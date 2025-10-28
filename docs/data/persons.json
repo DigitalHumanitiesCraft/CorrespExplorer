@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2025-10-28T21:53:11.504710",
+    "generated": "2025-10-28T22:07:25.161204",
     "data_source": "NEW export 2025-10-27 (curated 448 women)",
     "total_women": 448,
     "with_cmif_data": 230,
@@ -685,7 +685,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Bernstorff, Charitas Emilie Gräfin von, geb. von Buchwald(t) (1733-1820), Tochter des holsteinischen Rates und Herrn auf Borstel bei Segeberg Friedrich von Buchwald(t), seit 1751 verh. mit dem dänischen Minister Graf Johann Hartwig Ernst B., 1772 verw., seit 1779 in Weimar"
+      "biography": "Bernstorff, Charitas Emilie Gräfin von, geb. von Buchwald(t) (1733-1820), Tochter des holsteinischen Rates und Herrn auf Borstel bei Segeberg Friedrich von Buchwald(t), seit 1751 verh. mit dem dänischen Minister Graf Johann Hartwig Ernst B., 1772 verw., seit 1779 in Weimar",
+      "relationships": [
+        {
+          "target_id": "45090",
+          "type": "hat Nichte/Neffe",
+          "type_id": "4110",
+          "reciprocal_type": "hat Tante/Onkel"
+        }
+      ]
     },
     {
       "id": "35710",
@@ -811,7 +819,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Bode (Bodé), Charlotte #s+Karoline#s- Adamine Luise von (um 1759-1828), Tochter des nassau-usingischen Geheimen Rats Karl Wilhelm Moritz von B., um 1782-1819 Hof- bzw. Staatsdame der Landgräfin bzw. Großherzogin Luise von Hessen-Darmstadt, seit etwa 1820 in Oppenheim lebend"
+      "biography": "Bode (Bodé), Charlotte #s+Karoline#s- Adamine Luise von (um 1759-1828), Tochter des nassau-usingischen Geheimen Rats Karl Wilhelm Moritz von B., um 1782-1819 Hof- bzw. Staatsdame der Landgräfin bzw. Großherzogin Luise von Hessen-Darmstadt, seit etwa 1820 in Oppenheim lebend",
+      "relationships": [
+        {
+          "target_id": "44010",
+          "type": "hat Einfluss auf",
+          "type_id": "3020",
+          "reciprocal_type": "ist beeinflusst durch"
+        }
+      ]
     },
     {
       "id": "35896",
@@ -1436,7 +1452,15 @@
       "dates": {
         "birth": "1759"
       },
-      "biography": "Foucquet, Marie Louise Eugénie Marquise de, geb. Blondel d'Aubers (Aubert; Blondel genannt d'Aubers) (geb. 1759), Tochter des Juristen und Präsidenten des flandrischen Parlaments Eugène Blondel d'Aubers, seit 1777 verh. mit Marquis Jean Gabriel René François de F."
+      "biography": "Foucquet, Marie Louise Eugénie Marquise de, geb. Blondel d'Aubers (Aubert; Blondel genannt d'Aubers) (geb. 1759), Tochter des Juristen und Präsidenten des flandrischen Parlaments Eugène Blondel d'Aubers, seit 1777 verh. mit Marquis Jean Gabriel René François de F.",
+      "relationships": [
+        {
+          "target_id": "43658",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "37229",
@@ -1670,7 +1694,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Gore, Emilie (Emily) (1755-1832), um 1788 Freundin des Herzogs Karl August von Sachsen-Weimar, Tochter von Charles G., seit 1807 abwechselnd in Weimar und bei ihrer Schwester Hannah Cooper in Florenz lebend"
+      "biography": "Gore, Emilie (Emily) (1755-1832), um 1788 Freundin des Herzogs Karl August von Sachsen-Weimar, Tochter von Charles G., seit 1807 abwechselnd in Weimar und bei ihrer Schwester Hannah Cooper in Florenz lebend",
+      "relationships": [
+        {
+          "target_id": "43805",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "37674",
@@ -1852,7 +1884,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Karsch, Anna Luisa, geb. Dürbach, gesch. Hirsekorn (1722-1791), Schriftstellerin, seit 1762 in Berlin"
+      "biography": "Karsch, Anna Luisa, geb. Dürbach, gesch. Hirsekorn (1722-1791), Schriftstellerin, seit 1762 in Berlin",
+      "relationships": [
+        {
+          "target_id": "43352",
+          "type": "hat Enkel",
+          "type_id": "4040",
+          "reciprocal_type": "hat Großelternteil"
+        }
+      ]
     },
     {
       "id": "38694",
@@ -2542,7 +2582,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Reitzenstein, Eleonore Luise von, geb. von Plotho (1743/48-1810), Tochter des preußischen Diplomaten und Politikers Erich Christoph von Plotho, seit 1783 erste Ehefrau des kurkölnischen Kammerherrn Georg Christoph von R., (?) 1788 gesch., Hofdame in Weimar"
+      "biography": "Reitzenstein, Eleonore Luise von, geb. von Plotho (1743/48-1810), Tochter des preußischen Diplomaten und Politikers Erich Christoph von Plotho, seit 1783 erste Ehefrau des kurkölnischen Kammerherrn Georg Christoph von R., (?) 1788 gesch., Hofdame in Weimar",
+      "relationships": [
+        {
+          "target_id": "44919",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "40704",
@@ -2652,7 +2700,15 @@
         "birth": "1759",
         "death": "1828"
       },
-      "biography": "Russland, Maria Fjodorowna Zarin von, geb. Prinzessin Sophie Dorothea Augusta Luise von Württemberg (1759-1828), Tochter von Herzog Friedrich Eugen von Württemberg, seit 1776 zweite Ehefrau des  Zaren Paul_I., Mutter u._a. von Zar Alexander_I., von (Erb-)Großherzogin Maria Pawlowna von Sachsen-Weimar und Königin Katharina Pawlowna von Württemberg"
+      "biography": "Russland, Maria Fjodorowna Zarin von, geb. Prinzessin Sophie Dorothea Augusta Luise von Württemberg (1759-1828), Tochter von Herzog Friedrich Eugen von Württemberg, seit 1776 zweite Ehefrau des  Zaren Paul_I., Mutter u._a. von Zar Alexander_I., von (Erb-)Großherzogin Maria Pawlowna von Sachsen-Weimar und Königin Katharina Pawlowna von Württemberg",
+      "relationships": [
+        {
+          "target_id": "40967",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "40959",
@@ -2792,7 +2848,21 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Sachsen-Weimar-Eisenach, Maria Pawlowna Erbgroßherzogin von, geb. Großfürstin von Russland (1786-1859), 1804 Erbprinzessin, April 1815 Erbgroßherzogin, 1828 Großherzogin, Tochter des russischen Zaren Paul_I., Schwester u._a. von Zar Alexander_I. von Russland, seit 1804 verh. mit Erbprinz Karl Friedrich"
+      "biography": "Sachsen-Weimar-Eisenach, Maria Pawlowna Erbgroßherzogin von, geb. Großfürstin von Russland (1786-1859), 1804 Erbprinzessin, April 1815 Erbgroßherzogin, 1828 Großherzogin, Tochter des russischen Zaren Paul_I., Schwester u._a. von Zar Alexander_I. von Russland, seit 1804 verh. mit Erbprinz Karl Friedrich",
+      "relationships": [
+        {
+          "target_id": "40923",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        },
+        {
+          "target_id": "45051",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "41249",
@@ -2812,7 +2882,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Schmidt, Johanne Christiana (Sophia) #s+Agnese#s- (1804-1859), Tochter des Schneidermeisters Johann August und der Anna Elisabeth S. in Jena, 1823-1832 verh. mit dem Schneidermeister August Philipp Grose in Jena, verw., 1835-1838 verh. mit dem Buchdrucker Johann Karl Bernhard Müller in Jena, verw., Patenkind Christiane von Goethes"
+      "biography": "Schmidt, Johanne Christiana (Sophia) #s+Agnese#s- (1804-1859), Tochter des Schneidermeisters Johann August und der Anna Elisabeth S. in Jena, 1823-1832 verh. mit dem Schneidermeister August Philipp Grose in Jena, verw., 1835-1838 verh. mit dem Buchdrucker Johann Karl Bernhard Müller in Jena, verw., Patenkind Christiane von Goethes",
+      "relationships": [
+        {
+          "target_id": "43779",
+          "type": "hat Pate",
+          "type_id": "4080",
+          "reciprocal_type": "hat Patenkind"
+        }
+      ]
     },
     {
       "id": "41280",
@@ -2958,7 +3036,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Schubart, Henriette (1769-1831), Übersetzerin aus dem Englischen, vorwiegend in Altenburg, Gotha und Jena lebend, Tochter des Obersteuerbuchhalters Gotthelf S. in Altenburg, Schwester von Sophie Brentano, gesch. Mereau, und Karl S."
+      "biography": "Schubart, Henriette (1769-1831), Übersetzerin aus dem Englischen, vorwiegend in Altenburg, Gotha und Jena lebend, Tochter des Obersteuerbuchhalters Gotthelf S. in Altenburg, Schwester von Sophie Brentano, gesch. Mereau, und Karl S.",
+      "relationships": [
+        {
+          "target_id": "43260",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "41365",
@@ -3099,7 +3185,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Staff, Amalie #s+Friederike#s- von, geb. von Voß (1764-1796), seit 1788 verh. mit dem Kammerherrn und Oberforstmeister in Weimar und Eisenach, Christian Friedrich August von S., Enkelin von Herzog Ernst August von Sachsen-Weimar und Schwester von Amalie von Voß"
+      "biography": "Staff, Amalie #s+Friederike#s- von, geb. von Voß (1764-1796), seit 1788 verh. mit dem Kammerherrn und Oberforstmeister in Weimar und Eisenach, Christian Friedrich August von S., Enkelin von Herzog Ernst August von Sachsen-Weimar und Schwester von Amalie von Voß",
+      "relationships": [
+        {
+          "target_id": "45623",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "41719",
@@ -3687,7 +3781,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Ahlefeld (Ahlefeldt), #s+Charlotte#s- Elisabeth Sophie Luise Wilhelmine von, geb. von Seebach (1777-1849), Schriftstellerin, seit 1798 verh. mit dem schleswigschen Rittergutsbesitzer Johann Rudolf von A., seit 1807 von ihm getrennt und vorwiegend in Thüringen lebend, seit 1821 in Weimar, Schwester von Friedrich und Ludwig von Seebach sowie Amalie von Stein"
+      "biography": "Ahlefeld (Ahlefeldt), #s+Charlotte#s- Elisabeth Sophie Luise Wilhelmine von, geb. von Seebach (1777-1849), Schriftstellerin, seit 1798 verh. mit dem schleswigschen Rittergutsbesitzer Johann Rudolf von A., seit 1807 von ihm getrennt und vorwiegend in Thüringen lebend, seit 1821 in Weimar, Schwester von Friedrich und Ludwig von Seebach sowie Amalie von Stein",
+      "relationships": [
+        {
+          "target_id": "45391",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "42965",
@@ -3768,7 +3870,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Arnim, Katharina Elisabeth (#s+Bettina#s-, #s+Bettine#s-) Ludovika Magdalena von, geb. Brentano (1785-1859), Schriftstellerin, bis 1810 u._a. in Frankfurt am Main, Kassel, München und Landshut, seitdem vorwiegend in Berlin, Tochter von Peter Anton und Maximiliane Brentano, seit 1811 verh. mit Achim von A."
+      "biography": "Arnim, Katharina Elisabeth (#s+Bettina#s-, #s+Bettine#s-) Ludovika Magdalena von, geb. Brentano (1785-1859), Schriftstellerin, bis 1810 u._a. in Frankfurt am Main, Kassel, München und Landshut, seitdem vorwiegend in Berlin, Tochter von Peter Anton und Maximiliane Brentano, seit 1811 verh. mit Achim von A.",
+      "relationships": [
+        {
+          "target_id": "44355",
+          "type": "hat Großelternteil",
+          "type_id": "4020",
+          "reciprocal_type": "hat Enkel"
+        }
+      ]
     },
     {
       "id": "43025",
@@ -4061,7 +4171,21 @@
           "type": "Sterbeort"
         }
       ],
-      "biography": "Beaulieu-Marconnay, #s+Henriette#s- Sophie Franziska Friederike Albertine von, geb. von und zu Egloffstein, gesch. Gräfin von und zu Egloffstein (1773-1864), Tochter des kurbrandenburgischen Hauptmanns Karl Ludwig Ernst Franz von Egloffstein, 1788/89-1803 verh. mit ihrem Cousin Graf Leopold Egloffstein, seit 1804 verh. mit Karl von B., u._a. 1795-1797 und um 1802 in Weimar lebend, Mutter u._a. der Gräfinnen Auguste, Julie und Karoline Egloffstein und des Grafen Karl Egloffstein"
+      "biography": "Beaulieu-Marconnay, #s+Henriette#s- Sophie Franziska Friederike Albertine von, geb. von und zu Egloffstein, gesch. Gräfin von und zu Egloffstein (1773-1864), Tochter des kurbrandenburgischen Hauptmanns Karl Ludwig Ernst Franz von Egloffstein, 1788/89-1803 verh. mit ihrem Cousin Graf Leopold Egloffstein, seit 1804 verh. mit Karl von B., u._a. 1795-1797 und um 1802 in Weimar lebend, Mutter u._a. der Gräfinnen Auguste, Julie und Karoline Egloffstein und des Grafen Karl Egloffstein",
+      "relationships": [
+        {
+          "target_id": "46093",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        },
+        {
+          "target_id": "46094",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "43073",
@@ -4319,7 +4443,21 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Bohn, Johanna #s+Sophie#s-, geb. Wesselhöft (1769-1834), Tochter des Konrektors Johann Georg Wesselhöft in Hamburg, seit 1794 verh. mit dem Buchhändler Johann Friedrich B. in Lübeck, 1803 verw., seit 1807/08 in Jena, später in Stuttgart, Schwester von Johanna Frommann sowie Elisabeth und Johann Karl Wesselhöft"
+      "biography": "Bohn, Johanna #s+Sophie#s-, geb. Wesselhöft (1769-1834), Tochter des Konrektors Johann Georg Wesselhöft in Hamburg, seit 1794 verh. mit dem Buchhändler Johann Friedrich B. in Lübeck, 1803 verw., seit 1807/08 in Jena, später in Stuttgart, Schwester von Johanna Frommann sowie Elisabeth und Johann Karl Wesselhöft",
+      "relationships": [
+        {
+          "target_id": "43690",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "45714",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "43215",
@@ -4452,7 +4590,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Brentano, #s+Sophie#s- Friederike, geb. Schubart, gesch. Mereau (1770-1806), Schriftstellerin, Übersetzerin, seit 1793 verh. mit dem Bibliothekar und Professor Friedrich Ernst Karl Mereau in Jena, 1801 gesch., seit 1803 verh. mit Klemens B."
+      "biography": "Brentano, #s+Sophie#s- Friederike, geb. Schubart, gesch. Mereau (1770-1806), Schriftstellerin, Übersetzerin, seit 1793 verh. mit dem Bibliothekar und Professor Friedrich Ernst Karl Mereau in Jena, 1801 gesch., seit 1803 verh. mit Klemens B.",
+      "relationships": [
+        {
+          "target_id": "41351",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "43273",
@@ -4773,7 +4919,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Chézy, Wilhelmine (#s+Helmina#s-) Christiane von, geb. von Klen(c)ke, gesch. von Hastfer (1783-1856), Schriftstellerin, 1801-1810 in Paris, dann u._a. in Heidelberg, Aschaffenburg, Darmstadt und Berlin, 1817-1823 in Dresden, dann in Wien, seit 1830 in München, zuletzt in Genf, 1799-1801 verh. mit dem preußischen Offizier Gustav von Hastfer, seit 1805 verh. mit dem französischen Orientalisten Antoine Léonard de C., seit 1810 von ihm getrennt lebend, Enkelin von Anna Luisa Karsch"
+      "biography": "Chézy, Wilhelmine (#s+Helmina#s-) Christiane von, geb. von Klen(c)ke, gesch. von Hastfer (1783-1856), Schriftstellerin, 1801-1810 in Paris, dann u._a. in Heidelberg, Aschaffenburg, Darmstadt und Berlin, 1817-1823 in Dresden, dann in Wien, seit 1830 in München, zuletzt in Genf, 1799-1801 verh. mit dem preußischen Offizier Gustav von Hastfer, seit 1805 verh. mit dem französischen Orientalisten Antoine Léonard de C., seit 1810 von ihm getrennt lebend, Enkelin von Anna Luisa Karsch",
+      "relationships": [
+        {
+          "target_id": "38507",
+          "type": "hat Großelternteil",
+          "type_id": "4020",
+          "reciprocal_type": "hat Enkel"
+        }
+      ]
     },
     {
       "id": "43377",
@@ -4960,7 +5114,21 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Eybenberg, Karoline Esperance #s+Marianne#s- von, geb. Meyer (um 1770-1812), Salonière in Berlin und Wien, Tochter von A(a)ron Moses und Rösel Meyer in Berlin, 1788 evangelisch getauft, seit 1797 heimlich verh. mit Prinz Heinrich_XIV. von Reuß-Greiz, 1799 verw., führte seitdem den Namen von E. und lebte vorwiegend in Wien, Schwester von Sophie von Grotthuß"
+      "biography": "Eybenberg, Karoline Esperance #s+Marianne#s- von, geb. Meyer (um 1770-1812), Salonière in Berlin und Wien, Tochter von A(a)ron Moses und Rösel Meyer in Berlin, 1788 evangelisch getauft, seit 1797 heimlich verh. mit Prinz Heinrich_XIV. von Reuß-Greiz, 1799 verw., führte seitdem den Namen von E. und lebte vorwiegend in Wien, Schwester von Sophie von Grotthuß",
+      "relationships": [
+        {
+          "target_id": "43849",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "43849",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "43598",
@@ -5047,7 +5215,15 @@
         "death": "1845",
         "birth": "1778"
       },
-      "biography": "Foucquet, Marie #s+Renée#s- Louise de (1778-1845), Tochter des Marquis Jean Gabriel René François de F., seit 1803 verh. mit dem späteren Marschall Anne Pierre de Bertier de Sauvigny"
+      "biography": "Foucquet, Marie #s+Renée#s- Louise de (1778-1845), Tochter des Marquis Jean Gabriel René François de F., seit 1803 verh. mit dem späteren Marschall Anne Pierre de Bertier de Sauvigny",
+      "relationships": [
+        {
+          "target_id": "37150",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "43660",
@@ -5269,7 +5445,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Frommann, #s+Alwina#s- (Albina) Sophia (1800-1875), Malerin, Illustratorin, in Jena und 1838-1872 in Berlin, zuletzt in Weimar, Gesellschafterin im Hause von Karl vom Stein zum Altenstein, 1843 Zeichenlehrerin und Vorleserin der Kronprinzessin Augusta von Preußen, geb. Prinzessin von Sachsen-Weimar, Tochter von Karl #s+Friedrich#s- Ernst und Johanna F."
+      "biography": "Frommann, #s+Alwina#s- (Albina) Sophia (1800-1875), Malerin, Illustratorin, in Jena und 1838-1872 in Berlin, zuletzt in Weimar, Gesellschafterin im Hause von Karl vom Stein zum Altenstein, 1843 Zeichenlehrerin und Vorleserin der Kronprinzessin Augusta von Preußen, geb. Prinzessin von Sachsen-Weimar, Tochter von Karl #s+Friedrich#s- Ernst und Johanna F.",
+      "relationships": [
+        {
+          "target_id": "43690",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "43690",
@@ -5332,7 +5516,27 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Frommann, #s+Johanna#s- Charlotte, geb. Wesselhöft (1765-1830), Miniaturmalerin,  Tochter des Gymnasiallehrers Johann Georg Wesselhöft in Hamburg, Schwester von Sophie Bohn sowie Elisabeth und Johann Karl Wesselhöft, seit 1792 verh. mit Karl #s+Friedrich#s- Ernst F., Mutter von Alwina und #s+Friedrich#s- Johannes F."
+      "biography": "Frommann, #s+Johanna#s- Charlotte, geb. Wesselhöft (1765-1830), Miniaturmalerin,  Tochter des Gymnasiallehrers Johann Georg Wesselhöft in Hamburg, Schwester von Sophie Bohn sowie Elisabeth und Johann Karl Wesselhöft, seit 1792 verh. mit Karl #s+Friedrich#s- Ernst F., Mutter von Alwina und #s+Friedrich#s- Johannes F.",
+      "relationships": [
+        {
+          "target_id": "43181",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "43688",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        },
+        {
+          "target_id": "45714",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "43705",
@@ -5660,7 +5864,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Goethe, Johanna #s+Christiane#s- Sophie von, geb. Vulpius (1765-1816), Tochter des Amtsarchivars Johann Friedrich Vulpius in Weimar, seit 1788 Lebensgefährtin Goethes, seit 19. Oktober 1806 mit ihm verh., Schwester von August Vulpius"
+      "biography": "Goethe, Johanna #s+Christiane#s- Sophie von, geb. Vulpius (1765-1816), Tochter des Amtsarchivars Johann Friedrich Vulpius in Weimar, seit 1788 Lebensgefährtin Goethes, seit 19. Oktober 1806 mit ihm verh., Schwester von August Vulpius",
+      "relationships": [
+        {
+          "target_id": "41249",
+          "type": "hat Patenkind",
+          "type_id": "4070",
+          "reciprocal_type": "hat Pate"
+        }
+      ]
     },
     {
       "id": "43781",
@@ -5732,7 +5944,15 @@
           "type": "Sterbeort"
         }
       ],
-      "biography": "Goethe, Katharina #s+Elisabeth#s-, geb. Textor (1731-1808), Goethes Mutter, Tochter des Stadtschultheißen Johann Wolfgang Textor in Frankfurt am Main, seit 1748 verh. mit Johann #s+Kaspar#s- G., 1782 verw."
+      "biography": "Goethe, Katharina #s+Elisabeth#s-, geb. Textor (1731-1808), Goethes Mutter, Tochter des Stadtschultheißen Johann Wolfgang Textor in Frankfurt am Main, seit 1748 verh. mit Johann #s+Kaspar#s- G., 1782 verw.",
+      "relationships": [
+        {
+          "target_id": "44537",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "43782",
@@ -5762,7 +5982,27 @@
         "death": "1872",
         "birth": "1796"
       },
-      "biography": "Goethe, #s+Ottilie#s- Wilhelmine Ernestine Henriette von, geb. von Pogwisch (1796-1872), Goethes Schwiegertochter, Tochter von Wilhelm Julius und Henriette von Pogwisch, seit 17. Juni 1817 verh. mit August von G., nach 1832 vorwiegend in Leipzig und Wien, seit 1870 wieder in Weimar lebend"
+      "biography": "Goethe, #s+Ottilie#s- Wilhelmine Ernestine Henriette von, geb. von Pogwisch (1796-1872), Goethes Schwiegertochter, Tochter von Wilhelm Julius und Henriette von Pogwisch, seit 17. Juni 1817 verh. mit August von G., nach 1832 vorwiegend in Leipzig und Wien, seit 1870 wieder in Weimar lebend",
+      "relationships": [
+        {
+          "target_id": "44815",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        },
+        {
+          "target_id": "49574",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        },
+        {
+          "target_id": "44816",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "43787",
@@ -5815,7 +6055,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Gore, Elisabeth (#s+Eliza#s-) Maria (1753-1802), Malerin, Tochter von Charles G."
+      "biography": "Gore, Elisabeth (#s+Eliza#s-) Maria (1753-1802), Malerin, Tochter von Charles G.",
+      "relationships": [
+        {
+          "target_id": "37557",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "43841",
@@ -5923,7 +6171,21 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Grotthuß, #s+Sophie#s- Leopoldine Wilhelmine von, geb. Sara Meyer, gesch. Wulff (1763-1828), Salonière in Berlin, Tochter von A(a)ron Moses und Rösel Meyer in Berlin, seit 1778 verh. mit dem Kaufmann Jakob Isaak (Lipmann) Wulff in Berlin, 1788 gesch. und evangelisch getauft, seit 1797 in zweiter Ehe verh. mit Friedrich Dietrich Wilhelm von G., 1820 verw., Schwester von Marianne von Eybenberg"
+      "biography": "Grotthuß, #s+Sophie#s- Leopoldine Wilhelmine von, geb. Sara Meyer, gesch. Wulff (1763-1828), Salonière in Berlin, Tochter von A(a)ron Moses und Rösel Meyer in Berlin, seit 1778 verh. mit dem Kaufmann Jakob Isaak (Lipmann) Wulff in Berlin, 1788 gesch. und evangelisch getauft, seit 1797 in zweiter Ehe verh. mit Friedrich Dietrich Wilhelm von G., 1820 verw., Schwester von Marianne von Eybenberg",
+      "relationships": [
+        {
+          "target_id": "43592",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "43592",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "43868",
@@ -6050,7 +6312,21 @@
           "type": "Geburtsort"
         }
       ],
-      "biography": "Hasenclever, Kornelia #s+Henriette#s- Franziska, geb. Schlosser (1781-1851), Tochter von Georg und Johanna Schlosser, seit 1809 verh. mit David H."
+      "biography": "Hasenclever, Kornelia #s+Henriette#s- Franziska, geb. Schlosser (1781-1851), Tochter von Georg und Johanna Schlosser, seit 1809 verh. mit David H.",
+      "relationships": [
+        {
+          "target_id": "44686",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "45158",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "43958",
@@ -6172,7 +6448,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Henckel von Donnersmarck, Eleonore Maximiliane #s+Ottilie#s- Luise Gräfin, geb. Gräfin von Lepel (1756-1843), Tochter des Grafen Friedrich Wilhelm Lepel, seit 1774 zweite Ehefrau von Graf Viktor Amadeus H., 1793 verw., zeitweise in Rheinsberg lebend, 1799 Oberhofmeisterin der Erbprinzessin Helena Pawlowna von Mecklenburg-Schwerin und 1804 der späteren Großherzogin Maria Pawlowna von Sachsen-Weimar, Mutter der Grafen Wilhelm und Leo H. und von Henriette von Pogwisch"
+      "biography": "Henckel von Donnersmarck, Eleonore Maximiliane #s+Ottilie#s- Luise Gräfin, geb. Gräfin von Lepel (1756-1843), Tochter des Grafen Friedrich Wilhelm Lepel, seit 1774 zweite Ehefrau von Graf Viktor Amadeus H., 1793 verw., zeitweise in Rheinsberg lebend, 1799 Oberhofmeisterin der Erbprinzessin Helena Pawlowna von Mecklenburg-Schwerin und 1804 der späteren Großherzogin Maria Pawlowna von Sachsen-Weimar, Mutter der Grafen Wilhelm und Leo H. und von Henriette von Pogwisch",
+      "relationships": [
+        {
+          "target_id": "44815",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "43984",
@@ -6260,7 +6544,15 @@
         "death": "1829",
         "birth": "1761"
       },
-      "biography": "Hessen-Darmstadt, #s+Luise#s- Karoline Henriette Großherzogin von, geb. Prinzessin von Hessen-Darmstadt (1761-1829), 1790 Landgräfin, 1806 Großherzogin, Tochter von Landgraf Georg Wilhelm, seit 1777 verh. mit Ludwig_I."
+      "biography": "Hessen-Darmstadt, #s+Luise#s- Karoline Henriette Großherzogin von, geb. Prinzessin von Hessen-Darmstadt (1761-1829), 1790 Landgräfin, 1806 Großherzogin, Tochter von Landgraf Georg Wilhelm, seit 1777 verh. mit Ludwig_I.",
+      "relationships": [
+        {
+          "target_id": "35842",
+          "type": "ist beeinflusst durch",
+          "type_id": "3030",
+          "reciprocal_type": "hat Einfluss auf"
+        }
+      ]
     },
     {
       "id": "44017",
@@ -7156,7 +7448,15 @@
         "death": "1858",
         "birth": "1785"
       },
-      "biography": "Koethe, Agnes Silvia (#s+Sylvie#s-) Dorothea, geb. von Ziegesar (1785-1858), Tochter von August Friedrich Karl und Magdalena Augusta von Ziegesar, seit 1814 verh. mit Friedrich August K."
+      "biography": "Koethe, Agnes Silvia (#s+Sylvie#s-) Dorothea, geb. von Ziegesar (1785-1858), Tochter von August Friedrich Karl und Magdalena Augusta von Ziegesar, seit 1814 verh. mit Friedrich August K.",
+      "relationships": [
+        {
+          "target_id": "45712",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "44287",
@@ -7421,7 +7721,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "La Roche, Marie #s+Sophie#s- (seit 1775:) von, geb. Gutermann (seit 1741:) von Gutershofen (1730-1807), Schriftstellerin, Tochter des 1741 geadelten Augsburger Arztes Georg Friedrich Gutermann, seit 1754 verh. mit Georg Michael Frank von Lichtenfels genannt L., u._a. 1771-1780 in Ehrenbreitstein bei Koblenz und seit 1786 in Offenbach, 1788 verw."
+      "biography": "La Roche, Marie #s+Sophie#s- (seit 1775:) von, geb. Gutermann (seit 1741:) von Gutershofen (1730-1807), Schriftstellerin, Tochter des 1741 geadelten Augsburger Arztes Georg Friedrich Gutermann, seit 1754 verh. mit Georg Michael Frank von Lichtenfels genannt L., u._a. 1771-1780 in Ehrenbreitstein bei Koblenz und seit 1786 in Offenbach, 1788 verw.",
+      "relationships": [
+        {
+          "target_id": "43000",
+          "type": "hat Enkel",
+          "type_id": "4040",
+          "reciprocal_type": "hat Großelternteil"
+        }
+      ]
     },
     {
       "id": "44384",
@@ -7472,7 +7780,15 @@
         "death": "1830",
         "birth": "1801"
       },
-      "biography": "Lincker (Linker) und Lützenwick, Agnes #s+Mathilde#s- von (1801-1830), Tochter von Karl Albert und Karoline von L., seit 1823 verh. mit Daniel #s+Wilhelm#s- von Wegner"
+      "biography": "Lincker (Linker) und Lützenwick, Agnes #s+Mathilde#s- von (1801-1830), Tochter von Karl Albert und Karoline von L., seit 1823 verh. mit Daniel #s+Wilhelm#s- von Wegner",
+      "relationships": [
+        {
+          "target_id": "44415",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "44415",
@@ -7484,7 +7800,15 @@
         "death": "1864",
         "birth": "1779"
       },
-      "biography": "Lincker (Linker) und Lützenwick, #s+Karoline#s- (#s+Lili#s-) Christiane Eleonore von, geb. von Schönberg (1779-1864), Tochter von Friedrich Alexander und Maximiliane Erdmute von Schönberg, seit 1799 verh. mit Karl Albert von L."
+      "biography": "Lincker (Linker) und Lützenwick, #s+Karoline#s- (#s+Lili#s-) Christiane Eleonore von, geb. von Schönberg (1779-1864), Tochter von Friedrich Alexander und Maximiliane Erdmute von Schönberg, seit 1799 verh. mit Karl Albert von L.",
+      "relationships": [
+        {
+          "target_id": "44412",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "44422",
@@ -7608,7 +7932,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Mecklenburg-Schwerin, #s+Karoline#s- Luise Erbgroßherzogin von, geb. Prinzessin von Sachsen-Weimar und Eisenach (1786-1816), seit 1815 Erbgroßherzogin, Tochter von Karl August und Luise von Sachsen-Weimar, seit 1810 zweite Ehefrau des Erbprinzen und späteren Erbgroßherzogs Friedrich Ludwig"
+      "biography": "Mecklenburg-Schwerin, #s+Karoline#s- Luise Erbgroßherzogin von, geb. Prinzessin von Sachsen-Weimar und Eisenach (1786-1816), seit 1815 Erbgroßherzogin, Tochter von Karl August und Luise von Sachsen-Weimar, seit 1810 zweite Ehefrau des Erbprinzen und späteren Erbgroßherzogs Friedrich Ludwig",
+      "relationships": [
+        {
+          "target_id": "45046",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "44537",
@@ -7649,7 +7981,21 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Melber, #s+Johanna#s- Maria, geb. Textor (1734-1823), Tochter des Stadtschultheißen Johann Wolfgang Textor in Frankfurt am Main, seit 1751 verh. mit dem Kaufmann Georg Adolf M., Tante Goethes"
+      "biography": "Melber, #s+Johanna#s- Maria, geb. Textor (1734-1823), Tochter des Stadtschultheißen Johann Wolfgang Textor in Frankfurt am Main, seit 1751 verh. mit dem Kaufmann Georg Adolf M., Tante Goethes",
+      "relationships": [
+        {
+          "target_id": "43781",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "51015",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "44542",
@@ -7921,7 +8267,15 @@
           "type": "Geburtsort"
         }
       ],
-      "biography": "Nicolovius, #s+Luise#s- Maria Anna, geb. Schlosser (1774-1811), ältere Tochter aus Georg Schlossers (erster) Ehe mit Goethes Schwester Kornelia, seit 1795 verh. mit Ludwig N."
+      "biography": "Nicolovius, #s+Luise#s- Maria Anna, geb. Schlosser (1774-1811), ältere Tochter aus Georg Schlossers (erster) Ehe mit Goethes Schwester Kornelia, seit 1795 verh. mit Ludwig N.",
+      "relationships": [
+        {
+          "target_id": "43928",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "44692",
@@ -8282,7 +8636,27 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Pogwisch, #s+Henriette#s- Ottilie Ulrike von, geb. Gräfin Henckel von Donnersmarck (1776-1851), Hofdame, Tochter von Graf Viktor Amadeus und Gräfin Ottilie Henckel, 1796-1820 verh. mit dem preußischen Offizier Wilhelm Julius von P., seit 1801/02 von ihm getrennt lebend und 1820 gesch., 1802-1805 Oberhofmeisterin der preußischen Prinzessin Friederike (später Herzogin von Anhalt-Dessau), seit 1805/06 in Weimar, 1811-1830 Hofdame bei (Groß-)Herzogin Luise, Schwester von Auguste von Hagen, den Grafen Wilhelm und Leo Henckel und von Amalie von Treskow, Mutter von Ottilie von Goethe und Ulrike von P."
+      "biography": "Pogwisch, #s+Henriette#s- Ottilie Ulrike von, geb. Gräfin Henckel von Donnersmarck (1776-1851), Hofdame, Tochter von Graf Viktor Amadeus und Gräfin Ottilie Henckel, 1796-1820 verh. mit dem preußischen Offizier Wilhelm Julius von P., seit 1801/02 von ihm getrennt lebend und 1820 gesch., 1802-1805 Oberhofmeisterin der preußischen Prinzessin Friederike (später Herzogin von Anhalt-Dessau), seit 1805/06 in Weimar, 1811-1830 Hofdame bei (Groß-)Herzogin Luise, Schwester von Auguste von Hagen, den Grafen Wilhelm und Leo Henckel und von Amalie von Treskow, Mutter von Ottilie von Goethe und Ulrike von P.",
+      "relationships": [
+        {
+          "target_id": "43782",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        },
+        {
+          "target_id": "43961",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        },
+        {
+          "target_id": "44816",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "44816",
@@ -8320,7 +8694,21 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Pogwisch, #s+Ulrike#s- Henriette Adele Elmire (Eleonore) von (1798-1875), Tochter von Wilhelm Julius und Henriette von P., 1817-1828 in Goethes Haus und 1828-1851 bei ihrer Mutter lebend, 1859 Konventualin und 1864 Priorin des adeligen Fräuleinstifts St. Johannis in Schleswig, Schwester von Ottilie von Goethe"
+      "biography": "Pogwisch, #s+Ulrike#s- Henriette Adele Elmire (Eleonore) von (1798-1875), Tochter von Wilhelm Julius und Henriette von P., 1817-1828 in Goethes Haus und 1828-1851 bei ihrer Mutter lebend, 1859 Konventualin und 1864 Priorin des adeligen Fräuleinstifts St. Johannis in Schleswig, Schwester von Ottilie von Goethe",
+      "relationships": [
+        {
+          "target_id": "43782",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "44815",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "44829",
@@ -8544,7 +8932,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Reitzenstein, Christiane Henriette (#s+Tinette#s-) von (1784-1837), Tochter von Eleonore Luise und Georg Christoph von R., Schwester der Gräfin Friederike Karoline von Beust, vorwiegend in Konradsreuth lebend, um 1802-1813 zeitweise in Weimar"
+      "biography": "Reitzenstein, Christiane Henriette (#s+Tinette#s-) von (1784-1837), Tochter von Eleonore Luise und Georg Christoph von R., Schwester der Gräfin Friederike Karoline von Beust, vorwiegend in Konradsreuth lebend, um 1802-1813 zeitweise in Weimar",
+      "relationships": [
+        {
+          "target_id": "40634",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "44924",
@@ -8820,7 +9216,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Sachsen-Weimar-Eisenach, #s+Luise#s- Augusta Großherzogin von, geb. Prinzessin von Hessen-Darmstadt (1757-1830), seit 1775 verh. mit Herzog Karl August, seit April 1815 Großherzogin"
+      "biography": "Sachsen-Weimar-Eisenach, #s+Luise#s- Augusta Großherzogin von, geb. Prinzessin von Hessen-Darmstadt (1757-1830), seit 1775 verh. mit Herzog Karl August, seit April 1815 Großherzogin",
+      "relationships": [
+        {
+          "target_id": "44523",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "45051",
@@ -8874,7 +9278,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Sachsen-Weimar-Eisenach, Maria Luise #s+Augusta#s- Katharina Prinzessin von (1811-1890), jüngere Tochter von Karl Friedrich und Maria Pawlowna, seit 1829 verh. mit Prinz Friedrich #s+Wilhelm#s- Ludwig von Preußen"
+      "biography": "Sachsen-Weimar-Eisenach, Maria Luise #s+Augusta#s- Katharina Prinzessin von (1811-1890), jüngere Tochter von Karl Friedrich und Maria Pawlowna, seit 1829 verh. mit Prinz Friedrich #s+Wilhelm#s- Ludwig von Preußen",
+      "relationships": [
+        {
+          "target_id": "40967",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "45063",
@@ -9075,7 +9487,21 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Schardt, Friederike #s+Sophie#s- Eleonore von, geb. von Bernstorff (1755-1819), seit 1778 verh. mit dem späteren Geheimen Rat Karl von S., Schwägerin von Charlotte von Stein"
+      "biography": "Schardt, Friederike #s+Sophie#s- Eleonore von, geb. von Bernstorff (1755-1819), seit 1778 verh. mit dem späteren Geheimen Rat Karl von S., Schwägerin von Charlotte von Stein",
+      "relationships": [
+        {
+          "target_id": "35705",
+          "type": "hat Tante/Onkel",
+          "type_id": "4050",
+          "reciprocal_type": "hat Nichte/Neffe"
+        },
+        {
+          "target_id": "45394",
+          "type": "hat Schwager/Schwägerin",
+          "type_id": "4090",
+          "reciprocal_type": "hat Schwager/Schwägerin"
+        }
+      ]
     },
     {
       "id": "45095",
@@ -9242,7 +9668,15 @@
           "type": "Geburtsort"
         }
       ],
-      "biography": "Schiller, Luise Antoinette #s+Charlotte#s- (seit 1802:) von, geb. von Lengefeld (1766-1826), Tochter des schwarzburg-rudolstädtischen Oberforstmeisters und Kammerrates Karl Christoph von Lengefeld und dessen Ehefrau Luise, seit 1790 verh. mit Friedrich (von) S., 1805 verw., 1825 Umzug nach  Bonn, Schwester von Karoline von Wolzogen"
+      "biography": "Schiller, Luise Antoinette #s+Charlotte#s- (seit 1802:) von, geb. von Lengefeld (1766-1826), Tochter des schwarzburg-rudolstädtischen Oberforstmeisters und Kammerrates Karl Christoph von Lengefeld und dessen Ehefrau Luise, seit 1790 verh. mit Friedrich (von) S., 1805 verw., 1825 Umzug nach  Bonn, Schwester von Karoline von Wolzogen",
+      "relationships": [
+        {
+          "target_id": "45783",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "45134",
@@ -9373,7 +9807,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Schlosser, #s+Johanna#s- Katharina Sibylla, geb. Fahlmer (1744-1821), Tochter des Großkaufmanns und Kommerzienrates Georg Christoph Fahlmer in Düsseldorf, seit 1778 zweite Ehefrau von Georg S., 1799 verw., in Frankfurt am Main und seit 1809 in Düsseldorf lebend, Tante von Fritz und Christian S."
+      "biography": "Schlosser, #s+Johanna#s- Katharina Sibylla, geb. Fahlmer (1744-1821), Tochter des Großkaufmanns und Kommerzienrates Georg Christoph Fahlmer in Düsseldorf, seit 1778 zweite Ehefrau von Georg S., 1799 verw., in Frankfurt am Main und seit 1809 in Düsseldorf lebend, Tante von Fritz und Christian S.",
+      "relationships": [
+        {
+          "target_id": "43928",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "45163",
@@ -9605,7 +10047,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Schopenhauer, #s+Johanna#s- Henriette, geb. Trosiener (1766-1838), Schriftstellerin, 1793 in Hamburg, 1806 in Weimar, 1829 in Unkel, 1832 in Bonn und 1837 in Jena, seit 1784 verh. mit dem Danziger Kaufmann Heinrich Floris S., 1806 verw., Mutter von Arthur und Adele S."
+      "biography": "Schopenhauer, #s+Johanna#s- Henriette, geb. Trosiener (1766-1838), Schriftstellerin, 1793 in Hamburg, 1806 in Weimar, 1829 in Unkel, 1832 in Bonn und 1837 in Jena, seit 1784 verh. mit dem Danziger Kaufmann Heinrich Floris S., 1806 verw., Mutter von Arthur und Adele S.",
+      "relationships": [
+        {
+          "target_id": "45215",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "45215",
@@ -9673,7 +10123,21 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Schopenhauer, Luise Adelaide (#s+Adele#s-) Lavinia (1797-1849), Schriftstellerin, Übersetzerin, Malerin, Silhouettenschneiderin, 1806 mit ihrer Mutter Johanna S. in Weimar, 1829 in Unkel, 1832 in Bonn und 1837 in Jena, 1845-1848 in Italien, zuletzt in Bonn, Schwester von Arthur S."
+      "biography": "Schopenhauer, Luise Adelaide (#s+Adele#s-) Lavinia (1797-1849), Schriftstellerin, Übersetzerin, Malerin, Silhouettenschneiderin, 1806 mit ihrer Mutter Johanna S. in Weimar, 1829 in Unkel, 1832 in Bonn und 1837 in Jena, 1845-1848 in Italien, zuletzt in Bonn, Schwester von Arthur S.",
+      "relationships": [
+        {
+          "target_id": "45214",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        },
+        {
+          "target_id": "51022",
+          "type": "hat Freund",
+          "type_id": "1010",
+          "reciprocal_type": "hat Freund"
+        }
+      ]
     },
     {
       "id": "45261",
@@ -9894,7 +10358,15 @@
         "birth": "1773",
         "death": "1862"
       },
-      "biography": "Servière, Anna #s+Charlotte#s- (1773-1862), Tochter des Weinhändlers und Likör- und Parfümeriefabrikanten Peter Joseph S. in Frankfurt am Main, Zwillingsschwester von Paula S."
+      "biography": "Servière, Anna #s+Charlotte#s- (1773-1862), Tochter des Weinhändlers und Likör- und Parfümeriefabrikanten Peter Joseph S. in Frankfurt am Main, Zwillingsschwester von Paula S.",
+      "relationships": [
+        {
+          "target_id": "45328",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "45328",
@@ -9920,7 +10392,15 @@
         "birth": "1773",
         "death": "1832"
       },
-      "biography": "Servière, #s+Paula#s- Maria Walburgis (1773-1832), Tochter des Weinhändlers und Likör- und Parfümeriefabrikanten Peter Joseph S. in Frankfurt am Main, Zwillingsschwester von Charlotte S."
+      "biography": "Servière, #s+Paula#s- Maria Walburgis (1773-1832), Tochter des Weinhändlers und Likör- und Parfümeriefabrikanten Peter Joseph S. in Frankfurt am Main, Zwillingsschwester von Charlotte S.",
+      "relationships": [
+        {
+          "target_id": "45327",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "45345",
@@ -10098,7 +10578,15 @@
         "death": "1860",
         "birth": "1775"
       },
-      "biography": "Stein, #s+Amalie#s- (Amélie) Konstantine Luise Henriette von, geb. von Seebach (1775-1860), Tochter von August Alexander Christoph und Albertine von Seebach, Schwester von Charlotte von Ahlefeld sowie Friedrich und Ludwig von Seebach, seit 1798 verh. mit Karl von S. auf Kochberg, Schwiegertochter von Charlotte von S. "
+      "biography": "Stein, #s+Amalie#s- (Amélie) Konstantine Luise Henriette von, geb. von Seebach (1775-1860), Tochter von August Alexander Christoph und Albertine von Seebach, Schwester von Charlotte von Ahlefeld sowie Friedrich und Ludwig von Seebach, seit 1798 verh. mit Karl von S. auf Kochberg, Schwiegertochter von Charlotte von S. ",
+      "relationships": [
+        {
+          "target_id": "42959",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "45394",
@@ -10171,7 +10659,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Stein, #s+Charlotte#s- Albertine (Bernhardina) Ernestine von, geb. von Schardt (1742-1827), Hofdame, Schriftstellerin, Tochter des späteren Hofmarschalls und Geheimen Rates Johann Wilhelm Christian von Schardt in Weimar, 1758 Hofdame der Herzogin Anna Amalia, seit 1764 verh. mit Josias von S. auf Kochberg, 1793 verw., Mutter von Fritz und Karl von S."
+      "biography": "Stein, #s+Charlotte#s- Albertine (Bernhardina) Ernestine von, geb. von Schardt (1742-1827), Hofdame, Schriftstellerin, Tochter des späteren Hofmarschalls und Geheimen Rates Johann Wilhelm Christian von Schardt in Weimar, 1758 Hofdame der Herzogin Anna Amalia, seit 1764 verh. mit Josias von S. auf Kochberg, 1793 verw., Mutter von Fritz und Karl von S.",
+      "relationships": [
+        {
+          "target_id": "45090",
+          "type": "hat Schwager/Schwägerin",
+          "type_id": "4090",
+          "reciprocal_type": "hat Schwager/Schwägerin"
+        }
+      ]
     },
     {
       "id": "45425",
@@ -10686,7 +11182,15 @@
         "birth": "1763",
         "death": "1809"
       },
-      "biography": "Voß, #s+Amalie#s- Friederike Wilhelmine Ernestine von, geb. von Voß (1763-1809), Tochter des hannoverschen Hauptmanns Christian Heinrich Wilhelm von Voß, seit 1795 verh. mit dem preußischen General Karl Friedrich von V., Enkelin von Herzog Ernst August von Sachsen-Weimar und Schwester von Friederike von Staff"
+      "biography": "Voß, #s+Amalie#s- Friederike Wilhelmine Ernestine von, geb. von Voß (1763-1809), Tochter des hannoverschen Hauptmanns Christian Heinrich Wilhelm von Voß, seit 1795 verh. mit dem preußischen General Karl Friedrich von V., Enkelin von Herzog Ernst August von Sachsen-Weimar und Schwester von Friederike von Staff",
+      "relationships": [
+        {
+          "target_id": "41693",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "45628",
@@ -10896,7 +11400,15 @@
         "death": "1831",
         "birth": "1773"
       },
-      "biography": "Werthern (W.-Frohndorf), Juliane Luise #s+Cäcilie#s- von, geb. von Ziegesar (1773-1831), Tochter von August Friedrich Karl und Magdalena Augusta von Ziegesar, seit 1789 zweite Ehefrau des sachsen-weimarischen (Ober-)Kammerherrn Christian Ferdinand Georg von W., 1800 verw., Mutter von Lulu und (Graf) Ottobald von W."
+      "biography": "Werthern (W.-Frohndorf), Juliane Luise #s+Cäcilie#s- von, geb. von Ziegesar (1773-1831), Tochter von August Friedrich Karl und Magdalena Augusta von Ziegesar, seit 1789 zweite Ehefrau des sachsen-weimarischen (Ober-)Kammerherrn Christian Ferdinand Georg von W., 1800 verw., Mutter von Lulu und (Graf) Ottobald von W.",
+      "relationships": [
+        {
+          "target_id": "44275",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "45714",
@@ -10960,7 +11472,21 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Wesselhöft, Margareta #s+Elisabeth#s- (Betty) (1774-1842), Schriftstellerin und Malerin, Tochter des Gymnasiallehrers Johann Georg W. in Hamburg, seit 1807/08 in Jena, später in Stuttgart, zuletzt in Koblenz, Schwester von Johann Karl W., Sophie Bohn und Johanna Frommann"
+      "biography": "Wesselhöft, Margareta #s+Elisabeth#s- (Betty) (1774-1842), Schriftstellerin und Malerin, Tochter des Gymnasiallehrers Johann Georg W. in Hamburg, seit 1807/08 in Jena, später in Stuttgart, zuletzt in Koblenz, Schwester von Johann Karl W., Sophie Bohn und Johanna Frommann",
+      "relationships": [
+        {
+          "target_id": "43690",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "43181",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "45721",
@@ -11305,7 +11831,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Wolzogen, Friederike Sophie #s+Karoline#s- Augusta von, geb. von Lengefeld, gesch. von Beulwitz (1763-1847), Schriftstellerin, 1784-1794 verh. mit dem Geheimen Legationsrat Friedrich Wilhelm Ludwig von Beulwitz in Rudolstadt, seit 1794 in zweiter Ehe verh. mit Wilhelm von W., 1809 verw., seit 1797 vorwiegend in Weimar, auch in Bauerbach und auf ihrem Gut Bösleben bei Arnstadt lebend, seit 1826 in Jena, Schillers Schwägerin"
+      "biography": "Wolzogen, Friederike Sophie #s+Karoline#s- Augusta von, geb. von Lengefeld, gesch. von Beulwitz (1763-1847), Schriftstellerin, 1784-1794 verh. mit dem Geheimen Legationsrat Friedrich Wilhelm Ludwig von Beulwitz in Rudolstadt, seit 1794 in zweiter Ehe verh. mit Wilhelm von W., 1809 verw., seit 1797 vorwiegend in Weimar, auch in Bauerbach und auf ihrem Gut Bösleben bei Arnstadt lebend, seit 1826 in Jena, Schillers Schwägerin",
+      "relationships": [
+        {
+          "target_id": "45127",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "45814",
@@ -11561,7 +12095,21 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Egloffstein (E. auf Lamgarben und Arklitten), #s+Julie#s- Sophie Gräfin von und zu (1792-1869), Malerin, Hofdame, vorwiegend in Weimar und zuletzt in Marienrode bei Hildesheim lebend, 1826/27-1830 Hofdame der Großherzogin Luise von Sachsen-Weimar, Tochter aus Henriette von Beaulieu-Marconnays (erster) Ehe mit Graf Leopold E., Schwester der Gräfinnen Auguste und Karoline E. und des Grafen #s+Karl#s- August E."
+      "biography": "Egloffstein (E. auf Lamgarben und Arklitten), #s+Julie#s- Sophie Gräfin von und zu (1792-1869), Malerin, Hofdame, vorwiegend in Weimar und zuletzt in Marienrode bei Hildesheim lebend, 1826/27-1830 Hofdame der Großherzogin Luise von Sachsen-Weimar, Tochter aus Henriette von Beaulieu-Marconnays (erster) Ehe mit Graf Leopold E., Schwester der Gräfinnen Auguste und Karoline E. und des Grafen #s+Karl#s- August E.",
+      "relationships": [
+        {
+          "target_id": "43070",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        },
+        {
+          "target_id": "46094",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "46094",
@@ -11615,7 +12163,21 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Egloffstein (E. auf Lamgarben und Arklitten), #s+Karoline#s- (Line) Henriette Gräfin von und zu (1789-1868), Komponistin, Tochter aus Henriette von Beaulieu-Marconnays (erster) Ehe mit Graf Leopold E., Kindheit in Erlangen, Misburg bei Hannover und u._a. um 1802 und 1809-1810 in Weimar, 1815-1831 Hofdame der (Erb-)Großherzogin Maria Pawlowna von Sachsen-Weimar, Schwester der Gräfinnen Auguste und Julie E. und des Grafen #s+Karl#s- August E."
+      "biography": "Egloffstein (E. auf Lamgarben und Arklitten), #s+Karoline#s- (Line) Henriette Gräfin von und zu (1789-1868), Komponistin, Tochter aus Henriette von Beaulieu-Marconnays (erster) Ehe mit Graf Leopold E., Kindheit in Erlangen, Misburg bei Hannover und u._a. um 1802 und 1809-1810 in Weimar, 1815-1831 Hofdame der (Erb-)Großherzogin Maria Pawlowna von Sachsen-Weimar, Schwester der Gräfinnen Auguste und Julie E. und des Grafen #s+Karl#s- August E.",
+      "relationships": [
+        {
+          "target_id": "46093",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        },
+        {
+          "target_id": "43070",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "46251",
@@ -11652,7 +12214,15 @@
         "death": "1888",
         "birth": "1799"
       },
-      "biography": "Wolowska, #s+Kasimira#s- Friederika (Kazimiera Fryderyka Wo#.lowska) (um 1799-1888),  Begleiterin ihrer Schwester Maria Szymanowska auf deren Konzertreisen, seit etwa 1835 zweite Ehefrau ihres Cousins Jan Tadeusz Wolowski, 1843 verw."
+      "biography": "Wolowska, #s+Kasimira#s- Friederika (Kazimiera Fryderyka Wo#.lowska) (um 1799-1888),  Begleiterin ihrer Schwester Maria Szymanowska auf deren Konzertreisen, seit etwa 1835 zweite Ehefrau ihres Cousins Jan Tadeusz Wolowski, 1843 verw.",
+      "relationships": [
+        {
+          "target_id": "49243",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "46811",
@@ -11782,7 +12352,15 @@
         "death": "1829",
         "birth": "1769"
       },
-      "biography": "Broesigke, #s+Ulrike#s- Elisabeth von, geb. von Löwenklau (1769-1829), verh. mit Friedrich Leberecht von B. in Marienbad, Großmutter von Ulrike von Levetzow"
+      "biography": "Broesigke, #s+Ulrike#s- Elisabeth von, geb. von Löwenklau (1769-1829), verh. mit Friedrich Leberecht von B. in Marienbad, Großmutter von Ulrike von Levetzow",
+      "relationships": [
+        {
+          "target_id": "51286",
+          "type": "hat Enkel",
+          "type_id": "4040",
+          "reciprocal_type": "hat Großelternteil"
+        }
+      ]
     },
     {
       "id": "46931",
@@ -12240,7 +12818,15 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Szymanowska, #s+Maria#s- (Marianna) Agata, geb. Wo&#322owska (1789-1831), polnische Pianistin und Komponistin, 1823-1826 Konzertreisen in Deutschland, England, Frankreich, der Schweiz, Italien und Russland, seit 1828 Hofpianistin, Musiklehrerin und Salonière in St. Petersburg, Tochter des Brauereibesitzers Franciszek Wo&#322owski in Warschau, seit 1810 verh. mit dem Gutspächter #s+Józef#s- Teofil Szymanowski, 1820 gesch."
+      "biography": "Szymanowska, #s+Maria#s- (Marianna) Agata, geb. Wo&#322owska (1789-1831), polnische Pianistin und Komponistin, 1823-1826 Konzertreisen in Deutschland, England, Frankreich, der Schweiz, Italien und Russland, seit 1828 Hofpianistin, Musiklehrerin und Salonière in St. Petersburg, Tochter des Brauereibesitzers Franciszek Wo&#322owski in Warschau, seit 1810 verh. mit dem Gutspächter #s+Józef#s- Teofil Szymanowski, 1820 gesch.",
+      "relationships": [
+        {
+          "target_id": "46263",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "49258",
@@ -12351,7 +12937,15 @@
         "death": "1844",
         "birth": "1827"
       },
-      "biography": "Goethe, #s+Alma#s- Sedina Henriette Kornelia von (1827-1844), Goethes Enkelin, Tochter von August und Ottilie von G."
+      "biography": "Goethe, #s+Alma#s- Sedina Henriette Kornelia von (1827-1844), Goethes Enkelin, Tochter von August und Ottilie von G.",
+      "relationships": [
+        {
+          "target_id": "43782",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "49771",
@@ -12533,7 +13127,15 @@
         "death": "1857",
         "birth": "1778"
       },
-      "biography": "Löw von und zu Steinfurth, Sophie #s+Luise#s- Euphrosine von, geb. von Diede zum Fürstenstein (1778-1857), Tochter des Diplomaten Wilhelm Christoph von Diede, seit 1804 verh. mit dem hannoverschen Offizier Karl #s+Georg#s- Hermann Wilhelm von L., 1811 verw."
+      "biography": "Löw von und zu Steinfurth, Sophie #s+Luise#s- Euphrosine von, geb. von Diede zum Fürstenstein (1778-1857), Tochter des Diplomaten Wilhelm Christoph von Diede, seit 1804 verh. mit dem hannoverschen Offizier Karl #s+Georg#s- Hermann Wilhelm von L., 1811 verw.",
+      "relationships": [
+        {
+          "target_id": "51575",
+          "type": "hat Kind",
+          "type_id": "4030",
+          "reciprocal_type": "hat Elternteil"
+        }
+      ]
     },
     {
       "id": "50086",
@@ -13036,7 +13638,15 @@
         "birth": "1756",
         "death": "1837"
       },
-      "biography": "Melber, Johanna Maria Jakobäa (#s+Jacquette#s-) (1756-1837), in Frankfurt am Main, Tochter von Georg Adolf und Johanna M."
+      "biography": "Melber, Johanna Maria Jakobäa (#s+Jacquette#s-) (1756-1837), in Frankfurt am Main, Tochter von Georg Adolf und Johanna M.",
+      "relationships": [
+        {
+          "target_id": "44537",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "51022",
@@ -13048,7 +13658,15 @@
         "birth": "1798",
         "death": "1880"
       },
-      "biography": "Kleefeld, Julie (1798-1880), Freundin von Adele Schopenhauer, Tochter des Arztes Johann Gottfried K. in Danzig"
+      "biography": "Kleefeld, Julie (1798-1880), Freundin von Adele Schopenhauer, Tochter des Arztes Johann Gottfried K. in Danzig",
+      "relationships": [
+        {
+          "target_id": "45215",
+          "type": "hat Freund",
+          "type_id": "1010",
+          "reciprocal_type": "hat Freund"
+        }
+      ]
     },
     {
       "id": "51110",
@@ -13158,7 +13776,15 @@
         "death": "1899",
         "birth": "1804"
       },
-      "biography": "Levetzow, Theodore #s+Ulrike#s- Sophie von (1804-1899), älteste Tochter von #s+Amalie#s- Theodore Karoline von L., 1821-1823 in Marienbad mit Goethe befreundet"
+      "biography": "Levetzow, Theodore #s+Ulrike#s- Sophie von (1804-1899), älteste Tochter von #s+Amalie#s- Theodore Karoline von L., 1821-1823 in Marienbad mit Goethe befreundet",
+      "relationships": [
+        {
+          "target_id": "46929",
+          "type": "hat Großelternteil",
+          "type_id": "4020",
+          "reciprocal_type": "hat Enkel"
+        }
+      ]
     },
     {
       "id": "51287",
@@ -13435,7 +14061,15 @@
         "birth": "1807",
         "death": "1864"
       },
-      "biography": "Reventlow, Marie #s+Luise#s- Henriette Wilhelmine Gräfin von, geb. von Löw von und zu Steinfurth (1807-1864), Tochter von Georg und Luise von Löw von und zu Steinfurth, seit 1831 verh. mit dem dänischen Juristen und Kammerherrn Graf Friedrich R."
+      "biography": "Reventlow, Marie #s+Luise#s- Henriette Wilhelmine Gräfin von, geb. von Löw von und zu Steinfurth (1807-1864), Tochter von Georg und Luise von Löw von und zu Steinfurth, seit 1831 verh. mit dem dänischen Juristen und Kammerherrn Graf Friedrich R.",
+      "relationships": [
+        {
+          "target_id": "50055",
+          "type": "hat Elternteil",
+          "type_id": "4010",
+          "reciprocal_type": "hat Kind"
+        }
+      ]
     },
     {
       "id": "51689",
@@ -13628,7 +14262,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Tunno, #s+Augusta#s- Rose (1797-1785), Tochter des schottisch-amerikanischen Kaufmanns John T. in London und von Margaret T., geb. Rose, Schwester des Handelsmannes und britischen Parlamentariers #s+Edward#s- Rose T. und von  Maria T., (?) Cousine des kanadischen Geologen und Schriftstellers John Auldjo"
+      "biography": "Tunno, #s+Augusta#s- Rose (1797-1785), Tochter des schottisch-amerikanischen Kaufmanns John T. in London und von Margaret T., geb. Rose, Schwester des Handelsmannes und britischen Parlamentariers #s+Edward#s- Rose T. und von  Maria T., (?) Cousine des kanadischen Geologen und Schriftstellers John Auldjo",
+      "relationships": [
+        {
+          "target_id": "64146",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "52034",
@@ -13909,7 +14551,15 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Tunno, #s+Maria#s- Rose (1783-1853), Schwester von Augusta T."
+      "biography": "Tunno, #s+Maria#s- Rose (1783-1853), Schwester von Augusta T.",
+      "relationships": [
+        {
+          "target_id": "52031",
+          "type": "hat Geschwister",
+          "type_id": "4120",
+          "reciprocal_type": "hat Geschwister"
+        }
+      ]
     },
     {
       "id": "64858",

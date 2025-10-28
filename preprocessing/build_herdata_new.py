@@ -477,6 +477,65 @@ class HerDataPipelineNew:
 
         self.log(f"  Added {biografien_added} biographical texts from NEW export")
 
+        # Step 7: Load AGRELON relationships from NEW export
+        self.log("Loading ra_ndb_beziehungen.xml (NEW export)...")
+        beziehungen_tree = ET.parse(self.new_export_dir / 'ra_ndb_beziehungen.xml')
+        beziehungen_root = beziehungen_tree.getroot()
+
+        # Load AGRELON type definitions
+        agrelon_tree = ET.parse(self.new_export_dir / 'nsl_agrelon.xml')
+        agrelon_root = agrelon_tree.getroot()
+
+        # Build AGRELON ID to label mapping
+        agrelon_types = {}
+        for item in agrelon_root.findall('.//ITEM'):
+            agrelon_id = item.find('IDENT').text if item.find('IDENT') is not None else None
+            beziehung = item.find('BEZIEHUNG').text if item.find('BEZIEHUNG') is not None else None
+            if agrelon_id and beziehung:
+                agrelon_types[agrelon_id] = beziehung
+
+        self.log(f"  Loaded {len(agrelon_types)} AGRELON relationship types")
+
+        # Process relationships
+        relationships_added = 0
+        for item in beziehungen_root.findall('.//ITEM'):
+            id1 = item.find('ID1').text if item.find('ID1') is not None else None
+            id2 = item.find('ID2').text if item.find('ID2') is not None else None
+            agrelon_id1 = item.find('AGRELON_ID1').text if item.find('AGRELON_ID1') is not None else None
+            agrelon_id2 = item.find('AGRELON_ID2').text if item.find('AGRELON_ID2') is not None else None
+
+            # Only process if both persons are in our women dataset
+            if id1 in self.women and id2 in self.women:
+                # Get relationship type labels
+                type1 = agrelon_types.get(agrelon_id1, 'Unbekannte Beziehung')
+                type2 = agrelon_types.get(agrelon_id2, 'Unbekannte Beziehung')
+
+                # Add relationship to person 1
+                if 'relationships' not in self.women[id1]:
+                    self.women[id1]['relationships'] = []
+
+                self.women[id1]['relationships'].append({
+                    'target_id': id2,
+                    'type': type1,
+                    'type_id': agrelon_id1,
+                    'reciprocal_type': type2
+                })
+
+                # Add reciprocal relationship to person 2
+                if 'relationships' not in self.women[id2]:
+                    self.women[id2]['relationships'] = []
+
+                self.women[id2]['relationships'].append({
+                    'target_id': id1,
+                    'type': type2,
+                    'type_id': agrelon_id2,
+                    'reciprocal_type': type1
+                })
+
+                relationships_added += 2  # Count both directions
+
+        self.log(f"  Added {relationships_added} relationship entries (bidirectional)")
+
         # Validate Phase 3
         self.test_phase3()
 
@@ -575,6 +634,9 @@ class HerDataPipelineNew:
 
             if woman_data.get('biography'):
                 person['biography'] = woman_data['biography']
+
+            if woman_data.get('relationships'):
+                person['relationships'] = woman_data['relationships']
 
             output_data['persons'].append(person)
 
