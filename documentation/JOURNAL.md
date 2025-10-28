@@ -157,3 +157,82 @@ Lessons Learned:
 - Iterate on feedback: Brush selection → Hover + Sidebar was better UX
 
 Total Commits Session 10: 6 commits, ~500 lines changed
+
+## 2025-10-28
+
+### Session 11: Curated Dataset Integration and Pipeline Refactoring
+
+Discovery of New Data Export:
+- Found new-data/Datenexport 2025-10-27/ with 8 XML files (800 KB)
+- Export date: 27 October 2025 (yesterday)
+- 448 women (12.4% of full SNDB 3,617)
+- File structure: ra_ndb_* (Regestausgabe) instead of pers_koerp_*
+- No geodata files included (geo_main.xml, geo_indiv.xml, geo_links.xml missing)
+
+Data Quality Comparison (New vs Old):
+- Created compare_data_sources.py (390 lines) for systematic comparison
+- GND coverage: 60.3% (new) vs 34.1% (old) = +76.8% improvement
+- Date coverage: 94.0% (new) vs 83.9% (old) = +12.0% improvement
+- CMIF match: 51.3% (new) vs 22.3% (old) = +130% relative improvement
+- Geodata: 50.7% (new) vs 28.8% (old) = +76.0% relative improvement
+- Overlap: 447 women in both datasets, 3,170 only in old, 1 only in new
+- GND data: Identical for common women (no updates, just curated subset)
+
+Decision: Use Only New Data with Hybrid Approach:
+- Rationale: Quality over quantity (curated, research-relevant subset)
+- 60.3% GND coverage nearly double vs 34.1% (full SNDB)
+- Focused on 448 regest-relevant women with better documentation
+- All 448 have biographical texts (projekt_regestausgabe.xml)
+- Hybrid geodata: New export place refs + old SNDB coordinate resolution
+
+Pipeline Refactoring:
+- Created build_herdata_new.py (663 lines) with hybrid approach
+- Phase 1: Load ra_ndb_main.xml, ra_ndb_indiv.xml, ra_ndb_datierungen.xml (new)
+- Phase 2: CMIF matching (unchanged logic, better GND base)
+- Phase 3: HYBRID geodata enrichment
+  - ra_ndb_orte.xml (new) → SNDB_ID references
+  - geo_main.xml (old) → Place names resolution
+  - geo_indiv.xml (old) → Coordinates resolution
+  - ra_ndb_berufe.xml (new) → Occupations
+  - ra_ndb_beziehungen.xml (new) → AGRELON relationships
+- Phase 4: JSON generation with metadata update
+
+Results and Performance:
+- Total: 448 women processed
+- GND: 270 (60.3%)
+- Dates: 421 (94.0%)
+- CMIF match: 230 (51.3%) - 191 senders, 195 mentioned
+- Geodata: 227 (50.7%) via hybrid approach
+- Occupations: 207 (46.2%)
+- Timeline: 53 years with data
+- Output: persons.json 0.29 MB (was 1.56 MB = 81% reduction)
+- Runtime: 0.63s (was 1.4s = 55% faster)
+- All 48 tests passing
+
+Why Old Geodata Files Are Essential:
+- New export has ra_ndb_orte.xml with SNDB_ID references only
+- Example: SNDB_ID 79627 (Weimar)
+- geo_main.xml (old): 79627 → "Weimar" (place name)
+- geo_indiv.xml (old): 79627 → Lat 50.9795, Lon 11.3235
+- Without old geo files: NO map visualization possible
+- 121 unique SNDB_IDs in new export, all resolvable via old geo files
+
+Documentation Updates:
+- Updated knowledge/data.md: New statistics, hybrid architecture diagram
+- Updated README.md: Project status, data sources, repository structure
+- Created ADR-008: Curated dataset selection strategy (quality over quantity)
+- Updated JOURNAL.md: Session 11 complete documentation
+
+Key Insights:
+- New export is curated subset, not quality update of existing data
+- GND IDs identical for common women (no new linkages)
+- Selection criteria: Regestausgabe relevance, better data completeness
+- Hybrid approach necessary: New person data + old geodata = complete system
+- Old SNDB geo files are architectural dependency (cannot be removed)
+
+Technical Debt Addressed:
+- Maintained both pipelines: build_herdata.py (old, reference) + build_herdata_new.py (new, active)
+- Created comparison tool for future data quality monitoring
+- Documented architectural decision in ADR-008
+
+Total Commits Session 11: 0 commits (documentation phase, changes pending review)

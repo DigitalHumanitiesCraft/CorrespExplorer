@@ -1,0 +1,131 @@
+
+============================================================
+DATA SOURCE COMPARISON TOOL
+HerData Project - SNDB Analysis
+============================================================
+
+============================================================
+Loading OLD SNDB data (data/SNDB/)
+============================================================
+  Loaded 23568 person names
+  Found 3617 women (SEXUS='w')
+  GND coverage: 1235/3617 (34.1%)
+
+============================================================
+Loading NEW EXPORT data (new-data/Datenexport 2025-10-27/)
+============================================================
+  Loaded 448 person names
+  Found 448 women
+  All SEXUS='w': True
+  GND coverage: 270/448 (60.3%)
+
+============================================================
+COMPARISON ANALYSIS
+============================================================
+
+Dataset overlap:
+  Total in OLD SNDB:     3617 women
+  Total in NEW export:    448 women
+  In BOTH datasets:       447 women (12.4% of old)
+  ONLY in old SNDB:      3170 women (87.6% of old)
+  ONLY in new export:       1 women
+
+GND coverage for 447 common women:
+  OLD SNDB: 270/447 (60.4%)
+  NEW export: 270/447 (60.4%)
+
+GND changes in common women:
+  GND added (was None):      0
+  GND removed (now None):    0
+  GND changed:               0
+
+============================================================
+NEW EXPORT DATA COMPLETENESS
+============================================================
+  [OK] ra_ndb_main.xml                 797 items - Person names
+  [OK] ra_ndb_indiv.xml                448 items - Gender & GND
+  [OK] ra_ndb_datierungen.xml          869 items - Life dates
+  [OK] ra_ndb_berufe.xml               296 items - Occupations
+  [OK] ra_ndb_orte.xml                 552 items - Place links (SNDB_ID)
+  [OK] ra_ndb_beziehungen.xml          939 items - AGRELON relationships
+  [OK] projekt_regestausgabe.xml       448 items - Biographical texts
+  [OK] nsl_agrelon.xml                  38 items - AGRELON types
+
+Geographic data files:
+  [  ] geo_main.xml - NOT in new export (need old SNDB)
+  [  ] geo_indiv.xml - NOT in new export (need old SNDB)
+  [  ] geo_links.xml - NOT in new export (need old SNDB)
+
+============================================================
+GEODATA ANALYSIS
+============================================================
+New export place links:
+  Women with place data: 245/448 (54.7%)
+  Total place entries:   552
+  Unique SNDB_IDs:       121
+
+Old SNDB geo_main.xml:
+  Available places: 3210
+  --> Can resolve 121 SNDB_IDs from new export
+
+Old SNDB geo_indiv.xml:
+  [OK] Coordinates available for place resolution
+
+============================================================
+SAMPLE WOMEN
+============================================================
+
+Women in BOTH datasets (sample of 5):
+  ID 43841 | Friederike Karoline Sophie Alexandrine G | GND: 118823663
+  ID 35729 | Susanne Elisabeth Bethmann-Hollweg       | GND: 1016583249
+  ID 40704 | Friederike Karoline Susanne Wilhelmine R | GND: None
+  ID 43260 | Sophie Friederike Brentano               | GND: 11858104X
+  ID 44294 | Anna Christiane Kotzebue                 | GND: 116345284
+
+Women ONLY in old SNDB (sample of 5):
+  ID 83663 | Johanna Friederieka Theresia Hufeland    | GND: 11615313X
+  ID 59515 | Johanna Sophie Fritsch                   | GND: None
+  ID 37006 | Maria Fahlmer                            | GND: None
+  ID 40558 | Dorothea Johanna Karolina Rehberg        | GND: None
+  ID 35731 | Johanna Karoline Luise Bethmann-Metzler  | GND: None
+
+Women ONLY in new export (sample of all 1):
+  ID 52100 | Eleonore Warrloss                        | GND: None
+
+============================================================
+RECOMMENDATIONS
+============================================================
+
+1. DATA COVERAGE:
+   New export has 448 of 3617 women (12.4%)
+   [!] Missing 3169 women from old SNDB
+   --> Decision needed: Use only 448 women OR supplement with old data
+
+2. GEODATA STRATEGY:
+   [OK] New export has ra_ndb_orte.xml with SNDB_ID references
+   [  ] New export lacks geo_main.xml and geo_indiv.xml
+   --> MUST use old SNDB geo files to resolve coordinates
+
+3. RECOMMENDED APPROACH:
+   Option A: Use ONLY new export (448 women)
+     Pros: Curated dataset, latest data, smaller size
+     Cons: Only 12.4% of all women, missing 3,169 women
+     Use case: Focus on high-quality, regest-relevant women
+
+   Option B: Hybrid approach (new + old)
+     Pros: Complete dataset (3,617 women), newer data for 448
+     Cons: More complex pipeline, potential conflicts
+     Use case: Comprehensive visualization
+
+4. PIPELINE CHANGES NEEDED:
+   - Change XML root element: PERS_KOERP_* --> RA_NDB_*
+   - Keep geo file loading from old SNDB (geo_main.xml, geo_indiv.xml)
+   - Use projekt_regestausgabe.xml for biographies (448 entries)
+
+5. DATA QUALITY:
+   --> GND coverage unchanged for common women
+
+============================================================
+ANALYSIS COMPLETE
+============================================================
+

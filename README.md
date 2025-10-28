@@ -18,26 +18,33 @@ Key Goals:
 
 ## Project Status
 
-Current Phase: MVP Complete - Interactive Map Visualization Deployed
+Current Phase: Enhanced with Curated Dataset (Export 2025-10-27)
 
 Live Demo: [https://chpollin.github.io/HerData/](https://chpollin.github.io/HerData/)
 
-- Data ingestion and verification (15,312 letters, 3,617 women identified)
-- Python analysis pipeline operational (4-phase pipeline with 48 tests)
-- JSON dataset generated (1.49 MB, 1,042 women with geodata)
+Latest Update (2025-10-28):
+- NEW: Curated dataset of 448 women with significantly improved data quality
+- NEW: 60.3% GND coverage (was 34.1% - nearly doubled)
+- NEW: 51.3% CMIF match rate (was 22.3% - increased by 130%)
+- NEW: Hybrid data approach (new export + old geodata resolution)
+- NEW: Pipeline refactored for ra_ndb_* file structure
+- JSON dataset: 0.29 MB (was 1.56 MB - 81% reduction)
+- Pipeline performance: 0.63s (was 1.4s - 55% faster)
+
+Completed Features:
+- Data ingestion with hybrid approach (15,312 letters, 448 curated women)
+- Python pipeline refactored (build_herdata_new.py with 48 tests)
 - Interactive map with MapLibre GL JS (WebGL rendering, clustering)
-- Research-oriented filtering: Briefaktivität (letter activity) and Berufsgruppe (7 occupation groups)
-- Visual hierarchy: Cluster colors encode letter activity (blue=wrote, gray=mentioned, green=mixed)
-- Map legend for self-documenting interface
-- Core documentation complete (data model, research context, design system)
+- Research-oriented filtering: Briefaktivität and Berufsgruppe (7 occupation groups)
+- Visual hierarchy: Cluster colors encode letter activity
+- Person detail pages with 6-tab structure
+- Timeline view with D3.js (Phase 2, Session 10)
+- Brushing and linking: Timeline ↔ Map ↔ Sidebar synchronization
 - ADR-001: MapLibre GL JS selected over Leaflet
 - ADR-002: Multi-person popup for overlapping markers
 - ADR-003: Cluster color encoding for research interface
+- ADR-008: Curated dataset selection strategy (new)
 - GitHub Pages deployment
-- Person detail pages with 6-tab structure
-- Debugging system with color-coded console logging
-- Timeline view with D3.js and brush selection (Phase 2, Day 10)
-- Brushing and linking: Timeline ↔ Map synchronization
 - 🚧 Network visualization (Phase 3)
 
 ## Repository Structure
@@ -59,30 +66,36 @@ HerData/
 ├── data/                        # Raw datasets (not committed, see below)
 │   ├── ra-cmif.xml              # 15,312 letters in TEI-XML/CMIF (23.4 MB)
 │   ├── analysis-report.md       # Generated statistical analysis
-│   └── SNDB/                    # 14 XML files with biographical data (32 MB)
-│       ├── pers_koerp_main.xml          # 23,571 person IDs, names
-│       ├── pers_koerp_indiv.xml         # Gender (SEXUS), GND IDs
-│       ├── pers_koerp_beziehungen.xml   # 6,580 relationships
-│       ├── pers_koerp_datierungen.xml   # Life dates
-│       ├── pers_koerp_berufe.xml        # 29,375 occupations
-│       ├── pers_koerp_orte.xml          # 21,058 location assignments
-│       ├── pers_koerp_projekt_goebriefe.xml        # 6,790 letter project entries
-│       ├── pers_koerp_projekt_regestausgabe.xml    # 20,128 regest descriptions
-│       ├── pers_koerp_projekt_bug.xml              # 2,254 BUG project entries
-│       ├── pers_koerp_projekt_tagebuch.xml         # 1,004 diary mentions
-│       ├── geo_main.xml                 # 4,007 places
-│       ├── geo_links.xml                # GeoNames linkage
-│       ├── geo_indiv.xml                # Coordinates, alt names
-│       └── nsl_agrelon.xml              # 44 AGRELON relationship types
+│   └── SNDB/                    # Geographic data (3.6 MB, for coordinate resolution)
+│       ├── geo_main.xml         # 4,007 places with names
+│       ├── geo_indiv.xml        # 22,571 coordinates
+│       └── geo_links.xml        # 63,766 GeoNames linkages
+│
+├── new-data/                    # NEW: Curated export (2025-10-27)
+│   └── Datenexport 2025-10-27/  # 8 XML files with 448 women (800 KB)
+│       ├── ra_ndb_main.xml              # 797 entries (448 unique IDs, names)
+│       ├── ra_ndb_indiv.xml             # 448 women (SEXUS='w', GND)
+│       ├── ra_ndb_datierungen.xml       # 869 life dates
+│       ├── ra_ndb_berufe.xml            # 296 occupations
+│       ├── ra_ndb_orte.xml              # 552 place links (SNDB_ID refs)
+│       ├── ra_ndb_beziehungen.xml       # 939 AGRELON relationships
+│       ├── projekt_regestausgabe.xml    # 448 biographical texts
+│       └── nsl_agrelon.xml              # 38 relationship types
 │
 ├── preprocessing/               # Data analysis & transformation scripts
-│   └── analyze_goethe_letters.py    # CMIF parser & statistical report generator
+│   ├── analyze_goethe_letters.py    # CMIF parser & statistical report generator
+│   ├── build_herdata_new.py         # NEW: Pipeline for curated export (active)
+│   ├── build_herdata.py             # OLD: Pipeline for full SNDB (reference)
+│   ├── compare_data_sources.py      # Data quality comparison tool
+│   └── compare_output.txt           # Comparison analysis results
 │
 └── docs/                        # GitHub Pages site (web visualization)
     └── (future: interactive visualization app)
 ```
 
 ## Data Sources
+
+HerData uses a hybrid approach combining three data sources:
 
 ### 1. CMIF Letter Metadata (ra-cmif.xml)
 
@@ -91,6 +104,7 @@ Format: TEI-XML/CMIF Standard
 License: CC BY 4.0
 DOI: [Zenodo 14998880](https://zenodo.org/records/14998880)
 Coverage: 1760–1824 (64 years)
+Snapshot: March 2025
 
 Contents:
 - 15,312 letters from 2,525 senders to Goethe
@@ -98,6 +112,46 @@ Contents:
 - 67,665 person mentions (14,425 unique persons)
 - 3,914 bibliographic mentions (2,147 unique works)
 - 380 organization mentions (120 unique organizations)
+
+### 2. SNDB Curated Export (NEW - Active as of 2025-10-28)
+
+Source: PROPYLÄEN Project / Klassik Stiftung Weimar
+Format: XML (ra_ndb_* file structure)
+Export Date: 27 October 2025
+Size: 8 files, 800 KB
+
+Contents:
+- 448 curated women (12.4% of full SNDB, focus on regest-relevant persons)
+- 60.3% GND coverage (nearly double the full SNDB rate)
+- 94.0% with life dates
+- 51.3% with CMIF letter connection
+- 50.7% with geodata
+- 448 biographical texts (projekt_regestausgabe.xml)
+- 939 AGRELON relationships
+
+Data Quality Improvements vs. Full SNDB:
+- GND coverage: +76.8% (60.3% vs 34.1%)
+- Date completeness: +12.0% (94.0% vs 83.9%)
+- CMIF match rate: +130% relative (51.3% vs 22.3%)
+- Geodata coverage: +76.0% relative (50.7% vs 28.8%)
+
+### 3. SNDB Geographic Data (OLD - Essential for Coordinate Resolution)
+
+Source: Klassik Stiftung Weimar
+Format: XML (geo_* file structure)
+Size: 3 files, 3.6 MB
+
+Why still needed:
+The new curated export contains place references (SNDB_ID) but not the actual place names or coordinates. The old SNDB geodata files resolve these references:
+
+- geo_main.xml: 4,007 places with names
+- geo_indiv.xml: 22,571 coordinate sets
+- geo_links.xml: 63,766 GeoNames linkages
+
+Pipeline workflow:
+1. ra_ndb_orte.xml (new) → SNDB_ID: 79627
+2. geo_main.xml (old) → "Weimar"
+3. geo_indiv.xml (old) → Lat: 50.9795, Lon: 11.3235
 
 Authority Coverage:
 - 93.8% GND IDs for senders

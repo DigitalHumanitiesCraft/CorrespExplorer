@@ -2,17 +2,23 @@
 
 Datenarchitektur, Strukturen und Verknüpfungen für HerData.
 
-Stand: 2025-10-19
+Stand: 2025-10-28 (aktualisiert mit neuem Datenexport)
 
 Siehe [INDEX.md](INDEX.md) für Navigation im Knowledge Vault.
 
-## Kern-Statistiken
+## Kern-Statistiken (NEUE DATENQUELLE)
+
+### Aktuelle Implementierung (Export 2025-10-27)
+
+HerData verwendet seit 28.10.2025 einen kuratierten Export von 448 Frauen mit deutlich besserer Datenqualität.
 
 ### Frauen
-- 3.617 Frauen in SNDB identifiziert (15,3% von 23.571 Personen)
-- 808 Frauen mit CMIF-Briefverbindung (22,3%)
-- 1.042 Frauen mit Geodaten (28,8%)
-- 979 Frauen mit Berufsangaben (27,1%)
+- 448 Frauen im kuratierten Export (12,4% der vollständigen SNDB)
+- 230 Frauen mit CMIF-Briefverbindung (51,3%)
+- 227 Frauen mit Geodaten (50,7%)
+- 207 Frauen mit Berufsangaben (46,2%)
+- 270 Frauen mit GND-ID (60,3% - fast doppelt so gut wie alte SNDB)
+- 421 Frauen mit Lebensdaten (94,0%)
 
 ### Briefe
 - 15.312 Briefe in CMIF (1762-1824)
@@ -20,38 +26,63 @@ Siehe [INDEX.md](INDEX.md) für Navigation im Knowledge Vault.
 - 633 eindeutige Orte
 - 14.425 erwähnte Personen (67.665 Erwähnungen)
 
-### Datenquellen
-- CMIF: ra-cmif.xml (24 MB, Zenodo 14998880)
-- SNDB: 14 XML-Dateien (32 MB, Stand Oktober 2025)
+### Datenquellen (Hybrid-Ansatz)
+- CMIF: ra-cmif.xml (24 MB, Zenodo 14998880, März 2025)
+- SNDB Neu: 8 XML-Dateien (800 KB, Export 27.10.2025) - Personendaten
+- SNDB Alt: 3 XML-Dateien (3,6 MB) - Geodaten (geo_main.xml, geo_indiv.xml, geo_links.xml)
 
-Vollständige Analyse siehe [../data/analysis-report.md](../data/analysis-report.md).
+### Datenqualität: Neu vs. Alt
+
+| Metrik | Alte SNDB (3.617) | Neue Export (448) | Verbesserung |
+|--------|-------------------|-------------------|--------------|
+| GND-Abdeckung | 34,1% | 60,3% | +76,8% |
+| Datum-Abdeckung | 83,9% | 94,0% | +12,0% |
+| CMIF-Match (relativ) | 22,3% | 51,3% | +130% |
+| Geodaten (relativ) | 28,8% | 50,7% | +76,0% |
+
+Vollständige Vergleichsanalyse siehe [../preprocessing/compare_output.txt](../preprocessing/compare_output.txt).
 
 ## Architektur
 
 ### Verknüpfungsprinzip
 
-Zwei parallele Datenstränge:
+Drei Datenquellen mit Hybrid-Ansatz (seit 28.10.2025):
 - CMIF: Korrespondenzmetadaten (TEI-XML)
-- SNDB: Biografische Normdaten (14 XML-Dateien)
+- SNDB Neu: Kuratierter Export (8 XML-Dateien, ra_ndb_*)
+- SNDB Alt: Geodaten (3 XML-Dateien, geo_*)
 
 Primäre Verknüpfung über GND-ID als gemeinsamer Identifikator.
 
-### Verknüpfungsmatrix
+### Verknüpfungsmatrix (NEUE STRUKTUR)
 
 ```
 CMIF Brief
-  ├── persName@ref ←→ SNDB GND ←→ pers_koerp_main ID
-  ├── placeName@ref ←→ GeoNames ←→ geo_links
+  ├── persName@ref ←→ SNDB GND ←→ ra_ndb_main ID
+  ├── placeName@ref ←→ GeoNames ←→ geo_links (alt)
   └── mentionsPerson@target ←→ SNDB GND oder ID
 
-SNDB Person (ID als Schlüssel)
-  ├── pers_koerp_indiv (SEXUS, GND)
-  ├── pers_koerp_datierungen (Geburts-/Sterbedaten)
-  ├── pers_koerp_berufe (Berufsangaben)
-  ├── pers_koerp_orte (Wirkungsorte)
-  ├── pers_koerp_beziehungen (AGRELON-Netzwerk)
-  └── projekt_*.xml (Biografische Texte)
+SNDB Person (ID als Schlüssel) - HYBRID-ANSATZ
+  ├── ra_ndb_indiv (SEXUS, GND) [NEU]
+  ├── ra_ndb_datierungen (Geburts-/Sterbedaten) [NEU]
+  ├── ra_ndb_berufe (Berufsangaben) [NEU]
+  ├── ra_ndb_orte (SNDB_ID-Referenzen) [NEU]
+  │   └── SNDB_ID ←→ geo_main (Ortsnamen) [ALT]
+  │       └── ID ←→ geo_indiv (Koordinaten) [ALT]
+  ├── ra_ndb_beziehungen (AGRELON-Netzwerk) [NEU]
+  └── projekt_regestausgabe.xml (Biografische Texte) [NEU]
 ```
+
+### Warum Hybrid-Ansatz?
+
+Der neue Export (2025-10-27) enthält keine Geodateien (geo_main.xml, geo_indiv.xml, geo_links.xml). Stattdessen:
+
+1. ra_ndb_orte.xml verweist auf SNDB_ID (z.B. 79627 für Weimar)
+2. geo_main.xml (alte SNDB) löst SNDB_ID → Ortsname auf
+3. geo_indiv.xml (alte SNDB) löst SNDB_ID → Koordinaten auf
+
+Ohne die alten geo_*.xml Dateien gäbe es keine Kartenvisualisierung.
+
+Siehe [decisions.md ADR-008](decisions.md#adr-008) für vollständige Begründung.
 
 ## CMIF-Struktur
 
@@ -119,7 +150,38 @@ Sprachen (cmif:hasLanguage, ISO 639):
 
 ## SNDB-Struktur
 
-### Dateiübersicht (14 Dateien)
+### Aktuell verwendete Dateien (Export 2025-10-27)
+
+HerData verwendet seit 28.10.2025 einen fokussierten Export mit 8 Dateien:
+
+| Kategorie | Datei | Größe | Einträge | Zweck |
+|-----------|-------|-------|----------|-------|
+| Personen (5) |
+| Basis | ra_ndb_main.xml | 193 KB | 797 (448 unique IDs) | Namen, IDs |
+| Geschlecht | ra_ndb_indiv.xml | 41 KB | 448 | SEXUS (w), GND |
+| Daten | ra_ndb_datierungen.xml | 132 KB | 869 | Geburts-/Sterbedaten |
+| Berufe | ra_ndb_berufe.xml | 32 KB | 296 | Berufsangaben |
+| Orte | ra_ndb_orte.xml | 84 KB | 552 | SNDB_ID-Referenzen |
+| Netzwerk (1) |
+| Beziehungen | ra_ndb_beziehungen.xml | 137 KB | 939 | AGRELON-Netzwerk |
+| Projekt (1) |
+| Regest | projekt_regestausgabe.xml | 158 KB | 448 | Biografische Texte |
+| Ontologie (1) |
+| AGRELON | nsl_agrelon.xml | 9 KB | 38 | Beziehungstypen |
+
+### Geodaten (von alter SNDB, unverzichtbar)
+
+| Datei | Größe | Einträge | Zweck |
+|-------|-------|----------|-------|
+| geo_main.xml | 739 KB | 4.007 (3.210 LFDNR=0) | Ortsnamen |
+| geo_indiv.xml | 936 KB | 22.571 | Koordinaten |
+| geo_links.xml | 1.880 KB | 63.766 | GeoNames-Verknüpfungen |
+
+### Vollständige SNDB (Referenz, nicht verwendet)
+
+Zum Vergleich: Die vollständige SNDB mit allen 23.571 Personen umfasst 14 Dateien (32 MB).
+
+Details siehe Archiv-Dokumentation in diesem Dokument weiter unten.
 
 | Kategorie | Datei | Größe | Einträge | Zweck |
 |-----------|-------|-------|----------|-------|
