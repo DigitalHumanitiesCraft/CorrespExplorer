@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netzwerk - HerData</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/network.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="index.html">HerData</a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Karte</a>
+            <a href="network.html" class="active">Netzwerk</a>
+        </div>
+    </nav>
+
+    <div class="network-layout">
+        <div class="network-sidebar">
+            <div class="filter-section">
+                <h3>Filter</h3>
+
+                <div class="filter-group">
+                    <label for="relationship-type-filter">Beziehungstyp:</label>
+                    <select id="relationship-type-filter">
+                        <option value="all">Alle Beziehungen</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="name-search">Name suchen:</label>
+                    <input type="text" id="name-search" placeholder="Person suchen...">
+                </div>
+
+                <div class="stats-group">
+                    <h4>Statistik</h4>
+                    <div class="stat-item">
+                        <span class="stat-label">Personen:</span>
+                        <span id="stat-nodes">448</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Beziehungen:</span>
+                        <span id="stat-edges">86</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Sichtbar:</span>
+                        <span id="stat-visible">67</span>
+                    </div>
+                </div>
+
+                <button id="reset-view" class="btn-primary">Ansicht zurücksetzen</button>
+            </div>
+        </div>
+
+        <div class="network-main">
+            <div id="network-graph"></div>
+            <div id="network-tooltip" class="network-tooltip"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/force-graph@1.43.5/dist/force-graph.min.js"></script>
+    <script src="js/network.js"></script>
+</body>
+</html>
