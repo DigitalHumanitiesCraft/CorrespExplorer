@@ -125,6 +125,27 @@ function renderOverview() {
     document.getElementById('stat-mentions').textContent = currentPerson.mention_count || 0;
     document.getElementById('stat-places').textContent = currentPerson.places ? currentPerson.places.length : 0;
     document.getElementById('stat-occupations').textContent = currentPerson.occupations ? currentPerson.occupations.length : 0;
+
+    // Biography
+    const biographyEl = document.getElementById('biography-content');
+    if (currentPerson.biography) {
+        // Parse markup tags and display biography
+        const parsedBiography = parseMarkup(currentPerson.biography);
+        biographyEl.innerHTML = `<p class="biography-text">${parsedBiography}</p>`;
+    } else {
+        biographyEl.innerHTML = '<p class="placeholder-text">Keine Biographie verfügbar.</p>';
+    }
+}
+
+// Parse SNDB markup tags in biographical text
+function parseMarkup(text) {
+    if (!text) return '';
+
+    return text
+        // #s+text#s- = Sperrsatz (spacing) → use <em> for emphasis
+        .replace(/#s\+([^#]+)#s-/g, '<em>$1</em>')
+        // _ = Unterstrich für Leerzeichen in manchen Kontexten
+        .replace(/\b_\b/g, ' ');
 }
 
 // Render Letters tab
