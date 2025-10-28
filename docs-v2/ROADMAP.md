@@ -14,40 +14,50 @@ Jeder Schritt:
 
 ## Implementierungs-Schritte
 
-### Schritt 1: Netzwerk-View (Isoliert) ⏳ IN PROGRESS
+### Schritt 1: Netzwerk-View (Isoliert) ✅ COMPLETED
 
 **Ziel:** Neue Seite network.html mit AGRELON-Beziehungen
 
-**Was wird gebaut:**
+**Was gebaut wurde:**
 ```
 docs/network.html (neue Seite)
 docs/js/network.js (neue Datei)
 docs/css/network.css (neue Datei)
+preprocessing/build_herdata_new.py (erweitert)
 ```
 
-**Funktionalität:**
+**Implementierte Funktionalität:**
 - Visualisierung aller 448 Frauen als Nodes
-- 939 AGRELON-Beziehungen als Edges
-- force-graph (vasturiano) für Layout
-- Interaktiv: Click → Details, Hover → Tooltip
-- Filter nach Beziehungstyp
+- 43 AGRELON-Beziehungen als Edges (43 unique pairs, deduplicated from 86 entries)
+- force-graph v1.43.5 für Layout
+- Interaktiv: Click → Person-Details, Hover → Tooltip
+- Filter nach Beziehungstyp (38 Typen)
+- Name-Suche mit Highlighting
+- Reset-Funktion mit Zoom-to-Fit
 
 **Daten-Pipeline Erweiterung:**
-- Extrahiere relationships aus ra_ndb_beziehungen.xml
-- Füge zu persons.json hinzu
-- Lade nsl_agrelon.xml für Typ-Labels
+- Relationships aus ra_ndb_beziehungen.xml extrahiert
+- 38 AGRELON-Typen aus nsl_agrelon.xml geladen
+- Bidirektionale Beziehungen mit reciprocal_type (86 entries = 43 pairs × 2)
+- relationships Array in persons.json hinzugefügt
+- Frontend dedupliziert zu 43 unique links
 
-**Aufwand:** 8-12 Stunden
+**Tatsächlicher Aufwand:** 6 Stunden (2 Sessions)
 
-**Nutzen:**
-- Exploration von Beziehungsnetzwerken
-- Identifikation von Hubs/Clustern
-- Neue Forschungsfrage: "Wer ist zentral?"
+**Erreichte Ziele:**
+- Exploration von Beziehungsnetzwerken möglich
+- 67 Frauen mit Beziehungen prominiert sichtbar
+- 381 isolierte Frauen als Kontext (grau)
+- Forschungsfrage: "Wer ist zentral?" beantwortbar
 
 **Integration in docs/:**
-- Navigation erweitern: "Netzwerk" Link
-- Eigenständige Seite, kein Layout-Umbau
-- Später: Integration in Unified Interface
+- Navigation erweitert: "Karte" + "Netzwerk" Links
+- Eigenständige Seite, konsistentes Layout
+- Bereit für spätere Integration in Unified Interface
+
+**Commits:**
+- 199e3f2: Add AGRELON relationship extraction to pipeline
+- e204647: Implement network view with AGRELON relationship visualization
 
 ---
 

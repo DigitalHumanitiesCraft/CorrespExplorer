@@ -236,3 +236,93 @@ Technical Debt Addressed:
 - Documented architectural decision in ADR-008
 
 Total Commits Session 11: 0 commits (documentation phase, changes pending review)
+
+## 2025-10-28
+
+### Session 12: Network View Implementation (V2 Step 1)
+
+Context:
+- Continued V2 development based on ROADMAP.md
+- Step 1: Netzwerk-View (Isoliert) - Complete network visualization
+
+AGRELON Relationship Extraction:
+- Extended build_herdata_new.py with Step 7 in Phase 3
+- Loaded nsl_agrelon.xml: 38 relationship type definitions
+- Processed ra_ndb_beziehungen.xml: 939 total relationships
+- Filtered to relationships between women: 86 entries (43 pairs, bidirectional)
+- Fixed field mapping bug: IDENT/BEZIEHUNG (not ID/BEZEICHNUNG)
+- Result: 67 women have at least one relationship
+
+Bidirectional Relationship Logic:
+- Each pair stored twice in persons.json (A→B and B→A)
+- Total entries: 86 = 43 unique pairs × 2 directions
+- Example: Person 40967 "hat Kind" 45051, Person 45051 "hat Elternteil" 40967
+- Reciprocal types maintain semantic correctness
+- Visualization deduplicates to 43 links (one per pair)
+
+Network View Implementation:
+- Created docs/network.html: Standalone page with sidebar layout
+- Created docs/css/network.css: Responsive layout (280px sidebar + main)
+- Created docs/js/network.js: force-graph integration (v1.43.5)
+
+Visualization Features:
+- 448 nodes (all women): Blue (connected, 8px) vs Gray (isolated, 2px)
+- 43 links (unique pairs): Directional particles, gray color
+- Interactive: Click node → person page, Hover → tooltip
+- Filters: Relationship type (38 types), name search with highlighting
+- Reset view: Zoom to fit, clear filters
+- Dynamic labels: Show names when zoomed in (scale > 1.5)
+
+Graph Data Structure:
+- Nodes: {id, name, gnd_id, letter_count, relationships, hasRelationships}
+- Links: {source, target, type, type_id, reciprocal_type}
+- Bidirectional deduplication: Sorted pair keys to prevent duplicate links
+- Force-directed layout: Charge strength -50, particle animation
+
+Navigation Integration:
+- Updated docs/index.html: Added "Netzwerk" link to navbar
+- Updated docs/person.html: Consistent navbar across all pages
+- Simplified navigation: "Karte" and "Netzwerk" only
+
+Technical Implementation:
+- force-graph via unpkg CDN (v1.43.5)
+- Canvas-based rendering for performance
+- Tooltip follows mouse cursor with opacity transitions
+- Filter updates graph data in real-time
+- Search highlights matches in red, zooms to first result
+
+Performance:
+- 448 nodes render smoothly with WebGL acceleration
+- Force simulation stabilizes in <2 seconds
+- No lag with filter operations
+- Tooltip transitions: 0.2s opacity
+
+User Experience:
+- 67 women with relationships prominently displayed
+- 381 isolated women shown as context (gray)
+- Relationship type filter reduces to relevant subset
+- Name search provides quick person lookup
+- Zoom to fit maintains overview
+
+Research Questions Enabled:
+- Who is central in the network?
+- What relationship types are most common?
+- Are there clusters of related women?
+- How do letter counts correlate with network position?
+
+Commits:
+- 199e3f2: Add AGRELON relationship extraction to pipeline
+- e204647: Implement network view with AGRELON relationship visualization
+
+ROADMAP Update:
+- Step 1: Netzwerk-View marked as COMPLETED
+- Actual effort: 6 hours (2 sessions) vs estimated 8-12 hours
+- All planned features implemented
+- Ready for Step 2: Kontext-Timeline (Footer)
+
+Next Steps:
+- Step 2: Persistent timeline at page footer
+- Unified time filter across views
+- Brushing and linking with network
+
+Total Commits Session 12: 2 commits
