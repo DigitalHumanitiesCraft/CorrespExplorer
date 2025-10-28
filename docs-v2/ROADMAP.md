@@ -42,7 +42,7 @@ preprocessing/build_herdata_new.py (erweitert)
 - relationships Array in persons.json hinzugefügt
 - Frontend dedupliziert zu 43 unique links
 
-**Tatsächlicher Aufwand:** 6 Stunden (2 Sessions)
+**Status:** Abgeschlossen (2 Sessions)
 
 **Erreichte Ziele:**
 - Exploration von Beziehungsnetzwerken möglich
@@ -83,8 +83,6 @@ docs/css/context-timeline.css (neue Datei)
 - Event-Bus für Cross-Page Communication
 - localStorage für persistenten Zeitfilter
 
-**Aufwand:** 6-8 Stunden
-
 **Nutzen:**
 - Zeitlicher Kontext immer sichtbar
 - Schnelle Zeitfilter-Anpassung
@@ -120,8 +118,6 @@ docs/js/state-manager.js (neue Datei)
 3. Netzwerk-Seite liest Selection aus localStorage
 4. Netzwerk zeigt Person zentriert + Edges hervorgehoben
 ```
-
-**Aufwand:** 8-12 Stunden
 
 **Nutzen:**
 - Nahtlose Navigation zwischen Views
@@ -161,8 +157,6 @@ docs/css/detail-panel.css (neue Datei)
 ▼ Berufe (1: Hofdame)
 ▼ Netzwerk (Preview: 27 Beziehungen)
 ```
-
-**Aufwand:** 6-8 Stunden
 
 **Nutzen:**
 - Konsistente UX über alle Views
@@ -206,8 +200,6 @@ docs/js/context-timeline.js (Linien nach Beruf)
 - 70%: Basisdaten
 - 40%: Lückenhaft
 
-**Aufwand:** 4-6 Stunden
-
 **Nutzen:**
 - Visuelle Konsistenz
 - Bessere Vergleichbarkeit
@@ -242,8 +234,6 @@ docs/js/split-view.js (neue Datei)
 - Dropdown: Wähle View 2 (Karte/Netzwerk/Timeline)
 - Unified Selection: Click in View 1 → View 2 reagiert
 - Sync-Toggle: Zeitfilter synchronisiert Ja/Nein
-
-**Aufwand:** 8-12 Stunden
 
 **Nutzen:**
 - Direkte Vergleiche möglich
@@ -291,8 +281,6 @@ Lösung 3: Filtering
 Nur gefilterte Frauen als Einzellinien (z.B. 50 statt 448)
 ```
 
-**Aufwand:** 10-14 Stunden (komplex wegen Overplotting)
-
 **Nutzen:**
 - Biografischer Kontext sichtbar
 - Generationen-Übersicht
@@ -325,8 +313,6 @@ docs/js/*.js (Touch-Events, Drawer-Pattern)
 - Kontext-Timeline optional (toggle)
 - Vereinfachte Filter
 
-**Aufwand:** 8-12 Stunden
-
 **Nutzen:**
 - Mobile-first DH Research
 - Tablet für Teaching/Präsentationen
@@ -356,8 +342,6 @@ docs/js/*.js (Touch-Events, Drawer-Pattern)
 - Lighthouse Score: >90
 - WCAG AA Compliance
 
-**Aufwand:** 10-14 Stunden
-
 **Nutzen:**
 - Barrierefreiheit für alle Nutzer
 - Schnelle Ladezeiten
@@ -383,8 +367,6 @@ tests/ (Unit Tests für State Manager)
 - API Docs: SelectionManager, DetailPanel, etc.
 - Tests: Jest für State Logic
 
-**Aufwand:** 6-8 Stunden
-
 **Nutzen:**
 - Nachhaltigkeit
 - Onboarding neuer Entwickler
@@ -392,24 +374,20 @@ tests/ (Unit Tests für State Manager)
 
 ---
 
-## Zeitplan
+## Fortschritt
 
-**Realistisch mit Claude (2-3h Sessions):**
-
-| Schritt | Aufwand | Sessions | Zeitraum |
-|---------|---------|----------|----------|
-| 1. Netzwerk-View | 8-12h | 4-5 | Woche 1 |
-| 2. Kontext-Timeline | 6-8h | 3-4 | Woche 2 |
-| 3. Unified Selection | 8-12h | 4-5 | Woche 3 |
-| 4. Detail-Panel | 6-8h | 3-4 | Woche 4 |
-| 5. Farbschema | 4-6h | 2-3 | Woche 4 |
-| 6. Split-View | 8-12h | 4-5 | Woche 5 |
-| 7. Timeline Gantt | 10-14h | 5-6 | Woche 6 |
-| 8. Responsive | 8-12h | 4-5 | Woche 7 |
-| 9. Performance | 10-14h | 5-6 | Woche 8 |
-| 10. Dokumentation | 6-8h | 3-4 | Woche 8 |
-
-**Gesamt:** ~105h = 40-50 Sessions = **8-10 Wochen**
+| Schritt | Status |
+|---------|--------|
+| 1. Netzwerk-View | ✅ Completed |
+| 2. Kontext-Timeline | 🔲 Pending |
+| 3. Unified Selection | 🔲 Pending |
+| 4. Detail-Panel | 🔲 Pending |
+| 5. Farbschema | 🔲 Pending |
+| 6. Split-View | 🔲 Pending |
+| 7. Timeline Gantt | 🔲 Pending |
+| 8. Responsive | 🔲 Pending |
+| 9. Performance | 🔲 Pending |
+| 10. Dokumentation | 🔲 Pending |
 
 ## Entscheidungspunkte
 
@@ -425,33 +403,4 @@ Nach jedem Schritt:
 
 ## Nächster Schritt
 
-**JETZT:** Schritt 1 - Netzwerk-View
-
-**Phase A: Daten extrahieren** (30 Min)
-- Pipeline erweitern: relationships Array
-- AGRELON-Typen laden
-- persons.json neu generieren
-
-**Phase B: HTML/CSS Setup** (30 Min)
-- network.html erstellen
-- Navigation erweitern
-- Basis-Layout
-
-**Phase C: force-graph Integration** (2h)
-- CDN einbinden
-- Nodes + Edges aus persons.json
-- Basis-Visualisierung
-
-**Phase D: Interaktionen** (2h)
-- Click → Detail-Panel (vorerst Alert)
-- Hover → Tooltip
-- Filter nach Beziehungstyp
-
-**Phase E: Polish** (1h)
-- Styling
-- Performance-Test
-- Commit + Deploy
-
-**Session-Zeit:** 2-3 Stunden für vollständigen Schritt 1
-
-Bereit für Schritt 1?
+Schritt 2: Kontext-Timeline (Footer)

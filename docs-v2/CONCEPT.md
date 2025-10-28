@@ -34,7 +34,6 @@ Ein integriertes Interface mit drei überlagerbaren Visualisierungsebenen (Karte
 map.setPaintProperty('persons-layer', 'circle-opacity', opacity);
 ```
 
-**Aufwand:** 2-3 Stunden (Layer-Control + Farbschema-Wechsel)
 
 **Risiko:** NIEDRIG
 
@@ -83,7 +82,6 @@ beziehungen_tree = ET.parse(self.new_export_dir / 'ra_ndb_beziehungen.xml')
 # Füge "relationships" Array zu person hinzu
 ```
 
-**Aufwand:** 8-12 Stunden (Daten-Extraktion + Visualisierung + Interaktion)
 
 **Risiko:** MITTEL (neue Bibliothek, Koordinaten-Transformation komplex)
 
@@ -120,7 +118,6 @@ Statt Briefzahlen → **Lebenslinien der 448 Frauen**
 - 421 von 448 haben Lebensdaten (94%)
 - letter_years für Aktivitätsmarkierungen
 
-**Aufwand:** 6-8 Stunden (Neuimplementierung als Gantt-Chart)
 
 **Risiko:** MITTEL (448 Linien = Performance-Challenge, Overplotting)
 
@@ -214,7 +211,6 @@ class AccordionPanel {
 - Progressive Disclosure
 - Besser für Vergleiche
 
-**Aufwand:** 4-6 Stunden (HTML/CSS + State Management)
 
 **Risiko:** NIEDRIG (Standard-Pattern)
 
@@ -245,7 +241,6 @@ class AccordionPanel {
 
 **Ähnlich zu:** D3 Horizon Charts / Context+Focus Pattern
 
-**Aufwand:** 6-8 Stunden (Canvas-Rendering + Brushing)
 
 **Risiko:** MITTEL (448 Linien = Overplotting, braucht Aggregation)
 
@@ -291,7 +286,6 @@ const store = {
 };
 ```
 
-**Aufwand:** 8-12 Stunden (State Management + View-Synchronisation)
 
 **Risiko:** MITTEL (Synchronisation kompliziert, Race Conditions möglich)
 
@@ -344,7 +338,6 @@ function getVisiblePersons(view) {
 - Person im Zeitraum geboren, aber außerhalb gestorben → ganz zeigen oder nur Overlap?
 - Beziehungen: Beide Personen gefiltert oder reicht eine?
 
-**Aufwand:** 12-16 Stunden (Filter-Engine + Unit Tests + Edge Cases)
 
 **Risiko:** HOCH (viele Edge Cases, UX-Entscheidungen notwendig)
 
@@ -383,7 +376,6 @@ function getOpacity(person) {
 }
 ```
 
-**Aufwand:** 4-6 Stunden (Farbschema definieren + anwenden)
 
 **Risiko:** NIEDRIG
 
@@ -414,7 +406,6 @@ function getOpacity(person) {
 }
 ```
 
-**Aufwand:** 6-8 Stunden (CSS + JS für Drawer)
 
 **Risiko:** NIEDRIG
 
@@ -495,9 +486,8 @@ function getOpacity(person) {
 - [ ] Accessibility
 - [ ] Dokumentation
 
-**Gesamt-Aufwand:** 5 Wochen (bei Vollzeit-Entwicklung)
 
-**Realistisch mit Claude:** 10-15 Sessions à 2-3 Stunden
+Iterative Entwicklung über mehrere Sessions
 
 ---
 
