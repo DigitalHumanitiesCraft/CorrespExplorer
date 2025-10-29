@@ -1,5 +1,8 @@
 // HerData - Person Detail Page
 // Displays detailed information about a single person
+import { loadNavbar } from './navbar-loader.js';
+import { GlobalSearch } from './search.js';
+
 
 let currentPerson = null;
 let allPersons = [];
@@ -8,6 +11,7 @@ let miniMap = null;
 // Initialize page
 async function init() {
     try {
+        await loadNavbar();
         // Get person ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const personId = urlParams.get('id');
@@ -19,6 +23,10 @@ async function init() {
 
         // Load data
         await loadData();
+        initSearch();
+
+        // Initialize search
+        initSearch();
 
         // Find person
         currentPerson = allPersons.find(p => p.id === personId);
@@ -38,6 +46,16 @@ async function init() {
         console.error('Init error:', error);
     }
 }
+
+// Global search
+let globalSearch = null;
+function initSearch() {
+    if (allPersons.length > 0 && !globalSearch) {
+        globalSearch = new GlobalSearch(allPersons);
+        console.log("🔍 Global search initialized on person page");
+    }
+}
+
 
 // Load persons.json data
 async function loadData() {

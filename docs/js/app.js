@@ -2,6 +2,7 @@
 // Interactive map visualization with filtering
 
 import { GlobalSearch } from "./search.js";
+import { loadNavbar } from "./navbar-loader.js";
 
 let map;
 let allPersons = [];
@@ -76,7 +77,8 @@ function getOccupationGroup(person) {
 
 // Initialize application
 async function init() {
-    log.init('Starting application');
+    log.init("Starting application");
+    await loadNavbar();
     try {
         await loadData();
         initMap();
