@@ -188,12 +188,11 @@ function renderLetters() {
         html += '<p class="note">Diese Person ist über SNDB-Normdaten identifiziert, tritt aber nicht in der CMIF-Briefkorrespondenz auf.</p>';
     } else {
         html += '<div class="placeholder-content" style="margin-top: 24px;">';
-        html += '<p>Vollständige Briefdaten werden in Phase 2 verfügbar sein.</p>';
-        html += '<p>Geplante Inhalte:</p>';
+        html += '<p>Derzeit sind nur Anzahlen verfügbar. Detaillierte Briefinformationen könnten in Zukunft ergänzt werden:</p>';
         html += '<ul>';
         html += '<li>Chronologische Briefliste mit Datum und Ort</li>';
-        html += '<li>Regesten (Zusammenfassungen)</li>';
-        html += '<li>Links zu TEI-Volltexten (wenn verfügbar)</li>';
+        html += '<li>Regesten (Zusammenfassungen aus den Briefeditionen)</li>';
+        html += '<li>Links zu digitalen Editionen (wenn verfügbar)</li>';
         html += '<li>Erwähnungen in anderen Briefen</li>';
         html += '</ul>';
         html += '</div>';
@@ -331,24 +330,24 @@ function renderSources() {
     // GND Link
     if (currentPerson.gnd) {
         html += `
-            <div class="source-link">
-                <h3>GND (Gemeinsame Normdatei)</h3>
-                <p><a href="https://d-nb.info/gnd/${currentPerson.gnd}" target="_blank" rel="noopener">
+            <p class="normdaten-link">
+                <strong>GND:</strong>
+                <a href="https://d-nb.info/gnd/${currentPerson.gnd}" target="_blank" rel="noopener">
                     https://d-nb.info/gnd/${currentPerson.gnd} ↗
-                </a></p>
-            </div>
+                </a>
+            </p>
         `;
     }
 
     // SNDB Link
     if (currentPerson.sndb_url) {
         html += `
-            <div class="source-link">
-                <h3>SNDB (Sammlung Normdaten Biographica)</h3>
-                <p><a href="${currentPerson.sndb_url}" target="_blank" rel="noopener">
+            <p class="normdaten-link">
+                <strong>SNDB:</strong>
+                <a href="${currentPerson.sndb_url}" target="_blank" rel="noopener">
                     ${currentPerson.sndb_url} ↗
-                </a></p>
-            </div>
+                </a>
+            </p>
         `;
     }
 
@@ -359,11 +358,15 @@ function renderSources() {
     // Data quality
     const qualityEl = document.getElementById('data-quality');
     let qualityHtml = '<ul class="data-quality-list">';
-    qualityHtml += `<li>Normierung: ${currentPerson.gnd ? 'GND vorhanden' : 'Nur SNDB'}</li>`;
-    qualityHtml += `<li>Lebensdaten: ${currentPerson.dates ? 'Verfügbar' : 'Nicht verfügbar'}</li>`;
-    qualityHtml += `<li>Geodaten: ${currentPerson.places && currentPerson.places.length > 0 ? currentPerson.places.length + ' Orte' : 'Nicht verfügbar'}</li>`;
-    qualityHtml += `<li>Berufsdaten: ${currentPerson.occupations && currentPerson.occupations.length > 0 ? currentPerson.occupations.length + ' Einträge' : 'Nicht verfügbar'}</li>`;
-    qualityHtml += '<li>Datenstand: SNDB Oktober 2025</li>';
+
+    // Helper function for quality indicators
+    const indicator = (available) => available ? '<span class="quality-icon available">✓</span>' : '<span class="quality-icon unavailable">✗</span>';
+
+    qualityHtml += `<li>${indicator(currentPerson.gnd)} Normierung: ${currentPerson.gnd ? 'GND vorhanden' : 'Nur SNDB'}</li>`;
+    qualityHtml += `<li>${indicator(currentPerson.dates)} Lebensdaten: ${currentPerson.dates ? 'Verfügbar' : 'Nicht verfügbar'}</li>`;
+    qualityHtml += `<li>${indicator(currentPerson.places && currentPerson.places.length > 0)} Geodaten: ${currentPerson.places && currentPerson.places.length > 0 ? currentPerson.places.length + ' Orte' : 'Nicht verfügbar'}</li>`;
+    qualityHtml += `<li>${indicator(currentPerson.occupations && currentPerson.occupations.length > 0)} Berufsdaten: ${currentPerson.occupations && currentPerson.occupations.length > 0 ? currentPerson.occupations.length + ' Einträge' : 'Nicht verfügbar'}</li>`;
+    qualityHtml += `<li><span class="quality-icon info">i</span> Datenstand: SNDB Oktober 2025</li>`;
     qualityHtml += '</ul>';
     qualityEl.innerHTML = qualityHtml;
 
@@ -373,8 +376,34 @@ function renderSources() {
         `Hrsg. von Christopher Pollin. 2025. ` +
         `https://chpollin.github.io/HerData/person.html?id=${currentPerson.id} ` +
         `(Zugriff: ${new Date().toLocaleDateString('de-DE')})`;
-    citationEl.innerHTML = `<p class="citation-text">${citationText}</p>`;
+
+    citationEl.innerHTML = `
+        <div class="citation-box">
+            <pre class="citation-text">${citationText}</pre>
+            <button class="copy-button" onclick="copyCitation()" aria-label="Zitat kopieren">
+                Kopieren
+            </button>
+        </div>
+    `;
 }
+
+// Copy citation to clipboard
+window.copyCitation = function() {
+    const citationText = document.querySelector('.citation-text').textContent;
+    navigator.clipboard.writeText(citationText).then(() => {
+        const button = document.querySelector('.copy-button');
+        const originalText = button.textContent;
+        button.textContent = 'Kopiert!';
+        button.style.background = '#28a745';
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '';
+        }, 2000);
+    }).catch(err => {
+        console.error('Fehler beim Kopieren:', err);
+        alert('Kopieren fehlgeschlagen. Bitte manuell markieren und kopieren.');
+    });
+};
 
 // Initialize tab switching
 // Tab functionality removed - using card layout instead
