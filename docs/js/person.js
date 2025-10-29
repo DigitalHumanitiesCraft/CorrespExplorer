@@ -38,7 +38,7 @@ async function init() {
 
         // Render person page
         renderPerson();
-        initTabs();
+        // Tabs removed - card layout
         hideLoading();
 
     } catch (error) {
@@ -377,33 +377,7 @@ function renderSources() {
 }
 
 // Initialize tab switching
-function initTabs() {
-    const tabs = document.querySelectorAll('.tab');
-    const panels = document.querySelectorAll('.tab-panel');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetTab = tab.dataset.tab;
-
-            // Update active tab
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            // Show corresponding panel
-            panels.forEach(panel => {
-                panel.classList.remove('active');
-                if (panel.id === `${targetTab}-panel`) {
-                    panel.classList.add('active');
-                }
-            });
-
-            // Resize mini-map if switching to places tab
-            if (targetTab === 'places' && miniMap) {
-                setTimeout(() => miniMap.resize(), 100);
-            }
-        });
-    });
-}
+// Tab functionality removed - using card layout instead
 
 // Show loading state
 function hideLoading() {
