@@ -81,7 +81,7 @@ async function init() {
         await loadData();
         initMap();
         initFilters();
-        initTabs();
+        initSearch();
         log.init('Application ready');
     } catch (error) {
         showError('Initialisierung fehlgeschlagen: ' + error.message);
