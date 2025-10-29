@@ -22,12 +22,16 @@ Current Phase: Enhanced with Curated Dataset (Export 2025-10-27)
 
 Live Demo: [https://chpollin.github.io/HerData/](https://chpollin.github.io/HerData/)
 
-Latest Update (2025-10-28):
-- NEW: Curated dataset of 448 women with significantly improved data quality
-- NEW: 60.3% GND coverage (was 34.1% - nearly doubled)
-- NEW: 51.3% CMIF match rate (was 22.3% - increased by 130%)
-- NEW: Hybrid data approach (new export + old geodata resolution)
-- NEW: Pipeline refactored for ra_ndb_* file structure
+Latest Update (2025-10-29):
+- NEW: Network visualization with hover-based connections (Phase 1+2 complete)
+- NEW: 84 AGRELON relations integrated from SNDB (67 persons connected)
+- NEW: Color-coded network lines (Familie red, Beruflich green, Sozial orange)
+- NEW: 41 persons with geo-located connections visible on map
+- Curated dataset of 448 women with significantly improved data quality
+- 60.3% GND coverage (was 34.1% - nearly doubled)
+- 51.3% CMIF match rate (was 22.3% - increased by 130%)
+- Hybrid data approach (new export + old geodata resolution)
+- Pipeline refactored for ra_ndb_* file structure
 - JSON dataset: 0.29 MB (was 1.56 MB - 81% reduction)
 - Pipeline performance: 0.63s (was 1.4s - 55% faster)
 
@@ -35,6 +39,11 @@ Completed Features:
 - Data ingestion with hybrid approach (15,312 letters, 448 curated women)
 - Python pipeline refactored (build_herdata_new.py with 48 tests)
 - Interactive map with MapLibre GL JS (WebGL rendering, clustering)
+- **Network visualization with hover-based connections**
+  - 84 AGRELON relations (Familie/Beruflich/Sozial)
+  - Color-coded lines (red/green/orange)
+  - Real-time rendering on marker hover
+  - 67 persons with relations, 41 with geo-located connections
 - Research-oriented filtering: Briefaktivität and Berufsgruppe (7 occupation groups)
 - Visual hierarchy: Cluster colors encode letter activity
 - Person detail pages with modern card-based layout (no tabs)
@@ -57,7 +66,7 @@ Completed Features:
 
 Removed Features (UX simplification):
 - Timeline removed: Simplified to focus on core map visualization
-- Network tab removed: Out of scope for current phase
+- ~~Network tab removed~~: **Implemented as hover-based visualization (2025-10-29)**
 
 ## Repository Structure
 
@@ -432,5 +441,5 @@ DOI: 10.5281/zenodo.14998880
 
 ---
 
-*Last Updated: 2025-10-19*
+*Last Updated: 2025-10-29*
 *Project Journal: [documentation/JOURNAL.md](documentation/JOURNAL.md)*

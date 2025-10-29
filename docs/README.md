@@ -14,6 +14,7 @@ Current Dataset:
 - 227 women with geographic coordinates (50.7%)
 - 207 women with occupation data (46%)
 - 270 women with GND identifiers (60.3%)
+- 84 AGRELON relations (67 persons connected, 41 geo-located)
 
 ## Application Structure
 
@@ -21,6 +22,7 @@ Current Dataset:
 
 1. **index.html** - Interactive Map (Main Entry Point)
    - MapLibre GL JS visualization with clustering
+   - **Network visualization with hover-based connections**
    - Real-time filtering by letter activity and occupation groups
    - Time period slider (1762-1824)
    - Search with typeahead (448 persons)
@@ -58,7 +60,9 @@ docs/
 │   └── navbar-simple.html  # Simple navigation (for person pages)
 │
 ├── js/
-│   ├── app.js              # Main map application (828 lines)
+│   ├── app.js              # Main map application (920 lines)
+│   ├── network-utils.js    # Network connection utilities (160 lines)
+│   ├── data.js             # Shared data loading module (55 lines)
 │   ├── person.js           # Person page logic (434 lines)
 │   ├── stats.js            # Chart rendering & export (612 lines)
 │   ├── search.js           # Global search with typeahead (183 lines)
@@ -100,6 +104,11 @@ Standards:
 
 Map Visualization:
 - Cluster-based rendering (227 women with coordinates)
+- **Network visualization with hover-based connections:**
+  - 84 AGRELON relations from SNDB
+  - Color-coded lines: Familie (red), Beruflich (green), Sozial (orange)
+  - Real-time rendering on marker/cluster hover
+  - 41 persons with geo-located connections
 - Role-based color coding:
   - Steel Blue: Letter senders
   - Medium Gray: Mentioned persons
