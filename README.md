@@ -37,15 +37,20 @@ Completed Features:
 - Interactive map with MapLibre GL JS (WebGL rendering, clustering)
 - Research-oriented filtering: Briefaktivität and Berufsgruppe (7 occupation groups)
 - Visual hierarchy: Cluster colors encode letter activity
-- Person detail pages with 6-tab structure
-- Timeline view with D3.js (Phase 2, Session 10)
-- Brushing and linking: Timeline ↔ Map ↔ Sidebar synchronization
+- Person detail pages with modern card-based layout (no tabs)
+- Central search with typeahead and keyboard navigation
+- Comprehensive accessibility (ARIA labels, keyboard navigation)
+- Shared navbar component (DRY principle)
+- Corrected statistics: 448 women, 227 places with geodata
 - ADR-001: MapLibre GL JS selected over Leaflet
 - ADR-002: Multi-person popup for overlapping markers
 - ADR-003: Cluster color encoding for research interface
-- ADR-008: Curated dataset selection strategy (new)
+- ADR-008: Curated dataset selection strategy
 - GitHub Pages deployment
-- 🚧 Network visualization (Phase 3)
+
+Removed Features (UX simplification):
+- Timeline removed: Simplified to focus on core map visualization
+- Network tab removed: Out of scope for current phase
 
 ## Repository Structure
 
@@ -249,17 +254,6 @@ Output: `data/analysis-report.md` (15,312 letters analyzed, 240 lines)
 - Local Testing: Open docs/index.html or use local server
 - Decision: ADR-001 documented MapLibre selection over Leaflet
 
-### Timeline Visualization (Phase 2 - Complete)
-
-- Interactive D3.js histogram (1762-1824, 62 years)
-- Data: 13,414 letters extracted from CMIF XML
-- Brush selection for temporal filtering
-- Brushing and linking: Timeline selections filter map in real-time
-- Reset button for clearing temporal filter
-- Performance: <500ms rendering, <100ms brush updates
-- Lazy loading on first tab switch
-- Decision: ADR-005 documented D3.js implementation
-
 ### Person Detail Pages (Phase 2 - Complete)
 
 - Live Example: [Anna Altmutter](https://chpollin.github.io/HerData/person.html?id=35267)
@@ -283,7 +277,7 @@ Key Principles:
 - Progressive Disclosure: Manage cognitive load with layered complexity
 
 Primary Views:
-1. Explorer (landing): Map/Timeline/Network tabs with live faceting
+1. Explorer (landing): Map view with integrated filtering with live faceting
 2. Person Profile: 6 tabs (overview, correspondence, network, places, occupations, sources)
 3. Letter Detail: Regest, metadata, mentioned entities, TEI link (when available)
 4. Network Graph: AGRELON relationships + co-mentions, temporal filtering
