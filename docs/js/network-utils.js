@@ -140,9 +140,9 @@ export function getClusterConnections(clusterPersons, allPersons) {
  */
 export function getConnectionColor(category) {
     const colors = {
-        'Familie': '#e63946',        // Red
-        'Beruflich': '#06a77d',      // Green
-        'Sozial': '#f77f00',         // Orange
+        'Familie': '#ff0066',        // Bright Magenta/Pink - very distinct
+        'Beruflich': '#00ccff',      // Bright Cyan/Blue - very distinct
+        'Sozial': '#ffcc00',         // Bright Yellow/Gold - very distinct
         'Ort': '#6c757d',            // Gray
         'Unbekannt': '#adb5bd'       // Light gray
     };

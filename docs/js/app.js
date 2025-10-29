@@ -25,6 +25,7 @@ let networkEnabled = {
     'Beruflich': true,
     'Sozial': true
 };
+let clusterHoverTimeout = null;
 
 // Compact logging utility (export for Timeline module)
 export const Debug = {
@@ -398,7 +399,28 @@ function drawConnectionLines(connections) {
         data: geojson
     });
 
-    // Add layer for connection lines
+    // Add shadow/glow layer for connection lines (for better visibility)
+    map.addLayer({
+        id: 'connection-lines-glow',
+        type: 'line',
+        source: 'connections',
+        paint: {
+            'line-color': '#ffffff',
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['get', 'count'],
+                1, 8,    // 1 connection = 8px glow (increased)
+                5, 10,   // 5 connections = 10px glow
+                10, 12,  // 10 connections = 12px glow
+                20, 14   // 20+ connections = 14px glow
+            ],
+            'line-opacity': 0.6,  // Increased from 0.4
+            'line-blur': 4        // Increased from 3
+        }
+    }, 'persons-layer'); // Insert below markers
+
+    // Add main connection lines layer
     map.addLayer({
         id: 'connection-lines',
         type: 'line',
@@ -416,12 +438,12 @@ function drawConnectionLines(connections) {
                 'interpolate',
                 ['linear'],
                 ['get', 'count'],
-                1, 2,    // 1 connection = 2px
-                5, 4,    // 5 connections = 4px
-                10, 6,   // 10 connections = 6px
-                20, 8    // 20+ connections = 8px
+                1, 4,    // 1 connection = 4px (increased from 3)
+                5, 6,    // 5 connections = 6px (increased from 5)
+                10, 8,   // 10 connections = 8px (increased from 7)
+                20, 12   // 20+ connections = 12px (increased from 10)
             ],
-            'line-opacity': 0.6
+            'line-opacity': 0.9  // Increased from 0.8 for maximum visibility
         }
     }, 'persons-layer'); // Insert below markers
 
@@ -432,6 +454,9 @@ function drawConnectionLines(connections) {
 function clearConnectionLines() {
     if (map.getLayer('connection-lines')) {
         map.removeLayer('connection-lines');
+    }
+    if (map.getLayer('connection-lines-glow')) {
+        map.removeLayer('connection-lines-glow');
     }
     if (map.getSource('connections')) {
         map.removeSource('connections');
@@ -480,63 +505,61 @@ function setupEventHandlers() {
         const pointCount = features[0].properties.point_count;
         log.click(`Cluster: ${pointCount} persons at [${clusterCoords[0].toFixed(4)}, ${clusterCoords[1].toFixed(4)}]`);
 
-        // For small clusters (≤50), show popup by finding persons from data
+        // Get cluster source and ID
+        const source = map.getSource('persons');
+        const clusterId = features[0].properties.cluster_id;
+
+        // For small clusters (≤50), show popup with persons
         if (pointCount <= 50) {
             log.click(`Finding persons at cluster location from data (≤50 threshold)`);
 
-            // Get cluster source and leaves
-            const source = map.getSource('persons');
-            const clusterId = features[0].properties.cluster_id;
+            // Get persons in this cluster from MapLibre (Promise API)
+            source.getClusterLeaves(clusterId, pointCount)
+                .then(leaves => {
+                    log.click(`Found ${leaves.length} persons in cluster from MapLibre`);
 
-            // Get persons in this cluster from MapLibre
-            source.getClusterLeaves(clusterId, pointCount, 0, (error, leaves) => {
-                if (error) {
+                    if (leaves.length > 0) {
+                        // Convert coordinates array to lngLat object
+                        const lngLat = { lng: clusterCoords[0], lat: clusterCoords[1] };
+                        showMultiPersonPopup(lngLat, leaves);
+                    } else {
+                        log.error('No persons found in cluster - zooming instead');
+                        // Zoom to cluster as fallback
+                        source.getClusterExpansionZoom(clusterId)
+                            .then(zoom => {
+                                map.easeTo({
+                                    center: clusterCoords,
+                                    zoom: zoom
+                                });
+                            })
+                            .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
+                    }
+                })
+                .catch(error => {
                     log.error(`Failed to get cluster leaves: ${error.message}`);
                     // Fallback: zoom to cluster
-                    source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-                        if (!err) {
+                    source.getClusterExpansionZoom(clusterId)
+                        .then(zoom => {
                             map.easeTo({
                                 center: clusterCoords,
                                 zoom: zoom
                             });
-                        }
-                    });
-                    return;
-                }
+                        })
+                        .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
+                });
 
-                log.click(`Found ${leaves.length} persons in cluster from MapLibre`);
-
-                if (leaves.length > 0) {
-                    // Convert coordinates array to lngLat object
-                    const lngLat = { lng: clusterCoords[0], lat: clusterCoords[1] };
-                    showMultiPersonPopup(lngLat, leaves);
-                } else {
-                    log.error('No persons found in cluster - zooming instead');
-                    source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-                        if (!err) {
-                            map.easeTo({
-                                center: clusterCoords,
-                                zoom: zoom
-                            });
-                        }
-                    });
-                }
-            });
-
-            return; // Exit early, callback handles rest
+            return; // Exit early, promise handles rest
         }
 
         // For large clusters (>50), zoom to expand
-        const source = map.getSource('persons');
-        const clusterId = features[0].properties.cluster_id;
-        source.getClusterExpansionZoom(clusterId, (err, zoom) => {
-            if (!err) {
+        source.getClusterExpansionZoom(clusterId)
+            .then(zoom => {
                 map.easeTo({
                     center: clusterCoords,
                     zoom: zoom
                 });
-            }
-        });
+            })
+            .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
     });
 
     // Hover tooltips for clusters
@@ -548,19 +571,7 @@ function setupEventHandlers() {
         const coordinates = e.features[0].geometry.coordinates.slice();
         const clusterId = props.cluster_id;
 
-        // Get persons in cluster and show connections
-        const source = map.getSource('persons');
-        source.getClusterLeaves(clusterId, pointCount, 0, (error, leaves) => {
-            if (!error && leaves.length > 0) {
-                const clusterPersons = leaves.map(leaf => {
-                    return allPersons.find(p => p.id === leaf.properties.id);
-                }).filter(p => p && p.places && p.places.length > 0);
-
-                const connections = getClusterConnections(clusterPersons, allPersons);
-                drawConnectionLines(connections);
-                log.event(`Showing ${connections.length} connections for cluster (${clusterPersons.length} persons)`);
-            }
-        });
+        log.event(`Cluster hover: ${pointCount} persons, cluster_id=${clusterId}`);
 
         // Build composition breakdown
         const senderCount = (props.sender_count || 0) + (props.both_count || 0);
@@ -572,10 +583,12 @@ function setupEventHandlers() {
         if (mentionedCount > 0) details.push(`${mentionedCount} erwähnt`);
         if (indirectCount > 0) details.push(`${indirectCount} SNDB`);
 
+        // Show initial tooltip immediately (without connection count)
         const html = `
             <div class="hover-tooltip">
                 <strong>${pointCount} Frauen</strong><br>
-                <small>${details.join(' • ')}</small>
+                <small>${details.join(' • ')}</small><br>
+                <small id="network-info" style="color: #999;">Verbindungen werden geladen...</small>
             </div>
         `;
 
@@ -587,10 +600,56 @@ function setupEventHandlers() {
             .setLngLat(coordinates)
             .setHTML(html)
             .addTo(map);
+
+        // Get persons in cluster - use Promise API (MapLibre changed from callbacks to Promises!)
+        const source = map.getSource('persons');
+
+        source.getClusterLeaves(clusterId, pointCount)
+            .then(leaves => {
+                log.event(`Promise resolved: got ${leaves.length} leaves from cluster`);
+
+                // Convert features to person objects
+                const clusterPersons = leaves
+                    .map(leaf => allPersons.find(p => p.id === leaf.properties.id))
+                    .filter(p => p && p.places && p.places.length > 0);
+
+                const connections = getClusterConnections(clusterPersons, allPersons);
+
+                // Update tooltip with connection info - search within popup element
+                const popupEl = clusterTooltip ? clusterTooltip.getElement() : null;
+                const networkInfoEl = popupEl ? popupEl.querySelector('#network-info') : null;
+
+                log.event(`Found ${connections.length} connections, networkInfoEl=${!!networkInfoEl}`);
+                if (networkInfoEl && connections.length > 0) {
+                    // Count by category
+                    const familieCount = connections.filter(c => c.category === 'Familie').length;
+                    const beruflichCount = connections.filter(c => c.category === 'Beruflich').length;
+                    const sozialCount = connections.filter(c => c.category === 'Sozial').length;
+
+                    const connDetails = [];
+                    if (familieCount > 0) connDetails.push(`<span style="color: #ff0066; font-weight: bold;">${familieCount} Familie</span>`);
+                    if (beruflichCount > 0) connDetails.push(`<span style="color: #00ccff; font-weight: bold;">${beruflichCount} Beruflich</span>`);
+                    if (sozialCount > 0) connDetails.push(`<span style="color: #ffcc00; font-weight: bold;">${sozialCount} Sozial</span>`);
+
+                    networkInfoEl.innerHTML = `<strong style="color: #fff;">${connections.length} Verbindungen:</strong> ${connDetails.join(' • ')}`;
+                    networkInfoEl.style.color = '#fff';
+                } else if (networkInfoEl) {
+                    networkInfoEl.innerHTML = 'Keine Verbindungen';
+                    networkInfoEl.style.color = '#999';
+                }
+
+                // Draw connection lines
+                drawConnectionLines(connections);
+                log.event(`Showing ${connections.length} connections for cluster (${clusterPersons.length} persons)`);
+            })
+            .catch(error => {
+                log.error(`getClusterLeaves Promise rejected: ${error.message}`);
+            });
     });
 
     map.on('mouseleave', 'persons-clusters', () => {
         map.getCanvas().style.cursor = '';
+
         if (clusterTooltip) {
             clusterTooltip.remove();
             clusterTooltip = null;
