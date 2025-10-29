@@ -10,6 +10,11 @@
 export function getPersonConnections(person, allPersons) {
     const connections = [];
 
+    // Check if person has places (required for connections)
+    if (!person.places || person.places.length === 0) {
+        return connections;
+    }
+
     // 1. AGRELON relationships (family, professional, social)
     if (person.relations && Array.isArray(person.relations)) {
         person.relations.forEach(relation => {
