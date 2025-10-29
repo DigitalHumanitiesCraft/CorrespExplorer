@@ -39,6 +39,13 @@ Completed Features:
 - Visual hierarchy: Cluster colors encode letter activity
 - Person detail pages with modern card-based layout (no tabs)
 - Central search with typeahead and keyboard navigation
+- Statistical dashboard with 5 interactive charts (Apache ECharts)
+  - Berufsverteilung (Top 15 occupations)
+  - Brief-Timeline (1772-1824 temporal distribution)
+  - Geografische Zentren (Top 10 places)
+  - Generationen (Birth cohorts by decade)
+  - Briefaktivität (Activity categories with transparency)
+  - CSV/PNG export for all charts
 - Comprehensive accessibility (ARIA labels, keyboard navigation)
 - Shared navbar component (DRY principle)
 - Corrected statistics: 448 women, 227 places with geodata
