@@ -1,4 +1,7 @@
 /* Navbar Search Styles */
+
+@import url('tokens.css');
+
 .nav-search {
     flex: 1;
     max-width: 500px;

@@ -65,11 +65,12 @@ docs/
 │   └── navbar-loader.js    # Component loader (34 lines)
 │
 ├── css/
-│   ├── style.css           # Design system & map styles (1028 lines)
-│   ├── person-cards.css    # Person page card layout (380 lines)
-│   ├── stats.css           # Dashboard grid styling (202 lines)
-│   ├── search.css          # Search dropdown styles (93 lines)
-│   └── network.css         # Network view (archived feature)
+│   ├── tokens.css          # Design system tokens (158 lines)
+│   ├── style.css           # Map styles & responsive layout (1028 lines)
+│   ├── person-cards.css    # Person page card layout (383 lines)
+│   ├── stats.css           # Dashboard grid styling (236 lines)
+│   ├── search.css          # Search dropdown styles (96 lines)
+│   └── network.css         # Network view (archived, not imported)
 │
 └── data/
     └── persons.json        # Complete dataset (447 KB, 448 persons)

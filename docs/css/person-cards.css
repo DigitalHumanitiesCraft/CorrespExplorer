@@ -1,5 +1,7 @@
 /* Modern Card-Based Person Page Layout */
 
+@import url('tokens.css');
+
 .person-page-cards {
     max-width: 1200px;
     margin: 0 auto;
