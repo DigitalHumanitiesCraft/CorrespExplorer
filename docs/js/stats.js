@@ -25,9 +25,10 @@ async function init() {
         initCharts();
 
         // Wait for charts to render, then init export buttons
+        // ECharts need time to render before export buttons can be attached
         setTimeout(() => {
             initExportButtons();
-        }, 100);
+        }, 500);
 
         console.log("✅ Statistics dashboard ready");
     } catch (error) {
@@ -401,7 +402,14 @@ function renderActivityChart() {
 // Initialize export buttons
 function initExportButtons() {
     // Individual export buttons
-    document.querySelectorAll('.btn-export').forEach(btn => {
+    const exportButtons = document.querySelectorAll('.btn-export');
+
+    if (exportButtons.length === 0) {
+        console.warn('⚠️ No export buttons found - they may not be rendered yet');
+        return;
+    }
+
+    exportButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const chartId = e.target.dataset.export;
             const format = e.target.dataset.format;
@@ -414,8 +422,7 @@ function initExportButtons() {
         });
     });
 
-    // Export all button
-    document.getElementById('export-all-btn').addEventListener('click', exportAll);
+    console.log(`✅ Initialized ${exportButtons.length} export buttons`);
 }
 
 // Export chart as PNG
