@@ -316,7 +316,8 @@ body {
 }
 
 /* Mobile (≤640px) */
-@media (max-width: 640px) {
+/* Standardized breakpoint: 480px (was 640px) */
+@media (max-width: 480px) {
     .navbar {
         padding: 0 var(--space-lg);
     }

@@ -1,28 +1,10 @@
-/* HerData Statistics Dashboard Styles */
+/* HerData Statistics Dashboard Styles
+ *
+ * Design tokens imported from tokens.css
+ * DO NOT redefine tokens in this file
+ */
 
-:root {
-    --color-primary: #2c5f8d;
-    --color-secondary: #6c757d;
-    --color-accent: #2d6a4f;
-    --color-bg: #ffffff;
-    --color-bg-light: #f8f9fa;
-    --color-border: #dee2e6;
-    --color-text: #212529;
-    --color-text-light: #6c757d;
-
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
-    --space-2xl: 48px;
-
-    --font-size-sm: 14px;
-    --font-size-md: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 24px;
-    --font-size-2xl: 32px;
-}
+@import url('tokens.css');
 
 /* Stats Page Layout */
 .stats-page {
