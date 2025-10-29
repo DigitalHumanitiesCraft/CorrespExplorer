@@ -4,6 +4,7 @@
 import { loadPersons } from "./data.js";
 import { GlobalSearch } from "./search.js";
 import { loadNavbar } from "./navbar-loader.js";
+import { getPersonConnections, getClusterConnections, getConnectionColor } from "./network-utils.js";
 
 let map;
 let allPersons = [];
@@ -16,6 +17,14 @@ let markerTooltip = null;
 
 // Track if event handlers are already set up
 let handlersSetup = false;
+
+// Network visualization state
+let currentConnections = [];
+let networkEnabled = {
+    'Familie': true,
+    'Beruflich': true,
+    'Sozial': true
+};
 
 // Compact logging utility (export for Timeline module)
 export const Debug = {
@@ -324,6 +333,84 @@ function addMapLayers() {
     });
 }
 
+// Draw connection lines on map
+function drawConnectionLines(connections) {
+    // Remove existing lines first
+    clearConnectionLines();
+
+    if (connections.length === 0) {
+        log.event('No connections to draw');
+        return;
+    }
+
+    // Filter by enabled categories
+    const filtered = connections.filter(conn => networkEnabled[conn.category]);
+
+    log.event(`Drawing ${filtered.length} connection lines`);
+
+    // Create GeoJSON for lines
+    const features = filtered.map((conn, index) => ({
+        type: 'Feature',
+        properties: {
+            category: conn.category,
+            subtype: conn.subtype,
+            personName: conn.person.name,
+            fromPlace: conn.from.name,
+            toPlace: conn.to.name
+        },
+        geometry: {
+            type: 'LineString',
+            coordinates: [
+                [conn.from.lon, conn.from.lat],
+                [conn.to.lon, conn.to.lat]
+            ]
+        }
+    }));
+
+    const geojson = {
+        type: 'FeatureCollection',
+        features: features
+    };
+
+    // Add source for connection lines
+    map.addSource('connections', {
+        type: 'geojson',
+        data: geojson
+    });
+
+    // Add layer for connection lines
+    map.addLayer({
+        id: 'connection-lines',
+        type: 'line',
+        source: 'connections',
+        paint: {
+            'line-color': [
+                'match',
+                ['get', 'category'],
+                'Familie', getConnectionColor('Familie'),
+                'Beruflich', getConnectionColor('Beruflich'),
+                'Sozial', getConnectionColor('Sozial'),
+                getConnectionColor('Unbekannt')
+            ],
+            'line-width': 2,
+            'line-opacity': 0.6
+        }
+    }, 'persons-layer'); // Insert below markers
+
+    currentConnections = filtered;
+}
+
+// Clear connection lines from map
+function clearConnectionLines() {
+    if (map.getLayer('connection-lines')) {
+        map.removeLayer('connection-lines');
+    }
+    if (map.getSource('connections')) {
+        map.removeSource('connections');
+    }
+    currentConnections = [];
+}
+
 // Setup event handlers for map interactions (called only once)
 function setupEventHandlers() {
     log.event('Registering event handlers');
@@ -431,6 +518,21 @@ function setupEventHandlers() {
         const props = e.features[0].properties;
         const pointCount = props.point_count;
         const coordinates = e.features[0].geometry.coordinates.slice();
+        const clusterId = props.cluster_id;
+
+        // Get persons in cluster and show connections
+        const source = map.getSource('persons');
+        source.getClusterLeaves(clusterId, pointCount, 0, (error, leaves) => {
+            if (!error && leaves.length > 0) {
+                const clusterPersons = leaves.map(leaf => {
+                    return allPersons.find(p => p.id === leaf.properties.id);
+                }).filter(p => p && p.places && p.places.length > 0);
+
+                const connections = getClusterConnections(clusterPersons, allPersons);
+                drawConnectionLines(connections);
+                log.event(`Showing ${connections.length} connections for cluster (${clusterPersons.length} persons)`);
+            }
+        });
 
         // Build composition breakdown
         const senderCount = (props.sender_count || 0) + (props.both_count || 0);
@@ -465,6 +567,7 @@ function setupEventHandlers() {
             clusterTooltip.remove();
             clusterTooltip = null;
         }
+        clearConnectionLines();
     });
 
     // Hover tooltips for individual markers
@@ -473,6 +576,14 @@ function setupEventHandlers() {
 
         const props = e.features[0].properties;
         const coordinates = e.features[0].geometry.coordinates.slice();
+
+        // Find person and show connections
+        const person = allPersons.find(p => p.id === props.id);
+        if (person && person.places && person.places.length > 0) {
+            const connections = getPersonConnections(person, allPersons);
+            drawConnectionLines(connections);
+            log.event(`Showing ${connections.length} connections for ${person.name}`);
+        }
 
         // Create tooltip content
         const dates = props.birth || props.death
@@ -496,6 +607,7 @@ function setupEventHandlers() {
             markerTooltip.remove();
             markerTooltip = null;
         }
+        clearConnectionLines();
     });
 }
 

@@ -971,6 +971,13 @@ body {
     flex-shrink: 0;
 }
 
+.legend-line {
+    width: 30px;
+    height: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
 /* Timeline Styles */
 .timeline-container {
     width: 100%;

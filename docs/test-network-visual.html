@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Network Visualization Test</title>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+    <style>
+        body { margin: 0; font-family: system-ui; }
+        #map { width: 100%; height: 100vh; }
+        #info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-width: 300px;
+            z-index: 1000;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 5px 0;
+            font-size: 13px;
+        }
+        .legend-line {
+            width: 30px;
+            height: 3px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="info">
+        <h3 style="margin: 0 0 10px 0;">Test: Hover Network</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+            Hover über Marker um Verbindungen zu sehen
+        </p>
+        <div class="legend-item">
+            <span class="legend-line" style="background: #e63946;"></span>
+            <span>Familie</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-line" style="background: #06a77d;"></span>
+            <span>Beruflich</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-line" style="background: #f77f00;"></span>
+            <span>Sozial</span>
+        </div>
+        <div id="status" style="margin-top: 10px; font-size: 12px; color: #999;"></div>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script type="module">
+        import { getConnectionColor } from './js/network-utils.js';
+
+        const status = document.getElementById('status');
+
+        // Initialize map
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+            center: [10.5, 51.0],
+            zoom: 5
+        });
+
+        // Test data: 3 persons with synthetic relations
+        const testPersons = [
+            {
+                id: 'person1',
+                name: 'Anna Schmidt',
+                lat: 50.9375, lon: 6.9603, // Cologne
+                relations: [
+                    { target: 'person2', category: 'Familie' },
+                    { target: 'person3', category: 'Beruflich' }
+                ]
+            },
+            {
+                id: 'person2',
+                name: 'Maria Müller',
+                lat: 52.5200, lon: 13.4050, // Berlin
+                relations: [
+                    { target: 'person1', category: 'Familie' },
+                    { target: 'person3', category: 'Sozial' }
+                ]
+            },
+            {
+                id: 'person3',
+                name: 'Elisabeth Wagner',
+                lat: 48.1351, lon: 11.5820, // Munich
+                relations: [
+                    { target: 'person1', category: 'Beruflich' },
+                    { target: 'person2', category: 'Sozial' }
+                ]
+            }
+        ];
+
+        map.on('load', () => {
+            status.textContent = 'Map loaded';
+
+            // Add markers
+            const features = testPersons.map(p => ({
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: [p.lon, p.lat] },
+                properties: { id: p.id, name: p.name }
+            }));
+
+            map.addSource('persons', {
+                type: 'geojson',
+                data: { type: 'FeatureCollection', features }
+            });
+
+            map.addLayer({
+                id: 'persons-layer',
+                type: 'circle',
+                source: 'persons',
+                paint: {
+                    'circle-radius': 10,
+                    'circle-color': '#2c5f8d',
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#ffffff'
+                }
+            });
+
+            // Hover events
+            map.on('mouseenter', 'persons-layer', (e) => {
+                map.getCanvas().style.cursor = 'pointer';
+                const props = e.features[0].properties;
+                const person = testPersons.find(p => p.id === props.id);
+
+                if (person && person.relations) {
+                    // Create connection lines
+                    const lines = person.relations.map(rel => {
+                        const target = testPersons.find(p => p.id === rel.target);
+                        if (!target) return null;
+
+                        return {
+                            type: 'Feature',
+                            properties: { category: rel.category },
+                            geometry: {
+                                type: 'LineString',
+                                coordinates: [
+                                    [person.lon, person.lat],
+                                    [target.lon, target.lat]
+                                ]
+                            }
+                        };
+                    }).filter(l => l !== null);
+
+                    // Remove old lines
+                    if (map.getLayer('connection-lines')) {
+                        map.removeLayer('connection-lines');
+                    }
+                    if (map.getSource('connections')) {
+                        map.removeSource('connections');
+                    }
+
+                    // Add new lines
+                    map.addSource('connections', {
+                        type: 'geojson',
+                        data: { type: 'FeatureCollection', features: lines }
+                    });
+
+                    map.addLayer({
+                        id: 'connection-lines',
+                        type: 'line',
+                        source: 'connections',
+                        paint: {
+                            'line-color': [
+                                'match',
+                                ['get', 'category'],
+                                'Familie', getConnectionColor('Familie'),
+                                'Beruflich', getConnectionColor('Beruflich'),
+                                'Sozial', getConnectionColor('Sozial'),
+                                '#999999'
+                            ],
+                            'line-width': 3,
+                            'line-opacity': 0.7
+                        }
+                    }, 'persons-layer');
+
+                    status.textContent = `Showing ${lines.length} connections for ${person.name}`;
+                }
+            });
+
+            map.on('mouseleave', 'persons-layer', () => {
+                map.getCanvas().style.cursor = '';
+                if (map.getLayer('connection-lines')) {
+                    map.removeLayer('connection-lines');
+                }
+                if (map.getSource('connections')) {
+                    map.removeSource('connections');
+                }
+                status.textContent = 'Hover over markers';
+            });
+
+            status.textContent = 'Ready - hover over markers';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Network Test</title>
+    <style>
+        body { font-family: system-ui; padding: 20px; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 4px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Network Module Test</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        import { getPersonConnections, getConnectionColor, categorizeRelation } from './js/network-utils.js';
+        import { loadPersons } from './js/data.js';
+
+        const results = document.getElementById('results');
+
+        async function runTests() {
+            try {
+                // Test 1: Load data
+                results.innerHTML += '<h2>Test 1: Load Data</h2>';
+                const data = await loadPersons();
+                results.innerHTML += `<p class="success">✓ Loaded ${data.persons.length} persons</p>`;
+
+                // Test 2: Find person with relations
+                results.innerHTML += '<h2>Test 2: Find Person with Relations</h2>';
+                const personWithRelations = data.persons.find(p => p.relations && p.relations.length > 0);
+                if (personWithRelations) {
+                    results.innerHTML += `<p class="success">✓ Found: ${personWithRelations.name}</p>`;
+                    results.innerHTML += `<p>Relations: ${personWithRelations.relations.length}</p>`;
+                    results.innerHTML += '<pre>' + JSON.stringify(personWithRelations.relations.slice(0, 3), null, 2) + '</pre>';
+                } else {
+                    results.innerHTML += '<p class="error">✗ No person with relations found</p>';
+                }
+
+                // Test 3: Get connections
+                if (personWithRelations && personWithRelations.places && personWithRelations.places.length > 0) {
+                    results.innerHTML += '<h2>Test 3: Get Connections</h2>';
+                    const connections = getPersonConnections(personWithRelations, data.persons);
+                    results.innerHTML += `<p class="success">✓ Found ${connections.length} connections</p>`;
+
+                    if (connections.length > 0) {
+                        results.innerHTML += '<h3>First 3 Connections:</h3>';
+                        connections.slice(0, 3).forEach((conn, i) => {
+                            results.innerHTML += `
+                                <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                                    <strong>${i + 1}. ${conn.person.name}</strong><br>
+                                    Type: ${conn.subtype} (${conn.category})<br>
+                                    From: ${conn.from.name} (${conn.from.lat}, ${conn.from.lon})<br>
+                                    To: ${conn.to.name} (${conn.to.lat}, ${conn.to.lon})<br>
+                                    Color: <span style="background: ${getConnectionColor(conn.category)}; padding: 2px 10px; color: white;">${getConnectionColor(conn.category)}</span>
+                                </div>
+                            `;
+                        });
+                    }
+                } else {
+                    results.innerHTML += '<p class="error">✗ Cannot test connections (no person with places)</p>';
+                }
+
+                // Test 4: Color mapping
+                results.innerHTML += '<h2>Test 4: Color Mapping</h2>';
+                const categories = ['Familie', 'Beruflich', 'Sozial', 'Ort', 'Unbekannt'];
+                categories.forEach(cat => {
+                    const color = getConnectionColor(cat);
+                    results.innerHTML += `<p>${cat}: <span style="background: ${color}; padding: 2px 10px; color: white;">${color}</span></p>`;
+                });
+
+            } catch (error) {
+                results.innerHTML += `<h2 class="error">Error</h2><pre>${error.stack}</pre>`;
+            }
+        }
+
+        runTests();
+    </script>
+</body>
+</html>
