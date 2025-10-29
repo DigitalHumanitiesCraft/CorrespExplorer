@@ -435,6 +435,12 @@ body {
     color: var(--color-badge-sndb);
 }
 
+.badge-relation {
+    background: rgba(255, 0, 102, 0.1);
+    color: #ff0066;
+    font-weight: 600;
+}
+
 .popup-stats p {
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
@@ -501,6 +507,16 @@ body {
 
 .person-item:last-child {
     border-bottom: none;
+}
+
+.person-item.has-relations {
+    border-left: 3px solid #ff0066;
+    padding-left: var(--space-xs);
+    background-color: rgba(255, 0, 102, 0.05);
+}
+
+.person-item.has-relations:hover {
+    background-color: rgba(255, 0, 102, 0.1);
 }
 
 .person-name {

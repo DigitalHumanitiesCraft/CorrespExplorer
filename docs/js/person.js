@@ -69,6 +69,7 @@ function renderPerson() {
     renderLetters();
     renderPlaces();
     renderOccupations();
+    renderRelations();
     renderSources();
 
     // Show content
@@ -301,6 +302,108 @@ function renderOccupations() {
             </div>
         `;
     });
+    html += '</div>';
+
+    contentEl.innerHTML = html;
+}
+
+// Render Relations tab
+function renderRelations() {
+    const contentEl = document.getElementById('relations-content');
+    const cardEl = document.getElementById('relations-card');
+
+    if (!currentPerson.relations || currentPerson.relations.length === 0) {
+        cardEl.style.display = 'none';
+        return;
+    }
+
+    // Show card
+    cardEl.style.display = 'block';
+
+    // Group relations by category
+    const byCategory = {
+        'Familie': [],
+        'Beruflich': [],
+        'Sozial': []
+    };
+
+    currentPerson.relations.forEach(rel => {
+        const targetPerson = allPersons.find(p => p.id === rel.target);
+        if (!targetPerson) return;
+
+        // Categorize by AGRELON ID prefix
+        const prefix = rel.agrelon_id.charAt(0);
+        const category = prefix === '4' ? 'Familie' : prefix === '3' ? 'Beruflich' : 'Sozial';
+
+        byCategory[category].push({
+            ...rel,
+            targetPerson: targetPerson
+        });
+    });
+
+    // Build HTML
+    let html = '<div class="relations-list">';
+
+    // Familie
+    if (byCategory['Familie'].length > 0) {
+        html += `<div class="relation-category">
+            <h3 style="color: #ff0066; font-size: 16px; margin-bottom: 12px;">Familie (${byCategory['Familie'].length})</h3>`;
+        byCategory['Familie'].forEach(rel => {
+            const dates = rel.targetPerson.birth || rel.targetPerson.death
+                ? `(${rel.targetPerson.birth || '?'} – ${rel.targetPerson.death || '?'})`
+                : '';
+            html += `
+                <div class="relation-item">
+                    <div class="relation-type" style="color: #ff0066;">${rel.type}</div>
+                    <a href="person.html?id=${rel.target}" class="relation-name">
+                        <strong>${rel.targetPerson.name}</strong> ${dates}
+                    </a>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+
+    // Beruflich
+    if (byCategory['Beruflich'].length > 0) {
+        html += `<div class="relation-category">
+            <h3 style="color: #00ccff; font-size: 16px; margin-bottom: 12px;">Beruflich (${byCategory['Beruflich'].length})</h3>`;
+        byCategory['Beruflich'].forEach(rel => {
+            const dates = rel.targetPerson.birth || rel.targetPerson.death
+                ? `(${rel.targetPerson.birth || '?'} – ${rel.targetPerson.death || '?'})`
+                : '';
+            html += `
+                <div class="relation-item">
+                    <div class="relation-type" style="color: #00ccff;">${rel.type}</div>
+                    <a href="person.html?id=${rel.target}" class="relation-name">
+                        <strong>${rel.targetPerson.name}</strong> ${dates}
+                    </a>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+
+    // Sozial
+    if (byCategory['Sozial'].length > 0) {
+        html += `<div class="relation-category">
+            <h3 style="color: #ffcc00; font-size: 16px; margin-bottom: 12px;">Sozial (${byCategory['Sozial'].length})</h3>`;
+        byCategory['Sozial'].forEach(rel => {
+            const dates = rel.targetPerson.birth || rel.targetPerson.death
+                ? `(${rel.targetPerson.birth || '?'} – ${rel.targetPerson.death || '?'})`
+                : '';
+            html += `
+                <div class="relation-item">
+                    <div class="relation-type" style="color: #ffcc00;">${rel.type}</div>
+                    <a href="person.html?id=${rel.target}" class="relation-name">
+                        <strong>${rel.targetPerson.name}</strong> ${dates}
+                    </a>
+                </div>
+            `;
+        });
+        html += '</div>';
+    }
+
     html += '</div>';
 
     contentEl.innerHTML = html;

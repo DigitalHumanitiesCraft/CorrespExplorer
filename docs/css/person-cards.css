@@ -380,3 +380,54 @@
         word-break: break-all;
     }
 }
+
+/* Relations List */
+.relations-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+.relation-category {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.relation-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    background: var(--color-bg-light);
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.relation-item:hover {
+    background: var(--color-bg);
+    border-left-color: currentColor;
+    transform: translateX(4px);
+}
+
+.relation-type {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.relation-name {
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.relation-name:hover {
+    text-decoration: underline;
+}
+
+.relation-name strong {
+    color: var(--color-primary);
+}

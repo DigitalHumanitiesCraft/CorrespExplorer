@@ -759,14 +759,22 @@ function showMultiPersonPopup(lngLat, features) {
         if (p.mention_count > 0) stats.push(`${p.mention_count} Erw.`);
         const statsText = stats.length > 0 ? stats.join(' • ') : '';
 
+        // Check if person has relations
+        const person = allPersons.find(person => person.id === p.id);
+        const hasRelations = person && person.relations && person.relations.length > 0;
+        const relationBadge = hasRelations
+            ? `<span class="badge badge-relation" title="${person.relations.length} Verbindungen">🔗 ${person.relations.length}</span>`
+            : '';
+
         return `
-            <div class="person-item" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
+            <div class="person-item ${hasRelations ? 'has-relations' : ''}" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
                 <div class="person-name">
                     <strong>${p.name}</strong> ${dates}
                 </div>
                 <div class="person-meta">
                     ${gndBadge}
                     <span class="badge badge-sndb">SNDB</span>
+                    ${relationBadge}
                     ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
                 </div>
             </div>
@@ -818,14 +826,22 @@ window.expandPersonList = function(event) {
         if (p.mention_count > 0) stats.push(`${p.mention_count} Erw.`);
         const statsText = stats.length > 0 ? stats.join(' • ') : '';
 
+        // Check if person has relations
+        const person = allPersons.find(person => person.id === p.id);
+        const hasRelations = person && person.relations && person.relations.length > 0;
+        const relationBadge = hasRelations
+            ? `<span class="badge badge-relation" title="${person.relations.length} Verbindungen">🔗 ${person.relations.length}</span>`
+            : '';
+
         return `
-            <div class="person-item" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
+            <div class="person-item ${hasRelations ? 'has-relations' : ''}" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
                 <div class="person-name">
                     <strong>${p.name}</strong> ${dates}
                 </div>
                 <div class="person-meta">
                     ${gndBadge}
                     <span class="badge badge-sndb">SNDB</span>
+                    ${relationBadge}
                     ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
                 </div>
             </div>
