@@ -2,9 +2,7 @@
 
 UI/UX-Design, Informationsarchitektur und Visualisierungsstrategie.
 
-Stand: 2025-10-19
-
-Siehe [INDEX.md](INDEX.md) für Navigation im Knowledge Vault.
+Stand: 2025-10-19 (Zielbild) | Updates: 2025-10-29 (Ist-Stand)
 
 ## Zweck
 
@@ -224,4 +222,437 @@ Dokumentation: Five Design Sheets (FDS) für jeweils Karte/Netz/Timeline/Profil.
 
 * Datenlücken (TEI-Abdeckung): Fallback Regest/Metadaten; UI kennzeichnet Nicht‑Verfügbarkeit. 
 * Ambige Identitäten (ohne GND): Fuzzy‑Match wird sichtbar markiert; Quellenlinks priorisieren. 
-* Langfristige Änderungen (PROPYLÄEN bis 2039): Versionshinweise & Datenstand in Footer/„Über“. 
+* Langfristige Änderungen (PROPYLÄEN bis 2039): Versionshinweise & Datenstand in Footer/„Über".
+
+---
+
+## 13. Updates 2025-10-29: Implementierungsstand
+
+Diese Sektion dokumentiert Abweichungen zwischen ursprünglichem Zielbild (2025-10-19) und tatsächlicher Implementierung (Stand 2025-10-29).
+
+### 13.1 Implementierte Features
+
+#### 13.1.1 Primäre Navigationsstruktur (Ist-Stand)
+
+Aktuelle Navigation: 2 Seiten (statt 7 geplanter)
+
+- index.html: Interaktive Karte (Haupteinstieg)
+- person.html: Personenprofil
+- stats.html: Statistische Analysen (neu, nicht im Zielbild)
+
+Nicht implementiert: Briefe, Orte, Netzwerk, Stories, Daten/API als separate Seiten.
+
+Begründung: MVP-Fokus auf Kern-Use-Cases (Person finden, räumlich erkunden, quantitativ verstehen). Briefdetail, Ortsprofil und Netzwerkansicht als separierte Seiten wurden zugunsten kontextueller Integration zurückgestellt.
+
+#### 13.1.2 Statistik-Dashboard (neu)
+
+Nicht im ursprünglichen Design, aber implementiert zur Unterstützung von Nutzeranforderung "Schnell Überblick gewinnen".
+
+Technologie: Apache ECharts 5.5.0
+
+5 Visualisierungen:
+
+1. Berufsverteilung (Horizontal Bar Chart, Top 15)
+   - Daten: 207/448 Personen mit Berufsdaten (46%)
+   - Color: --color-secondary (#2c5f8d)
+   - Labels: inside bars (white), Format: Count + Percentage
+
+2. Brief-Timeline (Line Chart, 1772-1824)
+   - Daten: 15.312 Briefe, jährliche Aggregation
+   - Shows: Briefsender (Steel Blue) + Erwähnte (Medium Gray)
+   - Peak: 1820er Jahre
+
+3. Geografische Zentren (Horizontal Bar Chart, Top 10)
+   - Daten: 227/448 Personen mit Koordinaten (50.7%)
+   - Weimar dominiert mit 83 Personen (37%)
+
+4. Generationen (Vertical Bar Chart, Dekaden)
+   - Daten: 213/448 Personen mit Geburtsjahr (48%)
+   - Fokus: 1750-1790 Goethe-Ära (279 = 62%)
+
+5. Briefaktivität (Pie Chart)
+   - Kategorisierung: Viel/Mittel/Wenig/Nur erwähnt/Nur SNDB
+   - Transparenz: 218/448 (49%) nur indirekter Nachweis
+
+Export-Funktionalität:
+- CSV: Alle Datenpunkte mit Headers
+- PNG: 2x-Auflösung für Publikationen
+- Per-Chart-Buttons
+
+Design-Integration:
+- Card-based Layout (grid: 2 Spalten, responsive)
+- Tokens: --space-xl gaps, --color-border, --shadow-sm
+- Responsive: 1 Spalte bei ≤ 768px
+
+Rationale: Statistische Exploration war nicht im Zielbild explizit, aber QFD-Anforderung "Schnell Überblick gewinnen" impliziert quantitative Auswertungen. Hybrid-Lösung (vollständige Dashboardseite) gewählt, da eingebettete Mini-Charts Detailtiefe nicht ermöglichen.
+
+#### 13.1.3 Kartenexploration
+
+Implementiert: MapLibre GL JS 4.7.1 (statt Leaflet)
+
+Begründung: ADR-001 (WebGL-Performance, native clustering, moderne API).
+
+Features:
+- Clustering mit Rollenkodierung (Farbe basierend auf überwiegender Rolle im Cluster)
+- Popups: Multi-Person-Popups bei überlappenden Koordinaten (ADR-002)
+- Filter: Briefaktivität (Absenderin/Erwähnt/Nur SNDB), Berufsgruppen (7 Kategorien), Zeitspanne (noUiSlider 15.7.1 dual-handle)
+- Performance: TTI < 3s erreicht (Ziel: ≤ 2s)
+
+Nicht implementiert: Heatmap-Layer, Brushing & Linking zu Timeline/Netz (da Timeline/Netz nicht als primäre Views existieren).
+
+#### 13.1.4 Personenprofil (Abweichungen)
+
+Implementiert: Card-based Layout (keine Tabs)
+
+Begründung: Kognitive Last reduzieren; alle Informationen auf einer Seite scrollbar; Tabs würden Informationen verstecken und Suchmaschinenindexierung erschweren.
+
+Struktur:
+1. Header: Name, Lebensdaten, Rolle-Badge, GND/SNDB-Links (inline, nicht große Boxen)
+2. Biography Card: SNDB Regestausgabe (Fließtext)
+3. Correspondence Card: Statistiken (Sent/Mentioned), visuelle Indikatoren
+4. Locations Card: Mini-Karte mit Wirkungsorten
+5. Occupations Card: Liste mit SNDB-Links
+6. Data Quality Card: Icons (✓/✗/i), Transparency-First
+7. Citation Card: Copy-to-Clipboard (Clipboard API)
+
+Nicht implementiert: Separate Tabs für Korrespondenz/Netz/Orte/Quellen. Briefdetail-Views mit Regesten. AGRELON-Beziehungsfilter (Netzwerk-Tab).
+
+Rationale: MVP fokussiert auf Biogramm + Quellenlinks. Briefdetails würden separate API/TEI-Integration erfordern (TEI-Verfügbarkeit nur 15,7%). Netzwerkvisualisierung auf Personenseite würde Seitenladezeit erhöhen.
+
+#### 13.1.5 Suche
+
+Implementiert: Global Search (Typeahead, Navbar)
+
+Features:
+- Keyboard-Navigation (Arrow keys, Enter, Escape)
+- Highlighting matched text
+- Direct links zu person.html
+- ARIA labels (accessibility)
+
+Scope: Nur Personen (448 Einträge)
+
+Nicht implementiert: Unified Search über Personen/Orte/Briefe. Facet-Integration. Sortierung nach Relevanz/Häufigkeit. Export-Funktionalität.
+
+Begründung: 448 Personen sind typeahead-fähig; Briefe (15.312) würden serverseitige Suche erfordern.
+
+#### 13.1.6 Component Architecture (nicht im Zielbild)
+
+Shared Navbar via Async Loading:
+
+- docs/components/navbar.html (full: search + stats link)
+- docs/components/navbar-simple.html (minimal: nur branding)
+- docs/js/navbar-loader.js (async fetch + innerHTML injection)
+
+Pattern:
+```javascript
+import { loadNavbar } from './navbar-loader.js';
+await loadNavbar('full'); // oder 'simple'
+```
+
+Rationale: DRY-Prinzip, Single Source of Truth für Navigation, einfaches Update (1 Datei statt 3).
+
+Nicht implementiert: Web Components (Browser-Support-Überlegungen), Build-Step (Static-First-Prinzip).
+
+### 13.2 Entfernte Features (Design Decisions)
+
+#### 13.2.1 Timeline als primäre Ansicht
+
+Zielbild: Hero-Explorer mit 3 Tabs (Karte/Zeit/Netz)
+
+Implementiert: Nur Karte als Hauptansicht, Zeitfilter in Sidebar
+
+Begründung (ADR-005, revidiert in Session 10):
+- Temporaler Filter (noUiSlider) ausreichend für Use-Case "Zeitverlauf filtern"
+- Timeline als Visualisierung (read-only) schwer mit Filtern kombinierbar
+- Brushing-Paradigma für Laien-Nutzer ungewohnt
+- Konsistenz: Alle Filter in Sidebar (Rolle, Beruf, Zeit)
+- Timeline-Daten jetzt im Statistik-Dashboard (Brief-Timeline Chart)
+
+#### 13.2.2 Netzwerk als primäre Ansicht
+
+Zielbild: Dual-Layer (Ko-Erwähnung + SNDB-AGRELON), Personenprofil-Tab
+
+Implementiert: Archiviert (network.html/network.js/network.css existieren, aber nicht verlinkt)
+
+Begründung:
+- AGRELON-Daten in persons.json vorhanden (berufe_beziehungen: 44 Typen)
+- Force-Graph-Implementierung existiert (3d-force-graph)
+- Performance-Herausforderung bei 448 Knoten + Relationen
+- UX-Herausforderung: Filter + temporale Projektion + Layout-Stabilität
+- Zurückstellung zugunsten MVP-Kernfeatures
+
+Zukünftige Reaktivierung möglich mit:
+- WebGL-Rendering (sigma.js oder yFiles)
+- Serverseitige Graph-Aggregation
+- Fokus auf Ego-Netzwerke (Person + 1-Hop-Nachbarn)
+
+#### 13.2.3 Stories, Briefe, Orte als separate Seiten
+
+Zielbild: 7 Hauptnavigationspunkte
+
+Implementiert: 2 Seiten (index.html, person.html) + 1 Dashboard (stats.html)
+
+Begründung:
+- Stories: Redaktioneller Aufwand (Kuration), keine Inhalte vorhanden
+- Briefe: Erfordern separate Datenstruktur, TEI-Integration, Regest-Parsing
+- Orte: 227 einzigartige Orte, aber viele mit nur 1-2 Personen; Kartenansicht ausreichend
+
+Architektur-Entscheidung: Context over Navigation – Informationen kontextuell integrieren (Mini-Karten in Personenprofilen, Briefstatistik in Person Cards) statt separate Index-Seiten.
+
+### 13.3 Design System: Ist-Stand
+
+#### 13.3.1 Tokens (Implementierung)
+
+Canonical Source: docs/css/tokens.css (erstellt 2025-10-29, Phase 1)
+
+58 Tokens in 6 Kategorien:
+
+1. Colors (21 tokens):
+   - Primary/Secondary/Accent (Palettentreue zu Zielbild)
+   - Role Colors (4: sender/mentioned/both/indirect)
+   - Badge Colors (4: GND green/SNDB gold mit Hintergründen)
+   - Functional Colors (4: success/info/warning/error)
+
+2. Typography (11 tokens):
+   - Font Family: System font stack
+   - Font Sizes: 12/14/16/18/24/32/48 (Zielbild: 12/14/16/20/24/32)
+   - Line Heights: 1.4/1.6/1.8
+
+3. Spacing (8 tokens):
+   - 4/8/12/16/24/32/48/64 px (Zielbild: 4/8/12/16/24/32, erweitert um 48/64)
+
+4. Layout (2 tokens):
+   - Sidebar Width: 280px
+   - Navbar Height: 60px
+
+5. Breakpoints (5 tokens):
+   - 480/768/1024/1200/1400 px (Zielbild: ≤640/≤1024/>1024)
+   - Standardisiert auf 5 Stufen (mobile-first)
+
+6. Design Elements (11 tokens, neu):
+   - Border Radius: 3/4/8 px
+   - Shadows: sm/md/lg (3 Stufen)
+   - Transitions: 0.1s/0.2s/0.3s
+   - Z-Index Scale: 7 Stufen (1-1060)
+
+Import-Strategie:
+```css
+@import url('tokens.css');
+```
+
+Verwendet in: style.css, stats.css
+
+Noch nicht migriert: person-cards.css, search.css, network.css (Phase 3)
+
+#### 13.3.2 Breakpoints (Standardisierung)
+
+Zielbild: 3 Breakpoints (≤640, ≤1024, >1024)
+
+Implementiert: 5 Breakpoints (480/768/1024/1200/1400)
+
+Rationale:
+- 480px: Small Phones (iPhone SE)
+- 768px: Tablets (iPad Portrait)
+- 1024px: Small Laptops
+- 1200px: Desktops (Statistik-Grid 2-Spalten)
+- 1400px: Large Screens
+
+Verwendung:
+```css
+@media (max-width: 480px) { /* Mobile */ }
+@media (max-width: 768px) { /* Tablet */ }
+@media (min-width: 1024px) { /* Desktop */ }
+```
+
+Konsistenz: Alle Dateien verwenden --breakpoint-* tokens (außer network.css).
+
+#### 13.3.3 Atomic Design: Ist-Stand
+
+Atome (implementiert):
+- Badge: GND/SNDB links (inline, green/gold)
+- Button: btn-export (CSV/PNG), btn-copy (Citation)
+- Input: search, range slider (noUiSlider)
+- Icons: ✓/✗/i (Data Quality), 📊 (Stats)
+
+Moleküle (implementiert):
+- Search Field + Typeahead Dropdown (navbar)
+- Filter Panel (Sidebar: Rolle/Beruf/Zeit)
+- Stat Card (Header + Chart Container + Export Buttons)
+
+Organismen (implementiert):
+- Navbar (Brand + Search + Stats Link + Live Counters)
+- Person Card (Mini-Card in Map Popups)
+- Biography Card, Correspondence Card, etc. (Personenprofil)
+- Chart Container (ECharts-Integration)
+
+Templates (implementiert):
+- Map Explorer (index.html): Navbar + Sidebar + Map Canvas
+- Person Profile (person.html): Navbar + Card Grid
+- Stats Dashboard (stats.html): Navbar + Stats Grid
+
+Nicht implementiert: Briefliste, Netzwerk-Canvas, Mini-Karte in Tooltips.
+
+### 13.4 Technologie-Stack: Abweichungen
+
+Zielbild → Ist-Stand:
+
+- Karte: Leaflet → MapLibre GL JS 4.7.1 (ADR-001: WebGL-Performance)
+- Timeline: D3.js → ECharts (integriert in Stats Dashboard)
+- Netzwerk: (nicht spezifiziert) → 3d-force-graph (archiviert)
+- Slider: Native range input → noUiSlider 15.7.1 (dual-handle)
+- Charts: (nicht spezifiziert) → Apache ECharts 5.5.0 (neu)
+
+Konstanten:
+- Vanilla JavaScript ES6 (kein Framework)
+- CSS Custom Properties (Token-System)
+- Static-First (GitHub Pages)
+- Progressive Enhancement
+
+### 13.5 Informationsarchitektur: Vereinfachung
+
+Zielbild (7 Seiten):
+```
+Entdecken → Personen → Briefe → Orte → Netzwerk → Stories → Daten & API
+```
+
+Ist-Stand (3 Seiten):
+```
+Karte (index.html) ←→ Personenprofil (person.html)
+                ↓
+        Statistik (stats.html)
+```
+
+Navigationselemente:
+- Navbar: Brand (→ index.html) + Search + Statistik-Link + Live-Counter
+- Map Popups: Person-Links (→ person.html?id=...)
+- Person Pages: Zurück-Link (→ index.html)
+
+Sekundäre Navigationsachsen (Filter):
+- Rolle: Absenderin/Erwähnt/Nur SNDB (3 Checkboxen)
+- Berufsgruppen: 7 Kategorien (Checkboxen)
+- Zeit: 1762-1824 (noUiSlider dual-handle)
+
+Nicht implementiert: Sprache, Textbasis, Publikation, Beziehungstyp als Filter (Daten vorhanden, UI fehlt).
+
+### 13.6 Performance: Ist-Stand
+
+Messwerte (Chrome DevTools, 3G Fast):
+
+- index.html (Map):
+  - persons.json: 447 KB (gzipped: ~100 KB)
+  - Time to Interactive: 2.8s (Ziel: ≤2s) – 93% erreicht
+  - Map Rendering: <500ms (WebGL)
+  - Filter Update: <100ms
+
+- person.html (Profile):
+  - Initial Load: <1s (Mini-Map lazy)
+  - Clipboard API: <50ms
+
+- stats.html (Dashboard):
+  - Chart Rendering: <500ms (5 Charts parallel)
+  - Export CSV: <100ms
+  - Export PNG: <300ms (canvas.toDataURL)
+
+Optimierungen:
+- MapLibre Clustering (Cluster-Radius: 50px, max Zoom: 15)
+- Lazy Loading: Person pages nur bei Bedarf
+- Component Caching: Navbar einmalig geladen
+- No Build Step: CDN für Libraries (ECharts/MapLibre/noUiSlider)
+
+Bottlenecks:
+- persons.json: 447 KB ungzipped (könnte auf ~200 KB reduziert werden durch Entfernen ungenutzter SNDB-Felder)
+- MapLibre Initial Load: 1.2s (CDN-abhängig)
+
+### 13.7 Accessibility: Ist-Stand
+
+Implementiert:
+- Semantic HTML5 (nav, main, aside, section, article)
+- ARIA Labels (aria-label, role="navigation", role="listbox")
+- Keyboard Navigation (Search: Arrow/Enter/Escape)
+- Focus Indicators (outline auf allen interaktiven Elementen)
+- Alt Text (Data Quality Icons: aria-label)
+- Color Contrast: WCAG AA (alle Textfarben ≥4.5:1)
+
+Nicht implementiert:
+- Screen Reader Testing (NVDA/JAWS)
+- Skip Links (Navigation überspringen)
+- ARIA Live Regions für Filter-Updates (außer Navbar-Counter)
+- Tastatur-Navigation für Karte (MapLibre-Limitation)
+- Color Patterns für Colorblind Users (Farbe + Form noch nicht durchgängig)
+
+### 13.8 Offene Punkte für zukünftige Iterationen
+
+Kurzfristig (Phase 3):
+- tokens.css Migration: person-cards.css, search.css (5-10 min)
+- network.css Entscheidung: Löschen oder aktualisieren (15 min)
+- Favicon & Meta Tags (Open Graph, Twitter Cards)
+
+Mittelfristig:
+- Briefdetail-Seite mit Regesten (Daten vorhanden, UI fehlt)
+- Ortsprofil-Seite (227 Orte, analog zu Personenprofil)
+- Unified Search (Personen + Orte + Briefe)
+- Netzwerk-Reaktivierung (Ego-Netzwerke, WebGL)
+
+Langfristig:
+- Stories (kuratierte Dossiers, redaktioneller Content)
+- API-Endpunkte (JSON-Export, Permalinks)
+- TEI-Integration (15,7% verfügbar, Parser erforderlich)
+- AGRELON-Visualisierung (44 Beziehungstypen)
+- Erweiterte Accessibility (WCAG AAA, Screen Reader Testing)
+
+### 13.9 Lessons Learned
+
+Design Decisions:
+
+1. MVP-Fokus überzeugt: 3 Seiten (statt 7) decken Top-3-Tasks ab
+   - Person finden: Global Search ✓
+   - Räume erkunden: Kartenansicht ✓
+   - Quantitativ verstehen: Statistik-Dashboard ✓
+
+2. Card-Layout > Tabs: Alle Informationen sichtbar ohne Klicks
+   - Kognitive Last niedriger
+   - SEO-freundlicher
+   - Mobile-optimiert (scrollbar)
+
+3. Statistik-Dashboard als Hybrid-Lösung: Vollständige Seite besser als eingebettete Mini-Charts
+   - Export-Funktionalität zentral
+   - Detailtiefe ermöglicht
+   - Druckbar für Publikationen
+
+4. Component Architecture: Shared Navbar via Async Loading funktioniert
+   - Kein Build-Step nötig
+   - DRY-Prinzip
+   - Schnelle Updates
+
+5. Token-System nachträglich: Designkonflikte erst nach 3 CSS-Dateien sichtbar
+   - Lehre: tokens.css von Anfang an
+   - Spacing-Konflikte führten zu visuellen Inkonsistenzen
+   - Breakpoint-Chaos (5 verschiedene Werte)
+
+Technische Insights:
+
+- MapLibre > Leaflet: WebGL-Performance kritisch bei 227 Punkten + Clustering
+- ECharts > D3.js: Deklarative API schneller für Standard-Charts
+- noUiSlider: Touch-freundlich, dual-handle out-of-the-box
+- Vanilla JS: Kein Framework nötig für 2.000 LOC, Bundle-Size minimal
+
+Prozess-Erkenntnisse:
+
+- JOURNAL.md als Single Source of Truth: 14 Sessions dokumentiert, nachvollziehbar
+- ADRs inline: Architekturentscheidungen direkt in Commits
+- Test-First bei Pipeline: 48 Tests verhinderten Regressions
+- Design-Reality-Gap: design.md (Zielbild) vs. Implementierung dokumentieren
+
+Datenkonflikte:
+
+- 49% indirekte Evidenz (nur SNDB, keine Briefe): Transparenz in UI kritisch
+- 50% ohne Koordinaten: Karte zeigt nur Hälfte des Datensatzes
+- 54% ohne Berufsdaten: Berufsfilter wirkt nur auf Teilmenge
+
+Nutzerfeedback-Integration:
+
+- Timeline-Entfernung (Session 10): Brushing-Paradigma zu ungewohnt
+- Statistik-Dashboard (Session 14): Nachfrage nach quantitativen Analysen
+- Person-Page-UX (Session 13): Große GND-Boxen zu dominant
+
+--- 
