@@ -704,3 +704,99 @@ Performance Impact:
 - Bundle size: +55 lines (data.js)
 
 Total Commits Session 15: 6 commits
+
+## 2025-10-29
+
+### Session 16: Network Visualization with AGRELON Relations
+
+Phase 1: Hover-Network Infrastructure
+- Created network-utils.js (160 lines)
+  - getPersonConnections(): Extract AGRELON relations
+  - getClusterConnections(): Aggregate for clusters
+  - categorizeRelationByAgrelonId(): Familie/Beruflich/Sozial
+  - getConnectionColor(): Color mapping
+- Enhanced app.js with hover events
+  - drawConnectionLines(): Render GeoJSON LineStrings
+  - clearConnectionLines(): Remove on mouseleave
+  - Enhanced mouseenter for persons-layer and clusters
+- UI updates:
+  - Network legend in index.html
+  - .legend-line styles in style.css
+- Test infrastructure:
+  - test-network.html: Module tests
+  - test-network-visual.html: Visual demo with synthetic data
+  - TESTING-NETWORK.md: Testing guide
+
+Phase 2: AGRELON Data Integration
+- Created integrate_relations.py (233 lines)
+  - Parse pers_koerp_beziehungen.xml (6580 relations)
+  - Parse nsl_agrelon.xml (44 relation types)
+  - Map 34 AGRELON IDs to 3 categories
+  - Filter out non-person relations (Werk, Geografikum)
+- Integration results:
+  - 67 persons with relations (of 448 total)
+  - 84 relations added to persons.json
+  - Distribution: Familie 80, Beruflich 2, Sozial 2
+  - 41 persons with geo-located connections
+
+AGRELON Category Mapping:
+- Familie (16 types): 4xxx IDs (Verwandtschaft)
+- Beruflich (11 types): 3xxx IDs (Beruflicher Kontakt)
+- Sozial (7 types): 1xxx/2xxx IDs (Bekanntschaft, Gruppenbeteiligung)
+
+Bug Fixes:
+- network-utils.js: Check person.places before accessing
+- categorizeRelation(): Use AGRELON ID instead of German text
+  - Issue: All relations categorized as "Unbekannt"
+  - Fix: Use ID prefix (4xxx=Familie, 3xxx=Beruflich, 1xxx/2xxx=Sozial)
+  - Result: Correct color-coded lines
+
+Documentation Updates:
+- README.md: Network visualization features
+- docs/README.md: Network components and statistics
+- hover-network-plan.md: Complete 3-phase implementation plan
+
+Testing:
+- test-network-visual.html: 3 synthetic persons with connections
+- test-relations-data.html: Real data validation
+- Console logs: "Drawing N connection lines" working
+- User confirmation: "das funktioniert" with real data
+
+Commits:
+- 4b1022f: Implement Phase 1: Hover-based network visualization
+- 3f23e68: Integrate AGRELON relations from SNDB
+- 856abde: Fix network-utils: Check for person.places
+- 414c3cc: Fix categorization: Use AGRELON ID
+- 42a5bb0: Update documentation with network features
+
+Files Created:
+- docs/js/network-utils.js (160 lines)
+- docs/test-network.html
+- docs/test-network-visual.html
+- docs/test-relations-data.html
+- docs/TESTING-NETWORK.md
+- knowledge/hover-network-plan.md (500+ lines)
+- preprocessing/integrate_relations.py (233 lines)
+- preprocessing/list_agrelon_types.py
+
+Files Modified:
+- docs/js/app.js (+92 lines for network rendering)
+- docs/data/persons.json (+84 relations)
+- docs/index.html (network legend)
+- docs/css/style.css (.legend-line)
+- README.md (network features)
+- docs/README.md (network components)
+
+User Story Progress:
+- US-2.2 (Ego-Network): 100% fulfilled
+- US-3.4 (Gravitation): 90% fulfilled
+- US-3.6 (Network Density): 80% fulfilled
+- Overall: Improved from 52% to 67% (+15%)
+
+Next Phase (Optional):
+- Filter checkboxes for relation categories
+- Performance optimization for large clusters
+- Hover tooltips with relation details
+- Correspondence network (letter co-mentions)
+
+Total Commits Session 16: 5 commits
