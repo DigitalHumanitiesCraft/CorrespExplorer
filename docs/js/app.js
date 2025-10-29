@@ -348,15 +348,35 @@ function drawConnectionLines(connections) {
 
     log.event(`Drawing ${filtered.length} connection lines`);
 
-    // Create GeoJSON for lines
-    const features = filtered.map((conn, index) => ({
+    // Aggregate connections by same from-to coordinates
+    const aggregated = new Map();
+    filtered.forEach(conn => {
+        const key = `${conn.from.lat},${conn.from.lon}-${conn.to.lat},${conn.to.lon}`;
+
+        if (!aggregated.has(key)) {
+            aggregated.set(key, {
+                ...conn,
+                count: 1,
+                persons: [conn.person.name]
+            });
+        } else {
+            const existing = aggregated.get(key);
+            existing.count++;
+            existing.persons.push(conn.person.name);
+        }
+    });
+
+    // Create GeoJSON for lines with aggregated counts
+    const features = Array.from(aggregated.values()).map(conn => ({
         type: 'Feature',
         properties: {
             category: conn.category,
             subtype: conn.subtype,
             personName: conn.person.name,
             fromPlace: conn.from.name,
-            toPlace: conn.to.name
+            toPlace: conn.to.name,
+            count: conn.count,
+            persons: conn.persons.join(', ')
         },
         geometry: {
             type: 'LineString',
@@ -392,7 +412,15 @@ function drawConnectionLines(connections) {
                 'Sozial', getConnectionColor('Sozial'),
                 getConnectionColor('Unbekannt')
             ],
-            'line-width': 2,
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['get', 'count'],
+                1, 2,    // 1 connection = 2px
+                5, 4,    // 5 connections = 4px
+                10, 6,   // 10 connections = 6px
+                20, 8    // 20+ connections = 8px
+            ],
             'line-opacity': 0.6
         }
     }, 'persons-layer'); // Insert below markers
