@@ -1,6 +1,7 @@
 // HerData - MapLibre GL JS Implementation
 // Interactive map visualization with filtering
 
+import { loadPersons } from "./data.js";
 import { GlobalSearch } from "./search.js";
 import { loadNavbar } from "./navbar-loader.js";
 
@@ -80,7 +81,28 @@ async function init() {
     log.init("Starting application");
     await loadNavbar();
     try {
-        await loadData();
+        // Load data using shared module
+        const loading = document.getElementById('loading');
+        loading.textContent = 'Daten werden geladen...';
+
+        const data = await loadPersons();
+
+        // Add occupation group to each person
+        allPersons = data.persons.map(person => ({
+            ...person,
+            occupation_group: getOccupationGroup(person)
+        }));
+        filteredPersons = allPersons;
+
+        // Update stats in navbar
+        updateStats(data.meta);
+
+        loading.textContent = `${data.meta.total_women} Frauen geladen`;
+        loading.style.background = '#d8f3dc';
+        loading.style.color = '#2d6a4f';
+
+        log.init(`Loaded ${allPersons.length} persons, ${data.meta.with_geodata} with geodata`);
+
         initMap();
         initFilters();
         initSearch();
@@ -98,38 +120,6 @@ function initSearch() {
         globalSearch = new GlobalSearch(allPersons);
         console.log("🔍 Global search initialized");
     }
-}
-
-// Load persons.json data
-async function loadData() {
-    const loading = document.getElementById('loading');
-    loading.textContent = 'Daten werden geladen...';
-
-    const response = await fetch('data/persons.json');
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const data = await response.json();
-
-    // Validate structure
-    if (!data.meta || !Array.isArray(data.persons)) {
-        throw new Error('Ungültige Datenstruktur');
-    }
-
-    // Add occupation group to each person
-    allPersons = data.persons.map(person => ({
-        ...person,
-        occupation_group: getOccupationGroup(person)
-    }));
-    filteredPersons = allPersons;
-
-    // Update stats in navbar
-    updateStats(data.meta);
-
-    loading.textContent = `${data.meta.total_women} Frauen geladen`;
-    loading.style.background = '#d8f3dc';
-    loading.style.color = '#2d6a4f';
-
-    log.init(`Loaded ${allPersons.length} persons, ${data.meta.with_geodata} with geodata`);
 }
 
 // Initialize MapLibre map

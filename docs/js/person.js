@@ -1,8 +1,8 @@
 // HerData - Person Detail Page
 // Displays detailed information about a single person
+import { loadPersons, getPersonById } from './data.js';
 import { loadNavbar } from './navbar-loader.js';
 import { GlobalSearch } from './search.js';
-
 
 let currentPerson = null;
 let allPersons = [];
@@ -12,6 +12,7 @@ let miniMap = null;
 async function init() {
     try {
         await loadNavbar('simple');
+
         // Get person ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const personId = urlParams.get('id');
@@ -21,24 +22,23 @@ async function init() {
             return;
         }
 
-        // Load data
-        await loadData();
-        initSearch();
-
-        // Initialize search
-        initSearch();
+        // Load data using shared module
+        const data = await loadPersons();
+        allPersons = data.persons;
 
         // Find person
-        currentPerson = allPersons.find(p => p.id === personId);
+        currentPerson = getPersonById(allPersons, personId);
 
         if (!currentPerson) {
             showNotFound();
             return;
         }
 
+        // Initialize search
+        initSearch();
+
         // Render person page
         renderPerson();
-        // Tabs removed - card layout
         hideLoading();
 
     } catch (error) {
@@ -54,21 +54,6 @@ function initSearch() {
         globalSearch = new GlobalSearch(allPersons);
         console.log("🔍 Global search initialized on person page");
     }
-}
-
-
-// Load persons.json data
-async function loadData() {
-    const response = await fetch('data/persons.json');
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const data = await response.json();
-
-    if (!data.meta || !Array.isArray(data.persons)) {
-        throw new Error('Ungültige Datenstruktur');
-    }
-
-    allPersons = data.persons;
 }
 
 // Render person information

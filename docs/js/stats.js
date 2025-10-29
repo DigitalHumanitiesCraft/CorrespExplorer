@@ -1,6 +1,7 @@
 // HerData - Statistics Dashboard
 // Renders statistical charts using Apache ECharts
 
+import { loadPersons } from "./data.js";
 import { loadNavbar } from "./navbar-loader.js";
 import { GlobalSearch } from "./search.js";
 
@@ -13,12 +14,22 @@ async function init() {
 
     await loadNavbar();
     highlightActiveNavLink();
-    await loadData();
-    initSearch();
-    initCharts();
-    initExportButtons();
 
-    console.log("✅ Statistics dashboard ready");
+    try {
+        // Load data using shared module
+        const data = await loadPersons();
+        allPersons = data.persons;
+        console.log(`📊 Loaded ${allPersons.length} persons`);
+
+        initSearch();
+        initCharts();
+        initExportButtons();
+
+        console.log("✅ Statistics dashboard ready");
+    } catch (error) {
+        console.error('Error loading data:', error);
+        showError('Daten konnten nicht geladen werden');
+    }
 }
 
 // Highlight active nav link
@@ -37,19 +48,6 @@ function initSearch() {
     if (allPersons.length > 0) {
         new GlobalSearch(allPersons);
         console.log("🔍 Global search initialized");
-    }
-}
-
-// Load persons data
-async function loadData() {
-    try {
-        const response = await fetch('data/persons.json');
-        const data = await response.json();
-        allPersons = data.persons;
-        console.log(`📊 Loaded ${allPersons.length} persons`);
-    } catch (error) {
-        console.error('Error loading data:', error);
-        showError('Daten konnten nicht geladen werden');
     }
 }
 
