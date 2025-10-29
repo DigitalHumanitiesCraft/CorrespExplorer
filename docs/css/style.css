@@ -207,19 +207,36 @@ body {
     display: none;
 }
 
-#reset-filters {
-    width: 100%;
+/* Filter buttons */
+.filter-buttons {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.filter-buttons button {
+    flex: 1;
     padding: var(--space-md) var(--space-lg);
     background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: 4px;
     cursor: pointer;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     transition: all 0.2s;
 }
 
-#reset-filters:hover {
+.filter-buttons button:hover {
     background: var(--color-border);
+}
+
+#select-all-filters {
+    background: var(--color-secondary);
+    color: white;
+    border-color: var(--color-secondary);
+}
+
+#select-all-filters:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 /* Main Content */

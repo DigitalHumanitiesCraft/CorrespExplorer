@@ -690,10 +690,23 @@ function initFilters() {
         applyFilters();
     });
 
-    // Reset button
-    resetButton.addEventListener('click', () => {
+    // Select all button
+    const selectAllButton = document.getElementById('select-all-filters');
+    selectAllButton.addEventListener('click', () => {
         roleCheckboxes.forEach(cb => cb.checked = true);
         occupationCheckboxes.forEach(cb => cb.checked = true);
+
+        // Reset year range slider to full range
+        yearRangeSlider.noUiSlider.set([1762, 1824]);
+        temporalFilter = null;
+
+        applyFilters();
+    });
+
+    // Reset button
+    resetButton.addEventListener('click', () => {
+        roleCheckboxes.forEach(cb => cb.checked = false);
+        occupationCheckboxes.forEach(cb => cb.checked = false);
 
         // Reset year range slider
         yearRangeSlider.noUiSlider.set([1762, 1824]);

@@ -130,10 +130,9 @@ export class GlobalSearch {
             parts.push(`${birth}–${death}`);
         }
 
-        if (person.letter_count) {
-            parts.push(`${person.letter_count} Briefe`);
-        } else if (person.mention_count) {
-            parts.push(`${person.mention_count} Erwähnungen`);
+        // Letter count from briefe object
+        if (person.briefe && person.briefe.gesamt > 0) {
+            parts.push(`${person.briefe.gesamt} Briefe`);
         }
 
         if (person.occupations && person.occupations.length > 0) {
