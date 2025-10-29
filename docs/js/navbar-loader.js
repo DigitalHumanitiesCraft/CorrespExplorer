@@ -1,7 +1,7 @@
 // Navbar Component Loader
 // Loads the shared navbar component and initializes search
 
-export async function loadNavbar() {
+export async function loadNavbar(variant = 'full') {
     const navbarPlaceholder = document.getElementById('navbar-placeholder');
 
     if (!navbarPlaceholder) {
@@ -9,14 +9,18 @@ export async function loadNavbar() {
         return;
     }
 
+    const navbarFile = variant === 'simple'
+        ? 'components/navbar-simple.html'
+        : 'components/navbar.html';
+
     try {
-        const response = await fetch('components/navbar.html');
+        const response = await fetch(navbarFile);
         if (!response.ok) throw new Error('Failed to load navbar');
 
         const html = await response.text();
         navbarPlaceholder.innerHTML = html;
 
-        console.log('✅ Navbar component loaded');
+        console.log(`✅ Navbar component loaded (${variant})`);
     } catch (error) {
         console.error('❌ Failed to load navbar:', error);
         navbarPlaceholder.innerHTML = `

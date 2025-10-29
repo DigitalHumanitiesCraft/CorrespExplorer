@@ -11,7 +11,7 @@ let miniMap = null;
 // Initialize page
 async function init() {
     try {
-        await loadNavbar();
+        await loadNavbar('simple');
         // Get person ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const personId = urlParams.get('id');
