@@ -369,53 +369,59 @@ function setupEventHandlers() {
         if (pointCount <= 50) {
             log.click(`Finding persons at cluster location from data (≤50 threshold)`);
 
-            // Find all persons at this exact location from our data
-            const radius = 0.001; // ~100m radius for coordinate matching
-            const personsAtLocation = filteredPersons.filter(person => {
-                if (!person.places || person.places.length === 0) return false;
-                const place = person.places[0];
-                const distance = Math.sqrt(
-                    Math.pow(place.lon - clusterCoords[0], 2) +
-                    Math.pow(place.lat - clusterCoords[1], 2)
-                );
-                return distance < radius;
+            // Get cluster source and leaves
+            const source = map.getSource('persons');
+            const clusterId = features[0].properties.cluster_id;
+
+            // Get persons in this cluster from MapLibre
+            source.getClusterLeaves(clusterId, pointCount, 0, (error, leaves) => {
+                if (error) {
+                    log.error(`Failed to get cluster leaves: ${error.message}`);
+                    // Fallback: zoom to cluster
+                    source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+                        if (!err) {
+                            map.easeTo({
+                                center: clusterCoords,
+                                zoom: zoom
+                            });
+                        }
+                    });
+                    return;
+                }
+
+                log.click(`Found ${leaves.length} persons in cluster from MapLibre`);
+
+                if (leaves.length > 0) {
+                    // Convert coordinates array to lngLat object
+                    const lngLat = { lng: clusterCoords[0], lat: clusterCoords[1] };
+                    showMultiPersonPopup(lngLat, leaves);
+                } else {
+                    log.error('No persons found in cluster - zooming instead');
+                    source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+                        if (!err) {
+                            map.easeTo({
+                                center: clusterCoords,
+                                zoom: zoom
+                            });
+                        }
+                    });
+                }
             });
 
-            log.click(`Found ${personsAtLocation.length} persons at cluster location`);
+            return; // Exit early, callback handles rest
+        }
 
-            if (personsAtLocation.length > 0) {
-                // Convert to features format expected by showMultiPersonPopup
-                const features = personsAtLocation.map(person => ({
-                    properties: {
-                        id: person.id,
-                        name: person.name,
-                        role: person.role,
-                        normierung: person.normierung,
-                        gnd: person.gnd || null,
-                        birth: person.dates?.birth || null,
-                        death: person.dates?.death || null,
-                        letter_count: person.letter_count || 0,
-                        mention_count: person.mention_count || 0,
-                        place_name: person.places[0].name,
-                        place_type: person.places[0].type
-                    }
-                }));
-
-                showMultiPersonPopup({lng: clusterCoords[0], lat: clusterCoords[1]}, features);
-            } else {
-                log.error(`Expected ${pointCount} persons but found ${personsAtLocation.length} - zooming instead`);
+        // For large clusters (>50), zoom to expand
+        const source = map.getSource('persons');
+        const clusterId = features[0].properties.cluster_id;
+        source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (!err) {
                 map.easeTo({
                     center: clusterCoords,
-                    zoom: map.getZoom() + 2
+                    zoom: zoom
                 });
             }
-        } else {
-            log.click(`Zooming to expansion level (>50 threshold)`);
-            map.easeTo({
-                center: clusterCoords,
-                zoom: map.getZoom() + 2
-            });
-        }
+        });
     });
 
     // Hover tooltips for clusters

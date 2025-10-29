@@ -23,7 +23,11 @@ async function init() {
 
         initSearch();
         initCharts();
-        initExportButtons();
+
+        // Wait for charts to render, then init export buttons
+        setTimeout(() => {
+            initExportButtons();
+        }, 100);
 
         console.log("✅ Statistics dashboard ready");
     } catch (error) {
