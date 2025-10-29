@@ -93,19 +93,32 @@ body {
 .nav-links {
     display: flex;
     gap: var(--space-xl);
-    flex: 1;
+    margin-right: var(--space-xl);
 }
 
-.nav-links a {
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
     font-size: var(--font-size-base);
-    transition: color 0.2s;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: 4px;
+    transition: all 0.2s;
 }
 
-.nav-links a:hover,
-.nav-links a.active {
+.nav-link:hover {
     color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.nav-link-text {
     font-weight: 500;
 }
 
