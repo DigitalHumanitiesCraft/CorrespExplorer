@@ -26,7 +26,7 @@ export function getPersonConnections(person, allPersons) {
                 connections.push({
                     type: 'agrelon',
                     subtype: relation.type,
-                    category: categorizeRelation(relation.type),
+                    category: categorizeRelationByAgrelonId(relation.agrelon_id),
                     person: targetPerson,
                     from: {
                         lat: person.places[0].lat,
@@ -54,7 +54,25 @@ export function getPersonConnections(person, allPersons) {
 }
 
 /**
- * Categorize AGRELON relation type into Familie/Beruflich/Sozial
+ * Categorize AGRELON relation by ID
+ * @param {string} agrelonId - AGRELON ID (e.g., "4010", "3010")
+ * @returns {string} Category: Familie, Beruflich, Sozial, or Unbekannt
+ */
+function categorizeRelationByAgrelonId(agrelonId) {
+    // Familie (Verwandtschaft)
+    if (agrelonId.startsWith('4')) return 'Familie';
+
+    // Beruflich
+    if (agrelonId.startsWith('3')) return 'Beruflich';
+
+    // Sozial (Private Bekanntschaft + Gruppenbeteiligung)
+    if (agrelonId.startsWith('1') || agrelonId.startsWith('2')) return 'Sozial';
+
+    return 'Unbekannt';
+}
+
+/**
+ * Categorize AGRELON relation type into Familie/Beruflich/Sozial (deprecated - use categorizeRelationByAgrelonId)
  * @param {string} relationType - AGRELON type (e.g., "Tochter", "Mutter")
  * @returns {string} Category: Familie, Beruflich, Sozial, or Unbekannt
  */
