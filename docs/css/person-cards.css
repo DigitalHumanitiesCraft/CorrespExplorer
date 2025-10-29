@@ -1,0 +1,232 @@
+/* Modern Card-Based Person Page Layout */
+
+.person-page-cards {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-xl) var(--space-4xl);
+}
+
+/* Person Header */
+.person-page-cards .person-header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+    padding: var(--space-3xl) 0;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.person-page-cards .person-header h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+}
+
+.person-page-cards .person-dates {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    margin-bottom: var(--space-lg);
+}
+
+.person-page-cards .person-badges {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Stats Cards - Horizontal Row */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-3xl);
+}
+
+.stats-cards .stat-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-xl);
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.stats-cards .stat-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.stats-cards .stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.stats-cards .stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Content Cards Container */
+.cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+}
+
+/* Individual Content Cards */
+.content-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-2xl);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s;
+}
+
+.content-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.content-card h2 {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--color-bg-light);
+}
+
+.card-content {
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+/* Biography specific */
+#biography-card .card-content {
+    font-size: var(--font-size-md);
+}
+
+/* Letters list */
+#letters-content .letter-item {
+    padding: var(--space-lg);
+    border-left: 3px solid var(--color-secondary);
+    margin-bottom: var(--space-lg);
+    background: var(--color-bg-light);
+    border-radius: 4px;
+}
+
+#letters-content .letter-date {
+    font-weight: 600;
+    color: var(--color-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+#letters-content .letter-place {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+}
+
+/* Places list */
+.places-list .place-item {
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    background: var(--color-bg-light);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.places-list .place-name {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.places-list .place-type {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    background: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+/* Mini Map in Places Card */
+#places-map {
+    height: 300px;
+    margin-top: var(--space-lg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Occupations list */
+#occupations-content .occupation-item {
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    background: var(--color-bg-light);
+    border-radius: 4px;
+    border-left: 3px solid var(--color-accent);
+}
+
+#occupations-content .occupation-name {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+#occupations-content .occupation-type {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+/* Sources list */
+#sources-content .source-link {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-lg);
+    margin: var(--space-xs) var(--space-sm) var(--space-xs) 0;
+    background: var(--color-secondary);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+#sources-content .source-link:hover {
+    background: var(--color-primary);
+}
+
+/* Empty state */
+.placeholder-text {
+    color: var(--color-text-light);
+    font-style: italic;
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .person-page-cards {
+        padding: var(--space-lg);
+    }
+
+    .person-page-cards .person-header h1 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats-cards .stat-value {
+        font-size: var(--font-size-2xl);
+    }
+
+    .content-card {
+        padding: var(--space-lg);
+    }
+
+    #places-map {
+        height: 250px;
+    }
+}
