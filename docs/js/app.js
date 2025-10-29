@@ -1,12 +1,11 @@
 // HerData - MapLibre GL JS Implementation
 // Interactive map visualization with filtering
 
-import { Timeline } from './timeline.js';
+import { GlobalSearch } from "./search.js";
 
 let map;
 let allPersons = [];
 let filteredPersons = [];
-let timeline = null;
 let temporalFilter = null;  // { start: year, end: year }
 
 // Tooltip variables (accessible to all event handlers)
@@ -87,6 +86,15 @@ async function init() {
     } catch (error) {
         showError('Initialisierung fehlgeschlagen: ' + error.message);
         log.error('Init failed: ' + error.message);
+    }
+}
+
+// Initialize global search
+let globalSearch = null;
+function initSearch() {
+    if (allPersons.length > 0 && !globalSearch) {
+        globalSearch = new GlobalSearch(allPersons);
+        console.log("🔍 Global search initialized");
     }
 }
 
