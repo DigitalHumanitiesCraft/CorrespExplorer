@@ -1,0 +1,6239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RA_NDB_DATIERUNGEN>
+  <ITEM num="1">
+    <ID>1906</ID>
+    <LFDNR>333</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1806</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="2">
+    <ID>1906</ID>
+    <LFDNR>30532</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1887</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="3">
+    <ID>3251</ID>
+    <LFDNR>30204</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1877</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="4">
+    <ID>3251</ID>
+    <LFDNR>5</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="5">
+    <ID>35204</ID>
+    <LFDNR>30359</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1830</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="6">
+    <ID>35204</ID>
+    <LFDNR>160</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1757</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="7">
+    <ID>35217</ID>
+    <LFDNR>26512</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1777/78</FREITEXT>
+  </ITEM>
+  <ITEM num="8">
+    <ID>35217</ID>
+    <LFDNR>56711</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="9">
+    <ID>35239</ID>
+    <LFDNR>370</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="10">
+    <ID>35239</ID>
+    <LFDNR>30569</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="11">
+    <ID>35267</ID>
+    <LFDNR>388</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="12">
+    <ID>35267</ID>
+    <LFDNR>30587</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="13">
+    <ID>35289</ID>
+    <LFDNR>24059</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1745</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="14">
+    <ID>35391</ID>
+    <LFDNR>34347</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1867</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="15">
+    <ID>35391</ID>
+    <LFDNR>4148</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1793</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="16">
+    <ID>35445</ID>
+    <LFDNR>26819</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1751</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="17">
+    <ID>35445</ID>
+    <LFDNR>57018</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="18">
+    <ID>35474</ID>
+    <LFDNR>60455</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="19">
+    <ID>35474</ID>
+    <LFDNR>34390</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1825</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="20">
+    <ID>35536</ID>
+    <LFDNR>33223</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1824</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="21">
+    <ID>35536</ID>
+    <LFDNR>64762</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1737</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="22">
+    <ID>35642</ID>
+    <LFDNR>25273</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>19</TAG>
+    <MONAT>10</MONAT>
+    <JAHR>1760</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="23">
+    <ID>35642</ID>
+    <LFDNR>55472</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>15</TAG>
+    <MONAT>11</MONAT>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="24">
+    <ID>35665</ID>
+    <LFDNR>63176</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="25">
+    <ID>35705</ID>
+    <LFDNR>3102</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1732</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="26">
+    <ID>35705</ID>
+    <LFDNR>33301</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1820</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="27">
+    <ID>35710</ID>
+    <LFDNR>33303</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1877</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="28">
+    <ID>35710</ID>
+    <LFDNR>3104</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1805</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="29">
+    <ID>35729</ID>
+    <LFDNR>33313</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="30">
+    <ID>35729</ID>
+    <LFDNR>3114</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1763</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="31">
+    <ID>35757</ID>
+    <LFDNR>78561</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1760</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="32">
+    <ID>35757</ID>
+    <LFDNR>33328</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1825</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="33">
+    <ID>35764</ID>
+    <LFDNR>58788</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1845</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="34">
+    <ID>35764</ID>
+    <LFDNR>28589</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="35">
+    <ID>35792</ID>
+    <LFDNR>60449</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1802</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="36">
+    <ID>35842</ID>
+    <LFDNR>34238</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="37">
+    <ID>35842</ID>
+    <LFDNR>4039</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1759</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="38">
+    <ID>35896</ID>
+    <LFDNR>41665</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1806</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="39">
+    <ID>35896</ID>
+    <LFDNR>11466</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1738</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="40">
+    <ID>35942</ID>
+    <LFDNR>34281</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1858</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="41">
+    <ID>35942</ID>
+    <LFDNR>4082</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="42">
+    <ID>35961</ID>
+    <LFDNR>34294</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1866</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="43">
+    <ID>35961</ID>
+    <LFDNR>4095</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="44">
+    <ID>36008</ID>
+    <LFDNR>61103</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1831-1835</FREITEXT>
+  </ITEM>
+  <ITEM num="45">
+    <ID>36008</ID>
+    <LFDNR>43636</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1858</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="46">
+    <ID>36025</ID>
+    <LFDNR>37744</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="47">
+    <ID>36025</ID>
+    <LFDNR>77750</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1784</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="48">
+    <ID>36088</ID>
+    <LFDNR>63977</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1803</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="49">
+    <ID>36088</ID>
+    <LFDNR>7586</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1750</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="50">
+    <ID>36109</ID>
+    <LFDNR>37799</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1884</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="51">
+    <ID>36109</ID>
+    <LFDNR>7600</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1795</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="52">
+    <ID>36123</ID>
+    <LFDNR>7606</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>12</TAG>
+    <MONAT>8</MONAT>
+    <JAHR>1750</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="53">
+    <ID>36123</ID>
+    <LFDNR>37805</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>26</TAG>
+    <MONAT>10</MONAT>
+    <JAHR>1802</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="54">
+    <ID>36134</ID>
+    <LFDNR>11541</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1748</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="55">
+    <ID>36134</ID>
+    <LFDNR>41740</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1822</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="56">
+    <ID>36186</ID>
+    <LFDNR>9126</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="57">
+    <ID>36186</ID>
+    <LFDNR>80178</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1826</JAHR>
+    <UNBESTIMMT>vor</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="58">
+    <ID>36539</ID>
+    <LFDNR>8942</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1742</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="59">
+    <ID>36539</ID>
+    <LFDNR>60633</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1799</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="60">
+    <ID>36539</ID>
+    <LFDNR>39141</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1817</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="61">
+    <ID>36546</ID>
+    <LFDNR>39143</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1836</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="62">
+    <ID>36546</ID>
+    <LFDNR>8944</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1754</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="63">
+    <ID>36565</ID>
+    <LFDNR>39154</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1794</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="64">
+    <ID>36565</ID>
+    <LFDNR>8955</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1737</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="65">
+    <ID>36587</ID>
+    <LFDNR>8967</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="66">
+    <ID>36587</ID>
+    <LFDNR>39166</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1871</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="67">
+    <ID>36610</ID>
+    <LFDNR>8982</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1728</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="68">
+    <ID>36610</ID>
+    <LFDNR>39181</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1808</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="69">
+    <ID>36658</ID>
+    <LFDNR>10439</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1750</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="70">
+    <ID>36658</ID>
+    <LFDNR>40638</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="71">
+    <ID>36846</ID>
+    <LFDNR>8397</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="72">
+    <ID>36846</ID>
+    <LFDNR>38596</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1869</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="73">
+    <ID>36847</ID>
+    <LFDNR>48300</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>19</TAG>
+    <MONAT>7</MONAT>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="74">
+    <ID>36847</ID>
+    <LFDNR>18101</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="75">
+    <ID>36886</ID>
+    <LFDNR>69449</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1806</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="76">
+    <ID>36954</ID>
+    <LFDNR>38675</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1836</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="77">
+    <ID>36954</ID>
+    <LFDNR>72105</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1760</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="78">
+    <ID>37057</ID>
+    <LFDNR>42972</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1822</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="79">
+    <ID>37057</ID>
+    <LFDNR>12773</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1760</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="80">
+    <ID>37119</ID>
+    <LFDNR>8594</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>15</TAG>
+    <MONAT>4</MONAT>
+    <JAHR>1752</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="81">
+    <ID>37119</ID>
+    <LFDNR>38793</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>20</TAG>
+    <MONAT>8</MONAT>
+    <JAHR>1812</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="82">
+    <ID>37150</ID>
+    <LFDNR>8618</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1759</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="83">
+    <ID>37229</ID>
+    <LFDNR>9863</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1748</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="84">
+    <ID>37229</ID>
+    <LFDNR>40062</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1836</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="85">
+    <ID>37233</ID>
+    <LFDNR>11661</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1781</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="86">
+    <ID>37233</ID>
+    <LFDNR>41860</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1858</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="87">
+    <ID>37253</ID>
+    <LFDNR>9875</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="88">
+    <ID>37365</ID>
+    <LFDNR>40142</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1822</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="89">
+    <ID>37365</ID>
+    <LFDNR>9943</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="90">
+    <ID>37403</ID>
+    <LFDNR>40172</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="91">
+    <ID>37403</ID>
+    <LFDNR>9973</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1746</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="92">
+    <ID>37408</ID>
+    <LFDNR>40173</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="93">
+    <ID>37408</ID>
+    <LFDNR>9974</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1788</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="94">
+    <ID>37557</ID>
+    <LFDNR>40271</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1832</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="95">
+    <ID>37557</ID>
+    <LFDNR>10072</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1755</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="96">
+    <ID>37674</ID>
+    <LFDNR>40361</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1850</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="97">
+    <ID>37674</ID>
+    <LFDNR>10162</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1781</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="98">
+    <ID>37740</ID>
+    <LFDNR>40403</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1830</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="99">
+    <ID>37740</ID>
+    <LFDNR>10204</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1754</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="100">
+    <ID>37802</ID>
+    <LFDNR>40449</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1841</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="101">
+    <ID>37802</ID>
+    <LFDNR>10250</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1776</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="102">
+    <ID>38021</ID>
+    <LFDNR>40591</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1816</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="103">
+    <ID>38021</ID>
+    <LFDNR>10392</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1749</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="104">
+    <ID>38046</ID>
+    <LFDNR>72804</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1747</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="105">
+    <ID>38046</ID>
+    <LFDNR>72805</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="106">
+    <ID>38099</ID>
+    <LFDNR>9267</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1764</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="107">
+    <ID>38099</ID>
+    <LFDNR>39466</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1821</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="108">
+    <ID>38170</ID>
+    <LFDNR>24566</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1754</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="109">
+    <ID>38170</ID>
+    <LFDNR>54765</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1803</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="110">
+    <ID>38302</ID>
+    <LFDNR>82345</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1807</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="111">
+    <ID>38302</ID>
+    <LFDNR>9400</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1732</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="112">
+    <ID>38360</ID>
+    <LFDNR>39639</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="113">
+    <ID>38360</ID>
+    <LFDNR>9440</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1749</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="114">
+    <ID>38507</ID>
+    <LFDNR>24584</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1722</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="115">
+    <ID>38507</ID>
+    <LFDNR>54783</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1791</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="116">
+    <ID>38694</ID>
+    <LFDNR>39865</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="117">
+    <ID>38694</ID>
+    <LFDNR>9666</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1782</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="118">
+    <ID>38743</ID>
+    <LFDNR>9694</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1861</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="119">
+    <ID>38743</ID>
+    <LFDNR>71234</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="120">
+    <ID>38752</ID>
+    <LFDNR>9701</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="121">
+    <ID>38752</ID>
+    <LFDNR>39900</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1816</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="122">
+    <ID>38832</ID>
+    <LFDNR>71004</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1802</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="123">
+    <ID>38834</ID>
+    <LFDNR>39951</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1803</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="124">
+    <ID>38834</ID>
+    <LFDNR>9752</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1749</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="125">
+    <ID>39323</ID>
+    <LFDNR>71336</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1802</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="126">
+    <ID>39387</ID>
+    <LFDNR>57393</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="127">
+    <ID>39387</ID>
+    <LFDNR>27194</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1749</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="128">
+    <ID>39428</ID>
+    <LFDNR>33942</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1800</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="129">
+    <ID>39428</ID>
+    <LFDNR>3743</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1767</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="130">
+    <ID>39463</ID>
+    <LFDNR>27147</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="131">
+    <ID>39463</ID>
+    <LFDNR>57346</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1825</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="132">
+    <ID>39495</ID>
+    <LFDNR>3797</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="133">
+    <ID>39495</ID>
+    <LFDNR>33996</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1852</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="134">
+    <ID>39496</ID>
+    <LFDNR>33997</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1817</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="135">
+    <ID>39496</ID>
+    <LFDNR>3798</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="136">
+    <ID>39591</ID>
+    <LFDNR>3853</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1797</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="137">
+    <ID>39591</ID>
+    <LFDNR>34052</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="138">
+    <ID>39767</ID>
+    <LFDNR>84613</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1771</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="139">
+    <ID>39767</ID>
+    <LFDNR>84614</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1804</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="140">
+    <ID>39831</ID>
+    <LFDNR>4556</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1750</JAHR>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1750/51</FREITEXT>
+  </ITEM>
+  <ITEM num="141">
+    <ID>39831</ID>
+    <LFDNR>34755</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1801</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="142">
+    <ID>39863</ID>
+    <LFDNR>4800</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="143">
+    <ID>39863</ID>
+    <LFDNR>34999</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1849</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="144">
+    <ID>40032</ID>
+    <LFDNR>35121</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1867</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="145">
+    <ID>40032</ID>
+    <LFDNR>4922</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1786/88</FREITEXT>
+  </ITEM>
+  <ITEM num="146">
+    <ID>40034</ID>
+    <LFDNR>35123</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="147">
+    <ID>40034</ID>
+    <LFDNR>4924</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="148">
+    <ID>40186</ID>
+    <LFDNR>15452</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1769</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="149">
+    <ID>40186</ID>
+    <LFDNR>45651</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1850</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="150">
+    <ID>40230</ID>
+    <LFDNR>5052</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="151">
+    <ID>40230</ID>
+    <LFDNR>35251</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="152">
+    <ID>40305</ID>
+    <LFDNR>16720</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1769</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="153">
+    <ID>40305</ID>
+    <LFDNR>46919</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="154">
+    <ID>40613</ID>
+    <LFDNR>28482</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="155">
+    <ID>40613</ID>
+    <LFDNR>58681</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="156">
+    <ID>40634</ID>
+    <LFDNR>34843</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1810</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="157">
+    <ID>40634</ID>
+    <LFDNR>4644</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1743/48</FREITEXT>
+  </ITEM>
+  <ITEM num="158">
+    <ID>40704</ID>
+    <LFDNR>4674</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1751</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="159">
+    <ID>40704</ID>
+    <LFDNR>34873</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1820</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="160">
+    <ID>40812</ID>
+    <LFDNR>4727</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="161">
+    <ID>40812</ID>
+    <LFDNR>34926</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1808</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="162">
+    <ID>40923</ID>
+    <LFDNR>4777</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1759</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="163">
+    <ID>40923</ID>
+    <LFDNR>34976</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="164">
+    <ID>40959</ID>
+    <LFDNR>5764</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>24</TAG>
+    <MONAT>10</MONAT>
+    <JAHR>1739</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="165">
+    <ID>40959</ID>
+    <LFDNR>35963</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>10</TAG>
+    <MONAT>4</MONAT>
+    <JAHR>1807</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="166">
+    <ID>40967</ID>
+    <LFDNR>35969</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="167">
+    <ID>40967</ID>
+    <LFDNR>5770</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="168">
+    <ID>41249</ID>
+    <LFDNR>5924</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1804</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="169">
+    <ID>41249</ID>
+    <LFDNR>36123</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="170">
+    <ID>41280</ID>
+    <LFDNR>59275</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1799</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="171">
+    <ID>41280</ID>
+    <LFDNR>29076</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1741</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="172">
+    <ID>41340</ID>
+    <LFDNR>29040</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1767</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="173">
+    <ID>41340</ID>
+    <LFDNR>59239</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1836</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="174">
+    <ID>41351</ID>
+    <LFDNR>26583</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1769</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="175">
+    <ID>41351</ID>
+    <LFDNR>56782</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="176">
+    <ID>41365</ID>
+    <LFDNR>36173</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1822</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="177">
+    <ID>41365</ID>
+    <LFDNR>5974</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1749</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="178">
+    <ID>41387</ID>
+    <LFDNR>36187</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1818</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="179">
+    <ID>41387</ID>
+    <LFDNR>5988</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1745</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="180">
+    <ID>41414</ID>
+    <LFDNR>36199</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1822</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="181">
+    <ID>41414</ID>
+    <LFDNR>6000</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1752</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="182">
+    <ID>41571</ID>
+    <LFDNR>62955</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1802</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="183">
+    <ID>41693</ID>
+    <LFDNR>53437</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="184">
+    <ID>41693</ID>
+    <LFDNR>23238</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1764</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="185">
+    <ID>41719</ID>
+    <LFDNR>6155</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="186">
+    <ID>41719</ID>
+    <LFDNR>36354</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1838</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="187">
+    <ID>41853</ID>
+    <LFDNR>35534</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1846</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="188">
+    <ID>41853</ID>
+    <LFDNR>5335</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1790/92</FREITEXT>
+  </ITEM>
+  <ITEM num="189">
+    <ID>41919</ID>
+    <LFDNR>24400</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="190">
+    <ID>41919</ID>
+    <LFDNR>54599</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1842</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="191">
+    <ID>42159</ID>
+    <LFDNR>5492</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1791</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="192">
+    <ID>42159</ID>
+    <LFDNR>35691</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1839</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="193">
+    <ID>42250</ID>
+    <LFDNR>5545</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1771</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="194">
+    <ID>42250</ID>
+    <LFDNR>35744</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="195">
+    <ID>42254</ID>
+    <LFDNR>54815</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <UNBESTIMMT>vor</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="196">
+    <ID>42336</ID>
+    <LFDNR>78251</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="197">
+    <ID>42336</ID>
+    <LFDNR>78249</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1751</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="198">
+    <ID>42398</ID>
+    <LFDNR>3904</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1746</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="199">
+    <ID>42398</ID>
+    <LFDNR>34103</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1808</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="200">
+    <ID>42448</ID>
+    <LFDNR>59683</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1871</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="201">
+    <ID>42448</ID>
+    <LFDNR>29484</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="202">
+    <ID>42449</ID>
+    <LFDNR>34134</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1854</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="203">
+    <ID>42449</ID>
+    <LFDNR>3935</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="204">
+    <ID>42472</ID>
+    <LFDNR>58718</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1836</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="205">
+    <ID>42472</ID>
+    <LFDNR>28519</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1784</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="206">
+    <ID>42572</ID>
+    <LFDNR>15596</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1751</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="207">
+    <ID>42572</ID>
+    <LFDNR>45795</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1837</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="208">
+    <ID>42797</ID>
+    <LFDNR>16415</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="209">
+    <ID>42797</ID>
+    <LFDNR>46614</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1862</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="210">
+    <ID>42805</ID>
+    <LFDNR>5289</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1782</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="211">
+    <ID>42805</ID>
+    <LFDNR>35488</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="212">
+    <ID>42809</ID>
+    <LFDNR>35491</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="213">
+    <ID>42809</ID>
+    <LFDNR>5292</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1801</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="214">
+    <ID>42859</ID>
+    <LFDNR>65695</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1754</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="215">
+    <ID>42859</ID>
+    <LFDNR>65696</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1819</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="216">
+    <ID>42889</ID>
+    <LFDNR>5635</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1745</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="217">
+    <ID>42889</ID>
+    <LFDNR>35834</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1811</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="218">
+    <ID>42959</ID>
+    <LFDNR>35866</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>27</TAG>
+    <MONAT>6</MONAT>
+    <JAHR>1849</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="219">
+    <ID>42959</ID>
+    <LFDNR>5667</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1777</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="220">
+    <ID>42965</ID>
+    <LFDNR>5671</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1757</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="221">
+    <ID>42965</ID>
+    <LFDNR>35870</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1840</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="222">
+    <ID>43000</ID>
+    <LFDNR>35895</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>20</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="223">
+    <ID>43000</ID>
+    <LFDNR>5696</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>4</TAG>
+    <MONAT>4</MONAT>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="224">
+    <ID>43025</ID>
+    <LFDNR>35909</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="225">
+    <ID>43025</ID>
+    <LFDNR>5710</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="226">
+    <ID>43026</ID>
+    <LFDNR>25244</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1738</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="227">
+    <ID>43026</ID>
+    <LFDNR>55443</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1808</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="228">
+    <ID>43039</ID>
+    <LFDNR>54111</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1866</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="229">
+    <ID>43039</ID>
+    <LFDNR>23912</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="230">
+    <ID>43042</ID>
+    <LFDNR>55712</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1852</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="231">
+    <ID>43042</ID>
+    <LFDNR>25513</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="232">
+    <ID>43043</ID>
+    <LFDNR>25515</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1781</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="233">
+    <ID>43043</ID>
+    <LFDNR>55714</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="234">
+    <ID>43051</ID>
+    <LFDNR>23660</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1784</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="235">
+    <ID>43051</ID>
+    <LFDNR>53859</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1858</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="236">
+    <ID>43060</ID>
+    <LFDNR>23663</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="237">
+    <ID>43060</ID>
+    <LFDNR>53862</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1852</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="238">
+    <ID>43070</ID>
+    <LFDNR>6336</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>6</TAG>
+    <MONAT>7</MONAT>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="239">
+    <ID>43070</ID>
+    <LFDNR>36535</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>15</TAG>
+    <MONAT>10</MONAT>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="240">
+    <ID>43073</ID>
+    <LFDNR>23605</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="241">
+    <ID>43073</ID>
+    <LFDNR>53804</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="242">
+    <ID>43086</ID>
+    <LFDNR>36819</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="243">
+    <ID>43086</ID>
+    <LFDNR>6620</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="244">
+    <ID>43101</ID>
+    <LFDNR>11403</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="245">
+    <ID>43101</ID>
+    <LFDNR>41602</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1862</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="246">
+    <ID>43103</ID>
+    <LFDNR>6627</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1797</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="247">
+    <ID>43103</ID>
+    <LFDNR>36826</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1849</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="248">
+    <ID>43116</ID>
+    <LFDNR>36834</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1852</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="249">
+    <ID>43116</ID>
+    <LFDNR>6635</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1782</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="250">
+    <ID>43123</ID>
+    <LFDNR>41623</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1815</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="251">
+    <ID>43123</ID>
+    <LFDNR>11424</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="252">
+    <ID>43138</ID>
+    <LFDNR>6648</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="253">
+    <ID>43138</ID>
+    <LFDNR>36847</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1834</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="254">
+    <ID>43159</ID>
+    <LFDNR>6656</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="255">
+    <ID>43159</ID>
+    <LFDNR>36855</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1819</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="256">
+    <ID>43181</ID>
+    <LFDNR>36866</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1834</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="257">
+    <ID>43181</ID>
+    <LFDNR>6667</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1769</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="258">
+    <ID>43215</ID>
+    <LFDNR>77602</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1856</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="259">
+    <ID>43215</ID>
+    <LFDNR>77593</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="260">
+    <ID>43252</ID>
+    <LFDNR>36908</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1869</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="261">
+    <ID>43252</ID>
+    <LFDNR>6709</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="262">
+    <ID>43260</ID>
+    <LFDNR>48328</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1806</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="263">
+    <ID>43260</ID>
+    <LFDNR>18129</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1770</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="264">
+    <ID>43273</ID>
+    <LFDNR>14005</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>20</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="265">
+    <ID>43273</ID>
+    <LFDNR>44204</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>3</TAG>
+    <MONAT>7</MONAT>
+    <JAHR>1816</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="266">
+    <ID>43298</ID>
+    <LFDNR>28541</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1769</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="267">
+    <ID>43298</ID>
+    <LFDNR>58740</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="268">
+    <ID>43337</ID>
+    <LFDNR>6761</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1787</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="269">
+    <ID>43337</ID>
+    <LFDNR>36960</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1835</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="270">
+    <ID>43346</ID>
+    <LFDNR>36966</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1848</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="271">
+    <ID>43346</ID>
+    <LFDNR>6767</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="272">
+    <ID>43352</ID>
+    <LFDNR>11588</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1783</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="273">
+    <ID>43352</ID>
+    <LFDNR>41787</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1856</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="274">
+    <ID>43377</ID>
+    <LFDNR>36987</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1823</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="275">
+    <ID>43377</ID>
+    <LFDNR>78287</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="276">
+    <ID>43404</ID>
+    <LFDNR>24128</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1755</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="277">
+    <ID>43404</ID>
+    <LFDNR>54327</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1832</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="278">
+    <ID>43518</ID>
+    <LFDNR>37084</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1829</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="279">
+    <ID>43518</ID>
+    <LFDNR>6885</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1776</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="280">
+    <ID>43566</ID>
+    <LFDNR>43364</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>28</TAG>
+    <MONAT>9</MONAT>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="281">
+    <ID>43566</ID>
+    <LFDNR>13165</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>21</TAG>
+    <MONAT>10</MONAT>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="282">
+    <ID>43592</ID>
+    <LFDNR>29386</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1770</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="283">
+    <ID>43592</ID>
+    <LFDNR>59585</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1812</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="284">
+    <ID>43598</ID>
+    <LFDNR>6932</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1781</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="285">
+    <ID>43598</ID>
+    <LFDNR>37131</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1842</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="286">
+    <ID>43602</ID>
+    <LFDNR>37133</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1841</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="287">
+    <ID>43602</ID>
+    <LFDNR>6934</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>14</TAG>
+    <MONAT>2</MONAT>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="288">
+    <ID>43624</ID>
+    <LFDNR>6948</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="289">
+    <ID>43624</ID>
+    <LFDNR>37147</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="290">
+    <ID>43649</ID>
+    <LFDNR>72732</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="291">
+    <ID>43649</ID>
+    <LFDNR>72733</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1809</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="292">
+    <ID>43658</ID>
+    <LFDNR>37170</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1845</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="293">
+    <ID>43658</ID>
+    <LFDNR>6971</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="294">
+    <ID>43660</ID>
+    <LFDNR>6973</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="295">
+    <ID>43660</ID>
+    <LFDNR>37172</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="296">
+    <ID>43664</ID>
+    <LFDNR>37173</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1832</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="297">
+    <ID>43664</ID>
+    <LFDNR>6974</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1745</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="298">
+    <ID>43682</ID>
+    <LFDNR>37183</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1811</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="299">
+    <ID>43682</ID>
+    <LFDNR>6984</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="300">
+    <ID>43683</ID>
+    <LFDNR>17275</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1776</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="301">
+    <ID>43683</ID>
+    <LFDNR>47474</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="302">
+    <ID>43687</ID>
+    <LFDNR>37186</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="303">
+    <ID>43687</ID>
+    <LFDNR>6987</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="304">
+    <ID>43688</ID>
+    <LFDNR>54341</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1875</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="305">
+    <ID>43688</ID>
+    <LFDNR>24142</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1800</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="306">
+    <ID>43690</ID>
+    <LFDNR>6989</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="307">
+    <ID>43690</ID>
+    <LFDNR>37188</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1830</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="308">
+    <ID>43705</ID>
+    <LFDNR>58127</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1806</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="309">
+    <ID>43705</ID>
+    <LFDNR>27928</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1748</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="310">
+    <ID>43722</ID>
+    <LFDNR>6345</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="311">
+    <ID>43722</ID>
+    <LFDNR>36544</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1860</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="312">
+    <ID>43735</ID>
+    <LFDNR>23263</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1771</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="313">
+    <ID>43735</ID>
+    <LFDNR>53462</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1834</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="314">
+    <ID>43753</ID>
+    <LFDNR>58294</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="315">
+    <ID>43753</ID>
+    <LFDNR>28095</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>1</TAG>
+    <MONAT>10</MONAT>
+    <JAHR>1759</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="316">
+    <ID>43766</ID>
+    <LFDNR>6372</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>13</TAG>
+    <MONAT>2</MONAT>
+    <JAHR>1752</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="317">
+    <ID>43766</ID>
+    <LFDNR>36571</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>7</TAG>
+    <MONAT>9</MONAT>
+    <JAHR>1807</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="318">
+    <ID>43767</ID>
+    <LFDNR>36572</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1866</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="319">
+    <ID>43767</ID>
+    <LFDNR>6373</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1799</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="320">
+    <ID>43775</ID>
+    <LFDNR>36578</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1836</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="321">
+    <ID>43775</ID>
+    <LFDNR>6379</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1772</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="322">
+    <ID>43779</ID>
+    <LFDNR>6382</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="323">
+    <ID>43779</ID>
+    <LFDNR>36581</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1816</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="324">
+    <ID>43781</ID>
+    <LFDNR>6383</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1731</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="325">
+    <ID>43781</ID>
+    <LFDNR>36582</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1808</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="326">
+    <ID>43782</ID>
+    <LFDNR>36583</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1872</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="327">
+    <ID>43782</ID>
+    <LFDNR>6384</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="328">
+    <ID>43787</ID>
+    <LFDNR>69511</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1809</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="329">
+    <ID>43805</ID>
+    <LFDNR>58130</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1802</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="330">
+    <ID>43805</ID>
+    <LFDNR>27931</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="331">
+    <ID>43841</ID>
+    <LFDNR>36620</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1841</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="332">
+    <ID>43841</ID>
+    <LFDNR>6421</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="333">
+    <ID>43848</ID>
+    <LFDNR>6427</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1793</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="334">
+    <ID>43848</ID>
+    <LFDNR>36626</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1869</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="335">
+    <ID>43849</ID>
+    <LFDNR>36627</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="336">
+    <ID>43849</ID>
+    <LFDNR>6428</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1763</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="337">
+    <ID>43868</ID>
+    <LFDNR>6439</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1777</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="338">
+    <ID>43868</ID>
+    <LFDNR>36638</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1853</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="339">
+    <ID>43872</ID>
+    <LFDNR>54298</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="340">
+    <ID>43872</ID>
+    <LFDNR>24099</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1767</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="341">
+    <ID>43892</ID>
+    <LFDNR>36653</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1812</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="342">
+    <ID>43892</ID>
+    <LFDNR>6454</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="343">
+    <ID>43894</ID>
+    <LFDNR>6455</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1761</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="344">
+    <ID>43894</ID>
+    <LFDNR>36654</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="345">
+    <ID>43920</ID>
+    <LFDNR>36669</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="346">
+    <ID>43920</ID>
+    <LFDNR>6470</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1763</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="347">
+    <ID>43928</ID>
+    <LFDNR>36675</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1851</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="348">
+    <ID>43928</ID>
+    <LFDNR>6476</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>7</TAG>
+    <MONAT>9</MONAT>
+    <JAHR>1781</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="349">
+    <ID>43958</ID>
+    <LFDNR>59019</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="350">
+    <ID>43958</ID>
+    <LFDNR>28820</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1776</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="351">
+    <ID>43961</ID>
+    <LFDNR>36693</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="352">
+    <ID>43961</ID>
+    <LFDNR>6494</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="353">
+    <ID>43984</ID>
+    <LFDNR>6506</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>28</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1750</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="354">
+    <ID>43984</ID>
+    <LFDNR>36705</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>15</TAG>
+    <MONAT>9</MONAT>
+    <JAHR>1809</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="355">
+    <ID>44000</ID>
+    <LFDNR>36713</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1851</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="356">
+    <ID>44000</ID>
+    <LFDNR>6514</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1769</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="357">
+    <ID>44010</ID>
+    <LFDNR>36722</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1829</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="358">
+    <ID>44010</ID>
+    <LFDNR>6523</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1761</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="359">
+    <ID>44017</ID>
+    <LFDNR>6529</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="360">
+    <ID>44017</ID>
+    <LFDNR>36728</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1841</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="361">
+    <ID>44018</ID>
+    <LFDNR>36729</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1854</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="362">
+    <ID>44018</ID>
+    <LFDNR>6530</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1799</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="363">
+    <ID>44029</ID>
+    <LFDNR>24107</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>25</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1777</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="364">
+    <ID>44029</ID>
+    <LFDNR>54306</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>10</TAG>
+    <MONAT>7</MONAT>
+    <JAHR>1848</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="365">
+    <ID>44058</ID>
+    <LFDNR>6559</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="366">
+    <ID>44058</ID>
+    <LFDNR>36758</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="367">
+    <ID>44069</ID>
+    <LFDNR>6566</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="368">
+    <ID>44069</ID>
+    <LFDNR>36765</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1860</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="369">
+    <ID>44071</ID>
+    <LFDNR>13836</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1770</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="370">
+    <ID>44071</ID>
+    <LFDNR>44035</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1837</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="371">
+    <ID>44079</ID>
+    <LFDNR>36770</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1845</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="372">
+    <ID>44079</ID>
+    <LFDNR>6571</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="373">
+    <ID>44081</ID>
+    <LFDNR>28074</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1764</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="374">
+    <ID>44081</ID>
+    <LFDNR>58273</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1829</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="375">
+    <ID>44098</ID>
+    <LFDNR>36783</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1829</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="376">
+    <ID>44098</ID>
+    <LFDNR>6584</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1766</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="377">
+    <ID>44107</ID>
+    <LFDNR>36789</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1806</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="378">
+    <ID>44107</ID>
+    <LFDNR>6590</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1762</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="379">
+    <ID>44110</ID>
+    <LFDNR>82344</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1772</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="380">
+    <ID>44110</ID>
+    <LFDNR>70384</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="381">
+    <ID>44131</ID>
+    <LFDNR>6605</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1743</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="382">
+    <ID>44131</ID>
+    <LFDNR>36804</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1784</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="383">
+    <ID>44141</ID>
+    <LFDNR>24112</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="384">
+    <ID>44141</ID>
+    <LFDNR>54311</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1838</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="385">
+    <ID>44158</ID>
+    <LFDNR>37817</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1817</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="386">
+    <ID>44158</ID>
+    <LFDNR>7618</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="387">
+    <ID>44170</ID>
+    <LFDNR>28085</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1761</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="388">
+    <ID>44170</ID>
+    <LFDNR>58284</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="389">
+    <ID>44190</ID>
+    <LFDNR>13071</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1757</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="390">
+    <ID>44190</ID>
+    <LFDNR>43270</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1805</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="391">
+    <ID>44199</ID>
+    <LFDNR>37848</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="392">
+    <ID>44199</ID>
+    <LFDNR>7649</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="393">
+    <ID>44207</ID>
+    <LFDNR>7654</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1777</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="394">
+    <ID>44207</ID>
+    <LFDNR>37853</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1863</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="395">
+    <ID>44209</ID>
+    <LFDNR>37854</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1883</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="396">
+    <ID>44209</ID>
+    <LFDNR>7655</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1803</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="397">
+    <ID>44225</ID>
+    <LFDNR>7665</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1761</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="398">
+    <ID>44225</ID>
+    <LFDNR>37864</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="399">
+    <ID>44246</ID>
+    <LFDNR>15460</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>7</TAG>
+    <MONAT>6</MONAT>
+    <JAHR>1777</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="400">
+    <ID>44246</ID>
+    <LFDNR>45659</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>4</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1852</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="401">
+    <ID>44248</ID>
+    <LFDNR>15462</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>29</TAG>
+    <MONAT>6</MONAT>
+    <JAHR>1755</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="402">
+    <ID>44248</ID>
+    <LFDNR>45661</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>14</TAG>
+    <MONAT>6</MONAT>
+    <JAHR>1813</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="403">
+    <ID>44255</ID>
+    <LFDNR>26029</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1763</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="404">
+    <ID>44255</ID>
+    <LFDNR>56228</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1832</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="405">
+    <ID>44266</ID>
+    <LFDNR>12686</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1788</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="406">
+    <ID>44266</ID>
+    <LFDNR>42885</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1815</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="407">
+    <ID>44275</ID>
+    <LFDNR>37892</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1858</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="408">
+    <ID>44275</ID>
+    <LFDNR>7693</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="409">
+    <ID>44287</ID>
+    <LFDNR>37901</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1810</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="410">
+    <ID>44287</ID>
+    <LFDNR>7702</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1748</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="411">
+    <ID>44294</ID>
+    <LFDNR>37905</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="412">
+    <ID>44294</ID>
+    <LFDNR>7706</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1736</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="413">
+    <ID>44311</ID>
+    <LFDNR>25758</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1770</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="414">
+    <ID>44311</ID>
+    <LFDNR>55957</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1842</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="415">
+    <ID>44314</ID>
+    <LFDNR>88233</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="416">
+    <ID>44314</ID>
+    <LFDNR>16665</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="417">
+    <ID>44336</ID>
+    <LFDNR>7734</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1761</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="418">
+    <ID>44336</ID>
+    <LFDNR>37933</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1821</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="419">
+    <ID>44355</ID>
+    <LFDNR>58295</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>18</TAG>
+    <MONAT>2</MONAT>
+    <JAHR>1807</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="420">
+    <ID>44355</ID>
+    <LFDNR>28096</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>6</TAG>
+    <MONAT>12</MONAT>
+    <JAHR>1730</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="421">
+    <ID>44384</ID>
+    <LFDNR>7760</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1788</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="422">
+    <ID>44384</ID>
+    <LFDNR>37959</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1868</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="423">
+    <ID>44396</ID>
+    <LFDNR>71290</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1796-1799</FREITEXT>
+  </ITEM>
+  <ITEM num="424">
+    <ID>44412</ID>
+    <LFDNR>37980</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1830</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="425">
+    <ID>44412</ID>
+    <LFDNR>7781</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1801</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="426">
+    <ID>44415</ID>
+    <LFDNR>37981</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="427">
+    <ID>44415</ID>
+    <LFDNR>7782</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="428">
+    <ID>44422</ID>
+    <LFDNR>13592</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1772</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="429">
+    <ID>44422</ID>
+    <LFDNR>43791</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1856</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="430">
+    <ID>44429</ID>
+    <LFDNR>37991</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="431">
+    <ID>44429</ID>
+    <LFDNR>7792</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="432">
+    <ID>44502</ID>
+    <LFDNR>53048</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="433">
+    <ID>44502</ID>
+    <LFDNR>22849</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1788</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="434">
+    <ID>44523</ID>
+    <LFDNR>7868</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="435">
+    <ID>44523</ID>
+    <LFDNR>38067</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1816</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="436">
+    <ID>44537</ID>
+    <LFDNR>38077</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1823</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="437">
+    <ID>44537</ID>
+    <LFDNR>7878</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1734</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="438">
+    <ID>44542</ID>
+    <LFDNR>12648</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1805</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="439">
+    <ID>44542</ID>
+    <LFDNR>42847</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="440">
+    <ID>44543</ID>
+    <LFDNR>25847</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1777/78</FREITEXT>
+  </ITEM>
+  <ITEM num="441">
+    <ID>44543</ID>
+    <LFDNR>56046</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1842</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="442">
+    <ID>44575</ID>
+    <LFDNR>38100</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1872</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="443">
+    <ID>44575</ID>
+    <LFDNR>7901</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="444">
+    <ID>44582</ID>
+    <LFDNR>7906</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="445">
+    <ID>44582</ID>
+    <LFDNR>38105</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1838</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="446">
+    <ID>44589</ID>
+    <LFDNR>7912</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="447">
+    <ID>44589</ID>
+    <LFDNR>71509</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1834</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="448">
+    <ID>44593</ID>
+    <LFDNR>12949</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="449">
+    <ID>44593</ID>
+    <LFDNR>43148</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1838</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="450">
+    <ID>44630</ID>
+    <LFDNR>7938</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1788</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="451">
+    <ID>44686</ID>
+    <LFDNR>7982</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="452">
+    <ID>44686</ID>
+    <LFDNR>38181</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1811</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="453">
+    <ID>44692</ID>
+    <LFDNR>38185</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="454">
+    <ID>44692</ID>
+    <LFDNR>7986</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="455">
+    <ID>44708</ID>
+    <LFDNR>38198</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1834</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="456">
+    <ID>44708</ID>
+    <LFDNR>7999</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="457">
+    <ID>44716</ID>
+    <LFDNR>8005</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1764</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="458">
+    <ID>44718</ID>
+    <LFDNR>38206</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1829</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="459">
+    <ID>44718</ID>
+    <LFDNR>8007</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1748</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="460">
+    <ID>44745</ID>
+    <LFDNR>38228</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="461">
+    <ID>44745</ID>
+    <LFDNR>8029</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="462">
+    <ID>44759</ID>
+    <LFDNR>38238</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1880</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="463">
+    <ID>44759</ID>
+    <LFDNR>8039</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1797</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="464">
+    <ID>44761</ID>
+    <LFDNR>38240</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="465">
+    <ID>44761</ID>
+    <LFDNR>8041</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1763</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="466">
+    <ID>44763</ID>
+    <LFDNR>38242</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1890</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="467">
+    <ID>44763</ID>
+    <LFDNR>8043</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1811</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="468">
+    <ID>44777</ID>
+    <LFDNR>46917</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="469">
+    <ID>44777</ID>
+    <LFDNR>16718</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1767</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="470">
+    <ID>44799</ID>
+    <LFDNR>38270</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1818</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="471">
+    <ID>44799</ID>
+    <LFDNR>8071</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1738</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="472">
+    <ID>44810</ID>
+    <LFDNR>54523</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1853</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="473">
+    <ID>44810</ID>
+    <LFDNR>24324</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="474">
+    <ID>44815</ID>
+    <LFDNR>42939</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1851</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="475">
+    <ID>44815</ID>
+    <LFDNR>12740</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1776</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="476">
+    <ID>44816</ID>
+    <LFDNR>38278</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1875</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="477">
+    <ID>44816</ID>
+    <LFDNR>8079</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="478">
+    <ID>44829</ID>
+    <LFDNR>38284</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1846</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="479">
+    <ID>44829</ID>
+    <LFDNR>8085</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="480">
+    <ID>44861</ID>
+    <LFDNR>38307</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1836</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="481">
+    <ID>44861</ID>
+    <LFDNR>8108</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1770</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="482">
+    <ID>44885</ID>
+    <LFDNR>27537</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1754</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="483">
+    <ID>44885</ID>
+    <LFDNR>57736</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="484">
+    <ID>44886</ID>
+    <LFDNR>38324</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1854</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="485">
+    <ID>44886</ID>
+    <LFDNR>8125</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="486">
+    <ID>44915</ID>
+    <LFDNR>38340</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1861</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="487">
+    <ID>44915</ID>
+    <LFDNR>8141</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1801</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="488">
+    <ID>44919</ID>
+    <LFDNR>59719</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1837</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="489">
+    <ID>44919</ID>
+    <LFDNR>29520</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1784</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="490">
+    <ID>44924</ID>
+    <LFDNR>58168</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1824</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="491">
+    <ID>44924</ID>
+    <LFDNR>27969</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="492">
+    <ID>44932</ID>
+    <LFDNR>16723</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1762</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="493">
+    <ID>44932</ID>
+    <LFDNR>46922</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1816</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="494">
+    <ID>44943</ID>
+    <LFDNR>58152</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1855</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="495">
+    <ID>44943</ID>
+    <LFDNR>27953</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="496">
+    <ID>44977</ID>
+    <LFDNR>38371</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="497">
+    <ID>44977</ID>
+    <LFDNR>8172</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1759</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="498">
+    <ID>45034</ID>
+    <LFDNR>37362</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1827</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="499">
+    <ID>45034</ID>
+    <LFDNR>7163</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1751</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="500">
+    <ID>45046</ID>
+    <LFDNR>55218</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1830</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="501">
+    <ID>45046</ID>
+    <LFDNR>25019</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1757</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="502">
+    <ID>45051</ID>
+    <LFDNR>48425</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>7</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1890</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="503">
+    <ID>45051</ID>
+    <LFDNR>18226</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>30</TAG>
+    <MONAT>9</MONAT>
+    <JAHR>1811</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="504">
+    <ID>45063</ID>
+    <LFDNR>37378</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="505">
+    <ID>45063</ID>
+    <LFDNR>7179</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="506">
+    <ID>45070</ID>
+    <LFDNR>54361</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1830</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="507">
+    <ID>45070</ID>
+    <LFDNR>24162</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="508">
+    <ID>45082</ID>
+    <LFDNR>7193</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1784</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="509">
+    <ID>45082</ID>
+    <LFDNR>37392</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1832</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="510">
+    <ID>45090</ID>
+    <LFDNR>37396</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>30</TAG>
+    <MONAT>7</MONAT>
+    <JAHR>1819</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="511">
+    <ID>45090</ID>
+    <LFDNR>7197</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>23</TAG>
+    <MONAT>11</MONAT>
+    <JAHR>1755</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="512">
+    <ID>45095</ID>
+    <LFDNR>65589</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1850</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="513">
+    <ID>45095</ID>
+    <LFDNR>7200</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="514">
+    <ID>45110</ID>
+    <LFDNR>7210</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1786/88</FREITEXT>
+  </ITEM>
+  <ITEM num="515">
+    <ID>45110</ID>
+    <LFDNR>37409</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1854</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="516">
+    <ID>45111</ID>
+    <LFDNR>53774</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1809</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="517">
+    <ID>45111</ID>
+    <LFDNR>23575</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1763</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="518">
+    <ID>45127</ID>
+    <LFDNR>7218</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>22</TAG>
+    <MONAT>11</MONAT>
+    <JAHR>1766</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="519">
+    <ID>45127</ID>
+    <LFDNR>37417</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>9</TAG>
+    <MONAT>7</MONAT>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="520">
+    <ID>45134</ID>
+    <LFDNR>41853</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1839</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="521">
+    <ID>45134</ID>
+    <LFDNR>11654</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1764</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="522">
+    <ID>45158</ID>
+    <LFDNR>37433</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1821</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="523">
+    <ID>45158</ID>
+    <LFDNR>7234</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1744</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="524">
+    <ID>45163</ID>
+    <LFDNR>7238</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1749</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="525">
+    <ID>45163</ID>
+    <LFDNR>37437</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1819</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="526">
+    <ID>45165</ID>
+    <LFDNR>7240</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="527">
+    <ID>45165</ID>
+    <LFDNR>37439</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1865</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="528">
+    <ID>45170</ID>
+    <LFDNR>37441</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1820</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="529">
+    <ID>45170</ID>
+    <LFDNR>7242</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1787</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="530">
+    <ID>45178</ID>
+    <LFDNR>7246</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1805</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="531">
+    <ID>45204</ID>
+    <LFDNR>37458</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1849</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="532">
+    <ID>45204</ID>
+    <LFDNR>7259</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1797</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="533">
+    <ID>45214</ID>
+    <LFDNR>59256</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>16</TAG>
+    <MONAT>4</MONAT>
+    <JAHR>1838</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="534">
+    <ID>45214</ID>
+    <LFDNR>29057</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>9</TAG>
+    <MONAT>7</MONAT>
+    <JAHR>1766</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="535">
+    <ID>45215</ID>
+    <LFDNR>42701</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>25</TAG>
+    <MONAT>8</MONAT>
+    <JAHR>1849</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="536">
+    <ID>45215</ID>
+    <LFDNR>12502</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>12</TAG>
+    <MONAT>6</MONAT>
+    <JAHR>1797</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="537">
+    <ID>45261</ID>
+    <LFDNR>26418</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1792</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="538">
+    <ID>45261</ID>
+    <LFDNR>56617</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="539">
+    <ID>45287</ID>
+    <LFDNR>7311</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="540">
+    <ID>45287</ID>
+    <LFDNR>37510</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1853</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="541">
+    <ID>45296</ID>
+    <LFDNR>37517</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1819</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="542">
+    <ID>45296</ID>
+    <LFDNR>7318</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1748</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="543">
+    <ID>45309</ID>
+    <LFDNR>37524</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1879</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="544">
+    <ID>45309</ID>
+    <LFDNR>7325</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1802</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="545">
+    <ID>45315</ID>
+    <LFDNR>7330</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="546">
+    <ID>45315</ID>
+    <LFDNR>37529</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1861</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="547">
+    <ID>45320</ID>
+    <LFDNR>12859</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="548">
+    <ID>45320</ID>
+    <LFDNR>43058</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1866</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="549">
+    <ID>45327</ID>
+    <LFDNR>7335</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="550">
+    <ID>45327</ID>
+    <LFDNR>37534</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1862</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="551">
+    <ID>45328</ID>
+    <LFDNR>7336</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="552">
+    <ID>45328</ID>
+    <LFDNR>37535</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1832</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="553">
+    <ID>45345</ID>
+    <LFDNR>25905</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="554">
+    <ID>45345</ID>
+    <LFDNR>56104</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1867</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="555">
+    <ID>45363</ID>
+    <LFDNR>7356</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1787</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="556">
+    <ID>45363</ID>
+    <LFDNR>37555</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1870</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="557">
+    <ID>45379</ID>
+    <LFDNR>27025</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1766</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="558">
+    <ID>45379</ID>
+    <LFDNR>57224</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1817</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="559">
+    <ID>45391</ID>
+    <LFDNR>37566</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>14</TAG>
+    <MONAT>5</MONAT>
+    <JAHR>1860</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="560">
+    <ID>45391</ID>
+    <LFDNR>7367</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>8</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1775</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="561">
+    <ID>45394</ID>
+    <LFDNR>7370</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>25</TAG>
+    <MONAT>12</MONAT>
+    <JAHR>1742</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="562">
+    <ID>45394</ID>
+    <LFDNR>37569</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>6</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1827</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="563">
+    <ID>45425</ID>
+    <LFDNR>7383</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1755</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="564">
+    <ID>45425</ID>
+    <LFDNR>37582</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1825</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="565">
+    <ID>45438</ID>
+    <LFDNR>37592</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1842</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="566">
+    <ID>45438</ID>
+    <LFDNR>7393</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1765</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="567">
+    <ID>45480</ID>
+    <LFDNR>54401</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1862</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="568">
+    <ID>45480</ID>
+    <LFDNR>24202</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="569">
+    <ID>45503</ID>
+    <LFDNR>42728</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1807</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="570">
+    <ID>45503</ID>
+    <LFDNR>12529</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="571">
+    <ID>45532</ID>
+    <LFDNR>24296</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1764</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="572">
+    <ID>45532</ID>
+    <LFDNR>54495</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="573">
+    <ID>45545</ID>
+    <LFDNR>24297</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1766</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="574">
+    <ID>45545</ID>
+    <LFDNR>54496</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1840</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="575">
+    <ID>45551</ID>
+    <LFDNR>37646</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1817</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="576">
+    <ID>45551</ID>
+    <LFDNR>7447</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1758</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="577">
+    <ID>45567</ID>
+    <LFDNR>37656</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1813</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="578">
+    <ID>45567</ID>
+    <LFDNR>7457</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1741</JAHR>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1741/51/54</FREITEXT>
+  </ITEM>
+  <ITEM num="579">
+    <ID>45574</ID>
+    <LFDNR>7461</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1785</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="580">
+    <ID>45574</ID>
+    <LFDNR>37660</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1855</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="581">
+    <ID>45592</ID>
+    <LFDNR>7469</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="582">
+    <ID>45592</ID>
+    <LFDNR>37668</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1809</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="583">
+    <ID>45610</ID>
+    <LFDNR>56999</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1840</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="584">
+    <ID>45610</ID>
+    <LFDNR>26800</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="585">
+    <ID>45611</ID>
+    <LFDNR>37677</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="586">
+    <ID>45611</ID>
+    <LFDNR>7478</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1766</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="587">
+    <ID>45618</ID>
+    <LFDNR>7484</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1792</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="588">
+    <ID>45618</ID>
+    <LFDNR>37683</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1877</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="589">
+    <ID>45619</ID>
+    <LFDNR>54873</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1814</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="590">
+    <ID>45619</ID>
+    <LFDNR>24674</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1749</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="591">
+    <ID>45623</ID>
+    <LFDNR>7486</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1763</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="592">
+    <ID>45623</ID>
+    <LFDNR>37685</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1809</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="593">
+    <ID>45628</ID>
+    <LFDNR>37688</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>10</TAG>
+    <MONAT>5</MONAT>
+    <JAHR>1834</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="594">
+    <ID>45628</ID>
+    <LFDNR>7489</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>11</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="595">
+    <ID>45635</ID>
+    <LFDNR>37693</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1856</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="596">
+    <ID>45635</ID>
+    <LFDNR>7494</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="597">
+    <ID>45680</ID>
+    <LFDNR>35927</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1832</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="598">
+    <ID>45680</ID>
+    <LFDNR>5728</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1771</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="599">
+    <ID>45684</ID>
+    <LFDNR>5730</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1752</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="600">
+    <ID>45684</ID>
+    <LFDNR>35929</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1815</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="601">
+    <ID>45707</ID>
+    <LFDNR>35939</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1822</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="602">
+    <ID>45707</ID>
+    <LFDNR>5740</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="603">
+    <ID>45710</ID>
+    <LFDNR>5741</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1759</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="604">
+    <ID>45710</ID>
+    <LFDNR>35940</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1829</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="605">
+    <ID>45711</ID>
+    <LFDNR>28605</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>26</TAG>
+    <MONAT>2</MONAT>
+    <JAHR>1751</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="606">
+    <ID>45711</ID>
+    <LFDNR>58804</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1811</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="607">
+    <ID>45712</ID>
+    <LFDNR>35941</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="608">
+    <ID>45712</ID>
+    <LFDNR>5742</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="609">
+    <ID>45714</ID>
+    <LFDNR>41513</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1842</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="610">
+    <ID>45714</ID>
+    <LFDNR>11314</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="611">
+    <ID>45721</ID>
+    <LFDNR>5747</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1758</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="612">
+    <ID>45721</ID>
+    <LFDNR>35946</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1840</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="613">
+    <ID>45726</ID>
+    <LFDNR>16383</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1768</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="614">
+    <ID>45726</ID>
+    <LFDNR>46582</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1834</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="615">
+    <ID>45745</ID>
+    <LFDNR>37214</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1860</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="616">
+    <ID>45745</ID>
+    <LFDNR>7015</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1784</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="617">
+    <ID>45769</ID>
+    <LFDNR>37224</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1820</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="618">
+    <ID>45769</ID>
+    <LFDNR>7025</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1769</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="619">
+    <ID>45772</ID>
+    <LFDNR>24146</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1742</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="620">
+    <ID>45772</ID>
+    <LFDNR>54345</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1820</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="621">
+    <ID>45773</ID>
+    <LFDNR>37226</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1821</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="622">
+    <ID>45773</ID>
+    <LFDNR>7027</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1754</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="623">
+    <ID>45775</ID>
+    <LFDNR>46610</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1851</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="624">
+    <ID>45775</ID>
+    <LFDNR>16411</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1780/83</FREITEXT>
+  </ITEM>
+  <ITEM num="625">
+    <ID>45783</ID>
+    <LFDNR>27527</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1763</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="626">
+    <ID>45783</ID>
+    <LFDNR>57726</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="627">
+    <ID>45814</ID>
+    <LFDNR>37252</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1852</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="628">
+    <ID>45814</ID>
+    <LFDNR>7053</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1792</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="629">
+    <ID>45830</ID>
+    <LFDNR>37263</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1855</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="630">
+    <ID>45830</ID>
+    <LFDNR>7064</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1781</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="631">
+    <ID>45836</ID>
+    <LFDNR>7069</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1755</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="632">
+    <ID>45836</ID>
+    <LFDNR>37268</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="633">
+    <ID>45841</ID>
+    <LFDNR>7070</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1741</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="634">
+    <ID>45841</ID>
+    <LFDNR>37269</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1807</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="635">
+    <ID>45905</ID>
+    <LFDNR>7109</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="636">
+    <ID>45905</ID>
+    <LFDNR>37308</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="637">
+    <ID>46017</ID>
+    <LFDNR>60580</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>um 1791-1812</FREITEXT>
+  </ITEM>
+  <ITEM num="638">
+    <ID>46093</ID>
+    <LFDNR>48299</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>16</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1869</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="639">
+    <ID>46093</ID>
+    <LFDNR>18100</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>12</TAG>
+    <MONAT>9</MONAT>
+    <JAHR>1792</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="640">
+    <ID>46094</ID>
+    <LFDNR>18099</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>2</TAG>
+    <MONAT>11</MONAT>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="641">
+    <ID>46094</ID>
+    <LFDNR>48298</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>16</TAG>
+    <MONAT>7</MONAT>
+    <JAHR>1868</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="642">
+    <ID>46251</ID>
+    <LFDNR>60671</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1812</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="643">
+    <ID>46251</ID>
+    <LFDNR>70326</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1774</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="644">
+    <ID>46263</ID>
+    <LFDNR>73508</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1888</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="645">
+    <ID>46263</ID>
+    <LFDNR>66082</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1799</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="646">
+    <ID>46811</ID>
+    <LFDNR>41364</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1834</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="647">
+    <ID>46811</ID>
+    <LFDNR>11165</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1759</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="648">
+    <ID>46882</ID>
+    <LFDNR>84015</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1871</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="649">
+    <ID>46882</ID>
+    <LFDNR>84014</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1794</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="650">
+    <ID>46898</ID>
+    <LFDNR>11212</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1760</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="651">
+    <ID>46898</ID>
+    <LFDNR>41411</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1829</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="652">
+    <ID>46921</ID>
+    <LFDNR>63195</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="653">
+    <ID>46921</ID>
+    <LFDNR>78267</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1781</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="654">
+    <ID>46921</ID>
+    <LFDNR>72472</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1837</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="655">
+    <ID>46926</ID>
+    <LFDNR>60968</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1800-1811</FREITEXT>
+  </ITEM>
+  <ITEM num="656">
+    <ID>46926</ID>
+    <LFDNR>11232</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="657">
+    <ID>46929</ID>
+    <LFDNR>41433</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1829</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="658">
+    <ID>46929</ID>
+    <LFDNR>11234</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1769</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="659">
+    <ID>46931</ID>
+    <LFDNR>41435</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="660">
+    <ID>46931</ID>
+    <LFDNR>60971</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1823-1826</FREITEXT>
+  </ITEM>
+  <ITEM num="661">
+    <ID>46931</ID>
+    <LFDNR>11236</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1766</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="662">
+    <ID>46934</ID>
+    <LFDNR>11239</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="663">
+    <ID>46934</ID>
+    <LFDNR>65399</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1881</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="664">
+    <ID>46935</ID>
+    <LFDNR>60974</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1824</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="665">
+    <ID>46942</ID>
+    <LFDNR>11247</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1787</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="666">
+    <ID>46942</ID>
+    <LFDNR>41446</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="667">
+    <ID>47003</ID>
+    <LFDNR>60711</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1806-1817</FREITEXT>
+  </ITEM>
+  <ITEM num="668">
+    <ID>47010</ID>
+    <LFDNR>70536</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1849</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="669">
+    <ID>47010</ID>
+    <LFDNR>70535</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="670">
+    <ID>47046</ID>
+    <LFDNR>60737</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1812-1814</FREITEXT>
+  </ITEM>
+  <ITEM num="671">
+    <ID>47071</ID>
+    <LFDNR>10656</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>2</TAG>
+    <MONAT>8</MONAT>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="672">
+    <ID>47071</ID>
+    <LFDNR>40855</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1840</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="673">
+    <ID>47110</ID>
+    <LFDNR>60773</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="674">
+    <ID>47110</ID>
+    <LFDNR>10685</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="675">
+    <ID>47195</ID>
+    <LFDNR>60811</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1811</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="676">
+    <ID>47203</ID>
+    <LFDNR>80231</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1854</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="677">
+    <ID>47203</ID>
+    <LFDNR>80230</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1788</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="678">
+    <ID>47209</ID>
+    <LFDNR>60821</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1814</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="679">
+    <ID>47230</ID>
+    <LFDNR>60831</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1813-1830</FREITEXT>
+  </ITEM>
+  <ITEM num="680">
+    <ID>47237</ID>
+    <LFDNR>10776</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="681">
+    <ID>47237</ID>
+    <LFDNR>40975</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1860</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="682">
+    <ID>47256</ID>
+    <LFDNR>69430</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1811-1813</FREITEXT>
+  </ITEM>
+  <ITEM num="683">
+    <ID>47261</ID>
+    <LFDNR>60846</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1805-1813</FREITEXT>
+  </ITEM>
+  <ITEM num="684">
+    <ID>47261</ID>
+    <LFDNR>10795</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1767</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="685">
+    <ID>47261</ID>
+    <LFDNR>40994</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1823</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="686">
+    <ID>47263</ID>
+    <LFDNR>41454</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1830</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="687">
+    <ID>47263</ID>
+    <LFDNR>60984</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1818</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="688">
+    <ID>47263</ID>
+    <LFDNR>11255</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1758</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="689">
+    <ID>47264</ID>
+    <LFDNR>11256</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1793</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="690">
+    <ID>47264</ID>
+    <LFDNR>41455</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1867</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="691">
+    <ID>47289</ID>
+    <LFDNR>11278</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="692">
+    <ID>47289</ID>
+    <LFDNR>41477</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1850</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="693">
+    <ID>48315</ID>
+    <LFDNR>28815</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <TAG>7</TAG>
+    <MONAT>1</MONAT>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="694">
+    <ID>48315</ID>
+    <LFDNR>59014</LFDNR>
+    <ART>Sterbedatum</ART>
+    <TAG>30</TAG>
+    <MONAT>5</MONAT>
+    <JAHR>1835</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="695">
+    <ID>48678</ID>
+    <LFDNR>12060</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="696">
+    <ID>48678</ID>
+    <LFDNR>42259</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1891</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="697">
+    <ID>49049</ID>
+    <LFDNR>25347</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="698">
+    <ID>49049</ID>
+    <LFDNR>55546</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1855</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="699">
+    <ID>49243</ID>
+    <LFDNR>11544</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="700">
+    <ID>49243</ID>
+    <LFDNR>41743</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="701">
+    <ID>49258</ID>
+    <LFDNR>33626</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1827</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="702">
+    <ID>49258</ID>
+    <LFDNR>64741</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1805</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="703">
+    <ID>49275</ID>
+    <LFDNR>11378</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1801</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="704">
+    <ID>49275</ID>
+    <LFDNR>41577</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1866</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="705">
+    <ID>49290</ID>
+    <LFDNR>11579</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="706">
+    <ID>49290</ID>
+    <LFDNR>41778</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="707">
+    <ID>49291</ID>
+    <LFDNR>11581</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1801</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="708">
+    <ID>49291</ID>
+    <LFDNR>41780</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1838</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="709">
+    <ID>49304</ID>
+    <LFDNR>12512</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="710">
+    <ID>49304</ID>
+    <LFDNR>42711</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1855</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="711">
+    <ID>49312</ID>
+    <LFDNR>12786</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1795</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="712">
+    <ID>49312</ID>
+    <LFDNR>42985</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="713">
+    <ID>49574</ID>
+    <LFDNR>44180</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1844</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="714">
+    <ID>49574</ID>
+    <LFDNR>13981</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1827</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="715">
+    <ID>49771</ID>
+    <LFDNR>69818</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1781</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="716">
+    <ID>49771</ID>
+    <LFDNR>47311</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1836</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="717">
+    <ID>49779</ID>
+    <LFDNR>16491</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1773</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="718">
+    <ID>49779</ID>
+    <LFDNR>46690</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1867</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="719">
+    <ID>49793</ID>
+    <LFDNR>61606</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1825</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="720">
+    <ID>49793</ID>
+    <LFDNR>47316</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1854</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="721">
+    <ID>49793</ID>
+    <LFDNR>17117</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1807</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="722">
+    <ID>49795</ID>
+    <LFDNR>17119</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1794</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="723">
+    <ID>49795</ID>
+    <LFDNR>47318</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1881</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="724">
+    <ID>49814</ID>
+    <LFDNR>14638</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1771</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="725">
+    <ID>49814</ID>
+    <LFDNR>44837</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="726">
+    <ID>49925</ID>
+    <LFDNR>61656</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>um 1829</FREITEXT>
+  </ITEM>
+  <ITEM num="727">
+    <ID>49925</ID>
+    <LFDNR>47613</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1867</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="728">
+    <ID>49925</ID>
+    <LFDNR>17414</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1791</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="729">
+    <ID>49929</ID>
+    <LFDNR>15562</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="730">
+    <ID>49929</ID>
+    <LFDNR>45761</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="731">
+    <ID>49957</ID>
+    <LFDNR>16222</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="732">
+    <ID>49957</ID>
+    <LFDNR>46421</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1870</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="733">
+    <ID>50022</ID>
+    <LFDNR>46299</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1870</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="734">
+    <ID>50022</ID>
+    <LFDNR>16100</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="735">
+    <ID>50055</ID>
+    <LFDNR>45765</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="736">
+    <ID>50055</ID>
+    <LFDNR>15566</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="737">
+    <ID>50086</ID>
+    <LFDNR>45546</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="738">
+    <ID>50086</ID>
+    <LFDNR>15347</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1753</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="739">
+    <ID>50139</ID>
+    <LFDNR>46228</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1863</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="740">
+    <ID>50139</ID>
+    <LFDNR>16029</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1803</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="741">
+    <ID>50160</ID>
+    <LFDNR>60416</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1826</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="742">
+    <ID>50164</ID>
+    <LFDNR>17135</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1791</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="743">
+    <ID>50164</ID>
+    <LFDNR>47334</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1867</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="744">
+    <ID>50190</ID>
+    <LFDNR>45025</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1879</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="745">
+    <ID>50190</ID>
+    <LFDNR>14826</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1796</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="746">
+    <ID>50190</ID>
+    <LFDNR>61256</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1823</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="747">
+    <ID>50194</ID>
+    <LFDNR>45029</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1865</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="748">
+    <ID>50194</ID>
+    <LFDNR>14830</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1795</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="749">
+    <ID>50207</ID>
+    <LFDNR>16517</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1792</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="750">
+    <ID>50265</ID>
+    <LFDNR>44562</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="751">
+    <ID>50265</ID>
+    <LFDNR>14363</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1799</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="752">
+    <ID>50304</ID>
+    <LFDNR>45330</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1849</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="753">
+    <ID>50304</ID>
+    <LFDNR>15131</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="754">
+    <ID>50412</ID>
+    <LFDNR>44042</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="755">
+    <ID>50412</ID>
+    <LFDNR>13843</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1788</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="756">
+    <ID>50424</ID>
+    <LFDNR>28518</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="757">
+    <ID>50424</ID>
+    <LFDNR>58717</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="758">
+    <ID>50489</ID>
+    <LFDNR>70761</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1889</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="759">
+    <ID>50489</ID>
+    <LFDNR>16106</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1809</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="760">
+    <ID>50510</ID>
+    <LFDNR>16963</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1803</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="761">
+    <ID>50510</ID>
+    <LFDNR>47162</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1856</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="762">
+    <ID>50513</ID>
+    <LFDNR>61574</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="763">
+    <ID>50537</ID>
+    <LFDNR>44877</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1884</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="764">
+    <ID>50574</ID>
+    <LFDNR>89792</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1860</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="765">
+    <ID>50574</ID>
+    <LFDNR>89791</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1790</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="766">
+    <ID>50574</ID>
+    <LFDNR>61249</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1832</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="767">
+    <ID>50744</ID>
+    <LFDNR>25555</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1794</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="768">
+    <ID>50744</ID>
+    <LFDNR>55754</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1861</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="769">
+    <ID>50773</ID>
+    <LFDNR>47697</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1861</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="770">
+    <ID>50773</ID>
+    <LFDNR>17498</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1799</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="771">
+    <ID>50784</ID>
+    <LFDNR>17947</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1807/10</FREITEXT>
+  </ITEM>
+  <ITEM num="772">
+    <ID>50784</ID>
+    <LFDNR>48146</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1893</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="773">
+    <ID>50810</ID>
+    <LFDNR>55786</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1870</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="774">
+    <ID>50810</ID>
+    <LFDNR>25587</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1797</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="775">
+    <ID>50811</ID>
+    <LFDNR>15187</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1800</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="776">
+    <ID>50811</ID>
+    <LFDNR>45386</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1881</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="777">
+    <ID>50947</ID>
+    <LFDNR>84792</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="778">
+    <ID>50947</ID>
+    <LFDNR>15027</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1792</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="779">
+    <ID>50981</ID>
+    <LFDNR>13503</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1783/84</FREITEXT>
+  </ITEM>
+  <ITEM num="780">
+    <ID>50981</ID>
+    <LFDNR>43702</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1850</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="781">
+    <ID>50981</ID>
+    <LFDNR>61110</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1825</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="782">
+    <ID>51015</ID>
+    <LFDNR>14401</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1756</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="783">
+    <ID>51015</ID>
+    <LFDNR>44600</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1837</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="784">
+    <ID>51022</ID>
+    <LFDNR>14840</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1798</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="785">
+    <ID>51022</ID>
+    <LFDNR>45039</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1880</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="786">
+    <ID>51110</ID>
+    <LFDNR>72738</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1755</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="787">
+    <ID>51110</ID>
+    <LFDNR>61322</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1823</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="788">
+    <ID>51123</ID>
+    <LFDNR>13778</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1776</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="789">
+    <ID>51123</ID>
+    <LFDNR>43977</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1871</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="790">
+    <ID>51240</ID>
+    <LFDNR>61430</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1824</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="791">
+    <ID>51281</ID>
+    <LFDNR>55946</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1884</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="792">
+    <ID>51281</ID>
+    <LFDNR>25747</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1792</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="793">
+    <ID>51285</ID>
+    <LFDNR>45239</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1884</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="794">
+    <ID>51285</ID>
+    <LFDNR>15040</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1808</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="795">
+    <ID>51286</ID>
+    <LFDNR>55783</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1899</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="796">
+    <ID>51286</ID>
+    <LFDNR>25584</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1804</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="797">
+    <ID>51287</ID>
+    <LFDNR>15041</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1805</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="798">
+    <ID>51287</ID>
+    <LFDNR>45240</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="799">
+    <ID>51293</ID>
+    <LFDNR>64787</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1795</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="800">
+    <ID>51293</ID>
+    <LFDNR>43740</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="801">
+    <ID>51301</ID>
+    <LFDNR>46329</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1845</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="802">
+    <ID>51301</ID>
+    <LFDNR>16130</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="803">
+    <ID>51302</ID>
+    <LFDNR>16131</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="804">
+    <ID>51302</ID>
+    <LFDNR>46330</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1849</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="805">
+    <ID>51312</ID>
+    <LFDNR>45793</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1833</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="806">
+    <ID>51312</ID>
+    <LFDNR>15594</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1771</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="807">
+    <ID>51350</ID>
+    <LFDNR>16638</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1780</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="808">
+    <ID>51350</ID>
+    <LFDNR>46837</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1866</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="809">
+    <ID>51416</ID>
+    <LFDNR>44229</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1863</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="810">
+    <ID>51416</ID>
+    <LFDNR>14030</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="811">
+    <ID>51419</ID>
+    <LFDNR>14032</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1779</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="812">
+    <ID>51419</ID>
+    <LFDNR>44231</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="813">
+    <ID>51444</ID>
+    <LFDNR>15105</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1786</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="814">
+    <ID>51444</ID>
+    <LFDNR>61309</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1830</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="815">
+    <ID>51479</ID>
+    <LFDNR>46365</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1860</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="816">
+    <ID>51479</ID>
+    <LFDNR>16166</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1784</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="817">
+    <ID>51485</ID>
+    <LFDNR>25578</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1776</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="818">
+    <ID>51485</ID>
+    <LFDNR>55777</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1856</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="819">
+    <ID>51557</ID>
+    <LFDNR>46838</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1853</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="820">
+    <ID>51557</ID>
+    <LFDNR>16639</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1783</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="821">
+    <ID>51575</ID>
+    <LFDNR>16533</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1807</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="822">
+    <ID>51575</ID>
+    <LFDNR>46732</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1864</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="823">
+    <ID>51689</ID>
+    <LFDNR>15747</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="824">
+    <ID>51689</ID>
+    <LFDNR>45946</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="825">
+    <ID>51828</ID>
+    <LFDNR>45812</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1847</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="826">
+    <ID>51828</ID>
+    <LFDNR>15613</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1792</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="827">
+    <ID>51835</ID>
+    <LFDNR>45818</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1868</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="828">
+    <ID>51835</ID>
+    <LFDNR>15619</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1799</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="829">
+    <ID>51896</ID>
+    <LFDNR>61089</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="830">
+    <ID>51954</ID>
+    <LFDNR>44242</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1874</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="831">
+    <ID>51954</ID>
+    <LFDNR>14043</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1791</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="832">
+    <ID>51956</ID>
+    <LFDNR>44485</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1857</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="833">
+    <ID>51956</ID>
+    <LFDNR>14286</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1781</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="834">
+    <ID>51978</ID>
+    <LFDNR>55926</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1875</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="835">
+    <ID>51978</ID>
+    <LFDNR>25727</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1800</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="836">
+    <ID>52031</ID>
+    <LFDNR>45842</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1885</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="837">
+    <ID>52031</ID>
+    <LFDNR>15643</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1797</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="838">
+    <ID>52034</ID>
+    <LFDNR>45973</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1879</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="839">
+    <ID>52034</ID>
+    <LFDNR>61382</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1831</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="840">
+    <ID>52058</ID>
+    <LFDNR>44249</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1863</JAHR>
+    <UNBESTIMMT>nach</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="841">
+    <ID>52058</ID>
+    <LFDNR>14050</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1804</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="842">
+    <ID>52063</ID>
+    <LFDNR>61185</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="843">
+    <ID>52064</ID>
+    <LFDNR>25549</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1806</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="844">
+    <ID>52064</ID>
+    <LFDNR>55748</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1859</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="845">
+    <ID>52100</ID>
+    <LFDNR>89520</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1801-1829</FREITEXT>
+  </ITEM>
+  <ITEM num="846">
+    <ID>52354</ID>
+    <LFDNR>61612</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1797-1824</FREITEXT>
+  </ITEM>
+  <ITEM num="847">
+    <ID>52354</ID>
+    <LFDNR>69735</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1828</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="848">
+    <ID>52354</ID>
+    <LFDNR>69734</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1758</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="849">
+    <ID>52557</ID>
+    <LFDNR>61541</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <MONAT>5</MONAT>
+    <JAHR>1793</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="850">
+    <ID>52563</ID>
+    <LFDNR>61547</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <MONAT>6</MONAT>
+    <JAHR>1797</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="851">
+    <ID>52698</ID>
+    <LFDNR>15998</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1771</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="852">
+    <ID>52698</ID>
+    <LFDNR>61410</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1805</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="853">
+    <ID>52968</ID>
+    <LFDNR>16990</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1782</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="854">
+    <ID>52968</ID>
+    <LFDNR>47189</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1845</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="855">
+    <ID>53487</ID>
+    <LFDNR>24476</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1752</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="856">
+    <ID>53487</ID>
+    <LFDNR>71506</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1815</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="857">
+    <ID>55551</ID>
+    <LFDNR>66144</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1811</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="858">
+    <ID>58734</ID>
+    <LFDNR>18392</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1767</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="859">
+    <ID>58734</ID>
+    <LFDNR>48591</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1843</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="860">
+    <ID>59189</ID>
+    <LFDNR>19302</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1767</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="861">
+    <ID>59615</ID>
+    <LFDNR>88273</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1736</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="862">
+    <ID>59615</ID>
+    <LFDNR>49035</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1793</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="863">
+    <ID>64146</ID>
+    <LFDNR>20251</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1783</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="864">
+    <ID>64146</ID>
+    <LFDNR>50450</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1853</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="865">
+    <ID>64858</ID>
+    <LFDNR>62367</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1827</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="866">
+    <ID>68181</ID>
+    <LFDNR>74064</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <JAHR>1789</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="867">
+    <ID>68503</ID>
+    <LFDNR>62419</LFDNR>
+    <ART>Erwähnungsdatum</ART>
+    <V_CHR>1</V_CHR>
+    <FREITEXT>1816-1817</FREITEXT>
+  </ITEM>
+  <ITEM num="868">
+    <ID>89435</ID>
+    <LFDNR>82268</LFDNR>
+    <ART>Sterbedatum</ART>
+    <JAHR>1861</JAHR>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+  <ITEM num="869">
+    <ID>89435</ID>
+    <LFDNR>82267</LFDNR>
+    <ART>Geburtsdatum</ART>
+    <JAHR>1778</JAHR>
+    <UNBESTIMMT>um</UNBESTIMMT>
+    <V_CHR>1</V_CHR>
+  </ITEM>
+</RA_NDB_DATIERUNGEN>

@@ -1,0 +1,6661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RA_NDB_MAIN>
+  <ITEM num="1">
+    <ID>1906</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Facius</NACHNAME>
+    <VORNAMEN>Angelica Bellonata</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="2">
+    <ID>3251</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hüssener</NACHNAME>
+    <VORNAMEN>Auguste</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="3">
+    <ID>35204</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Ackermann</NACHNAME>
+    <VORNAMEN>Maria Anna</VORNAMEN>
+    <GEBURTSNAME>geb. Schumann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="4">
+    <ID>35217</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Aguilar</NACHNAME>
+    <VORNAMEN>Rose</VORNAMEN>
+    <GEBURTSNAME>verh. Lawrence</GEBURTSNAME>
+    <TITEL>d&apos;</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="5">
+    <ID>35217</ID>
+    <LFDNR>8110</LFDNR>
+    <NACHNAME>Lawrence</NACHNAME>
+    <VORNAMEN>Rose</VORNAMEN>
+    <GEBURTSNAME>geb. d&apos;Aguilar</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="6">
+    <ID>35239</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Alberti</NACHNAME>
+    <VORNAMEN>Wilhelmine </VORNAMEN>
+    <GEBURTSNAME>geb. Hensler</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="7">
+    <ID>35239</ID>
+    <LFDNR>10755</LFDNR>
+    <NACHNAME>Hensler</NACHNAME>
+    <VORNAMEN>Wilhelmine Johanna</VORNAMEN>
+    <GEBURTSNAME>verh. Alberti</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="8">
+    <ID>35267</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Altmutter</NACHNAME>
+    <VORNAMEN>Anna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="9">
+    <ID>35289</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Amor</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <GEBURTSNAME>geb. Friderici</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="10">
+    <ID>35391</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Austin</NACHNAME>
+    <VORNAMEN>Sarah</VORNAMEN>
+    <GEBURTSNAME>geb. Taylor</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="11">
+    <ID>35445</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bandemer</NACHNAME>
+    <VORNAMEN>Anne Susanne Sophia</VORNAMEN>
+    <GEBURTSNAME>geb. von Franklin, verh. Gräfin von Bohlen </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="12">
+    <ID>35474</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Forget de Barst</NACHNAME>
+    <VORNAMEN>Marie Gabrielle Adelaide</VORNAMEN>
+    <GEBURTSNAME>geb. de Reboucher</GEBURTSNAME>
+    <TITEL>de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="13">
+    <ID>35536</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Baureis</NACHNAME>
+    <VORNAMEN>Anna Maria</VORNAMEN>
+    <GEBURTSNAME>geb. Bauder</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="14">
+    <ID>35642</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Berg</NACHNAME>
+    <VORNAMEN>Karoline Friederike</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von Haeseler</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="15">
+    <ID>35642</ID>
+    <LFDNR>6736</LFDNR>
+    <NACHNAME>Berg</NACHNAME>
+    <VORNAMEN>Karoline Friederike</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="16">
+    <ID>35665</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Berisse</NACHNAME>
+    <VORNAMEN>J. C. H.</VORNAMEN>
+    <TITEL>de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="17">
+    <ID>35705</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bernstorff</NACHNAME>
+    <VORNAMEN>Charitas Emilie</VORNAMEN>
+    <GEBURTSNAME>geb. von Buchwald</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="18">
+    <ID>35705</ID>
+    <LFDNR>11793</LFDNR>
+    <NACHNAME>Buchwald</NACHNAME>
+    <VORNAMEN>Charitas Emilie</VORNAMEN>
+    <GEBURTSNAME>verh. Gräfin von Bernstorff</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="19">
+    <ID>35710</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bertin</NACHNAME>
+    <VORNAMEN>Louise Angélique</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="20">
+    <ID>35729</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bethmann-Hollweg</NACHNAME>
+    <VORNAMEN>Susanne Elisabeth</VORNAMEN>
+    <GEBURTSNAME>geb. Bethmann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="21">
+    <ID>35757</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bibra</NACHNAME>
+    <VORNAMEN>Karoline Luise Augusta</VORNAMEN>
+    <RUFNAME>Karoline Luise</RUFNAME>
+    <GEBURTSNAME>geb. v. Dungern</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="22">
+    <ID>35757</ID>
+    <LFDNR>9692</LFDNR>
+    <NACHNAME>Dungern</NACHNAME>
+    <VORNAMEN>Karoline Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="23">
+    <ID>35764</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bielke</NACHNAME>
+    <VORNAMEN>Christiana Juliana Friderica Charlotte</VORNAMEN>
+    <RUFNAME>Juliana</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="24">
+    <ID>35792</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Blank</NACHNAME>
+    <VORNAMEN>Barbara</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="25">
+    <ID>35842</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bode</NACHNAME>
+    <VORNAMEN>Charlotte Karoline Adamine Luise</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="26">
+    <ID>35896</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bohl</NACHNAME>
+    <VORNAMEN>Johanne Susanne</VORNAMEN>
+    <GEBURTSNAME>geb. Eberhard(t) </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="27">
+    <ID>35942</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bosch</NACHNAME>
+    <VORNAMEN>Luzie Wilhelmine Marie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="28">
+    <ID>35961</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Both</NACHNAME>
+    <VORNAMEN>Rudolfine Hedwig Friederike</VORNAMEN>
+    <RUFNAME>Rudolfine</RUFNAME>
+    <GEBURTSNAME>geb. Brüning</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="29">
+    <ID>36008</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Braun</NACHNAME>
+    <VORNAMEN>Amalie Augusta</VORNAMEN>
+    <GEBURTSNAME>geb. Seidelmann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="30">
+    <ID>36025</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Brede</NACHNAME>
+    <VORNAMEN>Auguste Henriette Elisabeth</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <GEBURTSNAME>geb. Eulner</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="31">
+    <ID>36088</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Brossard</NACHNAME>
+    <VORNAMEN>Jeannette</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="32">
+    <ID>36109</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Brühl</NACHNAME>
+    <VORNAMEN>Jenny</VORNAMEN>
+    <GEBURTSNAME>geb. von Pourtalès</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="33">
+    <ID>36123</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Brunst</NACHNAME>
+    <VORNAMEN>Sophia Christiana Johanna</VORNAMEN>
+    <GEBURTSNAME>geb. von Poseck</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="34">
+    <ID>36134</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Buchholz</NACHNAME>
+    <VORNAMEN>Johanna Maria</VORNAMEN>
+    <GEBURTSNAME>geb. Söllner </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="35">
+    <ID>36186</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Burgdorf</NACHNAME>
+    <VORNAMEN>Minna Charlotte</VORNAMEN>
+    <RUFNAME>Minna </RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="36">
+    <ID>36539</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Dalton</NACHNAME>
+    <VORNAMEN>Jane</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="37">
+    <ID>36546</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Danckelmann</NACHNAME>
+    <VORNAMEN>Kornelia Helena</VORNAMEN>
+    <GEBURTSNAME>geb. von Baumgardt</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="38">
+    <ID>36565</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Darjes</NACHNAME>
+    <VORNAMEN>Martha Friederika</VORNAMEN>
+    <GEBURTSNAME>geb. Reichart</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="39">
+    <ID>36587</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Dawe</NACHNAME>
+    <VORNAMEN>Mary Margaret</VORNAMEN>
+    <GEBURTSNAME>verh. Wright</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="40">
+    <ID>36610</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Delph</NACHNAME>
+    <VORNAMEN>Helene Dorothea</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="41">
+    <ID>36658</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Dietrichstein</NACHNAME>
+    <VORNAMEN>Maria Anna</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="42">
+    <ID>36846</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Egloffstein</NACHNAME>
+    <VORNAMEN>Isabella</VORNAMEN>
+    <GEBURTSNAME>geb. Waldner von Freundstein</GEBURTSNAME>
+    <TITEL>von und zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="43">
+    <ID>36847</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Egloffstein</NACHNAME>
+    <VORNAMEN>Karoline Auguste Sophie Wilhelmine</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von und zu Aufseß</GEBURTSNAME>
+    <TITEL>von und zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="44">
+    <ID>36886</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Elterich</NACHNAME>
+    <VORNAMEN>Josepha</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="45">
+    <ID>36954</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Eskeles</NACHNAME>
+    <VORNAMEN>Cäcilie</VORNAMEN>
+    <GEBURTSNAME>geb. Itzig</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="46">
+    <ID>37057</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Fiala</NACHNAME>
+    <VORNAMEN>Fanny</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="47">
+    <ID>37119</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Flies</NACHNAME>
+    <VORNAMEN>Eleonore</VORNAMEN>
+    <GEBURTSNAME>geb. Eskeles </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="48">
+    <ID>37119</ID>
+    <LFDNR>13917</LFDNR>
+    <NACHNAME>Eskeles</NACHNAME>
+    <VORNAMEN>Eleonore</VORNAMEN>
+    <GEBURTSNAME>verh. Flies</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="49">
+    <ID>37119</ID>
+    <LFDNR>13918</LFDNR>
+    <NACHNAME>Fließ</NACHNAME>
+    <VORNAMEN>Eleonore</VORNAMEN>
+    <GEBURTSNAME>geb. Eskeles</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="50">
+    <ID>37150</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Foucquet</NACHNAME>
+    <VORNAMEN>Marie Louise Eugénie</VORNAMEN>
+    <GEBURTSNAME>geb. Blondel d&apos;Aubers</GEBURTSNAME>
+    <TITEL>Marquise de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="51">
+    <ID>37229</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Fritsch</NACHNAME>
+    <VORNAMEN>Johanna Sophia</VORNAMEN>
+    <GEBURTSNAME>geb. v. Haeseler</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="52">
+    <ID>37233</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Fritsch</NACHNAME>
+    <VORNAMEN>Konstanze</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="53">
+    <ID>37253</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Füchsel</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <GEBURTSNAME>geb. Im Baumgarten</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="54">
+    <ID>37365</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gensiken</NACHNAME>
+    <VORNAMEN>Justina Dorothea Wilhelmine</VORNAMEN>
+    <RUFNAME>Wilhelmine</RUFNAME>
+    <GEBURTSNAME>geb. Herz </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="55">
+    <ID>37403</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gerning</NACHNAME>
+    <VORNAMEN>Maria Magdalena</VORNAMEN>
+    <GEBURTSNAME>geb. Moors</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="56">
+    <ID>37408</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gersdorff</NACHNAME>
+    <VORNAMEN>Diana</VORNAMEN>
+    <GEBURTSNAME>geb. Waldner von Freundstein</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="57">
+    <ID>37557</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gore</NACHNAME>
+    <VORNAMEN>Emilie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="58">
+    <ID>37557</ID>
+    <LFDNR>3864</LFDNR>
+    <NACHNAME>Gore</NACHNAME>
+    <VORNAMEN>Emily</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="59">
+    <ID>37674</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Grunelius</NACHNAME>
+    <VORNAMEN>Anna Elisabeth</VORNAMEN>
+    <GEBURTSNAME>geb. Bethmann-Hollwg</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="60">
+    <ID>37740</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Haacke</NACHNAME>
+    <VORNAMEN>Karolina Philippina</VORNAMEN>
+    <GEBURTSNAME>geb. von Rathsamhausen </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="61">
+    <ID>37802</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Halberstadt</NACHNAME>
+    <VORNAMEN>Elisabeth Friederike Wilhelmine</VORNAMEN>
+    <RUFNAME>Wilhelmine</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="62">
+    <ID>38021</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Herda zu Brandenburg</NACHNAME>
+    <VORNAMEN>Friederike Bernhardine Sophie Dorothea Elisabethe</VORNAMEN>
+    <RUFNAME>Bernhardine Sophie</RUFNAME>
+    <GEBURTSNAME>geb. v. Holleben</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="63">
+    <ID>38046</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Herrleb</NACHNAME>
+    <VORNAMEN>Klara Regina</VORNAMEN>
+    <GEBURTSNAME>geb. Bauer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="64">
+    <ID>38099</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Heußler</NACHNAME>
+    <VORNAMEN>Rosalia</VORNAMEN>
+    <GEBURTSNAME>geb. Meyer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="65">
+    <ID>38099</ID>
+    <LFDNR>13754</LFDNR>
+    <NACHNAME>Häußler</NACHNAME>
+    <VORNAMEN>Rosalia</VORNAMEN>
+    <GEBURTSNAME>geb. Meyer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="66">
+    <ID>38170</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hofmann</NACHNAME>
+    <VORNAMEN>Johanne Marie</VORNAMEN>
+    <GEBURTSNAME>geb. Canzler</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="67">
+    <ID>38302</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hunnius</NACHNAME>
+    <VORNAMEN>Maria Sophia</VORNAMEN>
+    <GEBURTSNAME>geb. Pabst (Papst) </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="68">
+    <ID>38360</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Jacobi</NACHNAME>
+    <VORNAMEN>Friederike Henriette Christiane</VORNAMEN>
+    <GEBURTSNAME>geb. Bieglein</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="69">
+    <ID>38507</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Karsch</NACHNAME>
+    <VORNAMEN>Anna Luisa</VORNAMEN>
+    <GEBURTSNAME>geb. Dürbach</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="70">
+    <ID>38507</ID>
+    <LFDNR>12011</LFDNR>
+    <NACHNAME>Dürbach</NACHNAME>
+    <VORNAMEN>Anna Luisa</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="71">
+    <ID>38507</ID>
+    <LFDNR>12012</LFDNR>
+    <NACHNAME>Hirsekorn</NACHNAME>
+    <VORNAMEN>Anna Luisa</VORNAMEN>
+    <GEBURTSNAME>geb. Dürbach</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="72">
+    <ID>38694</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Koch</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="73">
+    <ID>38743</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Körte</NACHNAME>
+    <VORNAMEN>Friederike Wilhelmine</VORNAMEN>
+    <RUFNAME>Wilhelmine</RUFNAME>
+    <GEBURTSNAME>geb. Wolf</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="74">
+    <ID>38743</ID>
+    <LFDNR>12263</LFDNR>
+    <NACHNAME>Wolf</NACHNAME>
+    <VORNAMEN>Wilhelmine</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="75">
+    <ID>38752</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kötschau</NACHNAME>
+    <VORNAMEN>Johanna Barbara</VORNAMEN>
+    <GEBURTSNAME>geb. Gebert </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="76">
+    <ID>38832</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kriegsheim</NACHNAME>
+    <VORNAMEN>J. F.</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="77">
+    <ID>38834</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Krockow</NACHNAME>
+    <VORNAMEN>Margarete Regina Luise</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. von Göppel </GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="78">
+    <ID>39323</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>M.</NACHNAME>
+    <VORNAMEN>D.</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="79">
+    <ID>39387</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mara</NACHNAME>
+    <VORNAMEN>Gertrud Elisabeth</VORNAMEN>
+    <RUFNAME>Gertrud</RUFNAME>
+    <GEBURTSNAME>geb. Schme(h)ling </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="80">
+    <ID>39387</ID>
+    <LFDNR>10654</LFDNR>
+    <NACHNAME>Schmeling</NACHNAME>
+    <VORNAMEN>Gertrud Elisabeth</VORNAMEN>
+    <RUFNAME>Gertrud</RUFNAME>
+    <GEBURTSNAME>verh. Mara</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="81">
+    <ID>39387</ID>
+    <LFDNR>11656</LFDNR>
+    <NACHNAME>Florio</NACHNAME>
+    <VORNAMEN>Gertrud Elisabeth</VORNAMEN>
+    <RUFNAME>Gertrud</RUFNAME>
+    <GEBURTSNAME>geb. Schme(h)ling</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="82">
+    <ID>39428</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Marschall auf Burgholzhausen</NACHNAME>
+    <VORNAMEN>Hortensia</VORNAMEN>
+    <GEBURTSNAME>geb. Waldner von Freundstein </GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="83">
+    <ID>39463</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Matiegzeck</NACHNAME>
+    <VORNAMEN>Maximiliana Maria Eva</VORNAMEN>
+    <GEBURTSNAME>verh. Werndt</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="84">
+    <ID>39463</ID>
+    <LFDNR>9712</LFDNR>
+    <NACHNAME>Werndt</NACHNAME>
+    <VORNAMEN>Emilia Franziska Maximiliana</VORNAMEN>
+    <RUFNAME>Franziska Maximiliana</RUFNAME>
+    <GEBURTSNAME>geb. Matiegzeck (Maticzeck)</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="85">
+    <ID>39495</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mazelet</NACHNAME>
+    <VORNAMEN>Jeanne Marie Jaqueline Antoinette</VORNAMEN>
+    <RUFNAME>Jeanne</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="86">
+    <ID>39495</ID>
+    <LFDNR>17399</LFDNR>
+    <NACHNAME>Huc-Mazelet</NACHNAME>
+    <VORNAMEN>Jeanne</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="87">
+    <ID>39496</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mebus</NACHNAME>
+    <VORNAMEN>Helene Friederike</VORNAMEN>
+    <RUFNAME>Helene</RUFNAME>
+    <GEBURTSNAME>verh. Frühling</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="88">
+    <ID>39591</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mertens</NACHNAME>
+    <VORNAMEN>Sibylle</VORNAMEN>
+    <GEBURTSNAME>geb. Schaaffhausen </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="89">
+    <ID>39767</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Morelli</NACHNAME>
+    <VORNAMEN>Anna Maria (Nannette)</VORNAMEN>
+    <RUFNAME>Anna</RUFNAME>
+    <GEBURTSNAME>geb. von Wlodoff</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="90">
+    <ID>39831</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Müller</NACHNAME>
+    <VORNAMEN>Henrietta Susanna</VORNAMEN>
+    <GEBURTSNAME>geb. Gentzsch</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="91">
+    <ID>39863</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Müller</NACHNAME>
+    <VORNAMEN>Karoline Sophie</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. von Taylor, gesch. von Haza-Radlitz</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="92">
+    <ID>40032</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>O&apos;Donell von Tyrconell</NACHNAME>
+    <VORNAMEN>Christine</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin von (de) Ligne</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="93">
+    <ID>40034</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>O&apos;Donell von Tyrconell</NACHNAME>
+    <VORNAMEN>Josephine</VORNAMEN>
+    <GEBURTSNAME>geb. Gräfin Gaisruck </GEBURTSNAME>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="94">
+    <ID>40186</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Pattberg</NACHNAME>
+    <VORNAMEN>Elisabetha Auguste</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <GEBURTSNAME>geb. Kettner</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="95">
+    <ID>40230</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Pereira-Arnstein</NACHNAME>
+    <VORNAMEN>Henriette Judith</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. von Arnstein</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="96">
+    <ID>40230</ID>
+    <LFDNR>16997</LFDNR>
+    <NACHNAME>Arnstein</NACHNAME>
+    <VORNAMEN>Henriette (Judith)</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="97">
+    <ID>40305</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Pichler</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <GEBURTSNAME>geb. von Greiner</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="98">
+    <ID>40613</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Reinhard</NACHNAME>
+    <VORNAMEN>Sophie Karoline Friederike Petronella</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="99">
+    <ID>40634</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Reitzenstein</NACHNAME>
+    <VORNAMEN>Eleonore Luise</VORNAMEN>
+    <GEBURTSNAME>geb. v. Plotho </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="100">
+    <ID>40704</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Riedesel</NACHNAME>
+    <VORNAMEN>Friederike Karoline Susanne Wilhelmine</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="101">
+    <ID>40812</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Roose</NACHNAME>
+    <VORNAMEN>Elisabeth</VORNAMEN>
+    <GEBURTSNAME>geb. Eckardt (genannt Koch)</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="102">
+    <ID>40923</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Rußland</NACHNAME>
+    <VORNAMEN>Maria Fjodorowna</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin von Württemberg</GEBURTSNAME>
+    <TITEL>Zarin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="103">
+    <ID>40923</ID>
+    <LFDNR>3919</LFDNR>
+    <NACHNAME>Württemberg</NACHNAME>
+    <VORNAMEN>Sophie Dorothea Augusta Luise</VORNAMEN>
+    <RUFNAME>Sophie Dorothea</RUFNAME>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="104">
+    <ID>40959</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Sachsen-Weimar und Eisenach</NACHNAME>
+    <VORNAMEN>Anna Amalia</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin von Braunschweig-Wolfenbüttel</GEBURTSNAME>
+    <TITEL>Herzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="105">
+    <ID>40959</ID>
+    <LFDNR>11217</LFDNR>
+    <NACHNAME>Allstedt</NACHNAME>
+    <TITEL>Comtesse</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="106">
+    <ID>40967</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Sachsen-Weimar-Eisenach</NACHNAME>
+    <VORNAMEN>Maria Pawlowna</VORNAMEN>
+    <GEBURTSNAME>geb. Großfürstin von Rußland</GEBURTSNAME>
+    <TITEL>Erbgroßherzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="107">
+    <ID>40967</ID>
+    <LFDNR>3925</LFDNR>
+    <NACHNAME>Sachsen-Weimar-Eisenach</NACHNAME>
+    <VORNAMEN>Maria Pawlowna</VORNAMEN>
+    <GEBURTSNAME>geb. Großfürstin von Rußland</GEBURTSNAME>
+    <TITEL>Großherzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="108">
+    <ID>40967</ID>
+    <LFDNR>3926</LFDNR>
+    <NACHNAME>Rußland</NACHNAME>
+    <VORNAMEN>Maria Pawlowna</VORNAMEN>
+    <TITEL>Großfürstin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="109">
+    <ID>40967</ID>
+    <LFDNR>6712</LFDNR>
+    <NACHNAME>Sachsen-Weimar und Eisenach</NACHNAME>
+    <VORNAMEN>Maria Pawlowna</VORNAMEN>
+    <GEBURTSNAME>geb. Großfürstin von Rußland</GEBURTSNAME>
+    <TITEL>Erbprinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="110">
+    <ID>41249</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schmidt</NACHNAME>
+    <VORNAMEN>Johanne Christiana (Sophia) Agnese</VORNAMEN>
+    <RUFNAME>Agnese</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="111">
+    <ID>41249</ID>
+    <LFDNR>11650</LFDNR>
+    <NACHNAME>Grose</NACHNAME>
+    <VORNAMEN>Johanne Christiana (Sophia) Agnese</VORNAMEN>
+    <RUFNAME>Agnese</RUFNAME>
+    <GEBURTSNAME>geb. Schmidt</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="112">
+    <ID>41249</ID>
+    <LFDNR>11651</LFDNR>
+    <NACHNAME>Müller</NACHNAME>
+    <VORNAMEN>Johanne Christiana (Sophia) Agnese</VORNAMEN>
+    <RUFNAME>Agnese</RUFNAME>
+    <GEBURTSNAME>geb. Schmidt</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="113">
+    <ID>41280</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schneider</NACHNAME>
+    <VORNAMEN>Magdalena Justine</VORNAMEN>
+    <GEBURTSNAME>geb. Ehrhardt</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="114">
+    <ID>41340</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schröfl</NACHNAME>
+    <VORNAMEN>Katharina</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="115">
+    <ID>41351</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schubart</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="116">
+    <ID>41365</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schütz</NACHNAME>
+    <VORNAMEN>Anna Henriette</VORNAMEN>
+    <GEBURTSNAME>geb. Danovius</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="117">
+    <ID>41387</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schultheß</NACHNAME>
+    <VORNAMEN>Anna Barbara</VORNAMEN>
+    <GEBURTSNAME>geb. Wolf </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="118">
+    <ID>41414</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schumacher</NACHNAME>
+    <VORNAMEN>Sophie Hedwig Rebekka</VORNAMEN>
+    <GEBURTSNAME>geb. Weddi, verw. Büsching</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="119">
+    <ID>41571</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Simoni</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="120">
+    <ID>41693</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Staff</NACHNAME>
+    <VORNAMEN>Amalie Friederike</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <GEBURTSNAME>geb. von Voß</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="121">
+    <ID>41693</ID>
+    <LFDNR>11318</LFDNR>
+    <NACHNAME>Voß</NACHNAME>
+    <VORNAMEN>Amalie Friederike</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="122">
+    <ID>41719</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Staupitz</NACHNAME>
+    <VORNAMEN>Johanna Karolina Augusta</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>verh. (Damm) von der Pforte</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="123">
+    <ID>41853</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stricker</NACHNAME>
+    <VORNAMEN>Johanne Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Schütz </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="124">
+    <ID>41919</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Sylvestre</NACHNAME>
+    <VORNAMEN>Espérance</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="125">
+    <ID>42159</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Türckheim</NACHNAME>
+    <VORNAMEN>Cäcilie</VORNAMEN>
+    <GEBURTSNAME>geb. Waldner von Freundstein</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="126">
+    <ID>42159</ID>
+    <LFDNR>11497</LFDNR>
+    <NACHNAME>Waldner von Freundstein</NACHNAME>
+    <VORNAMEN>Cäcilie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="127">
+    <ID>42250</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Varnhagen von Ense</NACHNAME>
+    <VORNAMEN>Antonie Friederike</VORNAMEN>
+    <GEBURTSNAME>geb. Rahel Levin</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="128">
+    <ID>42250</ID>
+    <LFDNR>13902</LFDNR>
+    <NACHNAME>Levin</NACHNAME>
+    <VORNAMEN>Rahel</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="129">
+    <ID>42254</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Vary</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <GEBURTSNAME>geb. Appun</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="130">
+    <ID>42336</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Vogelsang</NACHNAME>
+    <VORNAMEN>Adolfine Amalie Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. von Vogelsang</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="131">
+    <ID>42398</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wachtel</NACHNAME>
+    <VORNAMEN>Christiane Margarete</VORNAMEN>
+    <GEBURTSNAME>geb. Gentzsch</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="132">
+    <ID>42448</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Waldor</NACHNAME>
+    <VORNAMEN>Mélanie</VORNAMEN>
+    <GEBURTSNAME>geb. Villenave</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="133">
+    <ID>42449</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Waldow</NACHNAME>
+    <VORNAMEN>Albertine</VORNAMEN>
+    <GEBURTSNAME>geb. von Junck</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="134">
+    <ID>42449</ID>
+    <LFDNR>11376</LFDNR>
+    <NACHNAME>Junck</NACHNAME>
+    <VORNAMEN>Albertine</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="135">
+    <ID>42449</ID>
+    <LFDNR>11377</LFDNR>
+    <NACHNAME>Kleist</NACHNAME>
+    <VORNAMEN>Albertine</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="136">
+    <ID>42472</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wanckel</NACHNAME>
+    <VORNAMEN>Karoline Rosine</VORNAMEN>
+    <GEBURTSNAME>verh. von Heßling</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="137">
+    <ID>42572</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Weißmantel (Weismantel)</NACHNAME>
+    <VORNAMEN>Magdalena Sophia</VORNAMEN>
+    <GEBURTSNAME>geb. Heim</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="138">
+    <ID>42797</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wolkonskaja</NACHNAME>
+    <VORNAMEN>Sinaida Alexandrowna</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin Beloselskaja-Beloserskaja </GEBURTSNAME>
+    <TITEL>Fürstin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="139">
+    <ID>42805</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Woltmann</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <GEBURTSNAME>geb. Stosch</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="140">
+    <ID>42809</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wortmann</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <GEBURTSNAME>geb. Simons</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="141">
+    <ID>42859</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Zapff</NACHNAME>
+    <VORNAMEN>Dorothea Elisabeth</VORNAMEN>
+    <GEBURTSNAME>geb. Kommer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="142">
+    <ID>42889</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Zick</NACHNAME>
+    <VORNAMEN>Anna Maria</VORNAMEN>
+    <GEBURTSNAME>geb. Gruber</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="143">
+    <ID>42959</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Ahlefeld</NACHNAME>
+    <VORNAMEN>Charlotte Elisabeth Sophie Luise Wilhelmine</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>geb. von Seebach</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="144">
+    <ID>42959</ID>
+    <LFDNR>3786</LFDNR>
+    <NACHNAME>Seebach</NACHNAME>
+    <VORNAMEN>Charlotte </VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="145">
+    <ID>42959</ID>
+    <LFDNR>3787</LFDNR>
+    <NACHNAME>Ahlefeld</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="146">
+    <ID>42965</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Albrecht</NACHNAME>
+    <VORNAMEN>Johanna Sophie Dorothea</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Baumer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="147">
+    <ID>42965</ID>
+    <LFDNR>4009</LFDNR>
+    <NACHNAME>Albrecht</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="148">
+    <ID>43000</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Arnim</NACHNAME>
+    <VORNAMEN>Elisabeth (Bettina, Bettine) Katharina Ludovika Magdalena</VORNAMEN>
+    <RUFNAME>Bettina, Bettine</RUFNAME>
+    <GEBURTSNAME>geb. Brentano</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="149">
+    <ID>43000</ID>
+    <LFDNR>3805</LFDNR>
+    <NACHNAME>Arnim</NACHNAME>
+    <VORNAMEN>Bettina</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="150">
+    <ID>43000</ID>
+    <LFDNR>3807</LFDNR>
+    <NACHNAME>Brentano</NACHNAME>
+    <VORNAMEN>Katharina Elisabeth (Bettina, Bettine) Ludovika Magdalena </VORNAMEN>
+    <RUFNAME>Bettina</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="151">
+    <ID>43000</ID>
+    <LFDNR>8749</LFDNR>
+    <NACHNAME>Arnim</NACHNAME>
+    <VORNAMEN>Katharina Elisabeth (Bettina, Bettine) Ludovika Magdalena</VORNAMEN>
+    <GEBURTSNAME>geb. Brentano</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="152">
+    <ID>43025</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bachoff von Echt</NACHNAME>
+    <VORNAMEN>Friederike Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von Ronow und Bieberstein</GEBURTSNAME>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="153">
+    <ID>43025</ID>
+    <LFDNR>4062</LFDNR>
+    <NACHNAME>Bachoff von Echt</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="154">
+    <ID>43026</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bachoff von Echt</NACHNAME>
+    <VORNAMEN>Henriette Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von Ronow und Bieberstein</GEBURTSNAME>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="155">
+    <ID>43026</ID>
+    <LFDNR>4063</LFDNR>
+    <NACHNAME>Bachoff von Echt</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="156">
+    <ID>43039</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bansa</NACHNAME>
+    <VORNAMEN>Viktorie Maria Augusta</VORNAMEN>
+    <RUFNAME>Viktorie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="157">
+    <ID>43039</ID>
+    <LFDNR>4074</LFDNR>
+    <NACHNAME>Bansa</NACHNAME>
+    <VORNAMEN>Viktorie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="158">
+    <ID>43042</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bardeleben</NACHNAME>
+    <VORNAMEN>Henriette Karoline Charlotte</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. Hübschmann</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="159">
+    <ID>43042</ID>
+    <LFDNR>4077</LFDNR>
+    <NACHNAME>Bardeleben</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="160">
+    <ID>43043</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bardua</NACHNAME>
+    <VORNAMEN>Marie Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="161">
+    <ID>43043</ID>
+    <LFDNR>3979</LFDNR>
+    <NACHNAME>Bardua</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="162">
+    <ID>43043</ID>
+    <LFDNR>3980</LFDNR>
+    <NACHNAME>Bardua</NACHNAME>
+    <VORNAMEN>Caroline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="163">
+    <ID>43051</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bassewitz</NACHNAME>
+    <VORNAMEN>Henriette Adelheid</VORNAMEN>
+    <RUFNAME>Adelheid</RUFNAME>
+    <GEBURTSNAME>geb. von Gerlach</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="164">
+    <ID>43051</ID>
+    <LFDNR>4084</LFDNR>
+    <NACHNAME>Bassewitz</NACHNAME>
+    <VORNAMEN>Adelheid</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="165">
+    <ID>43060</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Batsch</NACHNAME>
+    <VORNAMEN>Sophie Karolina Amalie</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. Pfündel </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="166">
+    <ID>43060</ID>
+    <LFDNR>4090</LFDNR>
+    <NACHNAME>Batsch</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="167">
+    <ID>43060</ID>
+    <LFDNR>14379</LFDNR>
+    <NACHNAME>Pfündel</NACHNAME>
+    <VORNAMEN>Sophie Karolina Amalie</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="168">
+    <ID>43070</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Beaulieu-Marconnay</NACHNAME>
+    <VORNAMEN>Henriette Sophie Franziska Friederike Albertine</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. von und zu Egloffstein gesch. Gräfin von und zu Egloffstein auf Lamgarben und Arklitten</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="169">
+    <ID>43070</ID>
+    <LFDNR>4100</LFDNR>
+    <NACHNAME>Beaulieu-Marconnay</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="170">
+    <ID>43070</ID>
+    <LFDNR>6602</LFDNR>
+    <NACHNAME>Egloffstein</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>Gräfin von und zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="171">
+    <ID>43070</ID>
+    <LFDNR>6603</LFDNR>
+    <NACHNAME>Egloffstein</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von und zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="172">
+    <ID>43073</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bechtolsheim</NACHNAME>
+    <VORNAMEN>Juliane (Julie) Auguste Christiane</VORNAMEN>
+    <RUFNAME>Julie</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="173">
+    <ID>43073</ID>
+    <LFDNR>6451</LFDNR>
+    <NACHNAME>Bechtolsheim</NACHNAME>
+    <VORNAMEN>Julie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="174">
+    <ID>43073</ID>
+    <LFDNR>6605</LFDNR>
+    <NACHNAME>Keller</NACHNAME>
+    <VORNAMEN>Julie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="175">
+    <ID>43073</ID>
+    <LFDNR>11324</LFDNR>
+    <NACHNAME>Keller</NACHNAME>
+    <VORNAMEN>Juliane (Julie) Auguste Christiane</VORNAMEN>
+    <RUFNAME>Julie</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="176">
+    <ID>43073</ID>
+    <LFDNR>11325</LFDNR>
+    <NACHNAME>Mauchenheim</NACHNAME>
+    <VORNAMEN>Juliane (Julie) Auguste Christiane</VORNAMEN>
+    <RUFNAME>Julie</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="177">
+    <ID>43086</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Becker</NACHNAME>
+    <VORNAMEN>Sophie Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Döbling </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="178">
+    <ID>43086</ID>
+    <LFDNR>4115</LFDNR>
+    <NACHNAME>Becker</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="179">
+    <ID>43101</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Berczy</NACHNAME>
+    <VORNAMEN>Louise Amélie</VORNAMEN>
+    <RUFNAME>Amélie</RUFNAME>
+    <GEBURTSNAME>geb. Panet </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="180">
+    <ID>43101</ID>
+    <LFDNR>4128</LFDNR>
+    <NACHNAME>Berczy</NACHNAME>
+    <VORNAMEN>Amélie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="181">
+    <ID>43103</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bergius</NACHNAME>
+    <VORNAMEN>Auguste Emilie Charlotte</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="182">
+    <ID>43103</ID>
+    <LFDNR>4130</LFDNR>
+    <NACHNAME>Bergius</NACHNAME>
+    <VORNAMEN>Auguste</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="183">
+    <ID>43116</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bertuch</NACHNAME>
+    <VORNAMEN>Christiane Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. Feder</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="184">
+    <ID>43116</ID>
+    <LFDNR>4142</LFDNR>
+    <NACHNAME>Bertuch</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="185">
+    <ID>43116</ID>
+    <LFDNR>11622</LFDNR>
+    <NACHNAME>Feder</NACHNAME>
+    <VORNAMEN>Christiane Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>verh. Bertuch</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="186">
+    <ID>43123</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bethmann</NACHNAME>
+    <VORNAMEN>Friederike Auguste Konradine</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="187">
+    <ID>43123</ID>
+    <LFDNR>4147</LFDNR>
+    <NACHNAME>Bethmann</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="188">
+    <ID>43123</ID>
+    <LFDNR>11341</LFDNR>
+    <NACHNAME>Unzelmann</NACHNAME>
+    <VORNAMEN>Friederike Auguste Konradine</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="189">
+    <ID>43123</ID>
+    <LFDNR>11342</LFDNR>
+    <NACHNAME>Flittner</NACHNAME>
+    <VORNAMEN>Friederike Auguste Konradine</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="190">
+    <ID>43138</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Beust</NACHNAME>
+    <VORNAMEN>Philippine Wilhelmine</VORNAMEN>
+    <RUFNAME>Philippine</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von Sandreczki</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="191">
+    <ID>43138</ID>
+    <LFDNR>4158</LFDNR>
+    <NACHNAME>Beust</NACHNAME>
+    <VORNAMEN>Philippine</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="192">
+    <ID>43159</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Blomberg</NACHNAME>
+    <VORNAMEN>Katharine Sophie Friederike</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <GEBURTSNAME>geb. Schott von Schottenstein</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="193">
+    <ID>43159</ID>
+    <LFDNR>4180</LFDNR>
+    <NACHNAME>Blomberg</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="194">
+    <ID>43181</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bohn</NACHNAME>
+    <VORNAMEN>Johanna Sophie</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Wesselhöft</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="195">
+    <ID>43181</ID>
+    <LFDNR>4201</LFDNR>
+    <NACHNAME>Bohn</NACHNAME>
+    <VORNAMEN>Johanna Sophie</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="196">
+    <ID>43181</ID>
+    <LFDNR>9312</LFDNR>
+    <NACHNAME>Wesselhöft</NACHNAME>
+    <VORNAMEN>Johanna Sophie</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>verh. Bohn</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="197">
+    <ID>43215</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Brand</NACHNAME>
+    <VORNAMEN>Anna Maria</VORNAMEN>
+    <RUFNAME>Maria, Minna</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="198">
+    <ID>43215</ID>
+    <LFDNR>4228</LFDNR>
+    <NACHNAME>Brand</NACHNAME>
+    <VORNAMEN>Maria</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="199">
+    <ID>43252</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Brentano</NACHNAME>
+    <VORNAMEN>Johanna Antonia</VORNAMEN>
+    <RUFNAME>Antonia</RUFNAME>
+    <GEBURTSNAME>geb. von Birkenstock</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="200">
+    <ID>43252</ID>
+    <LFDNR>4259</LFDNR>
+    <NACHNAME>Brentano</NACHNAME>
+    <VORNAMEN>Johanna Antonia (Toni) Josepha</VORNAMEN>
+    <RUFNAME>Antonia (Toni)</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="201">
+    <ID>43260</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Brentano</NACHNAME>
+    <VORNAMEN>Sophie Friederike</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Schubart gesch. Mereau</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="202">
+    <ID>43260</ID>
+    <LFDNR>4264</LFDNR>
+    <NACHNAME>Brentano</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <GEBURTSNAME>geb. Schubart gesch. Mereau</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="203">
+    <ID>43260</ID>
+    <LFDNR>6627</LFDNR>
+    <NACHNAME>Schubart</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="204">
+    <ID>43260</ID>
+    <LFDNR>6628</LFDNR>
+    <NACHNAME>Mereau</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <GEBURTSNAME>geb. Schubart</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="205">
+    <ID>43273</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Brühl</NACHNAME>
+    <VORNAMEN>Johanna Margareta Christiane (Christine, Tina) </VORNAMEN>
+    <RUFNAME>Christine, Tina</RUFNAME>
+    <GEBURTSNAME>geb. Schleierweber von Friedenau</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="206">
+    <ID>43273</ID>
+    <LFDNR>6462</LFDNR>
+    <NACHNAME>Brühl</NACHNAME>
+    <VORNAMEN>Christine</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="207">
+    <ID>43273</ID>
+    <LFDNR>6629</LFDNR>
+    <NACHNAME>Brühl</NACHNAME>
+    <VORNAMEN>Tina</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="208">
+    <ID>43298</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bürger</NACHNAME>
+    <VORNAMEN>Marie Christiane Elisabeth</VORNAMEN>
+    <RUFNAME>Elise</RUFNAME>
+    <GEBURTSNAME>geb. Hahn</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="209">
+    <ID>43298</ID>
+    <LFDNR>3851</LFDNR>
+    <NACHNAME>Hahn</NACHNAME>
+    <VORNAMEN>Elise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="210">
+    <ID>43337</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Caspers</NACHNAME>
+    <VORNAMEN>Franziska (Fanny) Johanna </VORNAMEN>
+    <RUFNAME>Fanny</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="211">
+    <ID>43337</ID>
+    <LFDNR>6463</LFDNR>
+    <NACHNAME>Caspers</NACHNAME>
+    <VORNAMEN>Fanny</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="212">
+    <ID>43346</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Chassepot</NACHNAME>
+    <VORNAMEN>Anna Dorothea Elisabeth de</VORNAMEN>
+    <RUFNAME>Dorothea</RUFNAME>
+    <GEBURTSNAME>geb. von Knabenau</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="213">
+    <ID>43346</ID>
+    <LFDNR>4346</LFDNR>
+    <NACHNAME>Chassepot</NACHNAME>
+    <VORNAMEN>Dorothea</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="214">
+    <ID>43346</ID>
+    <LFDNR>17674</LFDNR>
+    <NACHNAME>Knabenau</NACHNAME>
+    <VORNAMEN>Anna Dorothea Elisabeth</VORNAMEN>
+    <RUFNAME>Dorothea</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="215">
+    <ID>43352</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Chézy</NACHNAME>
+    <VORNAMEN>Wilhelmine (Helmina) Christiane</VORNAMEN>
+    <RUFNAME>Helmina</RUFNAME>
+    <GEBURTSNAME>geb. von Klenke (Klencke), gesch. von Hastfer</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="216">
+    <ID>43352</ID>
+    <LFDNR>6466</LFDNR>
+    <NACHNAME>Chézy</NACHNAME>
+    <VORNAMEN>Helmina</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="217">
+    <ID>43377</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Cornet</NACHNAME>
+    <VORNAMEN>Marie Katharine Friederike</VORNAMEN>
+    <RUFNAME>Marie</RUFNAME>
+    <GEBURTSNAME>geb. Leu</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="218">
+    <ID>43377</ID>
+    <LFDNR>4368</LFDNR>
+    <NACHNAME>Sachse</NACHNAME>
+    <VORNAMEN>Marie Katharine Friederike</VORNAMEN>
+    <RUFNAME>Marie </RUFNAME>
+    <GEBURTSNAME>geb. Leu</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="219">
+    <ID>43404</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Crayen</NACHNAME>
+    <VORNAMEN>Susanne Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. Le Veaux</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="220">
+    <ID>43404</ID>
+    <LFDNR>4392</LFDNR>
+    <NACHNAME>Crayen</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="221">
+    <ID>43518</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Duttenhofer</NACHNAME>
+    <VORNAMEN>Christiane Luise</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Hummel</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="222">
+    <ID>43518</ID>
+    <LFDNR>4498</LFDNR>
+    <NACHNAME>Duttenhofer</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="223">
+    <ID>43566</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Engelhard</NACHNAME>
+    <VORNAMEN>Magdalene Philippine</VORNAMEN>
+    <RUFNAME>Philippine</RUFNAME>
+    <GEBURTSNAME>geb. Gatterer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="224">
+    <ID>43566</ID>
+    <LFDNR>4544</LFDNR>
+    <NACHNAME>Engelhard</NACHNAME>
+    <VORNAMEN>Philippine</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="225">
+    <ID>43592</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Eybenberg</NACHNAME>
+    <VORNAMEN>Karoline Esperance Marianne</VORNAMEN>
+    <RUFNAME>Marianne</RUFNAME>
+    <GEBURTSNAME>geb. Meyer</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="226">
+    <ID>43592</ID>
+    <LFDNR>5390</LFDNR>
+    <NACHNAME>Eybenberg</NACHNAME>
+    <VORNAMEN>Marianne</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="227">
+    <ID>43598</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Färber</NACHNAME>
+    <VORNAMEN>Dorothea Johanne Marie</VORNAMEN>
+    <RUFNAME>Dorothea</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="228">
+    <ID>43598</ID>
+    <LFDNR>4569</LFDNR>
+    <NACHNAME>Färber</NACHNAME>
+    <VORNAMEN>Dorothea</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="229">
+    <ID>43602</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Falk</NACHNAME>
+    <VORNAMEN>Elisabeth Charlotte Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Rosenfeld </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="230">
+    <ID>43602</ID>
+    <LFDNR>4573</LFDNR>
+    <NACHNAME>Falk</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="231">
+    <ID>43624</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Finck von Finckenstein</NACHNAME>
+    <VORNAMEN>Henriette Amalie Dorothea</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="232">
+    <ID>43624</ID>
+    <LFDNR>4594</LFDNR>
+    <NACHNAME>Finck von Finckenstein</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="233">
+    <ID>43649</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Focke</NACHNAME>
+    <VORNAMEN>Johanna Katharina Friederike</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <GEBURTSNAME>geb. Urban</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="234">
+    <ID>43649</ID>
+    <LFDNR>4617</LFDNR>
+    <NACHNAME>Focke</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="235">
+    <ID>43658</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Foucquet</NACHNAME>
+    <VORNAMEN>Marie Renée Louise</VORNAMEN>
+    <RUFNAME>Renée</RUFNAME>
+    <TITEL>de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="236">
+    <ID>43658</ID>
+    <LFDNR>4626</LFDNR>
+    <NACHNAME>Foucquet</NACHNAME>
+    <VORNAMEN>Renée</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="237">
+    <ID>43660</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Fouqué</NACHNAME>
+    <VORNAMEN>Karoline Philippine de la Motte-[F.]</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von Briest </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="238">
+    <ID>43660</ID>
+    <LFDNR>4628</LFDNR>
+    <NACHNAME>Fouqué</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="239">
+    <ID>43664</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Franckenberg und Ludwigsdorf</NACHNAME>
+    <VORNAMEN>Friederike Dorothea Karoline</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <GEBURTSNAME>geb. von Rüxleben </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="240">
+    <ID>43664</ID>
+    <LFDNR>4632</LFDNR>
+    <NACHNAME>Franckenberg</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="241">
+    <ID>43682</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Fritsch</NACHNAME>
+    <VORNAMEN>Amalia Luise Konstantine</VORNAMEN>
+    <RUFNAME>Amalia</RUFNAME>
+    <GEBURTSNAME>geb. von Lyncker </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="242">
+    <ID>43682</ID>
+    <LFDNR>4646</LFDNR>
+    <NACHNAME>Fritsch</NACHNAME>
+    <VORNAMEN>Amalia</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="243">
+    <ID>43683</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Fritsch</NACHNAME>
+    <VORNAMEN>Henriette Albertine Antonie</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. Wolffskeel (Wolfskeel) von Reichenberg </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="244">
+    <ID>43683</ID>
+    <LFDNR>4647</LFDNR>
+    <NACHNAME>Fritsch</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="245">
+    <ID>43683</ID>
+    <LFDNR>13716</LFDNR>
+    <NACHNAME>Wolffskeel (Wolfskeel) von Reichenberg </NACHNAME>
+    <VORNAMEN>Henriette Albertine Antoine</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="246">
+    <ID>43687</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Frölich</NACHNAME>
+    <VORNAMEN>Dorothea Friederika Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. Rauthe</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="247">
+    <ID>43687</ID>
+    <LFDNR>4651</LFDNR>
+    <NACHNAME>Frölich</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="248">
+    <ID>43688</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Frommann</NACHNAME>
+    <VORNAMEN>Sophia Alwina (Albina)</VORNAMEN>
+    <RUFNAME>Alwina</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="249">
+    <ID>43688</ID>
+    <LFDNR>4652</LFDNR>
+    <NACHNAME>Frommann</NACHNAME>
+    <VORNAMEN>Allwina</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="250">
+    <ID>43690</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Frommann</NACHNAME>
+    <VORNAMEN>Johanna Charlotte</VORNAMEN>
+    <RUFNAME>Johanna</RUFNAME>
+    <GEBURTSNAME>geb. Wesselhöft</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="251">
+    <ID>43690</ID>
+    <LFDNR>3856</LFDNR>
+    <NACHNAME>Wesselhöft</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="252">
+    <ID>43690</ID>
+    <LFDNR>3857</LFDNR>
+    <NACHNAME>Frommann</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="253">
+    <ID>43705</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gallitzin</NACHNAME>
+    <VORNAMEN>Adelheid Amalia</VORNAMEN>
+    <RUFNAME>Amalia</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin v. Schmettau</GEBURTSNAME>
+    <TITEL>Fürstin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="254">
+    <ID>43705</ID>
+    <LFDNR>4662</LFDNR>
+    <NACHNAME>Gallitzin</NACHNAME>
+    <VORNAMEN>Amalia</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="255">
+    <ID>43722</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Genast</NACHNAME>
+    <VORNAMEN>Karoline Christine</VORNAMEN>
+    <RUFNAME>Christine</RUFNAME>
+    <GEBURTSNAME>geb. Böhler</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="256">
+    <ID>43722</ID>
+    <LFDNR>3993</LFDNR>
+    <NACHNAME>Böhler</NACHNAME>
+    <VORNAMEN>Karoline Christine</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="257">
+    <ID>43735</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Germar</NACHNAME>
+    <VORNAMEN>Karoline Luise</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="258">
+    <ID>43753</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gildemeister</NACHNAME>
+    <VORNAMEN>Karoline Amalie</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. Kotzebue</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="259">
+    <ID>43753</ID>
+    <LFDNR>4705</LFDNR>
+    <NACHNAME>Gildemeister</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="260">
+    <ID>43753</ID>
+    <LFDNR>8811</LFDNR>
+    <NACHNAME>Kotzebue</NACHNAME>
+    <VORNAMEN>Karoline Amalie</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>verh. Gildemeister</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="261">
+    <ID>43766</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Göchhausen</NACHNAME>
+    <VORNAMEN>Luise Ernestine Christiane Juliane</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="262">
+    <ID>43766</ID>
+    <LFDNR>3971</LFDNR>
+    <NACHNAME>Göchhausen</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="263">
+    <ID>43766</ID>
+    <LFDNR>6738</LFDNR>
+    <NACHNAME>Goechhausen</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="264">
+    <ID>43766</ID>
+    <LFDNR>6746</LFDNR>
+    <NACHNAME>Goechhausen</NACHNAME>
+    <VORNAMEN>Luise Ernestine Christiane Juliane</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="265">
+    <ID>43766</ID>
+    <LFDNR>11897</LFDNR>
+    <NACHNAME>Sunnemann</NACHNAME>
+    <VORNAMEN>Fräulein</VORNAMEN>
+    <NAMENSFORM>Pseudonym</NAMENSFORM>
+  </ITEM>
+  <ITEM num="266">
+    <ID>43767</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gödör</NACHNAME>
+    <VORNAMEN>Emilie Henriette Rosamunde Karoline Friederike Luise</VORNAMEN>
+    <RUFNAME>Emilie</RUFNAME>
+    <GEBURTSNAME>geb. Eckhardt</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="267">
+    <ID>43767</ID>
+    <LFDNR>4716</LFDNR>
+    <NACHNAME>Gödör</NACHNAME>
+    <VORNAMEN>Emilie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="268">
+    <ID>43775</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Goertzke</NACHNAME>
+    <VORNAMEN>Christine Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von Hoffmann</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="269">
+    <ID>43775</ID>
+    <LFDNR>4722</LFDNR>
+    <NACHNAME>Goertzke</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="270">
+    <ID>43779</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Goethe</NACHNAME>
+    <VORNAMEN>Johanna Christiane Sophie</VORNAMEN>
+    <RUFNAME>Christiane</RUFNAME>
+    <GEBURTSNAME>geb. Vulpius</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="271">
+    <ID>43779</ID>
+    <LFDNR>3862</LFDNR>
+    <NACHNAME>Vulpius</NACHNAME>
+    <VORNAMEN>Christiane</VORNAMEN>
+    <GEBURTSNAME>verh. Goethe</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="272">
+    <ID>43779</ID>
+    <LFDNR>3863</LFDNR>
+    <NACHNAME>Goethe</NACHNAME>
+    <VORNAMEN>Christiane</VORNAMEN>
+    <GEBURTSNAME>geb. Vulpius</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="273">
+    <ID>43781</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Goethe</NACHNAME>
+    <VORNAMEN>Katharina Elisabeth</VORNAMEN>
+    <RUFNAME>Elisabeth</RUFNAME>
+    <GEBURTSNAME>geb. Textor</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="274">
+    <ID>43781</ID>
+    <LFDNR>4726</LFDNR>
+    <NACHNAME>Goethe</NACHNAME>
+    <VORNAMEN>Elisabeth</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="275">
+    <ID>43781</ID>
+    <LFDNR>19254</LFDNR>
+    <NACHNAME>Frau Rat</NACHNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="276">
+    <ID>43781</ID>
+    <LFDNR>19255</LFDNR>
+    <NACHNAME>Frau Aja</NACHNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="277">
+    <ID>43782</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Goethe</NACHNAME>
+    <VORNAMEN>Ottilie Wilhelmine Ernestine Henriette</VORNAMEN>
+    <RUFNAME>Ottilie</RUFNAME>
+    <GEBURTSNAME>geb. von Pogwisch</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="278">
+    <ID>43782</ID>
+    <LFDNR>4727</LFDNR>
+    <NACHNAME>Goethe</NACHNAME>
+    <VORNAMEN>Ottilie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="279">
+    <ID>43782</ID>
+    <LFDNR>18931</LFDNR>
+    <NACHNAME>Pogwisch</NACHNAME>
+    <VORNAMEN>Ottilie Wilhelmine Ernestine Henriette</VORNAMEN>
+    <RUFNAME>Ottilie</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="280">
+    <ID>43787</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Goetze  (Frau von)</NACHNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="281">
+    <ID>43805</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gore</NACHNAME>
+    <VORNAMEN>Elisabeth Maria</VORNAMEN>
+    <RUFNAME>Eliza</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="282">
+    <ID>43841</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Großbritannien</NACHNAME>
+    <VORNAMEN>Friederike Karoline Sophie Alexandrine</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Mecklenburg-Strelitz</GEBURTSNAME>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="283">
+    <ID>43841</ID>
+    <LFDNR>4780</LFDNR>
+    <NACHNAME>Großbritannien</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="284">
+    <ID>43841</ID>
+    <LFDNR>18036</LFDNR>
+    <NACHNAME>Cumberland</NACHNAME>
+    <VORNAMEN>Friederike Karoline Sophie Alexandrine</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="285">
+    <ID>43848</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Großmann</NACHNAME>
+    <VORNAMEN>Dorothee</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="286">
+    <ID>43849</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Grotthuß</NACHNAME>
+    <VORNAMEN>Sophie Leopoldine Wilhelmine</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="287">
+    <ID>43849</ID>
+    <LFDNR>4787</LFDNR>
+    <NACHNAME>Grotthuß</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="288">
+    <ID>43849</ID>
+    <LFDNR>11357</LFDNR>
+    <NACHNAME>Meyer</NACHNAME>
+    <VORNAMEN>Sara</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="289">
+    <ID>43849</ID>
+    <LFDNR>11358</LFDNR>
+    <NACHNAME>Wulff</NACHNAME>
+    <VORNAMEN>Sophie Leopoldine Wilhelmine</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="290">
+    <ID>43868</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Güldenapfel</NACHNAME>
+    <VORNAMEN>Johannetta Luisa Christophina</VORNAMEN>
+    <RUFNAME>Jeanette</RUFNAME>
+    <GEBURTSNAME>geb. Heß</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="291">
+    <ID>43872</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Günderrode</NACHNAME>
+    <VORNAMEN>Wilhelmine Karoline Eleonore</VORNAMEN>
+    <RUFNAME>Wilhelmine</RUFNAME>
+    <GEBURTSNAME>geb. von Stein zu Nord- und Ostheim </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="292">
+    <ID>43872</ID>
+    <LFDNR>4804</LFDNR>
+    <NACHNAME>Günderrode</NACHNAME>
+    <VORNAMEN>Wilhelmine</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="293">
+    <ID>43892</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Haeseler</NACHNAME>
+    <VORNAMEN>Charlotte Christiane Luise</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von Beust </GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="294">
+    <ID>43892</ID>
+    <LFDNR>4823</LFDNR>
+    <NACHNAME>Haeseler</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="295">
+    <ID>43894</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Häßler</NACHNAME>
+    <VORNAMEN>Barbara Sophia</VORNAMEN>
+    <RUFNAME>Sophia</RUFNAME>
+    <GEBURTSNAME>geb. Kiel</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="296">
+    <ID>43894</ID>
+    <LFDNR>4825</LFDNR>
+    <NACHNAME>Häßler</NACHNAME>
+    <VORNAMEN>Sophia</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="297">
+    <ID>43920</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Harrach</NACHNAME>
+    <VORNAMEN>Marie Josephine Eleonore</VORNAMEN>
+    <RUFNAME>Josephine</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von und zu Liechtenstein </GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="298">
+    <ID>43920</ID>
+    <LFDNR>4847</LFDNR>
+    <NACHNAME>Harrach</NACHNAME>
+    <VORNAMEN>Josephine</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="299">
+    <ID>43928</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hasenclever</NACHNAME>
+    <VORNAMEN>Kornelia Henriette Franziska</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. Schlosser</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="300">
+    <ID>43928</ID>
+    <LFDNR>4854</LFDNR>
+    <NACHNAME>Hasenclever</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="301">
+    <ID>43928</ID>
+    <LFDNR>8810</LFDNR>
+    <NACHNAME>Schlosser</NACHNAME>
+    <VORNAMEN>Kornelia Henriette Franziska</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>verh. Hasenclever</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="302">
+    <ID>43958</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Helvig</NACHNAME>
+    <VORNAMEN>Anna Amalia</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. von Imhoff</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="303">
+    <ID>43958</ID>
+    <LFDNR>6641</LFDNR>
+    <NACHNAME>Imhoff</NACHNAME>
+    <VORNAMEN>Anna Amalia</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="304">
+    <ID>43958</ID>
+    <LFDNR>6642</LFDNR>
+    <NACHNAME>Helvig</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <GEBURTSNAME>geb. von Imhoff</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="305">
+    <ID>43961</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Henckel von Donnersmarck</NACHNAME>
+    <VORNAMEN>Eleonore Maximiliane Ottilie Luise</VORNAMEN>
+    <RUFNAME>Ottilie</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von Lepel </GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="306">
+    <ID>43961</ID>
+    <LFDNR>4883</LFDNR>
+    <NACHNAME>Henckel von Donnersmarck</NACHNAME>
+    <VORNAMEN>Ottilie</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="307">
+    <ID>43984</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Herder</NACHNAME>
+    <VORNAMEN>Maria Karolina</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Flachsland</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="308">
+    <ID>43984</ID>
+    <LFDNR>3872</LFDNR>
+    <NACHNAME>Herder</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="309">
+    <ID>43984</ID>
+    <LFDNR>3873</LFDNR>
+    <NACHNAME>Herder</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="310">
+    <ID>43984</ID>
+    <LFDNR>3874</LFDNR>
+    <NACHNAME>Flachsland</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="311">
+    <ID>43984</ID>
+    <LFDNR>6747</LFDNR>
+    <NACHNAME>Herder</NACHNAME>
+    <VORNAMEN>Karoline Maria</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Flachsland</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="312">
+    <ID>43984</ID>
+    <LFDNR>13212</LFDNR>
+    <NACHNAME>Herder</NACHNAME>
+    <VORNAMEN>Caroline</VORNAMEN>
+    <GEBURTSNAME>geb. Flachsland</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="313">
+    <ID>44000</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hertel</NACHNAME>
+    <VORNAMEN>Marianne Juliane Johanne</VORNAMEN>
+    <RUFNAME>Marianne</RUFNAME>
+    <GEBURTSNAME>geb. Steiner </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="314">
+    <ID>44000</ID>
+    <LFDNR>4914</LFDNR>
+    <NACHNAME>Hertel</NACHNAME>
+    <VORNAMEN>Marianne</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="315">
+    <ID>44010</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hessen-Darmstadt</NACHNAME>
+    <VORNAMEN>Luise Karoline Henriette</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Hessen-Darmstadt</GEBURTSNAME>
+    <TITEL>Großherzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="316">
+    <ID>44010</ID>
+    <LFDNR>3875</LFDNR>
+    <NACHNAME>Hessen-Darmstadt</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin von Hessen-Darmstadt</GEBURTSNAME>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="317">
+    <ID>44010</ID>
+    <LFDNR>3876</LFDNR>
+    <NACHNAME>Hessen-Darmstadt</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>Großherzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="318">
+    <ID>44017</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hessen-Kassel</NACHNAME>
+    <VORNAMEN>Friederike Christiane Auguste</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Preußen </GEBURTSNAME>
+    <TITEL>Kurprinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="319">
+    <ID>44017</ID>
+    <LFDNR>5404</LFDNR>
+    <NACHNAME>Hessen-Kassel</NACHNAME>
+    <VORNAMEN>Auguste</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="320">
+    <ID>44018</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hessen-Kassel</NACHNAME>
+    <VORNAMEN>Karoline Friederike Wilhelmine</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="321">
+    <ID>44018</ID>
+    <LFDNR>5405</LFDNR>
+    <NACHNAME>Hessen-Kassel</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="322">
+    <ID>44029</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Heygendorff</NACHNAME>
+    <VORNAMEN>Henriette Karoline Friederike</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Jagemann</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="323">
+    <ID>44029</ID>
+    <LFDNR>5416</LFDNR>
+    <NACHNAME>Heygendorff</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="324">
+    <ID>44029</ID>
+    <LFDNR>6720</LFDNR>
+    <NACHNAME>Jagemann</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="325">
+    <ID>44058</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hohenhausen</NACHNAME>
+    <VORNAMEN>Elise Philippine Amalie</VORNAMEN>
+    <RUFNAME>Elise</RUFNAME>
+    <GEBURTSNAME>geb. von Ochs</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="326">
+    <ID>44058</ID>
+    <LFDNR>5441</LFDNR>
+    <NACHNAME>Hohenhausen</NACHNAME>
+    <VORNAMEN>Elise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="327">
+    <ID>44069</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hopffgarten</NACHNAME>
+    <VORNAMEN>Karoline Rosine</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Reuß</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="328">
+    <ID>44069</ID>
+    <LFDNR>5452</LFDNR>
+    <NACHNAME>Hopffgarten</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="329">
+    <ID>44071</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hopffgarten</NACHNAME>
+    <VORNAMEN>Sophie Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von Fritsch </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="330">
+    <ID>44071</ID>
+    <LFDNR>5454</LFDNR>
+    <NACHNAME>Hopffgarten</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="331">
+    <ID>44079</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Horstig</NACHNAME>
+    <VORNAMEN>Susanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="332">
+    <ID>44081</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Huber</NACHNAME>
+    <VORNAMEN>Maria Theresia (Therese) Wilhelmine</VORNAMEN>
+    <RUFNAME>Therese</RUFNAME>
+    <GEBURTSNAME>geb. Heyne verw. Forster</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="333">
+    <ID>44081</ID>
+    <LFDNR>6484</LFDNR>
+    <NACHNAME>Huber</NACHNAME>
+    <VORNAMEN>Therese</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="334">
+    <ID>44081</ID>
+    <LFDNR>6658</LFDNR>
+    <NACHNAME>Heyne</NACHNAME>
+    <VORNAMEN>Therese</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="335">
+    <ID>44081</ID>
+    <LFDNR>6659</LFDNR>
+    <NACHNAME>Forster</NACHNAME>
+    <VORNAMEN>Therese</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="336">
+    <ID>44098</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Humboldt</NACHNAME>
+    <VORNAMEN>Karoline Friederike</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von Dacheroeden (Dachroeden)</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="337">
+    <ID>44098</ID>
+    <LFDNR>5475</LFDNR>
+    <NACHNAME>Humboldt</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="338">
+    <ID>44098</ID>
+    <LFDNR>14436</LFDNR>
+    <NACHNAME>Dacheröden</NACHNAME>
+    <VORNAMEN>Caroline Friederike</VORNAMEN>
+    <RUFNAME>Caroline</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="339">
+    <ID>44107</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hunnius</NACHNAME>
+    <VORNAMEN>Christiana Elmire</VORNAMEN>
+    <RUFNAME>Christiana</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="340">
+    <ID>44107</ID>
+    <LFDNR>5481</LFDNR>
+    <NACHNAME>Hunnius</NACHNAME>
+    <VORNAMEN>Christiana</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="341">
+    <ID>44110</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hunnius</NACHNAME>
+    <VORNAMEN>Augusta Karoline Ernestine</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="342">
+    <ID>44110</ID>
+    <LFDNR>5484</LFDNR>
+    <NACHNAME>Hunnius</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="343">
+    <ID>44131</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Jacobi</NACHNAME>
+    <VORNAMEN>Helene Elisabeth  (Betty)</VORNAMEN>
+    <RUFNAME>Betty</RUFNAME>
+    <GEBURTSNAME>geb. von Clermont</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="344">
+    <ID>44131</ID>
+    <LFDNR>6485</LFDNR>
+    <NACHNAME>Jacobi</NACHNAME>
+    <VORNAMEN>Betty</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="345">
+    <ID>44141</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Jacobi</NACHNAME>
+    <VORNAMEN>Susanne Helene (Lene)</VORNAMEN>
+    <RUFNAME>Lene</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="346">
+    <ID>44141</ID>
+    <LFDNR>6491</LFDNR>
+    <NACHNAME>Jacobi</NACHNAME>
+    <VORNAMEN>Lene</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="347">
+    <ID>44158</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Jung</NACHNAME>
+    <VORNAMEN>Elisabeth</VORNAMEN>
+    <GEBURTSNAME>geb. Coing</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="348">
+    <ID>44170</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kalb</NACHNAME>
+    <VORNAMEN>Charlotte Sophie Juliane</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>geb. Marschalk von Ostheim</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="349">
+    <ID>44170</ID>
+    <LFDNR>4962</LFDNR>
+    <NACHNAME>Kalb</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="350">
+    <ID>44190</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Keil</NACHNAME>
+    <VORNAMEN>Charlotte Friederika</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>geb. Straßburger</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="351">
+    <ID>44190</ID>
+    <LFDNR>4976</LFDNR>
+    <NACHNAME>Keil</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <GEBURTSNAME>geb. Straßburg(er)</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="352">
+    <ID>44199</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kestner</NACHNAME>
+    <VORNAMEN>Charlotte Sophie Henriette</VORNAMEN>
+    <RUFNAME>Charlotte (Lotte)</RUFNAME>
+    <GEBURTSNAME>geb. Buff</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="353">
+    <ID>44199</ID>
+    <LFDNR>4984</LFDNR>
+    <NACHNAME>Kestner</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="354">
+    <ID>44199</ID>
+    <LFDNR>12003</LFDNR>
+    <NACHNAME>Buff</NACHNAME>
+    <VORNAMEN>Charlotte Sophie Henriette</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>verh. Kestner</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="355">
+    <ID>44207</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kielmannsegge</NACHNAME>
+    <VORNAMEN>Auguste Charlotte</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <GEBURTSNAME>geb. von Schönberg</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="356">
+    <ID>44207</ID>
+    <LFDNR>4991</LFDNR>
+    <NACHNAME>Kielmannsegge</NACHNAME>
+    <VORNAMEN>Auguste</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="357">
+    <ID>44209</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kielmannsegge</NACHNAME>
+    <VORNAMEN>Natalie Charlotte Ferdinande</VORNAMEN>
+    <RUFNAME>Natalie</RUFNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="358">
+    <ID>44209</ID>
+    <LFDNR>4993</LFDNR>
+    <NACHNAME>Kielmannsegge</NACHNAME>
+    <VORNAMEN>Natalie</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="359">
+    <ID>44225</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kleist</NACHNAME>
+    <VORNAMEN>Marie Margarete Philippine</VORNAMEN>
+    <RUFNAME>Marie</RUFNAME>
+    <GEBURTSNAME>geb. v. Gualtieri </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="360">
+    <ID>44225</ID>
+    <LFDNR>5008</LFDNR>
+    <NACHNAME>Kleist</NACHNAME>
+    <VORNAMEN>Marie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="361">
+    <ID>44246</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Knebel</NACHNAME>
+    <VORNAMEN>Luise Dorothea Ulrike Emilie</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Rudorf (Rudorff)</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="362">
+    <ID>44246</ID>
+    <LFDNR>5024</LFDNR>
+    <NACHNAME>Knebel</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="363">
+    <ID>44246</ID>
+    <LFDNR>6672</LFDNR>
+    <NACHNAME>Rudorf (Rudorff)</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="364">
+    <ID>44248</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Knebel</NACHNAME>
+    <VORNAMEN>Magdalena Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="365">
+    <ID>44248</ID>
+    <LFDNR>5025</LFDNR>
+    <NACHNAME>Knebel</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="366">
+    <ID>44255</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Koels</NACHNAME>
+    <VORNAMEN>Johanna Sophie Dorothea</VORNAMEN>
+    <RUFNAME>Johanna</RUFNAME>
+    <GEBURTSNAME>geb. Loos</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="367">
+    <ID>44255</ID>
+    <LFDNR>5032</LFDNR>
+    <NACHNAME>Koels</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="368">
+    <ID>44266</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Körner</NACHNAME>
+    <VORNAMEN>Emma Sophie</VORNAMEN>
+    <RUFNAME>Emma</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="369">
+    <ID>44266</ID>
+    <LFDNR>5040</LFDNR>
+    <NACHNAME>Körner</NACHNAME>
+    <VORNAMEN>Emma</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="370">
+    <ID>44275</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Koethe</NACHNAME>
+    <VORNAMEN>Agnes Silvia Dorothea</VORNAMEN>
+    <RUFNAME>Sylvie</RUFNAME>
+    <GEBURTSNAME>geb. Ziegesar</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="371">
+    <ID>44275</ID>
+    <LFDNR>11338</LFDNR>
+    <NACHNAME>Ziegesar</NACHNAME>
+    <VORNAMEN>Agnes Silvia Dorothea</VORNAMEN>
+    <RUFNAME>Sylvie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="372">
+    <ID>44287</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Koppenfels</NACHNAME>
+    <VORNAMEN>Maria Christiana Kobe</VORNAMEN>
+    <RUFNAME>Maria</RUFNAME>
+    <GEBURTSNAME>geb. v. Kühn</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="373">
+    <ID>44287</ID>
+    <LFDNR>5058</LFDNR>
+    <NACHNAME>Koppenfels</NACHNAME>
+    <VORNAMEN>Maria</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="374">
+    <ID>44294</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kotzebue</NACHNAME>
+    <VORNAMEN>Anna Christiane</VORNAMEN>
+    <RUFNAME>Christiane</RUFNAME>
+    <GEBURTSNAME>geb. Krüger</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="375">
+    <ID>44294</ID>
+    <LFDNR>5065</LFDNR>
+    <NACHNAME>Kotzebue</NACHNAME>
+    <VORNAMEN>Christiane</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="376">
+    <ID>44311</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Krickeberg</NACHNAME>
+    <VORNAMEN>Sophie Friederike</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <GEBURTSNAME>geb. Koch, gesch. Gentz</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="377">
+    <ID>44311</ID>
+    <LFDNR>5082</LFDNR>
+    <NACHNAME>Krickeberg</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="378">
+    <ID>44314</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kröber</NACHNAME>
+    <VORNAMEN>Karoline Luisa Wilhelmine</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von Urff </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="379">
+    <ID>44314</ID>
+    <LFDNR>5085</LFDNR>
+    <NACHNAME>Kröber</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="380">
+    <ID>44336</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kurland</NACHNAME>
+    <VORNAMEN>Anna Charlotte Dorothea</VORNAMEN>
+    <RUFNAME>Dorothea</RUFNAME>
+    <GEBURTSNAME>geb. (Gräfin) von Medem</GEBURTSNAME>
+    <TITEL>Herzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="381">
+    <ID>44336</ID>
+    <LFDNR>5104</LFDNR>
+    <NACHNAME>Kurland</NACHNAME>
+    <VORNAMEN>Dorothea</VORNAMEN>
+    <TITEL>Herzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="382">
+    <ID>44355</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>La Roche</NACHNAME>
+    <VORNAMEN>Marie Sophie</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Gutermann von Gutershofen</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="383">
+    <ID>44355</ID>
+    <LFDNR>6679</LFDNR>
+    <NACHNAME>La Roche</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <GEBURTSNAME>geb. Gutermann von Gutershofen</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="384">
+    <ID>44355</ID>
+    <LFDNR>6680</LFDNR>
+    <NACHNAME>Gutermann von Gutershofen</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="385">
+    <ID>44355</ID>
+    <LFDNR>6682</LFDNR>
+    <NACHNAME>La Roche</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="386">
+    <ID>44384</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Levetzow</NACHNAME>
+    <VORNAMEN>Amalie Theodore Karoline</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. von Brösigke</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="387">
+    <ID>44384</ID>
+    <LFDNR>5143</LFDNR>
+    <NACHNAME>Levetzow</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="388">
+    <ID>44396</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Lieber</NACHNAME>
+    <VORNAMEN>Marie Friederike</VORNAMEN>
+    <RUFNAME>Marie</RUFNAME>
+    <GEBURTSNAME>geb. Hol(t)zwart</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="389">
+    <ID>44396</ID>
+    <LFDNR>5152</LFDNR>
+    <NACHNAME>Lieber</NACHNAME>
+    <VORNAMEN>Marie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="390">
+    <ID>44412</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Lincker</NACHNAME>
+    <VORNAMEN>Agnes Mathilde</VORNAMEN>
+    <RUFNAME>Mathilde</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="391">
+    <ID>44412</ID>
+    <LFDNR>5169</LFDNR>
+    <NACHNAME>Wegner</NACHNAME>
+    <VORNAMEN>Agnes Mathilde</VORNAMEN>
+    <RUFNAME>Agnes</RUFNAME>
+    <GEBURTSNAME>geb. von Lincker (Linker)</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="392">
+    <ID>44415</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Lincker (Linker) und Lützenwick</NACHNAME>
+    <VORNAMEN>Karoline (Lili) Christiane Eleonore</VORNAMEN>
+    <RUFNAME>Karoline (Lili)</RUFNAME>
+    <GEBURTSNAME>geb. von Schönberg </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="393">
+    <ID>44415</ID>
+    <LFDNR>5171</LFDNR>
+    <NACHNAME>Lincker (Linker) und Lützenwick</NACHNAME>
+    <VORNAMEN>Karoline (Lili)</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="394">
+    <ID>44422</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Lisiewska</NACHNAME>
+    <VORNAMEN>Friederike Julie</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <TITEL>(von)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="395">
+    <ID>44422</ID>
+    <LFDNR>5178</LFDNR>
+    <NACHNAME>Lisiewska</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <TITEL>(von)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="396">
+    <ID>44429</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Loder</NACHNAME>
+    <VORNAMEN>Charlotte Luise Auguste</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Richter</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="397">
+    <ID>44429</ID>
+    <LFDNR>5182</LFDNR>
+    <NACHNAME>Loder</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="398">
+    <ID>44502</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Martin</NACHNAME>
+    <VORNAMEN>Susanne Marianne Louise</VORNAMEN>
+    <RUFNAME>Louise</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="399">
+    <ID>44502</ID>
+    <LFDNR>5250</LFDNR>
+    <NACHNAME>Martin</NACHNAME>
+    <VORNAMEN>Louise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="400">
+    <ID>44523</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mecklenburg-Schwerin</NACHNAME>
+    <VORNAMEN>Karoline Luise</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Sachsen-Weimar und Eisenach</GEBURTSNAME>
+    <TITEL>Erbgroßherzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="401">
+    <ID>44523</ID>
+    <LFDNR>5270</LFDNR>
+    <NACHNAME>Mecklenburg-Schwerin</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>Erbgroßherzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="402">
+    <ID>44523</ID>
+    <LFDNR>6686</LFDNR>
+    <NACHNAME>Sachsen-Weimar und Eisenach</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="403">
+    <ID>44537</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Melber</NACHNAME>
+    <VORNAMEN>Johanna Maria</VORNAMEN>
+    <RUFNAME>Johanna</RUFNAME>
+    <GEBURTSNAME>geb. Textor</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="404">
+    <ID>44537</ID>
+    <LFDNR>5283</LFDNR>
+    <NACHNAME>Melber</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="405">
+    <ID>44542</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mendelssohn Bartholdy</NACHNAME>
+    <VORNAMEN>Fanny Cäcilie</VORNAMEN>
+    <RUFNAME>Fanny</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="406">
+    <ID>44542</ID>
+    <LFDNR>5287</LFDNR>
+    <NACHNAME>Mendelssohn Bartholdy</NACHNAME>
+    <VORNAMEN>Fanny</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="407">
+    <ID>44543</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mendelssohn Bartholdy</NACHNAME>
+    <VORNAMEN>Felizia Pauline Lea</VORNAMEN>
+    <RUFNAME>Lea</RUFNAME>
+    <GEBURTSNAME>geb. Salomon</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="408">
+    <ID>44543</ID>
+    <LFDNR>5288</LFDNR>
+    <NACHNAME>Mendelssohn Bartholdy</NACHNAME>
+    <VORNAMEN>Lea</VORNAMEN>
+    <GEBURTSNAME>geb. Salomon</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="409">
+    <ID>44543</ID>
+    <LFDNR>6687</LFDNR>
+    <NACHNAME>Mendelssohn Bartholdy</NACHNAME>
+    <VORNAMEN>Lea</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="410">
+    <ID>44543</ID>
+    <LFDNR>6688</LFDNR>
+    <NACHNAME>Salomon</NACHNAME>
+    <VORNAMEN>Lea</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="411">
+    <ID>44575</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Meyer</NACHNAME>
+    <VORNAMEN>Sophie Dorothea Elisabeth</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Meyer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="412">
+    <ID>44575</ID>
+    <LFDNR>5315</LFDNR>
+    <NACHNAME>Meyer</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="413">
+    <ID>44582</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Milder</NACHNAME>
+    <VORNAMEN>Pauline Anna</VORNAMEN>
+    <RUFNAME>Anna</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="414">
+    <ID>44582</ID>
+    <LFDNR>5322</LFDNR>
+    <NACHNAME>Milder</NACHNAME>
+    <VORNAMEN>Anna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="415">
+    <ID>44589</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mohr</NACHNAME>
+    <VORNAMEN>Johanna Maria Elisabeth</VORNAMEN>
+    <RUFNAME>Johanna Elisabeth</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="416">
+    <ID>44589</ID>
+    <LFDNR>5329</LFDNR>
+    <NACHNAME>Mohr</NACHNAME>
+    <VORNAMEN>Johanna Elisabeth</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="417">
+    <ID>44593</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Montenglaut</NACHNAME>
+    <VORNAMEN>Artemisia Henriette Marianne</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. von Cronstein </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="418">
+    <ID>44593</ID>
+    <LFDNR>5334</LFDNR>
+    <NACHNAME>Montenglaut</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="419">
+    <ID>44630</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Müller</NACHNAME>
+    <VORNAMEN>Karoline Luise</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Willmann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="420">
+    <ID>44630</ID>
+    <LFDNR>3905</LFDNR>
+    <NACHNAME>Willmann</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="421">
+    <ID>44630</ID>
+    <LFDNR>3906</LFDNR>
+    <NACHNAME>Müller</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="422">
+    <ID>44686</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Nicolovius</NACHNAME>
+    <VORNAMEN>Luise Maria Anna</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Schlosser </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="423">
+    <ID>44686</ID>
+    <LFDNR>5516</LFDNR>
+    <NACHNAME>Nicolovius</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="424">
+    <ID>44686</ID>
+    <LFDNR>7172</LFDNR>
+    <NACHNAME>Schlosser</NACHNAME>
+    <VORNAMEN>Luise Maria Anna</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="425">
+    <ID>44692</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Niebecker</NACHNAME>
+    <VORNAMEN>Luise Friederike</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. von Fritsch</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="426">
+    <ID>44692</ID>
+    <LFDNR>5521</LFDNR>
+    <NACHNAME>Niebecker</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="427">
+    <ID>44708</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Nuys</NACHNAME>
+    <VORNAMEN>Elisabeth Wilhelmine</VORNAMEN>
+    <RUFNAME>Elisa Minna</RUFNAME>
+    <GEBURTSNAME>geb. Traub, verh. Bertheau, verh. Mumssen </GEBURTSNAME>
+    <TITEL>van</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="428">
+    <ID>44708</ID>
+    <LFDNR>5536</LFDNR>
+    <NACHNAME>Nuys</NACHNAME>
+    <VORNAMEN>Elisa Minna</VORNAMEN>
+    <TITEL>van</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="429">
+    <ID>44716</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Oertel</NACHNAME>
+    <VORNAMEN>Wilhelmine (Mimi) Henriette</VORNAMEN>
+    <RUFNAME>Mimi</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="430">
+    <ID>44716</ID>
+    <LFDNR>5543</LFDNR>
+    <NACHNAME>Oertel</NACHNAME>
+    <VORNAMEN>Mimi</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="431">
+    <ID>44718</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Oeser</NACHNAME>
+    <VORNAMEN>Friederike Elisabeth</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="432">
+    <ID>44718</ID>
+    <LFDNR>5545</LFDNR>
+    <NACHNAME>Oeser</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="433">
+    <ID>44745</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Orttenburg</NACHNAME>
+    <VORNAMEN>Christiane Luise</VORNAMEN>
+    <RUFNAME>Christiane</RUFNAME>
+    <GEBURTSNAME>geb. Wild- und Rheingräfin zu Rheingrafenstein (Salm-Horstmar)</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="434">
+    <ID>44745</ID>
+    <LFDNR>5578</LFDNR>
+    <NACHNAME>Orttenburg</NACHNAME>
+    <VORNAMEN>Christiane</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="435">
+    <ID>44759</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Pallard</NACHNAME>
+    <VORNAMEN>Jeanne Augusta Suzanne</VORNAMEN>
+    <RUFNAME>Augusta</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="436">
+    <ID>44759</ID>
+    <LFDNR>5597</LFDNR>
+    <NACHNAME>Pallard</NACHNAME>
+    <VORNAMEN>Augusta</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="437">
+    <ID>44761</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Panhuys</NACHNAME>
+    <VORNAMEN>Luise Friederike Auguste</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Barckhaus (Barkhaus) genannt von Wiesenhütten </GEBURTSNAME>
+    <TITEL>van</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="438">
+    <ID>44761</ID>
+    <LFDNR>5600</LFDNR>
+    <NACHNAME>Panhuys</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>van</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="439">
+    <ID>44763</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Pappenheim</NACHNAME>
+    <VORNAMEN>Jenny Katharine</VORNAMEN>
+    <RUFNAME>Jenny</RUFNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="440">
+    <ID>44763</ID>
+    <LFDNR>5602</LFDNR>
+    <NACHNAME>Pappenheim</NACHNAME>
+    <VORNAMEN>Jenny</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="441">
+    <ID>44763</ID>
+    <LFDNR>8434</LFDNR>
+    <NACHNAME>Gustedt</NACHNAME>
+    <VORNAMEN>Jenny</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="442">
+    <ID>44777</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Paulus</NACHNAME>
+    <VORNAMEN>Elisabeth Friederike Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Paulus</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="443">
+    <ID>44777</ID>
+    <LFDNR>5616</LFDNR>
+    <NACHNAME>Paulus</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="444">
+    <ID>44777</ID>
+    <LFDNR>12459</LFDNR>
+    <NACHNAME>Holberg</NACHNAME>
+    <VORNAMEN>Eleutheria</VORNAMEN>
+    <NAMENSFORM>Pseudonym</NAMENSFORM>
+  </ITEM>
+  <ITEM num="445">
+    <ID>44799</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Phuhl</NACHNAME>
+    <VORNAMEN>Marie Luise Sophie Friederike</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von der Schulenburg-Kehnert </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="446">
+    <ID>44799</ID>
+    <LFDNR>5637</LFDNR>
+    <NACHNAME>Phuhl</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="447">
+    <ID>44810</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Pistorius</NACHNAME>
+    <VORNAMEN>Luise Augusta Philippina</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Schwan</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="448">
+    <ID>44810</ID>
+    <LFDNR>5647</LFDNR>
+    <NACHNAME>Pistorius</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="449">
+    <ID>44815</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Pogwisch</NACHNAME>
+    <VORNAMEN>Henriette Ottilie Ulrike</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin Henckel von Donnersmarck</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="450">
+    <ID>44815</ID>
+    <LFDNR>5652</LFDNR>
+    <NACHNAME>Pogwisch</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="451">
+    <ID>44816</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Pogwisch</NACHNAME>
+    <VORNAMEN>Ulrike Henriette Adele Elmire (Eleonore)</VORNAMEN>
+    <RUFNAME>Ulrike</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="452">
+    <ID>44816</ID>
+    <LFDNR>5653</LFDNR>
+    <NACHNAME>Pogwisch</NACHNAME>
+    <VORNAMEN>Ulrike</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="453">
+    <ID>44829</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Preußen</NACHNAME>
+    <VORNAMEN>Amalie Marie Anne (Marianne)</VORNAMEN>
+    <RUFNAME>Marianne</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Hessen-Homburg</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="454">
+    <ID>44829</ID>
+    <LFDNR>5666</LFDNR>
+    <NACHNAME>Preußen</NACHNAME>
+    <VORNAMEN>Marianne</VORNAMEN>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="455">
+    <ID>44861</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Radziwill</NACHNAME>
+    <VORNAMEN>Friederike Dorothea Luise Philippine</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Preußen </GEBURTSNAME>
+    <TITEL>Fürstin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="456">
+    <ID>44861</ID>
+    <LFDNR>5693</LFDNR>
+    <NACHNAME>Radziwill</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="457">
+    <ID>44885</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Recke</NACHNAME>
+    <VORNAMEN>Charlotte Elisabeth (Elisa) Konstantia </VORNAMEN>
+    <RUFNAME>Elisa</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von Medem</GEBURTSNAME>
+    <TITEL>von der</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="458">
+    <ID>44885</ID>
+    <LFDNR>5712</LFDNR>
+    <NACHNAME>Recke</NACHNAME>
+    <VORNAMEN>Elisa</VORNAMEN>
+    <TITEL>von der</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="459">
+    <ID>44886</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Reden</NACHNAME>
+    <VORNAMEN>Johanne Karoline Friederike</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <GEBURTSNAME>geb. von Riedesel zu Eisenbach</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="460">
+    <ID>44886</ID>
+    <LFDNR>5713</LFDNR>
+    <NACHNAME>Reden</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="461">
+    <ID>44915</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Reinhard</NACHNAME>
+    <VORNAMEN>Sophie Karoline</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="462">
+    <ID>44915</ID>
+    <LFDNR>5740</LFDNR>
+    <NACHNAME>Reinhard</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="463">
+    <ID>44919</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Reitzenstein</NACHNAME>
+    <VORNAMEN>Christiane Henriette (Tinette)</VORNAMEN>
+    <RUFNAME>Tinette</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="464">
+    <ID>44919</ID>
+    <LFDNR>5745</LFDNR>
+    <NACHNAME>Reitzenstein</NACHNAME>
+    <VORNAMEN>Tinette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="465">
+    <ID>44924</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Renner</NACHNAME>
+    <VORNAMEN>Maria Johanna</VORNAMEN>
+    <RUFNAME>Maria</RUFNAME>
+    <GEBURTSNAME>geb. Brochard </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="466">
+    <ID>44924</ID>
+    <LFDNR>5749</LFDNR>
+    <NACHNAME>Renner</NACHNAME>
+    <VORNAMEN>Maria</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="467">
+    <ID>44932</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Reventlow</NACHNAME>
+    <VORNAMEN>Friederike Juliane</VORNAMEN>
+    <RUFNAME>Julie</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin v. Schimmelmann</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="468">
+    <ID>44932</ID>
+    <LFDNR>5756</LFDNR>
+    <NACHNAME>Reventlow</NACHNAME>
+    <VORNAMEN>Julie</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="469">
+    <ID>44943</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Riemer</NACHNAME>
+    <VORNAMEN>Karoline Wilhelmina Henrietta Johanna</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Ulrich</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="470">
+    <ID>44943</ID>
+    <LFDNR>5765</LFDNR>
+    <NACHNAME>Riemer</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="471">
+    <ID>44977</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Rost</NACHNAME>
+    <VORNAMEN>Dorothea Katharina</VORNAMEN>
+    <RUFNAME>Dorothea</RUFNAME>
+    <GEBURTSNAME>geb. Hauenschild</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="472">
+    <ID>44977</ID>
+    <LFDNR>5798</LFDNR>
+    <NACHNAME>Rost</NACHNAME>
+    <VORNAMEN>Dorothea</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="473">
+    <ID>45034</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Sachsen-Gotha und Altenburg</NACHNAME>
+    <VORNAMEN>Maria Charlotte Amalie Ernestine Wilhelmine Henriette Philippine</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Sachsen-Meiningen</GEBURTSNAME>
+    <TITEL>Herzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="474">
+    <ID>45034</ID>
+    <LFDNR>5873</LFDNR>
+    <NACHNAME>Sachsen-Gotha und Altenburg</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="475">
+    <ID>45034</ID>
+    <LFDNR>11753</LFDNR>
+    <NACHNAME>Sachsen-Meiningen</NACHNAME>
+    <VORNAMEN>Maria Charlotte Amalie Ernestine Wilhelmine Henriette Philippine</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>verh. Herzogin von Sachsen-Gotha und Altenburg</GEBURTSNAME>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="476">
+    <ID>45046</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Sachsen-Weimar-Eisenach</NACHNAME>
+    <VORNAMEN>Luise Augusta</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Hessen-Darmstadt</GEBURTSNAME>
+    <TITEL>Großherzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="477">
+    <ID>45046</ID>
+    <LFDNR>3920</LFDNR>
+    <NACHNAME>Sachsen-Weimar-Eisenach</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin von Hessen-Darmstadt </GEBURTSNAME>
+    <TITEL>Großherzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="478">
+    <ID>45046</ID>
+    <LFDNR>6706</LFDNR>
+    <NACHNAME>Sachsen-Weimar und Eisenach</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin von Hessen-Darmstadt </GEBURTSNAME>
+    <TITEL>Herzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="479">
+    <ID>45051</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Sachsen-Weimar-Eisenach</NACHNAME>
+    <VORNAMEN>Maria Luise Augusta Katharina</VORNAMEN>
+    <RUFNAME>Augusta</RUFNAME>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="480">
+    <ID>45051</ID>
+    <LFDNR>3921</LFDNR>
+    <NACHNAME>Preußen</NACHNAME>
+    <VORNAMEN>Maria Luise Augusta Katharina</VORNAMEN>
+    <RUFNAME>Augusta</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Sachsen-Weimar-Eisenach</GEBURTSNAME>
+    <TITEL>Königin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="481">
+    <ID>45051</ID>
+    <LFDNR>3922</LFDNR>
+    <NACHNAME>Deutschland</NACHNAME>
+    <VORNAMEN>Augusta Marie Luise Katharina</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin von Sachsen-Weimar-Eisenach</GEBURTSNAME>
+    <TITEL>Kaiserin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="482">
+    <ID>45051</ID>
+    <LFDNR>3923</LFDNR>
+    <NACHNAME>Preußen</NACHNAME>
+    <VORNAMEN>Augusta</VORNAMEN>
+    <TITEL>Königin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="483">
+    <ID>45051</ID>
+    <LFDNR>3924</LFDNR>
+    <NACHNAME>Sachsen-Weimar-Eisenach</NACHNAME>
+    <VORNAMEN>Augusta</VORNAMEN>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="484">
+    <ID>45051</ID>
+    <LFDNR>6694</LFDNR>
+    <NACHNAME>Preußen</NACHNAME>
+    <VORNAMEN>Augusta</VORNAMEN>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="485">
+    <ID>45051</ID>
+    <LFDNR>11744</LFDNR>
+    <NACHNAME>Sachsen-Weimar und Eisenach</NACHNAME>
+    <VORNAMEN>Maria Luise Augusta Katharina</VORNAMEN>
+    <RUFNAME>Augusta</RUFNAME>
+    <TITEL>Prinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="486">
+    <ID>45063</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Sander</NACHNAME>
+    <VORNAMEN>Sophia (Sophie) Friederika Henriette</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Diederichs</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="487">
+    <ID>45063</ID>
+    <LFDNR>5901</LFDNR>
+    <NACHNAME>Sander</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="488">
+    <ID>45063</ID>
+    <LFDNR>11735</LFDNR>
+    <NACHNAME>Diederichs</NACHNAME>
+    <VORNAMEN>Sophia (Sophie) Friederika Henriette</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>verh. Sander</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="489">
+    <ID>45070</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Sartorius</NACHNAME>
+    <VORNAMEN>Karoline Dorothee</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von Voigt </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="490">
+    <ID>45070</ID>
+    <LFDNR>5905</LFDNR>
+    <NACHNAME>Sartorius</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="491">
+    <ID>45070</ID>
+    <LFDNR>11731</LFDNR>
+    <NACHNAME>Voigt</NACHNAME>
+    <VORNAMEN>Karoline Dorothee</VORNAMEN>
+    <GEBURTSNAME>verh. Sartorius</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="492">
+    <ID>45082</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schadow</NACHNAME>
+    <VORNAMEN>Karoline Henriette Marie</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. Rosenstiel</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="493">
+    <ID>45082</ID>
+    <LFDNR>5913</LFDNR>
+    <NACHNAME>Schadow</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="494">
+    <ID>45082</ID>
+    <LFDNR>9036</LFDNR>
+    <NACHNAME>Rosentiel</NACHNAME>
+    <VORNAMEN>Karoline Henriette Marie</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>verh. Schadow</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="495">
+    <ID>45090</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schardt</NACHNAME>
+    <VORNAMEN>Friederike Sophie Eleonore</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. von Bernstorff</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="496">
+    <ID>45090</ID>
+    <LFDNR>5921</LFDNR>
+    <NACHNAME>Schardt</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="497">
+    <ID>45090</ID>
+    <LFDNR>11718</LFDNR>
+    <NACHNAME>Bernstorff</NACHNAME>
+    <VORNAMEN>Friederike Sophie Eleonore </VORNAMEN>
+    <GEBURTSNAME>verh. Schardt</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="498">
+    <ID>45095</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schaumann</NACHNAME>
+    <VORNAMEN>Sophie Luise</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Koch</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="499">
+    <ID>45095</ID>
+    <LFDNR>5926</LFDNR>
+    <NACHNAME>Schaumann</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="500">
+    <ID>45095</ID>
+    <LFDNR>11716</LFDNR>
+    <NACHNAME>Koch</NACHNAME>
+    <VORNAMEN>Sophie Luise</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>verh. Schaumann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="501">
+    <ID>45110</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schelling</NACHNAME>
+    <VORNAMEN>Angelika Amalie Pauline</VORNAMEN>
+    <RUFNAME>Pauline</RUFNAME>
+    <GEBURTSNAME>geb. Gotter </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="502">
+    <ID>45110</ID>
+    <LFDNR>5940</LFDNR>
+    <NACHNAME>Schelling</NACHNAME>
+    <VORNAMEN>Pauline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="503">
+    <ID>45110</ID>
+    <LFDNR>11701</LFDNR>
+    <NACHNAME>Gotter</NACHNAME>
+    <VORNAMEN>Angelika Amalie Pauline</VORNAMEN>
+    <RUFNAME>Pauline</RUFNAME>
+    <GEBURTSNAME>verh. Schelling</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="504">
+    <ID>45111</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schelling</NACHNAME>
+    <VORNAMEN>Dorothea Karoline Albertine</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Michaelis</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="505">
+    <ID>45111</ID>
+    <LFDNR>5941</LFDNR>
+    <NACHNAME>Schelling</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="506">
+    <ID>45111</ID>
+    <LFDNR>8112</LFDNR>
+    <NACHNAME>Schlegel</NACHNAME>
+    <VORNAMEN>Dorothea Karoline Albertine</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Michaelis</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="507">
+    <ID>45111</ID>
+    <LFDNR>8113</LFDNR>
+    <NACHNAME>Böhmer</NACHNAME>
+    <VORNAMEN>Dorothea Karoline Albertine</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Michaelis</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="508">
+    <ID>45111</ID>
+    <LFDNR>13957</LFDNR>
+    <NACHNAME>Michaelis</NACHNAME>
+    <VORNAMEN>Dorothea Caroline Albertine</VORNAMEN>
+    <RUFNAME>Caroline</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="509">
+    <ID>45127</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schiller</NACHNAME>
+    <VORNAMEN>Luise Antoinette Charlotte</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>geb. von Lengefeld</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="510">
+    <ID>45127</ID>
+    <LFDNR>3936</LFDNR>
+    <NACHNAME>Schiller</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <GEBURTSNAME>geb. von Lengefeld</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="511">
+    <ID>45127</ID>
+    <LFDNR>3937</LFDNR>
+    <NACHNAME>Schiller</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <GEBURTSNAME>geb. von Lengefeld</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="512">
+    <ID>45127</ID>
+    <LFDNR>6669</LFDNR>
+    <NACHNAME>Lengefeld</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="513">
+    <ID>45134</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schlegel</NACHNAME>
+    <VORNAMEN>Dorothea Friederike</VORNAMEN>
+    <RUFNAME>Dorothea</RUFNAME>
+    <GEBURTSNAME>geb. Brendel (Veronika) Mendelssohn gesch. Veit</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="514">
+    <ID>45134</ID>
+    <LFDNR>5959</LFDNR>
+    <NACHNAME>Schlegel</NACHNAME>
+    <VORNAMEN>Dorothea</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="515">
+    <ID>45134</ID>
+    <LFDNR>6793</LFDNR>
+    <NACHNAME>Veit</NACHNAME>
+    <VORNAMEN>Dorothea</VORNAMEN>
+    <GEBURTSNAME>geb. Brendel (Veronika) Mendelssohn gesch. Veit</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="516">
+    <ID>45134</ID>
+    <LFDNR>11684</LFDNR>
+    <NACHNAME>Mendelssohn</NACHNAME>
+    <VORNAMEN>Brendel (Veronika)</VORNAMEN>
+    <GEBURTSNAME>verh. Schlegel</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="517">
+    <ID>45158</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schlosser</NACHNAME>
+    <VORNAMEN>Johanna Katharina Sibylla</VORNAMEN>
+    <RUFNAME>Johanna</RUFNAME>
+    <GEBURTSNAME>geb. Fahlmer </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="518">
+    <ID>45158</ID>
+    <LFDNR>5979</LFDNR>
+    <NACHNAME>Schlosser</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="519">
+    <ID>45158</ID>
+    <LFDNR>13414</LFDNR>
+    <NACHNAME>Fahlmer</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="520">
+    <ID>45163</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schlosser</NACHNAME>
+    <VORNAMEN>Margarete Rebekka Elisabeth</VORNAMEN>
+    <RUFNAME>Margarete</RUFNAME>
+    <GEBURTSNAME>geb. Steitz </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="521">
+    <ID>45163</ID>
+    <LFDNR>5983</LFDNR>
+    <NACHNAME>Schlosser</NACHNAME>
+    <VORNAMEN>Margarete</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="522">
+    <ID>45165</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schlosser</NACHNAME>
+    <VORNAMEN>Sophie Johanna</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Du Fay</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="523">
+    <ID>45165</ID>
+    <LFDNR>5985</LFDNR>
+    <NACHNAME>Schlosser</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="524">
+    <ID>45170</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schmidt</NACHNAME>
+    <VORNAMEN>Andrienne Jeanne</VORNAMEN>
+    <RUFNAME>Andrienne</RUFNAME>
+    <GEBURTSNAME>geb. Salomon</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="525">
+    <ID>45170</ID>
+    <LFDNR>5990</LFDNR>
+    <NACHNAME>Schmidt</NACHNAME>
+    <VORNAMEN>Andrienne</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="526">
+    <ID>45178</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schmidt</NACHNAME>
+    <VORNAMEN>Johanna Maria</VORNAMEN>
+    <RUFNAME>Maria</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="527">
+    <ID>45178</ID>
+    <LFDNR>5997</LFDNR>
+    <NACHNAME>Schmidt</NACHNAME>
+    <VORNAMEN>Maria</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="528">
+    <ID>45204</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Carolath-Beuthen</NACHNAME>
+    <VORNAMEN>Adelheid</VORNAMEN>
+    <GEBURTSNAME>geb. Gräfin von Pappenheim</GEBURTSNAME>
+    <TITEL>Fürstin zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="529">
+    <ID>45214</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schopenhauer</NACHNAME>
+    <VORNAMEN>Johanna Henriette</VORNAMEN>
+    <RUFNAME>Johanna</RUFNAME>
+    <GEBURTSNAME>geb. Trosiener</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="530">
+    <ID>45214</ID>
+    <LFDNR>6028</LFDNR>
+    <NACHNAME>Schopenhauer</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="531">
+    <ID>45215</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schopenhauer</NACHNAME>
+    <VORNAMEN>Luise Adelaide (Adele) Lavinia </VORNAMEN>
+    <RUFNAME>Adele</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="532">
+    <ID>45215</ID>
+    <LFDNR>6029</LFDNR>
+    <NACHNAME>Schopenhauer</NACHNAME>
+    <VORNAMEN>Adele</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="533">
+    <ID>45261</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schumann</NACHNAME>
+    <VORNAMEN>Karolina Friederika Christiana</VORNAMEN>
+    <RUFNAME>Karolina</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="534">
+    <ID>45261</ID>
+    <LFDNR>6074</LFDNR>
+    <NACHNAME>Schumann</NACHNAME>
+    <VORNAMEN>Karolina</VORNAMEN>
+    <GEBURTSNAME>verh. Wangemann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="535">
+    <ID>45287</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schwendler</NACHNAME>
+    <VORNAMEN>Auguste Sophie Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. von Mützschefahl</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="536">
+    <ID>45287</ID>
+    <LFDNR>6098</LFDNR>
+    <NACHNAME>Schwendler</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="537">
+    <ID>45287</ID>
+    <LFDNR>11629</LFDNR>
+    <NACHNAME>Mützschefahl</NACHNAME>
+    <VORNAMEN>Auguste Sophie Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="538">
+    <ID>45287</ID>
+    <LFDNR>11630</LFDNR>
+    <NACHNAME>Schlabrendorff (Schlabrendorf)</NACHNAME>
+    <VORNAMEN>Auguste Sophie Henriette</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="539">
+    <ID>45296</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Seckendorff</NACHNAME>
+    <VORNAMEN>Alexandrine Charlotte Marianne Wilhelmine </VORNAMEN>
+    <RUFNAME>Alexandrine</RUFNAME>
+    <GEBURTSNAME>geb. von Seckendorff-Aberdar </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="540">
+    <ID>45296</ID>
+    <LFDNR>6108</LFDNR>
+    <NACHNAME>Seckendorff</NACHNAME>
+    <VORNAMEN>Alexandrine</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="541">
+    <ID>45309</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Seebach</NACHNAME>
+    <VORNAMEN>Amalie Karoline Henriette Charlotte Wilhelmine</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="542">
+    <ID>45309</ID>
+    <LFDNR>6119</LFDNR>
+    <NACHNAME>Seebach</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <GEBURTSNAME>verh. von Groß</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="543">
+    <ID>45309</ID>
+    <LFDNR>8792</LFDNR>
+    <NACHNAME>Groß</NACHNAME>
+    <VORNAMEN>Amalie Karoline Henriette Charlotte Wilhelmine Luise</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. von Seebach</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="544">
+    <ID>45309</ID>
+    <LFDNR>9295</LFDNR>
+    <NACHNAME>Winter</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <NAMENSFORM>Pseudonym</NAMENSFORM>
+  </ITEM>
+  <ITEM num="545">
+    <ID>45315</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Seebeck</NACHNAME>
+    <VORNAMEN>Juliane Ulrika Amalia</VORNAMEN>
+    <RUFNAME>Juliane</RUFNAME>
+    <GEBURTSNAME>geb. Boye</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="546">
+    <ID>45315</ID>
+    <LFDNR>6125</LFDNR>
+    <NACHNAME>Seebeck</NACHNAME>
+    <VORNAMEN>Juliane</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="547">
+    <ID>45320</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Seidler</NACHNAME>
+    <VORNAMEN>Karoline Sophie Luise</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="548">
+    <ID>45320</ID>
+    <LFDNR>6128</LFDNR>
+    <NACHNAME>Seidler</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="549">
+    <ID>45320</ID>
+    <LFDNR>6917</LFDNR>
+    <NACHNAME>Seidler</NACHNAME>
+    <VORNAMEN>Louise Caroline Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="550">
+    <ID>45327</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Servière</NACHNAME>
+    <VORNAMEN>Anna Charlotte</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="551">
+    <ID>45327</ID>
+    <LFDNR>6135</LFDNR>
+    <NACHNAME>Servière</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="552">
+    <ID>45328</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Servière</NACHNAME>
+    <VORNAMEN>Paula Maria Walburgis </VORNAMEN>
+    <RUFNAME>Paula</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="553">
+    <ID>45328</ID>
+    <LFDNR>6137</LFDNR>
+    <NACHNAME>Servière</NACHNAME>
+    <VORNAMEN>Paula</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="554">
+    <ID>45345</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Solger</NACHNAME>
+    <VORNAMEN>Henriette Johanne Franziska Charlotte</VORNAMEN>
+    <RUFNAME>Henriette</RUFNAME>
+    <GEBURTSNAME>geb. von der Groeben</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="555">
+    <ID>45363</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Spiegel von und zu Pickelsheim</NACHNAME>
+    <VORNAMEN>Wilhelmine Emilie</VORNAMEN>
+    <RUFNAME>Emilie</RUFNAME>
+    <GEBURTSNAME>geb. von Rot(h)berg</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="556">
+    <ID>45363</ID>
+    <LFDNR>6169</LFDNR>
+    <NACHNAME>Spiegel von und zu Pickelsheim</NACHNAME>
+    <VORNAMEN>Emilie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="557">
+    <ID>45379</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Staël (S.-Holstein)</NACHNAME>
+    <VORNAMEN>Anne Louise Germaine de</VORNAMEN>
+    <RUFNAME>Germaine</RUFNAME>
+    <GEBURTSNAME>geb. Necker</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="558">
+    <ID>45379</ID>
+    <LFDNR>6197</LFDNR>
+    <NACHNAME>Staël (S.-Holstein)</NACHNAME>
+    <VORNAMEN>Germaine</VORNAMEN>
+    <GEBURTSNAME>geb. Necker</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="559">
+    <ID>45391</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stein</NACHNAME>
+    <VORNAMEN>Amalie (Amélie) Konstantine Luise Henriette</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. von Seebach</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="560">
+    <ID>45391</ID>
+    <LFDNR>6206</LFDNR>
+    <NACHNAME>Stein</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="561">
+    <ID>45394</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stein</NACHNAME>
+    <VORNAMEN>Charlotte Albertine Ernestine</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>geb. von Schardt</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="562">
+    <ID>45394</ID>
+    <LFDNR>6209</LFDNR>
+    <NACHNAME>Stein</NACHNAME>
+    <VORNAMEN>Charlotte</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="563">
+    <ID>45394</ID>
+    <LFDNR>11721</LFDNR>
+    <NACHNAME>Schardt</NACHNAME>
+    <VORNAMEN>Charlotte Albertine Ernestine</VORNAMEN>
+    <RUFNAME>Charlotte</RUFNAME>
+    <GEBURTSNAME>verh. von Stein</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="564">
+    <ID>45425</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stock</NACHNAME>
+    <VORNAMEN>Esther Maria Margarete</VORNAMEN>
+    <RUFNAME>Esther</RUFNAME>
+    <GEBURTSNAME>geb. Moritz </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="565">
+    <ID>45425</ID>
+    <LFDNR>6229</LFDNR>
+    <NACHNAME>Stock</NACHNAME>
+    <VORNAMEN>Esther</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="566">
+    <ID>45438</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stolberg-Stolberg</NACHNAME>
+    <VORNAMEN>Sophie Charlotte Eleonore</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von Redern</GEBURTSNAME>
+    <TITEL>Gräfin zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="567">
+    <ID>45438</ID>
+    <LFDNR>6241</LFDNR>
+    <NACHNAME>Stolberg-Stolberg</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <TITEL>Gräfin zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="568">
+    <ID>45480</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Tarnow</NACHNAME>
+    <VORNAMEN>Franziska Fanny Christiane Johanne Friederike </VORNAMEN>
+    <RUFNAME>Fanny</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="569">
+    <ID>45480</ID>
+    <LFDNR>5831</LFDNR>
+    <NACHNAME>Tarnow</NACHNAME>
+    <VORNAMEN>Fanny</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="570">
+    <ID>45503</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Thon</NACHNAME>
+    <VORNAMEN>Eleonore Sophie Auguste</VORNAMEN>
+    <RUFNAME>Eleonore</RUFNAME>
+    <GEBURTSNAME>geb. Röder </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="571">
+    <ID>45503</ID>
+    <LFDNR>5854</LFDNR>
+    <NACHNAME>Thon</NACHNAME>
+    <VORNAMEN>Eleonore</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="572">
+    <ID>45532</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Trebra</NACHNAME>
+    <VORNAMEN>Eleonore Erdmute</VORNAMEN>
+    <RUFNAME>Erdmute</RUFNAME>
+    <GEBURTSNAME>geb. von Gersdorf(f)</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="573">
+    <ID>45532</ID>
+    <LFDNR>6298</LFDNR>
+    <NACHNAME>Trebra</NACHNAME>
+    <VORNAMEN>Erdmute</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="574">
+    <ID>45545</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Tümpling</NACHNAME>
+    <VORNAMEN>Eleonore (Lorette) Ernestine Friederike</VORNAMEN>
+    <RUFNAME>Eleonore</RUFNAME>
+    <GEBURTSNAME>geb. von Tümpling</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="575">
+    <ID>45545</ID>
+    <LFDNR>6310</LFDNR>
+    <NACHNAME>Tümpling</NACHNAME>
+    <VORNAMEN>Eleonore</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="576">
+    <ID>45551</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Türckheim</NACHNAME>
+    <VORNAMEN>Anna Elisabeth (Lili Elise)</VORNAMEN>
+    <RUFNAME>Lili Elise</RUFNAME>
+    <GEBURTSNAME>geb. Schönemann</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="577">
+    <ID>45551</ID>
+    <LFDNR>6315</LFDNR>
+    <NACHNAME>Türckheim</NACHNAME>
+    <VORNAMEN>Lili Elise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="578">
+    <ID>45551</ID>
+    <LFDNR>8209</LFDNR>
+    <NACHNAME>Schönemann</NACHNAME>
+    <VORNAMEN>Anna Elisabeth</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="579">
+    <ID>45567</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Unger</NACHNAME>
+    <VORNAMEN>Friederike Helene</VORNAMEN>
+    <RUFNAME>Friederike</RUFNAME>
+    <GEBURTSNAME>geb. v. Rothenburg </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="580">
+    <ID>45567</ID>
+    <LFDNR>6330</LFDNR>
+    <NACHNAME>Unger</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="581">
+    <ID>45574</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Unzelmann</NACHNAME>
+    <VORNAMEN>Johanna Sophia Friederika</VORNAMEN>
+    <RUFNAME>Friederika</RUFNAME>
+    <GEBURTSNAME>geb. Petersilie </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="582">
+    <ID>45574</ID>
+    <LFDNR>6336</LFDNR>
+    <NACHNAME>Unzelmann</NACHNAME>
+    <VORNAMEN>Friederika</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="583">
+    <ID>45592</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Vernejoul</NACHNAME>
+    <VORNAMEN>Christiane Elise Sabine</VORNAMEN>
+    <RUFNAME>Christiane</RUFNAME>
+    <TITEL>von (de)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="584">
+    <ID>45592</ID>
+    <LFDNR>6353</LFDNR>
+    <NACHNAME>Vernejoul</NACHNAME>
+    <VORNAMEN>Christiane</VORNAMEN>
+    <TITEL>von (de)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="585">
+    <ID>45592</ID>
+    <LFDNR>11480</LFDNR>
+    <NACHNAME>Cramon</NACHNAME>
+    <VORNAMEN>Christiane Elise Sabine</VORNAMEN>
+    <RUFNAME>Christiane</RUFNAME>
+    <TITEL>von (de)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="586">
+    <ID>45592</ID>
+    <LFDNR>11481</LFDNR>
+    <NACHNAME>Waldenfels</NACHNAME>
+    <VORNAMEN>Christiane Elise Sabine</VORNAMEN>
+    <RUFNAME>Christiane</RUFNAME>
+    <TITEL>von (de)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="587">
+    <ID>45592</ID>
+    <LFDNR>11482</LFDNR>
+    <NACHNAME>Haeften</NACHNAME>
+    <VORNAMEN>Christiane Elise Sabine</VORNAMEN>
+    <RUFNAME>Christiane</RUFNAME>
+    <TITEL>von (de)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="588">
+    <ID>45610</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Voigt</NACHNAME>
+    <VORNAMEN>Amalie Henriette Karoline</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. Ludecus</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="589">
+    <ID>45610</ID>
+    <LFDNR>6372</LFDNR>
+    <NACHNAME>Voigt</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="590">
+    <ID>45611</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Voigt</NACHNAME>
+    <VORNAMEN>Amalie Karoline Friederike</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. Hufeland</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="591">
+    <ID>45611</ID>
+    <LFDNR>10676</LFDNR>
+    <NACHNAME>Osann</NACHNAME>
+    <VORNAMEN>Amalie Karoline Friedrike</VORNAMEN>
+    <GEBURTSNAME>geb. Hufeland</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="592">
+    <ID>45618</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Voigt</NACHNAME>
+    <VORNAMEN>Maria Susanna (Susette)</VORNAMEN>
+    <RUFNAME>Susette</RUFNAME>
+    <GEBURTSNAME>geb. von Loevenich </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="593">
+    <ID>45618</ID>
+    <LFDNR>6379</LFDNR>
+    <NACHNAME>Voigt</NACHNAME>
+    <VORNAMEN>Susette</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="594">
+    <ID>45619</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Voigts</NACHNAME>
+    <VORNAMEN>Johanna (Jenny) Wilhelmina Juliana</VORNAMEN>
+    <RUFNAME>Jenny</RUFNAME>
+    <GEBURTSNAME>geb. Möser</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="595">
+    <ID>45619</ID>
+    <LFDNR>6380</LFDNR>
+    <NACHNAME>Voigts</NACHNAME>
+    <VORNAMEN>Jenny</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="596">
+    <ID>45623</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Voß</NACHNAME>
+    <VORNAMEN>Amalie Friederike Wilhelmine Ernestine</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. v. Voß</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="597">
+    <ID>45623</ID>
+    <LFDNR>6384</LFDNR>
+    <NACHNAME>Voß</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="598">
+    <ID>45628</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Voß</NACHNAME>
+    <VORNAMEN>Marie Christi(a)ne Henriette Ernestine</VORNAMEN>
+    <RUFNAME>Ernestine</RUFNAME>
+    <GEBURTSNAME>geb. Boie </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="599">
+    <ID>45628</ID>
+    <LFDNR>6388</LFDNR>
+    <NACHNAME>Voß</NACHNAME>
+    <VORNAMEN>Ernestine</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="600">
+    <ID>45628</ID>
+    <LFDNR>13174</LFDNR>
+    <NACHNAME>Boie</NACHNAME>
+    <VORNAMEN>Marie Christine Henriette Ernestine</VORNAMEN>
+    <RUFNAME>Ernestine</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="601">
+    <ID>45635</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Vulpius</NACHNAME>
+    <VORNAMEN>Sophie (Josephine) Helene Christiane</VORNAMEN>
+    <RUFNAME>Helene</RUFNAME>
+    <GEBURTSNAME>geb. Deahna </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="602">
+    <ID>45635</ID>
+    <LFDNR>6394</LFDNR>
+    <NACHNAME>Vulpius</NACHNAME>
+    <VORNAMEN>Helene</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="603">
+    <ID>45680</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Weber</NACHNAME>
+    <VORNAMEN>Magdalena Barbara (Babet) Margareta</VORNAMEN>
+    <RUFNAME>Barbara</RUFNAME>
+    <GEBURTSNAME>geb. Wild</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="604">
+    <ID>45684</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wedel</NACHNAME>
+    <VORNAMEN>Johanna Marianne Henriette</VORNAMEN>
+    <RUFNAME>Marianne</RUFNAME>
+    <GEBURTSNAME>geb. von Woellwarth-Essingen</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="605">
+    <ID>45684</ID>
+    <LFDNR>6533</LFDNR>
+    <NACHNAME>Wedel</NACHNAME>
+    <VORNAMEN>Marianne</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="606">
+    <ID>45684</ID>
+    <LFDNR>10856</LFDNR>
+    <NACHNAME>Woellwarth-Essingen</NACHNAME>
+    <VORNAMEN>Johanna Marianne Henriette</VORNAMEN>
+    <RUFNAME>Marianne</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="607">
+    <ID>45707</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Werthern</NACHNAME>
+    <VORNAMEN>Elisabeth (Elise) Amalie Leonore Karoline Georgine</VORNAMEN>
+    <RUFNAME>Elisabeth Elise</RUFNAME>
+    <GEBURTSNAME>geb. von Ziegesar</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="608">
+    <ID>45707</ID>
+    <LFDNR>6493</LFDNR>
+    <NACHNAME>Werthern</NACHNAME>
+    <VORNAMEN>Elisabeth (Elise)</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="609">
+    <ID>45710</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Werthern (W.-Beichlingen)</NACHNAME>
+    <VORNAMEN>Christiane Benedikte Johanne</VORNAMEN>
+    <RUFNAME>Christiane</RUFNAME>
+    <GEBURTSNAME>geb. von Globig</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="610">
+    <ID>45710</ID>
+    <LFDNR>6474</LFDNR>
+    <NACHNAME>Werthern (W.-Beichlingen)</NACHNAME>
+    <VORNAMEN>Christiane</VORNAMEN>
+    <GEBURTSNAME>geb. von Globig</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="611">
+    <ID>45711</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Werthern auf Neunheiligen (Werthern-Beichlingen)</NACHNAME>
+    <VORNAMEN>Johanna Luise</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. vom und zum Stein </GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="612">
+    <ID>45711</ID>
+    <LFDNR>6475</LFDNR>
+    <NACHNAME>Werthern</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="613">
+    <ID>45712</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Werthern</NACHNAME>
+    <VORNAMEN>Juliane Luise Cäcilie</VORNAMEN>
+    <RUFNAME>Cäcilie</RUFNAME>
+    <GEBURTSNAME>geb. von Ziegesar</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="614">
+    <ID>45712</ID>
+    <LFDNR>6494</LFDNR>
+    <NACHNAME>Werthern</NACHNAME>
+    <VORNAMEN>Cäcilie</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="615">
+    <ID>45712</ID>
+    <LFDNR>11337</LFDNR>
+    <NACHNAME>Ziegesar</NACHNAME>
+    <VORNAMEN>Juliane Luise Cäcilie</VORNAMEN>
+    <RUFNAME>Cäcilie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="616">
+    <ID>45714</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wesselhöft</NACHNAME>
+    <VORNAMEN>Margareta Elisabeth</VORNAMEN>
+    <RUFNAME>Elisabeth</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="617">
+    <ID>45714</ID>
+    <LFDNR>6549</LFDNR>
+    <NACHNAME>Wesselhöft</NACHNAME>
+    <VORNAMEN>Elisabeth</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="618">
+    <ID>45714</ID>
+    <LFDNR>8092</LFDNR>
+    <NACHNAME>Wesselhöft</NACHNAME>
+    <VORNAMEN>Betty</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="619">
+    <ID>45721</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Westphalen</NACHNAME>
+    <VORNAMEN>Engel Christine</VORNAMEN>
+    <RUFNAME>Christine</RUFNAME>
+    <GEBURTSNAME>geb. v. Axen</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="620">
+    <ID>45721</ID>
+    <LFDNR>6551</LFDNR>
+    <NACHNAME>Westphalen</NACHNAME>
+    <VORNAMEN>Christine</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="621">
+    <ID>45726</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Weyrauch</NACHNAME>
+    <VORNAMEN>Maria Anna Theresia Magdalena Antonetta</VORNAMEN>
+    <RUFNAME>MariaTheresia</RUFNAME>
+    <GEBURTSNAME>geb. ?_v. Weber </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="622">
+    <ID>45726</ID>
+    <LFDNR>6552</LFDNR>
+    <NACHNAME>Weyrauch</NACHNAME>
+    <VORNAMEN>Maria Anna Theresia</VORNAMEN>
+    <RUFNAME>Maria Theresia (Jeanette)</RUFNAME>
+    <GEBURTSNAME>geb. von Weber</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="623">
+    <ID>45726</ID>
+    <LFDNR>13582</LFDNR>
+    <NACHNAME>Weyhrauch</NACHNAME>
+    <VORNAMEN>Jeanette (Maria)</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="624">
+    <ID>45745</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Willemer</NACHNAME>
+    <VORNAMEN>Maria Anna (Marianne) Katharina Therese</VORNAMEN>
+    <RUFNAME>Marianne</RUFNAME>
+    <GEBURTSNAME>geb. Jung</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="625">
+    <ID>45745</ID>
+    <LFDNR>6718</LFDNR>
+    <NACHNAME>Willemer</NACHNAME>
+    <VORNAMEN>Marianne</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="626">
+    <ID>45769</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wolf</NACHNAME>
+    <VORNAMEN>Arnoldine Charlotte Henriette</VORNAMEN>
+    <RUFNAME>Arnoldine</RUFNAME>
+    <GEBURTSNAME>geb. Weissel </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="627">
+    <ID>45769</ID>
+    <LFDNR>6587</LFDNR>
+    <NACHNAME>Wolf</NACHNAME>
+    <VORNAMEN>Arnoldine</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="628">
+    <ID>45772</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wolf</NACHNAME>
+    <VORNAMEN>Maria Karolina</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Benda</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="629">
+    <ID>45773</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wolf</NACHNAME>
+    <VORNAMEN>Maria Sabina</VORNAMEN>
+    <RUFNAME>Sabine</RUFNAME>
+    <GEBURTSNAME>geb. Schropp</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="630">
+    <ID>45775</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wolff</NACHNAME>
+    <VORNAMEN>Anna Amalia Christiane</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="631">
+    <ID>45775</ID>
+    <LFDNR>11279</LFDNR>
+    <NACHNAME>Malcolmi (Malkolmy)</NACHNAME>
+    <VORNAMEN>Anna Amalia Christiane</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="632">
+    <ID>45775</ID>
+    <LFDNR>11280</LFDNR>
+    <NACHNAME>Miller</NACHNAME>
+    <VORNAMEN>Anna Amalia Christiane</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="633">
+    <ID>45775</ID>
+    <LFDNR>11281</LFDNR>
+    <NACHNAME>Becker</NACHNAME>
+    <VORNAMEN>Anna Amalia Christiane</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="634">
+    <ID>45783</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wolzogen</NACHNAME>
+    <VORNAMEN>Friederike Sophie Karoline Augusta</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. von Lengefeld gesch. von Beulwitz</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="635">
+    <ID>45783</ID>
+    <LFDNR>3475</LFDNR>
+    <NACHNAME>Lengefeld</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="636">
+    <ID>45783</ID>
+    <LFDNR>3476</LFDNR>
+    <NACHNAME>Beulwitz</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <GEBURTSNAME>geb. von Lengefeld</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="637">
+    <ID>45783</ID>
+    <LFDNR>6607</LFDNR>
+    <NACHNAME>Wolzogen</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="638">
+    <ID>45814</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Zelter</NACHNAME>
+    <VORNAMEN>Dorothea (Doris) Auguste Cäcilie </VORNAMEN>
+    <RUFNAME>Doris</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="639">
+    <ID>45814</ID>
+    <LFDNR>6406</LFDNR>
+    <NACHNAME>Zelter</NACHNAME>
+    <VORNAMEN>Doris</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="640">
+    <ID>45830</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Ziegesar</NACHNAME>
+    <VORNAMEN>Luise Amalie Friederike Auguste</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. von Stein zu Nord- und Ostheim</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="641">
+    <ID>45830</ID>
+    <LFDNR>3972</LFDNR>
+    <NACHNAME>Ziegesar</NACHNAME>
+    <VORNAMEN>Luise Sophie Amalie Friederike</VORNAMEN>
+    <GEBURTSNAME>geb. von Stein zu Nord- und Ostheim </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="642">
+    <ID>45830</ID>
+    <LFDNR>6421</LFDNR>
+    <NACHNAME>Ziegesar</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="643">
+    <ID>45830</ID>
+    <LFDNR>6714</LFDNR>
+    <NACHNAME>Stein (S. zu Nord- und Ostheim)</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="644">
+    <ID>45836</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Zimmermann</NACHNAME>
+    <VORNAMEN>Luise Margarete</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. von Berger </GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="645">
+    <ID>45836</ID>
+    <LFDNR>6429</LFDNR>
+    <NACHNAME>Zimmermann</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="646">
+    <ID>45841</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Zucchi</NACHNAME>
+    <VORNAMEN>Maria Anna Angelika Katharina</VORNAMEN>
+    <RUFNAME>Angelika</RUFNAME>
+    <GEBURTSNAME>geb. Kauffmann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="647">
+    <ID>45841</ID>
+    <LFDNR>6434</LFDNR>
+    <NACHNAME>Zucchi</NACHNAME>
+    <VORNAMEN>Angelika</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="648">
+    <ID>45841</ID>
+    <LFDNR>11362</LFDNR>
+    <NACHNAME>Kauffmann</NACHNAME>
+    <VORNAMEN>Maria Anna Angelika Katharina</VORNAMEN>
+    <RUFNAME>Angelika</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="649">
+    <ID>45905</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bachmann</NACHNAME>
+    <VORNAMEN>Sophie Ulrika Amalia</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. Ewers</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="650">
+    <ID>46017</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Carlier</NACHNAME>
+    <GEBURTSNAME>geb. (?) de Serigny</GEBURTSNAME>
+    <TITEL>de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="651">
+    <ID>46093</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Egloffstein</NACHNAME>
+    <VORNAMEN>Julie Sophie</VORNAMEN>
+    <RUFNAME>Julie </RUFNAME>
+    <TITEL>Gräfin von und zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="652">
+    <ID>46093</ID>
+    <LFDNR>5385</LFDNR>
+    <NACHNAME>Egloffstein</NACHNAME>
+    <VORNAMEN>Julie</VORNAMEN>
+    <TITEL>Gräfin von und zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="653">
+    <ID>46094</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Egloffstein</NACHNAME>
+    <VORNAMEN>Karoline (Line) Henriette</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <TITEL>Gräfin von und zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="654">
+    <ID>46094</ID>
+    <LFDNR>5386</LFDNR>
+    <NACHNAME>Egloffstein</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <TITEL>Gräfin von und zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="655">
+    <ID>46251</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hesse</NACHNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="656">
+    <ID>46263</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wolowska</NACHNAME>
+    <VORNAMEN>Kasimira Friederika</VORNAMEN>
+    <RUFNAME>Kasimira</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="657">
+    <ID>46811</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Voß</NACHNAME>
+    <VORNAMEN>Maria Debora Dorothea</VORNAMEN>
+    <RUFNAME>Dorothea</RUFNAME>
+    <GEBURTSNAME>geb. Wisling</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="658">
+    <ID>46882</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Arnold</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Pseudonym</NAMENSFORM>
+  </ITEM>
+  <ITEM num="659">
+    <ID>46882</ID>
+    <LFDNR>17542</LFDNR>
+    <NACHNAME>Tittmann</NACHNAME>
+    <VORNAMEN>Luise Ernestine Arnoldine</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Becker</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="660">
+    <ID>46898</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Benckher</NACHNAME>
+    <VORNAMEN>Maria Elisabeth</VORNAMEN>
+    <RUFNAME>Elisabeth</RUFNAME>
+    <GEBURTSNAME>geb. Keyl</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="661">
+    <ID>46921</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bosselinska</NACHNAME>
+    <VORNAMEN>Johanna Maria Magdalena</VORNAMEN>
+    <TITEL>(von)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="662">
+    <ID>46926</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Breitenbauch</NACHNAME>
+    <VORNAMEN>Henriette Christiane</VORNAMEN>
+    <RUFNAME>Chretienne </RUFNAME>
+    <GEBURTSNAME>geb. Scholing</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="663">
+    <ID>46929</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Broesigke</NACHNAME>
+    <VORNAMEN>Ulrike Elisabeth</VORNAMEN>
+    <RUFNAME>Ulrike</RUFNAME>
+    <GEBURTSNAME>geb. von Löwenklau</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="664">
+    <ID>46931</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bülow</NACHNAME>
+    <VORNAMEN>Karoline Mathilde</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="665">
+    <ID>46934</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Busch</NACHNAME>
+    <VORNAMEN>Juliane (Julie) Friederike Wilhelmine</VORNAMEN>
+    <RUFNAME>Juliane</RUFNAME>
+    <GEBURTSNAME>geb. Martini</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="666">
+    <ID>46935</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Constant</NACHNAME>
+    <VORNAMEN>Eugénie</VORNAMEN>
+    <TITEL>Baronne de </TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="667">
+    <ID>46942</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Deny</NACHNAME>
+    <VORNAMEN>Johanna Elisabetha Henrietta</VORNAMEN>
+    <GEBURTSNAME>geb. Lagnac</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="668">
+    <ID>47003</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hubert</NACHNAME>
+    <VORNAMEN>Friederika</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="669">
+    <ID>47010</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Jaraczewska</NACHNAME>
+    <VORNAMEN>Ludwika Eleonora</VORNAMEN>
+    <RUFNAME>Laura</RUFNAME>
+    <GEBURTSNAME>geb. Bierzynska </GEBURTSNAME>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="670">
+    <ID>47046</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Lefevre</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="671">
+    <ID>47071</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Martini</NACHNAME>
+    <VORNAMEN>Auguste Amalie</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>geb. von Brawe </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="672">
+    <ID>47071</ID>
+    <LFDNR>12678</LFDNR>
+    <NACHNAME>Brawe</NACHNAME>
+    <VORNAMEN>Auguste Amalie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="673">
+    <ID>47110</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Petróczy</NACHNAME>
+    <VORNAMEN>Susanna (Susi)</VORNAMEN>
+    <GEBURTSNAME>geb. von Doleviczényi</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="674">
+    <ID>47195</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Tamcourt</NACHNAME>
+    <GEBURTSNAME>geb. Karsseboom</GEBURTSNAME>
+    <TITEL>de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="675">
+    <ID>47203</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Triebler</NACHNAME>
+    <VORNAMEN>Karoline Wilhelmine</VORNAMEN>
+    <RUFNAME>Wilhelmine</RUFNAME>
+    <GEBURTSNAME>geb. Nagel</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="676">
+    <ID>47209</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Urbach</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <GEBURTSNAME>geb. von Rothy</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="677">
+    <ID>47230</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Weisflog</NACHNAME>
+    <VORNAMEN>Leopoldine</VORNAMEN>
+    <GEBURTSNAME>geb. Hoch</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="678">
+    <ID>47237</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wiggers</NACHNAME>
+    <VORNAMEN>Wilhelmine Henriette</VORNAMEN>
+    <RUFNAME>Wilhelmine</RUFNAME>
+    <GEBURTSNAME>geb. Wolff</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="679">
+    <ID>47256</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Devismes (de Vismes), Pierre Jean Louiss; dessen Ehefrau</NACHNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="680">
+    <ID>47261</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Geisler</NACHNAME>
+    <VORNAMEN>Johanna Maria Sophia</VORNAMEN>
+    <RUFNAME>Johanna</RUFNAME>
+    <GEBURTSNAME>geb. Ludwig</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="681">
+    <ID>47261</ID>
+    <LFDNR>4672</LFDNR>
+    <NACHNAME>Geisler</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="682">
+    <ID>47263</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gottschild</NACHNAME>
+    <VORNAMEN>Johanne Sophie Friederike</VORNAMEN>
+    <RUFNAME>Sophie Friederike</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="683">
+    <ID>47263</ID>
+    <LFDNR>4747</LFDNR>
+    <NACHNAME>Gottschild</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="684">
+    <ID>47264</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Graeve</NACHNAME>
+    <VORNAMEN>Albertine Auguste Aurora Amalie</VORNAMEN>
+    <RUFNAME>Albertine Auguste</RUFNAME>
+    <GEBURTSNAME>geb. von Wallenrodt</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="685">
+    <ID>47289</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Weyrauch</NACHNAME>
+    <VORNAMEN>Maria Sophia</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <GEBURTSNAME>geb. von Stackelberg </GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="686">
+    <ID>48315</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bernstorff</NACHNAME>
+    <VORNAMEN>Auguste Luise</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin zu  Stolberg-Stolberg</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="687">
+    <ID>48315</ID>
+    <LFDNR>12704</LFDNR>
+    <NACHNAME>Stolberg-Stolberg</NACHNAME>
+    <VORNAMEN>Augusta Louise</VORNAMEN>
+    <RUFNAME>Augusta</RUFNAME>
+    <TITEL>Gräfin zu</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="688">
+    <ID>48678</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Könneritz</NACHNAME>
+    <VORNAMEN>Luise (Lulu) Klara</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. von Werthern-Beichlingen</GEBURTSNAME>
+    <TITEL>(Gräfin) von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="689">
+    <ID>48678</ID>
+    <LFDNR>8208</LFDNR>
+    <NACHNAME>Werthern (W.-Beichlingen)</NACHNAME>
+    <VORNAMEN> Luise (Lulu) Klara</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="690">
+    <ID>49049</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stein</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <GEBURTSNAME>verh. Gräfin Giech</GEBURTSNAME>
+    <TITEL>vom und zum</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="691">
+    <ID>49049</ID>
+    <LFDNR>6972</LFDNR>
+    <NACHNAME>Giech</NACHNAME>
+    <VORNAMEN>Henriette</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="692">
+    <ID>49243</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Szymanowska</NACHNAME>
+    <VORNAMEN>Marianna Agata</VORNAMEN>
+    <RUFNAME>Maria</RUFNAME>
+    <GEBURTSNAME>geb. Wolowska</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="693">
+    <ID>49243</ID>
+    <LFDNR>6278</LFDNR>
+    <NACHNAME>Szymanowska</NACHNAME>
+    <VORNAMEN>Maria</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="694">
+    <ID>49258</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Cuvier</NACHNAME>
+    <VORNAMEN>Sophia Laure Clémentine</VORNAMEN>
+    <RUFNAME>Clémentine</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="695">
+    <ID>49275</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Carlyle</NACHNAME>
+    <VORNAMEN>Jane Baillie</VORNAMEN>
+    <RUFNAME>Jane </RUFNAME>
+    <GEBURTSNAME>geb. Welsh</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="696">
+    <ID>49290</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Cotta von Cottendorf</NACHNAME>
+    <VORNAMEN>Elisabeth Sophie</VORNAMEN>
+    <RUFNAME>Elisabeth</RUFNAME>
+    <GEBURTSNAME>geb. von Gemmingen-Guttenberg</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="697">
+    <ID>49290</ID>
+    <LFDNR>4371</LFDNR>
+    <NACHNAME>Cotta von Cottendorf</NACHNAME>
+    <VORNAMEN>Elisabeth</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="698">
+    <ID>49291</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Cotta von Cottendorf</NACHNAME>
+    <VORNAMEN>Johanna Maria Sophie</VORNAMEN>
+    <RUFNAME>Sophie </RUFNAME>
+    <GEBURTSNAME>geb. von Adlerflycht</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="699">
+    <ID>49304</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Davy</NACHNAME>
+    <VORNAMEN>Jane</VORNAMEN>
+    <GEBURTSNAME>geb. Kerr</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="700">
+    <ID>49312</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Osiander</NACHNAME>
+    <VORNAMEN>Tullia Luise</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>verh. von Gerhardt</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="701">
+    <ID>49574</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Goethe</NACHNAME>
+    <VORNAMEN>Alma</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="702">
+    <ID>49771</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Eckartshausen</NACHNAME>
+    <VORNAMEN>Domicilla Theresia</VORNAMEN>
+    <RUFNAME>Theresia</RUFNAME>
+    <GEBURTSNAME>geb. Weiß</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="703">
+    <ID>49779</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Ehrenström</NACHNAME>
+    <VORNAMEN>Marianne</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="704">
+    <ID>49793</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schulze</NACHNAME>
+    <VORNAMEN>Auguste Friederika Karoline</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="705">
+    <ID>49795</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schulze</NACHNAME>
+    <VORNAMEN>Karoline Wilhelmine Charlotte</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="706">
+    <ID>49814</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Dreyßig</NACHNAME>
+    <VORNAMEN>Auguste Friederike</VORNAMEN>
+    <GEBURTSNAME>geb. Herzog</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="707">
+    <ID>49925</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Duval</NACHNAME>
+    <VORNAMEN>Marie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="708">
+    <ID>49929</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Duras (Durfurt-Duras)</NACHNAME>
+    <VORNAMEN>Claire</VORNAMEN>
+    <GEBURTSNAME>geb. Coëtnempren Comtesse de Kersaint</GEBURTSNAME>
+    <TITEL>Herzogin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="709">
+    <ID>49957</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Einsiedel</NACHNAME>
+    <VORNAMEN>Klementine Franziska Auguste</VORNAMEN>
+    <RUFNAME>Klementine</RUFNAME>
+    <GEBURTSNAME>geb. Gräfin von Reuß-Schleiz-Köstritz</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="710">
+    <ID>50022</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Weppen</NACHNAME>
+    <VORNAMEN>Auguste Wlhelmine Dorothee Jakobine Georgine</VORNAMEN>
+    <RUFNAME>Georgine</RUFNAME>
+    <GEBURTSNAME>geb. Bütemeister</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="711">
+    <ID>50055</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Löw von und zu Steinfurth</NACHNAME>
+    <VORNAMEN>Sophie Luise Euphrosine</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. von Diede zum Fürstenstein</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="712">
+    <ID>50055</ID>
+    <LFDNR>18815</LFDNR>
+    <NACHNAME>Diede zum Fürstenstein</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="713">
+    <ID>50086</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Welz</NACHNAME>
+    <VORNAMEN>Anna Katharina</VORNAMEN>
+    <GEBURTSNAME>geb. Friedel</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="714">
+    <ID>50139</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stein</NACHNAME>
+    <VORNAMEN>Therese Marianne Magdalene</VORNAMEN>
+    <RUFNAME>Therese</RUFNAME>
+    <GEBURTSNAME>verh. Gräfin von Kielmannsegge</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="715">
+    <ID>50139</ID>
+    <LFDNR>6973</LFDNR>
+    <NACHNAME>Kielmannsegge</NACHNAME>
+    <VORNAMEN>Therese</VORNAMEN>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="716">
+    <ID>50160</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Zarino</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <GEBURTSNAME>verw. von Bornstedt</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="717">
+    <ID>50164</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Salzmann</NACHNAME>
+    <VORNAMEN>Thusnelda Gertrude</VORNAMEN>
+    <RUFNAME>Thusnelda</RUFNAME>
+    <GEBURTSNAME>geb. Lenz</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="718">
+    <ID>50164</ID>
+    <LFDNR>11737</LFDNR>
+    <NACHNAME>Lenz</NACHNAME>
+    <VORNAMEN>Thusnelda</VORNAMEN>
+    <GEBURTSNAME>verh. Salzmann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="719">
+    <ID>50190</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Zillmer</NACHNAME>
+    <VORNAMEN>Wilhelmine (Minette) Amalie</VORNAMEN>
+    <GEBURTSNAME>verh. Köhne</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="720">
+    <ID>50194</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stich</NACHNAME>
+    <VORNAMEN>Sophie Auguste Friederike</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <GEBURTSNAME>geb. Düring, verh. Crelinger</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="721">
+    <ID>50194</ID>
+    <LFDNR>7015</LFDNR>
+    <NACHNAME>Düring</NACHNAME>
+    <VORNAMEN>Sophie Auguste Friederike</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="722">
+    <ID>50194</ID>
+    <LFDNR>7016</LFDNR>
+    <NACHNAME>Crelinger</NACHNAME>
+    <VORNAMEN>Sophie Auguste Friederike</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="723">
+    <ID>50207</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Eißl</NACHNAME>
+    <VORNAMEN>Therese</VORNAMEN>
+    <GEBURTSNAME>geb. Oberndorfer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="724">
+    <ID>50265</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Förster</NACHNAME>
+    <VORNAMEN>Laura Elisa</VORNAMEN>
+    <RUFNAME>Laura</RUFNAME>
+    <GEBURTSNAME>geb. Gedike</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="725">
+    <ID>50304</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Flotow</NACHNAME>
+    <VORNAMEN>Christiane Dorothea Friederike Albertine</VORNAMEN>
+    <RUFNAME>Albertine</RUFNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="726">
+    <ID>50412</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Gravenreuth</NACHNAME>
+    <VORNAMEN>Maria Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <TITEL>(Gräfin) von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="727">
+    <ID>50424</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wangemann</NACHNAME>
+    <VORNAMEN>Marie Magdalena</VORNAMEN>
+    <RUFNAME>Marie</RUFNAME>
+    <GEBURTSNAME>geb. Flügel</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="728">
+    <ID>50489</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Grustner von Grustorf</NACHNAME>
+    <VORNAMEN>Leopoldine</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="729">
+    <ID>50510</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Jacobi</NACHNAME>
+    <VORNAMEN>Auguste Marie Karoline</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="730">
+    <ID>50513</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Goëtt</NACHNAME>
+    <VORNAMEN>Sophie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="731">
+    <ID>50537</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Neumann</NACHNAME>
+    <VORNAMEN>Amalie</VORNAMEN>
+    <GEBURTSNAME>geb. Morstadt, verh. Haizinger</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="732">
+    <ID>50574</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hahn</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="733">
+    <ID>50744</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Hülle</NACHNAME>
+    <VORNAMEN>Margaeta Hedwig</VORNAMEN>
+    <RUFNAME>Hedwig</RUFNAME>
+    <GEBURTSNAME>geb. Hoffmeier</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="734">
+    <ID>50773</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schmidt</NACHNAME>
+    <VORNAMEN>Rosina Wilhelmina Augustina</VORNAMEN>
+    <RUFNAME>Rosalie</RUFNAME>
+    <GEBURTSNAME>verh. Schwabe</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="735">
+    <ID>50784</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Jänisch</NACHNAME>
+    <VORNAMEN>Karolina</VORNAMEN>
+    <GEBURTSNAME>verh. Pawlowa</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="736">
+    <ID>50810</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Jakob</NACHNAME>
+    <VORNAMEN>Therese Albertine Luise</VORNAMEN>
+    <RUFNAME>Therese</RUFNAME>
+    <GEBURTSNAME>verh. Robinson</GEBURTSNAME>
+    <TITEL>(von)</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="737">
+    <ID>50811</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Münchhausen-Steinburg</NACHNAME>
+    <VORNAMEN>Wilhelmine</VORNAMEN>
+    <GEBURTSNAME>verh. von Münchhausen</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="738">
+    <ID>50947</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schwarz</NACHNAME>
+    <VORNAMEN>Karoline</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="739">
+    <ID>50947</ID>
+    <LFDNR>18194</LFDNR>
+    <NACHNAME>Schwarz</NACHNAME>
+    <VORNAMEN>Charlotte Magdalena Karoline</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>verh. Nathusius</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="740">
+    <ID>50981</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kaunitz</NACHNAME>
+    <VORNAMEN>Rosa</VORNAMEN>
+    <TITEL>Gräfin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="741">
+    <ID>51015</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Melber</NACHNAME>
+    <VORNAMEN>Johanna Maria Jakobäa</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="742">
+    <ID>51022</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kleefeld</NACHNAME>
+    <VORNAMEN>Julie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="743">
+    <ID>51110</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kirchenschlag</NACHNAME>
+    <VORNAMEN>Anna Eleonore</VORNAMEN>
+    <RUFNAME>Anna</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="744">
+    <ID>51123</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Mecklenburg-Schwerin</NACHNAME>
+    <VORNAMEN>Auguste Friederike</VORNAMEN>
+    <RUFNAME>Auguste</RUFNAME>
+    <GEBURTSNAME>geb. Prinzessin von Hessen-Homburg</GEBURTSNAME>
+    <TITEL>Erbprinzessin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="745">
+    <ID>51240</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Kreisig</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <GEBURTSNAME>geb. Hennig</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="746">
+    <ID>51281</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Lehmann</NACHNAME>
+    <VORNAMEN>Friederike</VORNAMEN>
+    <GEBURTSNAME>geb. Dellevie</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="747">
+    <ID>51285</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Levetzow</NACHNAME>
+    <VORNAMEN>Berta Ulrike Helene</VORNAMEN>
+    <RUFNAME>Berta</RUFNAME>
+    <GEBURTSNAME>verh. Mladota von Solopisk</GEBURTSNAME>
+    <TITEL>Freiin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="748">
+    <ID>51286</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Levetzow</NACHNAME>
+    <VORNAMEN>Theodore Ulrike Sophie</VORNAMEN>
+    <RUFNAME>Ulrike</RUFNAME>
+    <TITEL>Freiin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="749">
+    <ID>51287</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Levetzow</NACHNAME>
+    <VORNAMEN>Amalie (Amelie) Ottilie Friederike Ferdinandine</VORNAMEN>
+    <RUFNAME>Amalie</RUFNAME>
+    <GEBURTSNAME>verh. von Rauch</GEBURTSNAME>
+    <TITEL>Freiin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="750">
+    <ID>51293</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Lasius</NACHNAME>
+    <VORNAMEN>Sophie Marie Dorothea</VORNAMEN>
+    <RUFNAME>Sophie</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="751">
+    <ID>51301</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Liebhaber</NACHNAME>
+    <VORNAMEN>Amalie Luise Henriette</VORNAMEN>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="752">
+    <ID>51302</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Löffelholz von Colberg</NACHNAME>
+    <VORNAMEN>Anna Elisabeth Sophie</VORNAMEN>
+    <RUFNAME>Elise</RUFNAME>
+    <GEBURTSNAME>geb. König von Königsthal</GEBURTSNAME>
+    <TITEL>Freifrau</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="753">
+    <ID>51312</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Leißner</NACHNAME>
+    <VORNAMEN>Johanna Rosina</VORNAMEN>
+    <GEBURTSNAME>geb. Mund</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="754">
+    <ID>51350</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Melos</NACHNAME>
+    <VORNAMEN>Justina Wilhelmina Ulrika</VORNAMEN>
+    <GEBURTSNAME>geb. Baumann</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="755">
+    <ID>51416</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Neumann</NACHNAME>
+    <VORNAMEN>Johanna</VORNAMEN>
+    <GEBURTSNAME>geb. Hiepe</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="756">
+    <ID>51416</ID>
+    <LFDNR>16854</LFDNR>
+    <NACHNAME>Satori</NACHNAME>
+    <VORNAMEN>J.</VORNAMEN>
+    <NAMENSFORM>Pseudonym</NAMENSFORM>
+  </ITEM>
+  <ITEM num="757">
+    <ID>51419</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Niederer</NACHNAME>
+    <VORNAMEN>Rosette</VORNAMEN>
+    <GEBURTSNAME>geb. Kasthofer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="758">
+    <ID>51444</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Niesner</NACHNAME>
+    <VORNAMEN>Margarete</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="759">
+    <ID>51479</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Panckoucke</NACHNAME>
+    <VORNAMEN>Anne Ernestine</VORNAMEN>
+    <RUFNAME>Ernestine</RUFNAME>
+    <GEBURTSNAME>geb. Désormeaux</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="760">
+    <ID>51485</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Palmaroli</NACHNAME>
+    <VORNAMEN>Elisabetta</VORNAMEN>
+    <GEBURTSNAME>geb. Munoz (Mugnoz)</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="761">
+    <ID>51557</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Addicks</NACHNAME>
+    <VORNAMEN>Barbara</VORNAMEN>
+    <GEBURTSNAME>geb. O&apos;Sullivan</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="762">
+    <ID>51575</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Reventlow</NACHNAME>
+    <VORNAMEN>Marie Luise Henriette Wilhelmine</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Löw von und zu Steinfurth</GEBURTSNAME>
+    <TITEL>Gräfin von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="763">
+    <ID>51575</ID>
+    <LFDNR>8994</LFDNR>
+    <NACHNAME>Löw von und zu Steinfurth</NACHNAME>
+    <VORNAMEN>Marie Luise Henriette Wilhelmine</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="764">
+    <ID>51689</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Ségur</NACHNAME>
+    <VORNAMEN>Marie Félicité Henriette</VORNAMEN>
+    <RUFNAME>Felicité</RUFNAME>
+    <GEBURTSNAME>geb. Comtesse d&apos;Aguesseau</GEBURTSNAME>
+    <TITEL>Comtesse de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="765">
+    <ID>51828</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schauroth</NACHNAME>
+    <VORNAMEN>Augustine Luise Friederike Ernestine</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. Teltz</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="766">
+    <ID>51828</ID>
+    <LFDNR>11713</LFDNR>
+    <NACHNAME>Teltz</NACHNAME>
+    <VORNAMEN>Augustine Luise Friederike Ernestine</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>verh. Schauroth</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="767">
+    <ID>51835</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schtscherbatowa</NACHNAME>
+    <VORNAMEN>Anna Michailowna</VORNAMEN>
+    <GEBURTSNAME>geb. Prinzessin Chilkowa</GEBURTSNAME>
+    <TITEL>Fürstin</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="768">
+    <ID>51896</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schmid</NACHNAME>
+    <VORNAMEN>Luise</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="769">
+    <ID>51954</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schröder</NACHNAME>
+    <VORNAMEN>Emilie</VORNAMEN>
+    <GEBURTSNAME>geb. Schroedter</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="770">
+    <ID>51956</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schulenburg</NACHNAME>
+    <VORNAMEN>Karoline Jakobine Sophie</VORNAMEN>
+    <RUFNAME>Karoline</RUFNAME>
+    <GEBURTSNAME>geb. Freiin von Friesen</GEBURTSNAME>
+    <TITEL>Gräfin von der</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="771">
+    <ID>51978</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Stolterfoth</NACHNAME>
+    <VORNAMEN>Wilhelmine Julie Adelheid</VORNAMEN>
+    <RUFNAME>Adelheid</RUFNAME>
+    <GEBURTSNAME>verh. von Zwierlein</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="772">
+    <ID>52031</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Tunno</NACHNAME>
+    <VORNAMEN>Augusta Rose</VORNAMEN>
+    <RUFNAME>Augusta</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="773">
+    <ID>52034</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Tschewkina</NACHNAME>
+    <VORNAMEN>Jekaterina Wassiljewna/Fominischna</VORNAMEN>
+    <GEBURTSNAME>geb. Gräfin Tomatis</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="774">
+    <ID>52058</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wilke</NACHNAME>
+    <VORNAMEN>J. Henriette</VORNAMEN>
+    <GEBURTSNAME>genannt Kronhelm</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="775">
+    <ID>52063</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Warburg</NACHNAME>
+    <VORNAMEN>Marianne</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="776">
+    <ID>52064</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Rigaud de Vaudreuil</NACHNAME>
+    <VORNAMEN>Anne Louise</VORNAMEN>
+    <GEBURTSNAME>geb. Collot</GEBURTSNAME>
+    <TITEL>Comtesse de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="777">
+    <ID>52064</ID>
+    <LFDNR>11489</LFDNR>
+    <NACHNAME>Collot</NACHNAME>
+    <VORNAMEN>Anne Louise</VORNAMEN>
+    <RUFNAME>Louise</RUFNAME>
+    <TITEL>Comtesse de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="778">
+    <ID>52064</ID>
+    <LFDNR>19334</LFDNR>
+    <NACHNAME>Vaudreuil (Rigaud de Vaudreuil)</NACHNAME>
+    <VORNAMEN>Anne Louise</VORNAMEN>
+    <TITEL>Comtesse de</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="779">
+    <ID>52100</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Warrloss</NACHNAME>
+    <VORNAMEN>Eleonore</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="780">
+    <ID>52354</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Dies</NACHNAME>
+    <VORNAMEN>Elisa</VORNAMEN>
+    <GEBURTSNAME>geb. Galli</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="781">
+    <ID>52557</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Nicht ermittelt</NACHNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="782">
+    <ID>52563</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Nicht ermittelt</NACHNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="783">
+    <ID>52698</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Nicht ermittelt</NACHNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="784">
+    <ID>52968</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Thomas</NACHNAME>
+    <VORNAMEN>Anna Rosina Magdalene</VORNAMEN>
+    <RUFNAME>Rosette</RUFNAME>
+    <GEBURTSNAME>geb. Willemer</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="785">
+    <ID>52968</ID>
+    <LFDNR>11526</LFDNR>
+    <NACHNAME>Willemer</NACHNAME>
+    <VORNAMEN>Anna Rosina Magdalene</VORNAMEN>
+    <RUFNAME>Rosette</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="786">
+    <ID>52968</ID>
+    <LFDNR>11527</LFDNR>
+    <NACHNAME>Städel</NACHNAME>
+    <VORNAMEN>Anna Rosina Magdalene</VORNAMEN>
+    <RUFNAME>Rosette</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="787">
+    <ID>53487</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Runckel</NACHNAME>
+    <VORNAMEN>Elisabeth Catharina (Lisette)</VORNAMEN>
+    <RUFNAME>Lisette</RUFNAME>
+    <GEBURTSNAME>verh. Miltenberg</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="788">
+    <ID>53487</ID>
+    <LFDNR>11777</LFDNR>
+    <NACHNAME>Miltenberg</NACHNAME>
+    <VORNAMEN>Elisabeth Katharina (Lisette)</VORNAMEN>
+    <RUFNAME>Elisabeth</RUFNAME>
+    <GEBURTSNAME>geb. Runckel</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="789">
+    <ID>55551</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Müller (M. zu Lengsfeld)</NACHNAME>
+    <VORNAMEN>Luise Ernestine Henriette Hedwig Wilhelmine</VORNAMEN>
+    <RUFNAME>Luise</RUFNAME>
+    <GEBURTSNAME>geb. von Bünau, gesch. von Lincker</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="790">
+    <ID>58734</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Ompteda</NACHNAME>
+    <VORNAMEN>Friederike Christiane Elisabeth</VORNAMEN>
+    <GEBURTSNAME>geb. Gräfin von Schlippenbach, verw. Gräfin von Solms</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="791">
+    <ID>59189</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Roesler</NACHNAME>
+    <VORNAMEN>Maria Constanza Teresa</VORNAMEN>
+    <RUFNAME>Constanza</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="792">
+    <ID>59615</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Lindau</NACHNAME>
+    <VORNAMEN>Klara Dorothea Wilhelmine Erhardine</VORNAMEN>
+    <RUFNAME>Wilhelmine</RUFNAME>
+    <GEBURTSNAME>geb. von Brinck</GEBURTSNAME>
+    <TITEL>von</TITEL>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="793">
+    <ID>64146</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Tunno</NACHNAME>
+    <VORNAMEN>Maria Rose</VORNAMEN>
+    <RUFNAME>Maria</RUFNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="794">
+    <ID>64858</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Wilhelmine</NACHNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="795">
+    <ID>68181</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Bohl</NACHNAME>
+    <VORNAMEN>Amalia</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="796">
+    <ID>68503</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Schmid (Schmidt)</NACHNAME>
+    <VORNAMEN>Marie</VORNAMEN>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+  <ITEM num="797">
+    <ID>89435</ID>
+    <LFDNR>0</LFDNR>
+    <NACHNAME>Weltden</NACHNAME>
+    <VORNAMEN>Catherine</VORNAMEN>
+    <GEBURTSNAME>geb. Lutwyche</GEBURTSNAME>
+    <NAMENSFORM>Personenname</NAMENSFORM>
+  </ITEM>
+</RA_NDB_MAIN>
