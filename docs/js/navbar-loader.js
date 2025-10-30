@@ -20,8 +20,10 @@ export async function loadNavbar(variant = 'full') {
         const html = await response.text();
         navbarPlaceholder.innerHTML = html;
 
-        // Initialize dropdown after navbar is loaded
-        initDropdown();
+        // Initialize dropdown after navbar is loaded (wait for DOM to update)
+        setTimeout(() => {
+            initDropdown();
+        }, 0);
 
         console.log(`✅ Navbar component loaded (${variant})`);
     } catch (error) {
