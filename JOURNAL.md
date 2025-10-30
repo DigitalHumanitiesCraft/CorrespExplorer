@@ -216,19 +216,49 @@ Ergebnis:
 - 80 Familie, 2 Beruflich, 2 Sozial
 - Netzwerk-Visualisierung funktioniert wieder
 
+### Multi-Source Biographies Feature implementiert
+
+Zusätzliche biografische Texte aus SNDB-Projekten integriert.
+
+Implementierung:
+- Neues Script `preprocessing/add_biographies.py` erstellt
+- Lädt biografische Texte aus 3 SNDB-Projektdateien
+- Fügt `biographies` Array zu persons.json hinzu
+
+Datenquellen:
+- goebriefe: 150 Frauen (Goethe-Briefe Registereinträge)
+- bug: 133 Frauen (Briefnetzwerk um Goethe)
+- tagebuch: 20 Frauen (Goethe Tagebuch)
+
+Ergebnis:
+- 187 von 448 Frauen haben zusätzliche Biografien (41.7%)
+- 303 biografische Texte insgesamt
+- Manche Frauen haben mehrere Quellen
+
+Datenstruktur in persons.json:
+```json
+{
+  "id": "1906",
+  "name": "Angelica Bellonata Facius",
+  "biographies": [
+    {
+      "source": "goebriefe",
+      "text": "Faciius, Angelika Bellonate (1806–1887)..."
+    }
+  ]
+}
+```
+
+Metadaten erweitert:
+- `with_biographies`: 187
+- `biographies_coverage_pct`: 41.7
+
 ### Commits
 
 - `a1ffad0`: Restructure data directories for clarity and future extensibility
 - `62a0a00`: Clean up repository: remove test files and archive obsolete documentation
 - `d89babc`: Restore network relations data to persons.json
-
-### Nächste Schritte
-
-Geplant:
-1. Multi-Source Biographies Feature implementieren
-2. Zusätzliche biografische Texte aus SNDB-Projekten integrieren
-3. JOURNAL.md updaten
-4. Push zu Remote
+- `8fcdb77`: Update JOURNAL.md with Session 2025-10-30
 
 ---
 
