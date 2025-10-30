@@ -4,14 +4,14 @@ import { loadNavbar } from './navbar-loader.js';
 
 // Knowledge documents
 const DOCS = [
-    { id: 'data', title: 'Datenmodell', file: '../knowledge/data.md', category: 'Data' },
-    { id: 'technical-architecture', title: 'Technische Architektur', file: '../knowledge/technical-architecture.md', category: 'Architecture' },
-    { id: 'decisions', title: 'Architektur-Entscheidungen', file: '../knowledge/decisions.md', category: 'Architecture' },
-    { id: 'design', title: 'Design System', file: '../knowledge/design.md', category: 'Design' },
-    { id: 'network-relations', title: 'Netzwerk-Relationen', file: '../knowledge/network-relations.md', category: 'Features' },
-    { id: 'project', title: 'Projektziele', file: '../knowledge/project.md', category: 'Project' },
-    { id: 'requirements', title: 'Anforderungen', file: '../knowledge/requirements.md', category: 'Project' },
-    { id: 'research-context', title: 'Forschungskontext', file: '../knowledge/research-context.md', category: 'Research' }
+    { id: 'data', title: 'Datenmodell', file: 'knowledge/data.md', category: 'DATA' },
+    { id: 'technical-architecture', title: 'Technische Architektur', file: 'knowledge/technical-architecture.md', category: 'ARCHITECTURE' },
+    { id: 'decisions', title: 'Architektur-Entscheidungen', file: 'knowledge/decisions.md', category: 'ARCHITECTURE' },
+    { id: 'design', title: 'Design System', file: 'knowledge/design.md', category: 'DESIGN' },
+    { id: 'network-relations', title: 'Netzwerk-Relationen', file: 'knowledge/network-relations.md', category: 'FEATURES' },
+    { id: 'project', title: 'Projektziele', file: 'knowledge/project.md', category: 'PROJECT' },
+    { id: 'requirements', title: 'Anforderungen', file: 'knowledge/requirements.md', category: 'PROJECT' },
+    { id: 'research-context', title: 'Forschungskontext', file: 'knowledge/research-context.md', category: 'RESEARCH' }
 ];
 
 let currentDoc = null;
