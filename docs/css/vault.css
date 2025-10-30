@@ -9,7 +9,6 @@
     min-height: calc(100vh - var(--navbar-height));
     max-width: 1600px;
     margin: 0 auto;
-    margin-top: var(--navbar-height);
 }
 
 /* Sidebar */

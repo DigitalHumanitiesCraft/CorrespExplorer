@@ -66,6 +66,7 @@ body {
     color: var(--color-text);
     background: var(--color-bg-light);
     line-height: 1.6;
+    padding-top: var(--navbar-height);
 }
 
 /* Navbar */
@@ -122,14 +123,8 @@ body {
     font-weight: 500;
 }
 
-/* Page Container - Universal spacing for all pages below fixed navbar */
-.page-container {
-    margin-top: var(--navbar-height);
-}
-
 /* Container */
 .container {
-    margin-top: var(--navbar-height);
     display: flex;
     height: calc(100vh - var(--navbar-height));
 }
@@ -619,7 +614,6 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: var(--space-xl);
-    margin-top: var(--navbar-height);
 }
 
 /* Person Header */
