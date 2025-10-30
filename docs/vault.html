@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promptotyping Vault - HerData</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/vault.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+</head>
+<body>
+    <!-- Global Navigation -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Vault Container -->
+    <div class="vault-container">
+        <!-- Sidebar -->
+        <aside class="vault-sidebar">
+            <div class="vault-sidebar-header">
+                <h2>Knowledge Docs</h2>
+                <p class="vault-subtitle">Single Source of Truth</p>
+            </div>
+            <nav class="vault-nav" id="vault-nav">
+                <!-- Populated by JS -->
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="vault-content">
+            <div class="vault-header">
+                <h1 id="doc-title">Promptotyping Vault</h1>
+                <div class="vault-meta">
+                    <span id="doc-meta"></span>
+                </div>
+            </div>
+
+            <article class="vault-article" id="vault-article">
+                <div class="vault-intro">
+                    <h2>Willkommen im Promptotyping Vault</h2>
+                    <p>Dieser Knowledge Vault dient als zentrale Wissensbasis des HerData-Projekts mit mehreren kritischen Funktionen:</p>
+                    <ul>
+                        <li><strong>Context Engineering:</strong> Kontext für bessere Code-Entscheidungen</li>
+                        <li><strong>Arbeitsgrundlage:</strong> Während der Entwicklung</li>
+                        <li><strong>Dokumentation:</strong> Für Teammitglieder und Interessierte</li>
+                        <li><strong>Single Source of Truth:</strong> Für alle Nutzungsszenarien</li>
+                    </ul>
+                    <p>Wähle ein Dokument aus der Navigation, um zu beginnen.</p>
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <script src="js/vault.js?v=1" type="module"></script>
+</body>
+</html>
