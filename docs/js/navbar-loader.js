@@ -41,18 +41,27 @@ function initDropdown() {
     const dropdown = document.querySelector('.nav-dropdown');
     const toggle = document.querySelector('.nav-dropdown-toggle');
 
-    if (!dropdown || !toggle) return;
+    if (!dropdown || !toggle) {
+        console.warn('Dropdown elements not found');
+        return;
+    }
+
+    console.log('✅ Initializing dropdown');
 
     // Toggle dropdown on click
     toggle.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        dropdown.classList.toggle('active');
+        const isActive = dropdown.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', isActive);
+        console.log('Dropdown toggled:', isActive);
     });
 
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (!dropdown.contains(e.target)) {
             dropdown.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
         }
     });
 
@@ -60,6 +69,7 @@ function initDropdown() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             dropdown.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
         }
     });
 }
