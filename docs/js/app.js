@@ -5,7 +5,6 @@ import { loadPersons } from "./data.js";
 import { GlobalSearch } from "./search.js";
 import { loadNavbar } from "./navbar-loader.js";
 import { getPersonConnections, getClusterConnections, getConnectionColor } from "./network-utils.js";
-import { initStatsCards } from "./stats-cards.js";
 
 let map;
 let allPersons = [];

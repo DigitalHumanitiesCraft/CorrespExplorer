@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alle Frauen - HerData</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/list.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+    <!-- Global Navigation -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- People List -->
+    <div class="list-container">
+        <header class="list-header">
+            <h1>Alle Frauen</h1>
+            <p class="list-subtitle">448 Frauen in Goethes Briefkorrespondenz</p>
+        </header>
+
+        <div class="list-filters">
+            <input type="text" id="search-list" placeholder="Namen suchen..." class="list-search">
+            <div class="list-sort">
+                <label for="sort-select">Sortierung:</label>
+                <select id="sort-select">
+                    <option value="name">Name (A-Z)</option>
+                    <option value="letters">Briefe (absteigend)</option>
+                    <option value="birth">Geburtsjahr</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="people-list" class="list-content">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <script src="js/people.js?v=1" type="module"></script>
+</body>
+</html>
