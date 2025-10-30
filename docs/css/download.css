@@ -5,6 +5,7 @@
 .download-container {
     max-width: 1200px;
     margin: 0 auto;
+    margin-top: var(--navbar-height);
     padding: var(--space-3xl) var(--space-xl);
 }
 
