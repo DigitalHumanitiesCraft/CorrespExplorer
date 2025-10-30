@@ -41,11 +41,9 @@ function renderList() {
             ? `${person.dates.birth || '?'} – ${person.dates.death || '?'}`
             : 'Lebensdaten unbekannt';
 
-        const letterCount = person.letters?.length || 0;
-        const mentionCount = person.mentioned_in?.length || 0;
-        const totalCount = letterCount + mentionCount;
+        const totalCount = person.letter_count || 0;
 
-        const occupation = person.occupation?.[0] || 'Keine Angabe';
+        const occupation = person.occupations?.[0]?.name || 'Keine Angabe';
         const place = person.places?.[0]?.name || 'Unbekannt';
 
         html += `
@@ -99,8 +97,8 @@ function sortAndRender() {
             break;
         case 'letters':
             filteredPersons.sort((a, b) => {
-                const countA = (a.letters?.length || 0) + (a.mentioned_in?.length || 0);
-                const countB = (b.letters?.length || 0) + (b.mentioned_in?.length || 0);
+                const countA = a.letter_count || 0;
+                const countB = b.letter_count || 0;
                 return countB - countA;
             });
             break;
