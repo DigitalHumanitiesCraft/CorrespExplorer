@@ -136,6 +136,102 @@ Mögliche Erweiterungen:
 
 ---
 
+## 2025-10-30: Datenrestrukturierung und Repository-Cleanup
+
+### Datenverzeichnisse umstrukturiert
+
+Problem: Unklare Trennung zwischen neuen und alten Daten, Verzeichnisnamen nicht aussagekräftig.
+
+Lösung:
+- `new-data/Datenexport 2025-10-27/` → `data/herdata/` (448 kuratierte Frauen)
+- `data/SNDB/` → `data/sndb/` (SNDB-Gesamtdatenbank für Geodaten)
+
+Rationale:
+- Klarere Trennung zwischen HerData-Export und SNDB-Referenzdaten
+- Lowercase für Konsistenz
+- Aussagekräftige Namen ohne "new/old"
+
+### Pipeline-Skripte aktualisiert
+
+Alle betroffenen Skripte angepasst:
+- `preprocessing/build_herdata_new.py`: Pfade zu data/herdata/ und data/sndb/
+- `preprocessing/integrate_relations.py`: Pfad zu data/sndb/
+- `preprocessing/compare_data_sources.py`: Pfad zu data/herdata/
+- `preprocessing/list_agrelon_types.py`: Pfad zu data/sndb/
+- `README.md`: Dokumentation der neuen Struktur
+
+Pipeline getestet und funktionsfähig.
+
+### SNDB-Zusatzdaten identifiziert
+
+Analyse der SNDB-Projektdateien ergab zusätzliche biografische Quellen:
+- `pers_koerp_projekt_goebriefe.xml`: 6790 Registereinträge (150 Frauen aus HerData)
+- `pers_koerp_projekt_bug.xml`: 133 Frauen (Briefnetzwerk um Goethe)
+- `pers_koerp_projekt_tagebuch.xml`: 21 Frauen (Goethe Tagebuch)
+- `pers_koerp_projekt_regestausgabe.xml`: Hauptquelle (bereits integriert)
+
+Diese Daten wurden im Verzeichnis `data/sndb/` behalten für zukünftige Multi-Source Biographies Feature.
+
+### Repository-Cleanup
+
+Entfernte Dateien (7 Dateien, 45 KB):
+- `docs/test-network.html`
+- `docs/test-network-visual.html`
+- `docs/test-relations-data.html`
+- `docs/TESTING-NETWORK.md`
+- `preprocessing/build_herdata_test.py`
+- `preprocessing/compare_output.txt`
+- `server.log`
+
+Archivierte Dokumentation:
+- `docs/CLUSTER_HOVER_DEBUG.md` → `archive/debug/`
+- `knowledge/hover-network-plan.md` → `archive/planning/`
+
+Umbenennung:
+- `preprocessing/build_herdata.py` → `preprocessing/build_herdata_legacy.py`
+
+.gitignore erweitert:
+```
+# Generated files
+preprocessing/compare_output.txt
+data/analysis-report.md
+
+# Test files
+docs/test-*.html
+```
+
+### Bug-Fix: Netzwerk-Relationen verschwunden
+
+Problem: Nach Datenrestrukturierung zeigten die Netzwerk-Verbindungen auf der Karte keine Relationen mehr an.
+
+Root Cause: `build_herdata_new.py` generiert persons.json ohne Relationen. Diese werden durch separaten Script `integrate_relations.py` hinzugefügt, der nach der Umstrukturierung nicht neu ausgeführt wurde.
+
+Lösung:
+```bash
+python preprocessing/integrate_relations.py
+```
+
+Ergebnis:
+- 67 Personen mit 84 Relationen wiederhergestellt
+- 80 Familie, 2 Beruflich, 2 Sozial
+- Netzwerk-Visualisierung funktioniert wieder
+
+### Commits
+
+- `a1ffad0`: Restructure data directories for clarity and future extensibility
+- `62a0a00`: Clean up repository: remove test files and archive obsolete documentation
+- `d89babc`: Restore network relations data to persons.json
+
+### Nächste Schritte
+
+Geplant:
+1. Multi-Source Biographies Feature implementieren
+2. Zusätzliche biografische Texte aus SNDB-Projekten integrieren
+3. JOURNAL.md updaten
+4. Push zu Remote
+
+---
+
 ## Ältere Einträge
 
 (Hier können frühere Sessions dokumentiert werden)
