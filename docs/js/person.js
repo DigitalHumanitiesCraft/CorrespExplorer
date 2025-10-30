@@ -158,7 +158,7 @@ function renderAdditionalBiographies() {
     const card = document.getElementById('additional-biographies-card');
     const content = document.getElementById('additional-biographies-content');
     
-    if (\!currentPerson.biographies || currentPerson.biographies.length === 0) {
+    if (!currentPerson.biographies || currentPerson.biographies.length === 0) {
         card.style.display = 'none';
         return;
     }
@@ -175,7 +175,7 @@ function renderAdditionalBiographies() {
     // Group biographies by source
     const bySource = {};
     currentPerson.biographies.forEach(bio => {
-        if (\!bySource[bio.source]) {
+        if (!bySource[bio.source]) {
             bySource[bio.source] = [];
         }
         bySource[bio.source].push(bio);
@@ -202,15 +202,15 @@ function renderAdditionalBiographies() {
 
 // Parse biography markup tags
 function parseBiographyMarkup(text) {
-    if (\!text) return '';
+    if (!text) return '';
     
     return text
         // #k# = Kursiv (italic)
-        .replace(/#k#([^#]+)#\/k#/g, '<em></em>')
+        .replace(/#k#([^#]+)#\/k#/g, '<em>$1</em>')
         // #r# = Recte/Roman (normal)
-        .replace(/#r#([^#]+)#\/r#/g, '<span></span>')
+        .replace(/#r#([^#]+)#\/r#/g, '<span>$1</span>')
         // #s+ = Sperrsatz (spaced)
-        .replace(/#s\+([^#]+)#s-/g, '<strong></strong>')
+        .replace(/#s\+([^#]+)#s-/g, '<strong>$1</strong>')
         // Clean up any remaining markup
         .replace(/#[^#]*#/g, '');
 }
