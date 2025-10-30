@@ -132,6 +132,9 @@ body {
     background: none;
     border: none;
     cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: inherit;
+    font-size: inherit;
 }
 
 .nav-dropdown-arrow {
