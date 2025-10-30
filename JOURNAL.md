@@ -280,6 +280,119 @@ Features:
 
 ---
 
+## 2025-10-30 (Session 2): Dedizierte Listen-Seiten für Personen und Orte
+
+### UI-Verbesserungen
+
+Navbar-Konsistenz:
+- Alle Unterseiten verwenden jetzt einheitlich die vollständige Navbar (components/navbar.html)
+- Entfernung der 'simple' Navbar-Variante
+- Konsistenter Import von search.css auf allen Seiten
+
+Statistik-Karten:
+- Statistiken aus Navbar entfernt (15.312 Briefe, 448 Frauen, 227 Orte)
+- Neue Stats-Karten über den Filtern in der Sidebar
+- 3-spaltige Grid-Layout mit hover-Effekten
+- Klickbare Karten für Frauen und Orte
+
+### Neue Features: Listen-Seiten
+
+people.html - Alle Frauen:
+- Liste aller 448 Frauen mit vollständigen Informationen
+- Suchfunktion nach Namen
+- Sortierung nach Name (A-Z), Briefanzahl (absteigend), Geburtsjahr
+- Grid-Layout mit responsiven Karten
+- Anzeige von Lebensdaten, Beruf, Ort und Briefanzahl
+- Direktlinks zu Personendetails
+
+places.html - Alle Orte:
+- Liste aller 227 Orte mit Geodaten
+- Suchfunktion nach Ortsnamen
+- Sortierung nach Name (A-Z) oder Personenanzahl (absteigend)
+- Anzeige von Koordinaten und Personenanzahl
+- Ausklappbare Details-Sektion zeigt alle Personen pro Ort
+- Direktlinks zu Personendetails
+
+Gemeinsame Implementierung:
+- Shared CSS in list.css für beide Seiten
+- Konsistentes Design mit hover-Effekten
+- Responsive Grid-Layout (auto-fill, minmax(350px, 1fr))
+- JavaScript-basierte Filterung und Sortierung
+- Verwendung der zentralen loadPersons() API
+
+### Download-Seite
+
+Neue Seite download.html:
+- JSON-Export (vollständiger Datensatz)
+- CSV-Export (flaches Tabellenformat, 15 Spalten)
+- Excel-Vorbereitung (geplant)
+- Vault ZIP-Download (alle knowledge/*.md Dateien)
+- Client-seitige ZIP-Generierung mit JSZip
+
+CSV-Struktur:
+```
+id, name, gnd, birth_year, death_year, letter_count, mention_count,
+roles, primary_place, place_lat, place_lon, primary_occupation,
+sndb_url, has_biography, has_relations
+```
+
+### Technische Refactorings
+
+Modal-System entfernt:
+- Ursprünglicher Ansatz mit Modals für Listen verworfen
+- Dedizierte Seiten bevorzugt (bessere UX)
+- Modal-CSS und JavaScript komplett entfernt
+- stats-cards.js gelöscht
+
+Datenstruktur-Fix:
+- loadPersons() gibt {meta, persons} zurück, nicht nur Array
+- people.js und places.js korrigiert um data.persons zu extrahieren
+- Verhindert TypeError: "forEach is not a function"
+
+CSS-Verbesserungen:
+- Neue list.css für gemeinsame Listen-Styles
+- Entfernung ungenutzter Modal-Styles aus style.css
+- Stats-Karten Hover-Effekte mit transform und box-shadow
+- Konsistente Farbpalette mit CSS-Variablen
+
+### Dateien
+
+Neu:
+- docs/people.html - Frauen-Liste Seite
+- docs/places.html - Orte-Liste Seite
+- docs/download.html - Export/Download Seite
+- docs/js/people.js - Frauen-Liste JavaScript
+- docs/js/places.js - Orte-Liste JavaScript
+- docs/js/download.js - Vault ZIP Generierung
+- docs/css/list.css - Shared List-Styles
+- docs/css/download.css - Download-Seite Styles
+- docs/data/persons.csv - CSV-Export (generiert)
+
+Geändert:
+- docs/index.html - Stats-Karten zu Links geändert, Modal entfernt
+- docs/css/style.css - Modal-CSS entfernt, Stats-Karten Styles
+- docs/js/app.js - stats-cards.js Import entfernt, updateStats() leer
+- docs/vault.html - Navbar-Konsistenz, Download-Button
+- docs/person.js - Navbar-Konsistenz
+
+Gelöscht:
+- docs/js/stats-cards.js - Nicht mehr benötigt
+
+### Design-Prinzipien
+
+Aus dieser Session gelernt:
+- Dedizierte Seiten sind besser als Modals für Listen
+- Template-Konsistenz ist kritisch (navbar.html für alle Seiten)
+- Verwandte Änderungen können zu einem Commit gebatcht werden
+- Klare Trennung: Seiten für Inhalte, Modals nur für transiente UI
+
+### Commits
+
+- `fb26f70`: Add dedicated list pages for people and places
+- `0f8f071`: Fix data loading in people.js and places.js
+
+---
+
 ## Ältere Einträge
 
 (Hier können frühere Sessions dokumentiert werden)
