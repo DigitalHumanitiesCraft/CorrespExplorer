@@ -4,7 +4,7 @@ import { loadNavbar } from './navbar-loader.js';
 
 // Initialize
 async function init() {
-    await loadNavbar('simple');
+    await loadNavbar();
 
     // Setup vault ZIP download
     const vaultZipButton = document.getElementById('download-vault-zip');

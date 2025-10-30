@@ -18,7 +18,7 @@ let currentDoc = null;
 
 // Initialize
 async function init() {
-    await loadNavbar('simple');
+    await loadNavbar();
     renderSidebar();
 
     // Setup download button
