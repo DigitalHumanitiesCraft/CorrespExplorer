@@ -393,6 +393,63 @@ Aus dieser Session gelernt:
 
 ---
 
+## 2025-10-30 (Session 3): Dropdown Navigation und Dokumentations-Cleanup
+
+### Navigation
+
+Dropdown-Menü "Index":
+- Neues Dropdown in Navbar mit "Personen" und "Orte"
+- Click-to-Toggle Funktionalität
+- Schließt bei außerhalb-Click und Escape
+- Smooth Animation mit opacity und transform
+- Arrow rotiert beim Öffnen (180deg)
+- setTimeout Fix für DOM-Ready Timing
+
+CSS und Alignment:
+- Dropdown-Arrow Styling (8px, opacity 0.8)
+- Button font-family und font-size inherit
+- Vertikale Ausrichtung mit anderen Nav-Links
+
+### Zentralisierung
+
+Navbar Spacing:
+- Single body padding-top: var(--navbar-height)
+- Entfernung aller individuellen margin-top Regeln
+- Gilt automatisch für alle Seiten
+
+Knowledge Docs:
+- Verschoben von /knowledge/ nach /docs/knowledge/
+- Single Source of Truth in docs/
+- Vault-Pfade auf knowledge/ angepasst (relativ von docs/)
+
+### UI-Cleanup
+
+Marketing-Fluff entfernt:
+- "Single Source of Truth" aus vault.html
+- Verbose Willkommenstext vereinfacht
+- Alle Download-Badges entfernt (Vollständig, Flach, Multi-Sheet)
+- Marketing-Phrasen entfernt (optimal, perfekt, benutzerfreundlich)
+- Nur faktische Beschreibungen beibehalten
+
+Bug Fixes:
+- People.js: letter_count statt letters.length
+- People.js: occupations[0].name statt occupation[0]
+- Vault.js: Pfade korrigiert für docs/knowledge/
+
+### Commits
+
+- `08413ba`: Fix people.js data display and improve layout spacing
+- `a3a312f`: Improve dropdown arrow styling and alignment
+- `b52888e`: Fix Index dropdown button vertical alignment
+- `21dd26f`: Centralize navbar spacing with body padding-top
+- `a630376`: Add dropdown navigation menu for Index
+- `ad54a71`: Fix dropdown initialization timing with setTimeout
+- `bee79f4`: Move knowledge/ into docs/knowledge/
+- `e286d76`: Improve dropdown functionality with better event handling
+- `e2ddb26`: Remove marketing fluff from vault.html and download.html
+
+---
+
 ## Ältere Einträge
 
 (Hier können frühere Sessions dokumentiert werden)
