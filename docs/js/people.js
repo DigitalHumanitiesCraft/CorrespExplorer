@@ -9,7 +9,8 @@ async function init() {
     await loadNavbar();
 
     try {
-        allPersons = await loadPersons();
+        const data = await loadPersons();
+        allPersons = data.persons;
         filteredPersons = [...allPersons];
 
         renderList();

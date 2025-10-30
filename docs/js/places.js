@@ -9,7 +9,8 @@ async function init() {
     await loadNavbar();
 
     try {
-        const allPersons = await loadPersons();
+        const data = await loadPersons();
+        const allPersons = data.persons;
 
         // Collect all unique places with person counts
         const placesMap = new Map();
