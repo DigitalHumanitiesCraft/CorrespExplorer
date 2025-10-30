@@ -1023,9 +1023,10 @@ async function initializeTimeline() {
 
 // Update statistics in navbar
 function updateStats(meta) {
-    document.getElementById('stat-letters').textContent = '15.312 Briefe';
-    document.getElementById('stat-women').textContent = `${meta.total_women.toLocaleString('de-DE')} Frauen`;
-    document.getElementById('stat-places').textContent = '633 Orte';
+    //     document.getElementById('stat-letters').textContent = '15.312 Briefe';
+    //     document.getElementById('stat-women').textContent = `${meta.total_women.toLocaleString('de-DE')} Frauen`;
+    //     document.getElementById('stat-places').textContent = '633 Orte';
+    // Stats now in sidebar, no navbar update needed
 }
 
 // Hide loading message
