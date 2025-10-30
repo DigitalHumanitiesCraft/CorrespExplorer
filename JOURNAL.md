@@ -253,12 +253,30 @@ Metadaten erweitert:
 - `with_biographies`: 187
 - `biographies_coverage_pct`: 41.7
 
+### Frontend-Integration implementiert
+
+Biografien jetzt im Interface sichtbar.
+
+Änderungen:
+- person.html: Neue Sektion "Zusätzliche biografische Quellen"
+- person.js: renderAdditionalBiographies() mit Markup-Parsing
+- person-cards.css: Styling für Biografien
+
+Features:
+- Gruppierung nach Quelle mit Überschriften
+- Markup-Parsing für SNDB-Formatierung (#k#, #r#, #s+)
+- Sektion wird nur bei vorhandenen Biografien angezeigt
+- Farbige linke Border für visuelle Trennung
+
 ### Commits
 
 - `a1ffad0`: Restructure data directories for clarity and future extensibility
 - `62a0a00`: Clean up repository: remove test files and archive obsolete documentation
 - `d89babc`: Restore network relations data to persons.json
 - `8fcdb77`: Update JOURNAL.md with Session 2025-10-30
+- `febca78`: Implement Multi-Source Biographies feature
+- `272b09c`: Add additional biographies display to person detail page
+- `7bd019c`: Fix syntax errors in person.js biography rendering
 
 ---
 

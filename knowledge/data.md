@@ -2,7 +2,7 @@
 
 Datenarchitektur, Strukturen und Verknüpfungen für HerData.
 
-Stand: 2025-10-28 (aktualisiert mit neuem Datenexport)
+Stand: 2025-10-30 (aktualisiert mit Multi-Source Biographies)
 
 Siehe [INDEX.md](INDEX.md) für Navigation im Knowledge Vault.
 
@@ -19,6 +19,9 @@ HerData verwendet seit 28.10.2025 einen kuratierten Export von 448 Frauen mit de
 - 207 Frauen mit Berufsangaben (46,2%)
 - 270 Frauen mit GND-ID (60,3% - fast doppelt so gut wie alte SNDB)
 - 421 Frauen mit Lebensdaten (94,0%)
+- 187 Frauen mit zusätzlichen Biografien (41,7% - Multi-Source Feature seit 30.10.2025)
+  - 303 biografische Texte aus 3 SNDB-Projekten
+  - goebriefe: 150 Frauen, bug: 133 Frauen, tagebuch: 20 Frauen
 
 ### Briefe
 - 15.312 Briefe in CMIF (1762-1824)

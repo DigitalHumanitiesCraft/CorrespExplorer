@@ -22,11 +22,18 @@ Current Phase: Enhanced with Curated Dataset (Export 2025-10-27)
 
 Live Demo: [https://chpollin.github.io/HerData/](https://chpollin.github.io/HerData/)
 
-Latest Update (2025-10-29):
-- NEW: Network visualization with hover-based connections (Phase 1+2 complete)
-- NEW: 84 AGRELON relations integrated from SNDB (67 persons connected)
-- NEW: Color-coded network lines (Familie red, Beruflich green, Sozial orange)
-- NEW: 41 persons with geo-located connections visible on map
+Latest Update (2025-10-30):
+- NEW: Multi-source biographies integrated (187 women, 41.7% coverage)
+- NEW: 303 biographical texts from SNDB projects (goebriefe, bug, tagebuch)
+- NEW: Biography display on person detail pages with markup parsing
+- Data restructuring: herdata/ and sndb/ directories for clarity
+- Repository cleanup: Test files removed, documentation archived
+
+Previous Update (2025-10-29):
+- Network visualization with hover-based connections (Phase 1+2 complete)
+- 84 AGRELON relations integrated from SNDB (67 persons connected)
+- Color-coded network lines (Familie red, Beruflich green, Sozial orange)
+- 41 persons with geo-located connections visible on map
 - Curated dataset of 448 women with significantly improved data quality
 - 60.3% GND coverage (was 34.1% - nearly doubled)
 - 51.3% CMIF match rate (was 22.3% - increased by 130%)
@@ -47,6 +54,11 @@ Completed Features:
 - Research-oriented filtering: Briefaktivität and Berufsgruppe (7 occupation groups)
 - Visual hierarchy: Cluster colors encode letter activity
 - Person detail pages with modern card-based layout (no tabs)
+- **Multi-source biographies from SNDB projects**
+  - 303 biographical texts from 3 sources (goebriefe, bug, tagebuch)
+  - 187 women with additional biographies (41.7% coverage)
+  - Markup parsing for SNDB formatting (#k#, #r#, #s+)
+  - Grouped display by source with visual hierarchy
 - Central search with typeahead and keyboard navigation
 - Statistical dashboard with 5 interactive charts (Apache ECharts)
   - Berufsverteilung (Top 15 occupations)
@@ -110,9 +122,10 @@ HerData/
 ├── preprocessing/               # Data analysis & transformation scripts
 │   ├── analyze_goethe_letters.py    # CMIF parser & statistical report generator
 │   ├── build_herdata_new.py         # NEW: Pipeline for curated export (active)
-│   ├── build_herdata.py             # OLD: Pipeline for full SNDB (reference)
-│   ├── compare_data_sources.py      # Data quality comparison tool
-│   └── compare_output.txt           # Comparison analysis results
+│   ├── build_herdata_legacy.py      # OLD: Pipeline for full SNDB (reference)
+│   ├── add_biographies.py           # Multi-source biography integration
+│   ├── integrate_relations.py       # AGRELON relations integration
+│   └── compare_data_sources.py      # Data quality comparison tool
 │
 └── docs/                        # GitHub Pages site (web visualization)
     └── (future: interactive visualization app)
