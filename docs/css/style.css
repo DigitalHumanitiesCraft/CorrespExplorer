@@ -122,6 +122,11 @@ body {
     font-weight: 500;
 }
 
+/* Page Container - Universal spacing for all pages below fixed navbar */
+.page-container {
+    margin-top: var(--navbar-height);
+}
+
 /* Container */
 .container {
     margin-top: var(--navbar-height);
