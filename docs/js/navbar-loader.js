@@ -20,6 +20,9 @@ export async function loadNavbar(variant = 'full') {
         const html = await response.text();
         navbarPlaceholder.innerHTML = html;
 
+        // Initialize dropdown after navbar is loaded
+        initDropdown();
+
         console.log(`✅ Navbar component loaded (${variant})`);
     } catch (error) {
         console.error('❌ Failed to load navbar:', error);
@@ -31,4 +34,32 @@ export async function loadNavbar(variant = 'full') {
             </nav>
         `;
     }
+}
+
+// Initialize dropdown functionality
+function initDropdown() {
+    const dropdown = document.querySelector('.nav-dropdown');
+    const toggle = document.querySelector('.nav-dropdown-toggle');
+
+    if (!dropdown || !toggle) return;
+
+    // Toggle dropdown on click
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('active');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove('active');
+        }
+    });
+
+    // Close dropdown when pressing Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            dropdown.classList.remove('active');
+        }
+    });
 }
