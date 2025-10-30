@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daten Export - HerData</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/download.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+    <!-- Global Navigation -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Download Page -->
+    <div class="download-container">
+        <header class="download-header">
+            <h1>Forschungsdaten Export</h1>
+            <p class="download-subtitle">Strukturierte Daten für wissenschaftliche Nachnutzung</p>
+        </header>
+
+        <!-- Export Formats Section -->
+        <section class="download-section">
+            <h2>Strukturierte Datenexporte</h2>
+            <p>Alle Daten stehen unter CC BY 4.0 Lizenz zur freien Nachnutzung zur Verfügung.</p>
+
+            <div class="download-cards">
+                <!-- JSON Export -->
+                <div class="download-card">
+                    <div class="download-card-header">
+                        <h3>JSON</h3>
+                        <span class="download-badge">Vollständig</span>
+                    </div>
+                    <p class="download-description">
+                        Vollständiger Datensatz mit allen Feldern, Relationen und Metadaten.
+                        Optimal für maschinelle Verarbeitung und APIs.
+                    </p>
+                    <ul class="download-features">
+                        <li>448 Personen mit vollständigen Profilen</li>
+                        <li>84 AGRELON-Relationen</li>
+                        <li>227 Orte mit Geodaten</li>
+                        <li>303 zusätzliche Biografien</li>
+                    </ul>
+                    <div class="download-meta">
+                        <span>~1.8 MB</span>
+                        <span>UTF-8</span>
+                    </div>
+                    <a href="data/persons.json" download class="download-button">Download JSON</a>
+                </div>
+
+                <!-- CSV Export -->
+                <div class="download-card">
+                    <div class="download-card-header">
+                        <h3>CSV</h3>
+                        <span class="download-badge">Flach</span>
+                    </div>
+                    <p class="download-description">
+                        Flache Tabellenstruktur für Excel, R, SPSS und andere Statistiksoftware.
+                        Basis-Felder ohne verschachtelte Daten.
+                    </p>
+                    <ul class="download-features">
+                        <li>ID, Name, GND, Lebensdaten</li>
+                        <li>Brief-Statistiken</li>
+                        <li>Primärer Ort</li>
+                        <li>Hauptberuf</li>
+                    </ul>
+                    <div class="download-meta">
+                        <span>~80 KB</span>
+                        <span>UTF-8</span>
+                    </div>
+                    <a href="data/persons.csv" download class="download-button">Download CSV</a>
+                </div>
+
+                <!-- Excel Export -->
+                <div class="download-card">
+                    <div class="download-card-header">
+                        <h3>Excel</h3>
+                        <span class="download-badge">Multi-Sheet</span>
+                    </div>
+                    <p class="download-description">
+                        Excel-Arbeitsmappe mit mehreren Arbeitsblättern für verschiedene Datenebenen.
+                        Benutzerfreundlich mit Formatierung.
+                    </p>
+                    <ul class="download-features">
+                        <li>Sheet 1: Personen</li>
+                        <li>Sheet 2: Orte</li>
+                        <li>Sheet 3: Berufe</li>
+                        <li>Sheet 4: Relationen</li>
+                    </ul>
+                    <div class="download-meta">
+                        <span>~200 KB</span>
+                        <span>.xlsx</span>
+                    </div>
+                    <a href="#" class="download-button download-button-disabled" title="In Vorbereitung">In Vorbereitung</a>
+                </div>
+
+                <!-- Documentation ZIP -->
+                <div class="download-card">
+                    <div class="download-card-header">
+                        <h3>Vault ZIP</h3>
+                        <span class="download-badge">Dokumentation</span>
+                    </div>
+                    <p class="download-description">
+                        Komplette Knowledge-Dokumentation als ZIP-Archiv.
+                        Alle Markdown-Dateien für Offline-Nutzung.
+                    </p>
+                    <ul class="download-features">
+                        <li>8 Knowledge-Dokumente</li>
+                        <li>Datenmodell & Architektur</li>
+                        <li>Design & Entscheidungen</li>
+                        <li>Projektziele & Kontext</li>
+                    </ul>
+                    <div class="download-meta">
+                        <span>~150 KB</span>
+                        <span>.zip</span>
+                    </div>
+                    <a href="#" id="download-vault-zip" class="download-button">Download Vault ZIP</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Raw Data Sources -->
+        <section class="download-section">
+            <h2>Quelldaten</h2>
+            <p>Originale XML-Datenquellen für vollständige Transparenz und Reproduzierbarkeit.</p>
+
+            <div class="source-links">
+                <div class="source-link">
+                    <h4>CMIF Briefkorrespondenz</h4>
+                    <p>15.312 Briefe (1762-1824) im TEI-XML/CMIF Format</p>
+                    <a href="https://zenodo.org/records/14998880" target="_blank" rel="noopener">Zenodo 14998880</a>
+                </div>
+                <div class="source-link">
+                    <h4>SNDB HerData Export</h4>
+                    <p>448 kuratierte Frauenbiografien (Export 2025-10-27)</p>
+                    <a href="https://github.com/chpollin/HerData/tree/main/data/herdata" target="_blank" rel="noopener">GitHub Repository</a>
+                </div>
+                <div class="source-link">
+                    <h4>SNDB Geodaten</h4>
+                    <p>Geografische Referenzdaten und zusätzliche Quellen</p>
+                    <a href="https://github.com/chpollin/HerData/tree/main/data/sndb" target="_blank" rel="noopener">GitHub Repository</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Citation -->
+        <section class="download-section">
+            <h2>Zitierhinweis</h2>
+            <div class="citation-box">
+                <p>
+                    Pollin, Christopher (Hrsg.). 2025. <em>HerData - Frauen in Goethes Briefkorrespondenz</em>.
+                    Datenexport vom 30.10.2025.
+                    <a href="https://chpollin.github.io/HerData/" target="_blank">https://chpollin.github.io/HerData/</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- License -->
+        <section class="download-section">
+            <h2>Lizenz</h2>
+            <p>
+                Alle Daten stehen unter <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> Lizenz.
+                Sie dürfen die Daten teilen, bearbeiten und für beliebige Zwecke verwenden, auch kommerziell,
+                solange Sie angemessene Urheber- und Rechteangaben machen.
+            </p>
+        </section>
+    </div>
+
+    <script src="js/download.js?v=1" type="module"></script>
+</body>
+</html>

@@ -21,6 +21,15 @@ async function init() {
     await loadNavbar('simple');
     renderSidebar();
 
+    // Setup download button
+    const downloadBtn = document.getElementById('vault-download-btn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            window.location.href = 'download.html#vault-zip';
+        });
+    }
+
     // Check URL for doc parameter
     const urlParams = new URLSearchParams(window.location.search);
     const docId = urlParams.get('doc');

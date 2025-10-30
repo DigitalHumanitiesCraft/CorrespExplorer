@@ -255,3 +255,38 @@
         padding: var(--space-xl);
     }
 }
+
+/* Vault Download Button */
+.vault-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-xl);
+}
+
+.vault-download-btn {
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.vault-download-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+@media (max-width: 768px) {
+    .vault-header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .vault-download-btn {
+        text-align: center;
+    }
+}
