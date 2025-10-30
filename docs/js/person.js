@@ -70,6 +70,7 @@ function renderPerson() {
     renderPlaces();
     renderOccupations();
     renderRelations();
+    renderAdditionalBiographies();
     renderSources();
 
     // Show content
@@ -150,6 +151,68 @@ function parseMarkup(text) {
         .replace(/#s\+([^#]+)#s-/g, '<em>$1</em>')
         // _ = Unterstrich für Leerzeichen in manchen Kontexten
         .replace(/\b_\b/g, ' ');
+}
+
+// Render Additional Biographies section
+function renderAdditionalBiographies() {
+    const card = document.getElementById('additional-biographies-card');
+    const content = document.getElementById('additional-biographies-content');
+    
+    if (\!currentPerson.biographies || currentPerson.biographies.length === 0) {
+        card.style.display = 'none';
+        return;
+    }
+    
+    card.style.display = 'block';
+    
+    // Source name mapping
+    const sourceNames = {
+        'goebriefe': 'Goethe-Briefe Register',
+        'bug': 'Briefnetzwerk um Goethe',
+        'tagebuch': 'Goethe Tagebuch'
+    };
+    
+    // Group biographies by source
+    const bySource = {};
+    currentPerson.biographies.forEach(bio => {
+        if (\!bySource[bio.source]) {
+            bySource[bio.source] = [];
+        }
+        bySource[bio.source].push(bio);
+    });
+    
+    let html = '<div class="biographies-list">';
+    
+    for (const [source, bios] of Object.entries(bySource)) {
+        const sourceName = sourceNames[source] || source;
+        html += '<div class="biography-source">';
+        html += '<h3 class="biography-source-title">' + sourceName + '</h3>';
+        
+        bios.forEach(bio => {
+            const parsedText = parseBiographyMarkup(bio.text);
+            html += '<div class="biography-text">' + parsedText + '</div>';
+        });
+        
+        html += '</div>';
+    }
+    
+    html += '</div>';
+    content.innerHTML = html;
+}
+
+// Parse biography markup tags
+function parseBiographyMarkup(text) {
+    if (\!text) return '';
+    
+    return text
+        // #k# = Kursiv (italic)
+        .replace(/#k#([^#]+)#\/k#/g, '<em></em>')
+        // #r# = Recte/Roman (normal)
+        .replace(/#r#([^#]+)#\/r#/g, '<span></span>')
+        // #s+ = Sperrsatz (spaced)
+        .replace(/#s\+([^#]+)#s-/g, '<strong></strong>')
+        // Clean up any remaining markup
+        .replace(/#[^#]*#/g, '');
 }
 
 // Render Letters tab

@@ -431,3 +431,38 @@
 .relation-name strong {
     color: var(--color-primary);
 }
+
+/* Additional Biographies Section */
+.biographies-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+}
+
+.biography-source {
+    border-left: 3px solid var(--color-primary);
+    padding-left: var(--space-lg);
+}
+
+.biography-source-title {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+}
+
+.biography-text {
+    line-height: 1.7;
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+}
+
+.biography-text em {
+    font-style: italic;
+    color: var(--color-text-light);
+}
+
+.biography-text strong {
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
