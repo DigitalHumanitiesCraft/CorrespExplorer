@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2025-10-29T06:57:00.965443",
+    "generated": "2025-10-30T08:26:45.049175",
     "data_source": "NEW export 2025-10-27 (curated 448 women)",
     "total_women": 448,
     "with_cmif_data": 230,
@@ -9,8 +9,8 @@
     "gnd_coverage_pct": 60.3,
     "geodata_coverage_pct": 50.7,
     "data_sources": {
-      "persons": "new-data/Datenexport 2025-10-27/ (ra_ndb_*)",
-      "geodata": "data/SNDB/ (geo_main.xml, geo_indiv.xml)",
+      "persons": "data/herdata/ (ra_ndb_*)",
+      "geodata": "data/sndb/ (geo_main.xml, geo_indiv.xml)",
       "cmif": "data/ra-cmif.xml (2025-03 snapshot)"
     },
     "timeline": [
@@ -693,13 +693,6 @@
           "type_id": "4110",
           "reciprocal_type": "hat Tante/Onkel"
         }
-      ],
-      "relations": [
-        {
-          "target": "45090",
-          "type": "hat Nichte/Neffe",
-          "agrelon_id": "4110"
-        }
       ]
     },
     {
@@ -833,13 +826,6 @@
           "type": "hat Einfluss auf",
           "type_id": "3020",
           "reciprocal_type": "ist beeinflusst durch"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44010",
-          "type": "hat Einfluss auf",
-          "agrelon_id": "3020"
         }
       ]
     },
@@ -1474,13 +1460,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "43658",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -1723,13 +1702,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43805",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -1919,13 +1891,6 @@
           "type": "hat Enkel",
           "type_id": "4040",
           "reciprocal_type": "hat Großelternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43352",
-          "type": "hat Enkel",
-          "agrelon_id": "4040"
         }
       ]
     },
@@ -2625,13 +2590,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "44919",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -2749,13 +2707,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "40967",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
         }
       ]
     },
@@ -2911,18 +2862,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "40923",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "45051",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -2950,13 +2889,6 @@
           "type": "hat Pate",
           "type_id": "4080",
           "reciprocal_type": "hat Patenkind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43779",
-          "type": "hat Pate",
-          "agrelon_id": "4080"
         }
       ]
     },
@@ -3112,13 +3044,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43260",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -3267,13 +3192,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45623",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -3871,13 +3789,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45391",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -3966,13 +3877,6 @@
           "type": "hat Großelternteil",
           "type_id": "4020",
           "reciprocal_type": "hat Enkel"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44355",
-          "type": "hat Großelternteil",
-          "agrelon_id": "4020"
         }
       ]
     },
@@ -4281,13 +4185,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "46093",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -4560,18 +4457,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43690",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "45714",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -4712,13 +4597,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "41351",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -5049,13 +4927,6 @@
           "type_id": "4020",
           "reciprocal_type": "hat Enkel"
         }
-      ],
-      "relations": [
-        {
-          "target": "38507",
-          "type": "hat Großelternteil",
-          "agrelon_id": "4020"
-        }
       ]
     },
     {
@@ -5257,18 +5128,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43849",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "43849",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -5363,13 +5222,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "37150",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
         }
       ]
     },
@@ -5601,13 +5453,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "43690",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
       ]
     },
     {
@@ -5690,23 +5535,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43181",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "43688",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        },
-        {
-          "target": "45714",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -6044,13 +5872,6 @@
           "type_id": "4070",
           "reciprocal_type": "hat Pate"
         }
-      ],
-      "relations": [
-        {
-          "target": "41249",
-          "type": "hat Patenkind",
-          "agrelon_id": "4070"
-        }
       ]
     },
     {
@@ -6131,13 +5952,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "44537",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -6187,23 +6001,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44815",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "49574",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        },
-        {
-          "target": "44816",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -6265,13 +6062,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "37557",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -6394,18 +6184,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43592",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "43592",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -6548,18 +6326,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "44686",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "45158",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
       ]
     },
     {
@@ -6690,13 +6456,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "44815",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -6792,13 +6551,6 @@
           "type": "ist beeinflusst durch",
           "type_id": "3030",
           "reciprocal_type": "hat Einfluss auf"
-        }
-      ],
-      "relations": [
-        {
-          "target": "35842",
-          "type": "ist beeinflusst durch",
-          "agrelon_id": "3030"
         }
       ]
     },
@@ -7704,13 +7456,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45712",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -7984,13 +7729,6 @@
           "type_id": "4040",
           "reciprocal_type": "hat Großelternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "43000",
-          "type": "hat Enkel",
-          "agrelon_id": "4040"
-        }
       ]
     },
     {
@@ -8050,13 +7788,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "44415",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
       ]
     },
     {
@@ -8076,13 +7807,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44412",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
         }
       ]
     },
@@ -8216,13 +7940,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "45046",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
       ]
     },
     {
@@ -8277,18 +7994,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43781",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "51015",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
         }
       ]
     },
@@ -8569,13 +8274,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43928",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -8958,23 +8656,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "43782",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        },
-        {
-          "target": "43961",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "44816",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -9026,18 +8707,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43782",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "44815",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
         }
       ]
     },
@@ -9270,13 +8939,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "40634",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
         }
       ]
     },
@@ -9562,13 +9224,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "44523",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -9630,13 +9285,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "40967",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
         }
       ]
     },
@@ -9853,18 +9501,6 @@
           "type_id": "4090",
           "reciprocal_type": "hat Schwager/Schwägerin"
         }
-      ],
-      "relations": [
-        {
-          "target": "35705",
-          "type": "hat Tante/Onkel",
-          "agrelon_id": "4050"
-        },
-        {
-          "target": "45394",
-          "type": "hat Schwager/Schwägerin",
-          "agrelon_id": "4090"
-        }
       ]
     },
     {
@@ -10040,13 +9676,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45783",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -10185,13 +9814,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43928",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
         }
       ]
     },
@@ -10433,13 +10055,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "45215",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -10521,18 +10136,6 @@
           "type": "hat Freund",
           "type_id": "1010",
           "reciprocal_type": "hat Freund"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45214",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "51022",
-          "type": "hat Freund",
-          "agrelon_id": "1010"
         }
       ]
     },
@@ -10763,13 +10366,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45328",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -10803,13 +10399,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45327",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -10997,13 +10586,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "42959",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -11084,13 +10666,6 @@
           "type": "hat Schwager/Schwägerin",
           "type_id": "4090",
           "reciprocal_type": "hat Schwager/Schwägerin"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45090",
-          "type": "hat Schwager/Schwägerin",
-          "agrelon_id": "4090"
         }
       ]
     },
@@ -11615,13 +11190,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "41693",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -11840,13 +11408,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "44275",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -11924,18 +11485,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43690",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "43181",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -12290,13 +11839,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45127",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -12567,18 +12109,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43070",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "46094",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -12647,13 +12177,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "46093",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -12698,13 +12221,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "49243",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -12843,13 +12359,6 @@
           "type": "hat Enkel",
           "type_id": "4040",
           "reciprocal_type": "hat Großelternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "51286",
-          "type": "hat Enkel",
-          "agrelon_id": "4040"
         }
       ]
     },
@@ -13317,13 +12826,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "46263",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -13442,13 +12944,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43782",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
         }
       ]
     },
@@ -13639,13 +13134,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "51575",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
         }
       ]
     },
@@ -14158,13 +13646,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "44537",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
       ]
     },
     {
@@ -14184,13 +13665,6 @@
           "type": "hat Freund",
           "type_id": "1010",
           "reciprocal_type": "hat Freund"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45215",
-          "type": "hat Freund",
-          "agrelon_id": "1010"
         }
       ]
     },
@@ -14309,13 +13783,6 @@
           "type": "hat Großelternteil",
           "type_id": "4020",
           "reciprocal_type": "hat Enkel"
-        }
-      ],
-      "relations": [
-        {
-          "target": "46929",
-          "type": "hat Großelternteil",
-          "agrelon_id": "4020"
         }
       ]
     },
@@ -14602,13 +14069,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "50055",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
       ]
     },
     {
@@ -14809,13 +14269,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "64146",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -15105,13 +14558,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "52031",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },

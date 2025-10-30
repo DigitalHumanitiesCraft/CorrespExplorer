@@ -195,7 +195,7 @@ def integrate_relations(persons_json_path, relations, agrelon_types):
 def main():
     base_path = Path(__file__).parent.parent
 
-    sndb_path = base_path / 'data' / 'SNDB'
+    sndb_path = base_path / 'data' / 'sndb'
     persons_json_path = base_path / 'docs' / 'data' / 'persons.json'
 
     print('Parsing AGRELON taxonomy...')

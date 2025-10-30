@@ -1,5 +1,5 @@
 """
-Compare old SNDB data (data/SNDB/) with new export (new-data/Datenexport 2025-10-27/)
+Compare old SNDB data (data/SNDB/) with new export (data/herdata/)
 
 Analyzes:
 1. Which women are in new vs old export
@@ -20,8 +20,8 @@ class DataSourceComparison:
 
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
-        self.old_sndb_dir = self.project_root / 'data' / 'SNDB'
-        self.new_export_dir = self.project_root / 'new-data' / 'Datenexport 2025-10-27'
+        self.old_sndb_dir = self.project_root / 'data' / 'sndb'
+        self.new_export_dir = self.project_root / 'data' / 'herdata'
 
         # Data containers
         self.old_women = {}
@@ -78,7 +78,7 @@ class DataSourceComparison:
     def load_new_export_women(self):
         """Load women from new export (ra_ndb_*)"""
         print("\n" + "="*60)
-        print("Loading NEW EXPORT data (new-data/Datenexport 2025-10-27/)")
+        print("Loading NEW EXPORT data (data/herdata/)")
         print("="*60)
 
         # Load main names

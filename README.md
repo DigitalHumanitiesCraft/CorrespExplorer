@@ -87,21 +87,25 @@ HerData/
 ├── data/                        # Raw datasets (not committed, see below)
 │   ├── ra-cmif.xml              # 15,312 letters in TEI-XML/CMIF (23.4 MB)
 │   ├── analysis-report.md       # Generated statistical analysis
-│   └── SNDB/                    # Geographic data (3.6 MB, for coordinate resolution)
+│   │
+│   ├── herdata/                 # Curated export: 448 women (800 KB)
+│   │   ├── ra_ndb_main.xml              # 797 entries (448 unique IDs, names)
+│   │   ├── ra_ndb_indiv.xml             # 448 women (SEXUS='w', GND)
+│   │   ├── ra_ndb_datierungen.xml       # 869 life dates
+│   │   ├── ra_ndb_berufe.xml            # 296 occupations
+│   │   ├── ra_ndb_orte.xml              # 552 place links (SNDB_ID refs)
+│   │   ├── ra_ndb_beziehungen.xml       # 939 AGRELON relationships
+│   │   ├── projekt_regestausgabe.xml    # 448 biographical texts
+│   │   └── nsl_agrelon.xml              # 38 relationship types
+│   │
+│   └── sndb/                    # Complete SNDB (32 MB) - geodata & additional sources
 │       ├── geo_main.xml         # 4,007 places with names
 │       ├── geo_indiv.xml        # 22,571 coordinates
-│       └── geo_links.xml        # 63,766 GeoNames linkages
-│
-├── new-data/                    # NEW: Curated export (2025-10-27)
-│   └── Datenexport 2025-10-27/  # 8 XML files with 448 women (800 KB)
-│       ├── ra_ndb_main.xml              # 797 entries (448 unique IDs, names)
-│       ├── ra_ndb_indiv.xml             # 448 women (SEXUS='w', GND)
-│       ├── ra_ndb_datierungen.xml       # 869 life dates
-│       ├── ra_ndb_berufe.xml            # 296 occupations
-│       ├── ra_ndb_orte.xml              # 552 place links (SNDB_ID refs)
-│       ├── ra_ndb_beziehungen.xml       # 939 AGRELON relationships
-│       ├── projekt_regestausgabe.xml    # 448 biographical texts
-│       └── nsl_agrelon.xml              # 38 relationship types
+│       ├── geo_links.xml        # 63,766 GeoNames linkages
+│       └── pers_koerp_projekt_*.xml     # Additional biographical sources
+│           ├── goebriefe.xml    # 6,790 entries (150 match HerData women)
+│           ├── bug.xml          # 2,254 entries (133 match HerData women)
+│           └── tagebuch.xml     # 1,004 entries (21 match HerData women)
 │
 ├── preprocessing/               # Data analysis & transformation scripts
 │   ├── analyze_goethe_letters.py    # CMIF parser & statistical report generator
@@ -134,10 +138,11 @@ Contents:
 - 3,914 bibliographic mentions (2,147 unique works)
 - 380 organization mentions (120 unique organizations)
 
-### 2. SNDB Curated Export (NEW - Active as of 2025-10-28)
+### 2. HerData Curated Export (Active Dataset)
 
 Source: PROPYLÄEN Project / Klassik Stiftung Weimar
 Format: XML (ra_ndb_* file structure)
+Location: `data/herdata/`
 Export Date: 27 October 2025
 Size: 8 files, 800 KB
 
@@ -156,23 +161,28 @@ Data Quality Improvements vs. Full SNDB:
 - CMIF match rate: +130% relative (51.3% vs 22.3%)
 - Geodata coverage: +76.0% relative (50.7% vs 28.8%)
 
-### 3. SNDB Geographic Data (OLD - Essential for Coordinate Resolution)
+### 3. SNDB Complete Database (Geodata & Additional Sources)
 
 Source: Klassik Stiftung Weimar
-Format: XML (geo_* file structure)
-Size: 3 files, 3.6 MB
+Format: XML (geo_* and pers_koerp_* files)
+Location: `data/sndb/`
+Size: 14 files, 32 MB
 
-Why still needed:
-The new curated export contains place references (SNDB_ID) but not the actual place names or coordinates. The old SNDB geodata files resolve these references:
+Purpose - Geodata Resolution:
+The curated export contains place references (SNDB_ID) but not actual coordinates. SNDB geodata resolves these:
 
 - geo_main.xml: 4,007 places with names
 - geo_indiv.xml: 22,571 coordinate sets
 - geo_links.xml: 63,766 GeoNames linkages
 
-Pipeline workflow:
-1. ra_ndb_orte.xml (new) → SNDB_ID: 79627
-2. geo_main.xml (old) → "Weimar"
-3. geo_indiv.xml (old) → Lat: 50.9795, Lon: 11.3235
+Purpose - Additional Biographical Sources:
+The complete SNDB contains supplementary biographical texts for HerData women:
+
+- pers_koerp_projekt_goebriefe.xml: 150 of 448 women (33%)
+- pers_koerp_projekt_bug.xml: 133 of 448 women (30%)
+- pers_koerp_projekt_tagebuch.xml: 21 of 448 women (5%)
+
+These sources enable multi-perspective biographical narratives in future versions.
 
 Authority Coverage:
 - 93.8% GND IDs for senders
@@ -181,30 +191,6 @@ Authority Coverage:
 
 Peak Period: 1810s (4,592 letters, 30% of corpus)
 Languages: 96.9% German, 2.7% French, 0.4% other
-
-### 2. SNDB Biographical Authority Files
-
-Source: Sammlung Normdaten Biographica, Klassik Stiftung Weimar
-Format: 14 XML files (relational database export)
-Data Snapshot: October 2025 (structurally stable, ~2 years old)
-
-Contents:
-- 23,571 unique person IDs (27,835 total entries with name variants)
-  - 3,617 women (15.3%) ← *Primary target group*
-  - 16,572 men (70.3%)
-  - 3,382 no gender data (14.3%)
-- Gender field: `SEXUS` (values: `m`, `w`)
-- GND coverage: 53.4% (12,596 persons)
-- 4,007 places with GeoNames linkage
-- 6,580 relationships (AGRELON ontology: 44 types)
-- 29,375 occupation entries (multiple per person)
-- 21,058 location assignments (birth/death/activity places)
-
-Biographical Narratives:
-- 6,790 entries from letter edition project
-- 20,128 entries from regest edition (largest)
-- 2,254 entries from BUG (Biographica Universalis Goetheana)
-- 1,004 diary mentions
 
 ## Data Integration Strategy
 

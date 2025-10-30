@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 
-tree = ET.parse('c:/Users/Chrisi/Documents/GitHub/HerData/data/SNDB/nsl_agrelon.xml')
+tree = ET.parse('c:/Users/Chrisi/Documents/GitHub/HerData/data/sndb/nsl_agrelon.xml')
 root = tree.getroot()
 
 print('AGRELON Types in SNDB:\n')
