@@ -28,3 +28,10 @@ nul
 
 # Logs
 *.log
+
+# Generated files
+preprocessing/compare_output.txt
+data/analysis-report.md
+
+# Test files  
+docs/test-*.html

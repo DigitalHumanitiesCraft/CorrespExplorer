@@ -1,12 +1,14 @@
 // HerData - MapLibre GL JS Implementation
 // Interactive map visualization with filtering
 
-import { Timeline } from './timeline.js';
+import { loadPersons } from "./data.js";
+import { GlobalSearch } from "./search.js";
+import { loadNavbar } from "./navbar-loader.js";
+import { getPersonConnections, getClusterConnections, getConnectionColor } from "./network-utils.js";
 
 let map;
 let allPersons = [];
 let filteredPersons = [];
-let timeline = null;
 let temporalFilter = null;  // { start: year, end: year }
 
 // Tooltip variables (accessible to all event handlers)
@@ -15,6 +17,15 @@ let markerTooltip = null;
 
 // Track if event handlers are already set up
 let handlersSetup = false;
+
+// Network visualization state
+let currentConnections = [];
+let networkEnabled = {
+    'Familie': true,
+    'Beruflich': true,
+    'Sozial': true
+};
+let clusterHoverTimeout = null;
 
 // Compact logging utility (export for Timeline module)
 export const Debug = {
@@ -77,12 +88,34 @@ function getOccupationGroup(person) {
 
 // Initialize application
 async function init() {
-    log.init('Starting application');
+    log.init("Starting application");
+    await loadNavbar();
     try {
-        await loadData();
+        // Load data using shared module
+        const loading = document.getElementById('loading');
+        loading.textContent = 'Daten werden geladen...';
+
+        const data = await loadPersons();
+
+        // Add occupation group to each person
+        allPersons = data.persons.map(person => ({
+            ...person,
+            occupation_group: getOccupationGroup(person)
+        }));
+        filteredPersons = allPersons;
+
+        // Update stats in navbar
+        updateStats(data.meta);
+
+        loading.textContent = `${data.meta.total_women} Frauen geladen`;
+        loading.style.background = '#d8f3dc';
+        loading.style.color = '#2d6a4f';
+
+        log.init(`Loaded ${allPersons.length} persons, ${data.meta.with_geodata} with geodata`);
+
         initMap();
         initFilters();
-        initTabs();
+        initSearch();
         log.init('Application ready');
     } catch (error) {
         showError('Initialisierung fehlgeschlagen: ' + error.message);
@@ -90,36 +123,13 @@ async function init() {
     }
 }
 
-// Load persons.json data
-async function loadData() {
-    const loading = document.getElementById('loading');
-    loading.textContent = 'Daten werden geladen...';
-
-    const response = await fetch('data/persons.json');
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const data = await response.json();
-
-    // Validate structure
-    if (!data.meta || !Array.isArray(data.persons)) {
-        throw new Error('Ungültige Datenstruktur');
+// Initialize global search
+let globalSearch = null;
+function initSearch() {
+    if (allPersons.length > 0 && !globalSearch) {
+        globalSearch = new GlobalSearch(allPersons);
+        console.log("🔍 Global search initialized");
     }
-
-    // Add occupation group to each person
-    allPersons = data.persons.map(person => ({
-        ...person,
-        occupation_group: getOccupationGroup(person)
-    }));
-    filteredPersons = allPersons;
-
-    // Update stats in navbar
-    updateStats(data.meta);
-
-    loading.textContent = `${data.meta.total_women} Frauen geladen`;
-    loading.style.background = '#d8f3dc';
-    loading.style.color = '#2d6a4f';
-
-    log.init(`Loaded ${allPersons.length} persons, ${data.meta.with_geodata} with geodata`);
 }
 
 // Initialize MapLibre map
@@ -324,6 +334,136 @@ function addMapLayers() {
     });
 }
 
+// Draw connection lines on map
+function drawConnectionLines(connections) {
+    // Remove existing lines first
+    clearConnectionLines();
+
+    if (connections.length === 0) {
+        log.event('No connections to draw');
+        return;
+    }
+
+    // Filter by enabled categories
+    const filtered = connections.filter(conn => networkEnabled[conn.category]);
+
+    log.event(`Drawing ${filtered.length} connection lines`);
+
+    // Aggregate connections by same from-to coordinates
+    const aggregated = new Map();
+    filtered.forEach(conn => {
+        const key = `${conn.from.lat},${conn.from.lon}-${conn.to.lat},${conn.to.lon}`;
+
+        if (!aggregated.has(key)) {
+            aggregated.set(key, {
+                ...conn,
+                count: 1,
+                persons: [conn.person.name]
+            });
+        } else {
+            const existing = aggregated.get(key);
+            existing.count++;
+            existing.persons.push(conn.person.name);
+        }
+    });
+
+    // Create GeoJSON for lines with aggregated counts
+    const features = Array.from(aggregated.values()).map(conn => ({
+        type: 'Feature',
+        properties: {
+            category: conn.category,
+            subtype: conn.subtype,
+            personName: conn.person.name,
+            fromPlace: conn.from.name,
+            toPlace: conn.to.name,
+            count: conn.count,
+            persons: conn.persons.join(', ')
+        },
+        geometry: {
+            type: 'LineString',
+            coordinates: [
+                [conn.from.lon, conn.from.lat],
+                [conn.to.lon, conn.to.lat]
+            ]
+        }
+    }));
+
+    const geojson = {
+        type: 'FeatureCollection',
+        features: features
+    };
+
+    // Add source for connection lines
+    map.addSource('connections', {
+        type: 'geojson',
+        data: geojson
+    });
+
+    // Add shadow/glow layer for connection lines (for better visibility)
+    map.addLayer({
+        id: 'connection-lines-glow',
+        type: 'line',
+        source: 'connections',
+        paint: {
+            'line-color': '#ffffff',
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['get', 'count'],
+                1, 8,    // 1 connection = 8px glow (increased)
+                5, 10,   // 5 connections = 10px glow
+                10, 12,  // 10 connections = 12px glow
+                20, 14   // 20+ connections = 14px glow
+            ],
+            'line-opacity': 0.6,  // Increased from 0.4
+            'line-blur': 4        // Increased from 3
+        }
+    }, 'persons-layer'); // Insert below markers
+
+    // Add main connection lines layer
+    map.addLayer({
+        id: 'connection-lines',
+        type: 'line',
+        source: 'connections',
+        paint: {
+            'line-color': [
+                'match',
+                ['get', 'category'],
+                'Familie', getConnectionColor('Familie'),
+                'Beruflich', getConnectionColor('Beruflich'),
+                'Sozial', getConnectionColor('Sozial'),
+                getConnectionColor('Unbekannt')
+            ],
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['get', 'count'],
+                1, 4,    // 1 connection = 4px (increased from 3)
+                5, 6,    // 5 connections = 6px (increased from 5)
+                10, 8,   // 10 connections = 8px (increased from 7)
+                20, 12   // 20+ connections = 12px (increased from 10)
+            ],
+            'line-opacity': 0.9  // Increased from 0.8 for maximum visibility
+        }
+    }, 'persons-layer'); // Insert below markers
+
+    currentConnections = filtered;
+}
+
+// Clear connection lines from map
+function clearConnectionLines() {
+    if (map.getLayer('connection-lines')) {
+        map.removeLayer('connection-lines');
+    }
+    if (map.getLayer('connection-lines-glow')) {
+        map.removeLayer('connection-lines-glow');
+    }
+    if (map.getSource('connections')) {
+        map.removeSource('connections');
+    }
+    currentConnections = [];
+}
+
 // Setup event handlers for map interactions (called only once)
 function setupEventHandlers() {
     log.event('Registering event handlers');
@@ -365,57 +505,61 @@ function setupEventHandlers() {
         const pointCount = features[0].properties.point_count;
         log.click(`Cluster: ${pointCount} persons at [${clusterCoords[0].toFixed(4)}, ${clusterCoords[1].toFixed(4)}]`);
 
-        // For small clusters (≤50), show popup by finding persons from data
+        // Get cluster source and ID
+        const source = map.getSource('persons');
+        const clusterId = features[0].properties.cluster_id;
+
+        // For small clusters (≤50), show popup with persons
         if (pointCount <= 50) {
             log.click(`Finding persons at cluster location from data (≤50 threshold)`);
 
-            // Find all persons at this exact location from our data
-            const radius = 0.001; // ~100m radius for coordinate matching
-            const personsAtLocation = filteredPersons.filter(person => {
-                if (!person.places || person.places.length === 0) return false;
-                const place = person.places[0];
-                const distance = Math.sqrt(
-                    Math.pow(place.lon - clusterCoords[0], 2) +
-                    Math.pow(place.lat - clusterCoords[1], 2)
-                );
-                return distance < radius;
-            });
+            // Get persons in this cluster from MapLibre (Promise API)
+            source.getClusterLeaves(clusterId, pointCount)
+                .then(leaves => {
+                    log.click(`Found ${leaves.length} persons in cluster from MapLibre`);
 
-            log.click(`Found ${personsAtLocation.length} persons at cluster location`);
-
-            if (personsAtLocation.length > 0) {
-                // Convert to features format expected by showMultiPersonPopup
-                const features = personsAtLocation.map(person => ({
-                    properties: {
-                        id: person.id,
-                        name: person.name,
-                        role: person.role,
-                        normierung: person.normierung,
-                        gnd: person.gnd || null,
-                        birth: person.dates?.birth || null,
-                        death: person.dates?.death || null,
-                        letter_count: person.letter_count || 0,
-                        mention_count: person.mention_count || 0,
-                        place_name: person.places[0].name,
-                        place_type: person.places[0].type
+                    if (leaves.length > 0) {
+                        // Convert coordinates array to lngLat object
+                        const lngLat = { lng: clusterCoords[0], lat: clusterCoords[1] };
+                        showMultiPersonPopup(lngLat, leaves);
+                    } else {
+                        log.error('No persons found in cluster - zooming instead');
+                        // Zoom to cluster as fallback
+                        source.getClusterExpansionZoom(clusterId)
+                            .then(zoom => {
+                                map.easeTo({
+                                    center: clusterCoords,
+                                    zoom: zoom
+                                });
+                            })
+                            .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
                     }
-                }));
+                })
+                .catch(error => {
+                    log.error(`Failed to get cluster leaves: ${error.message}`);
+                    // Fallback: zoom to cluster
+                    source.getClusterExpansionZoom(clusterId)
+                        .then(zoom => {
+                            map.easeTo({
+                                center: clusterCoords,
+                                zoom: zoom
+                            });
+                        })
+                        .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
+                });
 
-                showMultiPersonPopup({lng: clusterCoords[0], lat: clusterCoords[1]}, features);
-            } else {
-                log.error(`Expected ${pointCount} persons but found ${personsAtLocation.length} - zooming instead`);
+            return; // Exit early, promise handles rest
+        }
+
+        // For large clusters (>50), zoom to expand
+        source.getClusterExpansionZoom(clusterId)
+            .then(zoom => {
                 map.easeTo({
                     center: clusterCoords,
-                    zoom: map.getZoom() + 2
+                    zoom: zoom
                 });
-            }
-        } else {
-            log.click(`Zooming to expansion level (>50 threshold)`);
-            map.easeTo({
-                center: clusterCoords,
-                zoom: map.getZoom() + 2
-            });
-        }
+            })
+            .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
     });
 
     // Hover tooltips for clusters
@@ -425,6 +569,9 @@ function setupEventHandlers() {
         const props = e.features[0].properties;
         const pointCount = props.point_count;
         const coordinates = e.features[0].geometry.coordinates.slice();
+        const clusterId = props.cluster_id;
+
+        log.event(`Cluster hover: ${pointCount} persons, cluster_id=${clusterId}`);
 
         // Build composition breakdown
         const senderCount = (props.sender_count || 0) + (props.both_count || 0);
@@ -436,10 +583,12 @@ function setupEventHandlers() {
         if (mentionedCount > 0) details.push(`${mentionedCount} erwähnt`);
         if (indirectCount > 0) details.push(`${indirectCount} SNDB`);
 
+        // Show initial tooltip immediately (without connection count)
         const html = `
             <div class="hover-tooltip">
                 <strong>${pointCount} Frauen</strong><br>
-                <small>${details.join(' • ')}</small>
+                <small>${details.join(' • ')}</small><br>
+                <small id="network-info" style="color: #999;">Verbindungen werden geladen...</small>
             </div>
         `;
 
@@ -451,14 +600,61 @@ function setupEventHandlers() {
             .setLngLat(coordinates)
             .setHTML(html)
             .addTo(map);
+
+        // Get persons in cluster - use Promise API (MapLibre changed from callbacks to Promises!)
+        const source = map.getSource('persons');
+
+        source.getClusterLeaves(clusterId, pointCount)
+            .then(leaves => {
+                log.event(`Promise resolved: got ${leaves.length} leaves from cluster`);
+
+                // Convert features to person objects
+                const clusterPersons = leaves
+                    .map(leaf => allPersons.find(p => p.id === leaf.properties.id))
+                    .filter(p => p && p.places && p.places.length > 0);
+
+                const connections = getClusterConnections(clusterPersons, allPersons);
+
+                // Update tooltip with connection info - search within popup element
+                const popupEl = clusterTooltip ? clusterTooltip.getElement() : null;
+                const networkInfoEl = popupEl ? popupEl.querySelector('#network-info') : null;
+
+                log.event(`Found ${connections.length} connections, networkInfoEl=${!!networkInfoEl}`);
+                if (networkInfoEl && connections.length > 0) {
+                    // Count by category
+                    const familieCount = connections.filter(c => c.category === 'Familie').length;
+                    const beruflichCount = connections.filter(c => c.category === 'Beruflich').length;
+                    const sozialCount = connections.filter(c => c.category === 'Sozial').length;
+
+                    const connDetails = [];
+                    if (familieCount > 0) connDetails.push(`<span style="color: #ff0066; font-weight: bold;">${familieCount} Familie</span>`);
+                    if (beruflichCount > 0) connDetails.push(`<span style="color: #00ccff; font-weight: bold;">${beruflichCount} Beruflich</span>`);
+                    if (sozialCount > 0) connDetails.push(`<span style="color: #ffcc00; font-weight: bold;">${sozialCount} Sozial</span>`);
+
+                    networkInfoEl.innerHTML = `<strong style="color: #fff;">${connections.length} Verbindungen:</strong> ${connDetails.join(' • ')}`;
+                    networkInfoEl.style.color = '#fff';
+                } else if (networkInfoEl) {
+                    networkInfoEl.innerHTML = 'Keine Verbindungen';
+                    networkInfoEl.style.color = '#999';
+                }
+
+                // Draw connection lines
+                drawConnectionLines(connections);
+                log.event(`Showing ${connections.length} connections for cluster (${clusterPersons.length} persons)`);
+            })
+            .catch(error => {
+                log.error(`getClusterLeaves Promise rejected: ${error.message}`);
+            });
     });
 
     map.on('mouseleave', 'persons-clusters', () => {
         map.getCanvas().style.cursor = '';
+
         if (clusterTooltip) {
             clusterTooltip.remove();
             clusterTooltip = null;
         }
+        clearConnectionLines();
     });
 
     // Hover tooltips for individual markers
@@ -467,6 +663,14 @@ function setupEventHandlers() {
 
         const props = e.features[0].properties;
         const coordinates = e.features[0].geometry.coordinates.slice();
+
+        // Find person and show connections
+        const person = allPersons.find(p => p.id === props.id);
+        if (person && person.places && person.places.length > 0) {
+            const connections = getPersonConnections(person, allPersons);
+            drawConnectionLines(connections);
+            log.event(`Showing ${connections.length} connections for ${person.name}`);
+        }
 
         // Create tooltip content
         const dates = props.birth || props.death
@@ -490,6 +694,7 @@ function setupEventHandlers() {
             markerTooltip.remove();
             markerTooltip = null;
         }
+        clearConnectionLines();
     });
 }
 
@@ -554,14 +759,22 @@ function showMultiPersonPopup(lngLat, features) {
         if (p.mention_count > 0) stats.push(`${p.mention_count} Erw.`);
         const statsText = stats.length > 0 ? stats.join(' • ') : '';
 
+        // Check if person has relations
+        const person = allPersons.find(person => person.id === p.id);
+        const hasRelations = person && person.relations && person.relations.length > 0;
+        const relationBadge = hasRelations
+            ? `<span class="badge badge-relation" title="${person.relations.length} Verbindungen">🔗 ${person.relations.length}</span>`
+            : '';
+
         return `
-            <div class="person-item" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
+            <div class="person-item ${hasRelations ? 'has-relations' : ''}" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
                 <div class="person-name">
                     <strong>${p.name}</strong> ${dates}
                 </div>
                 <div class="person-meta">
                     ${gndBadge}
                     <span class="badge badge-sndb">SNDB</span>
+                    ${relationBadge}
                     ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
                 </div>
             </div>
@@ -613,14 +826,22 @@ window.expandPersonList = function(event) {
         if (p.mention_count > 0) stats.push(`${p.mention_count} Erw.`);
         const statsText = stats.length > 0 ? stats.join(' • ') : '';
 
+        // Check if person has relations
+        const person = allPersons.find(person => person.id === p.id);
+        const hasRelations = person && person.relations && person.relations.length > 0;
+        const relationBadge = hasRelations
+            ? `<span class="badge badge-relation" title="${person.relations.length} Verbindungen">🔗 ${person.relations.length}</span>`
+            : '';
+
         return `
-            <div class="person-item" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
+            <div class="person-item ${hasRelations ? 'has-relations' : ''}" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
                 <div class="person-name">
                     <strong>${p.name}</strong> ${dates}
                 </div>
                 <div class="person-meta">
                     ${gndBadge}
                     <span class="badge badge-sndb">SNDB</span>
+                    ${relationBadge}
                     ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
                 </div>
             </div>
@@ -684,10 +905,23 @@ function initFilters() {
         applyFilters();
     });
 
-    // Reset button
-    resetButton.addEventListener('click', () => {
+    // Select all button
+    const selectAllButton = document.getElementById('select-all-filters');
+    selectAllButton.addEventListener('click', () => {
         roleCheckboxes.forEach(cb => cb.checked = true);
         occupationCheckboxes.forEach(cb => cb.checked = true);
+
+        // Reset year range slider to full range
+        yearRangeSlider.noUiSlider.set([1762, 1824]);
+        temporalFilter = null;
+
+        applyFilters();
+    });
+
+    // Reset button
+    resetButton.addEventListener('click', () => {
+        roleCheckboxes.forEach(cb => cb.checked = false);
+        occupationCheckboxes.forEach(cb => cb.checked = false);
 
         // Reset year range slider
         yearRangeSlider.noUiSlider.set([1762, 1824]);
@@ -789,9 +1023,10 @@ async function initializeTimeline() {
 
 // Update statistics in navbar
 function updateStats(meta) {
-    document.getElementById('stat-letters').textContent = '15.312 Briefe';
-    document.getElementById('stat-women').textContent = `${meta.total_women.toLocaleString('de-DE')} Frauen`;
-    document.getElementById('stat-places').textContent = '633 Orte';
+    //     document.getElementById('stat-letters').textContent = '15.312 Briefe';
+    //     document.getElementById('stat-women').textContent = `${meta.total_women.toLocaleString('de-DE')} Frauen`;
+    //     document.getElementById('stat-places').textContent = '633 Orte';
+    // Stats now in sidebar, no navbar update needed
 }
 
 // Hide loading message

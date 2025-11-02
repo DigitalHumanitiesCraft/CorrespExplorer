@@ -8,8 +8,8 @@ Key changes from old pipeline:
 - Focus on 448 regest-relevant women with better GND coverage (60.3% vs 34.1%)
 
 Data sources:
-- NEW: new-data/Datenexport 2025-10-27/ (448 women)
-- OLD: data/SNDB/geo_*.xml (geodata resolution)
+- NEW: data/herdata/ (448 women)
+- OLD: data/sndb/geo_*.xml (geodata resolution)
 
 Testing strategy:
 - Each phase validates its output before proceeding
@@ -29,9 +29,9 @@ NS = {'tei': 'http://www.tei-c.org/ns/1.0'}
 class HerDataPipelineNew:
     """4-phase pipeline using NEW export (2025-10-27) with OLD geodata"""
 
-    def __init__(self, new_export_dir, old_sndb_dir, cmif_file, output_file, verbose=True):
-        self.new_export_dir = Path(new_export_dir)
-        self.old_sndb_dir = Path(old_sndb_dir)
+    def __init__(self, herdata_dir, sndb_dir, cmif_file, output_file, verbose=True):
+        self.herdata_dir = Path(herdata_dir)
+        self.sndb_dir = Path(sndb_dir)
         self.cmif_file = Path(cmif_file)
         self.output_file = Path(output_file)
         self.verbose = verbose
@@ -144,7 +144,7 @@ class HerDataPipelineNew:
 
         # Step 1: Load main person data (names) from NEW export
         self.log("Loading ra_ndb_main.xml...")
-        main_tree = ET.parse(self.new_export_dir / 'ra_ndb_main.xml')
+        main_tree = ET.parse(self.herdata_dir / 'ra_ndb_main.xml')
         main_root = main_tree.getroot()
 
         id_to_name = {}
@@ -180,7 +180,7 @@ class HerDataPipelineNew:
 
         # Step 2: Load individual data (SEXUS, GND) from NEW export
         self.log("Loading ra_ndb_indiv.xml...")
-        indiv_tree = ET.parse(self.new_export_dir / 'ra_ndb_indiv.xml')
+        indiv_tree = ET.parse(self.herdata_dir / 'ra_ndb_indiv.xml')
         indiv_root = indiv_tree.getroot()
 
         women_count = 0
@@ -214,7 +214,7 @@ class HerDataPipelineNew:
 
         # Step 3: Add life dates from NEW export
         self.log("Loading ra_ndb_datierungen.xml...")
-        dates_tree = ET.parse(self.new_export_dir / 'ra_ndb_datierungen.xml')
+        dates_tree = ET.parse(self.herdata_dir / 'ra_ndb_datierungen.xml')
         dates_root = dates_tree.getroot()
 
         # Collect birth/death dates
@@ -368,7 +368,7 @@ class HerDataPipelineNew:
 
         # Step 1: Load place linkage from NEW export (person → SNDB_ID)
         self.log("Loading ra_ndb_orte.xml (NEW export)...")
-        orte_tree = ET.parse(self.new_export_dir / 'ra_ndb_orte.xml')
+        orte_tree = ET.parse(self.herdata_dir / 'ra_ndb_orte.xml')
         orte_root = orte_tree.getroot()
 
         person_to_places = defaultdict(list)
@@ -387,7 +387,7 @@ class HerDataPipelineNew:
 
         # Step 2: Load place names from OLD SNDB (geo_main.xml)
         self.log("Loading geo_main.xml (OLD SNDB for resolution)...")
-        geo_main_tree = ET.parse(self.old_sndb_dir / 'geo_main.xml')
+        geo_main_tree = ET.parse(self.sndb_dir / 'geo_main.xml')
         geo_main_root = geo_main_tree.getroot()
 
         place_id_to_name = {}
@@ -404,7 +404,7 @@ class HerDataPipelineNew:
 
         # Step 3: Load coordinates from OLD SNDB (geo_indiv.xml)
         self.log("Loading geo_indiv.xml (OLD SNDB for coordinates)...")
-        geo_indiv_tree = ET.parse(self.old_sndb_dir / 'geo_indiv.xml')
+        geo_indiv_tree = ET.parse(self.sndb_dir / 'geo_indiv.xml')
         geo_indiv_root = geo_indiv_tree.getroot()
 
         place_id_to_coords = {}
@@ -443,7 +443,7 @@ class HerDataPipelineNew:
 
         # Step 5: Load occupations from NEW export
         self.log("Loading ra_ndb_berufe.xml (NEW export)...")
-        berufe_tree = ET.parse(self.new_export_dir / 'ra_ndb_berufe.xml')
+        berufe_tree = ET.parse(self.herdata_dir / 'ra_ndb_berufe.xml')
         berufe_root = berufe_tree.getroot()
 
         occupations_added = 0
@@ -462,7 +462,7 @@ class HerDataPipelineNew:
 
         # Step 6: Load biographical texts from NEW export
         self.log("Loading projekt_regestausgabe.xml (NEW export)...")
-        projekt_tree = ET.parse(self.new_export_dir / 'projekt_regestausgabe.xml')
+        projekt_tree = ET.parse(self.herdata_dir / 'projekt_regestausgabe.xml')
         projekt_root = projekt_tree.getroot()
 
         biografien_added = 0
@@ -479,11 +479,11 @@ class HerDataPipelineNew:
 
         # Step 7: Load AGRELON relationships from NEW export
         self.log("Loading ra_ndb_beziehungen.xml (NEW export)...")
-        beziehungen_tree = ET.parse(self.new_export_dir / 'ra_ndb_beziehungen.xml')
+        beziehungen_tree = ET.parse(self.herdata_dir / 'ra_ndb_beziehungen.xml')
         beziehungen_root = beziehungen_tree.getroot()
 
         # Load AGRELON type definitions
-        agrelon_tree = ET.parse(self.new_export_dir / 'nsl_agrelon.xml')
+        agrelon_tree = ET.parse(self.herdata_dir / 'nsl_agrelon.xml')
         agrelon_root = agrelon_tree.getroot()
 
         # Build AGRELON ID to label mapping
@@ -578,8 +578,8 @@ class HerDataPipelineNew:
                 'gnd_coverage_pct': round(with_gnd / total_women * 100, 1) if total_women > 0 else 0,
                 'geodata_coverage_pct': round(with_geodata / total_women * 100, 1) if total_women > 0 else 0,
                 'data_sources': {
-                    'persons': 'new-data/Datenexport 2025-10-27/ (ra_ndb_*)',
-                    'geodata': 'data/SNDB/ (geo_main.xml, geo_indiv.xml)',
+                    'persons': 'data/herdata/ (ra_ndb_*)',
+                    'geodata': 'data/sndb/ (geo_main.xml, geo_indiv.xml)',
                     'cmif': 'data/ra-cmif.xml (2025-03 snapshot)'
                 },
                 'timeline': timeline_data
@@ -715,14 +715,14 @@ def main():
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
 
-    new_export_dir = project_root / 'new-data' / 'Datenexport 2025-10-27'
-    old_sndb_dir = project_root / 'data' / 'SNDB'
+    herdata_dir = project_root / 'data' / 'herdata'
+    sndb_dir = project_root / 'data' / 'sndb'
     cmif_file = project_root / 'data' / 'ra-cmif.xml'
     output_file = project_root / 'docs' / 'data' / 'persons.json'
 
     pipeline = HerDataPipelineNew(
-        new_export_dir=new_export_dir,
-        old_sndb_dir=old_sndb_dir,
+        herdata_dir=herdata_dir,
+        sndb_dir=sndb_dir,
         cmif_file=cmif_file,
         output_file=output_file,
         verbose=True

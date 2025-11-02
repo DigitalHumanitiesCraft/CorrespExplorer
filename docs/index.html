@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="HerData visualisiert 3.617 Frauen in der Briefkorrespondenz von Johann Wolfgang von Goethe (1762-1824)">
+    <meta name="description" content="HerData visualisiert 448 Frauen in der Briefkorrespondenz von Johann Wolfgang von Goethe (1762-1824)">
     <title>HerData - Frauen in Goethes Briefkorrespondenz</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
@@ -14,107 +14,114 @@
     <link rel="stylesheet" href="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.css" />
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search.css">
 </head>
 <body>
-    <!-- Global Navigation -->
-    <nav class="navbar">
-        <div class="nav-brand">
-            <a href="index.html" style="color: inherit; text-decoration: none;">HerData</a>
-        </div>
-        <div class="nav-links">
-            <a href="index.html" class="active">Karte</a>
-            <a href="network.html">Netzwerk</a>
-        </div>
-        <div class="nav-stats">
-            <span id="stat-letters">15.312 Briefe</span>
-            <span id="stat-women">3.617 Frauen</span>
-            <span id="stat-places">633 Orte</span>
-        </div>
-    </nav>
+    <!-- Global Navigation Placeholder -->
+    <div id="navbar-placeholder"></div>
 
     <!-- Main Container -->
     <div class="container">
         <!-- Sidebar Filters -->
-        <aside class="sidebar">
+        <aside class="sidebar" role="complementary" aria-label="Filteroptionen">
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-value">15.312</div>
+                    <div class="stat-label">Briefe</div>
+                </div>
+                <a href="people.html" class="stat-card stat-card-clickable">
+                    <div class="stat-value">448</div>
+                    <div class="stat-label">Frauen</div>
+                </a>
+                <a href="places.html" class="stat-card stat-card-clickable">
+                    <div class="stat-value">227</div>
+                    <div class="stat-label">Orte</div>
+                </a>
+            </div>
+
             <h3>Filter</h3>
 
             <!-- Letter Activity Filter -->
-            <div class="filter-group">
-                <h4>Briefaktivität</h4>
-                <label><input type="checkbox" name="role" value="sender" checked> Hat geschrieben</label>
-                <label><input type="checkbox" name="role" value="mentioned" checked> Wurde erwähnt</label>
-                <label><input type="checkbox" name="role" value="indirect"> Nur SNDB-Eintrag</label>
+            <div class="filter-group" role="group" aria-labelledby="filter-activity-heading">
+                <h4 id="filter-activity-heading">Briefaktivität</h4>
+                <label><input type="checkbox" name="role" value="sender" checked aria-describedby="filter-activity-heading"> Hat geschrieben</label>
+                <label><input type="checkbox" name="role" value="mentioned" checked aria-describedby="filter-activity-heading"> Wurde erwähnt</label>
+                <label><input type="checkbox" name="role" value="indirect" aria-describedby="filter-activity-heading"> Nur SNDB-Eintrag</label>
             </div>
 
             <!-- Occupation Groups Filter -->
-            <div class="filter-group">
-                <h4>Berufsgruppe</h4>
-                <label><input type="checkbox" name="occupation" value="artistic" checked> Künstlerisch</label>
-                <label><input type="checkbox" name="occupation" value="literary" checked> Literarisch</label>
-                <label><input type="checkbox" name="occupation" value="musical" checked> Musikalisch</label>
-                <label><input type="checkbox" name="occupation" value="court" checked> Hof/Adel</label>
-                <label><input type="checkbox" name="occupation" value="education" checked> Bildung</label>
-                <label><input type="checkbox" name="occupation" value="other" checked> Sonstiges</label>
-                <label><input type="checkbox" name="occupation" value="none" checked> Kein Beruf angegeben</label>
+            <div class="filter-group" role="group" aria-labelledby="filter-occupation-heading">
+                <h4 id="filter-occupation-heading">Berufsgruppe</h4>
+                <label><input type="checkbox" name="occupation" value="artistic" checked aria-describedby="filter-occupation-heading"> Künstlerisch</label>
+                <label><input type="checkbox" name="occupation" value="literary" checked aria-describedby="filter-occupation-heading"> Literarisch</label>
+                <label><input type="checkbox" name="occupation" value="musical" checked aria-describedby="filter-occupation-heading"> Musikalisch</label>
+                <label><input type="checkbox" name="occupation" value="court" checked aria-describedby="filter-occupation-heading"> Hof/Adel</label>
+                <label><input type="checkbox" name="occupation" value="education" checked aria-describedby="filter-occupation-heading"> Bildung</label>
+                <label><input type="checkbox" name="occupation" value="other" checked aria-describedby="filter-occupation-heading"> Sonstiges</label>
+                <label><input type="checkbox" name="occupation" value="none" checked aria-describedby="filter-occupation-heading"> Kein Beruf angegeben</label>
             </div>
 
             <!-- Time Period Filter -->
-            <div class="filter-group">
-                <h4>Zeitraum</h4>
-                <div id="year-range-slider"></div>
+            <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
+                <h4 id="filter-time-heading">Zeitraum</h4>
+                <div id="year-range-slider" aria-label="Jahr-Bereich wählen" role="slider" aria-valuemin="1762" aria-valuemax="1824"></div>
                 <div class="year-range-display">
-                    <span id="year-range-text">1762 – 1824</span>
+                    <span id="year-range-text" aria-live="polite">1762 – 1824</span>
                 </div>
             </div>
 
-            <button id="reset-filters">Alle zurücksetzen</button>
+            <div class="filter-buttons">
+                <button id="select-all-filters" aria-label="Alle Filter auswählen">Alle auswählen</button>
+                <button id="reset-filters" aria-label="Alle Filter zurücksetzen">Alle zurücksetzen</button>
+            </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="tabs">
-                <button class="tab active" data-tab="map">Karte</button>
-                <button class="tab" data-tab="timeline">Zeit</button>
-                <button class="tab" data-tab="network">Netz</button>
-            </div>
-
+        <main class="main-content" role="main">
             <div id="map-view" class="tab-content active">
-                <div id="map"></div>
-                <div id="loading">Daten werden geladen...</div>
+                <div id="map" role="application" aria-label="Interaktive Karte der Frauen"></div>
+                <div id="loading" role="status" aria-live="polite">Daten werden geladen...</div>
 
                 <!-- Map Legend -->
-                <div class="map-legend">
+                <div class="map-legend" role="region" aria-label="Kartenlegende">
                     <h4>Cluster-Farben</h4>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #2c5f8d;"></span>
+                        <span class="legend-color" style="background: #2c5f8d;" aria-hidden="true"></span>
                         <span>Überwiegend geschrieben (>50%)</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #6c757d;"></span>
+                        <span class="legend-color" style="background: #6c757d;" aria-hidden="true"></span>
                         <span>Überwiegend erwähnt (>50%)</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-color" style="background: #2d6a4f;"></span>
+                        <span class="legend-color" style="background: #2d6a4f;" aria-hidden="true"></span>
                         <span>Gemischt</span>
                     </div>
-                </div>
-            </div>
 
-            <div id="timeline-view" class="tab-content">
-                <div class="timeline-container">
-                    <div id="timeline-chart"></div>
+                    <h4 style="margin-top: 16px;">Netzwerk-Verbindungen</h4>
+                    <div class="legend-item">
+                        <span class="legend-line" style="background: #ff0066;" aria-hidden="true"></span>
+                        <span><strong>Familie</strong></span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-line" style="background: #00ccff;" aria-hidden="true"></span>
+                        <span><strong>Beruflich</strong></span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-line" style="background: #ffcc00;" aria-hidden="true"></span>
+                        <span><strong>Sozial</strong></span>
+                    </div>
+                    <p style="font-size: 11px; margin-top: 8px; color: #6c757d;">
+                        Hover über Marker/Cluster zeigt Verbindungen
+                    </p>
                 </div>
-            </div>
-
-            <div id="network-view" class="tab-content">
-                <p>Netzwerk wird in Phase 3 implementiert</p>
             </div>
         </main>
     </div>
 
     <!-- Scripts -->
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
     <script src="js/app.js" type="module"></script>
 </body>

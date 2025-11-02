@@ -4,8 +4,6 @@ Zentrale Einstiegsdatei für das HerData-Wissenssystem.
 
 Stand: 2025-11-02
 
-Siehe [VAULT-REGELN.md](VAULT-REGELN.md) für Struktur und Prinzipien des Wissenssystems.
-
 ## Projekt
 
 [project.md](project.md) - Projektziel, Datenquellen, Implementierungsstatus
@@ -19,7 +17,6 @@ Enthält: AGRELON-Ontologie, DTD-Schemas, LFDNR-Semantik, Projekt-XMLs, Geodaten
 ## Design
 
 [design.md](design.md) - UI/UX-System, Informationsarchitektur, Visualisierungsstrategie
-[wireframe.md](wireframe.md) - Technische UI-Spezifikationen, Systemzustände
 
 ## Requirements
 
@@ -27,12 +24,12 @@ Enthält: AGRELON-Ontologie, DTD-Schemas, LFDNR-Semantik, Projekt-XMLs, Geodaten
 
 ## Validierung und Analysen
 
-[../REQUIREMENTS_VALIDATION.md](../REQUIREMENTS_VALIDATION.md) - Validierung aller Requirements gegen tatsächliche Daten (2025-10-29)
+[../../REQUIREMENTS_VALIDATION.md](../../REQUIREMENTS_VALIDATION.md) - Validierung aller Requirements gegen tatsächliche Daten (2025-10-29)
 - Datenabdeckungs-Analyse für alle 5 Epics
 - Implementation Gaps identifiziert
 - Empfehlungen für Datenintegration
 
-[../TECHNICAL_ANALYSIS.md](../TECHNICAL_ANALYSIS.md) - Umfassende technische Analyse (2025-10-29)
+[../../TECHNICAL_ANALYSIS.md](../../TECHNICAL_ANALYSIS.md) - Umfassende technische Analyse (2025-10-29)
 - Python Pipeline (734 Zeilen, 4-Phasen-Architektur)
 - JavaScript Frontend (1.693 Zeilen, 4 Module)
 - Code-Qualität Assessment
@@ -51,6 +48,10 @@ Enthält: AGRELON-Ontologie, DTD-Schemas, LFDNR-Semantik, Projekt-XMLs, Geodaten
 - ADR-007: Search Implementation (Proposed)
 - ADR-008: Curated Dataset Selection (Accepted)
 
+## Netzwerk
+
+[network-relations.md](network-relations.md) - AGRELON-Beziehungen und Netzwerk-Visualisierung
+
 ## Technische Implementierung
 
 [technical-architecture.md](technical-architecture.md) - MapLibre, State Management, Event Handler, Performance
@@ -60,12 +61,10 @@ Enthält: Layer-Struktur, Clustering, Data Transformation, Person Detail Pages, 
 
 Alle Zahlen und Statistiken siehe:
 - [data.md](data.md) - Datenmodell mit Kern-Statistiken
-- [../data/analysis-report.md](../data/analysis-report.md) - Vollständige CMIF-Analyse
 
 ## Externe Verweise
 
 - Live Demo: https://chpollin.github.io/HerData/
 - Repository: https://github.com/chpollin/HerData
-- Hauptdokumentation: [../README.md](../README.md)
-- Implementierungsplan: [../IMPLEMENTATION_PLAN.md](../IMPLEMENTATION_PLAN.md)
-- Entwicklungsjournal: [../documentation/JOURNAL.md](../documentation/JOURNAL.md)
+- Hauptdokumentation: [../../README.md](../../README.md)
+- Entwicklungsjournal: [../../JOURNAL.md](../../JOURNAL.md)

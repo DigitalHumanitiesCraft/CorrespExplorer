@@ -1,0 +1,468 @@
+/* Modern Card-Based Person Page Layout */
+
+@import url('tokens.css');
+
+.person-page-cards {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-xl) var(--space-4xl);
+}
+
+/* Person Header */
+.person-page-cards .person-header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+    padding: var(--space-3xl) 0;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.person-page-cards .person-header h1 {
+    font-size: var(--font-size-3xl);
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+}
+
+.person-page-cards .person-dates {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    margin-bottom: var(--space-lg);
+}
+
+.person-page-cards .person-badges {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Stats Cards - Horizontal Row */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-3xl);
+}
+
+.stats-cards .stat-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-xl);
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.stats-cards .stat-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.stats-cards .stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    color: var(--color-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.stats-cards .stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Content Cards Container */
+.cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+}
+
+/* Individual Content Cards */
+.content-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-2xl);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s;
+}
+
+.content-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.content-card h2 {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--color-bg-light);
+}
+
+.card-content {
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+/* Biography specific */
+#biography-card .card-content {
+    font-size: var(--font-size-md);
+}
+
+/* Letters list */
+#letters-content .letter-item {
+    padding: var(--space-lg);
+    border-left: 3px solid var(--color-secondary);
+    margin-bottom: var(--space-lg);
+    background: var(--color-bg-light);
+    border-radius: 4px;
+}
+
+#letters-content .letter-date {
+    font-weight: 600;
+    color: var(--color-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+#letters-content .letter-place {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+}
+
+/* Places list */
+.places-list .place-item {
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    background: var(--color-bg-light);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.places-list .place-name {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.places-list .place-type {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    background: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+/* Mini Map in Places Card */
+#places-map {
+    height: 300px;
+    margin-top: var(--space-lg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Occupations list */
+#occupations-content .occupation-item {
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    background: var(--color-bg-light);
+    border-radius: 4px;
+    border-left: 3px solid var(--color-accent);
+}
+
+#occupations-content .occupation-name {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+#occupations-content .occupation-type {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+/* Normdaten links */
+.normdaten-link {
+    margin: var(--space-md) 0;
+    line-height: 1.6;
+}
+
+.normdaten-link a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom 0.2s;
+}
+
+.normdaten-link a:hover {
+    border-bottom: 1px solid var(--color-secondary);
+}
+
+/* Data quality indicators */
+.data-quality-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.data-quality-list li {
+    padding: var(--space-sm) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.quality-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.quality-icon.available {
+    background: #28a745;
+    color: white;
+}
+
+.quality-icon.unavailable {
+    background: #dc3545;
+    color: white;
+}
+
+.quality-icon.info {
+    background: #17a2b8;
+    color: white;
+    font-style: normal;
+    font-weight: 700;
+}
+
+/* Citation box */
+.citation-box {
+    position: relative;
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: var(--space-lg);
+    margin-top: var(--space-md);
+}
+
+.citation-text {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+    padding-right: 90px;
+}
+
+.copy-button {
+    position: absolute;
+    top: var(--space-lg);
+    right: var(--space-lg);
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.copy-button:hover {
+    background: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.copy-button:active {
+    transform: translateY(0);
+}
+
+/* Empty state */
+.placeholder-text {
+    color: var(--color-text-light);
+    font-style: italic;
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .person-page-cards {
+        padding: var(--space-md) var(--space-md) var(--space-2xl);
+    }
+
+    .person-page-cards .person-header {
+        padding: var(--space-xl) 0;
+        margin-bottom: var(--space-xl);
+    }
+
+    .person-page-cards .person-header h1 {
+        font-size: var(--font-size-2xl);
+        margin-bottom: var(--space-sm);
+    }
+
+    .person-dates {
+        font-size: var(--font-size-md);
+    }
+
+    .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+        margin-bottom: var(--space-xl);
+    }
+
+    .stats-cards .stat-card {
+        padding: var(--space-lg);
+    }
+
+    .stats-cards .stat-value {
+        font-size: var(--font-size-2xl);
+    }
+
+    .cards-container {
+        gap: var(--space-lg);
+    }
+
+    .content-card {
+        padding: var(--space-lg);
+    }
+
+    .content-card h2 {
+        font-size: var(--font-size-lg);
+        margin-bottom: var(--space-md);
+    }
+
+    #places-map {
+        height: 250px;
+    }
+
+    .citation-text {
+        padding-right: 0;
+        padding-bottom: 50px;
+    }
+
+    .copy-button {
+        position: static;
+        display: block;
+        width: 100%;
+        margin-top: var(--space-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .person-page-cards {
+        padding: var(--space-sm) var(--space-sm) var(--space-xl);
+    }
+
+    .person-page-cards .person-header h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    .stats-cards {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    .content-card {
+        padding: var(--space-md);
+    }
+
+    .normdaten-link {
+        word-break: break-all;
+    }
+}
+
+/* Relations List */
+.relations-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+.relation-category {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.relation-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    background: var(--color-bg-light);
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.relation-item:hover {
+    background: var(--color-bg);
+    border-left-color: currentColor;
+    transform: translateX(4px);
+}
+
+.relation-type {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.relation-name {
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.relation-name:hover {
+    text-decoration: underline;
+}
+
+.relation-name strong {
+    color: var(--color-primary);
+}
+
+/* Additional Biographies Section */
+.biographies-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+}
+
+.biography-source {
+    border-left: 3px solid var(--color-primary);
+    padding-left: var(--space-lg);
+}
+
+.biography-source-title {
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+}
+
+.biography-text {
+    line-height: 1.7;
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+}
+
+.biography-text em {
+    font-style: italic;
+    color: var(--color-text-light);
+}
+
+.biography-text strong {
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}

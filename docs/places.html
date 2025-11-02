@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alle Orte - HerData</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/list.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+    <!-- Global Navigation -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Places List -->
+    <div class="list-container">
+        <header class="list-header">
+            <h1>Alle Orte</h1>
+            <p class="list-subtitle">227 Orte mit Geodaten</p>
+        </header>
+
+        <div class="list-filters">
+            <input type="text" id="search-list" placeholder="Orte suchen..." class="list-search">
+            <div class="list-sort">
+                <label for="sort-select">Sortierung:</label>
+                <select id="sort-select">
+                    <option value="name">Name (A-Z)</option>
+                    <option value="count">Personenanzahl (absteigend)</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="places-list" class="list-content">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <script src="js/places.js?v=1" type="module"></script>
+</body>
+</html>

@@ -2,7 +2,7 @@
 
 Technische Implementierungsdetails der HerData-Webanwendung.
 
-Stand: 2025-10-19
+Stand: 2025-10-30
 
 Siehe [INDEX.md](INDEX.md) für Navigation im Knowledge Vault und [decisions.md](decisions.md) für architektonische Entscheidungen (ADRs).
 
@@ -376,6 +376,226 @@ person.places.forEach(place => {
 ```
 
 Wichtig: personMiniMap.resize() nach Tab-Wechsel (sonst graue Tiles).
+
+## List Pages Architecture
+
+### People List Page
+
+Dedicated page listing all 448 women with search and sort capabilities:
+
+```
+people.html + people.js + list.css
+```
+
+Features:
+
+- Search by name (case-insensitive filtering)
+- Sort by: Name (A-Z), Letter count (descending), Birth year (ascending)
+- Grid layout with responsive cards
+- Shows: name, dates, occupation, location, letter count
+- Direct links to person detail pages
+
+Implementation:
+
+```javascript
+const data = await loadPersons();
+allPersons = data.persons;
+filteredPersons = [...allPersons];
+
+searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    filteredPersons = allPersons.filter(person =>
+        person.name.toLowerCase().includes(query)
+    );
+    sortAndRender();
+});
+```
+
+### Places List Page
+
+Dedicated page listing all 227 places with geodata:
+
+```
+places.html + places.js + list.css
+```
+
+Features:
+
+- Search by place name
+- Sort by: Name (A-Z), Person count (descending)
+- Shows: coordinates, person count per place
+- Expandable details with list of persons at each place
+- Direct links to person detail pages
+
+Data aggregation:
+
+```javascript
+const placesMap = new Map();
+allPersons.forEach(person => {
+    if (person.places) {
+        person.places.forEach(place => {
+            const key = place.name;
+            if (!placesMap.has(key)) {
+                placesMap.set(key, {
+                    name: place.name,
+                    lat: place.lat,
+                    lon: place.lon,
+                    count: 0,
+                    persons: []
+                });
+            }
+            placesMap.get(key).count++;
+            placesMap.get(key).persons.push({id: person.id, name: person.name});
+        });
+    }
+});
+allPlaces = Array.from(placesMap.values());
+```
+
+### Shared Styling
+
+Both list pages use list.css with consistent design patterns:
+
+```css
+.list-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: var(--space-lg);
+}
+
+.list-item {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: var(--space-lg);
+    transition: all 0.2s ease;
+}
+
+.list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-primary);
+}
+```
+
+Responsive behavior: Auto-fill grid collapses to single column on mobile.
+
+### Navigation Integration
+
+List pages accessible via clickable stat cards in sidebar:
+
+```html
+<a href="people.html" class="stat-card stat-card-clickable">
+    <div class="stat-value">448</div>
+    <div class="stat-label">Frauen</div>
+</a>
+```
+
+Design decision: Dedicated pages preferred over modals for better UX and navigation.
+
+## Download Page Architecture
+
+### Export Formats
+
+download.html provides multiple export formats:
+
+1. JSON (full dataset with all fields)
+2. CSV (flat table, 15 columns for Excel/R/SPSS)
+3. Excel (planned)
+4. Vault ZIP (all knowledge documentation)
+
+CSV structure:
+
+```
+id, name, gnd, birth_year, death_year, letter_count, mention_count,
+roles, primary_place, place_lat, place_lon, primary_occupation,
+sndb_url, has_biography, has_relations
+```
+
+### Vault ZIP Generation
+
+Client-side ZIP creation using JSZip library:
+
+```javascript
+async function generateVaultZip() {
+    const JSZip = window.JSZip || await loadJSZip();
+    const zip = new JSZip();
+    const knowledgeFolder = zip.folder('herdata-vault');
+
+    const docs = ['data.md', 'technical-architecture.md', ...];
+
+    for (const doc of docs) {
+        const response = await fetch(`../knowledge/${doc}`);
+        if (response.ok) {
+            const content = await response.text();
+            knowledgeFolder.file(doc, content);
+        }
+    }
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'herdata-vault.zip';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+```
+
+## Shared Data Module
+
+### Data Loading API
+
+Centralized data loading with in-memory cache:
+
+```javascript
+// data.js
+let cachedData = null;
+
+export async function loadPersons() {
+    if (cachedData) {
+        console.log('Using cached persons data');
+        return cachedData;
+    }
+
+    const response = await fetch('data/persons.json');
+    const data = await response.json();
+
+    if (!data.meta || !Array.isArray(data.persons)) {
+        throw new Error('Invalid data structure');
+    }
+
+    cachedData = data;
+    return data;  // Returns {meta, persons}
+}
+```
+
+Usage pattern:
+
+```javascript
+const data = await loadPersons();
+const persons = data.persons;  // Extract array
+const meta = data.meta;        // Extract metadata
+```
+
+### Component Loading
+
+Shared navbar component loaded via navbar-loader.js:
+
+```javascript
+export async function loadNavbar() {
+    const response = await fetch('components/navbar.html');
+    const html = await response.text();
+    document.getElementById('navbar-placeholder').innerHTML = html;
+
+    // Initialize global search after navbar loaded
+    if (typeof GlobalSearch !== 'undefined') {
+        new GlobalSearch();
+    }
+}
+```
+
+Design decision: All pages must use the full navbar template for consistency.
 
 ## Performance Optimization
 
