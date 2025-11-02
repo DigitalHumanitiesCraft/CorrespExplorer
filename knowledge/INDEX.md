@@ -2,7 +2,7 @@
 
 Zentrale Einstiegsdatei für das HerData-Wissenssystem.
 
-Stand: 2025-10-19
+Stand: 2025-11-02
 
 Siehe [VAULT-REGELN.md](VAULT-REGELN.md) für Struktur und Prinzipien des Wissenssystems.
 
@@ -25,16 +25,31 @@ Enthält: AGRELON-Ontologie, DTD-Schemas, LFDNR-Semantik, Projekt-XMLs, Geodaten
 
 [requirements.md](requirements.md) - User Stories, funktionale und nicht-funktionale Anforderungen
 
+## Validierung und Analysen
+
+[../REQUIREMENTS_VALIDATION.md](../REQUIREMENTS_VALIDATION.md) - Validierung aller Requirements gegen tatsächliche Daten (2025-10-29)
+- Datenabdeckungs-Analyse für alle 5 Epics
+- Implementation Gaps identifiziert
+- Empfehlungen für Datenintegration
+
+[../TECHNICAL_ANALYSIS.md](../TECHNICAL_ANALYSIS.md) - Umfassende technische Analyse (2025-10-29)
+- Python Pipeline (734 Zeilen, 4-Phasen-Architektur)
+- JavaScript Frontend (1.693 Zeilen, 4 Module)
+- Code-Qualität Assessment
+- Performance-Metriken
+- Verbesserungspotentiale
+
 ## Entscheidungen
 
 [decisions.md](decisions.md) - Architecture Decision Records (ADRs)
-- ADR-001: MapLibre GL JS
-- ADR-002: Multi-Person Popups
-- ADR-003: Cluster Color Encoding
+- ADR-001: MapLibre GL JS (Accepted)
+- ADR-002: Multi-Person Popups (Accepted)
+- ADR-003: Cluster Color Encoding (Accepted)
 - ADR-004: Network Visualization Library (Proposed)
-- ADR-005: Timeline Implementation (Proposed)
+- ADR-005: Timeline Implementation (Accepted - D3.js implementiert)
 - ADR-006: State Management Strategy (Deferred)
 - ADR-007: Search Implementation (Proposed)
+- ADR-008: Curated Dataset Selection (Accepted)
 
 ## Technische Implementierung
 

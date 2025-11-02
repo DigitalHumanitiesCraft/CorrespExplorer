@@ -4,6 +4,11 @@ Detaillierte technische Analyse des HerData-Projekts: Architektur, Implementatio
 
 Stand: 2025-10-29
 
+Siehe auch:
+- [knowledge/technical-architecture.md](knowledge/technical-architecture.md) - Frontend-Architektur Details
+- [REQUIREMENTS_VALIDATION.md](REQUIREMENTS_VALIDATION.md) - Requirements-Validierung
+- [knowledge/INDEX.md](knowledge/INDEX.md) - Knowledge Vault Navigation
+
 ## Executive Summary
 
 HerData ist eine vollständig funktionsfähige Digital Humanities Web-Anwendung mit solider technischer Grundlage:

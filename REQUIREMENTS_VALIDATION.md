@@ -6,6 +6,11 @@ Stand: 2025-10-29
 
 Zusammenfassung: Validierung der geplanten Epics und User Stories gegen tatsächlich vorhandene und integrierte Daten.
 
+Siehe auch:
+- [knowledge/requirements.md](knowledge/requirements.md) - Ursprüngliche Requirements-Spezifikation
+- [TECHNICAL_ANALYSIS.md](TECHNICAL_ANALYSIS.md) - Technische Implementation-Analyse
+- [knowledge/INDEX.md](knowledge/INDEX.md) - Knowledge Vault Navigation
+
 ## Executive Summary
 
 ### Datenlage
