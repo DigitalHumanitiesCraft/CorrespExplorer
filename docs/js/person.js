@@ -3,6 +3,7 @@
 import { loadPersons, getPersonById } from './data.js';
 import { loadNavbar } from './navbar-loader.js';
 import { GlobalSearch } from './search.js';
+import { initDebugPanel, renderRawDataViewer, wrapFieldWithProvenance } from './debug.js';
 
 let currentPerson = null;
 let allPersons = [];
@@ -12,6 +13,9 @@ let miniMap = null;
 async function init() {
     try {
         await loadNavbar();
+
+        // Initialize debug panel
+        await initDebugPanel();
 
         // Get person ID from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -72,6 +76,12 @@ function renderPerson() {
     renderRelations();
     renderAdditionalBiographies();
     renderSources();
+
+    // Render raw data if debug mode
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('debug') === 'true') {
+        renderRawDataSection();
+    }
 
     // Show content
     document.getElementById('person-content').style.display = 'block';
@@ -555,6 +565,20 @@ window.copyCitation = function() {
         alert('Kopieren fehlgeschlagen. Bitte manuell markieren und kopieren.');
     });
 };
+
+// Render raw data section (debug mode)
+function renderRawDataSection() {
+    const sourcesCard = document.getElementById('sources-card');
+    if (!sourcesCard) return;
+
+    // Create container for raw data after sources card
+    const rawDataContainer = document.createElement('div');
+    rawDataContainer.id = 'raw-data-container';
+    sourcesCard.parentNode.insertBefore(rawDataContainer, sourcesCard.nextSibling);
+
+    // Render raw data viewer
+    renderRawDataViewer(currentPerson, 'raw-data-container');
+}
 
 // Initialize tab switching
 // Tab functionality removed - using card layout instead

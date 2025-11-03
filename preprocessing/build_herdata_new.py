@@ -29,12 +29,13 @@ NS = {'tei': 'http://www.tei-c.org/ns/1.0'}
 class HerDataPipelineNew:
     """4-phase pipeline using NEW export (2025-10-27) with OLD geodata"""
 
-    def __init__(self, herdata_dir, sndb_dir, cmif_file, output_file, verbose=True):
+    def __init__(self, herdata_dir, sndb_dir, cmif_file, output_file, verbose=True, track_provenance=False):
         self.herdata_dir = Path(herdata_dir)
         self.sndb_dir = Path(sndb_dir)
         self.cmif_file = Path(cmif_file)
         self.output_file = Path(output_file)
         self.verbose = verbose
+        self.track_provenance = track_provenance
 
         # Data containers
         self.women = {}  # {sndb_id: {name, gnd, dates, ...}}
@@ -49,6 +50,25 @@ class HerDataPipelineNew:
         """Print log message if verbose mode enabled"""
         if self.verbose:
             print(message)
+
+    def add_provenance(self, person_id, field, source_info):
+        """Track data provenance for debugging and review"""
+        if not self.track_provenance:
+            return
+
+        if person_id not in self.women:
+            return
+
+        if '_provenance' not in self.women[person_id]:
+            self.women[person_id]['_provenance'] = {}
+
+        self.women[person_id]['_provenance'][field] = {
+            'source': source_info.get('file', ''),
+            'xpath': source_info.get('xpath', ''),
+            'raw_value': source_info.get('raw_value', ''),
+            'transformation': source_info.get('transformation', ''),
+            'extracted_at': datetime.now().isoformat()
+        }
 
     def test_phase1(self):
         """Validate Phase 1 output: women extraction from NEW export"""

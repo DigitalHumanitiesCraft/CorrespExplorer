@@ -5,6 +5,7 @@ import { loadPersons } from "./data.js";
 import { GlobalSearch } from "./search.js";
 import { loadNavbar } from "./navbar-loader.js";
 import { getPersonConnections, getClusterConnections, getConnectionColor } from "./network-utils.js";
+import { initDebugPanel } from "./debug.js";
 
 let map;
 let allPersons = [];
@@ -90,6 +91,10 @@ function getOccupationGroup(person) {
 async function init() {
     log.init("Starting application");
     await loadNavbar();
+
+    // Initialize debug panel
+    await initDebugPanel();
+
     try {
         // Load data using shared module
         const loading = document.getElementById('loading');
@@ -676,7 +681,33 @@ function setupEventHandlers() {
         const dates = props.birth || props.death
             ? `(${props.birth || '?'}–${props.death || '?'})`
             : '';
-        const html = `<div class="hover-tooltip"><strong>${props.name}</strong> ${dates}</div>`;
+
+        // Check if debug mode is active
+        const urlParams = new URLSearchParams(window.location.search);
+        const debugMode = urlParams.get('debug') === 'true';
+
+        let html = '';
+        if (debugMode && person) {
+            // Enhanced debug tooltip with data provenance info
+            const places = person.places ? person.places.map(p => `${p.name} (${p.type})`).join(', ') : 'N/A';
+            const occupations = person.occupations ? person.occupations.map(o => o.name).join(', ') : 'N/A';
+            const gndInfo = person.gnd ? `GND: ${person.gnd}` : 'Keine GND';
+
+            html = `
+                <div class="hover-tooltip hover-tooltip-debug">
+                    <strong>${props.name}</strong> ${dates}<br>
+                    <small style="color: #6c757d; margin-top: 4px; display: block;">
+                        ${gndInfo}<br>
+                        Orte: ${places}<br>
+                        Berufe: ${occupations}<br>
+                        Briefe: ${props.letter_count || 0} | Erwähnungen: ${props.mention_count || 0}
+                    </small>
+                </div>
+            `;
+        } else {
+            // Standard tooltip
+            html = `<div class="hover-tooltip"><strong>${props.name}</strong> ${dates}</div>`;
+        }
 
         markerTooltip = new maplibregl.Popup({
             closeButton: false,
@@ -863,11 +894,13 @@ window.expandPersonList = function(event) {
 function initFilters() {
     const roleCheckboxes = document.querySelectorAll('input[name="role"]');
     const occupationCheckboxes = document.querySelectorAll('input[name="occupation"]');
+    const placeTypeCheckboxes = document.querySelectorAll('input[name="place-type"]');
     const resetButton = document.getElementById('reset-filters');
 
     // Attach change listeners
     roleCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
     occupationCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
+    placeTypeCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
 
     // Initialize noUiSlider for year range
     const yearRangeSlider = document.getElementById('year-range-slider');
@@ -910,6 +943,7 @@ function initFilters() {
     selectAllButton.addEventListener('click', () => {
         roleCheckboxes.forEach(cb => cb.checked = true);
         occupationCheckboxes.forEach(cb => cb.checked = true);
+        placeTypeCheckboxes.forEach(cb => cb.checked = true);
 
         // Reset year range slider to full range
         yearRangeSlider.noUiSlider.set([1762, 1824]);
@@ -922,6 +956,7 @@ function initFilters() {
     resetButton.addEventListener('click', () => {
         roleCheckboxes.forEach(cb => cb.checked = false);
         occupationCheckboxes.forEach(cb => cb.checked = false);
+        placeTypeCheckboxes.forEach(cb => cb.checked = false);
 
         // Reset year range slider
         yearRangeSlider.noUiSlider.set([1762, 1824]);
@@ -935,6 +970,7 @@ function initFilters() {
 function applyFilters() {
     const roleFilters = getCheckedValues('role');
     const occupationFilters = getCheckedValues('occupation');
+    const placeTypeFilters = getCheckedValues('place-type');
 
     // Filter persons
     filteredPersons = allPersons.filter(person => {
@@ -956,10 +992,21 @@ function applyFilters() {
             );
         }
 
-        return roleMatch && occupationMatch && temporalMatch;
+        // Place type filter: check if person has a place with selected type
+        let placeTypeMatch = true;
+        if (person.places && person.places.length > 0) {
+            placeTypeMatch = person.places.some(place =>
+                placeTypeFilters.includes(place.type)
+            );
+        } else {
+            // If person has no places, exclude them when place type filter is active
+            placeTypeMatch = false;
+        }
+
+        return roleMatch && occupationMatch && temporalMatch && placeTypeMatch;
     });
 
-    log.render(`Filters applied: ${filteredPersons.length} / ${allPersons.length} persons`);
+    log.render(`Filters applied: ${filteredPersons.length} / ${allPersons.length} persons (place types: ${placeTypeFilters.join(', ')})`);
 
     // Update map
     if (map && map.loaded()) {

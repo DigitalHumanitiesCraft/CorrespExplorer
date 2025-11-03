@@ -15,6 +15,7 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/debug.css">
 </head>
 <body>
     <!-- Global Navigation Placeholder -->
@@ -71,6 +72,15 @@
                 </div>
             </div>
 
+            <!-- Place Type Filter -->
+            <div class="filter-group" role="group" aria-labelledby="filter-place-heading">
+                <h4 id="filter-place-heading">Ortstyp</h4>
+                <label><input type="checkbox" name="place-type" value="Wirkungsort" checked aria-describedby="filter-place-heading"> Wirkungsort</label>
+                <label><input type="checkbox" name="place-type" value="Geburtsort" checked aria-describedby="filter-place-heading"> Geburtsort</label>
+                <label><input type="checkbox" name="place-type" value="Sterbeort" checked aria-describedby="filter-place-heading"> Sterbeort</label>
+                <label><input type="checkbox" name="place-type" value="Wohnort" checked aria-describedby="filter-place-heading"> Wohnort</label>
+            </div>
+
             <div class="filter-buttons">
                 <button id="select-all-filters" aria-label="Alle Filter auswählen">Alle auswählen</button>
                 <button id="reset-filters" aria-label="Alle Filter zurücksetzen">Alle zurücksetzen</button>
@@ -123,6 +133,7 @@
     <!-- Scripts -->
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <script src="js/debug.js" type="module"></script>
     <script src="js/app.js" type="module"></script>
 </body>
 </html>
