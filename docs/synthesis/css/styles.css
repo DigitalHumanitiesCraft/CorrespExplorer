@@ -2,7 +2,7 @@
 
 :root {
     /* Colors matching HerData design */
-    --color-primary: #2c5f8d;
+    --color-primary: #1e3a5f;
     --color-sender: #2c5f8d;
     --color-mentioned: #6c757d;
     --color-both: #2d6a4f;
@@ -89,10 +89,57 @@ body {
     font-weight: 600;
 }
 
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
 .meta-stats {
     display: flex;
     gap: var(--spacing-lg);
     font-size: 0.9rem;
+}
+
+/* View Switcher */
+.view-switcher {
+    display: flex;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.view-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.view-btn:last-child {
+    border-right: none;
+}
+
+.view-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.view-btn.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    cursor: default;
+}
+
+.view-btn.active:hover {
+    background: rgba(255, 255, 255, 0.25);
 }
 
 /* Main Layout - Three Columns */

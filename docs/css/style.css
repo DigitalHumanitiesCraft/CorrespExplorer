@@ -197,7 +197,15 @@ body {
 /* Container */
 .container {
     display: flex;
+    flex-direction: column;
     height: calc(100vh - var(--navbar-height));
+}
+
+/* Content Wrapper - holds sidebar and main content */
+.content-wrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
 }
 
 /* Sidebar */
@@ -1074,6 +1082,72 @@ body {
 
 .error-message a:hover {
     text-decoration: underline;
+}
+
+/* Map Header */
+.map-header {
+    background: var(--color-primary);
+    color: white;
+    padding: var(--space-md) var(--space-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 100;
+}
+
+.map-header h1 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin: 0;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+/* View Switcher */
+.view-switcher {
+    display: flex;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.view-btn {
+    padding: var(--space-sm) var(--space-md);
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: var(--font-size-base);
+    font-family: var(--font-base);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.view-btn:last-child {
+    border-right: none;
+}
+
+.view-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.view-btn.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    cursor: default;
+}
+
+.view-btn.active:hover {
+    background: rgba(255, 255, 255, 0.25);
 }
 
 /* Map Legend */
