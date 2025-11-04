@@ -1,82 +1,61 @@
-# HerData Knowledge Vault - Map of Content
+# INDEX
 
-Zentrale Einstiegsdatei für das HerData-Wissenssystem.
+HerData ist ein kompaktes, nachvollziehbares Wissenssystem zu Frauen im Korrespondenzumfeld Goethes. Diese Einstiegsseite erklärt Zweck und aktuellen Stand, verweist auf die zugehörigen Dateien und nennt die Versionen, damit Dokumentation, Daten und Live-Darstellung übereinstimmen.
 
-Stand: 2025-11-04
+**Stand:** 04.11.2025
+**Datensatz-Version:** 27.10.2025
+**Pipeline-Bezeichnung:** build_herdata_new
+**Live-Commit:** b36a807
 
-## Projekt
+## Überblick und aktueller Stand
 
-[project.md](project.md) - Projektziel, Datenquellen, Implementierungsstatus
-[research-context.md](research-context.md) - Wissenschaftlicher Kontext, DH-Standards, Gender Studies
+Die Live-Seite wird aus dem Hauptzweig über den `docs`-Bereich veröffentlicht. Die Karte ist bewusst die Startansicht; Personen werden in Cards ohne Tab-Logik dargestellt. Produktiv arbeiten wir mit einem kuratierten Korpus von 448 Frauen; Abdeckungen für GND, Geodaten und CMIF werden überall auf derselben Grundgesamtheit ausgewiesen. Felder, Beziehungen, Matching- und Deduplizierungsregeln sowie Geocoding-Heuristiken und Unsicherheitskennzeichnungen sind in Worten beschrieben. Externe Verweise (GND, CMIF, IIIF) sind integraler Bestandteil; bei Lücken erscheinen sprechende Fallbacks. Die frühere Timeline-Variante wurde als primäre Navigation verworfen; der Entscheid ist dokumentiert und begründet. Die Erzeugung der produktiven und der Provenance-Artefakte erfolgt derzeit manuell entlang eines klar beschriebenen Ablaufs.
 
-## Daten
+## Orientierung im Vault
 
-[data.md](data.md) - Datenmodell, Strukturen, Verknüpfungen, CMIF + SNDB
-Enthält: AGRELON-Ontologie, DTD-Schemas, LFDNR-Semantik, Projekt-XMLs, Geodaten
+**Projekt und Kontext:**
+[project.md](project.md) erläutert Zielbild, Zielgruppen, Scope und Terminologie. Enthält wissenschaftlichen Kontext: PROPYLÄEN-Projekt, DH-Standards (TEI, CMIF, GND, AGRELON), Gender Studies Perspektive, Forschungsfragen, Quellenkritik, strukturelle Verzerrungen und Nutzungsrechte.
 
-[debug-system.md](debug-system.md) - Data Provenance System
-Dokumentiert vollständige Datenherkunft, Transformationen und Qualitätsindikatoren
+**Daten und Herkunft:**
+[data.md](data.md) beschreibt Grundgesamtheit und Coverage, Feld- und Beziehungsmodell (mit vollständiger AGRELON-Dokumentation: 38 Typen, Visualisierung, historischer Kontext), Matching- und Deduplizierung, Geocoding-Heuristiken, Unsicherheiten, Provenance sowie die Lizenzlage einschließlich Drittquellen.
 
-## Design
+**Entscheidungen:**
+[decisions.md](decisions.md) führt alle maßgeblichen Architektur- und Produktentscheidungen mit Status, Begründung und beobachtetem Effekt; die Abkehr von der Timeline ist dort festgehalten und in design.md als finales Navigationsmodell gespiegelt.
 
-[design.md](design.md) - UI/UX-System, Informationsarchitektur, Visualisierungsstrategie
+**Anforderungen:**
+[requirements.md](requirements.md) hält die fachlichen Anforderungen in Prosa fest und benennt pro Punkt den Umsetzungsstand mit verifizierten Daten (stats.html, correspondence-Arrays, AGRELON-Beziehungen). Alle Aussagen sind gegen tatsächliche Implementierung geprüft.
 
-[responsive-design.md](responsive-design.md) - Mobile Responsive Design Analyse
-Bewertung der mobilen Nutzbarkeit und Optimierungsempfehlungen
+**Gestaltung:**
+[design.md](design.md) erklärt Informationsarchitektur und Interaktion: Startansicht Karte, Personen-Cards, Filter, Umgang mit Netzwerk-Hinweisen im UI, Darstellung von Unsicherheit und externen Verweisen. Enthält Zielbild 2025-10-19 und Implementierungsstand 2025-10-29 mit Lessons Learned.
 
-## Requirements
+**Bereitstellung:**
+[tech.md](tech.md) beschreibt den Weg von Quelle über Aufbereitung bis Veröffentlichung: 4-Phasen-Pipeline, Frontend-Architektur, Qualität und offene Punkte.
 
-[requirements.md](requirements.md) - User Stories, funktionale und nicht-funktionale Anforderungen
+**Responsive Design:**
+[responsive_dossier.md](responsive_dossier.md) fasst Diagnose, Zielbild, Maßnahmen-Backlog und Definition of Done für mobile Nutzung zusammen: Navigation, Touch-Interaktion, Zugänglichkeit, Testleitfaden und Abnahmekriterien.
 
-[requirements-validation.md](requirements-validation.md) - Validierung aller Requirements gegen tatsächliche Daten
-- Datenabdeckungs-Analyse für alle 5 Epics
-- Implementation Gaps identifiziert
-- Empfehlungen für Datenintegration
+**Implementierung:**
+[implementation-quick-wins.md](implementation-quick-wins.md) beschreibt 6 priorisierte Features (CSV-Export, Vollständigkeits-Badge, PNG-Export, Statistik-Dashboard, Namensvarianten, Volltextsuche) mit Ready/Done-Definitionen.
 
-## Technische Architektur
+## Testing und Qualität
 
-[technical-architecture.md](technical-architecture.md) - Frontend-Implementierung Details
-MapLibre, State Management, Event Handler, Performance
+**Pipeline-Testing:**
+Die Daten-Pipeline ([build_herdata_new.py](../../preprocessing/build_herdata_new.py)) implementiert 4 Validierungsmethoden mit 10 Assertions:
+- test_phase1: 448 Frauen (400-500), 60,3% GND (50-70%)
+- test_phase2: CMIF-Matching (senders > 0, with_letters > 0)
+- test_phase3: Geodaten-Coverage (40-70%, 50,7% erreicht)
+- test_phase4: JSON-Struktur (meta/persons vorhanden, required fields)
 
-[technical-analysis.md](technical-analysis.md) - Umfassende technische Analyse
-- Python Pipeline (734 Zeilen, 4-Phasen-Architektur)
-- JavaScript Frontend (1.693 Zeilen, 4 Module)
-- Code-Qualität Assessment
-- Performance-Metriken
-- Verbesserungspotentiale
+Testing-Strategie: Compact assertions check expected ranges, summary statistics printed for manual verification. Keine separaten Unit-Tests; Validierung integriert in Pipeline-Execution.
 
-## Entscheidungen
+**Provenance-Tracking:**
+Vollständig dokumentiert in data.md: persons_debug.json mit 3.695 Einträgen (source, xpath, raw_value, transformation, extracted_at) für alle 11 Datenfelder.
 
-[decisions.md](decisions.md) - Architecture Decision Records (ADRs)
-- ADR-001: MapLibre GL JS (Accepted)
-- ADR-002: Multi-Person Popups (Accepted)
-- ADR-003: Cluster Color Encoding (Accepted)
-- ADR-004: Network Visualization Library (Proposed)
-- ADR-005: Timeline Implementation (Accepted)
-- ADR-006: State Management Strategy (Deferred)
-- ADR-007: Search Implementation (Proposed)
-- ADR-008: Curated Dataset Selection (Accepted)
+**Frontend-Testing:**
+Keine automatisierten Tests. Manuelle Qualitätssicherung über Browser DevTools. Responsive Design analysiert in responsive_dossier.md.
 
-## Netzwerk
+## Verweise
 
-[network-relations.md](network-relations.md) - AGRELON-Beziehungen und Netzwerk-Visualisierung
-
-## Implementierung
-
-[implementation-quick-wins.md](implementation-quick-wins.md) - 6 Quick Win Features mit Code-Beispielen
-Einfach zu implementierende Features mit hohem Nutzen
-
-[implementation-mobile.md](implementation-mobile.md) - Mobile Responsive Implementation Plan
-4-Stunden-Plan für kritische Responsive-Fixes
-
-## Dokumentation
-
-[documentation-assessment.md](documentation-assessment.md) - Review aller Markdown-Dateien
-Qualitätsbewertung, Konsistenz-Analyse, Lücken-Identifikation
-
-## Externe Verweise
-
-- Live Demo: https://chpollin.github.io/HerData/
-- Repository: https://github.com/chpollin/HerData
-- Hauptdokumentation: [../../README.md](../../README.md)
-- Entwicklungsjournal: [../../JOURNAL.md](../../JOURNAL.md)
+Live-Seite: [https://chpollin.github.io/HerData/](https://chpollin.github.io/HerData/)
+Repository: [https://github.com/chpollin/HerData](https://github.com/chpollin/HerData)
+Entscheidungen und Änderungsstand sind in den genannten Dateien verlinkt; der Live-Commit ist oben genannt und wird in allen Dateien einheitlich geführt.

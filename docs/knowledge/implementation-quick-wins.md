@@ -1,575 +1,207 @@
-# Quick Wins - Einfach zu implementierende Features
+# Quick Wins – Umsetzungsreifes Synthese-Dokument
 
-Konkrete Feature-Empfehlungen basierend auf REQUIREMENTS_VALIDATION.md und TECHNICAL_ANALYSIS.md, sortiert nach Aufwand.
+*Stand: 04.11.2025*
 
-Stand: 2025-11-02
+## Zweck
 
-## 1. CSV-Export (SEHR EINFACH)
+Kompakte, neutrale Leitlinie zur Umsetzung sofort wirksamer Frontend-Features für die HerData-Site. Fokus: sichtbarer Nutzen, geringes Risiko, keine Server-Abhängigkeiten (einzige optionale Ausnahme: Pipeline-Erweiterung für Namensvarianten).
 
-Aufwand: 2-4 Stunden
-Schwierigkeit: 1/10
+Dieses Dokument spezifiziert WIE Features umgesetzt werden. Für fachliche Anforderungen (WAS das System leisten soll) siehe [requirements.md](requirements.md).
 
-### Was
+## Rahmen & Annahmen
 
-US-1.5: Exportiere gefilterte Personen-Daten als CSV
-
-### Warum einfach
-
-1. Daten bereits in persons.json vorhanden
-2. Nur clientseitiger JavaScript-Code nötig
-3. Keine Backend-Änderungen
-4. Keine Pipeline-Änderungen
-5. Browser-API bereits verfügbar (Blob, URL.createObjectURL)
-
-### Implementierung
-
-Datei: docs/js/app.js
-
-```javascript
-// Add export button to sidebar
-function addExportButton() {
-    const sidebar = document.querySelector('.sidebar');
-    const exportBtn = document.createElement('button');
-    exportBtn.textContent = 'Als CSV exportieren';
-    exportBtn.id = 'export-csv';
-    exportBtn.onclick = exportToCSV;
-    sidebar.appendChild(exportBtn);
-}
-
-// Export filtered persons to CSV
-function exportToCSV() {
-    const headers = ['ID', 'Name', 'GND', 'Geburt', 'Tod', 'Rolle', 'Orte', 'Berufe'];
-
-    const rows = filteredPersons.map(p => [
-        p.id,
-        p.name,
-        p.gnd || '',
-        p.dates?.birth || '',
-        p.dates?.death || '',
-        p.role,
-        p.places?.map(pl => pl.name).join('; ') || '',
-        p.occupations?.map(occ => occ.name).join('; ') || ''
-    ]);
-
-    const csv = [
-        headers.join(','),
-        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
-
-    // Download
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `herdata_export_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-}
-```
-
-HTML-Update (docs/index.html):
-```html
-<aside class="sidebar">
-    <!-- Existing filters -->
-    <button id="reset-filters">Alle zurücksetzen</button>
-    <button id="export-csv">Als CSV exportieren</button> <!-- NEU -->
-</aside>
-```
-
-### Testen
-
-1. Filter setzen (z.B. nur Schriftstellerinnen)
-2. CSV-Export klicken
-3. Datei herdata_export_2025-11-02.csv downloaded
-4. In Excel/LibreOffice öffnen
-5. Validieren: Nur gefilterte Personen enthalten
-
-### Nutzen
-
-- Forscher können Daten in Excel/R weiterverarbeiten
-- Zitationen einfacher
-- Offline-Analysen möglich
-- Erfüllt US-1.5 komplett
+* **Datenquelle:** `persons.json` (Personen, Orte, Berufe, Basisbiografien, Rollen).
+* **Plattform:** Statische Website, clientseitige Funktionen.
+* **Nicht-Ziele:** TypeScript-Migration, automatisierte Tests, vollständige Integration von Beziehungen/Briefen.
 
 ---
 
-## 2. Vollständigkeits-Badges (SEHR EINFACH)
+## Begriffe & Datenfelder (fixiert)
 
-Aufwand: 3-5 Stunden
-Schwierigkeit: 2/10
+* **Name:** Anzeigename einer Person.
+* **GND:** Normdaten-Identifier; kann fehlen.
+* **Geburt / Tod:** Jahresspezifische Angaben; können fehlen.
+* **Biografie:** Kurztext; kann fehlen.
+* **Orte:** Liste benannter Orte (Anzeige-String).
+* **Berufe:** Liste benannter Berufe (Anzeige-String).
+* **Rolle:** Briefbezug (z. B. *sender*, *mentioned*, *both*, *indirect*).
+* **Namensvarianten (optional):** Zusätzliche Schreibweisen; Quelle: `ra_ndb_main.xml`.
 
-### Was
-
-US-5.1: Zeige Vollständigkeitsindikatoren für jede Person
-
-### Warum einfach
-
-1. Alle Daten bereits in persons.json
-2. Nur Berechnung + CSS
-3. Keine neuen Datenquellen nötig
-4. Kann auf Person-Detailseite hinzugefügt werden
-
-### Implementierung
-
-Datei: docs/js/person.js
-
-```javascript
-function calculateCompleteness(person) {
-    const fields = {
-        'id': 1,
-        'name': 1,
-        'gnd': person.gnd ? 1 : 0,
-        'dates.birth': person.dates?.birth ? 1 : 0,
-        'dates.death': person.dates?.death ? 1 : 0,
-        'biography': person.biography ? 1 : 0,
-        'places': person.places?.length > 0 ? 1 : 0,
-        'occupations': person.occupations?.length > 0 ? 1 : 0
-    };
-
-    const total = Object.keys(fields).length;
-    const filled = Object.values(fields).reduce((sum, val) => sum + val, 0);
-    const percentage = Math.round((filled / total) * 100);
-
-    return { percentage, filled, total, fields };
-}
-
-function renderCompletenessBadge(person) {
-    const { percentage, filled, total } = calculateCompleteness(person);
-
-    let color = '#dc3545'; // red
-    if (percentage >= 75) color = '#28a745'; // green
-    else if (percentage >= 50) color = '#ffc107'; // yellow
-
-    const badge = `
-        <div class="completeness-badge" style="background: ${color};">
-            <strong>${percentage}%</strong> vollständig
-            <small>${filled}/${total} Felder</small>
-        </div>
-    `;
-
-    return badge;
-}
-```
-
-CSS (docs/css/style.css):
-```css
-.completeness-badge {
-    display: inline-block;
-    padding: 8px 12px;
-    border-radius: 4px;
-    color: white;
-    font-size: 14px;
-    margin: 10px 0;
-}
-
-.completeness-badge strong {
-    display: block;
-    font-size: 18px;
-}
-
-.completeness-badge small {
-    font-size: 11px;
-    opacity: 0.9;
-}
-```
-
-Integration in person.html:
-```html
-<div class="person-header">
-    <h1 id="person-name"></h1>
-    <div id="completeness-badge"></div> <!-- NEU -->
-</div>
-
-<script>
-    const badge = renderCompletenessBadge(person);
-    document.getElementById('completeness-badge').innerHTML = badge;
-</script>
-```
-
-### Nutzen
-
-- Forscher sehen auf Blick Datenqualität
-- Transparenz über Datenlücken
-- Erfüllt US-5.1
-- Hilft bei Quellenpriorisierung
+**Konventionen:** Keine künstliche Ableitung fehlender Werte; leere Felder werden als „nicht vorhanden“ behandelt.
 
 ---
 
-## 3. Statistik-Dashboard (EINFACH)
+## Cross-Cutting Regeln
 
-Aufwand: 1-2 Tage
-Schwierigkeit: 3/10
+* **Format/I18N:**
 
-### Was
-
-US-1.4: Dashboard mit Aggregat-Statistiken
-
-### Warum einfach
-
-1. Alle Daten bereits in persons.json vorhanden
-2. Aggregation clientseitig mit JavaScript
-3. Einfache Chart.js oder D3.js Visualisierungen
-4. Keine Backend-Logik
-
-### Implementierung
-
-Neuer Tab in index.html:
-```html
-<div class="tabs">
-    <button class="tab" data-tab="map">Karte</button>
-    <button class="tab" data-tab="timeline">Zeit</button>
-    <button class="tab" data-tab="network">Netz</button>
-    <button class="tab" data-tab="stats">Statistik</button> <!-- NEU -->
-</div>
-
-<div id="stats-view" class="tab-content">
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Berufsverteilung</h3>
-            <canvas id="occupation-chart"></canvas>
-        </div>
-        <div class="stat-card">
-            <h3>Ortskonzentrationen</h3>
-            <canvas id="places-chart"></canvas>
-        </div>
-        <div class="stat-card">
-            <h3>Zeitliche Verteilung</h3>
-            <canvas id="birth-decade-chart"></canvas>
-        </div>
-        <div class="stat-card">
-            <h3>Briefrollen</h3>
-            <canvas id="role-chart"></canvas>
-        </div>
-    </div>
-</div>
-```
-
-JavaScript (docs/js/stats.js - NEU):
-```javascript
-import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/+esm';
-
-export function renderStatsDashboard(persons) {
-    // Occupation distribution
-    const occupations = {};
-    persons.forEach(p => {
-        p.occupations?.forEach(occ => {
-            occupations[occ.name] = (occupations[occ.name] || 0) + 1;
-        });
-    });
-
-    const topOccupations = Object.entries(occupations)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10);
-
-    new Chart(document.getElementById('occupation-chart'), {
-        type: 'bar',
-        data: {
-            labels: topOccupations.map(([name]) => name),
-            datasets: [{
-                label: 'Anzahl Personen',
-                data: topOccupations.map(([, count]) => count),
-                backgroundColor: '#2c5f8d'
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true
-        }
-    });
-
-    // Similar for places, birth decades, roles...
-}
-```
-
-### Datengrundlage
-
-Bereits verfügbar aus persons.json:
-- 73 verschiedene Berufe
-- 121 verschiedene Orte
-- 407 Geburtsdaten (Dekaden berechenbar)
-- 4 Briefrollen (sender, mentioned, both, indirect)
-
-### Nutzen
-
-- Schneller Überblick über Daten
-- Erkennen von Mustern
-- Hilft bei Filter-Entscheidungen
-- Erfüllt US-1.4
+  * Datumsdarstellung in UI und Dateinamen: `JJJJ-MM-TT`.
+  * CSV: UTF-8, Feldtrennzeichen Komma, Zellen bei Bedarf gequotet, Zeilentrenner `\n`.
+  * Zahlenformate wie in Datenquelle vorliegend; keine Umformatierung.
+* **Zugänglichkeit (leichtgewichtig):** Alle interaktiven Elemente sind per Tastatur erreichbar, haben sprechende Labels/Aria-Attribute und sichtbaren Fokus.
+* **Fallbacks:** Fehlt ein Feld, wird kein Platzhalter erfunden; UI zeigt den nächst sinnvolleren Kontext (z. B. „Keine Berufsangabe“).
+* **Fehlerdarstellung:** Kurze, nicht-technische Meldungen im Kontext der Aktion; kein technischer Stacktrace in der UI.
+* **Lizenz/Quellenhinweise:** Bei Exporten (CSV/PNG) kurzer Herkunfts- und Lizenzhinweis in Metadaten/Legende.
+* **Änderungsmanagement:** Jede Änderung erhält eine einzeilige Notiz im Changelog (siehe unten) und kann ohne Seiteneffekte zurückgerollt werden.
 
 ---
 
-## 4. Namensvarianten integrieren (EINFACH)
+## Feature-Übersicht & Priorisierung
 
-Aufwand: 0.5-1 Tag
-Schwierigkeit: 4/10
+1. **CSV-Export gefilterter Personen**
+2. **Vollständigkeits-Badge pro Person**
+3. **PNG-Export aktueller Visualisierung**
+4. **Statistik-Dashboard (Aggregat-Sichten)**
+5. **Namensvarianten in JSON integrieren (optional, Pipeline)**
+6. **Volltextsuche (fuzzy) über Name/Biografie/Berufe/Orte**
 
-### Was
-
-Integriere 797 Namensformen aus ra_ndb_main.xml in persons.json
-
-### Warum einfach
-
-1. Daten bereits in XML vorhanden
-2. Nur Pipeline erweitern (build_herdata_new.py)
-3. Keine Frontend-Änderungen initial
-4. Klare Datenstruktur (ra_ndb_main.xml)
-
-### Implementierung
-
-Pipeline-Erweiterung (preprocessing/build_herdata_new.py):
-
-```python
-def phase1_identify_women(self):
-    # ... existing code ...
-
-    # Step 1: Load main person data (names) - ERWEITERT
-    main_tree = ET.parse(self.new_export_dir / 'ra_ndb_main.xml')
-    main_root = main_tree.getroot()
-
-    id_to_names = {}  # NEU: Nicht nur Hauptname, sondern alle Varianten
-    for item in main_root.findall('.//ITEM'):
-        person_id = item.find('ID').text
-        name = item.find('NAME').text if item.find('NAME') is not None else None
-
-        if person_id not in id_to_names:
-            id_to_names[person_id] = {
-                'main': name,
-                'variants': []
-            }
-        else:
-            # Weitere Namensform
-            id_to_names[person_id]['variants'].append(name)
-
-    # In self.women speichern
-    for person_id, woman_data in self.women.items():
-        if person_id in id_to_names:
-            woman_data['name_variants'] = id_to_names[person_id]['variants']
-
-    self.log(f"  Added {sum(len(names['variants']) for names in id_to_names.values())} name variants")
-```
-
-JSON-Output:
-```json
-{
-  "id": "1906",
-  "name": "Angelica Bellonata Facius",
-  "name_variants": [
-    "Facius, Angelica Bellonata",
-    "Facius, Angelika Bellonata",
-    "Angelika Facius"
-  ],
-  "..."
-}
-```
-
-### Nutzen
-
-- Verbessertes US-1.1 (Namenssuche)
-- Historische Namensvarianten sichtbar
-- Bessere Findability
-- Basis für verbesserte Suche
-
-### Aufwand-Breakdown
-
-- Pipeline anpassen: 2h
-- Testen: 1h
-- JSON regenerieren: 5min
-- Frontend-Update (optional): 2h
+> **Hinweis zu Abhängigkeiten:** Volltextsuche profitiert stark von **Namensvarianten**. Wenn Varianten früh vorliegen, ist eine Vorziehung der Suche sinnvoll.
 
 ---
 
-## 5. Volltextsuche mit Fuse.js (MITTEL)
+## Feature-Karten (umsetzungsreif, ohne Code)
 
-Aufwand: 1-2 Tage
-Schwierigkeit: 5/10
+### 1) CSV-Export gefilterter Personen
 
-### Was
+* **Ziel:** Aktuelle Filterergebnisse als CSV herunterladen.
+* **UX-Platzierung:** Button in der Filter-Sidebar unterhalb der Reset-Funktion.
+* **Definition of Ready:**
 
-US-1.6 (teilweise): Fuzzy-Suche über Namen, Biografien, Berufe
+  * Filterzustand ist über eine zentrale Quelle abrufbar.
+  * Feldreihenfolge und Spaltennamen sind festgelegt und dokumentiert.
+* **Definition of Done:**
 
-### Warum relativ einfach
-
-1. Library vorhanden (Fuse.js, 12 KB)
-2. Daten bereits in persons.json
-3. Nur Frontend-Code
-4. Keine Backend-Änderungen
-
-### Implementierung
-
-HTML (docs/index.html):
-```html
-<aside class="sidebar">
-    <div class="search-box">
-        <input type="text" id="search-input" placeholder="Name, Beruf oder Ort suchen...">
-        <div id="search-results"></div>
-    </div>
-    <!-- Existing filters -->
-</aside>
-```
-
-JavaScript (docs/js/app.js):
-```javascript
-import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/+esm';
-
-let fuse = null;
-
-function initSearch() {
-    const options = {
-        keys: [
-            { name: 'name', weight: 2 },
-            { name: 'biography', weight: 1 },
-            { name: 'occupations.name', weight: 1.5 },
-            { name: 'places.name', weight: 1 }
-        ],
-        threshold: 0.3,
-        includeScore: true,
-        minMatchCharLength: 2
-    };
-
-    fuse = new Fuse(allPersons, options);
-}
-
-document.getElementById('search-input').addEventListener('input', (e) => {
-    const query = e.target.value;
-
-    if (query.length < 2) {
-        filteredPersons = allPersons;
-        renderMarkers();
-        return;
-    }
-
-    const results = fuse.search(query);
-    filteredPersons = results.map(r => r.item);
-    renderMarkers();
-
-    // Show autocomplete
-    showSearchResults(results.slice(0, 10));
-});
-
-function showSearchResults(results) {
-    const container = document.getElementById('search-results');
-    container.innerHTML = results.map(r => `
-        <div class="search-result" onclick="selectPerson('${r.item.id}')">
-            <strong>${r.item.name}</strong>
-            <small>${r.item.occupations?.[0]?.name || 'Keine Berufsangabe'}</small>
-        </div>
-    `).join('');
-}
-```
-
-### Nutzen
-
-- Schnelles Finden von Personen
-- Typo-tolerant (Fuzzy)
-- Erfüllt US-1.6 zu 70%
-- Bessere UX
+  * Export enthält ausschließlich die aktuell gefilterten Personen.
+  * UTF-8-CSV, korrekt gequotet; Dateiname mit heutigem Datum.
+  * Leere Felder werden leer exportiert (keine Platzhaltertexte).
+* **Fallbacks:** Bei leerem Ergebnis wird ein leerer CSV-Header angeboten und eine kurze UI-Info angezeigt.
+* **Manueller Test (Prosa):** Filter setzen → Export auslösen → Datei öffnen → Stichprobe mit UI-Liste abgleichen → Feldreihenfolge prüfen.
 
 ---
 
-## 6. PNG-Export von Visualisierungen (EINFACH)
+### 2) Vollständigkeits-Badge pro Person
 
-Aufwand: 3-4 Stunden
-Schwierigkeit: 3/10
+* **Ziel:** Transparente Anzeige der Feldfülle je Person.
+* **Feldset:** `ID`, `Name`, `GND`, `Geburt`, `Tod`, `Biografie`, `Orte (≥1)`, `Berufe (≥1)`.
+* **UX-Platzierung:** Header der Personenseite rechts neben dem Namen.
+* **Definition of Ready:**
 
-### Was
+  * Feldset ist fixiert und für alle Teams sichtbar dokumentiert.
+  * Farbgrenzen (niedrig/mittel/hoch) sind semantisch benannt, nicht numerisch.
+* **Definition of Done:**
 
-US-1.5: Exportiere aktuelle Karten-/Timeline-Ansicht als PNG
-
-### Warum einfach
-
-1. Browser-API vorhanden (canvas.toBlob)
-2. MapLibre kann zu Canvas rendern
-3. D3.js SVG zu Canvas konvertierbar
-4. Keine Backend-Logik
-
-### Implementierung
-
-```javascript
-function exportMapAsPNG() {
-    const canvas = map.getCanvas();
-    canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `herdata_map_${new Date().toISOString().split('T')[0]}.png`;
-        link.click();
-        URL.revokeObjectURL(url);
-    });
-}
-
-// Add button to UI
-const exportBtn = document.createElement('button');
-exportBtn.textContent = 'Karte als PNG speichern';
-exportBtn.onclick = exportMapAsPNG;
-document.querySelector('.main-content').appendChild(exportBtn);
-```
-
-### Nutzen
-
-- Screenshots für Präsentationen
-- Publikationen
-- Social Media
-- Erfüllt US-1.5
+  * Badge zeigt Klartext („X % vollständig“, „n von m Feldern“).
+  * Farbskala transportiert Semantik (unvollständig/teilweise/vollständig) und ist auch ohne Farbe verständlich (Text).
+* **Fallbacks:** Fehlende Felder reduzieren nur den Zähler; keine Fehlermeldung.
+* **Manueller Test:** Person mit vielen vs. wenigen Feldern öffnen → Badge-Text und Zähler auf Plausibilität prüfen → Farbe/Label nachvollziehbar.
 
 ---
 
-## Empfohlene Priorität
+### 3) PNG-Export aktueller Visualisierung
 
-### Diese Woche (Quick Wins)
+* **Ziel:** Aktuelle Ansicht (Karte, Timeline etc.) als Bild exportieren.
+* **UX-Platzierung:** Button in der jeweiligen Visualisierung, nahe Zoom/Legende.
+* **Definition of Ready:**
 
-1. CSV-Export (2-4h) - Sofortiger Nutzen für Forscher
-2. Vollständigkeits-Badges (3-5h) - Transparenz
-3. PNG-Export (3-4h) - Publikationen
+  * Sichtbarer Zustand (Filter, Zoom, Layer) ist UI-seitig abfragbar.
+  * Export enthält eine kurze Legende und Quellenhinweis.
+* **Definition of Done:**
 
-Gesamt: ~1 Tag Arbeit, 3 Features komplett
+  * Bild repräsentiert exakt die aktuelle Ansicht.
+  * Legende/Quelle sind lesbar, ohne UI-Steuerelemente.
+* **Fallbacks:** Ist ein Canvas/SVG nicht exportierbar, erscheint eine klare Info mit Hinweis auf Screenshot-Alternative.
+* **Manueller Test:** Ansicht einstellen → Export → Bild öffnen → Zoom/Filter/Legende visuell abgleichen.
 
-### Nächste Woche
+---
 
-4. Statistik-Dashboard (1-2 Tage) - Überblick
-5. Namensvarianten (0.5-1 Tag) - Datenqualität
-6. Volltextsuche (1-2 Tage) - UX-Verbesserung
+### 4) Statistik-Dashboard (Aggregat-Sichten)
 
-Gesamt: ~4 Tage Arbeit, 6 Features komplett
+* **Ziel:** Überblick über Muster (Top-Berufe, Ortskonzentrationen, Geburts-Dekaden, Rollen).
+* **UX-Platzierung:** Registerreiter „Statistik“ neben Karte/Zeit/Netz.
+* **Definition of Ready:**
 
-## Begründung der Priorisierung
+  * Aggregationsregeln sind beschrieben (z. B. „Berufe werden nach Anzeigename aggregiert“).
+  * Top-N-Darstellungen sind textlich begründet (Platz, Lesbarkeit).
+* **Definition of Done:**
 
-### Warum diese Features zuerst?
+  * Vier kompakte Kacheln (Berufe, Orte, Zeit, Rollen) mit klaren Achsenbeschriftungen.
+  * Leere/fehlende Daten werden ignoriert, ohne die Charts zu verzerren.
+* **Fallbacks:** Bei zu wenigen Daten erscheint ein kurzer Hinweis statt leerer Grafik.
+* **Manueller Test:** Stichproben aus `persons.json` per Hand mitzählen → mit Chart-Werten vergleichen → Beschriftungen/Legende prüfen.
 
-1. Kein Backend nötig - Nur Frontend-Code
-2. Daten bereits vorhanden - Keine Pipeline-Änderungen (außer Namensvarianten)
-3. Hoher Nutzen - Forscher profitieren sofort
-4. Geringes Risiko - Keine breaking changes
-5. Schnelle Erfolge - Motivation für größere Features
+---
 
-### Was ist NICHT einfach?
+### 5) Namensvarianten in JSON integrieren (Pipeline, optional)
 
-Schwierige Features (nicht empfohlen für Quick Wins):
-- Beziehungsdaten integrieren (922 Beziehungen) - 1-2 Wochen
-- Briefdaten vollständig integrieren (15.312 Briefe) - 1-2 Wochen
-- TypeScript Migration - 1-2 Wochen
-- Automatisierte Tests - 1-2 Wochen
+* **Ziel:** Such-/Findability-Verbesserung durch zusätzliche Schreibweisen.
+* **Ablauf (inhaltlich):** Varianten aus `ra_ndb_main.xml` pro Person extrahieren, normalisieren, Duplikate/Leereinträge entfernen, in `persons.json` ablegen.
+* **Definition of Ready:**
 
-Diese sollten in separaten Sprints angegangen werden.
+  * Mapping von Personen-ID ↔ Varianten ist geklärt.
+  * Regeln zur Normalisierung (Trim, Dedupe) sind dokumentiert.
+* **Definition of Done:**
 
-## Zusammenfassung
+  * Varianten sind pro Person als Liste verfügbar.
+  * Keine Duplikate, keine leeren Strings, Quelle ist nachvollziehbar.
+* **Fallbacks:** Fehlen Varianten, bleibt das Feld aus; keine Platzhalter.
+* **Manueller Test:** Stichprobe in Quelle vs. JSON; Grenzfälle wie alternative Reihenfolge von Vor-/Nachname prüfen.
 
-Die empfohlenen Quick Wins:
+---
 
-Feature                   | Aufwand | Schwierigkeit | Nutzen | Priorität
---------------------------|---------|---------------|--------|----------
-CSV-Export                | 2-4h    | 1/10          | Hoch   | 1
-Vollständigkeits-Badges   | 3-5h    | 2/10          | Mittel | 2
-PNG-Export                | 3-4h    | 3/10          | Mittel | 3
-Statistik-Dashboard       | 1-2d    | 3/10          | Hoch   | 4
-Namensvarianten           | 0.5-1d  | 4/10          | Mittel | 5
-Volltextsuche (Fuse.js)   | 1-2d    | 5/10          | Hoch   | 6
+### 6) Volltextsuche (fuzzy)
 
-Mit ~1 Woche Arbeit (5 Tage) können alle 6 Features implementiert werden.
+* **Ziel:** Tippfehler-robuste Suche über Name, Biografie, Berufe, Orte.
+* **UX-Platzierung:** Suchfeld prominent in der Sidebar, Auto-Vorschläge unter dem Feld.
+* **Definition of Ready:**
 
-Das würde folgende User Stories erfüllen:
-- US-1.4: Statistik-Dashboard
-- US-1.5: Datenexport (CSV + PNG)
-- US-1.6: Volltextsuche (teilweise)
-- US-5.1: Vollständigkeitsindikator
+  * Zu durchsuchende Felder und ihre Priorität sind fixiert.
+  * Verhalten bei kürzeren Eingaben ist definiert (z. B. erst ab zwei Zeichen).
+* **Definition of Done:**
 
-4 von 21 User Stories komplett, 2 weitere teilweise.
+  * Relevante Treffer erscheinen zügig; Auswahl springt zur Person/markiert sie.
+  * Leere Eingabe setzt auf die Gesamtheit zurück.
+* **Fallbacks:** Bei keiner Übereinstimmung kurzer Hinweis statt leerer Liste.
+* **Manueller Test:** Absichtlich falsch geschriebene Namen, Berufs- und Ortsbegriffe testen; Trefferqualität stichprobenartig beurteilen.
+
+---
+
+## Abhängigkeiten & Reihenfolge (narrativ)
+
+* **Sofort:** CSV-Export → Vollständigkeits-Badge → PNG-Export (direkter Nutzen, keine Vorarbeiten).
+* **Danach:** Statistik-Dashboard (nutzt gefestigte Felddefinitionen).
+* **Optional/ergänzend:** Namensvarianten (verbessern direkt die spätere Suche).
+* **Zum Schluss:** Volltextsuche (profitiert maximal von Namensvarianten und stabilem Feldschema).
+
+---
+
+## Governance, Changelog & Rückrollplan
+
+* **Quellen/Lizenzen:** In Exporten und im Dashboard wird die Datenquelle benannt; Lizenz-Textbaustein einmalig definieren und wiederverwenden.
+* **Kontakt/Verantwortung:** Eine sichtbare Kontaktzeile für Datenfehler/Anmerkungen.
+* **Changelog (Template, pro Änderung eine Zeile):**
+
+  * *[Datum]* – *Komponente* – *Kurzbeschreibung der Änderung* – *Impact auf Daten/UI* – *Fallback/Rollback-Hinweis*.
+* **Rollback:** Jede Änderung ist kapselbar (separate Datei/Commit) und kann isoliert rückgängig gemacht werden, ohne andere Features zu beeinträchtigen.
+
+---
+
+## Leichtgewichtiges Testvorgehen (ohne Zahlen, ohne Tools)
+
+* **Plausibilitäts-Checks:** Vergleich einzelner UI-Ausschnitte mit den Rohdaten (Stichproben).
+* **Konsistenz-Checks:** CSV-Export vs. Statistik-Sichten vs. Listen/Marker zeigen dieselben Mengen.
+* **Zugänglichkeits-Checks:** Tastatur-Navigation durch alle neuen Buttons; Screenreader liest Labels verständlich.
+* **Robustheit-Checks:** Verhalten bei leeren Filtern, fehlenden Feldern, sehr langen Namen/Listen.
+
+---
+
+## Daten-Drift & Aktualisierung (Namensvarianten)
+
+* **Regelmäßigkeit:** Varianten werden bei neuen Datenständen gemeinsam mit `persons.json` regeneriert.
+* **Qualitätssicherung:** Nach jedem Lauf kurzer Bericht: Anzahl berücksichtigter Personen, Anzahl entfernter Duplikate, Beispiel-Diffs (internes Protokoll).
+* **Stabilität:** Keine semantische Uminterpretation; nur Ergänzung/Normalisierung.
+
+---
+
+## Ergebnis
+
+Dieses Dokument liefert eine sofort umsetzbare, team-klare Spezifikation ohne Code und ohne Metriken. Es fixiert Begriffe, UI-Platzierung, Ready/Done, Fallbacks, Abhängigkeiten, Export-/Lizenz-Hinweise sowie einen einfachen Test- und Rollback-Rahmen. Damit können die Quick Wins ohne Rückfragen implementiert und iterativ erweitert werden.
