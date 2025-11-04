@@ -6,7 +6,6 @@ const state = {
     filteredPersons: [],
     selectedPerson: null,
     basket: [],  // Wissenskorb
-    viewMode: 'basis',
     filters: {
         search: '',
         roles: ['sender', 'mentioned', 'both', 'indirect'],
@@ -20,33 +19,16 @@ const state = {
     }
 };
 
-// View mode configurations
-const viewModes = {
-    basis: {
-        columns: [
-            { key: 'name', label: 'Name', sortable: true },
-            { key: 'dates', label: 'Lebensdaten', sortable: false },
-            { key: 'role', label: 'Rolle', sortable: true },
-            { key: 'correspondence_summary', label: 'Korrespondenz', sortable: false }
-        ]
-    },
-    korrespondenz: {
-        columns: [
-            { key: 'name', label: 'Name', sortable: true },
-            { key: 'letter_count', label: 'Briefe gesendet', sortable: true },
-            { key: 'mention_count', label: 'Erwähnungen', sortable: true },
-            { key: 'letter_years', label: 'Jahre aktiv', sortable: false }
-        ]
-    },
-    biografisch: {
-        columns: [
-            { key: 'name', label: 'Name', sortable: true },
-            { key: 'occupations', label: 'Berufe', sortable: false },
-            { key: 'places', label: 'Orte', sortable: false },
-            { key: 'gnd', label: 'GND', sortable: false }
-        ]
-    }
-};
+// Single comprehensive view configuration
+const tableColumns = [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'dates', label: 'Lebensdaten', sortable: false },
+    { key: 'role', label: 'Rolle', sortable: true },
+    { key: 'correspondence_compact', label: 'Korrespondenz', sortable: false },
+    { key: 'occupations_compact', label: 'Berufe', sortable: false },
+    { key: 'relations_compact', label: 'Beziehungen', sortable: false },
+    { key: 'biography_preview', label: 'Biografie', sortable: false }
+];
 
 // Initialize app
 async function init() {
@@ -76,16 +58,6 @@ async function init() {
 
 // Setup event listeners
 function setupEventListeners() {
-    // View mode buttons
-    document.querySelectorAll('.btn-mode').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            state.viewMode = e.target.dataset.mode;
-            renderTable();
-        });
-    });
-
     // Tab buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -190,12 +162,11 @@ function resetFilters() {
 
 // Render table
 function renderTable() {
-    const mode = viewModes[state.viewMode];
     const thead = document.getElementById('table-headers');
     const tbody = document.getElementById('table-body');
 
     // Render headers
-    thead.innerHTML = mode.columns.map(col =>
+    thead.innerHTML = tableColumns.map(col =>
         `<th data-column="${col.key}" ${col.sortable ? 'class="sortable"' : ''}>
             ${col.label}
             ${col.sortable && state.sorting.column === col.key ?
@@ -223,7 +194,7 @@ function renderTable() {
     // Render rows
     tbody.innerHTML = sorted.map(person => {
         const inBasket = state.basket.some(p => p.id === person.id);
-        const cells = mode.columns.map(col => formatCell(person, col.key)).join('');
+        const cells = tableColumns.map(col => formatCell(person, col.key)).join('');
         const starButton = `<td style="width: 40px; text-align: center;">
             <button class="btn-add-basket ${inBasket ? 'in-basket' : ''}" data-id="${person.id}" title="Zum Wissenskorb hinzufügen">
                 ${inBasket ? '⭐' : '☆'}
@@ -278,40 +249,47 @@ function formatCell(person, key) {
             const place = person.places?.[0]?.name || '-';
             return `<td>${place}</td>`;
 
-        case 'correspondence_summary':
+        case 'correspondence_compact':
             const sent = person.letter_count || 0;
             const mentions = person.mention_count || 0;
             if (sent === 0 && mentions === 0) {
-                return `<td class="muted">keine Korrespondenz</td>`;
+                return `<td class="muted" style="font-size: 0.85rem;">keine</td>`;
             }
-            const parts = [];
-            if (sent > 0) parts.push(`${sent} Brief${sent > 1 ? 'e' : ''}`);
-            if (mentions > 0) parts.push(`${mentions}× erwähnt`);
-            return `<td>${parts.join(', ')}</td>`;
+            const corrParts = [];
+            if (sent > 0) corrParts.push(`<span title="${sent} Brief${sent > 1 ? 'e' : ''} gesendet">${sent}B</span>`);
+            if (mentions > 0) corrParts.push(`<span title="${mentions}× erwähnt">${mentions}E</span>`);
+            return `<td style="font-size: 0.85rem;">${corrParts.join(' ')}</td>`;
 
-        case 'letter_count':
-            return `<td>${person.letter_count || 0}</td>`;
-
-        case 'mention_count':
-            return `<td>${person.mention_count || 0}</td>`;
-
-        case 'letter_years':
-            if (person.letter_years && person.letter_years.length > 0) {
-                const min = Math.min(...person.letter_years);
-                const max = Math.max(...person.letter_years);
-                return `<td>${min}-${max}</td>`;
+        case 'occupations_compact':
+            const occs = person.occupations || [];
+            if (occs.length === 0) {
+                return `<td class="muted" style="font-size: 0.85rem;">-</td>`;
             }
-            return `<td>-</td>`;
-
-        case 'occupations':
-            const occs = person.occupations?.map(o => o.name).join(', ') || '-';
-            return `<td>${occs}</td>`;
-
-        case 'gnd':
-            if (person.gnd) {
-                return `<td><a href="https://d-nb.info/gnd/${person.gnd}" target="_blank">${person.gnd}</a></td>`;
+            if (occs.length <= 2) {
+                return `<td style="font-size: 0.85rem;">${occs.map(o => o.name).join(', ')}</td>`;
             }
-            return `<td>-</td>`;
+            const firstTwo = occs.slice(0, 2).map(o => o.name).join(', ');
+            const remaining = occs.length - 2;
+            return `<td style="font-size: 0.85rem;" title="${occs.map(o => o.name).join(', ')}">${firstTwo} <span class="muted">+${remaining}</span></td>`;
+
+        case 'relations_compact':
+            const rels = person.relationships || [];
+            if (rels.length === 0) {
+                return `<td class="muted" style="font-size: 0.85rem;">-</td>`;
+            }
+            return `<td style="font-size: 0.85rem;"><span class="info-badge" title="${rels.length} Beziehung${rels.length > 1 ? 'en' : ''}">${rels.length}</span></td>`;
+
+        case 'biography_preview':
+            if (!person.biography) {
+                return `<td class="muted" style="font-size: 0.85rem;">-</td>`;
+            }
+            const cleanBioPreview = person.biography
+                .replace(/#s\+/g, '')
+                .replace(/#s-/g, '')
+                .replace(/#e\+/g, '')
+                .replace(/#e-/g, '');
+            const preview = cleanBioPreview.length > 60 ? cleanBioPreview.substring(0, 60) + '...' : cleanBioPreview;
+            return `<td style="font-size: 0.85rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${cleanBioPreview}">${preview}</td>`;
 
         default:
             return `<td>-</td>`;
@@ -543,44 +521,21 @@ function updateStatistics() {
 
 // Export to CSV
 function exportToCSV() {
-    const mode = viewModes[state.viewMode];
-    const headers = mode.columns.map(col => col.label);
+    const headers = ['Name', 'Lebensdaten', 'Rolle', 'Briefe', 'Erwähnungen', 'Berufe', 'Beziehungen', 'GND'];
 
     let csv = headers.join(',') + '\n';
 
     state.filteredPersons.forEach(person => {
-        const row = mode.columns.map(col => {
-            let value = '';
-            switch(col.key) {
-                case 'name':
-                    value = person.name;
-                    break;
-                case 'dates':
-                    value = `${person.dates?.birth || '?'}-${person.dates?.death || '?'}`;
-                    break;
-                case 'role':
-                    value = getRoleLabel(person.role);
-                    break;
-                case 'places':
-                    value = person.places?.[0]?.name || '-';
-                    break;
-                case 'letter_count':
-                    value = person.letter_count || 0;
-                    break;
-                case 'mention_count':
-                    value = person.mention_count || 0;
-                    break;
-                case 'occupations':
-                    value = person.occupations?.map(o => o.name).join('; ') || '-';
-                    break;
-                case 'gnd':
-                    value = person.gnd || '-';
-                    break;
-                default:
-                    value = '-';
-            }
-            return `"${value}"`;
-        });
+        const row = [
+            `"${person.name}"`,
+            `"${person.dates?.birth || '?'}-${person.dates?.death || '?'}"`,
+            `"${getRoleLabel(person.role)}"`,
+            person.letter_count || 0,
+            person.mention_count || 0,
+            `"${person.occupations?.map(o => o.name).join('; ') || '-'}"`,
+            person.relationships?.length || 0,
+            `"${person.gnd || '-'}"`
+        ];
         csv += row.join(',') + '\n';
     });
 
