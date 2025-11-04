@@ -352,23 +352,51 @@ class HerDataPipelineNew:
         matched_mentioned = set()
 
         for corresp in correspondences:
-            # Extract letter year
+            # Extract letter metadata
             letter_year = None
+            letter_date = None
+            letter_place = None
+            letter_id = corresp.get('ref', '')
+
             sent_action = corresp.find('.//tei:correspAction[@type="sent"]', NS)
+            received_action = corresp.find('.//tei:correspAction[@type="received"]', NS)
+
             if sent_action:
                 date_elem = sent_action.find('.//tei:date', NS)
-                if date_elem is not None and date_elem.get('when'):
-                    try:
-                        letter_year = int(date_elem.get('when')[:4])
-                    except:
-                        pass
+                if date_elem is not None:
+                    if date_elem.get('when'):
+                        letter_date = date_elem.get('when')
+                        try:
+                            letter_year = int(letter_date[:4])
+                        except:
+                            pass
+                    elif date_elem.get('notBefore'):
+                        letter_date = date_elem.get('notBefore') + '/' + date_elem.get('notAfter', '')
+                        try:
+                            letter_year = int(date_elem.get('notBefore')[:4])
+                        except:
+                            pass
+
+                place_elem = sent_action.find('.//tei:placeName', NS)
+                if place_elem is not None:
+                    letter_place = place_elem.text
 
             # Check senders
             if sent_action:
                 sender = sent_action.find('.//tei:persName', NS)
+                receiver = None
+                if received_action:
+                    receiver = received_action.find('.//tei:persName', NS)
+
                 if sender is not None:
                     sender_ref = sender.get('ref', '')
                     sender_gnd = self.extract_gnd_id(sender_ref)
+
+                    receiver_name = None
+                    receiver_gnd = None
+                    if receiver is not None:
+                        receiver_name = receiver.text
+                        receiver_gnd = self.extract_gnd_id(receiver.get('ref', ''))
 
                     # Match by GND (primary)
                     if sender_gnd and sender_gnd in gnd_to_woman:
@@ -382,11 +410,30 @@ class HerDataPipelineNew:
                             if 'letter_years' not in self.women[woman_id]:
                                 self.women[woman_id]['letter_years'] = []
                             self.women[woman_id]['letter_years'].append(letter_year)
+
+                        # Add detailed correspondence data
+                        if 'correspondence' not in self.women[woman_id]:
+                            self.women[woman_id]['correspondence'] = []
+
+                        corresp_entry = {
+                            'type': 'sent',
+                            'letter_id': letter_id,
+                            'recipient': receiver_name if receiver_name else 'Unknown'
+                        }
+                        if letter_date:
+                            corresp_entry['date'] = letter_date
+                        if letter_year:
+                            corresp_entry['year'] = letter_year
+                        if letter_place:
+                            corresp_entry['place'] = letter_place
+                        if receiver_gnd:
+                            corresp_entry['recipient_gnd'] = receiver_gnd
+
+                        self.women[woman_id]['correspondence'].append(corresp_entry)
                         matched_senders.add(woman_id)
 
                         # Track provenance for first letter match
                         if is_first_letter:
-                            corresp_id = corresp.get('{{http://www.tei-c.org/ns/1.0}}ref', 'unknown')
                             self.add_provenance(woman_id, 'letter_count', {
                                 'file': 'ra-cmif.xml',
                                 'xpath': f"//correspDesc[@ref and .//persName[@ref='http://d-nb.info/gnd/{sender_gnd}']]",
@@ -413,6 +460,23 @@ class HerDataPipelineNew:
                             if 'letter_years' not in self.women[woman_id]:
                                 self.women[woman_id]['letter_years'] = []
                             self.women[woman_id]['letter_years'].append(letter_year)
+
+                        # Add detailed mention data
+                        if 'correspondence' not in self.women[woman_id]:
+                            self.women[woman_id]['correspondence'] = []
+
+                        mention_entry = {
+                            'type': 'mentioned',
+                            'letter_id': letter_id
+                        }
+                        if letter_date:
+                            mention_entry['date'] = letter_date
+                        if letter_year:
+                            mention_entry['year'] = letter_year
+                        if letter_place:
+                            mention_entry['place'] = letter_place
+
+                        self.women[woman_id]['correspondence'].append(mention_entry)
                         matched_mentioned.add(woman_id)
 
                         # Track provenance for first mention
@@ -766,6 +830,9 @@ class HerDataPipelineNew:
             if woman_data.get('relationships'):
                 person['relationships'] = woman_data['relationships']
 
+            if woman_data.get('correspondence'):
+                person['correspondence'] = woman_data['correspondence']
+
             output_data['persons'].append(person)
 
         # Validate Phase 4
@@ -839,6 +906,9 @@ class HerDataPipelineNew:
 
                 if woman_data.get('relationships'):
                     person_debug['relationships'] = woman_data['relationships']
+
+                if woman_data.get('correspondence'):
+                    person_debug['correspondence'] = woman_data['correspondence']
 
                 # ADD PROVENANCE DATA
                 if woman_data.get('_provenance'):
