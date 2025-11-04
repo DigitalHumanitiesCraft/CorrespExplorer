@@ -29,13 +29,13 @@ NS = {'tei': 'http://www.tei-c.org/ns/1.0'}
 class HerDataPipelineNew:
     """4-phase pipeline using NEW export (2025-10-27) with OLD geodata"""
 
-    def __init__(self, herdata_dir, sndb_dir, cmif_file, output_file, verbose=True, track_provenance=True):
+    def __init__(self, herdata_dir, sndb_dir, cmif_file, output_file, verbose=True, track_provenance=False):
         self.herdata_dir = Path(herdata_dir)
         self.sndb_dir = Path(sndb_dir)
         self.cmif_file = Path(cmif_file)
         self.output_file = Path(output_file)
         self.verbose = verbose
-        self.track_provenance = track_provenance  # NOW DEFAULT: True
+        self.track_provenance = track_provenance
 
         # Data containers
         self.women = {}  # {sndb_id: {name, gnd, dates, ...}}
@@ -230,35 +230,6 @@ class HerDataPipelineNew:
                     'mention_count': 0
                 }
 
-                # Track provenance for ID
-                self.add_provenance(person_id, 'id', {
-                    'file': 'ra_ndb_main.xml',
-                    'xpath': f"//ITEM[ID='{person_id}']",
-                    'raw_value': person_id,
-                    'transformation': 'direct extraction'
-                })
-
-                # Track provenance for name
-                self.add_provenance(person_id, 'name', {
-                    'file': 'ra_ndb_main.xml',
-                    'xpath': f"//ITEM[ID='{person_id}' and LFDNR='0']/VORNAMEN, NACHNAME, TITEL",
-                    'raw_value': {
-                        'vornamen': name_data.get('vornamen'),
-                        'nachname': name_data.get('nachname'),
-                        'titel': name_data.get('titel')
-                    },
-                    'transformation': f"concatenation with space: '{name_data['name']}'"
-                })
-
-                # Track provenance for GND
-                if gnd:
-                    self.add_provenance(person_id, 'gnd', {
-                        'file': 'ra_ndb_indiv.xml',
-                        'xpath': f"//ITEM[ID='{person_id}']/GND",
-                        'raw_value': gnd,
-                        'transformation': 'direct extraction'
-                    })
-
         self.log(f"  Found {women_count} women (all SEXUS='w' in new export)")
 
         # Step 3: Add life dates from NEW export
@@ -286,24 +257,6 @@ class HerDataPipelineNew:
             if dates:
                 self.women[person_id]['dates'] = dates
                 dates_added += 1
-
-                # Track provenance for birth date
-                if 'birth' in dates:
-                    self.add_provenance(person_id, 'dates.birth', {
-                        'file': 'ra_ndb_datierungen.xml',
-                        'xpath': f"//ITEM[ID='{person_id}' and ART='Geburtsdatum']/JAHR",
-                        'raw_value': dates['birth'],
-                        'transformation': 'extract year as string'
-                    })
-
-                # Track provenance for death date
-                if 'death' in dates:
-                    self.add_provenance(person_id, 'dates.death', {
-                        'file': 'ra_ndb_datierungen.xml',
-                        'xpath': f"//ITEM[ID='{person_id}' and ART='Sterbedatum']/JAHR",
-                        'raw_value': dates['death'],
-                        'transformation': 'extract year as string'
-                    })
 
         self.log(f"  Added dates for {dates_added} women")
 
@@ -373,7 +326,6 @@ class HerDataPipelineNew:
                     # Match by GND (primary)
                     if sender_gnd and sender_gnd in gnd_to_woman:
                         woman_id = gnd_to_woman[sender_gnd]
-                        is_first_letter = self.women[woman_id]['letter_count'] == 0
                         self.women[woman_id]['letter_count'] += 1
                         if 'sender' not in self.women[woman_id]['roles']:
                             self.women[woman_id]['roles'].append('sender')
@@ -383,16 +335,6 @@ class HerDataPipelineNew:
                                 self.women[woman_id]['letter_years'] = []
                             self.women[woman_id]['letter_years'].append(letter_year)
                         matched_senders.add(woman_id)
-
-                        # Track provenance for first letter match
-                        if is_first_letter:
-                            corresp_id = corresp.get('{{http://www.tei-c.org/ns/1.0}}ref', 'unknown')
-                            self.add_provenance(woman_id, 'letter_count', {
-                                'file': 'ra-cmif.xml',
-                                'xpath': f"//correspDesc[@ref and .//persName[@ref='http://d-nb.info/gnd/{sender_gnd}']]",
-                                'raw_value': f"GND match: {sender_gnd}",
-                                'transformation': f"count of letters as sender via GND matching"
-                            })
 
             # Check mentioned persons
             note = corresp.find('.//tei:note', NS)
@@ -404,7 +346,6 @@ class HerDataPipelineNew:
                     # Match by GND
                     if person_gnd and person_gnd in gnd_to_woman:
                         woman_id = gnd_to_woman[person_gnd]
-                        is_first_mention = self.women[woman_id]['mention_count'] == 0
                         self.women[woman_id]['mention_count'] += 1
                         if 'mentioned' not in self.women[woman_id]['roles']:
                             self.women[woman_id]['roles'].append('mentioned')
@@ -414,15 +355,6 @@ class HerDataPipelineNew:
                                 self.women[woman_id]['letter_years'] = []
                             self.women[woman_id]['letter_years'].append(letter_year)
                         matched_mentioned.add(woman_id)
-
-                        # Track provenance for first mention
-                        if is_first_mention:
-                            self.add_provenance(woman_id, 'mention_count', {
-                                'file': 'ra-cmif.xml',
-                                'xpath': f"//ref[@type='cmif:mentionsPerson' and @target='http://d-nb.info/gnd/{person_gnd}']",
-                                'raw_value': f"GND match: {person_gnd}",
-                                'transformation': f"count of mentions via GND matching"
-                            })
 
         # Assign combined roles
         for woman_id, woman_data in self.women.items():
@@ -435,14 +367,6 @@ class HerDataPipelineNew:
                 woman_data['role'] = 'sender'
             elif 'mentioned' in roles:
                 woman_data['role'] = 'mentioned'
-
-            # Track provenance for role assignment
-            self.add_provenance(woman_id, 'role', {
-                'file': 'calculated',
-                'xpath': 'derived from letter_count and mention_count',
-                'raw_value': {'roles_array': roles, 'letter_count': woman_data['letter_count'], 'mention_count': woman_data['mention_count']},
-                'transformation': f"calculated: {woman_data['role']}"
-            })
 
         self.log(f"  Matched {len(matched_senders)} women as senders")
         self.log(f"  Matched {len(matched_mentioned)} women as mentioned")
@@ -528,27 +452,12 @@ class HerDataPipelineNew:
                 coords = place_id_to_coords.get(place_id)
 
                 if place_name and coords:
-                    place_data = {
+                    self.women[person_id]['places'].append({
                         'name': place_name,
                         'lat': coords['lat'],
                         'lon': coords['lon'],
                         'type': place_info['type']
-                    }
-                    self.women[person_id]['places'].append(place_data)
-
-                    # Track provenance for places (first place only to avoid huge provenance)
-                    if len(self.women[person_id]['places']) == 1:
-                        self.add_provenance(person_id, 'places', {
-                            'file': 'ra_ndb_orte.xml (NEW) + geo_main.xml + geo_indiv.xml (OLD)',
-                            'xpath': f"//ITEM[ID='{person_id}']/SNDB_ID -> //ITEM[ID='{place_id}']",
-                            'raw_value': {
-                                'sndb_id': place_id,
-                                'place_name': place_name,
-                                'coordinates': coords,
-                                'type': place_info['type']
-                            },
-                            'transformation': f"HYBRID: place link from NEW export, resolved via OLD SNDB geodata"
-                        })
+                    })
 
         self.log(f"  Merged geodata via HYBRID approach (NEW place links + OLD coordinates)")
 
@@ -569,15 +478,6 @@ class HerDataPipelineNew:
                     })
                     occupations_added += 1
 
-                    # Track provenance for occupations (first one only)
-                    if len(self.women[person_id]['occupations']) == 1:
-                        self.add_provenance(person_id, 'occupations', {
-                            'file': 'ra_ndb_berufe.xml',
-                            'xpath': f"//ITEM[ID='{person_id}']/BERUF",
-                            'raw_value': beruf,
-                            'transformation': 'direct extraction, multiple occupations possible'
-                        })
-
         self.log(f"  Added {occupations_added} occupation entries from NEW export")
 
         # Step 6: Load biographical texts from NEW export
@@ -594,14 +494,6 @@ class HerDataPipelineNew:
                     # Store biography text
                     self.women[person_id]['biography'] = registereintrag
                     biografien_added += 1
-
-                    # Track provenance for biography
-                    self.add_provenance(person_id, 'biography', {
-                        'file': 'projekt_regestausgabe.xml',
-                        'xpath': f"//ITEM[ID='{person_id}']/REGISTEREINTRAG",
-                        'raw_value': registereintrag[:100] + '...' if len(registereintrag) > 100 else registereintrag,
-                        'transformation': 'direct extraction of biographical text'
-                    })
 
         self.log(f"  Added {biografien_added} biographical texts from NEW export")
 
@@ -771,7 +663,7 @@ class HerDataPipelineNew:
         # Validate Phase 4
         self.test_phase4(output_data)
 
-        # Write PRODUCTION file (clean, no provenance)
+        # Write to file
         self.output_file.parent.mkdir(parents=True, exist_ok=True)
         with open(self.output_file, 'w', encoding='utf-8') as f:
             json.dump(output_data, f, ensure_ascii=False, indent=2)
@@ -779,84 +671,8 @@ class HerDataPipelineNew:
         file_size_mb = self.output_file.stat().st_size / (1024 * 1024)
         self.stats['phase4']['output_file_size'] = f"{file_size_mb:.2f} MB"
 
-        self.log(f"\n[OK] PRODUCTION JSON written to {self.output_file}")
+        self.log(f"\n[OK] JSON written to {self.output_file}")
         self.log(f"  File size: {file_size_mb:.2f} MB")
-
-        # Write DEBUG file (with provenance data) if tracking enabled
-        if self.track_provenance:
-            debug_output_data = {
-                'meta': output_data['meta'].copy(),
-                'persons': []
-            }
-
-            # Add flag to meta
-            debug_output_data['meta']['provenance_enabled'] = True
-
-            # Add persons WITH provenance
-            for woman_id, woman_data in self.women.items():
-                # Determine normierung status
-                if woman_data.get('gnd'):
-                    normierung = 'gnd'
-                else:
-                    normierung = 'sndb'
-
-                # Build person entry WITH provenance
-                person_debug = {
-                    'id': woman_data['id'],
-                    'name': woman_data['name'],
-                    'role': woman_data.get('role', 'indirect'),
-                    'normierung': normierung,
-                    'sndb_url': woman_data['sndb_url']
-                }
-
-                # Add optional fields only if present
-                if woman_data.get('gnd'):
-                    person_debug['gnd'] = woman_data['gnd']
-
-                if woman_data.get('roles'):
-                    person_debug['roles'] = woman_data['roles']
-
-                if woman_data.get('letter_count', 0) > 0:
-                    person_debug['letter_count'] = woman_data['letter_count']
-
-                if woman_data.get('letter_years'):
-                    person_debug['letter_years'] = sorted(list(set(woman_data['letter_years'])))
-
-                if woman_data.get('mention_count', 0) > 0:
-                    person_debug['mention_count'] = woman_data['mention_count']
-
-                if woman_data.get('dates', {}).get('birth') or woman_data.get('dates', {}).get('death'):
-                    person_debug['dates'] = woman_data['dates']
-
-                if woman_data.get('places'):
-                    person_debug['places'] = woman_data['places']
-
-                if woman_data.get('occupations'):
-                    person_debug['occupations'] = woman_data['occupations']
-
-                if woman_data.get('biography'):
-                    person_debug['biography'] = woman_data['biography']
-
-                if woman_data.get('relationships'):
-                    person_debug['relationships'] = woman_data['relationships']
-
-                # ADD PROVENANCE DATA
-                if woman_data.get('_provenance'):
-                    person_debug['_provenance'] = woman_data['_provenance']
-
-                debug_output_data['persons'].append(person_debug)
-
-            # Write debug file
-            debug_file = self.output_file.parent / 'persons_debug.json'
-            with open(debug_file, 'w', encoding='utf-8') as f:
-                json.dump(debug_output_data, f, ensure_ascii=False, indent=2)
-
-            debug_file_size_mb = debug_file.stat().st_size / (1024 * 1024)
-            self.stats['phase4']['debug_file_size'] = f"{debug_file_size_mb:.2f} MB"
-
-            self.log(f"\n[OK] DEBUG JSON written to {debug_file}")
-            self.log(f"  File size: {debug_file_size_mb:.2f} MB")
-            self.log(f"  Size increase: {debug_file_size_mb - file_size_mb:.2f} MB ({((debug_file_size_mb / file_size_mb - 1) * 100):.1f}% larger)")
 
         return output_data
 

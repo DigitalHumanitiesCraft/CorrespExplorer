@@ -3,7 +3,6 @@
 import { loadPersons, getPersonById } from './data.js';
 import { loadNavbar } from './navbar-loader.js';
 import { GlobalSearch } from './search.js';
-import { initDebugPanel, renderRawDataViewer, wrapFieldWithProvenance } from './debug.js';
 
 let currentPerson = null;
 let allPersons = [];
@@ -13,9 +12,6 @@ let miniMap = null;
 async function init() {
     try {
         await loadNavbar();
-
-        // Initialize debug panel
-        await initDebugPanel();
 
         // Get person ID from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -77,11 +73,8 @@ function renderPerson() {
     renderAdditionalBiographies();
     renderSources();
 
-    // Render raw data if debug mode
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('debug') === 'true') {
-        renderRawDataSection();
-    }
+    // Always render raw JSON data section
+    renderRawDataSection();
 
     // Show content
     document.getElementById('person-content').style.display = 'block';
@@ -566,18 +559,56 @@ window.copyCitation = function() {
     });
 };
 
-// Render raw data section (debug mode)
+// Render raw data section in sidebar
 function renderRawDataSection() {
-    const sourcesCard = document.getElementById('sources-card');
-    if (!sourcesCard) return;
+    const container = document.getElementById('raw-data-container');
+    if (!container || !currentPerson) return;
 
-    // Create container for raw data after sources card
-    const rawDataContainer = document.createElement('div');
-    rawDataContainer.id = 'raw-data-container';
-    sourcesCard.parentNode.insertBefore(rawDataContainer, sourcesCard.nextSibling);
+    // Direct JSON display without toggle button - always visible
+    const jsonString = JSON.stringify(currentPerson, null, 2);
 
-    // Render raw data viewer
-    renderRawDataViewer(currentPerson, 'raw-data-container');
+    container.innerHTML = `
+        <pre class="raw-json-display">${syntaxHighlightJSON(currentPerson)}</pre>
+        <button class="raw-data-copy" onclick="copyRawJSON()">
+            In Zwischenablage kopieren
+        </button>
+    `;
+
+    // Global copy function
+    window.copyRawJSON = function() {
+        navigator.clipboard.writeText(jsonString).then(() => {
+            const button = container.querySelector('.raw-data-copy');
+            const originalText = button.textContent;
+            button.textContent = 'Kopiert!';
+            button.classList.add('copied');
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        });
+    };
+}
+
+// Syntax highlight helper
+function syntaxHighlightJSON(obj) {
+    let json = JSON.stringify(obj, null, 2);
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'json-key';
+            } else {
+                cls = 'json-string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'json-boolean';
+        } else if (/null/.test(match)) {
+            cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
 }
 
 // Initialize tab switching

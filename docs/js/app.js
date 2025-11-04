@@ -5,7 +5,6 @@ import { loadPersons } from "./data.js";
 import { GlobalSearch } from "./search.js";
 import { loadNavbar } from "./navbar-loader.js";
 import { getPersonConnections, getClusterConnections, getConnectionColor } from "./network-utils.js";
-import { initDebugPanel } from "./debug.js";
 
 let map;
 let allPersons = [];
@@ -91,9 +90,6 @@ function getOccupationGroup(person) {
 async function init() {
     log.init("Starting application");
     await loadNavbar();
-
-    // Initialize debug panel
-    await initDebugPanel();
 
     try {
         // Load data using shared module
@@ -677,46 +673,31 @@ function setupEventHandlers() {
             log.event(`Showing ${connections.length} connections for ${person.name}`);
         }
 
-        // Create tooltip content
-        const dates = props.birth || props.death
-            ? `(${props.birth || '?'}–${props.death || '?'})`
-            : '';
+        // Always show JSON snippet on hover
+        if (person) {
+            const jsonString = JSON.stringify(person, null, 2);
+            const syntaxHighlightedJSON = syntaxHighlightJSON(jsonString);
 
-        // Check if debug mode is active
-        const urlParams = new URLSearchParams(window.location.search);
-        const debugMode = urlParams.get('debug') === 'true';
-
-        let html = '';
-        if (debugMode && person) {
-            // Enhanced debug tooltip with data provenance info
-            const places = person.places ? person.places.map(p => `${p.name} (${p.type})`).join(', ') : 'N/A';
-            const occupations = person.occupations ? person.occupations.map(o => o.name).join(', ') : 'N/A';
-            const gndInfo = person.gnd ? `GND: ${person.gnd}` : 'Keine GND';
-
-            html = `
-                <div class="hover-tooltip hover-tooltip-debug">
-                    <strong>${props.name}</strong> ${dates}<br>
-                    <small style="color: #6c757d; margin-top: 4px; display: block;">
-                        ${gndInfo}<br>
-                        Orte: ${places}<br>
-                        Berufe: ${occupations}<br>
-                        Briefe: ${props.letter_count || 0} | Erwähnungen: ${props.mention_count || 0}
-                    </small>
+            const html = `
+                <div class="hover-tooltip hover-tooltip-json">
+                    <div class="hover-tooltip-header">
+                        <strong>${person.name}</strong>
+                    </div>
+                    <pre class="hover-json-display">${syntaxHighlightedJSON}</pre>
                 </div>
             `;
-        } else {
-            // Standard tooltip
-            html = `<div class="hover-tooltip"><strong>${props.name}</strong> ${dates}</div>`;
-        }
 
-        markerTooltip = new maplibregl.Popup({
-            closeButton: false,
-            closeOnClick: false,
-            className: 'hover-tooltip-popup'
-        })
-            .setLngLat(coordinates)
-            .setHTML(html)
-            .addTo(map);
+            markerTooltip = new maplibregl.Popup({
+                closeButton: false,
+                closeOnClick: false,
+                className: 'hover-tooltip-popup hover-json-popup',
+                maxWidth: '500px',
+                offset: [250, 0]  // Offset nach rechts, damit es nicht überlagert
+            })
+                .setLngLat(coordinates)
+                .setHTML(html)
+                .addTo(map);
+        }
     });
 
     map.on('mouseleave', 'persons-layer', () => {
@@ -798,7 +779,12 @@ function showMultiPersonPopup(lngLat, features) {
             : '';
 
         return `
-            <div class="person-item ${hasRelations ? 'has-relations' : ''}" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
+            <div class="person-item ${hasRelations ? 'has-relations' : ''}"
+                 data-id="${p.id}"
+                 data-person='${JSON.stringify(person).replace(/'/g, "&apos;")}'
+                 onclick="window.location.href='person.html?id=${p.id}'"
+                 onmouseenter="showPersonItemJSON(event)"
+                 onmouseleave="hidePersonItemJSON()">
                 <div class="person-name">
                     <strong>${p.name}</strong> ${dates}
                 </div>
@@ -857,7 +843,7 @@ window.expandPersonList = function(event) {
         if (p.mention_count > 0) stats.push(`${p.mention_count} Erw.`);
         const statsText = stats.length > 0 ? stats.join(' • ') : '';
 
-        // Check if person has relations
+        // Get full person object for JSON and check relations
         const person = allPersons.find(person => person.id === p.id);
         const hasRelations = person && person.relations && person.relations.length > 0;
         const relationBadge = hasRelations
@@ -865,7 +851,12 @@ window.expandPersonList = function(event) {
             : '';
 
         return `
-            <div class="person-item ${hasRelations ? 'has-relations' : ''}" data-id="${p.id}" onclick="window.location.href='person.html?id=${p.id}'">
+            <div class="person-item ${hasRelations ? 'has-relations' : ''}"
+                 data-id="${p.id}"
+                 data-person='${JSON.stringify(person).replace(/'/g, "&apos;")}'
+                 onclick="window.location.href='person.html?id=${p.id}'"
+                 onmouseenter="showPersonItemJSON(event)"
+                 onmouseleave="hidePersonItemJSON()">
                 <div class="person-name">
                     <strong>${p.name}</strong> ${dates}
                 </div>
@@ -1091,6 +1082,88 @@ function showError(message) {
     loading.style.background = '#f8d7da';
     loading.style.color = '#9b2226';
 }
+
+// Syntax highlight JSON for tooltips
+function syntaxHighlightJSON(jsonString) {
+    let json = typeof jsonString === 'string' ? jsonString : JSON.stringify(jsonString, null, 2);
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = 'json-number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'json-key';
+            } else {
+                cls = 'json-string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'json-boolean';
+        } else if (/null/.test(match)) {
+            cls = 'json-null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
+// Show JSON popup for person item in list
+let personItemTooltip = null;
+window.showPersonItemJSON = function(event) {
+    const personItem = event.currentTarget;
+    const personData = personItem.getAttribute('data-person');
+
+    if (!personData) return;
+
+    try {
+        const person = JSON.parse(personData.replace(/&apos;/g, "'"));
+        const jsonString = JSON.stringify(person, null, 2);
+        const syntaxHighlightedJSON = syntaxHighlightJSON(jsonString);
+
+        const rect = personItem.getBoundingClientRect();
+        const mapContainer = document.getElementById('map');
+        const mapRect = mapContainer.getBoundingClientRect();
+
+        // Calculate position relative to map
+        const x = rect.right - mapRect.left + 10;
+        const y = rect.top - mapRect.top;
+
+        // Convert to lng/lat (approximate - use item center)
+        const point = map.unproject([rect.right + 10, rect.top + rect.height / 2]);
+
+        const html = `
+            <div class="hover-tooltip hover-tooltip-json">
+                <div class="hover-tooltip-header">
+                    <strong>${person.name}</strong>
+                </div>
+                <pre class="hover-json-display">${syntaxHighlightedJSON}</pre>
+            </div>
+        `;
+
+        // Remove old tooltip
+        if (personItemTooltip) {
+            personItemTooltip.remove();
+        }
+
+        personItemTooltip = new maplibregl.Popup({
+            closeButton: false,
+            closeOnClick: false,
+            className: 'hover-tooltip-popup hover-json-popup',
+            maxWidth: '500px',
+            offset: [10, 0]
+        })
+            .setLngLat(point)
+            .setHTML(html)
+            .addTo(map);
+    } catch (e) {
+        console.error('Error showing person JSON:', e);
+    }
+};
+
+window.hidePersonItemJSON = function() {
+    if (personItemTooltip) {
+        personItemTooltip.remove();
+        personItemTooltip = null;
+    }
+};
 
 // Start application when DOM is ready
 if (document.readyState === 'loading') {

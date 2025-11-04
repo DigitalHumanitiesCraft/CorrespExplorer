@@ -58,9 +58,11 @@
             </div>
         </section>
 
-        <!-- Content Cards -->
-        <div class="cards-container">
-            <!-- Biography Card -->
+        <!-- Two-Column Layout: Content Left, Raw Data Right -->
+        <div class="person-layout-wrapper">
+            <!-- Left Column: Content Cards -->
+            <div class="cards-container">
+                <!-- Biography Card -->
             <section class="content-card" id="biography-card">
                 <h2>Biographie</h2>
                 <div id="biography-content" class="card-content">
@@ -126,10 +128,21 @@
                     <!-- Populated by JS -->
                 </div>
             </section>
+            </div>
+            <!-- End Left Column -->
+
+            <!-- Right Column: Raw JSON Data (Sticky) -->
+            <aside class="raw-data-sidebar">
+                <div class="raw-data-sidebar-inner">
+                    <h2>Raw Data (JSON)</h2>
+                    <div id="raw-data-container" class="raw-data-display"></div>
+                </div>
+            </aside>
+            <!-- End Right Column -->
         </div>
+        <!-- End Two-Column Layout -->
     </div>
 
-    <script src="js/debug.js" type="module"></script>
-    <script src="js/person.js?v=3" type="module"></script>
+    <script src="js/person.js?v=4" type="module"></script>
 </body>
 </html>

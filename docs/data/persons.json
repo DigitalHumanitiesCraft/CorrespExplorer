@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2025-10-30T08:32:15.607174",
+    "generated": "2025-11-04T15:33:03.957876",
     "data_source": "NEW export 2025-10-27 (curated 448 women)",
     "total_women": 448,
     "with_cmif_data": 230,
@@ -226,9 +226,7 @@
         "year": 1824,
         "count": 230
       }
-    ],
-    "with_biographies": 187,
-    "biographies_coverage_pct": 41.7
+    ]
   },
   "persons": [
     {
@@ -264,13 +262,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Facius, #s+Angelika#s- Bellonata (1806-1887), Stempel- und Gemmenschneiderin sowie Bildhauerin, 1824-1834 in Berlin, seitdem in Weimar, Tochter von Friedrich Wilhelm und Wilhelmine F.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Faciius, #k#Angelika#/k# Bellonate (1806–1887), Bildhauerin, Stein- und Stempelschneiderin, Tochter von Friedrich Wilhelm F."
-        }
-      ]
+      "biography": "Facius, #s+Angelika#s- Bellonata (1806-1887), Stempel- und Gemmenschneiderin sowie Bildhauerin, 1824-1834 in Berlin, seitdem in Weimar, Tochter von Friedrich Wilhelm und Wilhelmine F."
     },
     {
       "id": "3251",
@@ -329,17 +321,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Ackermann, Maria Anna (Anna Maria), geb. Schumann (um 1757-1830), aus Winkel im Rheingau, seit 1780 verh. mit dem Bankier, Handelsmann und kurmainzischen Salzfaktor Andreas A. in Mainz, 1802 verw., zuletzt in Frankfurt am Main",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Ackermann, Maria Anna, geb. Schumann (um 1757-1830), aus Winkel im Rheingau, seit 1780 verheirtet mit dem Bankier, Handelsmann und kurmainzischen Salzfaktor Andreas Ackermann in Mainz, 1802 verwitwet, zuletzt in Frankfurt am Main"
-        },
-        {
-          "source": "bug",
-          "text": "Ackermann, M. A., geb. Schuman"
-        }
-      ]
+      "biography": "Ackermann, Maria Anna (Anna Maria), geb. Schumann (um 1757-1830), aus Winkel im Rheingau, seit 1780 verh. mit dem Bankier, Handelsmann und kurmainzischen Salzfaktor Andreas A. in Mainz, 1802 verw., zuletzt in Frankfurt am Main"
     },
     {
       "id": "35217",
@@ -396,13 +378,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Alberti, #s+Wilhelmine#s- (Minna) Katherine, geb. Hensler (1778-1857), Tochter des Juristen und Schriftstellers Peter Wilhelm Hensler und der #s+Johanna#s- Dorothea Wilhelmina Hensler, geb. Alberti, Stieftochter von Johann Friedrich Reichardt, seit 1794 verh. mit dem Bruder ihrer Mutter, dem Kriegsrat und späteren Geheimen Oberfinanzrat in Berlin Karl A.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Hensler, Wilhelmine Johanna (1777–1851), Schwester von August Wilhelm H."
-        }
-      ]
+      "biography": "Alberti, #s+Wilhelmine#s- (Minna) Katherine, geb. Hensler (1778-1857), Tochter des Juristen und Schriftstellers Peter Wilhelm Hensler und der #s+Johanna#s- Dorothea Wilhelmina Hensler, geb. Alberti, Stieftochter von Johann Friedrich Reichardt, seit 1794 verh. mit dem Bruder ihrer Mutter, dem Kriegsrat und späteren Geheimen Oberfinanzrat in Berlin Karl A."
     },
     {
       "id": "35267",
@@ -489,13 +465,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Amor, Karoline, geb. Friderici, verw. Naumann (geb. um 1745), Schauspielerin, um 1758 in Hamburg, später in Karlsruhe, 1772 in Prag, 1775 in Linz, dann u._a. in Pressburg, zeitweise Prinzipalin in Neustadt (Wiener Neustadt), 1791-1793 in Weimar, später in Regensburg und Salzburg, seit 1775 zweite Ehefrau des Schauspielers #s+Peter#s- Johannes Thaddäus A., 1795 verw., Schwägerin von Jakob A.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Amor, Caroline, geb. Frederici, (geb. 1745), verw. Naumann, Schauspielerin in Weimar"
-        }
-      ]
+      "biography": "Amor, Karoline, geb. Friderici, verw. Naumann (geb. um 1745), Schauspielerin, um 1758 in Hamburg, später in Karlsruhe, 1772 in Prag, 1775 in Linz, dann u._a. in Pressburg, zeitweise Prinzipalin in Neustadt (Wiener Neustadt), 1791-1793 in Weimar, später in Regensburg und Salzburg, seit 1775 zweite Ehefrau des Schauspielers #s+Peter#s- Johannes Thaddäus A., 1795 verw., Schwägerin von Jakob A."
     },
     {
       "id": "35391",
@@ -522,13 +492,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Austin, Sarah, geb. Taylor (1793-1867), englische Schriftstellerin, Übersetzerin aus dem Deutschen, Salonière, seit 1819 verh. mit dem Juristen John A.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Austin, Sarah, geb. Taylor"
-        }
-      ]
+      "biography": "Austin, Sarah, geb. Taylor (1793-1867), englische Schriftstellerin, Übersetzerin aus dem Deutschen, Salonière, seit 1819 verh. mit dem Juristen John A."
     },
     {
       "id": "35445",
@@ -666,17 +630,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Berg, Karoline Friederike (Sophie #s+Karoline#s-) von, geb. von Haeseler (1760-1826), Hofdame, Salonière, Tochter des preußischen Legationsrates Johann August von Haeseler, seit 1779 verh. mit dem Domherrn und preußischen Kammerherrn (Graf) Karl Ludwig von B., 1801 gesch., Vertraute und später erste Biographin der Königin Luise von Preußen, seit 1814/15 Oberhofmeisterin der Herzogin Friederike von Cumberland, Mutter der Gräfin Luise von Voß, Tante von Gräfin Rosalie Haeseler",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Berg, Caroline Friederike von, geb. von Haeseler (1760-1826), Hofdame, Salonière, seit 1779 Frau des Domherrn und Kammerherrn (Graf) Karl Ludwig von Berg, 1801 geschieden, danach in Berlin Vertraute und später erste Biographin der Königin Luise von Preußen, seit 1814/15 Oberhofmeisterin der Herzogin Friederike von Cumberland, Mutter der Gräfin Luise von Voß"
-        },
-        {
-          "source": "bug",
-          "text": "Berg, Friederike Caroline v., geb. v. Häseler"
-        }
-      ]
+      "biography": "Berg, Karoline Friederike (Sophie #s+Karoline#s-) von, geb. von Haeseler (1760-1826), Hofdame, Salonière, Tochter des preußischen Legationsrates Johann August von Haeseler, seit 1779 verh. mit dem Domherrn und preußischen Kammerherrn (Graf) Karl Ludwig von B., 1801 gesch., Vertraute und später erste Biographin der Königin Luise von Preußen, seit 1814/15 Oberhofmeisterin der Herzogin Friederike von Cumberland, Mutter der Gräfin Luise von Voß, Tante von Gräfin Rosalie Haeseler"
     },
     {
       "id": "35665",
@@ -738,23 +692,6 @@
           "type": "hat Nichte/Neffe",
           "type_id": "4110",
           "reciprocal_type": "hat Tante/Onkel"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45090",
-          "type": "hat Nichte/Neffe",
-          "agrelon_id": "4110"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Bernstorff (Bernsdorf, Bernstorf), Charitas Emilie Gräfin von, geb. von Buchwald (1733-1820), seit 1751 Frau von Johann Hartwig Ernst Graf von Bernstorff, 1772 verwitwet, seit 1779 in Weimar\n"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Bernstorff, Charitas Emilie Gräfin von, geb. von Buchwald (1733–1820), seit 1772 Witwe des Ministers Johann Hartwig Ernst Graf von B., seit 1779 in Weimar"
         }
       ]
     },
@@ -828,13 +765,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Bibra, #s+Karoline#s- #s+Luise#s- Augusta von, geb. von Dungern (1760-1825), Tochter des Geheimen Rats und Oberhofmarschalls Johann #s+Karl#s- #s+Philipp#s- von Dungern in Darmstadt, seit 1784 verh. mit dem sachsen-meiningischen Reisemarschall und späteren Oberhofmeister Ludwig Karl von B., 1795 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Dungern, Caroline #r#Louisa#/r# Augusta von (1760-1825), Tochter des hessen-darmstädtischen Oberhofmarschalls Carl Philipp von Dungern, Hofdame in Sachsen-Meiningen, seit 1784 Frau von Ludwig Carl von Bibra"
-        }
-      ]
+      "biography": "Bibra, #s+Karoline#s- #s+Luise#s- Augusta von, geb. von Dungern (1760-1825), Tochter des Geheimen Rats und Oberhofmarschalls Johann #s+Karl#s- #s+Philipp#s- von Dungern in Darmstadt, seit 1784 verh. mit dem sachsen-meiningischen Reisemarschall und späteren Oberhofmeister Ludwig Karl von B., 1795 verw."
     },
     {
       "id": "35764",
@@ -896,19 +827,6 @@
           "type_id": "3020",
           "reciprocal_type": "ist beeinflusst durch"
         }
-      ],
-      "relations": [
-        {
-          "target": "44010",
-          "type": "hat Einfluss auf",
-          "agrelon_id": "3020"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Bode (Bodé), Charlotte #r#Caroline#r/# Adamine Luise von (um 1759-1828), Tochter des nassau-usingischen Geheimen Rats Karl Wilhelm Moritz von B., um 1782-1819 Hof- bzw. Staatsdame der Landgräfin bzw. Großherzogin Luise von Hessen-Darmstadt, seit etwa 1820 in Oppenheim lebend"
-        }
       ]
     },
     {
@@ -949,17 +867,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Bohl, Johanne Susanne, geb. Eberhard(t) (1738-1806), Dichterin in Lobeda bei Jena, Mitarbeiterin am \"Teutschen Merkur\", Tochter des Instrumentenmachers und Kastenvorstehers Bartel Eberhard(t) in Lobeda, seit 1755 verh. mit dem Bürgermeister Johann Justin B., 1795 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Bohl, Johanne Susanne, geb. Eberhard(t) (1738-1806), Dichterin in Lobeda bei Jena, Mitarbeiterin am \"Teutschen Merkur\", Tochter des Instrumentenmachers und Kastenvorstehers Bartel Eberhard(t) in Lobeda, Frau von Johann Justin Bohl"
-        },
-        {
-          "source": "bug",
-          "text": "Bohl, Johanne Susanne, geb. Eberhard(t)"
-        }
-      ]
+      "biography": "Bohl, Johanne Susanne, geb. Eberhard(t) (1738-1806), Dichterin in Lobeda bei Jena, Mitarbeiterin am \"Teutschen Merkur\", Tochter des Instrumentenmachers und Kastenvorstehers Bartel Eberhard(t) in Lobeda, seit 1755 verh. mit dem Bürgermeister Johann Justin B., 1795 verw."
     },
     {
       "id": "35942",
@@ -991,13 +899,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Both, #s+Rudolfine#s- Hedwig Friederike von, geb. Brüning (1798-1866), Tochter des Kammerdirektors Konrad Wilhelm Brüning in Schwerin, seit 1818 verh. mit Karl von B.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Both, /Rudolphine/ Hedwig Friederike v., geb. Brüning"
-        }
-      ]
+      "biography": "Both, #s+Rudolfine#s- Hedwig Friederike von, geb. Brüning (1798-1866), Tochter des Kammerdirektors Konrad Wilhelm Brüning in Schwerin, seit 1818 verh. mit Karl von B."
     },
     {
       "id": "36008",
@@ -1120,13 +1022,7 @@
         "death": "1803",
         "birth": "1750"
       },
-      "biography": "Brossard, Jeannette (um 1750-nach 1803), in Epernay in der Champagne, Anfang 1775 Freundin von Herzog Karl Augusts von Sachsen-Weimar, bezog von ihm eine Pension",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Brossard, Jeanette (geb. um 1750 - nach 1803), 1775 in Epernay in der Champagne, Freundin des Herzogs Carl August von Sachsen-Weimar und Eisenach, Mutter eines gemeinsamen Kindes"
-        }
-      ]
+      "biography": "Brossard, Jeannette (um 1750-nach 1803), in Epernay in der Champagne, Anfang 1775 Freundin von Herzog Karl Augusts von Sachsen-Weimar, bezog von ihm eine Pension"
     },
     {
       "id": "36109",
@@ -1159,13 +1055,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Brühl, Jenny Gräfin von, geb. von Pourtalès (1795-1884), Tochter des Paul de Pourtalès in Neuchâtel, , seit 1814 zweite Ehefrau von Graf Karl B.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Brühl, Jenny Gräfin v., geb. v. Pourtalès "
-        }
-      ]
+      "biography": "Brühl, Jenny Gräfin von, geb. von Pourtalès (1795-1884), Tochter des Paul de Pourtalès in Neuchâtel, , seit 1814 zweite Ehefrau von Graf Karl B."
     },
     {
       "id": "36123",
@@ -1185,13 +1075,7 @@
           "type": "Geburtsort"
         }
       ],
-      "biography": "Brunst, Sophia Christiana Johanna von, geb. von Poseck, gesch. von Hendrich (1750-1802), Tochter des preußischen Majors August Johann von Poseck, seit 1776 verh. mit Franz Ludwig Albrecht von Hendrich, 1796 gesch., in zweiter Ehe verh. mit Arnold von B.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Hendrich, Sophie Christiane Johanna von, geb. von Poseck (1750-1802), seit 1776 Frau von Franz Ludwig Ernst Albrecht von Hendrich, 1796 geschieden, in zweiter Ehe verheiratet mit Arnold von Brunst "
-        }
-      ]
+      "biography": "Brunst, Sophia Christiana Johanna von, geb. von Poseck, gesch. von Hendrich (1750-1802), Tochter des preußischen Majors August Johann von Poseck, seit 1776 verh. mit Franz Ludwig Albrecht von Hendrich, 1796 gesch., in zweiter Ehe verh. mit Arnold von B."
     },
     {
       "id": "36134",
@@ -1233,13 +1117,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Buchholz (Buchholtz, Bucholtz, Bucholz), Johanna Maria, geb. Söllner (1748-1822), Weberin, Textilunternehmerin in Weimar, 1767-1772/73 Besitzerin der Hofapotheke, gründete 1781 Werkstätten zur Fabrikation von Feuerwehrschläuchen, Tochter des Weimarer Unteroffiziers und späteren Kammerfaktors sowie Betreibers der Ratsziegelei Johann Nikolaus Söllner, seit 1763 erste Ehefrau von Wilhelm Heinrich Sebastian B., 1774 gesch., Erzieherin ihrer Enkelin Karoline Ulrich, verh. Riemer",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Buchholz, Johanna Maria, geb. Söllner (1748–1822), Textilunternehmerin in Weimar, 1767 bis 1772/73 Besitzerin der Hofapotheke, gründete 1781 Werkstätten zur Fabrikation von Feuerwehrschläuchen"
-        }
-      ]
+      "biography": "Buchholz (Buchholtz, Bucholtz, Bucholz), Johanna Maria, geb. Söllner (1748-1822), Weberin, Textilunternehmerin in Weimar, 1767-1772/73 Besitzerin der Hofapotheke, gründete 1781 Werkstätten zur Fabrikation von Feuerwehrschläuchen, Tochter des Weimarer Unteroffiziers und späteren Kammerfaktors sowie Betreibers der Ratsziegelei Johann Nikolaus Söllner, seit 1763 erste Ehefrau von Wilhelm Heinrich Sebastian B., 1774 gesch., Erzieherin ihrer Enkelin Karoline Ulrich, verh. Riemer"
     },
     {
       "id": "36186",
@@ -1265,13 +1143,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Burgdorf (Burgdorff), #s+Minna#s- Charlotte (?_richtig: Wilhelmine Keck) (1780-vor 1826), Schauspielerin, 1798-1799 in Weimar, (?) um 1806 in Parchim, 1798 Geliebte (?_und um 1806 erste Ehefrau) von Louis B.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Burgdorf(f), #r#Minna#/r# Charlotte (geb. 1780), Schauspielerin, 1798-1799 in Weimar, angeblich verh. mit Louis B."
-        }
-      ]
+      "biography": "Burgdorf (Burgdorff), #s+Minna#s- Charlotte (?_richtig: Wilhelmine Keck) (1780-vor 1826), Schauspielerin, 1798-1799 in Weimar, (?) um 1806 in Parchim, 1798 Geliebte (?_und um 1806 erste Ehefrau) von Louis B."
     },
     {
       "id": "36539",
@@ -1301,13 +1173,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Dalton, Jane (1742-1817), englische Botanikerin, Gartengestalterin und Übersetzerin, Besitzerin des Landsitzes Albury bei Guildford in der Grafschaft Surrey, mit dem Ökonomen Robert Malthus verwandt, mit Jean Jacques Rousseau und dem Schriftsteller und Botaniker Jacques Henri Bernardin de Saint-Pierre bekannt",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Dalton, Jane (1742-1817), englische Botanikerin, Gartengestalterin und Übersetzerin, Besitzerin des Landsitzes Albury bei Guildford in der Grafschaft Surrey, Cousine und Mündel von Daniel Malthus, dem Vater des Ökonomen Thomas Robert Malthus"
-        }
-      ]
+      "biography": "Dalton, Jane (1742-1817), englische Botanikerin, Gartengestalterin und Übersetzerin, Besitzerin des Landsitzes Albury bei Guildford in der Grafschaft Surrey, mit dem Ökonomen Robert Malthus verwandt, mit Jean Jacques Rousseau und dem Schriftsteller und Botaniker Jacques Henri Bernardin de Saint-Pierre bekannt"
     },
     {
       "id": "36546",
@@ -1387,17 +1253,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Delph, Helene #s+Dorothea#s- (1728-1808), Geschäftsfrau in Heidelberg, um 1760-1800 mit ihrer Schwester Sibylle Elisabeth D. Inhaberin einer Seidenwarenhandlung, Tochter des Pfarrers Johann Heinrich D. in Schwalbach",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Delph, Helene Dorothea (1728-1808), Geschäftsinhaberin in Heidelberg, Freundin der Familien Goethe und Schönemann in Frankfurt a. M."
-        },
-        {
-          "source": "bug",
-          "text": "Delph, Helene Dorothea"
-        }
-      ]
+      "biography": "Delph, Helene #s+Dorothea#s- (1728-1808), Geschäftsfrau in Heidelberg, um 1760-1800 mit ihrer Schwester Sibylle Elisabeth D. Inhaberin einer Seidenwarenhandlung, Tochter des Pfarrers Johann Heinrich D. in Schwalbach"
     },
     {
       "id": "36658",
@@ -1486,17 +1342,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Egloffstein, #s+Karoline#s- Auguste Sophie Wilhelmine von und zu, geb. von und zu Aufseß (1768-1828), Tochter des Leutnants und Kammerjunkers Christoph Siegfried Heinrich von Aufseß in Aufseß und Stieftochter des später in Weimar lebenden ansbach-bayreuthischen Kammerherrn und Majors Karl August Willibald von Tettau, seit 1787 verh. mit dem späteren Oberkammerherrn Gottlob von E., 1815 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Egloffstein, #r#Caroline#/r# Auguste Sophie Wilhelmine von und zu, geb. von und zu Aufseß (1768-1828), Tochter des Leutnants und Kammerjunkers Christoph Siegfried Heinrich von Aufseß in Aufseß und Stieftochter des später in Weimar lebenden ansbach-bayreuthischen Kammerherrn und Majors Karl August Willibald von Tettau, seit 1787 verh. mit dem späteren Oberkammerherrn Gottlob von und zu E., 1815 verw."
-        },
-        {
-          "source": "bug",
-          "text": "Egloffstein, Caroline v., geb. v. Aufseß"
-        }
-      ]
+      "biography": "Egloffstein, #s+Karoline#s- Auguste Sophie Wilhelmine von und zu, geb. von und zu Aufseß (1768-1828), Tochter des Leutnants und Kammerjunkers Christoph Siegfried Heinrich von Aufseß in Aufseß und Stieftochter des später in Weimar lebenden ansbach-bayreuthischen Kammerherrn und Majors Karl August Willibald von Tettau, seit 1787 verh. mit dem späteren Oberkammerherrn Gottlob von E., 1815 verw."
     },
     {
       "id": "36886",
@@ -1595,13 +1441,7 @@
           "type": "Geburtsort"
         }
       ],
-      "biography": "Flies (Fließ), Eleonore (Lea), geb. Eskeles (1752-1812), Schwester des Wiener Bankiers Bernhard (von) Eskeles, verh. mit dem Berliner Kaufmann Meyer F., nach kurzer Zeit von ihm getrennt und in Wien lebend, 1782 aus Wien verbannt, 1802 Rückkehr nach Wien",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Flies, Eleonore, geb. Eskeles"
-        }
-      ]
+      "biography": "Flies (Fließ), Eleonore (Lea), geb. Eskeles (1752-1812), Schwester des Wiener Bankiers Bernhard (von) Eskeles, verh. mit dem Berliner Kaufmann Meyer F., nach kurzer Zeit von ihm getrennt und in Wien lebend, 1782 aus Wien verbannt, 1802 Rückkehr nach Wien"
     },
     {
       "id": "37150",
@@ -1620,23 +1460,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "43658",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Foucquet, Marie Louise Eugénie Marquise de, geb. Blondel d'Aubers (Aubert; Blondel genannt d'Aubers) (geb. 1759), Tochter des Juristen und Präsidenten des flandrischen Parlaments Eugène Blondel d'Aubers, seit 1777 verh. mit Marquis Jean Gabriel René François de F."
-        },
-        {
-          "source": "bug",
-          "text": "Foucquet, Marie Louise Eugénie Marquise de, geb. Blondel dite d'Aubers"
-        }
       ]
     },
     {
@@ -1649,13 +1472,7 @@
         "birth": "1748",
         "death": "1836"
       },
-      "biography": "Fritsch, Johanna Sophia von, geb. von Haeseler (1748-1836), Tochter des preußischen Regierungsrates August von Haeseler in Magdeburg, seit 1767 verh. mit Jakob Friedrich von F., Mutter von Karl Wilhelm von F.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Fritsch, Johanna Sophia von, geb. von Haeseler (1748-1836), seit 1767 Frau von Jacob Friedrich von Fritsch"
-        }
-      ]
+      "biography": "Fritsch, Johanna Sophia von, geb. von Haeseler (1748-1836), Tochter des preußischen Regierungsrates August von Haeseler in Magdeburg, seit 1767 verh. mit Jakob Friedrich von F., Mutter von Karl Wilhelm von F."
     },
     {
       "id": "37233",
@@ -1693,17 +1510,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Fritsch, Konstanze (seit 1790:) Gräfin von (1781-1858), 1806 Hofdame Maria Pawlownas von Sachsen-Weimar, 1828 Oberhofmeisterin, Tochter von (Graf) Karl Abraham von F.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Fritsch, Constanze (seit 1790:) Gräfin von (1781-1858), 1806 Hofdame Maria Pawlownas von Sachsen-Weimar, 1828 Oberhofmeisterin, Tochter von (Graf) Karl Abraham von F."
-        },
-        {
-          "source": "bug",
-          "text": "Fritsch, Constanze Gräfin v."
-        }
-      ]
+      "biography": "Fritsch, Konstanze (seit 1790:) Gräfin von (1781-1858), 1806 Hofdame Maria Pawlownas von Sachsen-Weimar, 1828 Oberhofmeisterin, Tochter von (Graf) Karl Abraham von F."
     },
     {
       "id": "37253",
@@ -1714,13 +1521,7 @@
       "dates": {
         "birth": "1789"
       },
-      "biography": "Füchsel, Johanna, geb. Im Baumgarten (geb. 1789), Tochter von Peter und Johanna Friederike Luise Im Baumgarten, Patenkind Goethes, seit 1811 verh. mit dem Ilmenauer Fleischermeister und späteren Pächter des Kurhauses in Berka an der Ilm Johann Michael  F. (gest. 1856)",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "im Baumgarten, Johanna (geb. 1789), Tochter von Peter und Johanna Friederike Louise im Baumgarten, Patentochter Goethes, seit 1811 verh. mit dem Ilmenauer Fleischermeister und späteren Pächter des Kurhauses in Berka an der Ilm Johann Michael  Füchsel"
-        }
-      ]
+      "biography": "Füchsel, Johanna, geb. Im Baumgarten (geb. 1789), Tochter von Peter und Johanna Friederike Luise Im Baumgarten, Patenkind Goethes, seit 1811 verh. mit dem Ilmenauer Fleischermeister und späteren Pächter des Kurhauses in Berka an der Ilm Johann Michael  F. (gest. 1856)"
     },
     {
       "id": "37365",
@@ -1901,23 +1702,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43805",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Gore, Emilie (Emily) (1755-1832), seit 1785 Freundin des Herzogs Carl August von Sachsen-Weimar und\nEisenach, seit 1807 abwechselnd in Weimar und in Italien lebend, Tochter von Charles und Mary Gore"
-        },
-        {
-          "source": "bug",
-          "text": "Gore, Emilie"
-        }
       ]
     },
     {
@@ -1956,13 +1740,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Haacke (Haake, Hacke, Hake), Karolina Philippina von, geb. von Rathsamhausen (1754-1830), Hofdame in Karlsruhe, seit 1790 verh. mit dem Obristen Friedrich Karl von H.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Rathsamhausen, Karolina Philippina von (1754-1830), Hofdame in Karlsruhe, seit 1790 verh. mit dem Obristen Friedrich Karl von Haacke (Haake, Hacke, Hake)"
-        }
-      ]
+      "biography": "Haacke (Haake, Hacke, Hake), Karolina Philippina von, geb. von Rathsamhausen (1754-1830), Hofdame in Karlsruhe, seit 1790 verh. mit dem Obristen Friedrich Karl von H."
     },
     {
       "id": "37802",
@@ -1993,13 +1771,7 @@
         "death": "1816",
         "birth": "1749"
       },
-      "biography": "Herda zu Brandenburg, Friederike #s+Bernhardine#s- #s+Sophie#s- Dorothea Elisabethe von, geb. von Holleben (1749-1816),  Tochter des späteren schwarzburg-rudolstädtischen Oberjägermeisters #s+Anton#s- Adam Ludwig von Holleben, seit 1772 verh. mit Karl Christian von H.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Herda zu Brandenburg, Friederike #r#Bernardine#/r# Sophie Dorothea Elisabethe von, geb. von Holleben (1749-1816), seit 1772 Frau von Carl Christian von Herda zu Brandenburg"
-        }
-      ]
+      "biography": "Herda zu Brandenburg, Friederike #s+Bernhardine#s- #s+Sophie#s- Dorothea Elisabethe von, geb. von Holleben (1749-1816),  Tochter des späteren schwarzburg-rudolstädtischen Oberjägermeisters #s+Anton#s- Adam Ludwig von Holleben, seit 1772 verh. mit Karl Christian von H."
     },
     {
       "id": "38046",
@@ -2029,13 +1801,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Heußler (Häußler), Rosalia, geb. Meyer (1764-nach 1821), Schauspielerin, verh. mit dem Schauspieler und Prinzipal Franz Friedrich Häußler, seit 1792 von ihm getrennt lebend und 1793 verw., seit 1799 verh. mit dem Schauspieler und Prinzipal sowie Sprachlehrer Franz Heußer (eigentl. #s+Wilhelm#s- Franz Raphael Melchior de Baillou), schon 1792 mit ihm in Ansbach, 1793 in Berlin, 1795-1797 in Odense, dann in Hamburg, Bremen, Hannover und um 1799 in Leipzig",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Heußler, Rosalia, geb. Meyer (1764-nach 1821), Schauspielerin"
-        }
-      ]
+      "biography": "Heußler (Häußler), Rosalia, geb. Meyer (1764-nach 1821), Schauspielerin, verh. mit dem Schauspieler und Prinzipal Franz Friedrich Häußler, seit 1792 von ihm getrennt lebend und 1793 verw., seit 1799 verh. mit dem Schauspieler und Prinzipal sowie Sprachlehrer Franz Heußer (eigentl. #s+Wilhelm#s- Franz Raphael Melchior de Baillou), schon 1792 mit ihm in Ansbach, 1793 in Berlin, 1795-1797 in Odense, dann in Hamburg, Bremen, Hannover und um 1799 in Leipzig"
     },
     {
       "id": "38170",
@@ -2053,13 +1819,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Hofmann, Johanne Marie, geb. Canzler (1754-1803), Tochter von Gottfried Ernst Canzler in Niederroßla, seit 1772 zweite Ehefrau des Gutspächters Johann Kaspar H. in Oberroßla, 1797 verw. und bis 1798 selbst Pächterin des Freiguts",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Hofmann, Johanne Marie, geb. Canzler (1754-1803), aus Niederroßla, seit 1772 zweite Ehefrau des Gutspächters Johann Caspar H. in Oberroßla, 1797 verw. und bis 1798 selbst Pächterin des Freigutes"
-        }
-      ]
+      "biography": "Hofmann, Johanne Marie, geb. Canzler (1754-1803), Tochter von Gottfried Ernst Canzler in Niederroßla, seit 1772 zweite Ehefrau des Gutspächters Johann Kaspar H. in Oberroßla, 1797 verw. und bis 1798 selbst Pächterin des Freiguts"
     },
     {
       "id": "38302",
@@ -2132,27 +1892,6 @@
           "type_id": "4040",
           "reciprocal_type": "hat Großelternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "43352",
-          "type": "hat Enkel",
-          "agrelon_id": "4040"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Karsch, Anna Louisa, geb. Dürbach, geschiedene Hiersekorn (#k#gen.#/k# die Karschin) (1722-1791), Dichterin, von Ramler, Sulzer, Gleim u. a. gefördert, seit 1761 in Berlin, seit 1786 vom preußischen König unterstützt"
-        },
-        {
-          "source": "bug",
-          "text": "Karsch, Anna Louisa, geb. Dürbach, gesch. Hirsekorn"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Karsch (Karschin), Anna Louisa, geb. Dürbach, gesch. Hirsekorn (1722–1791), Schriftstellerin, seit 1762 in Berlin:"
-        }
       ]
     },
     {
@@ -2201,13 +1940,7 @@
         "death": "1861",
         "birth": "1786"
       },
-      "biography": "Körte, Friederike #s+Wilhelmine#s-, geb. Wolf (1786-1861), Tochter von Friedrich August Wolf, seit 1809 verh. mit Wilhelm K.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Wolf, Wilhelmine (1774–1861), Tochter von Friedrich August Wolf"
-        }
-      ]
+      "biography": "Körte, Friederike #s+Wilhelmine#s-, geb. Wolf (1786-1861), Tochter von Friedrich August Wolf, seit 1809 verh. mit Wilhelm K."
     },
     {
       "id": "38752",
@@ -2326,21 +2059,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Mara, Gertrud Elisabeth, geb. Schme(h)ling (1749-1833), Sängerin, 1765 Konzertsängerin in Leipzig, 1767 Operndebüt in Dresden, 1771-1779/80 an der Berliner Hofoper, 1782-1784 in Paris, 1784-1801/02 vorwiegend in London, 1805-1812 in Moskau, später Gesangslehrerin in Reval, Tochter des Musikers Johann Schme(h)ling in Kassel, ?_um 1775-?_1795/99 verh. mit dem Violoncellisten Johann Baptist M., (?) später verh. mit dem Flötisten Charles Haiman Florio",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schmeling (Schmehling), Gertrud #r#Elisabeth#/r# (1749-1833), Konzertsängerin, von 1765 bis 1771 Gesangsschülerin \nJohann Adam Hillers in Leipzig, von 1771 bis 1780 an der Königlichen Oper in Berlin, 1780 Frau des Leipziger Cellisten Johann Mara (1744-1808), danach Konzertreisen durch Europa, von 1784 bis 1802 vorwiegend in London, danach in Frankreich, 1803 in Deutschland, von 1805 bis 1812 Gesangslehrerin in Moskau, 1812 Gesanglehrerin in Reval"
-        },
-        {
-          "source": "bug",
-          "text": "Mara, Gertrud Elisabeth, geb. Schmeling"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Mara, Gertrud Elisabeth, geb. Schmeling (1749–1833), Sängerin, 1766 in Leipzig, 1771–1780 in Berlin engagiert "
-        }
-      ]
+      "biography": "Mara, Gertrud Elisabeth, geb. Schme(h)ling (1749-1833), Sängerin, 1765 Konzertsängerin in Leipzig, 1767 Operndebüt in Dresden, 1771-1779/80 an der Berliner Hofoper, 1782-1784 in Paris, 1784-1801/02 vorwiegend in London, 1805-1812 in Moskau, später Gesangslehrerin in Reval, Tochter des Musikers Johann Schme(h)ling in Kassel, ?_um 1775-?_1795/99 verh. mit dem Violoncellisten Johann Baptist M., (?) später verh. mit dem Flötisten Charles Haiman Florio"
     },
     {
       "id": "39428",
@@ -2436,17 +2155,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Werndt, Emilia #s+Franziska#s- #s+Maximiliana#s-, geb. Matiegzeck (Maticzeck) (um 1775-nach 1825), Sängerin und Schauspielerin, 1793 Hof- und Kirchensängerin in Passau, 1794-1801 in Weimar, dann in Hamburg, Kassel, Altenburg und Naumburg, 1803-1806 in Leipzig und Dresden, später in Bern, Mainz, um 1819-1824 in Hannover, 1825 Rückkehr nach Bayern, ältere Tochter des Hofmusikers Martin Matiegzeck in Passau, seit 1805 verh. mit Julius Wilhelm Andreas W.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Matiegzeck (Maticzeck), Maria Anna (auch: Franziska Maximiliane) (1778–nach 1824), von 1794 bis 1801 Sängerin und Schauspielerin in Weimar"
-        },
-        {
-          "source": "bug",
-          "text": "Matiegzeck, Emilia /Franziska/ /Maximiliana/"
-        }
-      ]
+      "biography": "Werndt, Emilia #s+Franziska#s- #s+Maximiliana#s-, geb. Matiegzeck (Maticzeck) (um 1775-nach 1825), Sängerin und Schauspielerin, 1793 Hof- und Kirchensängerin in Passau, 1794-1801 in Weimar, dann in Hamburg, Kassel, Altenburg und Naumburg, 1803-1806 in Leipzig und Dresden, später in Bern, Mainz, um 1819-1824 in Hannover, 1825 Rückkehr nach Bayern, ältere Tochter des Hofmusikers Martin Matiegzeck in Passau, seit 1805 verh. mit Julius Wilhelm Andreas W."
     },
     {
       "id": "39495",
@@ -2497,13 +2206,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Mazelet (Huc genannt M., Huc-Mazelet), #s+Jeanne#s- Marie Ja(c)queline Antoinette (auch: Jeannette, Jeannette Ilsa, Augusta) (1765-1852), Schweizer Pädagogin, 1790-1804 in Pawlowsk bei St. Petersburg Erzieherin und Hauslehrerin der späteren Großherzogin Maria Pawlowna von Sachsen-Weimar, setzte sich 1813 mit Frédéric César de La Harpe für den Erhalt der Unabhängigkeit der Schweiz ein, später längere Zeit in Weimar lebend, Tochter des Arztes und Apothekers Jaques Huc genannt M. in Morges im Kanton Waadt",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Mazelet, Jeanette Huc-"
-        }
-      ]
+      "biography": "Mazelet (Huc genannt M., Huc-Mazelet), #s+Jeanne#s- Marie Ja(c)queline Antoinette (auch: Jeannette, Jeannette Ilsa, Augusta) (1765-1852), Schweizer Pädagogin, 1790-1804 in Pawlowsk bei St. Petersburg Erzieherin und Hauslehrerin der späteren Großherzogin Maria Pawlowna von Sachsen-Weimar, setzte sich 1813 mit Frédéric César de La Harpe für den Erhalt der Unabhängigkeit der Schweiz ein, später längere Zeit in Weimar lebend, Tochter des Arztes und Apothekers Jaques Huc genannt M. in Morges im Kanton Waadt"
     },
     {
       "id": "39496",
@@ -2582,13 +2285,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Morelli, #s+Anna#s- Maria (Nannette), geb. von Wlodoff (auch: Gierzschig von Blodorff) (um 1771-1804), Schauspielerin, Sängerin, um 1798 in Stuttgart, dann in Frankfurt am Main, 1801-1803 in Weimar, zuletzt in Dresden, verh. (?_zweite Ehefrau) mit dem Ballettmeister #s+Cosmas#s- (Cosimo) Damianus M.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Morelli (Morelly), Nannette (Annette), geb. (?) von Wlodoff, Schauspielerin, Sängerin, 1801-1803 in Weimar, vorher in Frankfurt am Main, verheiratet mit Cosimo Morelli"
-        }
-      ]
+      "biography": "Morelli, #s+Anna#s- Maria (Nannette), geb. von Wlodoff (auch: Gierzschig von Blodorff) (um 1771-1804), Schauspielerin, Sängerin, um 1798 in Stuttgart, dann in Frankfurt am Main, 1801-1803 in Weimar, zuletzt in Dresden, verh. (?_zweite Ehefrau) mit dem Ballettmeister #s+Cosmas#s- (Cosimo) Damianus M."
     },
     {
       "id": "39831",
@@ -2682,13 +2379,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "O'Donell von Tyrconell, Josephine Gräfin, geb. Gräfin Gaisruck (1779-1833), zweite Ehefrau des österreichischen Hofkammerpräsidenten Graf Joseph O., 1810 verw., Hofdame der Kaiserin Maria Ludovika",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "O'Donell von Tyrconell, Josephine Gräfin, geb. Gräfin Gaisruck (1779-1833), zweite Ehefrau des österreichischen Hofkammerpräsidenten Graf Joseph O'Donell, 1810 verw., Hofdame der Kaiserin Maria Ludovika"
-        }
-      ]
+      "biography": "O'Donell von Tyrconell, Josephine Gräfin, geb. Gräfin Gaisruck (1779-1833), zweite Ehefrau des österreichischen Hofkammerpräsidenten Graf Joseph O., 1810 verw., Hofdame der Kaiserin Maria Ludovika"
     },
     {
       "id": "40186",
@@ -2762,13 +2453,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Pereira-Arnstein, Henriette (Judith) (seit 1810/12:) von, geb. (von) Arnstein (1780-1859), Mäzenatin in Wien, Tochter von Nathan Adam und Fanny (von) Arnstein, seit 1802 verh. mit dem Bankier Heinrich (von) P.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Arnstein, Henriette (Judith) v."
-        }
-      ]
+      "biography": "Pereira-Arnstein, Henriette (Judith) (seit 1810/12:) von, geb. (von) Arnstein (1780-1859), Mäzenatin in Wien, Tochter von Nathan Adam und Fanny (von) Arnstein, seit 1802 verh. mit dem Bankier Heinrich (von) P."
     },
     {
       "id": "40305",
@@ -2905,19 +2590,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "44919",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Reitzenstein, Eleonore Luise von, geb. von Plotha (1743/48–1810), Hofdame in Weimar"
-        }
       ]
     },
     {
@@ -2944,17 +2616,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Riedesel (R. zu Eisenbach), #s+Friederike#s-  Karoline Susanne Wilhelmine von (1751-1820), Tochter des hessen-kasselschen Geheimen Rats, Obristwachtmeisters und Erbmarschalls in Hessen Friedrich Georg von R., 1781-1809 Hofdame der Herzogin Luise von Sachsen-Weimar",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Riedesel, Friederike von (1751-1820), von 1781 bis 1809 Hofdame der Herzogin #r#Louise#/r# Auguste von Sachsen-Weimar und Eisenach"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Riedesel, Friederike von (1751–1820), seit 1781 Hofdame im Dienst der Herzogin Louise"
-        }
-      ]
+      "biography": "Riedesel (R. zu Eisenbach), #s+Friederike#s-  Karoline Susanne Wilhelmine von (1751-1820), Tochter des hessen-kasselschen Geheimen Rats, Obristwachtmeisters und Erbmarschalls in Hessen Friedrich Georg von R., 1781-1809 Hofdame der Herzogin Luise von Sachsen-Weimar"
     },
     {
       "id": "40812",
@@ -3003,13 +2665,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Roose, Elisabeth (Betty), geb. Eckardt (genannt Koch) (1778-1808), Schauspielerin, u._a. in Mannheim und Hannover, seit 1798 in Wien, Tochter des Schauspielers und Theaterdirektors Siegfried Gotthelf Koch (eigentl. Eckardt), seit 1798 in Wien, seit 1799 verh. mit Friedrich R.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Koch, Elisabeth (#r#Bettty#/r#) (1778–1808), Schauspielerin, u.a. in Mannheim und Hannover, seit 1798 in Wien, 1799 verheiratet mit Friedrich Roose, Tochter von Siegfried Gotthilf Koch"
-        }
-      ]
+      "biography": "Roose, Elisabeth (Betty), geb. Eckardt (genannt Koch) (1778-1808), Schauspielerin, u._a. in Mannheim und Hannover, seit 1798 in Wien, Tochter des Schauspielers und Theaterdirektors Siegfried Gotthelf Koch (eigentl. Eckardt), seit 1798 in Wien, seit 1799 verh. mit Friedrich R."
     },
     {
       "id": "40923",
@@ -3051,23 +2707,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "40967",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Württemberg, #r#Sophie#/r# #r#Dorothea#/r# Auguste Louise, Tochter von Friedrich Eugen von Württemberg #k#siehe#/k# Russland, Maria Fjodorowna von"
-        },
-        {
-          "source": "bug",
-          "text": "Rußland, Maria Feodorowna Kaiserin von, geb. Prinzessin Sophie Dorothea Augusta Luise von Württemberg"
         }
       ]
     },
@@ -3150,21 +2789,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Sachsen-Weimar und Eisenach, Anna Amalia Herzogin von, geb. Prinzessin von Braunschweig-Wolfenbüttel (1739-1807), seit 1756 verh. mit Herzog Ernst August_II. Konstantin, 1758 verw. und bis 1775 Regentin, Mutter von (Groß-)Herzog Karl August",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Sachsen-Weimar und Eisenach, Anna Amalia Herzogin von, geb. Prinzessin von Braunschweig und Lüneburg-Wolfenbüttel (1739-1807), seit 1756 verheiratet mit Herzog Ernst August II. Constantin, von 1758 bis 1775 obervormundschaftliche Regentin, Mutter von Carl August von Sachsen-Weimar und Eisenach"
-        },
-        {
-          "source": "bug",
-          "text": "Sachsen-Weimar-Eisenach, Anna Amalia Herzogin von, geb. Prinzessin von Braunschweig und Lüneburg-Wolfenbüttel"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Sachsen-Weimar-Eisenach, Anna Amalia (Am., Amalie) Herzogin von, geb. Prinzessin von Braunschweig-Lüneburg-Wolfenbüttel (1739–1807), seit 1756 verh. mit Ernst August II. Constantin Herzog von S.-W.-E., 1758 verw., Regentin 1758–1775"
-        }
-      ]
+      "biography": "Sachsen-Weimar und Eisenach, Anna Amalia Herzogin von, geb. Prinzessin von Braunschweig-Wolfenbüttel (1739-1807), seit 1756 verh. mit Herzog Ernst August_II. Konstantin, 1758 verw. und bis 1775 Regentin, Mutter von (Groß-)Herzog Karl August"
     },
     {
       "id": "40967",
@@ -3237,28 +2862,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "40923",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "45051",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Sachsen-Weimar und Eisenach, Maria Pawlowna von, geb. Großfürstin von Russland (1786-1859), Schwester von Zar Alexander I. von Russland, seit 1804 Frau von Erbprinz Carl Friedrich"
-        },
-        {
-          "source": "bug",
-          "text": "Sachsen-Weimar und Eisenach, Maria Pawlowna von, geb. Großfürstin von Russland "
-        }
       ]
     },
     {
@@ -3286,13 +2889,6 @@
           "type": "hat Pate",
           "type_id": "4080",
           "reciprocal_type": "hat Patenkind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43779",
-          "type": "hat Pate",
-          "agrelon_id": "4080"
         }
       ]
     },
@@ -3448,13 +3044,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43260",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -3488,13 +3077,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Schütz, Anna Henriette, geb. Danovius (1749-1822), Tochter des Pfarrers Ludwig Danovius in Thorn, seit 1778 verh. mit Christian Gottfried S., Schwester des Jenaer Theologieprofessors Ernst Jakob Danovius",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schütz, Anna Henriette, geb. Danovius (1751-1823), Frau von Christian Gottfried S. "
-        }
-      ]
+      "biography": "Schütz, Anna Henriette, geb. Danovius (1749-1822), Tochter des Pfarrers Ludwig Danovius in Thorn, seit 1778 verh. mit Christian Gottfried S., Schwester des Jenaer Theologieprofessors Ernst Jakob Danovius"
     },
     {
       "id": "41387",
@@ -3540,17 +3123,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Schultheß, Anna #s+Barbara#s- (Bäbe), geb. Wolf (1745-1818), seit 1763 verh. mit dem Seidenfabrikanten und Hauptmann David S. in Zürich, 1778 verw., mit Johann Kaspar Lavater und seit 1775 mit Goethe befreundet",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schultheß, Anna Barbara (#r#Bäbe#/r#), geb. Wolf (1745-1818),  seit 1763 Frau des Züricher Seidenfabrikanten und Hauptmanns David Schultheß, 1778 Witwe, gehörte zum Freundeskreis von Johann Caspar Lavater, seit 1775 Freundin Lavaters und Goethes in Zürich"
-        },
-        {
-          "source": "bug",
-          "text": "Schultheß, Anna /Barbara/, geb. Wolf"
-        }
-      ]
+      "biography": "Schultheß, Anna #s+Barbara#s- (Bäbe), geb. Wolf (1745-1818), seit 1763 verh. mit dem Seidenfabrikanten und Hauptmann David S. in Zürich, 1778 verw., mit Johann Kaspar Lavater und seit 1775 mit Goethe befreundet"
     },
     {
       "id": "41414",
@@ -3572,13 +3145,7 @@
         "death": "1822",
         "birth": "1752"
       },
-      "biography": "Schumacher, Sophie Hedwig Rebekka, geb. Weddi (Weddy), verw. Büsching (1752-1822), Tochter des Predigers Johann Arnold Weddi in Wardenberg im Oldenburgischen, in erster Ehe verh. mit dem Hofrat Johann Wilhelm Büsching in Oldenburg, 1776 verw., seit 1779 in zweiter Ehe verh. mit dem dänischen Konferenzrat und Justizamtmann Andreas S. in Bramstedt, 1790 verw., seitdem in Altona, Mutter von Heinrich Christian S., Schwägerin des Geographen Anton Friedrich Büsching",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Schumacher, Sophie Hedwig R., geb. Waddy, verw. Büsching"
-        }
-      ]
+      "biography": "Schumacher, Sophie Hedwig Rebekka, geb. Weddi (Weddy), verw. Büsching (1752-1822), Tochter des Predigers Johann Arnold Weddi in Wardenberg im Oldenburgischen, in erster Ehe verh. mit dem Hofrat Johann Wilhelm Büsching in Oldenburg, 1776 verw., seit 1779 in zweiter Ehe verh. mit dem dänischen Konferenzrat und Justizamtmann Andreas S. in Bramstedt, 1790 verw., seitdem in Altona, Mutter von Heinrich Christian S., Schwägerin des Geographen Anton Friedrich Büsching"
     },
     {
       "id": "41571",
@@ -3592,13 +3159,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Simoni, Karoline (e._1802), Schauspielerin, Bewerberin um ein Engagement am Hoftheater in Weimar",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Simoni, Caroline"
-        }
-      ]
+      "biography": "Simoni, Karoline (e._1802), Schauspielerin, Bewerberin um ein Engagement am Hoftheater in Weimar"
     },
     {
       "id": "41693",
@@ -3632,19 +3193,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45623",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Staff, Amalie #r#Friederike#/r# von, geb. von Voß (1764-1796), seit 1788 verh. mit dem Kammerherrn und Oberforstmeister in Weimar und Eisenach, Christian Friedrich August von Staff, Enkelin von Herzog Ernst August I. von Sachsen-Weimar und Eisenach und Schwester von Amalie von Voß"
-        }
       ]
     },
     {
@@ -3665,13 +3213,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Staupitz, Johanna #s+Karoline#s- Augusta von (1765-1838), Tochter von Karl Johann Friedrich von Staupitz zu Burkau in der Lausitz, seit 1789 zweite Ehefrau des sächsischen Kammer- und Jagdjunkers sowie Oberforst- und Wildmeisters Hans Damm von der Pforte  in Weißenfels, seit 1793/94 in Liebenwerda",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Staupitz, Johanna /Caroline/ Augusta v."
-        }
-      ]
+      "biography": "Staupitz, Johanna #s+Karoline#s- Augusta von (1765-1838), Tochter von Karl Johann Friedrich von Staupitz zu Burkau in der Lausitz, seit 1789 zweite Ehefrau des sächsischen Kammer- und Jagdjunkers sowie Oberforst- und Wildmeisters Hans Damm von der Pforte  in Weißenfels, seit 1793/94 in Liebenwerda"
     },
     {
       "id": "41853",
@@ -3836,17 +3378,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Varnhagen von Ense, Antonie Friederike, geb. Rahel Levin, (seit 1810 genannt) Robert (1771-1833), Schriftstellerin, Salonière in Berlin, seit 1814 verh. mit Karl August V., Schwester von Ludwig Robert",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Varnhagen von Ense, Antonie Friederike, geb. Rahel Levin (1771–1833), Schriftstellerin, Salonnière in Berlin   "
-        },
-        {
-          "source": "bug",
-          "text": "Levin, Rahel"
-        }
-      ]
+      "biography": "Varnhagen von Ense, Antonie Friederike, geb. Rahel Levin, (seit 1810 genannt) Robert (1771-1833), Schriftstellerin, Salonière in Berlin, seit 1814 verh. mit Karl August V., Schwester von Ludwig Robert"
     },
     {
       "id": "42254",
@@ -3902,17 +3434,7 @@
         "death": "1831",
         "birth": "1751"
       },
-      "biography": "Vogelsang, Adolfine Amalie #s+Henriette#s- von, geb. von Vogelsang (1751-1831), Tochter des in holländischen Diensten stehenden Obersten Friedrich Wilhelm von V., verh. mit dem  Offizier und Kriegsrat in Halberstadt Friedrich #s+Ernst#s- von V., Mutter von Wilhelm von V.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Vogelsang, H. von, Mutter von Wilhelm von Vogelsang"
-        },
-        {
-          "source": "bug",
-          "text": "Vogelsang, H. v., geb. v. Vogelsang"
-        }
-      ]
+      "biography": "Vogelsang, Adolfine Amalie #s+Henriette#s- von, geb. von Vogelsang (1751-1831), Tochter des in holländischen Diensten stehenden Obersten Friedrich Wilhelm von V., verh. mit dem  Offizier und Kriegsrat in Halberstadt Friedrich #s+Ernst#s- von V., Mutter von Wilhelm von V."
     },
     {
       "id": "42398",
@@ -4051,13 +3573,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Weißmantel (Weismantel; Schneider genannt W.), Magdalena Sophia, geb. Heim (1751-1837), Tochter des Kaufmanns Georg Matthäus Heim (Heym) in Erfurt, seit 1771 verh. mit dem dortigen Arzt und Blumenzüchter Johann Nikolaus W., 1790 verw. ",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Weißmantel (Weismantel), Magdalena Sophia, geb. Heim (1751–1837), seit 1771 Frau des Arztes und Blumenzüchters Johann Nicolaus Weißmantel in Erfurt, 1790 verw."
-        }
-      ]
+      "biography": "Weißmantel (Weismantel; Schneider genannt W.), Magdalena Sophia, geb. Heim (1751-1837), Tochter des Kaufmanns Georg Matthäus Heim (Heym) in Erfurt, seit 1771 verh. mit dem dortigen Arzt und Blumenzüchter Johann Nikolaus W., 1790 verw. "
     },
     {
       "id": "42797",
@@ -4273,19 +3789,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45391",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Ahlefeld(t), #r#Charlotte#/r# Elisabeth Sophie Luise Wilhelmine von, geb. von Seebach (1777-1849), Schriftstellerin, seit 1798 Frau des schleswigschen Rittergutsbesitzers Johann Rudolph von Ahlefeld(t), seit 1821 in Weimar"
-        }
       ]
     },
     {
@@ -4317,13 +3820,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Albrecht, Johanna #s+Sophie#s- Dorothea, geb. Baumer (1757-1840), Schauspielerin, Schriftstellerin, Tochter des Mediziners Johann #s+Paul#s- Baumer in Erfurt, seit 1772 verh. mit #s+Johann#s- Friedrich Ernst A., 1796/98 gesch., in zweiter Ehe verh. mit Ferdinand von Hahn, 1806 verw. und erneut verh. mit Johann A., 1814 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Albrecht, Johanna Sophie Dorothea, geb.Baumer (1757–1840), Schauspielerin und Schriftstellerin, seit 1772 Frau von Johann Friedrich Ernst A., 1796/98 gesch., in zweiter Ehe verh. mit Ferdinand von Hahn, 1806 verw. und erneut Frau von Johann Friedrich Ernst A., Bekannte Friedrich Schillers und Christian Gottfried Körners"
-        }
-      ]
+      "biography": "Albrecht, Johanna #s+Sophie#s- Dorothea, geb. Baumer (1757-1840), Schauspielerin, Schriftstellerin, Tochter des Mediziners Johann #s+Paul#s- Baumer in Erfurt, seit 1772 verh. mit #s+Johann#s- Friedrich Ernst A., 1796/98 gesch., in zweiter Ehe verh. mit Ferdinand von Hahn, 1806 verw. und erneut verh. mit Johann A., 1814 verw."
     },
     {
       "id": "43000",
@@ -4381,27 +3878,6 @@
           "type_id": "4020",
           "reciprocal_type": "hat Enkel"
         }
-      ],
-      "relations": [
-        {
-          "target": "44355",
-          "type": "hat Großelternteil",
-          "agrelon_id": "4020"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Arnim, Elisabeth #r#(Bettine)#/r# Catharina Ludovica Magdalena von, geb. Brentano (1785-1859), Schriftstellerin, seit 1811 verheiratet mit Achim von Arnim, Tochter aus der zweiten Ehe Peter Anton Brentanos mit Maximiliane La Roche, Enkeltochter Sophie von La Roches"
-        },
-        {
-          "source": "bug",
-          "text": "Arnim, Elisabeth (/Bettina/, /Bettine/) Catharina Ludovica Magdalena v., geb. Brentano"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Arnim, Anna Elisabeth (gen. Bettina, Bettine)  Katharina Ludovica Magdalena von, geb. Brentano (1785-1859), Schwester von Georg und Clemens Brentano, Halbschwester von Franz Brentano, Schriftstellerin, bis\n1810 u. a. in Frankfurt am Main, Kassel, München und Landshut, seit 1811 verh. mit Ludwig Achim von Arnim\n"
-        }
       ]
     },
     {
@@ -4422,13 +3898,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Bachoff von Echt, Friederike #s+Karoline#s- Gräfin (1765-1796), Tochter des Grafen Johann Friedrich und der Gräfin Henriette #s+Karoline#s- von B., seit 1782 mit ihrer Mutter und zwei Schwestern in Weimar --- (RA 1/765 statt: Bachoff von Echt, Karoline Gräfin von, jetzt: Bachoff von Echt, Friederike Karoline Gräfin von) ",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Bachoff von Echt, Friederike #s#Karoline#/r# Gräfin (1765-1796), Tochter des Grafen Johann Friedrich und der Gräfin Henriette Karoline von B., seit 1782 mit ihrer Mutter und zwei Schwestern in Weimar "
-        }
-      ]
+      "biography": "Bachoff von Echt, Friederike #s+Karoline#s- Gräfin (1765-1796), Tochter des Grafen Johann Friedrich und der Gräfin Henriette #s+Karoline#s- von B., seit 1782 mit ihrer Mutter und zwei Schwestern in Weimar --- (RA 1/765 statt: Bachoff von Echt, Karoline Gräfin von, jetzt: Bachoff von Echt, Friederike Karoline Gräfin von) "
     },
     {
       "id": "43026",
@@ -4454,13 +3924,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Bachoff von Echt, Henriette #s+Karoline#s- (Johanne Karoline Henriette) Gräfin, geb. Gräfin von Ronow und Bieberstein (1738-1808), Tochter des kursächsischen Militärs Graf Johann Wilhelm Ronow von Bieberstein, seit 1756 verh. mit dem dänischen Gesandten in Wien Graf Johann Friedrich B., 1781 verw., seit 1782 mit drei Töchtern in Weimar --- (RA 1/765 statt: Bachoff von Echt, Henriette Karoline Gräfin von, jetzt: Bachoff von Echt, Friederike Karoline Gräfin von, statt: ihre Mutter, jetzt: ihre Mutter [Gräfin K. Bachoff]) ",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Bachoff von Echt, Henriette #r#Karoline#/r# (Johanne Karoline Henriette) Gräfin, geb. Gräfin von Ronow und Bieberstein (1738-1808), Tochter des kursächsischen Militärs Graf Johann Wilhelm Ronow von Bieberstein, seit 1756 Frau des dänischen Gesandten in Wien Graf Johann Friedrich Bachoff von Echt, 1781 Witwe, seit 1782 mit drei Töchtern in Weimar "
-        }
-      ]
+      "biography": "Bachoff von Echt, Henriette #s+Karoline#s- (Johanne Karoline Henriette) Gräfin, geb. Gräfin von Ronow und Bieberstein (1738-1808), Tochter des kursächsischen Militärs Graf Johann Wilhelm Ronow von Bieberstein, seit 1756 verh. mit dem dänischen Gesandten in Wien Graf Johann Friedrich B., 1781 verw., seit 1782 mit drei Töchtern in Weimar --- (RA 1/765 statt: Bachoff von Echt, Henriette Karoline Gräfin von, jetzt: Bachoff von Echt, Friederike Karoline Gräfin von, statt: ihre Mutter, jetzt: ihre Mutter [Gräfin K. Bachoff]) "
     },
     {
       "id": "43039",
@@ -4581,13 +4045,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Bardua, Marie #s+Karoline#s- (1781-1864), Malerin, Salonière, 1805-1807 Ausbildung in Weimar und 1808-1811 in Dresden, 1819-1827 in Berlin, 1829-1832 in Frankfurt am Main, dann wieder in Berlin, seit 1852 in Ballenstedt, Tochter des anhalt-bernburgischen Kammerdieners Johann Adam B. in Ballenstedt, Schwester der Sängerin Wilhelmine B.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Bardua, Marie /Caroline/"
-        }
-      ]
+      "biography": "Bardua, Marie #s+Karoline#s- (1781-1864), Malerin, Salonière, 1805-1807 Ausbildung in Weimar und 1808-1811 in Dresden, 1819-1827 in Berlin, 1829-1832 in Frankfurt am Main, dann wieder in Berlin, seit 1852 in Ballenstedt, Tochter des anhalt-bernburgischen Kammerdieners Johann Adam B. in Ballenstedt, Schwester der Sängerin Wilhelmine B."
     },
     {
       "id": "43051",
@@ -4664,21 +4122,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Batsch, Sophie Karolina #s+Amalie#s-, geb. Pfündel (1765-1852), Erzieherin, Tochter des Kauf- und Handelsherrn Johann Jakob Pfündel in Jena, seit 1787 verh. mit Karl B., 1802 verw., 1805 Haushälterin  (Femme de charge) und 1813 Kammerfrau am erbprinzlichen Hof in Weimar,  bis 1824 eine der Erzieherinnen des Erbprinzen Karl Alexander und der Prinzessin Maria sowie der spätern deutschen Kaiserin Augusta, lebenslang Vertraute der (Erb-)Großherzogin Maria Pawlowna von Sachsen-Weimar und der Prinzessinnen",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Batsch, Sophie Carolina #k#Amalie#/k#, geb. Pfündel (1765-1852), Tochter des Kauf- und Handelsherrn Johann Jakob Pfündel in Jena, von 1805 bis 1824 Erzieherin am erbprinzlichen Hof in Weimar, seit 1787 Frau von August Johann Georg Carl Batsch"
-        },
-        {
-          "source": "bug",
-          "text": "Batsch, Sophie Karolina /Amalie/, geb. Pfündel"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Batsch, Sophie Karolina Amalie, geb. Pfündel (1765--1852), ab 1787 verh. mit August Johann Georg Carl Batsch, 1802 verw., 1805--1824 Erzieherin am erbprinzlichen Hof in Weimar, Tochter des Kauf- und Handelsherrn Johann Jakob Pfündel in Jena"
-        }
-      ]
+      "biography": "Batsch, Sophie Karolina #s+Amalie#s-, geb. Pfündel (1765-1852), Erzieherin, Tochter des Kauf- und Handelsherrn Johann Jakob Pfündel in Jena, seit 1787 verh. mit Karl B., 1802 verw., 1805 Haushälterin  (Femme de charge) und 1813 Kammerfrau am erbprinzlichen Hof in Weimar,  bis 1824 eine der Erzieherinnen des Erbprinzen Karl Alexander und der Prinzessin Maria sowie der spätern deutschen Kaiserin Augusta, lebenslang Vertraute der (Erb-)Großherzogin Maria Pawlowna von Sachsen-Weimar und der Prinzessinnen"
     },
     {
       "id": "43070",
@@ -4741,23 +4185,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "46093",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Egloffstein, #r#Henriette#/r# Sophie Franziska Friederike Albertine von und zu (1773-1864), von 1789 bis 1803 verh. mit ihrem Cousin Graf Leopold von Egloffstein, seit 1804 mit Karl von Beaulieu-Marconnay, u. a. von 1795 bis 1797 und um 1802 in Weimar lebend, Tochter von Johanna Sophie und Karl Ludwig Ernst Franz von und zu Egloffstein"
-        },
-        {
-          "source": "bug",
-          "text": "Beaulieu-Marconnay, /Henriette/ Sophie Franziska Friederike Albertine v., geb. von und zu Egloffstein, gesch. Gräfin von und zu Egloffstein"
-        }
       ]
     },
     {
@@ -4805,21 +4232,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Bechtolsheim, #s+Juliane#s- (Julie) Auguste Christiane von Mauchenheim genannt [B.], geb. von Keller (1753-1847), Schriftstellerin, Tochter des Diplomaten Christoph Dietrich (seit 1737/38:) von Keller auf Stedten (Erfurt), seit 1774 verh. mit ihrem Onkel, dem späteren Kanzler Johann Ludwig von Mauchenheim genannt B. in Eisenach, 1806 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Mauchenheim #k#gen.#/k# Bechtolsheim, Juliane (#r#Julie#/r#) Auguste Christiane von, geb. von Keller (1753-1847), Schriftstellerin, seit 1774 Frau von Johann Ludwig von Mauchenheim"
-        },
-        {
-          "source": "bug",
-          "text": "Mauchenheim, Juliane (/Julie/) Auguste Christiane v., gen. v. Bechtolsheim, geb. Gräfin Keller"
-        },
-        {
-          "source": "tagebuch",
-          "text": "#s+Juliane#s- Auguste Christiane von Mauchenheim, genannt von, geb. Gräfin Keller (1752–1847), Schriftstellerin, Nichte von und seit 1774 verh. mit Johann Ludwig von B."
-        }
-      ]
+      "biography": "Bechtolsheim, #s+Juliane#s- (Julie) Auguste Christiane von Mauchenheim genannt [B.], geb. von Keller (1753-1847), Schriftstellerin, Tochter des Diplomaten Christoph Dietrich (seit 1737/38:) von Keller auf Stedten (Erfurt), seit 1774 verh. mit ihrem Onkel, dem späteren Kanzler Johann Ludwig von Mauchenheim genannt B. in Eisenach, 1806 verw."
     },
     {
       "id": "43086",
@@ -4973,17 +4386,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Bethmann, #s+Friederike#s- Auguste Konradine (eigentl. Christiana Friederika Konradina), geb. Flittner, (seit 1782:) genannt oder adopt. Großmann, gesch. Unzelmann (1768-1815), Schauspielerin, Sängerin, seit 1788 in Berlin, Stieftochter des Schauspielers, Theaterleiters und Schriftstellers Gustav Friedrich Wilhelm Großmann, 1786-1803 verh. mit Karl Wilhelm Ferdinand Unzelmann, seit 1805 verh. mit Heinrich B., Mutter des Schauspielers Karl Unzelmann",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Bethmann, #r#Friederike#/r# Auguste Konradine (Christiana Friederika Konradina), geb. Flittner, (seit 1782:) genannt oder adopt. Großmann, gesch. Unzelmann (1768-1815), Schauspielerin, Sängerin, seit 1788 in Berlin, Stieftochter des Schauspielers und Theaterschriftstellers Gustav Friedrich Wilhelm Großmann, 1786-1803 verh. mit Karl Wilhelm Ferdinand Unzelmann, seit 1805 verh. mit Heinrich B., Mutter des Schauspielers Karl Unzelmann"
-        },
-        {
-          "source": "bug",
-          "text": "Unzelmann, /Friederike/ Auguste Konradine (Christiana Friederika Konradina), geb. Flittner, seit 1782 genannt oder adopt. Großmann"
-        }
-      ]
+      "biography": "Bethmann, #s+Friederike#s- Auguste Konradine (eigentl. Christiana Friederika Konradina), geb. Flittner, (seit 1782:) genannt oder adopt. Großmann, gesch. Unzelmann (1768-1815), Schauspielerin, Sängerin, seit 1788 in Berlin, Stieftochter des Schauspielers, Theaterleiters und Schriftstellers Gustav Friedrich Wilhelm Großmann, 1786-1803 verh. mit Karl Wilhelm Ferdinand Unzelmann, seit 1805 verh. mit Heinrich B., Mutter des Schauspielers Karl Unzelmann"
     },
     {
       "id": "43138",
@@ -5053,18 +4456,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43690",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "45714",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -5140,17 +4531,7 @@
           "type": "Wohnort"
         }
       ],
-      "biography": "Brentano, Johanna #s+Antonia#s- (#s+Toni#s-) Josepha, geb. von Birkenstock (1780-1869), Tochter des Hofrats, Schulreformers und Kunstsammlers Johann Melchior (von) Birkenstock in Wien, 1809 dessen Alleinerbin, seit 1798 verh. mit Franz B., 1809-1814 mit ihrer Familie in Wien lebend",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Brentano, Johanna #r#Antonia#/r# (#r#Toni#/r#) Josepha, geb. von Birkenstock (1780-1869), seit 1798 verh. mit Franz B., 1809-1814 mit ihrer Familie in Wien lebend"
-        },
-        {
-          "source": "bug",
-          "text": "Brentano, Johanna /Antonia/ (/Toni/) Josepha, geb. v. Birkenstock"
-        }
-      ]
+      "biography": "Brentano, Johanna #s+Antonia#s- (#s+Toni#s-) Josepha, geb. von Birkenstock (1780-1869), Tochter des Hofrats, Schulreformers und Kunstsammlers Johann Melchior (von) Birkenstock in Wien, 1809 dessen Alleinerbin, seit 1798 verh. mit Franz B., 1809-1814 mit ihrer Familie in Wien lebend"
     },
     {
       "id": "43260",
@@ -5217,23 +4598,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "41351",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Brentano, #r#Sophie#/r# Friederike, geb. Schubart, gesch. Mereau (1770-1806), Schriftstellerin, Übersetzerin, seit 1793 verh. mit dem Bibliothekar und Professor Friedrich Ernst Karl Mereau in Jena, 1801 gesch., seit 1803 verh. mit Clemens Brentano"
-        },
-        {
-          "source": "bug",
-          "text": "Mereau, Sophie, geb. Schubert"
-        }
       ]
     },
     {
@@ -5276,17 +4640,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Brühl, Johanna Margareta #s+Christiane#s- (Christine, Tina) Gräfin von, geb. Schleierweber (1756-1816), Tochter des elsässischen Premierleutnants Paul Ernst Schleierweber, seit 1771 verh. mit dem Obersten in französischen Diensten und späteren Generalintendanten des preußischen Chausseebaus Graf Hans Moritz B., mit ihm auf dem Rittergut Seifersdorf bei Dresden und später in Berlin lebend, 1811 verw., Mutter von Graf Karl B.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Brühl, Johanna Margareta Christiane #r#(Christine, Tina)#/r# Gräfin von, geb. Schleierweber von Friedenau (1756-1816), seit 1771  Frau von Hans Moritz Graf von Brühl Herrin auf Seifersdorf bei Radeberg nördlich von Dresden"
-        },
-        {
-          "source": "bug",
-          "text": "Brühl, Johanna Margareta Christiane (/Christine/, /Tina/) Gräfin v., geb. Schleierweber v. Friedenau"
-        }
-      ]
+      "biography": "Brühl, Johanna Margareta #s+Christiane#s- (Christine, Tina) Gräfin von, geb. Schleierweber (1756-1816), Tochter des elsässischen Premierleutnants Paul Ernst Schleierweber, seit 1771 verh. mit dem Obersten in französischen Diensten und späteren Generalintendanten des preußischen Chausseebaus Graf Hans Moritz B., mit ihm auf dem Rittergut Seifersdorf bei Dresden und später in Berlin lebend, 1811 verw., Mutter von Graf Karl B."
     },
     {
       "id": "43298",
@@ -5354,13 +4708,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Bürger, Marie Christiane Elisabeth (#s+Elise#s-), geb. Hahn (1769-1833), Schriftstellerin, Schauspielerin, Deklamatorin, u._a. 1792 in Altona, dann in Hamburg, 1799 in Hannover und 1804-1807 in Dresden, 1810 in Berlin, seit 1820 in Frankfurt am Main, 1790-1792 dritte Ehefrau von Gottfried August B.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Bürger, Marie Christiane Elisabeth (#r#Elise#/r#), geb. Hahn (1769–1833), 1790 dritte Frau von Gottfried August Bürger, 1792 gesch., nach Scheidung Schriftstellerin, Schauspielerin und Deklamatorin u.a. in Altona, Hannover und Dresden, seit 1820 in Frankfurt am Main"
-        }
-      ]
+      "biography": "Bürger, Marie Christiane Elisabeth (#s+Elise#s-), geb. Hahn (1769-1833), Schriftstellerin, Schauspielerin, Deklamatorin, u._a. 1792 in Altona, dann in Hamburg, 1799 in Hannover und 1804-1807 in Dresden, 1810 in Berlin, seit 1820 in Frankfurt am Main, 1790-1792 dritte Ehefrau von Gottfried August B."
     },
     {
       "id": "43337",
@@ -5436,13 +4784,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Caspers, Franziska (#s+Fanny#s-) Johanna (1787-1835), 1800 Schauspielerin in Weimar, 1802 Pensionärin in Gotha, dann Erzieherin in Regensburg, um 1812 Gesellschafterin in Wien mit Aufenthalten 1815-1816 und 1818-1819 in Rom, Tochter des Regierungssekretärs Lorenz Theodor C. in Mannheim, seit 1823 verh. mit dem Wiener Bankier Stanislaus (von) Doré",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Caspers, Fanny"
-        }
-      ]
+      "biography": "Caspers, Franziska (#s+Fanny#s-) Johanna (1787-1835), 1800 Schauspielerin in Weimar, 1802 Pensionärin in Gotha, dann Erzieherin in Regensburg, um 1812 Gesellschafterin in Wien mit Aufenthalten 1815-1816 und 1818-1819 in Rom, Tochter des Regierungssekretärs Lorenz Theodor C. in Mannheim, seit 1823 verh. mit dem Wiener Bankier Stanislaus (von) Doré"
     },
     {
       "id": "43346",
@@ -5473,13 +4815,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Chassepot, Anna #s+Dorothea#s- Elisabeth de, geb. von Knabenau, gesch. (?_Gräfin) Raut (Rand, Rant, Raud) (1779-1848), um 1808 Hofdame der Herzogin Dorothea von Kurland, 1809 verh. mit (? Graf) Raut aus Russland (?_Thomas Rand aus Moskau), seit 1814 zweite Ehefrau von Gabriel Marie Camille de C.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Chassepot, Anna /Dorothea/ Elisabeth de, geb. v. Knabenau"
-        }
-      ]
+      "biography": "Chassepot, Anna #s+Dorothea#s- Elisabeth de, geb. von Knabenau, gesch. (?_Gräfin) Raut (Rand, Rant, Raud) (1779-1848), um 1808 Hofdame der Herzogin Dorothea von Kurland, 1809 verh. mit (? Graf) Raut aus Russland (?_Thomas Rand aus Moskau), seit 1814 zweite Ehefrau von Gabriel Marie Camille de C."
     },
     {
       "id": "43352",
@@ -5590,23 +4926,6 @@
           "type": "hat Großelternteil",
           "type_id": "4020",
           "reciprocal_type": "hat Enkel"
-        }
-      ],
-      "relations": [
-        {
-          "target": "38507",
-          "type": "hat Großelternteil",
-          "agrelon_id": "4020"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Chézy, Wilhelmine (Helmina) Christiane von, geb. von Klencke, gesch. von Hastfer (1783-1856), Schriftstellerin und Publizistin, seit 1805 Frau des Orientalisten Antoine Léonard de Chézy, Tochter von Carl Friedrich und Caroline Louise von Klencke geb. Karsch"
-        },
-        {
-          "source": "bug",
-          "text": "Chezy, Wilhelmine (Helmina) v., geb. v. Klencke, gesch. v. Hastfer"
         }
       ]
     },
@@ -5809,28 +5128,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43849",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "43849",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Eybenberg, Caroline Esperance #r#Marianne#/r# von, geb. Meyer (1770 oder 1775/76-1812), Salonière in Berlin und Wien, Tochter von A(a)ron Moses und Rösel Meyer in Berlin, seit 1797 heimlich verh. mit Prinz Heinrich_XIV. von Reuß-Greiz, 1799 verw., führte seitdem den Namen von E. und lebte vorwiegend in Wien, Schwester von Sophie von Grotthuß"
-        },
-        {
-          "source": "bug",
-          "text": "Eybenberg, Caroline Esperance /Marianne/ v., geb. Meyer"
-        }
       ]
     },
     {
@@ -5874,17 +5171,7 @@
           "type": "Sterbeort"
         }
       ],
-      "biography": "Falk, Elisabeth Charlotte #s+Karoline#s-, geb. Rosenfeld (1780-1841), Tochter des Akziseeinnehmers Karl August Rosenfeld in Halle, seit 1797 verh. mit Johannes F.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Falk, Elisabeth Charlotte #r#Karoline#/r#, geb. Rosenfeld (1780-1841), Tochter des Akziseeinnehmers Karl August Rosenfeld in Halle, seit 1797 verh. mit Johannes F."
-        },
-        {
-          "source": "bug",
-          "text": "Falk, Elisabeth Charlotte /Caroline/, geb. Rosenfeld"
-        }
-      ]
+      "biography": "Falk, Elisabeth Charlotte #s+Karoline#s-, geb. Rosenfeld (1780-1841), Tochter des Akziseeinnehmers Karl August Rosenfeld in Halle, seit 1797 verh. mit Johannes F."
     },
     {
       "id": "43624",
@@ -5935,19 +5222,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "37150",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Foucquet, Marie #r#Renée#/r# Louise de (1778-1845), Tochter des Marquis Jean Gabriel René François de Foucquet, seit 1803 verheiratet mit dem späteren Marschall Anne Pierre de Bertier de Sauvigny"
         }
       ]
     },
@@ -6011,17 +5285,7 @@
         "death": "1832",
         "birth": "1745"
       },
-      "biography": "Franckenberg (Frankenberg, F. und Ludwigsdorf), #s+Friederike#s- Dorothea Karoline von, geb. von Rüxleben (1745-1832), verh. mit Sylvius Friedrich Ludwig von F.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Franckenberg und Ludwigsdorf, #r#Friederike#/r# Dorothea Caroline von, geb. von Rüxleben (1745-1832), Frau von Sylvius\nFriedrich Ludwig Freiherr von Franckenberg und Ludwigsdorf, Patin von Johann Gottfried Herders Sohn Adelbert"
-        },
-        {
-          "source": "bug",
-          "text": "Franckenberg und Ludwigsdorf, /Friederike/ Dorothea Caroline v., geb. v. Rüxleben"
-        }
-      ]
+      "biography": "Franckenberg (Frankenberg, F. und Ludwigsdorf), #s+Friederike#s- Dorothea Karoline von, geb. von Rüxleben (1745-1832), verh. mit Sylvius Friedrich Ludwig von F."
     },
     {
       "id": "43682",
@@ -6096,17 +5360,7 @@
           "type": "Sterbeort"
         }
       ],
-      "biography": "Fritsch, #s+Henriette#s- Albertine Antonie von, geb. Wolffskeel (Wolfskeel) von Reichenberg (1776-1859), Hofdame von Herzogin Anna Amalia von Sachsen-Weimar, seit 1803 verh. mit Karl Wilhelm von F., Tochter von Johann Karl Albrecht von Wolf(f)skeel und Schwester von Christian Friedrich Karl von Wolf(f)skeel",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Wolfskeel (Wolfskehl) von Reichenberg, Henriette Antonia Albertine Freiin (1776-1859), seit 1793 Hofdame Anna Amalias von Sachsen-Weimar und Eisenach, 1803 Heirat mit Karl Wilhelm Freiherr von Fritsch"
-        },
-        {
-          "source": "bug",
-          "text": "Fritsch, Henriette Albertine Antonie, geb. v. Wolfskeel von und zu Reichenberg"
-        }
-      ]
+      "biography": "Fritsch, #s+Henriette#s- Albertine Antonie von, geb. Wolffskeel (Wolfskeel) von Reichenberg (1776-1859), Hofdame von Herzogin Anna Amalia von Sachsen-Weimar, seit 1803 verh. mit Karl Wilhelm von F., Tochter von Johann Karl Albrecht von Wolf(f)skeel und Schwester von Christian Friedrich Karl von Wolf(f)skeel"
     },
     {
       "id": "43687",
@@ -6199,19 +5453,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "43690",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Frommann, /Allwina/ (Albina) Sophia"
-        }
       ]
     },
     {
@@ -6295,33 +5536,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43181",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "43688",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        },
-        {
-          "target": "45714",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Frommann, #r#Johanna#/r# Charlotte, geb. Wesselhöft (1765-1830), Miniaturmalerin,  Tochter des Gymnasiallehrers Johann Georg Wesselhöft in Hamburg, Schwester von Sophie Bohn sowie Elisabeth und Johann Karl Wesselhöft, seit 1792 verh. mit Friedrich F."
-        },
-        {
-          "source": "bug",
-          "text": "Frommann, /Johanna/ Charlotte, geb. Wesselhöft"
-        }
       ]
     },
     {
@@ -6383,17 +5597,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Gallitzin, Adelheid #s+Amalia#s-  (Amalija Samuilowna Golizyna) Fürstin, geb. Gräfin von Schmettau (1748-1806), Schriftstellerin, Mittelpunkt des religiösen Kreises von Münster, Tochter des preußischen Generalfeldmarschalls, Kartographen und Kurators der Akademie der Wissenschaften Samuel von Schmettau, seit 1768 verh. mit dem russischen Gesandten in Den Haag Fürst Dmitri Alexejewitsch G., seit 1774 von ihm getrennt in Scheveningen und seit 1779 in Münster lebend, Schwester des preußischen Topographen Graf Karl Schmettau",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Gallitzin (Gallizin, russ. Golizyn), Adelheid #r#Amalia#/r# Fürstin von, geb. Gräfin von Schmettau (1748-1806), seit 1768 Frau des Fürsten Dmitri Alexejewitsch Golizyn, des russischen Gesandten in Den Haag (seit 1769), seit 1774 von ihm getrennt, seit 1779 in Münster, Schwester des Grafen Friedrich Wilhelm Carl von Schmettau"
-        },
-        {
-          "source": "bug",
-          "text": "Gallitzin, Adelheid /Amalia/ Fürstin von, geb. Gräfin v. Schmettau"
-        }
-      ]
+      "biography": "Gallitzin, Adelheid #s+Amalia#s-  (Amalija Samuilowna Golizyna) Fürstin, geb. Gräfin von Schmettau (1748-1806), Schriftstellerin, Mittelpunkt des religiösen Kreises von Münster, Tochter des preußischen Generalfeldmarschalls, Kartographen und Kurators der Akademie der Wissenschaften Samuel von Schmettau, seit 1768 verh. mit dem russischen Gesandten in Den Haag Fürst Dmitri Alexejewitsch G., seit 1774 von ihm getrennt in Scheveningen und seit 1779 in Münster lebend, Schwester des preußischen Topographen Graf Karl Schmettau"
     },
     {
       "id": "43722",
@@ -6513,21 +5717,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Gildemeister, Karoline #s+Amalie#s-, geb. Kotzebue (1759-1844), Tochter des Legationsrates Karl Christian Kotzebue in Weimar, Schwester von August von Kotzebue, seit 1778 verh. mit dem Syndikus Johann Friedrich G. in Bremen, 1812 verw., seitdem wieder in Weimar",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Kotzebue, Caroline #r#Amalie#/r# von (1759-1844), Tochter des Legationsrates Karl Christian Kotzebue in Weimar, Schwester von August von Kotzebue, seit 1778 verh. mit dem Syndikus Johann Friedrich Gildemeister in Bremen, 1812 verwitwet, seitdem wieder in Weimar"
-        },
-        {
-          "source": "bug",
-          "text": "Gildemeister, Caroline /Amalie/, geb. Kotzebue"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Kotzebue, Caroline #s+Amalie#s- (1759–1844), in Weimar, beteiligt an Aufführungen des Weimarer Liebhabertheaters, Schwester des Schriftstellers August Friedrich Ferdinand K., verh. mit Johann Friedrich Gildemeister"
-        }
-      ]
+      "biography": "Gildemeister, Karoline #s+Amalie#s-, geb. Kotzebue (1759-1844), Tochter des Legationsrates Karl Christian Kotzebue in Weimar, Schwester von August von Kotzebue, seit 1778 verh. mit dem Syndikus Johann Friedrich G. in Bremen, 1812 verw., seitdem wieder in Weimar"
     },
     {
       "id": "43766",
@@ -6595,21 +5785,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Göchhausen, #s+Luise#s- Ernestine Christiane Juliane von (1752-1807), Gesellschafterin und seit 1783 Hofdame von Herzogin Anna Amalia in Weimar, Tochter des Schloßhauptmanns in Eisenach und späteren Oberkämmerers in Weimar Wilhelm Ernst Friedrich von G.,",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Göchhausen, #r#Louise#/r# Ernestine Christiane Juliane von (1752-1807), seit 1775 Gesellschafterin der Herzogin Anna Amalia von Sachsen Weimar und Eisenach, seit 1783 erste Hofdame"
-        },
-        {
-          "source": "bug",
-          "text": "Göchhausen, /Louise/ Ernestine Christiane Juliane v."
-        },
-        {
-          "source": "tagebuch",
-          "text": "Göchhausen (+, Göchhaus, J., Jochhaus, Jöchhaus), #s+Louise#s- Ernestine Christiane Juliane von, scherzhaft Thusnelde (Tus.) genannt (1752–1807)"
-        }
-      ]
+      "biography": "Göchhausen, #s+Luise#s- Ernestine Christiane Juliane von (1752-1807), Gesellschafterin und seit 1783 Hofdame von Herzogin Anna Amalia in Weimar, Tochter des Schloßhauptmanns in Eisenach und späteren Oberkämmerers in Weimar Wilhelm Ernst Friedrich von G.,"
     },
     {
       "id": "43767",
@@ -6696,23 +5872,6 @@
           "type_id": "4070",
           "reciprocal_type": "hat Pate"
         }
-      ],
-      "relations": [
-        {
-          "target": "41249",
-          "type": "hat Patenkind",
-          "agrelon_id": "4070"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Vulpius, Johanna Christiana #r#(Christiane)#/r# Sophia (1765-1816), seit 1788 Lebensgefährtin Goethes, seit 19. Oktober 1806 Frau von Goethe, Schwester von Christian August Vulpius"
-        },
-        {
-          "source": "bug",
-          "text": "Goethe, Johanna Christiana (/Christiane/) Sophia v., geb.Vulpius"
-        }
       ]
     },
     {
@@ -6793,27 +5952,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "44537",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Goethe, Catharina #k#Elisabeth#/k#, geb. Textor (1731-1808), seit 1748 Frau von Johann Caspar Goethe, Tochter des Frankfurter Reichs-Stadt-Schultheißen Johann Wolfgang Textor, Goethes Mutter"
-        },
-        {
-          "source": "bug",
-          "text": "Goethe, Catharina /Elisabeth/, geb. Textor"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Goethe, Catharina E l i s a b e t h , geb. Textor (1731–1808)"
-        }
       ]
     },
     {
@@ -6863,33 +6001,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44815",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "49574",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        },
-        {
-          "target": "44816",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Goethe, #r#Ottilie#/r# Wilhelmine Ernestine Henriette von, geb. von Pogwisch (1796-1872), Goethes Schwiegertochter, Tochter von Wilhelm Julius und Henriette von Pogwisch, seit 17. Juni 1817 verh. mit August von G., nach 1832 vorwiegend in Leipzig und Wien, seit 1870 wieder in Weimar lebend"
-        },
-        {
-          "source": "bug",
-          "text": "Goethe, /Ottilie/ Wilhelmine Ernestine Henriette v., geb. v. Pogwisch"
         }
       ]
     },
@@ -6952,23 +6063,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "37557",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Gore, Elisabeth #r#(Eliza)#/r# Maria (1753-1802), Malerin, Tochter von Charles und Mary Gore"
-        },
-        {
-          "source": "bug",
-          "text": "Gore, Elisabeth (/Eliza/) Maria"
-        }
       ]
     },
     {
@@ -7002,17 +6096,7 @@
         "death": "1841",
         "birth": "1778"
       },
-      "biography": "Großbritannien, #s+Friederike#s- Karoline Sophie Alexandrine Prinzessin von, Herzogin von Cumberland, geb. Prinzessin von Mecklenburg-Strelitz, verw. Prinzessin von Preußen, verw. Prinzessin von Solms-Braunfels (1778-1841), Tochter des späteren Großherzogs Karl II. von Mecklenburg-Strelitz, 1793-1796 verh. mit Prinz Friedrich #s+Ludwig#s- Karl von Preußen, 1799-1814 verh. mit Prinz #s+Friedrich#s- Wilhelm von Solms-Braunfels, seit 1815 verh. mit Herzog Ernst August von Cumberland, 1837 Königin von Hannover, Schwester von Großherzog Georg von Mecklenburg-Strelitz und Königin Luise von Preußen, Halbschwester des Prinzen Karl von Mecklenburg-Strelitz",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Großbritannien, Friederike Caroline Sophie Alexandrine Prinzessin von, Herzogin von Cumberland, geb. Prinzessin von Mecklenburg-Strelitz, verw. Prinzessin von Preußen, verw. Prinzessin von Solms-Braunfels (1778-1841). Tochter des späteren Großherzogs Carl II. von Mecklenburg-Strelitz, 1793-1796 verh. mit Prinz Friedrich Ludwig Karl von Preußen, 1799-1814 verh. mit Prinz Friedrich Wilhelm von Solms-Braunfels, seit 1815 verh. mit Herzog Ernst August von Cumberland, 1837 Königin von Hannover."
-        },
-        {
-          "source": "bug",
-          "text": "Cumberland, /Friederike/ Caroline Sophie Alexandrine Herzogin von, geb. Prinzessin von Mecklenburg-Strelitz, verw. Prinzessin von Preußen, verw. Prinzessin von Solms-Braunfels"
-        }
-      ]
+      "biography": "Großbritannien, #s+Friederike#s- Karoline Sophie Alexandrine Prinzessin von, Herzogin von Cumberland, geb. Prinzessin von Mecklenburg-Strelitz, verw. Prinzessin von Preußen, verw. Prinzessin von Solms-Braunfels (1778-1841), Tochter des späteren Großherzogs Karl II. von Mecklenburg-Strelitz, 1793-1796 verh. mit Prinz Friedrich #s+Ludwig#s- Karl von Preußen, 1799-1814 verh. mit Prinz #s+Friedrich#s- Wilhelm von Solms-Braunfels, seit 1815 verh. mit Herzog Ernst August von Cumberland, 1837 Königin von Hannover, Schwester von Großherzog Georg von Mecklenburg-Strelitz und Königin Luise von Preußen, Halbschwester des Prinzen Karl von Mecklenburg-Strelitz"
     },
     {
       "id": "43848",
@@ -7100,28 +6184,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43592",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "43592",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Grotthuß, #r#Sophie#/r# Leopoldine Wilhelmine von, geb. Sara Meyer, gesch./verw. Wulff (um 1760-1828), Salonière in Berlin, Tochter von A(a)ron Moses und Rösel Meyer in Berlin, 1778-1788 verh. mit dem Kaufmann Lipmann Wulff in Berlin, seit 1797 verh. mit Friedrich Dietrich Wilhelm von G., 1820 verw., Schwester von Marianne von Meyer, später Marianne von Eybenberg"
-        },
-        {
-          "source": "bug",
-          "text": "Wulff, Sara, geb. Meyer"
         }
       ]
     },
@@ -7215,13 +6277,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Harrach, Marie #s+Josephine#s- (Josepha) Eleonore Gräfin von, geb. Prinzessin von und zu Liechtenstein (1763-1833), Tochter des Fürsten Karl Borromäus von Liechtenstein, seit 1781 verh. mit Graf Johann Nepomuk Ernst H.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Harrach, Maria #r#Josepha#/r# Eleonora Gräfin von, geb. Prinzessin von und zu Liechtenstein (1763-1833), Tochter des Fürsten Carl Borromäus von Liechenstein, seit 1781 Frau von Johann Nepomuk Ernst Graf von Harrach in Wien"
-        }
-      ]
+      "biography": "Harrach, Marie #s+Josephine#s- (Josepha) Eleonore Gräfin von, geb. Prinzessin von und zu Liechtenstein (1763-1833), Tochter des Fürsten Karl Borromäus von Liechtenstein, seit 1781 verh. mit Graf Johann Nepomuk Ernst H."
     },
     {
       "id": "43928",
@@ -7269,24 +6325,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44686",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "45158",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schlosser, Cornelia #r#Henriette#/r# Franziska (1781-1851), Tochter von Johann Georg und Johanna Catharina Sibylla Schlosser, seit 1809 verh. mit David Hasenclever"
         }
       ]
     },
@@ -7369,17 +6407,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Helvig, Anna Amalia (#s+Amalie#s-) (seit 1807:) von, geb. von Imhoff (1776-1831), Schriftstellerin, Malerin, um 1791-1804 in Weimar, seit 1800 Hofdame der Herzogin Luise, 1804 in Schweden, 1810 in Heidelberg, 1814 wieder in Schweden, seit 1816 vorwiegend in Berlin, Tochter des Kolonialoffiziers und Malers Christoph Adam #s+Karl#s- von Imhoff aus dessen Ehe mit #s+Luise#s- Franziska Sophie von Schardt, seit 1803 verh. mit Karl (von) H., Nichte von Charlotte von Stein",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Imhoff, Anna Amalia (#r#Amalie#/r#) von (1776-1831), Schriftstellerin, Malerin, von etwa 1791 bis 1804 in Weimar, 1800 Hofdame von Herzogin Louise von Sachsen-Weimar und Eisenach, 1803 Frau von Carl von Helvig, in Schweden, Heidelberg und Berlin lebend, Tochter von Christoph Adam Carl von Imhoff und Louise Franziska Sophie von Imhoff geb. Schardt"
-        },
-        {
-          "source": "bug",
-          "text": "Imhoff, Anna Amalia (Amalie/) v."
-        }
-      ]
+      "biography": "Helvig, Anna Amalia (#s+Amalie#s-) (seit 1807:) von, geb. von Imhoff (1776-1831), Schriftstellerin, Malerin, um 1791-1804 in Weimar, seit 1800 Hofdame der Herzogin Luise, 1804 in Schweden, 1810 in Heidelberg, 1814 wieder in Schweden, seit 1816 vorwiegend in Berlin, Tochter des Kolonialoffiziers und Malers Christoph Adam #s+Karl#s- von Imhoff aus dessen Ehe mit #s+Luise#s- Franziska Sophie von Schardt, seit 1803 verh. mit Karl (von) H., Nichte von Charlotte von Stein"
     },
     {
       "id": "43961",
@@ -7427,19 +6455,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44815",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Henckel v. Donnersmarck, Eleonore Maximiliane /Ottilie/ Louise Gräfin, geb. Gräfin v. Lepel"
         }
       ]
     },
@@ -7490,17 +6505,7 @@
           "type": "Sterbeort"
         }
       ],
-      "biography": "Herder, Maria Karolina (#s+Karoline#s-) (seit 1801:) von, geb. Flachsland (1750-1809), seit 1773 verh. mit Johann Gottfried (von) H.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Herder, Maria Carolina (#r#Caroline#/r#, #r#Lina#/r#) (1801: von), geb. Flachsland (1750-1809), seit 1773 Frau von Johann Gottfried Herder"
-        },
-        {
-          "source": "bug",
-          "text": "Herder, Maria Carolina (/Caroline/), geb. Flachsland"
-        }
-      ]
+      "biography": "Herder, Maria Karolina (#s+Karoline#s-) (seit 1801:) von, geb. Flachsland (1750-1809), seit 1773 verh. mit Johann Gottfried (von) H."
     },
     {
       "id": "44000",
@@ -7546,19 +6551,6 @@
           "type": "ist beeinflusst durch",
           "type_id": "3030",
           "reciprocal_type": "hat Einfluss auf"
-        }
-      ],
-      "relations": [
-        {
-          "target": "35842",
-          "type": "ist beeinflusst durch",
-          "agrelon_id": "3030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Hessen-Darmstadt, Louise Caroline Henriette von, geb. Prinzessin von Hessen-Darmstadt (1761-1829), seit 1777 Frau von Erbprinz Ludwig von Hessen-Darmstadt "
         }
       ]
     },
@@ -7703,17 +6695,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Heygendorff (bis 1809: Jagemann), Henriette #s+Karoline#s- Friederike von (1777-1848), Schauspielerin, Sängerin, 1797-1828 in Weimar, Geliebte des (Groß-)Herzogs Karl August, 1809 geadelt unter dem Namen von H., Tochter des Romanisten Christian Joseph Jagemann und Schwester von Ferdinand Jagemann",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Jagemann (von Heygendorff), Henriette #r#Caroline#/r# Friederike (1777-1848), Schauspielerin und Sängerin zunächst in Mannheim, von 1797 bis 1828 in Weimar, Geliebte des Herzogs Carl August von Sachsen-Weimar und Eisenach, von diesem 1809 zur Freifrau von Heygendorff ernannt"
-        },
-        {
-          "source": "bug",
-          "text": "Jagemann, Henriette /Caroline/ Friederike"
-        }
-      ]
+      "biography": "Heygendorff (bis 1809: Jagemann), Henriette #s+Karoline#s- Friederike von (1777-1848), Schauspielerin, Sängerin, 1797-1828 in Weimar, Geliebte des (Groß-)Herzogs Karl August, 1809 geadelt unter dem Namen von H., Tochter des Romanisten Christian Joseph Jagemann und Schwester von Ferdinand Jagemann"
     },
     {
       "id": "44058",
@@ -7777,17 +6759,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Hopffgarten (Hopfgarten), Sophie #s+Karoline#s- von, geb. von Fritsch (1770-1837), Erzieherin, Tochter von Jakob Friedrich von Fritsch, seit 1787 verh. mit dem sächsischen Rittmeister Christian #s+Adolf#s- von H., 1815 verw., seit 1817 in Weimar, Hofmeisterin und 1827 Oberhofmeisterin der Prinzessinnen Maria und Augusta",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Fritsch, Sophia #r#Caroline#/r# von (1770-1837), Tochter von Jacob Friedrich von Fritsch, seit 1787 verh. mit dem sächsischen Rittmeister Christian Adolf von Hopffgarten, 1815 verw., seit 1817 in Weimar lebend, 1817 Hofmeisterin der Prinzessinnen Maria und Augusta von Sachsen-Weimar, 1827 Oberhofmeisterin"
-        },
-        {
-          "source": "bug",
-          "text": "Hopffgarten, Sophie Caroline v., geb. v. Fritsch "
-        }
-      ]
+      "biography": "Hopffgarten (Hopfgarten), Sophie #s+Karoline#s- von, geb. von Fritsch (1770-1837), Erzieherin, Tochter von Jakob Friedrich von Fritsch, seit 1787 verh. mit dem sächsischen Rittmeister Christian #s+Adolf#s- von H., 1815 verw., seit 1817 in Weimar, Hofmeisterin und 1827 Oberhofmeisterin der Prinzessinnen Maria und Augusta"
     },
     {
       "id": "44079",
@@ -7815,13 +6787,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Horstig, Susanna (#s+Susette#s-) Christiana, (seit 1840:) H. genannt d'Aubigny von Engelbronner, geb.  Engelbronner (1768-1845), Schriftstellerin, Tochter des Juristen und Pädagogen Johann Konrad Engelbronner (seit 1800: d'Aubigny von E.), seit 1794 verh. mit Karl Gottlieb H.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Horstig, Susette (Christine), geb. d'Aubigny gen. v. Engelbronner"
-        }
-      ]
+      "biography": "Horstig, Susanna (#s+Susette#s-) Christiana, (seit 1840:) H. genannt d'Aubigny von Engelbronner, geb.  Engelbronner (1768-1845), Schriftstellerin, Tochter des Juristen und Pädagogen Johann Konrad Engelbronner (seit 1800: d'Aubigny von E.), seit 1794 verh. mit Karl Gottlieb H."
     },
     {
       "id": "44081",
@@ -7921,17 +6887,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Huber, Maria Theresia (#s+Therese#s-) Wilhelmine, geb. Heyne, verw. Forster (1764-1829), Schriftstellerin, Redakteurin, 1785-1787 in Wilna und Göttingen, 1788-1792 in Mainz, dann in Straßburg und Neuchâtel, 1798-1803 in Stuttgart, dann in Ulm, Stoffenried und Günzburg, 1816 in Stuttgart, Redakteurin des „Kunstblatts“ und 1817 des \"Morgenblatts für gebildete Stände\", seit 1823 in Augsburg, älteste Tochter des Philologen Christian Gottlob Heyne in Göttingen, 1785-1794 verh. mit Georg Forster und seit 1794 mit dem Schriftsteller Ludwig Ferdinand H., 1804 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Forster, Maria Theresia #r#(Therese)#/r# Wilhelmine, geb. Heyne, (1764-1829), älteste Tochter des Philologen Christian Gottlob Heyne in Göttingen, Schriftstellerin, seit 1785 Frau von Johann Georg(e) Adam Forster, seit 1794 verheiratet mit dem Schriftsteller Ludwig Ferdinand Huber, 1804 verwitwet "
-        },
-        {
-          "source": "bug",
-          "text": "Huber, Maria Theresia (/Therese/) Wilhelmine, geb. Heyne, verw. Forster "
-        }
-      ]
+      "biography": "Huber, Maria Theresia (#s+Therese#s-) Wilhelmine, geb. Heyne, verw. Forster (1764-1829), Schriftstellerin, Redakteurin, 1785-1787 in Wilna und Göttingen, 1788-1792 in Mainz, dann in Straßburg und Neuchâtel, 1798-1803 in Stuttgart, dann in Ulm, Stoffenried und Günzburg, 1816 in Stuttgart, Redakteurin des „Kunstblatts“ und 1817 des \"Morgenblatts für gebildete Stände\", seit 1823 in Augsburg, älteste Tochter des Philologen Christian Gottlob Heyne in Göttingen, 1785-1794 verh. mit Georg Forster und seit 1794 mit dem Schriftsteller Ludwig Ferdinand H., 1804 verw."
     },
     {
       "id": "44098",
@@ -7977,17 +6933,7 @@
         "death": "1829",
         "birth": "1766"
       },
-      "biography": "Humboldt, #s+Karoline#s- Friederike von, geb. von Dach(e)roeden (1766-1829), Tochter des preußischen Kammerpräsidenten Karl Friedrich von Dach(e)roeden in Erfurt, seit 1791 verh. mit Wilhelm von H.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Humboldt, #r#Caroline#/r# Friederike von, geb. von Dach(e)roeden (1766-1829), Tochter des preußischen Kammerpräsidenten Carl Friedrich von Dach(e)roeden in Erfurt, seit 1791 verh. mit Wilhelm von H."
-        },
-        {
-          "source": "bug",
-          "text": "Humboldt, /Caroline/ Friederike v., geb. v. Dacheröden"
-        }
-      ]
+      "biography": "Humboldt, #s+Karoline#s- Friederike von, geb. von Dach(e)roeden (1766-1829), Tochter des preußischen Kammerpräsidenten Karl Friedrich von Dach(e)roeden in Erfurt, seit 1791 verh. mit Wilhelm von H."
     },
     {
       "id": "44107",
@@ -8033,17 +6979,7 @@
         "birth": "1743",
         "death": "1784"
       },
-      "biography": "Jacobi, Helene #s+Elisabeth#s- (Betty), geb. von Clermont (1743-1784), Tochter des Aachener Tuchhändlers Esaias Clermont, seit 1764 erste Ehefrau von #s+Friedrich#s- Heinrich (von) J.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Jacobi, Helene #r#Elisabeth#/r# (#r#Betty#/r#), geb. von Clermont (1743-1784), seit 1764 Frau von Friedrich Heinrich Jacobi"
-        },
-        {
-          "source": "bug",
-          "text": "Jacobi, Helene /Elisabeth/ (/Betty/), geb. v. Clermont "
-        }
-      ]
+      "biography": "Jacobi, Helene #s+Elisabeth#s- (Betty), geb. von Clermont (1743-1784), Tochter des Aachener Tuchhändlers Esaias Clermont, seit 1764 erste Ehefrau von #s+Friedrich#s- Heinrich (von) J."
     },
     {
       "id": "44141",
@@ -8079,17 +7015,7 @@
         "birth": "1753",
         "death": "1838"
       },
-      "biography": "Jacobi, Susanne #s+Helene#s- (Lene) (1753-1838), Halbschwester von #s+Friedrich#s- Heinrich (von) J. und Johann #s+Georg#s- J.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Jacobi, Susanna #r#Helene#/r#  (#r#Lene#/r#) (1753-1838), Tochter von Johann Konrad Jacobi aus zweiter Ehe, Halbschwester Friedrich Heinrich und Johann Georg Jacobis"
-        },
-        {
-          "source": "bug",
-          "text": "Jacobi, Susanne /Helene/ (/Lene/, /Lehngen/)"
-        }
-      ]
+      "biography": "Jacobi, Susanne #s+Helene#s- (Lene) (1753-1838), Halbschwester von #s+Friedrich#s- Heinrich (von) J. und Johann #s+Georg#s- J."
     },
     {
       "id": "44158",
@@ -8167,17 +7093,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Kalb, #s+Charlotte#s- Sophie Juliane von, geb. Marschalk von Ostheim (1761-1843), Schriftstellerin, seit 1783 verh. mit dem Offizier in französischen Diensten Heinrich von K., seit 1799 endgültig von ihm getrennt lebend, 1806 verw., 1787-1792 und 1795-1799 vorwiegend in Weimar, seit 1804 in Berlin, Kurzwaren- und Teehändlerin, befreundet u._a. mit Schiller und Jean Paul",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Kalb, #r#Charlotte#/r# Sophie Juliane von, geb. Marschalk von Ostheim (1761-1843), Schriftstellerin, von 1787 bis 1792 und von 1795 bis 1799 vorwiegend in Weimar, seit 1804 in Berlin, befreundet u. a. mit Schiller und Jean Paul, seit 1783 Frau von Heinrich Julius Alexander von Kalb, endgültige Trennung 1799"
-        },
-        {
-          "source": "bug",
-          "text": "Kalb, /Charlotte/ Sophie Juliane v., geb. Marschalk von Ostheim"
-        }
-      ]
+      "biography": "Kalb, #s+Charlotte#s- Sophie Juliane von, geb. Marschalk von Ostheim (1761-1843), Schriftstellerin, seit 1783 verh. mit dem Offizier in französischen Diensten Heinrich von K., seit 1799 endgültig von ihm getrennt lebend, 1806 verw., 1787-1792 und 1795-1799 vorwiegend in Weimar, seit 1804 in Berlin, Kurzwaren- und Teehändlerin, befreundet u._a. mit Schiller und Jean Paul"
     },
     {
       "id": "44190",
@@ -8233,17 +7149,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Kestner, #s+Charlotte#s- Sophie Henriette, geb. Buff (1753-1828), Tochter des Amtmanns Heinrich Adam Buff in Wetzlar, seit 1773 verh. mit dem späteren Hofrat Johann #s+Christian#s- K. in Hannover, Schwägerin von Kornelius Johann Rudolf Ridel, Freundin Goethes in Wetzlar ",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Kestner, #r#Charlotte#/r# Sophie Henriette, geb. Buff (1753-1828), seit 1773 Frau von Johann Christian Kestner, Freundin Goethes in Wetzlar"
-        },
-        {
-          "source": "bug",
-          "text": "Kestner, /Charlotte/ Sophie Henriette, geb. Buff"
-        }
-      ]
+      "biography": "Kestner, #s+Charlotte#s- Sophie Henriette, geb. Buff (1753-1828), Tochter des Amtmanns Heinrich Adam Buff in Wetzlar, seit 1773 verh. mit dem späteren Hofrat Johann #s+Christian#s- K. in Hannover, Schwägerin von Kornelius Johann Rudolf Ridel, Freundin Goethes in Wetzlar "
     },
     {
       "id": "44207",
@@ -8386,17 +7292,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Knebel, #s+Luise#s- Dorothea Ulrike Emilie von, geb. Rudorf(f) (1777-1852), Kammersängerin in Weimar, seit 1798 verh. mit #s+Karl#s- Ludwig von K.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Knebel, #r#Luise#/r# Dorothea Ulrike Emilie von, geb. Rudorf (Rudorff) (1776-1852), Kammersängerin in Weimar, Gesellschafterin der Herzoginmutter Anna Amalia, seit 1798 Frau von Carl Ludwig von Knebel"
-        },
-        {
-          "source": "bug",
-          "text": "Knebel, /Louise/ Dorothea Ulrike Emilie v., geb. Rudorf (Rudorff)"
-        }
-      ]
+      "biography": "Knebel, #s+Luise#s- Dorothea Ulrike Emilie von, geb. Rudorf(f) (1777-1852), Kammersängerin in Weimar, seit 1798 verh. mit #s+Karl#s- Ludwig von K."
     },
     {
       "id": "44248",
@@ -8467,17 +7363,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Knebel, Magdalena #s+Henriette#s- (seit 1756:) von (1755-1813), Erzieherin, 1791 Hofmeisterin und 1810 Hofdame der nunmehrigen Erbprinzessin Karoline von Mecklenburg-Schwerin, Schwester von #s+Karl#s- Ludwig von K.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Knebel, Magdalena #r#Henriette#/r# von (1755-1813), lebte in Ansbach, seit 1791 Hofmeisterin, später Gesellschafterin der Prinzessin Caroline Louise von Sachsen-Weimar und Eisenach in Weimar, ab 1810 mit ihr in Schwerin, Schwester von Carl Ludwig von Knebel"
-        },
-        {
-          "source": "bug",
-          "text": "Knebel, Magdalena /Henriette/ v. "
-        }
-      ]
+      "biography": "Knebel, Magdalena #s+Henriette#s- (seit 1756:) von (1755-1813), Erzieherin, 1791 Hofmeisterin und 1810 Hofdame der nunmehrigen Erbprinzessin Karoline von Mecklenburg-Schwerin, Schwester von #s+Karl#s- Ludwig von K."
     },
     {
       "id": "44255",
@@ -8536,13 +7422,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Körner, #s+Emma#s- Sophie Luise (1788-1815), Malerin in Dresden, Tochter von Christian Gottfried und Minna K.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Körner, Emma Sophia Louise (1788–1815), Tochter von Christian Gottfried K."
-        }
-      ]
+      "biography": "Körner, #s+Emma#s- Sophie Luise (1788-1815), Malerin in Dresden, Tochter von Christian Gottfried und Minna K."
     },
     {
       "id": "44275",
@@ -8576,23 +7456,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45712",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Koethe, Agnes Silvia (#r#Sylvie#/r#) Dorothea, geb. von Ziegesar (1785-1858), Tochter von August Friedrich Karl und Magdalena Augusta von Ziegesar, seit 1814 verh. mit Friedrich August K."
-        },
-        {
-          "source": "bug",
-          "text": "Ziegesar, Agnes Silvia (/Silvie/) Dorothea v., seit 1814 verh. Koethe"
-        }
       ]
     },
     {
@@ -8625,13 +7488,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Koppenfels, #s+Maria#s- Christiana Kobe von, geb. Kühn (1748-1810), Tochter des Kaufmanns Johann Wilhelm (von) Kühn in Eisenach, seit 1763 verh. mit Johann Friedrich Kobe von K.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Koppenfels, #r#Maria#/r# Christiana Kobe von, geb. Kühn (1748–1810), Tochter des Kaufmanns Johann Wilhelm Kühn\nin Eisenach, seit 1763 Frau von Johann Friedrich Kobe K."
-        }
-      ]
+      "biography": "Koppenfels, #s+Maria#s- Christiana Kobe von, geb. Kühn (1748-1810), Tochter des Kaufmanns Johann Wilhelm (von) Kühn in Eisenach, seit 1763 verh. mit Johann Friedrich Kobe von K."
     },
     {
       "id": "44294",
@@ -8657,17 +7514,7 @@
         "death": "1828",
         "birth": "1736"
       },
-      "biography": "Kotzebue, Anna #s+Christiane#s-, geb. Krüger (1736-1828), Tochter des Kaufmanns und Ratsherrn Johann Anton Krüger in Wolfenbüttel, seit 1757 verh. mit dem späteren sachsen-weimarischen Kabinettssekretär, Geheimen Referendar und Legationsrat Karl Christian K. in Wolfenbüttel, seit 1758 in Weimar, 1761 verw., Mutter von Amalie Gildemeister und August von K.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Kotzebue, Anna #r#Christiane#/r#, geb. Krüger (1736-1828), Tochter des Kaufmanns und Ratsherrn Johann Anton Krüger in Wolfenbüttel, seit 1757 verh. mit dem späteren sachsen-weimarischen Kabinettssekretär, Geheimen Referendar und Legationsrat Karl Christian K. in Wolfenbüttel, seit 1758 in Weimar, 1761 verw., Mutter von Carl, Amalie Gildemeister und August von K."
-        },
-        {
-          "source": "bug",
-          "text": "Kotzebue, Anna /Christiane/, geb. Krüger"
-        }
-      ]
+      "biography": "Kotzebue, Anna #s+Christiane#s-, geb. Krüger (1736-1828), Tochter des Kaufmanns und Ratsherrn Johann Anton Krüger in Wolfenbüttel, seit 1757 verh. mit dem späteren sachsen-weimarischen Kabinettssekretär, Geheimen Referendar und Legationsrat Karl Christian K. in Wolfenbüttel, seit 1758 in Weimar, 1761 verw., Mutter von Amalie Gildemeister und August von K."
     },
     {
       "id": "44311",
@@ -8746,13 +7593,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Krickeberg, Sophie #s+Friederike#s-, geb. Koch, gesch. Gentz (1770-1842), Schauspielerin und Schriftstellerin, 1775 in Gotha, 1778 in Dresden und Leipzig, 1787 in Berlin, seit 1798 u._a. in Schwerin, 1811 in Hamburg, 1815 in Königsberg, 1816 wieder in Berlin, Tochter des Schauspielerpaares Friedrich und Franziska Romana Koch, seit 1789 erste Ehefrau von Friedrich Gentz, 1791 gesch., seit 1798 in zweiter Ehe verh. mit dem Schauspieler und Theaterdirektor Karl Ludwig K.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Krickeberg, Sophie /Friederike/, geb. Koch, gesch. Gentz"
-        }
-      ]
+      "biography": "Krickeberg, Sophie #s+Friederike#s-, geb. Koch, gesch. Gentz (1770-1842), Schauspielerin und Schriftstellerin, 1775 in Gotha, 1778 in Dresden und Leipzig, 1787 in Berlin, seit 1798 u._a. in Schwerin, 1811 in Hamburg, 1815 in Königsberg, 1816 wieder in Berlin, Tochter des Schauspielerpaares Friedrich und Franziska Romana Koch, seit 1789 erste Ehefrau von Friedrich Gentz, 1791 gesch., seit 1798 in zweiter Ehe verh. mit dem Schauspieler und Theaterdirektor Karl Ludwig K."
     },
     {
       "id": "44314",
@@ -8809,13 +7650,7 @@
         "birth": "1761",
         "death": "1821"
       },
-      "biography": "Kurland, Anna Charlotte #s+Dorothea#s- Herzogin von, geb. (Gräfin) von Medem (1761-1821), Tochter des Reichsgrafen Friedrich von Medem, seit 1779 verh. mit Peter von Biron Herzog von K., 1800 verw., seitdem u._a. in Berlin, Karlsbad, Paris und auf ihrem Gut Löbichau bei Ronneburg, Halbschwester Elisa von der Reckes",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Curland, Anna Charlotte #r#Dorothea#/r# Herzogin von, geb. Gräfin von Medem (1761-1821), seit 1779 dritte Frau von Peter Reichsgraf von Biron"
-        }
-      ]
+      "biography": "Kurland, Anna Charlotte #s+Dorothea#s- Herzogin von, geb. (Gräfin) von Medem (1761-1821), Tochter des Reichsgrafen Friedrich von Medem, seit 1779 verh. mit Peter von Biron Herzog von K., 1800 verw., seitdem u._a. in Berlin, Karlsbad, Paris und auf ihrem Gut Löbichau bei Ronneburg, Halbschwester Elisa von der Reckes"
     },
     {
       "id": "44355",
@@ -8894,23 +7729,6 @@
           "type_id": "4040",
           "reciprocal_type": "hat Großelternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "43000",
-          "type": "hat Enkel",
-          "agrelon_id": "4040"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "La Roche, Marie #r#Sophie#/r# (31. August 1775:) von, geb. Gutermann (1730-1807), Schriftstellerin in Thal-Ehrenbreitstein und Mainz, ab 1780 in Speyer und seit 1786 in Offenbach, Freundin Goethes und Wielands"
-        },
-        {
-          "source": "bug",
-          "text": "La Roche, Marie /Sophie/ v., geb. Gutermann v. Gutershofen"
-        }
       ]
     },
     {
@@ -8950,13 +7768,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Lieber, #s+Marie#s- Friederike, geb. Hol(t)zwart (e._1796-1799),  Erzieherin, Tochter des preußischen Werbeoffiziers Johann Wilhelm Hol(t)zwart in Berlin, seit 1796 verh. mit dem Lehrer Gottlieb Friedrich L. (1767-1809) in Buttstädt ",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Lieber, #r#Marie#/r# Friederike, geb. Hol(t)zwart,  Erzieherin, Tochter des preußischen Werbeoffiziers Johann Wilhelm H.  in Berlin, seit 1796 verheiratet mit Gottlieb Friedrich Lieber"
-        }
-      ]
+      "biography": "Lieber, #s+Marie#s- Friederike, geb. Hol(t)zwart (e._1796-1799),  Erzieherin, Tochter des preußischen Werbeoffiziers Johann Wilhelm Hol(t)zwart in Berlin, seit 1796 verh. mit dem Lehrer Gottlieb Friedrich L. (1767-1809) in Buttstädt "
     },
     {
       "id": "44412",
@@ -8975,13 +7787,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44415",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
         }
       ]
     },
@@ -9002,13 +7807,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44412",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
         }
       ]
     },
@@ -9067,13 +7865,7 @@
         "death": "1847",
         "birth": "1773"
       },
-      "biography": "Loder, Charlotte #s+Luise#s- Auguste (seit 1809:) von, geb. Richter (1773-1847), Tochter von August Gottlieb Richter, seit 1792 zweite Ehefrau von Justus Christian (von) L., 1808 in Jena, 1809 in Göttingen, später vorwiegend in Oldenburg und Schwerin",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Loder, Charlotte #r#Luise#/r# Auguste (seit 1809:) von, geb. Richter (1773-1847), Tochter von August Gottlieb Richter, seit 1792 zweite Ehefrau von Justus Christian (von) L. "
-        }
-      ]
+      "biography": "Loder, Charlotte #s+Luise#s- Auguste (seit 1809:) von, geb. Richter (1773-1847), Tochter von August Gottlieb Richter, seit 1792 zweite Ehefrau von Justus Christian (von) L., 1808 in Jena, 1809 in Göttingen, später vorwiegend in Oldenburg und Schwerin"
     },
     {
       "id": "44502",
@@ -9091,13 +7883,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Martin, Susanne Marianne #s+Louise#s- (geb. 1788), Schweizer Pädagogin, Tochter des Bürgers Jean Abraham Jules #s+Emmanuel#s- M. in Lonay bei Morges im Kanton Waadt Jean Abraham Jules #s+Emmanuel#s- M., 1812-1817 Erzieherin der Prinzessinnen Maria und Augusta von Sachsen-Weimar, um 1819 in Genf lebend, seit 1821 in Lonay zweite Ehefrau des Genfer Pastors Georg Wilhelm (Georges Guillaume) Gerlach, 1828 verw., später wieder in Genf lebend",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Martin, Susanne Marianne /Louise/"
-        }
-      ]
+      "biography": "Martin, Susanne Marianne #s+Louise#s- (geb. 1788), Schweizer Pädagogin, Tochter des Bürgers Jean Abraham Jules #s+Emmanuel#s- M. in Lonay bei Morges im Kanton Waadt Jean Abraham Jules #s+Emmanuel#s- M., 1812-1817 Erzieherin der Prinzessinnen Maria und Augusta von Sachsen-Weimar, um 1819 in Genf lebend, seit 1821 in Lonay zweite Ehefrau des Genfer Pastors Georg Wilhelm (Georges Guillaume) Gerlach, 1828 verw., später wieder in Genf lebend"
     },
     {
       "id": "44523",
@@ -9154,23 +7940,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "45046",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Sachsen-Weimar und Eisenach, #r#Caroline#/r# Louise, Prinzessin von (1786-1816), seit 1810 Frau des Erbgroßherzogs Friedrich Ludwig von Mecklenburg-Schwerin, seit 1815 Erbgroßherzogin, Tochter von Carl August und #r#Louise#/r# Auguste von Sachsen-Weimar und Eisenach"
-        },
-        {
-          "source": "bug",
-          "text": "Mecklenburg-Schwerin, /Caroline/ Louise Erbgroßherzogin von, geb. Prinzessin von Sachsen-Weimar und Eisenach"
-        }
       ]
     },
     {
@@ -9225,28 +7994,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43781",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "51015",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Melber, #r#Johanna#/r# Maria Jacobäa, geb. Textor (1734-1823), älteste Schwester Elisabeth Catharina Goethes, Tante Goethes"
-        },
-        {
-          "source": "bug",
-          "text": "Melber, /Johanna/ Maria, geb. Textor"
         }
       ]
     },
@@ -9329,17 +8076,7 @@
         "death": "1872",
         "birth": "1789"
       },
-      "biography": "Meyer, #s+Sophie#s- Dorothea Elisabeth, geb. Meyer (1789-1872), seit 1806 Ehefrau von Nikolaus M., 1855 verw., zuletzt in Berlin",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Meyer, #r#Sophie#/r# Dorothea Elisabeth, geb. Meyer (1789-1872?), seit 1806 Ehefrau von Nicolaus Meyer"
-        },
-        {
-          "source": "bug",
-          "text": "Meyer, Sophia Doris Elisabeth, geb. Meyer"
-        }
-      ]
+      "biography": "Meyer, #s+Sophie#s- Dorothea Elisabeth, geb. Meyer (1789-1872), seit 1806 Ehefrau von Nikolaus M., 1855 verw., zuletzt in Berlin"
     },
     {
       "id": "44582",
@@ -9538,23 +8275,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43928",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schlosser, #r#Louise#/r# Maria Anna (1774-1811), Tochter von Johann Georg und Cornelia Friederike Christiane Schlosser"
-        },
-        {
-          "source": "bug",
-          "text": "Nicolovius, Louise Maria Anna, geb. Schlosser"
-        }
       ]
     },
     {
@@ -9579,13 +8299,7 @@
         "death": "1843",
         "birth": "1775"
       },
-      "biography": "Niebecker, #s+Luise#s- Friederike von, geb. von Fritsch (1775-1843), Tochter von Jakob Friedrich von Fritsch, seit 1792 verh. mit dem Landkammerrat Heinrich von N.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Fritsch, #r#Luise#/r# Friederike von (1775/76-1843), Tochter von Jacob Friedrich von Fritsch, seit 1792 verh. mit dem Landkammerrat Heinrich von Niebecker"
-        }
-      ]
+      "biography": "Niebecker, #s+Luise#s- Friederike von, geb. von Fritsch (1775-1843), Tochter von Jakob Friedrich von Fritsch, seit 1792 verh. mit dem Landkammerrat Heinrich von N."
     },
     {
       "id": "44708",
@@ -9608,17 +8322,7 @@
         "death": "1834",
         "birth": "1768"
       },
-      "biography": "Nuys, Elisabeth Wilhelmine (#s+Elisa#s-, #s+Minna#s-) van, geb. Traub (1768-nach 1834), Tochter des Weinhändlers Johann Andreas Traub in Bremen, seit 1784 verh. mit dem preußischen Kommerzienrat und Weinhändler #s+Rudolf#s- Christoph van N. auf Julianenburg bei Aurich, 1797/98 gesch., seit 1809 verh. mit dem Hamburger Kaufmann François Diederich Bertheau, 1826 verw., seit 1827 verh. mit dem Oberauditor der Hamburger Garnison Johannes Mumssen, 1830 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Nuys, Elisabeth Wilhelmine (#r#Elisa#/r#, #r#Minna#/r#) van, geb. Traub (1768-nach 1834), Tochter des Weinhändlers Johann Andreas Traub in Bremen, seit etwa 1784 verh. mit dem preußischen Kommerzienrat und Weinhändler #r#Rudolf#/r# Christoph van Nuys auf Julianenburg bei Aurich, 1797/98 gesch., seit 1809 verh. mit dem Hamburger Kaufmann François Diederich Bertheau, 1826 verw., seit 1827 verh. mit dem Oberauditor der Hamburger Garnison Johannes Mumssen, 1830 verw."
-        },
-        {
-          "source": "bug",
-          "text": "Nuys, Elisabeth Wilhelmine (/Elisa/, /Minna/) van, geb. Traub"
-        }
-      ]
+      "biography": "Nuys, Elisabeth Wilhelmine (#s+Elisa#s-, #s+Minna#s-) van, geb. Traub (1768-nach 1834), Tochter des Weinhändlers Johann Andreas Traub in Bremen, seit 1784 verh. mit dem preußischen Kommerzienrat und Weinhändler #s+Rudolf#s- Christoph van N. auf Julianenburg bei Aurich, 1797/98 gesch., seit 1809 verh. mit dem Hamburger Kaufmann François Diederich Bertheau, 1826 verw., seit 1827 verh. mit dem Oberauditor der Hamburger Garnison Johannes Mumssen, 1830 verw."
     },
     {
       "id": "44716",
@@ -9654,13 +8358,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Oertel, Wilhelmine (#s+Mimi#s-) Henriette von (geb. 1764), um 1798 in Weimar und um 1812 auf Carolath in Schlesien lebend, Schwester des Schriftstellers #s+Friedrich#s- Benedikt von O. und der Fürstin Karoline zu Carolath-Beuthen",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Oertel, Wilhelmine (#r#Mimi#/r#) Henriette von (geb. 1764), Tochter von Johanna Carolina und Friedrich Bendedikt von Oertel"
-        }
-      ]
+      "biography": "Oertel, Wilhelmine (#s+Mimi#s-) Henriette von (geb. 1764), um 1798 in Weimar und um 1812 auf Carolath in Schlesien lebend, Schwester des Schriftstellers #s+Friedrich#s- Benedikt von O. und der Fürstin Karoline zu Carolath-Beuthen"
     },
     {
       "id": "44718",
@@ -9677,17 +8375,7 @@
         "death": "1829",
         "birth": "1748"
       },
-      "biography": "Oeser, #s+Friederike#s- Elisabeth (1748-1829), in Leipzig, Tochter von Adam Friedrich O., Jugendfreundin Goethes",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Oeser, #r#Friederike#/r# Elisabeth (1748-1829), Tochter von Adam Friedrich Oeser und Friederike Elisabeth Oeser, Jugendfreundin Goethes"
-        },
-        {
-          "source": "bug",
-          "text": "Oeser, /Friederike/ Elisabeth"
-        }
-      ]
+      "biography": "Oeser, #s+Friederike#s- Elisabeth (1748-1829), in Leipzig, Tochter von Adam Friedrich O., Jugendfreundin Goethes"
     },
     {
       "id": "44745",
@@ -9775,13 +8463,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Panhuys, #s+Luise#s- Friederike Auguste van (von), geb. von Barckhaus (Barkhaus) genannt von Wiesenhütten (1763-1844), Pflanzen- und Landschaftsmalerin, Tochter des Bankiers Heinrich Karl von Barckhaus genannt von Wiesenhütten in Frankfurt am Main, 1793-1802 in Darmstadt, dann Aufenthalt in England, seit 1805 zweite Ehefrau des 1815 zum Generalgouverneur der niederländischen Kolonie Surinam ernannten Offiziers Willem Benjamin van P., 1811 und 1816 in Surinam, 1816 verw., seitdem wieder in Frankfurt, entfernt mit Goethe verwandt",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Panhuys, /Louise/ Friederike Auguste van (von), geb. v. Barckhaus- Wiesenhütten"
-        }
-      ]
+      "biography": "Panhuys, #s+Luise#s- Friederike Auguste van (von), geb. von Barckhaus (Barkhaus) genannt von Wiesenhütten (1763-1844), Pflanzen- und Landschaftsmalerin, Tochter des Bankiers Heinrich Karl von Barckhaus genannt von Wiesenhütten in Frankfurt am Main, 1793-1802 in Darmstadt, dann Aufenthalt in England, seit 1805 zweite Ehefrau des 1815 zum Generalgouverneur der niederländischen Kolonie Surinam ernannten Offiziers Willem Benjamin van P., 1811 und 1816 in Surinam, 1816 verw., seitdem wieder in Frankfurt, entfernt mit Goethe verwandt"
     },
     {
       "id": "44763",
@@ -9808,13 +8490,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Pappenheim (Rabe von P.), #s+Jenny#s- (Jeromée) Katharine Gräfin von (1811-1890), Schriftstellerin, Memoirenschreiberin, Tochter von Gräfin Diana von P. und König Jérôme von Westphalen, seit 1817 Stieftochter von Ernst August von Gersdorff, 1814/15 in Weimar, 1822 in Straßburg, 1826 wieder in Weimar, 1829-1838 in Diensten der Großherzogin Maria Pawlowna, seit 1838 verh. mit dem Gutsbesitzer Werner von Gustedt, auf dessen Gut Garden in Westpreußen, später auf Gut Rosenberg, in Berlin und Halberstadt lebend, 1864 verw., 1874 wieder in Weimar und zuletzt in Laplacken in Ostpreußen lebend, Großmutter der Politikerin und Schriftstellerin Lily Braun",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Pappenheim, Jenny Catharina v."
-        }
-      ]
+      "biography": "Pappenheim (Rabe von P.), #s+Jenny#s- (Jeromée) Katharine Gräfin von (1811-1890), Schriftstellerin, Memoirenschreiberin, Tochter von Gräfin Diana von P. und König Jérôme von Westphalen, seit 1817 Stieftochter von Ernst August von Gersdorff, 1814/15 in Weimar, 1822 in Straßburg, 1826 wieder in Weimar, 1829-1838 in Diensten der Großherzogin Maria Pawlowna, seit 1838 verh. mit dem Gutsbesitzer Werner von Gustedt, auf dessen Gut Garden in Westpreußen, später auf Gut Rosenberg, in Berlin und Halberstadt lebend, 1864 verw., 1874 wieder in Weimar und zuletzt in Laplacken in Ostpreußen lebend, Großmutter der Politikerin und Schriftstellerin Lily Braun"
     },
     {
       "id": "44777",
@@ -9864,17 +8540,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Paulus, Elisabeth Friederike #s+Karoline#s-, geb. Paulus (Ps. Eleutheria Holberg) (1767-1844), Schriftstellerin, Tochter des Oberamtmanns Gottlieb Friedrich P. in Schorndorf, seit 1789 verh. mit ihrem Cousin Heinrich Eberhard Gottlob P.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Paulus, Elisabeth Friederike Caroline, geb. Paulus (1767–1844), Schriftstellerin"
-        },
-        {
-          "source": "bug",
-          "text": "Paulus, Elisabeth Friederike /Caroline/, geb.Paulus"
-        }
-      ]
+      "biography": "Paulus, Elisabeth Friederike #s+Karoline#s-, geb. Paulus (Ps. Eleutheria Holberg) (1767-1844), Schriftstellerin, Tochter des Oberamtmanns Gottlieb Friedrich P. in Schorndorf, seit 1789 verh. mit ihrem Cousin Heinrich Eberhard Gottlob P."
     },
     {
       "id": "44799",
@@ -9922,17 +8588,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Pistorius, #s+Luise#s- Augusta Philippina, geb. Schwan (1775-1853), Tochter des Verlagsbuchhändlers Christian Friedrich Schwan in Mannheim, seit 1795 verh. mit Gottlieb P.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Pistorius, #r#Louise#/r# Augusta Philippina geb. Schwan (1775-1853), Tochter des Verlagsbuchhändlers Christian Friedrich Schwan in Mannheim, seit 1795 verheiratet mit Gottlieb Pistorius"
-        },
-        {
-          "source": "bug",
-          "text": "Pistorius, /Louise/ Augusta Philippina, geb. Schwan"
-        }
-      ]
+      "biography": "Pistorius, #s+Luise#s- Augusta Philippina, geb. Schwan (1775-1853), Tochter des Verlagsbuchhändlers Christian Friedrich Schwan in Mannheim, seit 1795 verh. mit Gottlieb P."
     },
     {
       "id": "44815",
@@ -10000,23 +8656,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "43782",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        },
-        {
-          "target": "43961",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "44816",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
       ]
     },
     {
@@ -10069,18 +8708,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "43782",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "44815",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
       ]
     },
     {
@@ -10126,13 +8753,7 @@
           "type": "Geburtsort"
         }
       ],
-      "biography": "Preußen, Amalie Marie Anne (#s+Marianne#s-) Prinzessin von, geb. Prinzessin von Hessen-Homburg (1785-1846), Tochter des Landgrafen Friedrich_V. von Hessen-Homburg, seit 1804 verh. mit Prinz Friedrich #s+Wilhelm#s- Karl",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Preußen, Amalie Marie Anna (/Marianne/) Prinzessin von, geb. Prinzessin von Hessen-Homburg"
-        }
-      ]
+      "biography": "Preußen, Amalie Marie Anne (#s+Marianne#s-) Prinzessin von, geb. Prinzessin von Hessen-Homburg (1785-1846), Tochter des Landgrafen Friedrich_V. von Hessen-Homburg, seit 1804 verh. mit Prinz Friedrich #s+Wilhelm#s- Karl"
     },
     {
       "id": "44861",
@@ -10227,17 +8848,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Recke, Charlotte Elisabeth (#s+Elisa#s-) Konstantia von der, geb. (Gräfin) von Medem (1754-1833), Schriftstellerin, Tochter des Reichsgrafen Friedrich von Medem, seit 1771 verh. mit Georg Peter #s+Magnus#s- von der R., 1781 gesch., seit 1803 Lebensgefährtin des Schriftstellers Christoph August Tiedge, 1804-1806 in Italien, dann vorwiegend in Berlin, Leipzig, Löbichau und seit 1818 in Dresden lebend, Halbschwester der Herzogin Dorothea von Kurland",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Recke, Charlotte Elisabeth #r#(Elisa)#/r# Constantia von der, geb. (Gräfin) von Medem (1754-1833), Schriftstellerin, seit 1771 verheiratet mit Georg Peter #r#Magnus#/r# von der Recke, 1781 geschieden, von 1784 bis 1786 Reise durch Deutschland, seit 1803 Lebensgefährtin von Christoph August Tiedge, von 1804 bis 1806 in Italien, dann vorwiegend in Berlin, Leipzig, Löbichau und seit 1818 in Dresden, Stiefschwester der Herzogin Anna Charlotte #r#Dorothea#/r# von Kurland"
-        },
-        {
-          "source": "bug",
-          "text": "Recke, Charlotte Elisabeth (/Elisa/) Constantia v. d., geb. Gräfin v. Medem"
-        }
-      ]
+      "biography": "Recke, Charlotte Elisabeth (#s+Elisa#s-) Konstantia von der, geb. (Gräfin) von Medem (1754-1833), Schriftstellerin, Tochter des Reichsgrafen Friedrich von Medem, seit 1771 verh. mit Georg Peter #s+Magnus#s- von der R., 1781 gesch., seit 1803 Lebensgefährtin des Schriftstellers Christoph August Tiedge, 1804-1806 in Italien, dann vorwiegend in Berlin, Leipzig, Löbichau und seit 1818 in Dresden lebend, Halbschwester der Herzogin Dorothea von Kurland"
     },
     {
       "id": "44886",
@@ -10271,13 +8882,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Reden, Johanne Karoline #s+Friederike#s- Gräfin von, geb. von Riedesel zu Eisenbach (1774-1854), Pietistin, Wohltäterin, Tochter des braunschweigischen Generals Friedrich Adolf von Riedesel zu Eisenbach, seit 1802 verh. mit Graf Friedrich Wilhelm R., 1815 verw., Präsidentin der 1815 gegründeten Buchwalder Bibelgesellschaft, Schwester von Georg und Karoline von Riedesel",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Reden, Johanne Juliane /Friederike/ Gräfin v., geb. v. Riedesel zu Eisenbach"
-        }
-      ]
+      "biography": "Reden, Johanne Karoline #s+Friederike#s- Gräfin von, geb. von Riedesel zu Eisenbach (1774-1854), Pietistin, Wohltäterin, Tochter des braunschweigischen Generals Friedrich Adolf von Riedesel zu Eisenbach, seit 1802 verh. mit Graf Friedrich Wilhelm R., 1815 verw., Präsidentin der 1815 gegründeten Buchwalder Bibelgesellschaft, Schwester von Georg und Karoline von Riedesel"
     },
     {
       "id": "44915",
@@ -10334,23 +8939,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "40634",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Reitzenstein, Christiane Henriette (#r#Tinette#/r#) von (1784-1837), Tochter von Eleonore Luise und Georg Christoph von R., Schwester der Gräfin Friederike Karoline von Beust"
-        },
-        {
-          "source": "bug",
-          "text": "Reitzenstein, Christiane Henriette (/Tinette/) v."
         }
       ]
     },
@@ -10453,13 +9041,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Reventlow, Friederike Juliane (#s+Julie#s-) Gräfin von, geb. (Gräfin) von Schimmelmann (1763-1816), Schriftstellerin, seit 1779 verh. mit Graf Friedrich R., seit 1789 vorwiegend auf dem Gut Emkendorf lebend, Schwester der Gräfin Karoline Bausissin und des Grafen Ernst Schimmelmann",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Reventlow, Friederike Juliane (#r#Julie#/r#) Gräfin von, geb. (Gräfin) von Schimmelmann (1763–1816), Schriftstellerin, seit 1779 Frau von Friedrich Carl Graf von R."
-        }
-      ]
+      "biography": "Reventlow, Friederike Juliane (#s+Julie#s-) Gräfin von, geb. (Gräfin) von Schimmelmann (1763-1816), Schriftstellerin, seit 1779 verh. mit Graf Friedrich R., seit 1789 vorwiegend auf dem Gut Emkendorf lebend, Schwester der Gräfin Karoline Bausissin und des Grafen Ernst Schimmelmann"
     },
     {
       "id": "44943",
@@ -10504,17 +9086,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Riemer, #s+Karoline#s- Wilhelmina Henrietta Johanna, geb. Ulrich (1790-1855), Tochter des Amtmanns Johann Gottlob Ulrich in Rudolstadt, früh verwaist, 1809 Gesellschafterin Christiane von Goethes, zeitweise Goethes Sekretärin, seit 1814 verh. mit Friedrich Wilhelm R.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Riemer, #r#Caroline#/r# Wilhelmine Henriette Johanna, geb. Ulrich (1790-1855), seit 1814 Frau von Friedrich Wilhelm Riemer"
-        },
-        {
-          "source": "bug",
-          "text": "Riemer, /Caroline/ Wilhelmina Henrietta Johanna, geb. Ulrich"
-        }
-      ]
+      "biography": "Riemer, #s+Karoline#s- Wilhelmina Henrietta Johanna, geb. Ulrich (1790-1855), Tochter des Amtmanns Johann Gottlob Ulrich in Rudolstadt, früh verwaist, 1809 Gesellschafterin Christiane von Goethes, zeitweise Goethes Sekretärin, seit 1814 verh. mit Friedrich Wilhelm R."
     },
     {
       "id": "44977",
@@ -10568,21 +9140,7 @@
         "death": "1827",
         "birth": "1751"
       },
-      "biography": "Sachsen-Gotha und Altenburg, Maria #s+Charlotte#s- Amalie Ernestine Wilhelmine Henriette Philippine Herzogin von, geb. Prinzessin von Sachsen-Meiningen (1751-1827), Tochter des Herzogs Anton Ulrich von Sachsen-Meiningen, seit 1769 verh. mit Herzog Ernst_II. Ludwig",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Sachsen-Gotha und Altenburg, Maria #r#Charlotte#/r# Amalie Ernestine Wilhelmine Henriette Philippine von, geb. Prinzessin von Sachsen-Meiningen (1751-1827), seit 1769 Frau von Ernst II. Ludwig von Sachsen-Gotha und Altenburg"
-        },
-        {
-          "source": "bug",
-          "text": "Sachsen-Gotha und Altenburg, Maria /Charlotte/ Amalie Ernestine Wilhelmine Henriette Philippine Herzogin von, geb. Prinzessin von Sachsen-Meiningen "
-        },
-        {
-          "source": "tagebuch",
-          "text": "Sachsen-Gotha-Altenburg, Maria #s+Charlottte#s-Amalie Ernestine Wilhelmine Henriette Philippine Herzogin\nvon, geb. Prinzessin von Sachsen-Meiningen (1751–1827), seit 1769 verh. mit Ernst II. Ludwig von S.-G.-A."
-        }
-      ]
+      "biography": "Sachsen-Gotha und Altenburg, Maria #s+Charlotte#s- Amalie Ernestine Wilhelmine Henriette Philippine Herzogin von, geb. Prinzessin von Sachsen-Meiningen (1751-1827), Tochter des Herzogs Anton Ulrich von Sachsen-Meiningen, seit 1769 verh. mit Herzog Ernst_II. Ludwig"
     },
     {
       "id": "45046",
@@ -10666,27 +9224,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "44523",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Sachsen-Weimar und Eisenach, #r#Louise#/r# Auguste Herzogin von, geb. Prinzessin von Hessen-Darmstadt (1757-1830), seit 1775 Herzogin, seit 1815 Großherzogin, seit 3. Oktober 1775 Frau von Herzog Carl August von Sachsen-Weimar und Eisenach"
-        },
-        {
-          "source": "bug",
-          "text": "Sachsen-Weimar-Eisenach, /Louise/ Augusta Herzogin von, geb. Prinzessin von Hessen-Darmstadt "
-        },
-        {
-          "source": "tagebuch",
-          "text": "Sachsen-Weimar-Eisenach, #s+Louise#s- (L, L., Louise, Luise) Augusta Herzogin von, geb. Prinzessin von Hessen-Darmstadt (1757–1830), seit 1775 verh. mit Carl August von S.-W.-E.:\n"
-        }
       ]
     },
     {
@@ -10748,13 +9285,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "40967",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
         }
       ]
     },
@@ -10821,17 +9351,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Sander, Sophia (#s+Sophie#s-) Friederika Henriette, geb. Diederichs (1768-1828), Salonière in Berlin, Tochter des Brunnenmeisters Leopold Konrad Diederichs in Pyrmont, seit 1794 verh. mit dem Berliner Verlagsbuchhändler Johann Daniel S.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Sander, Sophia (#r#Sophie#/r#) Friederika Henriette, geb. Diederichs (1768-1828), Salonière in Berlin, Tochter des Brunnenmeisters Leopold Konrad Diederichs in Pyrmont, seit 1794 verh. mit Johann Daniel Sander, übernahm nach dessen Tod 1825 seine Verlagsbuchhandlung"
-        },
-        {
-          "source": "bug",
-          "text": "Sander, Sophie, geb. Diederichs"
-        }
-      ]
+      "biography": "Sander, Sophia (#s+Sophie#s-) Friederika Henriette, geb. Diederichs (1768-1828), Salonière in Berlin, Tochter des Brunnenmeisters Leopold Konrad Diederichs in Pyrmont, seit 1794 verh. mit dem Berliner Verlagsbuchhändler Johann Daniel S."
     },
     {
       "id": "45070",
@@ -10880,13 +9400,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Sartorius, #s+Karoline#s- Dorothee, (seit 1827:) S. von Waltershausen, geb. von Voigt (1779-1830), Tochter des Hofrats Eberhard August (von) Voigt in Hannover, seit 1805 verh. mit Georg (von) S.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Sartorius, /Caroline/ Dorothee, geb. v. Voigt"
-        }
-      ]
+      "biography": "Sartorius, #s+Karoline#s- Dorothee, (seit 1827:) S. von Waltershausen, geb. von Voigt (1779-1830), Tochter des Hofrats Eberhard August (von) Voigt in Hannover, seit 1805 verh. mit Georg (von) S."
     },
     {
       "id": "45082",
@@ -10987,32 +9501,6 @@
           "type_id": "4090",
           "reciprocal_type": "hat Schwager/Schwägerin"
         }
-      ],
-      "relations": [
-        {
-          "target": "35705",
-          "type": "hat Tante/Onkel",
-          "agrelon_id": "4050"
-        },
-        {
-          "target": "45394",
-          "type": "hat Schwager/Schwägerin",
-          "agrelon_id": "4090"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schardt, Friederike #r#Sophie#/r# Eleonore von, geb. von Bernstorff (Bernsdorf, Bernstorf) (1755-1819), Pflegetochter von Johann Hartwig Ernst Graf von Bernstorff, seit 1778 Frau von Carl von Schardt, Schwägerin Charlotte von Steins"
-        },
-        {
-          "source": "bug",
-          "text": "Schardt, Friederike /Sophie/ Eleonore v., geb. v. Bernstorff"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Schardt (Sch.), Friederike #s+Sophie#s- Eleonore von, geb. von Bernstorff (1755–1819), seit 1778 verh. mit Ernst Carl Constantin von S."
-        }
       ]
     },
     {
@@ -11063,13 +9551,7 @@
           "type": "Sterbeort"
         }
       ],
-      "biography": "Schelling, Angelika Amalie #s+Pauline#s- von, geb. Gotter (1786-1854), Tochter von Friedrich Wilhelm und Luise Gotter, seit 1812 zweite Ehefrau von Friedrich Wilhelm Joseph von S.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Gotter, Angelika Amalie /Pauline/, verh. Schelling"
-        }
-      ]
+      "biography": "Schelling, Angelika Amalie #s+Pauline#s- von, geb. Gotter (1786-1854), Tochter von Friedrich Wilhelm und Luise Gotter, seit 1812 zweite Ehefrau von Friedrich Wilhelm Joseph von S."
     },
     {
       "id": "45111",
@@ -11116,17 +9598,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Schelling, Dorothea #s+Karoline#s- Albertine (seit 1808:) von, geb. Michaelis, verw. Böhmer, gesch. Schlegel (1763-1809), Schriftstellerin, Tochter des Theologen und Orientalisten Johann David Michaelis in Göttingen, 1784-1788 verh. mit dem Arzt Johann Franz Wilhelm Böhmer, 1796-1803 in zweiter Ehe verh. mit August Wilhelm Schlegel, seit 1803 erste Ehefrau von Friedrich Wilhelm Joseph (von) S.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schelling, Dorothea #r#Karoline#/r# Albertine (seit 1808:) von, geb. Michaelis, verw. Böhmer, gesch. Schlegel (1763-1809), Schriftstellerin, Tochter des Theologen und Orientalisten Johann David Michaelis in Göttingen, 1784-1788 verh. mit dem Arzt Johann Franz Wilhelm Böhmer, 1796-1803 in zweiter Ehe verh. mit August Wilhelm Schlegel, seit 1803 erste Ehefrau von Friedrich Wilhelm Joseph (von) S."
-        },
-        {
-          "source": "bug",
-          "text": "Michaelis, Dorothea /Caroline/ Albertine"
-        }
-      ]
+      "biography": "Schelling, Dorothea #s+Karoline#s- Albertine (seit 1808:) von, geb. Michaelis, verw. Böhmer, gesch. Schlegel (1763-1809), Schriftstellerin, Tochter des Theologen und Orientalisten Johann David Michaelis in Göttingen, 1784-1788 verh. mit dem Arzt Johann Franz Wilhelm Böhmer, 1796-1803 in zweiter Ehe verh. mit August Wilhelm Schlegel, seit 1803 erste Ehefrau von Friedrich Wilhelm Joseph (von) S."
     },
     {
       "id": "45127",
@@ -11203,23 +9675,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45783",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schiller, Louise Antoinette #r#Charlotte#/r# von, geb. von Lengefeld (1766-1826), seit 1790 verheiratet mit Friedrich Schiller, Schwester der Friederike Sophie Caroline Augusta von Beulwitz"
-        },
-        {
-          "source": "bug",
-          "text": "Schiller, Louise Antoinette /Charlotte/ v., geb. v. Lengefeld"
         }
       ]
     },
@@ -11300,17 +9755,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Schlegel, #s+Dorothea#s- Friederike (seit 1815:) von, geb. Brendel (Veronika) Mendelssohn, gesch. Veit (1764-1839), Schriftstellerin, Übersetzerin, Tochter von Moses Mendelssohn, 1783-1798/99 verh. mit dem Bankier Simon Veit in Berlin, seit 1804 evangelisch und in zweiter Ehe verh. mit Friedrich (von) S., 1799-1802 in Jena, dann in Paris, Köln und Wien, 1808 zum Katholizismus konvertiert, 1818-1820 in Rom und seit 1829 in Frankfurt am Main, Tochter von Moses Mendelssohn, Mutter der Maler Philipp und Johannes Veit",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schlegel, #r#Dorothea#/r# Friederike (seit 1815:) von, geb. Brendel (Veronika) Mendelssohn, gesch. Veit (1764-1839), Schriftstellerin und Übersetzerin, Tochter von Moses Mendelssohn, 1783-1799 verh. mit dem Bankier Simon Veit in Berlin, seit 1804 in zweiter Ehe verh. mit Friedrich (von) S., 1799-1802 in Jena, dann in Paris und Wien, 1818-1820 in Rom und seit 1830 in Frankfurt am Main"
-        },
-        {
-          "source": "bug",
-          "text": "Veit, /Dorothea/ Friederike, geb. Brendel (Veronika) Mendelssohn"
-        }
-      ]
+      "biography": "Schlegel, #s+Dorothea#s- Friederike (seit 1815:) von, geb. Brendel (Veronika) Mendelssohn, gesch. Veit (1764-1839), Schriftstellerin, Übersetzerin, Tochter von Moses Mendelssohn, 1783-1798/99 verh. mit dem Bankier Simon Veit in Berlin, seit 1804 evangelisch und in zweiter Ehe verh. mit Friedrich (von) S., 1799-1802 in Jena, dann in Paris, Köln und Wien, 1808 zum Katholizismus konvertiert, 1818-1820 in Rom und seit 1829 in Frankfurt am Main, Tochter von Moses Mendelssohn, Mutter der Maler Philipp und Johannes Veit"
     },
     {
       "id": "45158",
@@ -11370,23 +9815,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "43928",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schlosser, #r#Johanna#/r# Catharina Sibylla, geb. Fahlmer (1744-1821), seit 1778 zweite Frau von Johann Georg Schlosser, Freundin Goethes"
-        },
-        {
-          "source": "bug",
-          "text": "Schlosser, /Johanna/ Catharina Sibylla, geb. Fahlmer"
-        }
       ]
     },
     {
@@ -11431,13 +9859,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Schlosser, #s+Margarete#s- Rebekka Elisabeth, geb. Steitz (1749-1819), Tochter des Bankiers Johann #s+Christian#s- Steitz in Frankfurt am Main, seit 1778 verh. mit dem Schöffen Peter S., 1797 verw., Mutter von Fritz, Christian  und Susanna S.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Schlosser, #r#Margarete#/r# Rebekka Elisabeth, geb. Steitz (1749-1819), seit 1778 verh. mit Johann Georg Schlossers Bruder Peter, 1797 verw."
-        }
-      ]
+      "biography": "Schlosser, #s+Margarete#s- Rebekka Elisabeth, geb. Steitz (1749-1819), Tochter des Bankiers Johann #s+Christian#s- Steitz in Frankfurt am Main, seit 1778 verh. mit dem Schöffen Peter S., 1797 verw., Mutter von Fritz, Christian  und Susanna S."
     },
     {
       "id": "45165",
@@ -11633,19 +10055,6 @@
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
         }
-      ],
-      "relations": [
-        {
-          "target": "45215",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Schopenhauer, /Johanna/ Henriette, geb. Trosiener"
-        }
       ]
     },
     {
@@ -11727,24 +10136,6 @@
           "type": "hat Freund",
           "type_id": "1010",
           "reciprocal_type": "hat Freund"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45214",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "51022",
-          "type": "hat Freund",
-          "agrelon_id": "1010"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Schopenhauer, Louise Adelaide (/Adele/) Lavinia"
         }
       ]
     },
@@ -11947,17 +10338,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Seidler, Karoline Sophie #s+Luise#s- (1786-1866), Malerin, 1810-1814 vorwiegend in Dresden, 1817 in München und 1818-1823 in Rom, seit 1823 in Weimar, bis 1829 Zeichenlehrerin der Prinzessinnen Maria und Augusta, 1824 auch Kustodin der Gemäldesammlung, 1835 Hofmalerin, Tochter des akademischen Stallmeisters August Gottfried Ludwig S. in Jena",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Seidler, Caroline Sophie #r#Luise#/r# (1786-1866), Malerin, Tochter von August Gottfried Ludwig S. in Jena, 1810-1814 vorwiegend in Dresden, 1817 in München und 1818-1823 in Rom, seit 1823 in Weimar, bis 1829 Zeichenlehrerin der Prinzessinnen Maria und Augusta, 1824 auch Kustodin der Gemäldesammlung, 1835 Hofmalerin"
-        },
-        {
-          "source": "bug",
-          "text": "Seidler, Caroline Sophie /Louise/"
-        }
-      ]
+      "biography": "Seidler, Karoline Sophie #s+Luise#s- (1786-1866), Malerin, 1810-1814 vorwiegend in Dresden, 1817 in München und 1818-1823 in Rom, seit 1823 in Weimar, bis 1829 Zeichenlehrerin der Prinzessinnen Maria und Augusta, 1824 auch Kustodin der Gemäldesammlung, 1835 Hofmalerin, Tochter des akademischen Stallmeisters August Gottfried Ludwig S. in Jena"
     },
     {
       "id": "45327",
@@ -11984,13 +10365,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45328",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -12025,19 +10399,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45327",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Servière, Pauline (/Paula/) Maria Walburgis "
         }
       ]
     },
@@ -12192,17 +10553,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Staël (S.-Holstein, S. von Holstein), Anne Louise #s+Germaine#s- de, geb. Necker (1766-1817), französische Schriftstellerin, Publizistin, 1802/03-1814 aus Paris verbannt, u._a. in Weimar und Berlin, in Italien, Österreich und auf ihrem Landgut bei Coppet am Genfer See, Tochter des Schweizer Bankiers und französischen Finanzministers Jacques Necker, seit 1786 verh. mit dem schwedischen Gesandten in Paris Erik Magnus von S., 1802 verw., 1794-1808 Liaison mit Benjamin Constant, seit 1816 heimlich verh. mit dem französischen Leutnant Albert #s+Jean#s- Michel (de) Rocca",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Staël-Holstein, Anne Louise #r#Germaine#/r# de, geb. Necker (1766–1817), französische Schriftstellerin, von 1803 bis 1814 u.a. in Weimar und Berlin, in Italien, Österreich und der Schweiz, Frau des schwedischen Gesandten Eric Magnus Staël von Holstein"
-        },
-        {
-          "source": "bug",
-          "text": "Staël-Holstein, Anne Louise /Germaine/ de, geb. Necker"
-        }
-      ]
+      "biography": "Staël (S.-Holstein, S. von Holstein), Anne Louise #s+Germaine#s- de, geb. Necker (1766-1817), französische Schriftstellerin, Publizistin, 1802/03-1814 aus Paris verbannt, u._a. in Weimar und Berlin, in Italien, Österreich und auf ihrem Landgut bei Coppet am Genfer See, Tochter des Schweizer Bankiers und französischen Finanzministers Jacques Necker, seit 1786 verh. mit dem schwedischen Gesandten in Paris Erik Magnus von S., 1802 verw., 1794-1808 Liaison mit Benjamin Constant, seit 1816 heimlich verh. mit dem französischen Leutnant Albert #s+Jean#s- Michel (de) Rocca"
     },
     {
       "id": "45391",
@@ -12234,23 +10585,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "42959",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Stein, #r#Amalie#/r# (Amélie) Konstantine Luise Henriette von, geb. von Seebach (1775-1860), Tochter von August Alexander Christoph und Albertine von Seebach, Schwester von Charlotte von Ahlefeld sowie Friedrich und Ludwig von Seebach, seit 1798 verh. mit Karl von S. auf Kochberg, Schwiegertochter von Charlotte von S. "
-        },
-        {
-          "source": "bug",
-          "text": "Stein, /Amalie/ Konstantine Luise Henriette v., geb. v. Seebach"
         }
       ]
     },
@@ -12333,27 +10667,6 @@
           "type_id": "4090",
           "reciprocal_type": "hat Schwager/Schwägerin"
         }
-      ],
-      "relations": [
-        {
-          "target": "45090",
-          "type": "hat Schwager/Schwägerin",
-          "agrelon_id": "4090"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Stein, #r#Charlotte#/r# Ernestine (Berhardine) Albertine von, geb. von Schardt (1742-1827), bis 1764 Hofdame der Herzogin Anna Amalia von Sachsen-Weimar und Eisenach, 1764 Heirat mit Gottlob Ernst Josias Friedrich von Stein, seit 1775 Freundin Goethes, Schriftstellerin"
-        },
-        {
-          "source": "bug",
-          "text": "Stein, /Charlotte/ Ernestine Bernhardine Albertine v., geb. v. Schardt"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Stein (¿, St, St.), #s+Charlotte#s- Albertine Ernestine Freifrau von, geb. von Schardt (1742–1827), seit 1764 verh. mit Gottlob Ernst Josias von S."
-        }
       ]
     },
     {
@@ -12399,17 +10712,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Stock, #s+Esther#s- Maria Margarete, geb. Moritz (1755-1825), Tochter des Legationsrates Johann Friedrich Moritz, seit 1778 verh. mit dem Bankier und Fabrikanten Jakob S. in Frankfurt am Main, 1808 verw.,  Jugendfreundin Goethes",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Stock, #r#Esther#/r# Maria Margarethe, geb. Moritz (1755–1825), Frankfurter Jugendfreundin Goethes, seit 1778 Frau von Jakob Stock"
-        },
-        {
-          "source": "bug",
-          "text": "Stock, /Esther/ Maria Margarethe, geb. Moritz"
-        }
-      ]
+      "biography": "Stock, #s+Esther#s- Maria Margarete, geb. Moritz (1755-1825), Tochter des Legationsrates Johann Friedrich Moritz, seit 1778 verh. mit dem Bankier und Fabrikanten Jakob S. in Frankfurt am Main, 1808 verw.,  Jugendfreundin Goethes"
     },
     {
       "id": "45438",
@@ -12429,17 +10732,7 @@
         "death": "1842",
         "birth": "1765"
       },
-      "biography": "Stolberg-Stolberg, #s+Sophie#s- Charlotte Eleonore Gräfin zu, geb. Gräfin von Redern (1765-1842), Tochter des Grafen Sigismund von Redern, seit 1790 zweite Ehefrau von #s+Friedrich#s- Leopold zu S., 1819 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Stolberg-Stolberg, Sophie Charlotte Eleonore Gräfin zu, geb. Gräfin von Redern (1765-1842), Tochter des Grafen Sigismund von Redern, seit 1790 zweite Ehefrau von Friedrich Leopold Graf zu Stolberg-Stolberg"
-        },
-        {
-          "source": "bug",
-          "text": "Stolberg-Stolberg, /Sophie/ Charlotte Eleonore Gräfin zu, geb. Gräfin v. Redern"
-        }
-      ]
+      "biography": "Stolberg-Stolberg, #s+Sophie#s- Charlotte Eleonore Gräfin zu, geb. Gräfin von Redern (1765-1842), Tochter des Grafen Sigismund von Redern, seit 1790 zweite Ehefrau von #s+Friedrich#s- Leopold zu S., 1819 verw."
     },
     {
       "id": "45480",
@@ -12543,17 +10836,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Thon, #s+Eleonore#s- Sophie Auguste, geb. Röder (1753-1807), Schriftstellerin, Tochter des Kammersekretärs August Friedrich Röder in Eisenach, seit 1782 verh. mit dem Kammerrat Johann Karl Salomo(n) T. in Eisenach, Schwägerin von Christian August T.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Thon, #r#Eleonore#/r# Sophie Auguste, geb. Röder (1753-1807), Schriftstellerin"
-        },
-        {
-          "source": "bug",
-          "text": "Thon, /Eleonore/ Sophie Auguste, geb. Röder"
-        }
-      ]
+      "biography": "Thon, #s+Eleonore#s- Sophie Auguste, geb. Röder (1753-1807), Schriftstellerin, Tochter des Kammersekretärs August Friedrich Röder in Eisenach, seit 1782 verh. mit dem Kammerrat Johann Karl Salomo(n) T. in Eisenach, Schwägerin von Christian August T."
     },
     {
       "id": "45532",
@@ -12638,21 +10921,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Türckheim, Anna #s+Elisabeth#s- (Lili, Elise) von, geb. Schönemann (1758-1817), Tochter des Bankiers Johann Wolfgang Schönemann in Frankfurt am Main, 1775 mit Goethe verlobt, seit 1778 verh. mit dem Straßburger Bankier Bernhard von T.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Türckheim, Anna Elisabeth (#r#Lili#/r#) geb. Schönemann (1758-1817), seit 1778 Frau von Bernhard Friedrich von Türckheim, 1775 Goethes inoffzielle Verlobte"
-        },
-        {
-          "source": "bug",
-          "text": "Türckheim, Anna /Elisabeth/ (/Lili/) v., geb. Schönemann"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Schönemann, Anna Elisabeth (L., Lili) (1758–1817), Ostern bis September 1775 mit Goethe verlobt, seit 1778 verheiratet mit Bernhard Friedrich von Türckheim (1752–1831)"
-        }
-      ]
+      "biography": "Türckheim, Anna #s+Elisabeth#s- (Lili, Elise) von, geb. Schönemann (1758-1817), Tochter des Bankiers Johann Wolfgang Schönemann in Frankfurt am Main, 1775 mit Goethe verlobt, seit 1778 verh. mit dem Straßburger Bankier Bernhard von T."
     },
     {
       "id": "45567",
@@ -12683,13 +10952,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Unger, #s+Friederike#s- Helene, geb. ?_Rothenburg (1741/51/54-1813), Schriftstellerin in Berlin, (?) Tochter des preußischen Generals (seit 1736:) Graf Friedrich #s+Rudolf#s- von Rothenburg und der Marquise de Vieuville, seit 1785 verh. mit Johann Friedrich U.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Unger, #k#Friederike#/k# Helene, geb. von Rothenburg (1741-1813), (?) Tochter des preußischen Generals (seit 1736:) Graf Friedrich #k#Rudolf#/k# von Rothenburg und der Marquise de Vieuville, Schriftstellerin in Berlin, Übersetzerin, seit 1785/86 verh. mit Johann Friedrich U."
-        }
-      ]
+      "biography": "Unger, #s+Friederike#s- Helene, geb. ?_Rothenburg (1741/51/54-1813), Schriftstellerin in Berlin, (?) Tochter des preußischen Generals (seit 1736:) Graf Friedrich #s+Rudolf#s- von Rothenburg und der Marquise de Vieuville, seit 1785 verh. mit Johann Friedrich U."
     },
     {
       "id": "45574",
@@ -12780,13 +11043,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Vernejoul, #s+Christiane#s- Elise Sabine von (de), geb. von Cramon, gesch. von Waldenfels, verw. von Haeften (geb. 1768), Tochter des Oberforstmeisters Christoph Gustav von Cramon in Bayreuth, in erster Ehe verh. mit dem Offizier Karl von Waldenfels, 1793/94 gesch., 1794-1803 verh. mit dem preußischen Offizier #s+Reinhard#s- Samuel Christian von Haeften, seit 1804/05 verh. mit dem niederländischen Offizier Marc Antoine de V. in Kleve",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Vernijoul, /Christiane/ Elise Sabine de, geb. von Cramon, gesch. von Waldenfels, verw. von Haeften"
-        }
-      ]
+      "biography": "Vernejoul, #s+Christiane#s- Elise Sabine von (de), geb. von Cramon, gesch. von Waldenfels, verw. von Haeften (geb. 1768), Tochter des Oberforstmeisters Christoph Gustav von Cramon in Bayreuth, in erster Ehe verh. mit dem Offizier Karl von Waldenfels, 1793/94 gesch., 1794-1803 verh. mit dem preußischen Offizier #s+Reinhard#s- Samuel Christian von Haeften, seit 1804/05 verh. mit dem niederländischen Offizier Marc Antoine de V. in Kleve"
     },
     {
       "id": "45610",
@@ -12840,17 +11097,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Voigt, #s+Amalie#s- Henriette Karoline (seit 1807:) von, geb. Ludecus (1778-1840), Schriftstellerin in Weimar, Tochter aus Johann August Ludecus' (erster) Ehe mit Friederike Kirms, seit 1798 erste Ehefrau von Christian Gottlob (von) V. d._J., 1809 gesch., seitdem zeitweise in Dresden lebend, Nichte von Franz und Karl Kirms",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Voigt, #r#Amalie#/r# Henriette Karoline (seit 1807:) von, geb. Ludecus (1778-1840), Schriftstellerin in Weimar, Tochter aus Johann August Ludecus' (erster) Ehe mit Friederike Kirms, seit 1798 erste Ehefrau von Christian Gottlob (von) V. d. J., 1809 gesch., seitdem zeitweise in Dresden lebend, Nichte von Franz und Karl Kirms"
-        },
-        {
-          "source": "bug",
-          "text": "Voigt, /Amalie/ Henriette Caroline v., geb. Ludecus"
-        }
-      ]
+      "biography": "Voigt, #s+Amalie#s- Henriette Karoline (seit 1807:) von, geb. Ludecus (1778-1840), Schriftstellerin in Weimar, Tochter aus Johann August Ludecus' (erster) Ehe mit Friederike Kirms, seit 1798 erste Ehefrau von Christian Gottlob (von) V. d._J., 1809 gesch., seitdem zeitweise in Dresden lebend, Nichte von Franz und Karl Kirms"
     },
     {
       "id": "45611",
@@ -12923,21 +11170,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Voigts, Johanna (#s+Jenny#s-) Wilhelmina Juliana von, geb. Möser (1749-1814), Tochter von Justus Möser, seit 1768 verh. mit dem Justizrat Johann Gerlach Just von V. in Melle",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Voigts, Johanna (#r#Jenny#/r#) Wilhelmine Juliane von, geb. Möser (1749-1814), Tochter des Historikers Justus von Möser in Osnabrück"
-        },
-        {
-          "source": "bug",
-          "text": "Voigts, Johanna (/Jenny/) Wilhelmine Juliane v., geb. Möser "
-        },
-        {
-          "source": "tagebuch",
-          "text": "Voigts, #s+Johanna#s- (Jenny) Wilhelmina Juliana von, geb. Möser (1749–1814), Schriftstellerin, Korrespondentin Goethes, Tochter von Justus Möser"
-        }
-      ]
+      "biography": "Voigts, Johanna (#s+Jenny#s-) Wilhelmina Juliana von, geb. Möser (1749-1814), Tochter von Justus Möser, seit 1768 verh. mit dem Justizrat Johann Gerlach Just von V. in Melle"
     },
     {
       "id": "45623",
@@ -12956,23 +11189,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "41693",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Voß, #r#Amalie#/r# Friederike Wilhelmine Ernestine von, geb. von Voß (1763-1809), seit 1795 Frau des preußischen Generals Karl Friedrich von Voß, Tochter von Christian Heinrich Wilhelm von Voß, Enkelin von Herzog Ernst August von Sachsen-Weimar und Eisenach"
-        },
-        {
-          "source": "bug",
-          "text": "Voß, /Amalie/ Friederike Wilhelmine Ernestine v., geb. v. Voß"
         }
       ]
     },
@@ -13017,17 +11233,7 @@
           "type": "Geburtsort"
         }
       ],
-      "biography": "Voß, Marie Christiane (Christine) Henriette #s+Ernestine#s-, geb. Boie (1756-1834), Schwester von Heinrich Christian Boie, seit 1777 verh. mit Johann Heinrich V. d._Ä.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Voß, Marie Christine Henriette #r#Ernestine#/r# , geb. Boie (1756-1834), seit 1777 Frau von Johann Heinrich V. d. Ä., Schwester von Heinrich Christian Boie"
-        },
-        {
-          "source": "bug",
-          "text": "Voß (Voss), Marie Christine Henriette /Ernestine/, geb. Boie"
-        }
-      ]
+      "biography": "Voß, Marie Christiane (Christine) Henriette #s+Ernestine#s-, geb. Boie (1756-1834), Schwester von Heinrich Christian Boie, seit 1777 verh. mit Johann Heinrich V. d._Ä."
     },
     {
       "id": "45635",
@@ -13077,13 +11283,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Weber, Magdalena #s+Barbara#s- (Babet) Margareta von, geb. Wild (1771-1832), Tochter eines Kunst- und Naturalienhändlers in Nürnberg, seit 1792 verh. mit Fridolin (III) von W.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Weber, Magdalena /Barbara/ (Babet) Margareta v., geb. Wild"
-        }
-      ]
+      "biography": "Weber, Magdalena #s+Barbara#s- (Babet) Margareta von, geb. Wild (1771-1832), Tochter eines Kunst- und Naturalienhändlers in Nürnberg, seit 1792 verh. mit Fridolin (III) von W."
     },
     {
       "id": "45684",
@@ -13122,21 +11322,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Wedel, Johanna #s+Marianne#s- Henriette von, geb. von Woellwarth-Essingen (1752-1815), 1775 Hofdame von Herzogin Luise von Sachsen-Weimar, 1804 Oberhofmeisterin, seit 1782 verh. mit dem Kammerherrn und Oberforstmeister Moritz von W., 1794 verw.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Wedel, Johanna #r#Marianne#/r# Henriette von, geb. von Woellwarth-Essingen (1752-1815), seit 1775 Hofdame der Herzogin Louise Auguste von Sachsen-Weimar und Eisenach, seit 1804 Oberhofmeisterin, seit 1782 Frau von Otto Joachim Moritz von Wedel\n"
-        },
-        {
-          "source": "bug",
-          "text": "Wedel, Johanna /Marianne/ Henriette v., geb. v. Woellwarth-Essingen "
-        },
-        {
-          "source": "tagebuch",
-          "text": "Woellwarth-Essingen (Wollw., Wollwarth, Wöllwarth), Johanna #s+Marianne#s- (M., Mar.) Henriette von (1752–1815), seit 1775 Hofdame im Dienst der Herzogin Louise, beteiligt an Aufführungen des Weimarer\nLiebhabertheaters, seit 1782 verh. mit Otto Joachim Moritz von Wedel"
-        }
-      ]
+      "biography": "Wedel, Johanna #s+Marianne#s- Henriette von, geb. von Woellwarth-Essingen (1752-1815), 1775 Hofdame von Herzogin Luise von Sachsen-Weimar, 1804 Oberhofmeisterin, seit 1782 verh. mit dem Kammerherrn und Oberforstmeister Moritz von W., 1794 verw."
     },
     {
       "id": "45707",
@@ -13168,13 +11354,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Werthern (W.-Beichlingen), #s+Christiane#s- Benedikte Johanne Gräfin von, geb. von Globig (1759-1829), Tochter des kursächsischen Konsistorialpräsidenten und Geheimen Rates Hans Gotthelf von Globig, seit 1777 zweite Ehefrau von Graf Johann Georg Heinrich von W., 1790 verw., seit 1791 in Weimar lebend --- (RA 2/591 statt: Werthern-Beichlingen, Johanna Luise Gräfin von jetzt: Werthern-Beichlingen, Christiane Benedikte Johanne Gräfin von)",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Werthern-Beichlingen, #r#Christiane#/r# Benedicte Johanne Gräfin von, geb. von Globig (1759-1829), Tochter des kursächsischen Konsistorialpräsidenten und Geheimen Rates Hans Gotthelf von Globig, seit 1777 zweite Ehefrau von Johann Georg Heinrich Graf von Werthern-Beichlingen"
-        }
-      ]
+      "biography": "Werthern (W.-Beichlingen), #s+Christiane#s- Benedikte Johanne Gräfin von, geb. von Globig (1759-1829), Tochter des kursächsischen Konsistorialpräsidenten und Geheimen Rates Hans Gotthelf von Globig, seit 1777 zweite Ehefrau von Graf Johann Georg Heinrich von W., 1790 verw., seit 1791 in Weimar lebend --- (RA 2/591 statt: Werthern-Beichlingen, Johanna Luise Gräfin von jetzt: Werthern-Beichlingen, Christiane Benedikte Johanne Gräfin von)"
     },
     {
       "id": "45711",
@@ -13194,21 +11374,7 @@
         "birth": "1751",
         "death": "1811"
       },
-      "biography": "Werthern (W.-Beichlingen), Johanna #s+Luise#s- Gräfin von, geb. vom und zum Stein (1751-1811), Tochter des kurmainzischen Kammerherrn und Geheimen Rates Karl Philipp vom und zum Stein, seit 1773 verh. mit dem sächsischen Diplomaten Graf Jakob Friedemann von W., Schwester von Karl vom und zum Stein, 1806 verw. --- (RA 2/591 statt: Werthern-Beichlingen, Johanna Luise Gräfin von, jetzt: Werthern, Christiane Benedikte Johanne Gräfin von)",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Werthern-Beichlingen, Johanna #r#Louise#/r# Gräfin von, geb. vom und zum Stein (1751-1811), seit 1773 Frau von Jacob Friedemann Graf von Werthern-Beichlingen, ältere Schwester des preußischen Ministers Heinrich Friedrich Karl vom und zum Stein "
-        },
-        {
-          "source": "bug",
-          "text": "Werthern-Beichlingen, Johanna /Louise/ Gräfin von, geb. vom und zum Stein "
-        },
-        {
-          "source": "tagebuch",
-          "text": "Werthern-Beichlingen, Johanna #s+Louise#s- Gräfin von, geb. Freifrau vom und zum Stein zu Nassau (1752–1811), verh. mit Jacob Friedemann von W.-B."
-        }
-      ]
+      "biography": "Werthern (W.-Beichlingen), Johanna #s+Luise#s- Gräfin von, geb. vom und zum Stein (1751-1811), Tochter des kurmainzischen Kammerherrn und Geheimen Rates Karl Philipp vom und zum Stein, seit 1773 verh. mit dem sächsischen Diplomaten Graf Jakob Friedemann von W., Schwester von Karl vom und zum Stein, 1806 verw. --- (RA 2/591 statt: Werthern-Beichlingen, Johanna Luise Gräfin von, jetzt: Werthern, Christiane Benedikte Johanne Gräfin von)"
     },
     {
       "id": "45712",
@@ -13241,19 +11407,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "44275",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Werthern, Juliane Luise #r#Cäcilie#/r# von, geb. von Ziegesar (1773– 1831), Tochter von August Friedrich Carl Freiherr von Z. "
         }
       ]
     },
@@ -13333,24 +11486,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43690",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        },
-        {
-          "target": "43181",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Wesselhöft, Margareta /Elisabeth/ (Betty)"
-        }
       ]
     },
     {
@@ -13390,13 +11525,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Westphalen, Engel #s+Christine#s-, geb. von Axen (1758-1840), Schriftstellerin in Hamburg, Tochter des Hamburger Kaufmanns und Bürgerkapitäns Jakob von Axen, seit 1775/85 verh. mit dem Kaufmann und Senator Johann Ernst Friedrich W.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Westphalen, Engel #r#Christine#/r#, geb. von Axen (1758-1840), Schriftstellerin in Hamburg, seit 1775/85 verh. mit dem Kaufmann und Senator Johann Ernst Friedrich Westphalen"
-        }
-      ]
+      "biography": "Westphalen, Engel #s+Christine#s-, geb. von Axen (1758-1840), Schriftstellerin in Hamburg, Tochter des Hamburger Kaufmanns und Bürgerkapitäns Jakob von Axen, seit 1775/85 verh. mit dem Kaufmann und Senator Johann Ernst Friedrich W."
     },
     {
       "id": "45726",
@@ -13438,13 +11567,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Weyrauch, #s+Maria#s- Anna #s+Theresia#s- (#s+Jeannette#s-) Magdalena Antonetta, geb. von Weber (1767-1834), Schauspielerin, Sängerin, 1793-1800 in Weimar, seit 1789 verh. mit Vinzent W.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Weyrauch, #r#Maria#/r# Anna #r#Theresia#/r# (#r#Jeannette#/r#) Magdalena Antonetta (1767–1834), geb. von Weber, Schauspielerin und Sängerin in Weimar, seit 1789 Frau von Vincent Weyrauch"
-        }
-      ]
+      "biography": "Weyrauch, #s+Maria#s- Anna #s+Theresia#s- (#s+Jeannette#s-) Magdalena Antonetta, geb. von Weber (1767-1834), Schauspielerin, Sängerin, 1793-1800 in Weimar, seit 1789 verh. mit Vinzent W."
     },
     {
       "id": "45745",
@@ -13482,17 +11605,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Willemer, Maria Anna (#s+Marianne#s-) Katharina Therese (seit 26. September 1816:) von, geb. Jung (richtig: Pirngruber) (1784-1860), Tochter der Schauspielerin Maria Anna #s+Elisabeth#s- Pirngruber  und des Linzer Tanzmeisters Johann Baptist van Gangelt oder des Schauspielers und Theaterleiters Joseph Matthias Georg Jung, 1800 Pflegetochter und seit 1814 dritte Ehefrau von Johann Jakob (von) W.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Willemer, Maria Anna #r#(Marianne)#/r# Katharina Theresia (1816: von), geb. Jung (ursprüngl. Pirngruber) (1784-1860), seit 1800 Pflegetochter von Johann Jacob Willemer, 1814 dessen dritte Frau, Schriftstellerin"
-        },
-        {
-          "source": "bug",
-          "text": "Willemer, Maria Anna (/Marianne/) Catharina Therese (seit 26. Sept. 1816 v.), geb. Pirngruber, gen. Jung"
-        }
-      ]
+      "biography": "Willemer, Maria Anna (#s+Marianne#s-) Katharina Therese (seit 26. September 1816:) von, geb. Jung (richtig: Pirngruber) (1784-1860), Tochter der Schauspielerin Maria Anna #s+Elisabeth#s- Pirngruber  und des Linzer Tanzmeisters Johann Baptist van Gangelt oder des Schauspielers und Theaterleiters Joseph Matthias Georg Jung, 1800 Pflegetochter und seit 1814 dritte Ehefrau von Johann Jakob (von) W."
     },
     {
       "id": "45769",
@@ -13553,13 +11666,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Wolf, Maria Karolina (#s+Karoline#s-), geb. Benda (1742-1820), Sängerin, Schauspielerin, seit 1765 in Weimar, seit 1770 verh. mit dem Kapellmeister und Komponisten Ernst Wilhelm W., 1792 verw., Tochter des Komponisten Franz Benda, Schwägerin von Johann Friedrich Reichardt",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Wolf, Maria Carolina (/Caroline/), geb. Benda"
-        }
-      ]
+      "biography": "Wolf, Maria Karolina (#s+Karoline#s-), geb. Benda (1742-1820), Sängerin, Schauspielerin, seit 1765 in Weimar, seit 1770 verh. mit dem Kapellmeister und Komponisten Ernst Wilhelm W., 1792 verw., Tochter des Komponisten Franz Benda, Schwägerin von Johann Friedrich Reichardt"
     },
     {
       "id": "45773",
@@ -13582,13 +11689,7 @@
         "death": "1821",
         "birth": "1754"
       },
-      "biography": "Wolf, Maria Sabina (#s+Sabine#s-) Apollonia Viktoria, geb. Schropp (1754-1821), Tochter des Kaufmanns und Kupferstichverlegers Simon Schropp in Augsburg, seit 1777 verh. mit dem Augsburger Buchhändler Franz Xaver Karl Borromäus W., 1803 verw., Mutter von Pius Alexander Wolff",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Wolff, Sabine, geb. Schropp"
-        }
-      ]
+      "biography": "Wolf, Maria Sabina (#s+Sabine#s-) Apollonia Viktoria, geb. Schropp (1754-1821), Tochter des Kaufmanns und Kupferstichverlegers Simon Schropp in Augsburg, seit 1777 verh. mit dem Augsburger Buchhändler Franz Xaver Karl Borromäus W., 1803 verw., Mutter von Pius Alexander Wolff"
     },
     {
       "id": "45775",
@@ -13650,17 +11751,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Wolff, Anna Amalia (#s+Amalie#s-) Christiane, geb. Malcolmi (Malkolmy), gesch./verw. Miller, gesch. Becker (1780/81-1851), Schauspielerin, 1791 in Weimar, 1816-1844 in Berlin, Tochter des Schauspielers Karl Friedrich Malcolmi, 1802 verh. mit Julius Miller in Bayreuth, 1803-1804 verh. mit Heinrich Becker, seit 1805 verh. mit Pius Alexander W.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Malcolmi (Malcolmy), Anna Amalia (Amalie) Christiane (1780–1851), Schauspielerin, seit 1791 in Weimar, von 1816 bis 1844 \nin Berlin, seit 1802 verh. mit Julius Miller in Bayreuth, seit 1803 verh.  mit Heinrich Becker, seit 1805 mit Pius Alexander Wolff, Tochter von Carl Friedrich M."
-        },
-        {
-          "source": "bug",
-          "text": "Wolff (Wolf), Anna Amalia (/Amalie/) Christiane, geb. Malcolmi, verw. Miller, gesch. Becker"
-        }
-      ]
+      "biography": "Wolff, Anna Amalia (#s+Amalie#s-) Christiane, geb. Malcolmi (Malkolmy), gesch./verw. Miller, gesch. Becker (1780/81-1851), Schauspielerin, 1791 in Weimar, 1816-1844 in Berlin, Tochter des Schauspielers Karl Friedrich Malcolmi, 1802 verh. mit Julius Miller in Bayreuth, 1803-1804 verh. mit Heinrich Becker, seit 1805 verh. mit Pius Alexander W."
     },
     {
       "id": "45783",
@@ -13748,23 +11839,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "45127",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Wolzogen, Friederike Sophie #r#Caroline#/r# Augusta von, geb. von Lengefeld, gesch. von Beulwitz (1763-1847), Schriftstellerin, seit 1784 Frau von Friedrich Wilhelm Ludwig von Beulwitz, seit 1794 Frau von Wilhelm von Wolzogen, seit 1797 vorwiegend in Wemar, seit 1826 in Jena, Schillers Schwägerin, Freundin Carl Theodor von Dalbergs"
-        },
-        {
-          "source": "bug",
-          "text": "Wolzogen, Friederike Sophie /Caroline/ Augusta v., geb. v. Lengefeld, gesch. v. Beulwitz "
-        }
       ]
     },
     {
@@ -13796,13 +11870,7 @@
         "death": "1852",
         "birth": "1792"
       },
-      "biography": "Zelter, Dorothea (#s+Doris#s-) Auguste Cäcilie (1792-1852), dritte Tochter aus Karl Friedrich Z.s (erster) Ehe mit Johanna Sophia #s+Eleonora#s- Flöricke, geb. Kappel",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Zelter, Dorothea (/Doris/) Auguste Cäcilie"
-        }
-      ]
+      "biography": "Zelter, Dorothea (#s+Doris#s-) Auguste Cäcilie (1792-1852), dritte Tochter aus Karl Friedrich Z.s (erster) Ehe mit Johanna Sophia #s+Eleonora#s- Flöricke, geb. Kappel"
     },
     {
       "id": "45830",
@@ -13898,17 +11966,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Zucchi, Maria Anna #s+Angelika#s- Katharina, geb. Kauffmann (1741-1807), Schweizer Malerin, 1766/72-1781 in London, seit 1782 in Rom, 1767-1768 verh. mit dem vermeintlichen schwedischen Grafen Frederick de Horn, seit 1781 verh. mit Antonio Z. ",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Kauffmann, Maria Anna #r#Angelika#/r# Katharina (1741-1807), deutschschweizerische Malerin, nach Ausbildung vor allem in Italien von 1766 bis 1781 in London, seit 1782 in Rom, 1767 bis 1768 verh. mit dem vermeintlichen schwedischen Grafen Frederik de Horn, seit 1781 verh. mit Antonio Zucchi, in Rom mit Goethe befreundet"
-        },
-        {
-          "source": "bug",
-          "text": "Kauffmann, Maria Anna /Angelika/ Katharina"
-        }
-      ]
+      "biography": "Zucchi, Maria Anna #s+Angelika#s- Katharina, geb. Kauffmann (1741-1807), Schweizer Malerin, 1766/72-1781 in London, seit 1782 in Rom, 1767-1768 verh. mit dem vermeintlichen schwedischen Grafen Frederick de Horn, seit 1781 verh. mit Antonio Z. "
     },
     {
       "id": "45905",
@@ -14051,28 +12109,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "43070",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        },
-        {
-          "target": "46094",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Egloffstein, Ju l i e Sophie Gräfin von und zu (1792–1869), Malerin, Hofdame, vorwiegend in Weimar und zuletzt in Marienrode bei Hildesheim lebend, 1826/27 bis 1830 Hofdame der Großherzogin Louise von Sachsen-Weimar-Eisenach"
-        },
-        {
-          "source": "bug",
-          "text": "Egloffstein auf Lamgarben und Arklitten, /Julie/ Sophie Gräfin von und zu"
-        }
       ]
     },
     {
@@ -14141,23 +12177,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "46093",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Egloffstein (E. auf Lamgarben und Arklitten), #r#Karoline#/r# (Line) Henriette Gräfin von und zu (1789-1868), Komponistin, Tochter aus Henriette von Beaulieu-Marconnays (erster) Ehe mit Graf Leopold E., Kindheit in Erlangen, Misburg bei Hannover und u. a. um 1802 und 1809-1810 in Weimar, 1815-1831 Hofdame der (Erb-)Großherzogin Maria Pawlowna von Sachsen-Weimar, Schwester der Gräfin Julie E. und des Grafen Karl August E."
-        },
-        {
-          "source": "bug",
-          "text": "Egloffstein auf Lamgarben und Arklitten, /Caroline/ (Line) Henriette Gräfin von und zu"
-        }
       ]
     },
     {
@@ -14202,13 +12221,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "49243",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -14347,13 +12359,6 @@
           "type": "hat Enkel",
           "type_id": "4040",
           "reciprocal_type": "hat Großelternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "51286",
-          "type": "hat Enkel",
-          "agrelon_id": "4040"
         }
       ]
     },
@@ -14692,13 +12697,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Weyrauch, Maria #s+Sophie#s- von, geb. von Stackelberg (1773-1850), Tochter von Wolmar (Woldemar) Friedrich von Stackelberg, seit 1813 in Dorpat verh. mit August von W., seit 1819 in Dresden",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Weyrauch, Sophie v., geb. v. Stackelberg"
-        }
-      ]
+      "biography": "Weyrauch, Maria #s+Sophie#s- von, geb. von Stackelberg (1773-1850), Tochter von Wolmar (Woldemar) Friedrich von Stackelberg, seit 1813 in Dorpat verh. mit August von W., seit 1819 in Dresden"
     },
     {
       "id": "48315",
@@ -14724,21 +12723,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Bernstorff, #s+Auguste#s- Luise Gräfin von, geb. Gräfin zu Stolberg-Stolberg (1753-1835), 1770-1783 Stiftsdame in Uetersen, Tochter des Grafen Christian Günther zu Stolberg-Stolberg, seit 1783 zweite Ehefrau des Grafen Andreas Peter B., Schwester der Grafen #s+Friedrich#s- Leopold und Christian zu Stolberg-Stolberg und der Gräfin Henriette B.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Stolberg-Stolberg, #r#Augusta#/r# Louise (Luise) Gräfin zu (1753-1835), 1770-1783 Stiftsdame in Uetersen, Schwester der Grafen Friedrich Leopold und Christian zu Stolberg, seit 1783 zweite Ehefrau von Graf Andreas Peter Bernstorff\n"
-        },
-        {
-          "source": "bug",
-          "text": "Stolberg-Stolberg, /Augusta/ Louise Gräfin zu"
-        },
-        {
-          "source": "tagebuch",
-          "text": "Bernstorff (Stollberg), Auguste Luise Gräfin von, geb. Gräfin zu Stolberg-Stolberg (1753--1835), 1770--1783 Stiftsdame in Uetersen, seit 1783 zweite Ehefrau des Grafen Andreas Peter Bernstorff, seit 1797 verwitwet, Schwester der Grafen Friedrich Leopold und Christian zu Stolberg"
-        }
-      ]
+      "biography": "Bernstorff, #s+Auguste#s- Luise Gräfin von, geb. Gräfin zu Stolberg-Stolberg (1753-1835), 1770-1783 Stiftsdame in Uetersen, Tochter des Grafen Christian Günther zu Stolberg-Stolberg, seit 1783 zweite Ehefrau des Grafen Andreas Peter B., Schwester der Grafen #s+Friedrich#s- Leopold und Christian zu Stolberg-Stolberg und der Gräfin Henriette B."
     },
     {
       "id": "48678",
@@ -14782,13 +12767,7 @@
         "birth": "1796",
         "death": "1855"
       },
-      "biography": "Stein, #s+Henriette#s- Luise vom und zum (1796-1855), älteste Tochter des preußischen Ministers und Reformers Karl vom S., seit 1825 verh. mit Graf Hermann Giech",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Stein, /Henriette/ Louise vom und zum"
-        }
-      ]
+      "biography": "Stein, #s+Henriette#s- Luise vom und zum (1796-1855), älteste Tochter des preußischen Ministers und Reformers Karl vom S., seit 1825 verh. mit Graf Hermann Giech"
     },
     {
       "id": "49243",
@@ -14846,13 +12825,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "46263",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
@@ -14972,19 +12944,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "43782",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Goethe, #r#Alma#/r# Sedina Henriette Kornelia von (1827-1844), Goethes Enkelin, Tochter von August und Ottilie von Goethe"
         }
       ]
     },
@@ -15132,13 +13091,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Duras (Durfort de D.), #s+Claire#s- Louise Rose Bonne de Durfort de, geb. Comtesse Coëtnempren (Lechat) de Kersaint (1778-1828), seit 1800 Herzogin, französische Schriftstellerin und Salonière in Paris, Tochter des Vizeadmirals Guy de Coëtnempren Comte de Kersaint, seit 1797 verh. mit dem Militär und Politiker Herzog Amédée de D. und Rauzan",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Duras, Claire de (1778-1828), Herzogin von Rauzan"
-        }
-      ]
+      "biography": "Duras (Durfort de D.), #s+Claire#s- Louise Rose Bonne de Durfort de, geb. Comtesse Coëtnempren (Lechat) de Kersaint (1778-1828), seit 1800 Herzogin, französische Schriftstellerin und Salonière in Paris, Tochter des Vizeadmirals Guy de Coëtnempren Comte de Kersaint, seit 1797 verh. mit dem Militär und Politiker Herzog Amédée de D. und Rauzan"
     },
     {
       "id": "49957",
@@ -15181,13 +13134,6 @@
           "type": "hat Kind",
           "type_id": "4030",
           "reciprocal_type": "hat Elternteil"
-        }
-      ],
-      "relations": [
-        {
-          "target": "51575",
-          "type": "hat Kind",
-          "agrelon_id": "4030"
         }
       ]
     },
@@ -15292,13 +13238,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Stich, Sophie #s+Auguste#s- Friederike, geb. Düring (1795-1865), Schauspielerin in Berlin, Tochter des Kaufmanns Johann Christian Düring in Berlin, 1817-1824 verh. mit Wilhelm S., seit 1827 verh. mit dem Bankier Otto Crelinger",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Stich, Sophie Auguste Friederike, geb. Düring (1795-1865), Schauspielerin in Berlin, Tochter des Kaufmanns Johann Christian Düring in Berlin, 1817-1824 verh. mit Wilhelm S., seit 1827 verh. mit dem Bankier Otto Crelinger"
-        }
-      ]
+      "biography": "Stich, Sophie #s+Auguste#s- Friederike, geb. Düring (1795-1865), Schauspielerin in Berlin, Tochter des Kaufmanns Johann Christian Düring in Berlin, 1817-1824 verh. mit Wilhelm S., seit 1827 verh. mit dem Bankier Otto Crelinger"
     },
     {
       "id": "50207",
@@ -15706,13 +13646,6 @@
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
         }
-      ],
-      "relations": [
-        {
-          "target": "44537",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
-        }
       ]
     },
     {
@@ -15732,13 +13665,6 @@
           "type": "hat Freund",
           "type_id": "1010",
           "reciprocal_type": "hat Freund"
-        }
-      ],
-      "relations": [
-        {
-          "target": "45215",
-          "type": "hat Freund",
-          "agrelon_id": "1010"
         }
       ]
     },
@@ -15858,19 +13784,6 @@
           "type_id": "4020",
           "reciprocal_type": "hat Enkel"
         }
-      ],
-      "relations": [
-        {
-          "target": "46929",
-          "type": "hat Großelternteil",
-          "agrelon_id": "4020"
-        }
-      ],
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Levetzow, Theodore /Ulrike/ Sophie v."
-        }
       ]
     },
     {
@@ -15967,13 +13880,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Löffelholz von Colberg, Anna Elisabeth (#s+Elise#s-) Sophie, geb. König von Königsthal (Ps. Konstanze Reinhold, Amalie Huber) (1778-1849), Schriftstellerin in Nürnberg, Tochter des Nürnberger Ratskonsulenten Eberhard Jodokus König von Königsthal, seit 1800 verh. mit Georg Wilhelm #s+Friedrich#s- von L., 1818 verw.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Löffelholz v. Colberg, Anna Elisabetha (/Elisa/) Sophia, geb. König v. Königsthal "
-        }
-      ]
+      "biography": "Löffelholz von Colberg, Anna Elisabeth (#s+Elise#s-) Sophie, geb. König von Königsthal (Ps. Konstanze Reinhold, Amalie Huber) (1778-1849), Schriftstellerin in Nürnberg, Tochter des Nürnberger Ratskonsulenten Eberhard Jodokus König von Königsthal, seit 1800 verh. mit Georg Wilhelm #s+Friedrich#s- von L., 1818 verw."
     },
     {
       "id": "51312",
@@ -16161,13 +14068,6 @@
           "type": "hat Elternteil",
           "type_id": "4010",
           "reciprocal_type": "hat Kind"
-        }
-      ],
-      "relations": [
-        {
-          "target": "50055",
-          "type": "hat Elternteil",
-          "agrelon_id": "4010"
         }
       ]
     },
@@ -16370,13 +14270,6 @@
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
         }
-      ],
-      "relations": [
-        {
-          "target": "64146",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
-        }
       ]
     },
     {
@@ -16560,13 +14453,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Thomas, Anna Rosina (#s+Rosette#s-) Magdalene, geb. Willemer, verw. Städel (1782-1845), Malerin in Frankfurt am Main, um 1814-1821 Schulvorsteherin, Tochter aus Johann Jakob (von) Willemers (erster) Ehe mit Maria Magdalena Lang, seit 1799 verh. mit dem Kaufmann Johann Martin Städel, 1802 verw., seit 1819 zweite Ehefrau des Frankfurter Senators Johann #s+Gerhard#s- Christian T.",
-      "biographies": [
-        {
-          "source": "bug",
-          "text": "Städel, Anna Rosina (/Rosette/) Magdalene, geb. Willemer"
-        }
-      ]
+      "biography": "Thomas, Anna Rosina (#s+Rosette#s-) Magdalene, geb. Willemer, verw. Städel (1782-1845), Malerin in Frankfurt am Main, um 1814-1821 Schulvorsteherin, Tochter aus Johann Jakob (von) Willemers (erster) Ehe mit Maria Magdalena Lang, seit 1799 verh. mit dem Kaufmann Johann Martin Städel, 1802 verw., seit 1819 zweite Ehefrau des Frankfurter Senators Johann #s+Gerhard#s- Christian T."
     },
     {
       "id": "53487",
@@ -16592,17 +14479,7 @@
           "type": "Wirkungsort"
         }
       ],
-      "biography": "Miltenberg, #s+Elisabeth#s- (Lisette) Katharina, geb. Runckel (1752-1815), Tochter des Stallmeisters und Reitlehrers Karl Ambrosius Runckel in Frankfurt am Main, seit 1780 verh. mit dem hessen-darmstädtischen Hofkammerrat und Landschreiber Franz Wilhelm M., 1800 verw., Jugendfreundin Goethes und seiner Schwester Kornelia",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Runckel, Elisabeth #r#(Lisette)#/r# Catharina (geb. 1752), Tochter von Carl Ambrosius Runckel, Jugendfreundin Goethes und seiner Schwester in Frankfurt a. M."
-        },
-        {
-          "source": "bug",
-          "text": "Runckel, Elisabeth (/Lisette/) Catharina"
-        }
-      ]
+      "biography": "Miltenberg, #s+Elisabeth#s- (Lisette) Katharina, geb. Runckel (1752-1815), Tochter des Stallmeisters und Reitlehrers Karl Ambrosius Runckel in Frankfurt am Main, seit 1780 verh. mit dem hessen-darmstädtischen Hofkammerrat und Landschreiber Franz Wilhelm M., 1800 verw., Jugendfreundin Goethes und seiner Schwester Kornelia"
     },
     {
       "id": "55551",
@@ -16636,13 +14513,7 @@
       "dates": {
         "birth": "1767"
       },
-      "biography": "Roesler (Rößler, Roesler-Franz), Maria #s+Costanza#s- Teresa (Maria Konstanza Theresa) (geb._1767), Römerin, Tochter des Gastwirts Vinzenz (Vincenzo) R., seit Sommer 1787 verh. mit dem Kellner Antonio Gentile aus Albano",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Roesler, Maria #r#Constanza#/r# Teresa (geb. 1765?), wahrscheinlich dessen älteste Tochter"
-        }
-      ]
+      "biography": "Roesler (Rößler, Roesler-Franz), Maria #s+Costanza#s- Teresa (Maria Konstanza Theresa) (geb._1767), Römerin, Tochter des Gastwirts Vinzenz (Vincenzo) R., seit Sommer 1787 verh. mit dem Kellner Antonio Gentile aus Albano"
     },
     {
       "id": "59615",
@@ -16660,13 +14531,7 @@
           "type": "Beruf"
         }
       ],
-      "biography": "Lindau, Klara Dorothea #s+Wilhelmine#s- Dorothea Erhardine (auch: Wilhelmine Henriette) von, geb. von Brinck (Brink; von der/dem Brincken) (1736-1793), Oberhofmeisterin der Landgräfin Wilhelmine Karoline von Hessen-Kassel, seit 1751 verh. mit dem hessen-kasselschen Offizier Christian Friedrich Julius von L., 1761 verw., Tante von Heinrich Julius von L.",
-      "biographies": [
-        {
-          "source": "goebriefe",
-          "text": "Lindau, Klara Dorothea Wilhelmine Dorothea Erhardine (auch: Wilhelmine Henriette)  von, geb. von (der) Brinck (1736-1793), Tante von Heinrich Julius von Lindau, seit 1775 Pflegemutter von Caroline Luise und Marie Ulrike von Lindau"
-        }
-      ]
+      "biography": "Lindau, Klara Dorothea #s+Wilhelmine#s- Dorothea Erhardine (auch: Wilhelmine Henriette) von, geb. von Brinck (Brink; von der/dem Brincken) (1736-1793), Oberhofmeisterin der Landgräfin Wilhelmine Karoline von Hessen-Kassel, seit 1751 verh. mit dem hessen-kasselschen Offizier Christian Friedrich Julius von L., 1761 verw., Tante von Heinrich Julius von L."
     },
     {
       "id": "64146",
@@ -16693,13 +14558,6 @@
           "type": "hat Geschwister",
           "type_id": "4120",
           "reciprocal_type": "hat Geschwister"
-        }
-      ],
-      "relations": [
-        {
-          "target": "52031",
-          "type": "hat Geschwister",
-          "agrelon_id": "4120"
         }
       ]
     },
