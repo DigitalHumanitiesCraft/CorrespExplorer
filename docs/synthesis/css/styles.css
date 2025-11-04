@@ -841,3 +841,120 @@ td.muted {
 [data-tooltip-pos="left"]:hover::after {
     transform: translateY(-50%) translateX(0);
 }
+
+/* Timeline Popup */
+.timeline-popup {
+    position: fixed;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
+    min-width: 280px;
+    max-width: 350px;
+    animation: popupFadeIn 0.2s ease;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.timeline-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+    border-radius: 8px 8px 0 0;
+}
+
+.timeline-popup-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-primary);
+    flex: 1;
+    padding-right: var(--spacing-sm);
+}
+
+.timeline-popup-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.timeline-popup-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-text);
+}
+
+.timeline-popup-body {
+    padding: var(--spacing-md);
+}
+
+.timeline-popup-body p {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 0.9rem;
+}
+
+.timeline-popup-body p:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-popup-section {
+    margin-top: var(--spacing-md);
+}
+
+.timeline-popup-relations {
+    list-style: none;
+    margin: var(--spacing-xs) 0 0 0;
+    padding: 0;
+}
+
+.timeline-popup-relations li {
+    padding: var(--spacing-xs) 0;
+    font-size: 0.9rem;
+}
+
+.person-link-popup {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.person-link-popup:hover {
+    border-bottom-color: var(--color-primary);
+}
+
+.in-basket-marker {
+    color: var(--color-both);
+    margin-left: var(--spacing-xs);
+    font-weight: bold;
+}
+
+.timeline-bar {
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+.timeline-bar:hover {
+    filter: brightness(1.1);
+}

@@ -597,6 +597,138 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// Show timeline person popup
+function showTimelinePersonPopup(personId, anchorElement) {
+    const person = state.allPersons.find(p => p.id === personId);
+    if (!person) return;
+
+    // Remove any existing popup
+    const existingPopup = document.querySelector('.timeline-popup');
+    if (existingPopup) {
+        existingPopup.remove();
+    }
+
+    // Build popup content
+    let popupContent = `
+        <div class="timeline-popup-header">
+            <h4>${person.name}</h4>
+            <button class="timeline-popup-close">&times;</button>
+        </div>
+        <div class="timeline-popup-body">
+            <p><strong>Lebensdaten:</strong> ${person.dates?.birth || '?'} - ${person.dates?.death || '?'}</p>
+            <p><strong>Rolle:</strong> ${getRoleLabel(person.role)}</p>
+    `;
+
+    // Add occupations if available
+    if (person.occupations && person.occupations.length > 0) {
+        popupContent += `
+            <p><strong>Berufe:</strong> ${person.occupations.map(o => o.name).join(', ')}</p>
+        `;
+    }
+
+    // Add relationships if available
+    if (person.relationships && person.relationships.length > 0) {
+        popupContent += `
+            <div class="timeline-popup-section">
+                <strong>Beziehungen:</strong>
+                <ul class="timeline-popup-relations">
+        `;
+
+        person.relationships.forEach(rel => {
+            const target = state.allPersons.find(p => p.id === rel.target_id);
+            if (target) {
+                const inBasket = state.basket.some(p => p.id === target.id);
+                popupContent += `
+                    <li>
+                        ${rel.type}: <a href="#" class="person-link-popup" data-id="${target.id}">${target.name}</a>
+                        ${inBasket ? '<span class="in-basket-marker">★</span>' : ''}
+                    </li>
+                `;
+            }
+        });
+
+        popupContent += `
+                </ul>
+            </div>
+        `;
+    }
+
+    // Add correspondence summary if available
+    if (person.correspondence && person.correspondence.length > 0) {
+        const sent = person.correspondence.filter(c => c.type === 'sent').length;
+        const mentioned = person.correspondence.filter(c => c.type === 'mentioned').length;
+        popupContent += `
+            <p><strong>Korrespondenz:</strong> ${sent} Briefe gesendet, ${mentioned}× erwähnt</p>
+        `;
+    }
+
+    popupContent += `
+        </div>
+    `;
+
+    // Create popup element
+    const popup = document.createElement('div');
+    popup.className = 'timeline-popup';
+    popup.innerHTML = popupContent;
+
+    // Position popup near the anchor element
+    document.body.appendChild(popup);
+
+    const rect = anchorElement.getBoundingClientRect();
+    const popupRect = popup.getBoundingClientRect();
+
+    // Position to the right of the timeline bar if there's space, otherwise to the left
+    let left = rect.right + 10;
+    if (left + popupRect.width > window.innerWidth) {
+        left = rect.left - popupRect.width - 10;
+    }
+
+    // Center vertically relative to the bar
+    let top = rect.top + (rect.height / 2) - (popupRect.height / 2);
+
+    // Keep popup within viewport
+    if (top < 10) top = 10;
+    if (top + popupRect.height > window.innerHeight - 10) {
+        top = window.innerHeight - popupRect.height - 10;
+    }
+
+    popup.style.left = `${left}px`;
+    popup.style.top = `${top}px`;
+
+    // Add event listeners
+    popup.querySelector('.timeline-popup-close').addEventListener('click', () => {
+        popup.remove();
+    });
+
+    // Close popup when clicking outside
+    setTimeout(() => {
+        document.addEventListener('click', function closePopup(e) {
+            if (!popup.contains(e.target) && !anchorElement.contains(e.target)) {
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            }
+        });
+    }, 0);
+
+    // Handle person links in popup
+    popup.querySelectorAll('.person-link-popup').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.dataset.id;
+            popup.remove();
+
+            // Switch to Person tab and show details
+            const personTab = document.querySelector('[data-tab="person"]');
+            if (personTab) {
+                personTab.click();
+            }
+
+            // Find person in table and highlight
+            selectPerson(targetId);
+        });
+    });
+}
+
 // Wissenskorb functions
 function toggleBasket(personId) {
     const person = state.allPersons.find(p => p.id === personId);
@@ -678,6 +810,15 @@ function updateBasketView() {
             toggleBasket(btn.dataset.id);
         });
     });
+
+    // Add timeline bar click handlers
+    container.querySelectorAll('.timeline-bar').forEach(bar => {
+        bar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const personId = bar.dataset.personId;
+            showTimelinePersonPopup(personId, e.currentTarget);
+        });
+    });
 }
 
 function renderBasketVisualizations() {
@@ -710,9 +851,13 @@ function renderBasketVisualizations() {
                         const left = ((y.birth - minYear) / span) * 100;
                         const width = ((y.death - y.birth) / span) * 100;
                         const top = index * rowHeight;
+                        const person = state.basket.find(p => p.name === y.name);
                         return `
                             <div class="timeline-row" style="top: ${top}px;">
-                                <div class="timeline-bar" style="left: ${left}%; width: ${width}%;" title="${y.name} (${y.birth}-${y.death})">
+                                <div class="timeline-bar" style="left: ${left}%; width: ${width}%;"
+                                     title="${y.name} (${y.birth}-${y.death})"
+                                     data-person-id="${person.id}"
+                                     data-tooltip="Klicke für Details">
                                     <span class="timeline-label">${y.name}</span>
                                 </div>
                             </div>
