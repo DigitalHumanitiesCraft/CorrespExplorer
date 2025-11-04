@@ -690,10 +690,26 @@ body {
     max-width: 500px;
     max-height: 500px;
     overflow-y: auto;
+    pointer-events: auto;  /* Allow interaction with popup content */
 }
 
 .hover-json-popup .maplibregl-popup-tip {
     border-top-color: #ffffff;
+}
+
+/* Sticky JSON popup with close button */
+.json-popup-sticky .maplibregl-popup-close-button {
+    font-size: 20px;
+    padding: 4px 8px;
+    color: var(--color-text-light);
+    background: transparent;
+    right: 8px;
+    top: 8px;
+}
+
+.json-popup-sticky .maplibregl-popup-close-button:hover {
+    color: var(--color-text);
+    background: var(--color-bg-light);
 }
 
 .hover-tooltip-json {

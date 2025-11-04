@@ -688,24 +688,26 @@ function setupEventHandlers() {
             `;
 
             markerTooltip = new maplibregl.Popup({
-                closeButton: false,
+                closeButton: true,  // Show close button so user can scroll
                 closeOnClick: false,
-                className: 'hover-tooltip-popup hover-json-popup',
+                className: 'hover-tooltip-popup hover-json-popup json-popup-sticky',
                 maxWidth: '500px',
                 offset: [250, 0]  // Offset nach rechts, damit es nicht überlagert
             })
                 .setLngLat(coordinates)
                 .setHTML(html)
                 .addTo(map);
+
+            // Add event listener for popup close
+            markerTooltip.on('close', () => {
+                markerTooltip = null;
+            });
         }
     });
 
     map.on('mouseleave', 'persons-layer', () => {
         map.getCanvas().style.cursor = '';
-        if (markerTooltip) {
-            markerTooltip.remove();
-            markerTooltip = null;
-        }
+        // Don't remove tooltip on mouseleave - let user close it manually
         clearConnectionLines();
     });
 }
@@ -1144,25 +1146,27 @@ window.showPersonItemJSON = function(event) {
         }
 
         personItemTooltip = new maplibregl.Popup({
-            closeButton: false,
-            closeOnClick: false,
-            className: 'hover-tooltip-popup hover-json-popup',
+            closeButton: true,  // Show close button
+            closeOnClick: false,  // Don't close on map click
+            className: 'hover-tooltip-popup hover-json-popup json-popup-sticky',
             maxWidth: '500px',
             offset: [10, 0]
         })
             .setLngLat(point)
             .setHTML(html)
             .addTo(map);
+
+        // Add event listener for popup close
+        personItemTooltip.on('close', () => {
+            personItemTooltip = null;
+        });
     } catch (e) {
         console.error('Error showing person JSON:', e);
     }
 };
 
 window.hidePersonItemJSON = function() {
-    if (personItemTooltip) {
-        personItemTooltip.remove();
-        personItemTooltip = null;
-    }
+    // Do nothing - let user close it manually with close button
 };
 
 // Start application when DOM is ready
