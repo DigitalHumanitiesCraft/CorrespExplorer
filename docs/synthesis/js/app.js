@@ -24,13 +24,13 @@ const state = {
 
 // Single comprehensive view configuration
 const tableColumns = [
-    { key: 'name', label: 'Name', sortable: true },
-    { key: 'dates', label: 'Lebensdaten', sortable: false },
-    { key: 'role', label: 'Rolle', sortable: true },
-    { key: 'correspondence_compact', label: 'Korrespondenz', sortable: true },
-    { key: 'occupations_compact', label: 'Berufe', sortable: true },
-    { key: 'relations_compact', label: 'Beziehungen', sortable: true },
-    { key: 'biography_preview', label: 'Biografie', sortable: false }
+    { key: 'name', label: 'Name', sortable: true, tooltip: 'Klicke zum Sortieren nach Name' },
+    { key: 'dates', label: 'Lebensdaten', sortable: false, tooltip: 'Geburts- und Todesjahr' },
+    { key: 'role', label: 'Rolle', sortable: true, tooltip: 'Rolle in der Korrespondenz - Klicke zum Sortieren' },
+    { key: 'correspondence_compact', label: 'Korrespondenz', sortable: true, tooltip: 'Anzahl gesendeter Briefe (B) und Erwähnungen (E) - Klicke zum Sortieren' },
+    { key: 'occupations_compact', label: 'Berufe', sortable: true, tooltip: 'Bekannte Berufe und Tätigkeiten - Klicke zum Sortieren' },
+    { key: 'relations_compact', label: 'Beziehungen', sortable: true, tooltip: 'Anzahl dokumentierter Beziehungen - Klicke zum Sortieren' },
+    { key: 'biography_preview', label: 'Biografie', sortable: false, tooltip: 'Biografische Kurzinformation' }
 ];
 
 // Initialize app
@@ -173,7 +173,7 @@ function renderTable() {
 
     // Render headers
     thead.innerHTML = tableColumns.map(col =>
-        `<th data-column="${col.key}" ${col.sortable ? 'class="sortable"' : ''}>
+        `<th data-column="${col.key}" ${col.sortable ? 'class="sortable"' : ''} ${col.tooltip ? `data-tooltip="${col.tooltip}"` : ''}>
             ${col.label}
             ${col.sortable && state.sorting.column === col.key ?
                 (state.sorting.direction === 'asc' ? ' ▲' : ' ▼') : ''}

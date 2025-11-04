@@ -21,21 +21,21 @@
 
                 <div class="filter-section">
                     <h3>Suche</h3>
-                    <input type="text" id="search-input" placeholder="Name suchen...">
+                    <input type="text" id="search-input" placeholder="Name suchen..." data-tooltip="Nach Personennamen filtern">
                 </div>
 
                 <div class="filter-section">
-                    <h3>Rolle</h3>
+                    <h3 data-tooltip="Auswahl nach Rolle in der Korrespondenz">Rolle</h3>
                     <div class="filter-group">
-                        <label><input type="checkbox" value="sender" checked> Absenderin</label>
-                        <label><input type="checkbox" value="mentioned" checked> Erwähnt</label>
-                        <label><input type="checkbox" value="both" checked> Beides</label>
-                        <label><input type="checkbox" value="indirect" checked> Nur SNDB</label>
+                        <label data-tooltip="Frauen, die Briefe verfasst haben"><input type="checkbox" value="sender" checked> Absenderin</label>
+                        <label data-tooltip="Frauen, die in Briefen erwähnt wurden"><input type="checkbox" value="mentioned" checked> Erwähnt</label>
+                        <label data-tooltip="Frauen, die sowohl Briefe schrieben als auch erwähnt wurden"><input type="checkbox" value="both" checked> Beides</label>
+                        <label data-tooltip="Frauen nur aus biografischen Quellen (SNDB), nicht in Briefen"><input type="checkbox" value="indirect" checked> Nur SNDB</label>
                     </div>
                 </div>
 
                 <div class="filter-section">
-                    <h3>Lebensdaten</h3>
+                    <h3 data-tooltip="Nach Geburtsjahr filtern">Lebensdaten</h3>
                     <div class="range-filter">
                         <label>
                             Geburt: <span id="birth-range-label">1700-1850</span>
@@ -46,15 +46,15 @@
                 </div>
 
                 <div class="filter-section">
-                    <h3>Normierung</h3>
+                    <h3 data-tooltip="Nach Normdaten-Quelle filtern">Normierung</h3>
                     <div class="filter-group">
-                        <label><input type="checkbox" value="gnd" checked> GND</label>
-                        <label><input type="checkbox" value="sndb" checked> SNDB</label>
+                        <label data-tooltip="Gemeinsame Normdatei der Deutschen Nationalbibliothek"><input type="checkbox" value="gnd" checked> GND</label>
+                        <label data-tooltip="Schweizerisches Nationalbiografisches Datenbuch"><input type="checkbox" value="sndb" checked> SNDB</label>
                     </div>
                 </div>
 
                 <div class="filter-section">
-                    <button id="reset-filters" class="btn-reset">Filter zurücksetzen</button>
+                    <button id="reset-filters" class="btn-reset" data-tooltip="Alle Filter auf Standardwerte zurücksetzen">Filter zurücksetzen</button>
                 </div>
             </aside>
 
@@ -83,8 +83,8 @@
             <!-- Right: Detail/Context Panel -->
             <aside class="detail-panel">
                 <div class="panel-tabs">
-                    <button class="tab-btn active" data-tab="person">Person</button>
-                    <button class="tab-btn" data-tab="wissenskorb">
+                    <button class="tab-btn active" data-tab="person" data-tooltip="Details zur ausgewählten Person">Person</button>
+                    <button class="tab-btn" data-tab="wissenskorb" data-tooltip="Gesammelte Personen für Vergleiche und Export">
                         Wissenskorb <span id="basket-count" class="basket-badge">0</span>
                     </button>
                 </div>
@@ -109,9 +109,9 @@
                         <div id="basket-actions" style="display: none;">
                             <hr>
                             <h4>Export</h4>
-                            <button id="export-basket-csv" class="btn-export">Als CSV exportieren</button>
-                            <button id="export-basket-json" class="btn-export">Als JSON exportieren</button>
-                            <button id="clear-basket" class="btn-clear">Korb leeren</button>
+                            <button id="export-basket-csv" class="btn-export" data-tooltip="Exportiere gesammelte Personen als CSV-Tabelle">Als CSV exportieren</button>
+                            <button id="export-basket-json" class="btn-export" data-tooltip="Exportiere gesammelte Personen als JSON-Datei">Als JSON exportieren</button>
+                            <button id="clear-basket" class="btn-clear" data-tooltip="Alle Personen aus dem Wissenskorb entfernen">Korb leeren</button>
                         </div>
                     </div>
                 </div>
