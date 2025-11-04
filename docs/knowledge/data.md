@@ -68,33 +68,18 @@ Deduplizierung:
 
 ## Feldmodell
 
-Person (Kernfelder):
-- id: SNDB-ID (numerisch)
-- name: Anzeigename (zusammengesetzt aus VORNAMEN + NACHNAME + TITEL aus ra_ndb_main.xml)
-- gnd: GND-Nummer (optional, aus ra_ndb_indiv.xml)
-- sndb_url: Link zur SNDB-Datenbank (generiert: https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:{id})
-- dates: {birth: JAHR, death: JAHR} (aus ra_ndb_datierungen.xml, ART='Geburtsdatum'/'Sterbedatum')
-- role: 'sender' | 'mentioned' | 'both' | 'indirect' (berechnet aus letter_count + mention_count)
-- roles: ['sender', 'mentioned'] (Array der vorhandenen Rollen)
+Detailliertes JSON-Schema, Validierungsregeln und Frontend-Transformationen siehe [data-model.md](data-model.md).
 
-Briefdaten (CMIF-derived):
-- letter_count: Anzahl gesendeter Briefe
-- mention_count: Anzahl Erwähnungen in Briefen
-- letter_years: [Jahr1, Jahr2, ...] (eindeutige Jahre mit Briefaktivität)
-- correspondence: [{type, letter_id, date, year, place, recipient}] (detaillierte Liste)
+Zusammenfassung persons.json Struktur:
+- Kernfelder: id, name, gnd (optional), sndb_url, dates, biography, role, roles
+- Briefdaten: letter_count, mention_count, letter_years, correspondence[]
+- Geodaten: places[] (Hybrid-Quelle: ra_ndb_orte.xml + geo_*.xml)
+- Berufe: occupations[] (aus ra_ndb_berufe.xml)
+- Beziehungen: relationships[] (aus ra_ndb_beziehungen.xml + nsl_agrelon.xml)
 
-Geodaten (Hybrid-Quelle):
-- places: [{name, lat, lon, type}] (type: Wirkungsort/Geburtsort/Sterbeort/Wohnort)
-- Quelle: ra_ndb_orte.xml (SNDB_ID) → geo_main.xml (name) → geo_indiv.xml (lat/lon)
-
-Weitere Felder:
-- occupations: [{name, type}] (aus ra_ndb_berufe.xml)
-- biography: Text (aus projekt_regestausgabe.xml REGISTEREINTRAG)
-- relationships: [{target_id, type, type_id, reciprocal_type}] (aus ra_ndb_beziehungen.xml + nsl_agrelon.xml)
-
-Normierung-Status:
-- 'gnd': Person hat GND-ID
-- 'sndb': Person hat nur SNDB-ID
+Required vs. Optional:
+- Required (immer vorhanden): id, name, sndb_url, role, roles
+- Optional (Coverage variiert): gnd (60,3%), dates (94,0%), places (50,7%), occupations (46,2%), correspondence (51,3%), relationships (15,0%)
 
 ## Beziehungsmodell
 

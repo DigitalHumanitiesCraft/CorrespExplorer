@@ -440,9 +440,33 @@ Import-Strategie:
 @import url('tokens.css');
 ```
 
-Verwendet in: style.css, stats.css
+Token-Import Status (aktualisiert 2025-11-04):
+- ✓ stats.css: Importiert tokens.css (vollständig integriert, 20+ Tokens)
+- ✓ search.css: Importiert tokens.css (vollständig integriert, 8+ Tokens)
+- ✓ person-cards.css: Importiert tokens.css (vollständig integriert, 25+ Tokens)
+- ✗ style.css: Dupliziert Tokens lokal in Zeilen 1-54 (sollte importieren statt duplizieren)
+- ✗ network.css: Nicht migriert, 8 hard-coded Farben (archiviert, siehe 13.2.2)
 
-Noch nicht migriert: person-cards.css, search.css, network.css (Phase 3)
+Kritische Probleme identifiziert (2025-11-04):
+
+1. style.css dupliziert alle 58 Tokens statt tokens.css zu importieren
+   - Zeilen 1-54 enthalten vollständige :root-Deklaration
+   - Verhindert Single Source of Truth
+   - Lösung: Ersetze durch `@import url('tokens.css');`
+
+2. Undefinierte Token-Referenzen in style.css
+   - Line 194: `--color-bg-secondary` (sollte `--color-bg-light` sein)
+   - Line 258: `--color-text-secondary` (sollte `--color-text-light` sein)
+   - Führt zu CSS-Fehlern
+
+3. Fehlende Status-Farben in tokens.css
+   - person-cards.css Lines 313-327: Hard-coded #28a745, #dc3545, #17a2b8
+   - Sollten als Tokens definiert werden: `--color-status-success`, `--color-status-error`, `--color-status-info`
+
+Empfohlene Fixes:
+- Phase 1: style.css reparieren (15 min)
+- Phase 2: tokens.css ergänzen + person-cards.css migrieren (15 min)
+- Phase 3: network.css entfernen oder migrieren (optional)
 
 #### 13.3.2 Breakpoints (Standardisierung)
 

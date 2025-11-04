@@ -17,7 +17,10 @@ Die Live-Seite wird aus dem Hauptzweig über den `docs`-Bereich veröffentlicht.
 [project.md](project.md) erläutert Zielbild, Zielgruppen, Scope und Terminologie. Enthält wissenschaftlichen Kontext: PROPYLÄEN-Projekt, DH-Standards (TEI, CMIF, GND, AGRELON), Gender Studies Perspektive, Forschungsfragen, Quellenkritik, strukturelle Verzerrungen und Nutzungsrechte.
 
 **Daten und Herkunft:**
-[data.md](data.md) beschreibt Grundgesamtheit und Coverage, Feld- und Beziehungsmodell (mit vollständiger AGRELON-Dokumentation: 38 Typen, Visualisierung, historischer Kontext), Matching- und Deduplizierung, Geocoding-Heuristiken, Unsicherheiten, Provenance sowie die Lizenzlage einschließlich Drittquellen.
+[data.md](data.md) beschreibt Datenquellen, Grundgesamtheit und Coverage, Beziehungsmodell (mit vollständiger AGRELON-Dokumentation: 38 Typen, Visualisierung, historischer Kontext), Matching- und Deduplizierung, Geocoding-Heuristiken, Unsicherheiten, Provenance sowie die Lizenzlage einschließlich Drittquellen.
+
+**Datenmodell:**
+[data-model.md](data-model.md) dokumentiert persons.json JSON-Schema, Feldtypen, Validierungsregeln, Frontend-Transformationen und Aggregationen für Kartenvisualisierung und stats.html.
 
 **Entscheidungen:**
 [decisions.md](decisions.md) führt alle maßgeblichen Architektur- und Produktentscheidungen mit Status, Begründung und beobachtetem Effekt; die Abkehr von der Timeline ist dort festgehalten und in design.md als finales Navigationsmodell gespiegelt.
@@ -26,7 +29,7 @@ Die Live-Seite wird aus dem Hauptzweig über den `docs`-Bereich veröffentlicht.
 [requirements.md](requirements.md) hält die fachlichen Anforderungen in Prosa fest und benennt pro Punkt den Umsetzungsstand mit verifizierten Daten (stats.html, correspondence-Arrays, AGRELON-Beziehungen). Alle Aussagen sind gegen tatsächliche Implementierung geprüft.
 
 **Gestaltung:**
-[design.md](design.md) erklärt Informationsarchitektur und Interaktion: Startansicht Karte, Personen-Cards, Filter, Umgang mit Netzwerk-Hinweisen im UI, Darstellung von Unsicherheit und externen Verweisen. Enthält Zielbild 2025-10-19 und Implementierungsstand 2025-10-29 mit Lessons Learned.
+[design.md](design.md) erklärt Informationsarchitektur und Interaktion: Startansicht Karte, Personen-Cards, Filter, Umgang mit Netzwerk-Hinweisen im UI, Darstellung von Unsicherheit und externen Verweisen. Enthält Zielbild 2025-10-19, Implementierungsstand 2025-10-29 mit Lessons Learned, und CSS-Token-System-Analyse (aktualisiert 2025-11-04).
 
 **Bereitstellung:**
 [tech.md](tech.md) beschreibt den Weg von Quelle über Aufbereitung bis Veröffentlichung: 4-Phasen-Pipeline, Frontend-Architektur, Qualität und offene Punkte.
