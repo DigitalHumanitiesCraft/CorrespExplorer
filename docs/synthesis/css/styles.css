@@ -44,6 +44,35 @@ body {
     overflow: hidden;
 }
 
+/* Footer */
+.app-footer {
+    background: var(--color-bg-alt);
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.footer-label {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.footer-separator {
+    margin: 0 var(--spacing-sm);
+}
+
+.footer-meta {
+    font-weight: 500;
+}
+
 /* Header */
 .app-header {
     background: var(--color-primary);
@@ -462,6 +491,45 @@ td.muted {
     margin-bottom: var(--spacing-md);
 }
 
+.empty-state-help {
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+.empty-state-help .empty-state {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-state-help .help-text {
+    margin-bottom: var(--spacing-md);
+}
+
+.help-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--spacing-md) 0;
+    text-align: left;
+    display: inline-block;
+}
+
+.help-list li {
+    padding: var(--spacing-xs) 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.help-list li:before {
+    content: "•";
+    color: var(--color-primary);
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+    margin-right: 0.5em;
+}
+
 .basket-item {
     display: flex;
     justify-content: space-between;
@@ -618,4 +686,35 @@ td.muted {
 
 .btn-expand:hover {
     opacity: 0.8;
+}
+
+/* Toast notifications */
+.toast {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    background: var(--color-primary);
+    color: white;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.toast-success {
+    background: #2d6a4f;
+}
+
+.toast.toast-warning {
+    background: #d97706;
 }

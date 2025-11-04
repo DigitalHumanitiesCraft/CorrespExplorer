@@ -24,9 +24,9 @@ const tableColumns = [
     { key: 'name', label: 'Name', sortable: true },
     { key: 'dates', label: 'Lebensdaten', sortable: false },
     { key: 'role', label: 'Rolle', sortable: true },
-    { key: 'correspondence_compact', label: 'Korrespondenz', sortable: false },
-    { key: 'occupations_compact', label: 'Berufe', sortable: false },
-    { key: 'relations_compact', label: 'Beziehungen', sortable: false },
+    { key: 'correspondence_compact', label: 'Korrespondenz', sortable: true },
+    { key: 'occupations_compact', label: 'Berufe', sortable: true },
+    { key: 'relations_compact', label: 'Beziehungen', sortable: true },
     { key: 'biography_preview', label: 'Biografie', sortable: false }
 ];
 
@@ -253,7 +253,7 @@ function formatCell(person, key) {
             const sent = person.letter_count || 0;
             const mentions = person.mention_count || 0;
             if (sent === 0 && mentions === 0) {
-                return `<td class="muted" style="font-size: 0.85rem;">keine</td>`;
+                return `<td class="muted" style="font-size: 0.85rem;" title="Diese Person erscheint nur in biografischen Quellen, nicht in der erhaltenen Briefkorrespondenz">keine</td>`;
             }
             const corrParts = [];
             if (sent > 0) corrParts.push(`<span title="${sent} Brief${sent > 1 ? 'e' : ''} gesendet">${sent}B</span>`);
@@ -323,6 +323,21 @@ function sortPersons(persons) {
             case 'role':
                 aVal = a.role;
                 bVal = b.role;
+                break;
+            case 'correspondence_compact':
+                // Sort by total correspondence (letters + mentions)
+                aVal = (a.letter_count || 0) + (a.mention_count || 0);
+                bVal = (b.letter_count || 0) + (b.mention_count || 0);
+                break;
+            case 'occupations_compact':
+                // Sort alphabetically by first occupation
+                aVal = a.occupations?.[0]?.name?.toLowerCase() || 'zzz';
+                bVal = b.occupations?.[0]?.name?.toLowerCase() || 'zzz';
+                break;
+            case 'relations_compact':
+                // Sort by number of relationships
+                aVal = a.relationships?.length || 0;
+                bVal = b.relationships?.length || 0;
                 break;
             case 'letter_count':
                 aVal = a.letter_count || 0;
@@ -561,6 +576,23 @@ function downloadFile(content, filename, mimeType) {
     URL.revokeObjectURL(url);
 }
 
+// Show toast notification
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
 // Wissenskorb functions
 function toggleBasket(personId) {
     const person = state.allPersons.find(p => p.id === personId);
@@ -571,9 +603,16 @@ function toggleBasket(personId) {
     if (index >= 0) {
         // Remove from basket
         state.basket.splice(index, 1);
+        showToast(`${person.name} aus Wissenskorb entfernt`);
     } else {
+        // Check limit
+        if (state.basket.length >= 20) {
+            showToast('Wissenskorb voll - maximal 20 Personen möglich', 'warning');
+            return;
+        }
         // Add to basket
         state.basket.push(person);
+        showToast(`${person.name} zum Wissenskorb hinzugefügt (${state.basket.length}/20)`);
     }
 
     updateBasketView();
@@ -588,7 +627,17 @@ function updateBasketView() {
     const actions = document.getElementById('basket-actions');
 
     if (count === 0) {
-        container.innerHTML = '<p class="empty-state">Noch keine Personen im Korb</p>';
+        container.innerHTML = `
+            <div class="empty-state-help">
+                <p class="empty-state">Ihr Wissenskorb ist leer</p>
+                <p class="help-text">Klicken Sie auf ☆ neben Namen in der Tabelle, um Personen für vergleichende Analysen zu sammeln.</p>
+                <ul class="help-list">
+                    <li>Visualisieren Sie Lebenszeiten</li>
+                    <li>Entdecken Sie Beziehungen zwischen Personen</li>
+                    <li>Exportieren Sie Ihre Auswahl</li>
+                </ul>
+            </div>
+        `;
         actions.style.display = 'none';
         return;
     }
@@ -717,7 +766,7 @@ function clearBasket() {
 
 function exportBasketToCSV() {
     if (state.basket.length === 0) {
-        alert('Wissenskorb ist leer');
+        showToast('Wissenskorb ist leer', 'warning');
         return;
     }
 
@@ -736,16 +785,18 @@ function exportBasketToCSV() {
     });
 
     downloadFile(csv, 'wissenskorb.csv', 'text/csv');
+    showToast(`${state.basket.length} Personen als CSV exportiert`);
 }
 
 function exportBasketToJSON() {
     if (state.basket.length === 0) {
-        alert('Wissenskorb ist leer');
+        showToast('Wissenskorb ist leer', 'warning');
         return;
     }
 
     const json = JSON.stringify(state.basket, null, 2);
     downloadFile(json, 'wissenskorb.json', 'application/json');
+    showToast(`${state.basket.length} Personen als JSON exportiert`);
 }
 
 // Initialize on load
