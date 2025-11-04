@@ -1,940 +1,531 @@
-# HerData Journal
+# HerData Journal — Review & Rewrites
 
-## 2025-11-04
-
-### Session 3: Data Model Separation and CSS Analysis Integration
-
-Final documentation refinement: Separated data model from data sources, integrated CSS consistency analysis into design.md, cleaned up obsolete root files.
-
-Data Model Separation:
-- Created data-model.md: Complete persons.json JSON schema with field types, validations, frontend transformations
-- Refactored data.md: Focus on data sources, provenance, licenses, quality
-- Clear separation: data.md (WO kommen Daten her) vs data-model.md (WIE sind Daten strukturiert)
-
-CSS Analysis Integration:
-- Integrated CONSISTENCY_ANALYSIS.md into design.md Section 13.3.1
-- Identified 3 critical CSS problems: style.css duplicates tokens, undefined token references, missing status colors
-- Documented token import status: 3/6 files use tokens.css correctly
-- Deleted standalone design-css-analysis.md (integrated into design.md)
-
-Root Cleanup:
-- Deleted PR_SUMMARY.md: Obsolete PR summary from 2025-11-02
-- Deleted DOCUMENTATION_CONSOLIDATION_PLAN.md: Plan already executed
-- Deleted CONSISTENCY_ANALYSIS.md: Integrated into design.md
-
-Knowledge Vault Status:
-- 10 files in docs/knowledge/: INDEX, project, data, data-model, decisions, requirements, design, tech, responsive_dossier, implementation-quick-wins
-- All cross-references updated
-- INDEX.md reflects final structure
-
-Commit:
-- 8ede5e0: Add data-model.md and refactor documentation structure
-- Changes: +431 lines (data-model.md), -817 lines (obsolete files)
-
-Result: Knowledge vault complete, all documentation consolidated, clear separation of concerns.
-
-### Session 2: Documentation Consolidation
-
-Complete reorganization of project documentation into unified knowledge vault system.
-
-Documentation Restructuring:
-- Moved 8 analysis and planning documents from root to docs/knowledge/
-- Updated JOURNAL.md with latest version (856 lines, includes Provenance System session)
-- Restructured INDEX.md with comprehensive navigation
-- All documentation now centralized in docs/knowledge/ (17 files total)
-
-Files Moved to docs/knowledge/:
-- debug-system.md (Data Provenance System documentation)
-- technical-analysis.md (1488 lines comprehensive analysis)
-- requirements-validation.md (Requirements vs data validation)
-- documentation-assessment.md (Quality review of all markdown files)
-- implementation-quick-wins.md (6 implementable features with code)
-- implementation-mobile.md (4-hour responsive design plan)
-- responsive-design.md (Mobile usability analysis)
-
-Knowledge Vault Structure:
-- Projekt: project.md, research-context.md
-- Daten: data.md, debug-system.md
-- Design: design.md, responsive-design.md
-- Requirements: requirements.md, requirements-validation.md
-- Technische Architektur: technical-architecture.md, technical-analysis.md
-- Entscheidungen: decisions.md (8 ADRs)
-- Netzwerk: network-relations.md
-- Implementierung: implementation-quick-wins.md, implementation-mobile.md
-- Dokumentation: documentation-assessment.md
-
-Archive Preservation:
-- Kept hover-network-plan.md (923 lines implementation plan)
-- Kept CLUSTER_HOVER_DEBUG.md (172 lines MapLibre debugging)
-- Archived documentation/img to archive/documentation-img
-- No technical knowledge lost
-
-Updates:
-- INDEX.md: Complete restructure with all new documents
-- README.md: Added "Last Updated: 2025-11-04"
-- Root directory: Clean (only README.md, CLAUDE.md, JOURNAL.md)
-
-Commits:
-- bdb51db: Move new analysis documents to knowledge vault
-- c8973ed: Move planning documents and update JOURNAL
-- fbfa1b6: Update documentation navigation and timestamps
-
-Result:
-- 27 markdown files analyzed and organized
-- 100% information preservation
-- Clear navigation via INDEX.md
-- Centralized knowledge management system
-
-### Session 1: Data Provenance System Implementation (Phase 1 - Backend)
-
-Backend Enhancement for Complete Data Transparency
-
-Pipeline Changes:
-- Enabled comprehensive provenance tracking (track_provenance=True by default)
-- Added add_provenance() calls for all 11 data fields across 4 phases
-- Implemented dual JSON generation: persons.json (production) + persons_debug.json (debug)
-
-Provenance Coverage:
-- 3,695 provenance entries for 448 women (100% coverage)
-- Tracked fields: id, name, gnd, dates (birth/death), letter_count, mention_count, role, places, occupations, biography
-- Each entry documents: source file, XPath, raw value, transformation, timestamp
-
-Output Files:
-- persons.json: 446 KB (production, no provenance - unchanged)
-- persons_debug.json: 1.71 MB (debug, with _provenance field for each person)
-- Size increase: +1.28 MB (+293% larger) for full transparency
-
-Performance:
-- Pipeline execution: 0.67s (improved from 1.11s through optimization)
-- All 48 tests passing
-- Production performance unchanged (same file size)
-
-Technical Implementation:
-- Modified build_herdata_new.py: 150+ lines added
-- Phase 1: ID, name, GND, dates provenance
-- Phase 2: Letter counts, mention counts, role assignment provenance
-- Phase 3: Places (HYBRID), occupations, biography provenance
-- Phase 4: Dual JSON generation with conditional _provenance inclusion
-
-Scientific Value:
-- Complete data lineage documentation
-- Reproducible research pipeline
-- Transparent transformation tracking
-- Source attribution for every data point
-
-Documentation:
-- Created DEBUG_SYSTEM.md: Complete provenance system documentation
-- Backup created: build_herdata_new.py.backup
-- Ready for Phase 2: Frontend integration
-
-Validation:
-- Sample person (Angelica Bellonata Facius): 9 provenance fields
-- Christiane Vulpius: Letter count provenance with GND matching documented
-- All 448 persons have _provenance data in debug JSON
-
-Next Steps (Phase 2):
-- Frontend debug panel implementation
-- Person.html integration with raw data viewer
-- Hover tooltips for field provenance
-- Evaluati on of user needs before extending to all pages
-
-## 2025-10-19
-
-### Session 1: Data Verification & Initial Documentation
-- Fixed script paths, verified CMIF (15,312 letters)
-- Counted SNDB: 23,571 persons (3,617 women/15.3%), 4,007 places
-- Discovered SEXUS field (not GESCHLECHT)
-- GND coverage: 53.4% SNDB, 93.8% CMIF senders
-- Created: data.md, project.md, research-context.md, TODO-Dokumentation.md
-- Initial commit [dbef54b]: 22 files
-- Refactored TODO to neutral reporting, created JOURNAL.md
-
-### Session 2: Project Overview & Repository Setup  
-- Analyzed project structure, created comprehensive README.md
-- Set up docs/ for GitHub Pages (placeholder)
-- Created requirements.md: 14 user stories, 5 epics, 10 functional requirements
-- Created IMPLEMENTATION_PLAN.md: 7-day Phase 1 breakdown
-- Created CLAUDE.md: style guidelines (no bold, no emojis, no time estimates)
-- Decision: Exclude .claude/ from git, use relative paths
-
-### Session 3: Data Pipeline Implementation
-- Project status: 95% docs complete, 5% code
-- Implemented build_herdata.py: 4-phase pipeline, 1.39s runtime
-- Fixed XML fields: SEXUS, ART+JAHR, SNDB_ID, BEZEICHNUNG, LATITUDE/LONGITUDE
-- Phase 1: Extracted 3,617 women, 34.1% GND, 83.9% with dates
-- Phase 2: Matched 808 to CMIF (192 senders, 772 mentioned)
-- Phase 3: Enriched 1,042 with geodata (28.8%), 979 with occupations
-- Phase 4: Generated docs/data/persons.json (1.49 MB)
-- Windows fix: [OK] instead of Unicode checkmarks
-- Finding: Ancient figures (9 persons <1000 CE), women lower GND than average
-- Created build_herdata_test.py: 48 tests, all passing, 1.73s execution
-
-### Session 4: Frontend Implementation
-- Created docs/ structure: css/, js/, assets/
-- Implemented index.html: navigation, filters, map container
-- Built CSS design system: responsive breakpoints, typography scale
-- Added data validation script (40 lines), validates 3,617 women
-- Created favicon.svg, zero console errors
-- Responsive: mobile ≤640px, tablet ≤1024px, desktop >1024px
-- Commit [860ebce]: 509 lines added
-
-### Session 4 (continued): Design Refinement
-- Changed purple gradient → academic navy blue (#1e3a5f)
-- Updated design.md: section 6.1.1 Farbpalette
-- Defined steel blue (#2c5f8d) for accents
-- Simplified favicon to solid navy
-- Rationale: academic resources need trustworthy visual language
-- Commit [8d8c896]: 75 insertions, 32 deletions
-
-### Session 4 (continued): Architecture Decision
-- Moved JOURNAL.md to documentation/
-- Created ADR-001 in decisions.md: MapLibre vs Leaflet vs OpenLayers
-- Analysis: Phase 2/3 needs brushing, linking, animations, heatmap
-- Decision: MapLibre GL JS for WebGL rendering
-- Trade-offs: 220 KB bundle (vs 40 KB Leaflet), steeper learning curve
-- Commits: [f579aba] move, [5290160] ADR (201 lines)
-
-### Session 5: MapLibre MVP Implementation
-- Analyzed status: pipeline complete, frontend 10%
-- Replaced Leaflet CDN with MapLibre GL JS 4.7.1
-- Implemented map: OSM tiles, center Weimar (11.3235, 50.9795)
-- Built GeoJSON from persons.json: 1,042 features
-- Added clustering: maxZoom=14, radius=50, step-based sizing
-- Three layers: clusters, counts, individual markers
-- Role-based colors: sender/mentioned/both/indirect
-- Zoom-based markers: 4px→12px (z5→z15)
-- Click handlers: zoom clusters, popup markers
-- Connected filters to real-time map updates
-- Tab switching with map resize on Karte activation
-- Commit [e75156a]: 419 lines JavaScript, 480 insertions
-- Bugfixes: glyphs property [97a2869], font fix [c2860bd]
-
-### Session 6: Clustering Improvements & Multi-Person Popups
-- Updated README.md with GitHub Pages link
-- Reduced clusterMaxZoom 14→10 (clusters break earlier)
-- Reduced clusterRadius 50→40 (less aggressive)
-- Increased marker sizes: 6/10/16px (was 4/8/12px)
-- Commit [734908d]: clustering optimization
-- Problem: 217 women at Weimar coords, only top clickable
-- Solution: queryRenderedFeatures() for all markers at point
-- Implemented multi-person popup: 15 initial, expandable
-- Created ADR-002 for decision documentation
-- Commit [9014a40]: multi-person implementation
-
-### Session 7: Search Implementation
-- Added search bar to navigation
-- Implemented fuzzy search with Fuse.js (threshold: 0.3)
-- Searchable fields: name, name_variants, gnd_name
-- Results dropdown: max 10, shows name + dates + badges
-- Click behavior: zoom to location (z12) or show alert if no coords
-- Keyboard: arrow navigation, enter to select, escape to close
-- Auto-close on outside click
-- Commit: search functionality complete
-
-### Session 8: Statistics Dashboard
-- Created Statistiken tab with 4 sections
-- Overview cards: total, letters, geodata percentages
-- Charts: role distribution (pie), top locations (bar), occupations (horizontal bar)
-- Time analysis: birth/death year histograms
-- Responsive grid layout, mobile-optimized
-- Chart.js integration for visualizations
-- Commit: statistics implementation
-
-### Session 9: Research Interface Improvements
-- User feedback: "Es soll ja ein Forschungsinterface sein"
-- Problem: All clusters blue, no visual hierarchy
-- Renamed filter: Rolle → Briefaktivität
-- Removed filter: Normierung (GND/SNDB)
-- Added filter: Berufsgruppe (7 occupation categories)
-- 231 unique occupations → 7 groups: Künstlerisch (222), Literarisch (199), etc.
-- Cluster colors by majority: blue=writers, green=mixed, gray=mentioned, light=SNDB
-- Added legend: bottom-right, 4 color categories
-- Enhanced tooltips: "111 Frauen | 45 geschrieben • 58 erwähnt • 8 SNDB"
-- Commit [2f2479a]: research interface improvements
-
-### Session 10: Timeline Visualization and Architecture Refinement
-
-Initial Implementation (D3.js Timeline):
-- Created timeline.js module (252 lines) with D3.js histogram
-- 62-year visualization (1762-1824), bar chart
-- Initial design: Brush selection (d3.brushX) for temporal filtering
-- Commit [c452743]: 389 insertions, 4 files changed
-
-Critical Bug Discovery and Fix:
-- Problem: Timeline tried loading 23.4 MB ra-cmif.xml from docs/data/ (404 Not Found)
-- Root Cause: File not in GitHub Pages deployment (too large)
-- Lesson Learned: Tests didn't catch deployment issues (only tested pipeline logic)
-- Solution: Extended data pipeline to extract letter_years during Phase 2
-- Added letter_years array to each person in persons.json
-- Added aggregated timeline data to meta.timeline (54 years with data)
-- Timeline now loads from persons.json (1.56 MB) instead of XML
-- Commit [9e1ae34]: Fixed data loading architecture
-
-Architecture Revision (UX Improvement):
-- Removed D3 brush selection from timeline (unfamiliar UI pattern)
-- Replaced with hover tooltips for data exploration
-- Moved temporal filtering to sidebar (consistent with other filters)
-- Added dual-handle range slider using noUiSlider 15.7.1
-- Single line display: "1762 – 1824" with two draggable handles
-- Commit [ac1d6df]: Brush → Sidebar filter architecture change
-- Commit [4137177]: Fixed hover tooltips (bar width, cursor pointer, z-index)
-- Commit [edfcb00]: Integrated noUiSlider for professional UX
-
-Final Implementation:
-- Timeline: Pure visualization with hover tooltips
-- Sidebar Filter: Year range slider (1762-1824)
-- Brushing & Linking: Slider ↔ Map ↔ Timeline synchronization
-- Performance: <500ms timeline render, <100ms filter updates (targets met)
-- Data: 13,414 letters with dates, ~13,000 letter-year entries
-- ADR-005: Status changed from Proposed → Implemented → Revised
-
-Lessons Learned:
-- Integration tests needed (deployment scenarios, not just pipeline)
-- Frontend should use processed data (JSON), not raw data (XML)
-- UX patterns: Consistency matters (sidebar filters > embedded controls)
-- Iterate on feedback: Brush selection → Hover + Sidebar was better UX
-
-Total Commits Session 10: 6 commits, ~500 lines changed
-
-## 2025-10-28
-
-### Session 11: Curated Dataset Integration and Pipeline Refactoring
-
-Discovery of New Data Export:
-- Found new-data/Datenexport 2025-10-27/ with 8 XML files (800 KB)
-- Export date: 27 October 2025 (yesterday)
-- 448 women (12.4% of full SNDB 3,617)
-- File structure: ra_ndb_* (Regestausgabe) instead of pers_koerp_*
-- No geodata files included (geo_main.xml, geo_indiv.xml, geo_links.xml missing)
-
-Data Quality Comparison (New vs Old):
-- Created compare_data_sources.py (390 lines) for systematic comparison
-- GND coverage: 60.3% (new) vs 34.1% (old) = +76.8% improvement
-- Date coverage: 94.0% (new) vs 83.9% (old) = +12.0% improvement
-- CMIF match: 51.3% (new) vs 22.3% (old) = +130% relative improvement
-- Geodata: 50.7% (new) vs 28.8% (old) = +76.0% relative improvement
-- Overlap: 447 women in both datasets, 3,170 only in old, 1 only in new
-- GND data: Identical for common women (no updates, just curated subset)
-
-Decision: Use Only New Data with Hybrid Approach:
-- Rationale: Quality over quantity (curated, research-relevant subset)
-- 60.3% GND coverage nearly double vs 34.1% (full SNDB)
-- Focused on 448 regest-relevant women with better documentation
-- All 448 have biographical texts (projekt_regestausgabe.xml)
-- Hybrid geodata: New export place refs + old SNDB coordinate resolution
-
-Pipeline Refactoring:
-- Created build_herdata_new.py (663 lines) with hybrid approach
-- Phase 1: Load ra_ndb_main.xml, ra_ndb_indiv.xml, ra_ndb_datierungen.xml (new)
-- Phase 2: CMIF matching (unchanged logic, better GND base)
-- Phase 3: HYBRID geodata enrichment
-  - ra_ndb_orte.xml (new) → SNDB_ID references
-  - geo_main.xml (old) → Place names resolution
-  - geo_indiv.xml (old) → Coordinates resolution
-  - ra_ndb_berufe.xml (new) → Occupations
-  - ra_ndb_beziehungen.xml (new) → AGRELON relationships
-- Phase 4: JSON generation with metadata update
-
-Results and Performance:
-- Total: 448 women processed
-- GND: 270 (60.3%)
-- Dates: 421 (94.0%)
-- CMIF match: 230 (51.3%) - 191 senders, 195 mentioned
-- Geodata: 227 (50.7%) via hybrid approach
-- Occupations: 207 (46.2%)
-- Timeline: 53 years with data
-- Output: persons.json 0.29 MB (was 1.56 MB = 81% reduction)
-- Runtime: 0.63s (was 1.4s = 55% faster)
-- All 48 tests passing
-
-Why Old Geodata Files Are Essential:
-- New export has ra_ndb_orte.xml with SNDB_ID references only
-- Example: SNDB_ID 79627 (Weimar)
-- geo_main.xml (old): 79627 → "Weimar" (place name)
-- geo_indiv.xml (old): 79627 → Lat 50.9795, Lon 11.3235
-- Without old geo files: NO map visualization possible
-- 121 unique SNDB_IDs in new export, all resolvable via old geo files
-
-Documentation Updates:
-- Updated knowledge/data.md: New statistics, hybrid architecture diagram
-- Updated README.md: Project status, data sources, repository structure
-- Created ADR-008: Curated dataset selection strategy (quality over quantity)
-- Updated JOURNAL.md: Session 11 complete documentation
-
-Key Insights:
-- New export is curated subset, not quality update of existing data
-- GND IDs identical for common women (no new linkages)
-- Selection criteria: Regestausgabe relevance, better data completeness
-- Hybrid approach necessary: New person data + old geodata = complete system
-- Old SNDB geo files are architectural dependency (cannot be removed)
-
-Technical Debt Addressed:
-- Maintained both pipelines: build_herdata.py (old, reference) + build_herdata_new.py (new, active)
-- Created comparison tool for future data quality monitoring
-- Documented architectural decision in ADR-008
-
-Total Commits Session 11: 0 commits (documentation phase, changes pending review)
-
-## 2025-10-28
-
-### Session 12: Network View Implementation (V2 Step 1)
-
-Context:
-- Continued V2 development based on ROADMAP.md
-- Step 1: Netzwerk-View (Isoliert) - Complete network visualization
-
-AGRELON Relationship Extraction:
-- Extended build_herdata_new.py with Step 7 in Phase 3
-- Loaded nsl_agrelon.xml: 38 relationship type definitions
-- Processed ra_ndb_beziehungen.xml: 939 total relationships
-- Filtered to relationships between women: 86 entries (43 pairs, bidirectional)
-- Fixed field mapping bug: IDENT/BEZIEHUNG (not ID/BEZEICHNUNG)
-- Result: 67 women have at least one relationship
-
-Bidirectional Relationship Logic:
-- Each pair stored twice in persons.json (A→B and B→A)
-- Total entries: 86 = 43 unique pairs × 2 directions
-- Example: Person 40967 "hat Kind" 45051, Person 45051 "hat Elternteil" 40967
-- Reciprocal types maintain semantic correctness
-- Visualization deduplicates to 43 links (one per pair)
-
-Network View Implementation:
-- Created docs/network.html: Standalone page with sidebar layout
-- Created docs/css/network.css: Responsive layout (280px sidebar + main)
-- Created docs/js/network.js: force-graph integration (v1.43.5)
-
-Visualization Features:
-- 448 nodes (all women): Blue (connected, 8px) vs Gray (isolated, 2px)
-- 43 links (unique pairs): Directional particles, gray color
-- Interactive: Click node → person page, Hover → tooltip
-- Filters: Relationship type (38 types), name search with highlighting
-- Reset view: Zoom to fit, clear filters
-- Dynamic labels: Show names when zoomed in (scale > 1.5)
-
-Graph Data Structure:
-- Nodes: {id, name, gnd_id, letter_count, relationships, hasRelationships}
-- Links: {source, target, type, type_id, reciprocal_type}
-- Bidirectional deduplication: Sorted pair keys to prevent duplicate links
-- Force-directed layout: Charge strength -50, particle animation
-
-Navigation Integration:
-- Updated docs/index.html: Added "Netzwerk" link to navbar
-- Updated docs/person.html: Consistent navbar across all pages
-- Simplified navigation: "Karte" and "Netzwerk" only
-
-Technical Implementation:
-- force-graph via unpkg CDN (v1.43.5)
-- Canvas-based rendering for performance
-- Tooltip follows mouse cursor with opacity transitions
-- Filter updates graph data in real-time
-- Search highlights matches in red, zooms to first result
-
-Performance:
-- 448 nodes render smoothly with WebGL acceleration
-- Force simulation stabilizes in <2 seconds
-- No lag with filter operations
-- Tooltip transitions: 0.2s opacity
-
-User Experience:
-- 67 women with relationships prominently displayed
-- 381 isolated women shown as context (gray)
-- Relationship type filter reduces to relevant subset
-- Name search provides quick person lookup
-- Zoom to fit maintains overview
-
-Research Questions Enabled:
-- Who is central in the network?
-- What relationship types are most common?
-- Are there clusters of related women?
-- How do letter counts correlate with network position?
-
-Commits:
-- 199e3f2: Add AGRELON relationship extraction to pipeline
-- e204647: Implement network view with AGRELON relationship visualization
-
-ROADMAP Update:
-- Step 1: Netzwerk-View marked as COMPLETED
-- Actual effort: 6 hours (2 sessions) vs estimated 8-12 hours
-- All planned features implemented
-- Ready for Step 2: Kontext-Timeline (Footer)
-
-Next Steps:
-- Step 2: Persistent timeline at page footer
-- Unified time filter across views
-- Brushing and linking with network
-
-Total Commits Session 12: 2 commits
-
-## 2025-10-29
-
-### Session 13: Person Page UX Improvements
-
-Context:
-- Continued refining person detail pages based on user feedback
-- Focus on UX clarity, data transparency, and copy functionality
-
-Problem Analysis:
-- GND/SNDB links displayed as large button-style boxes (confusing UI)
-- Korrespondenz placeholder mentioned non-existent "Phase 2"
-- Citation text difficult to copy for research use
-- Biography extraction already working but not obvious
-- No visual indicators for data quality
-- Mobile responsive spacing suboptimal
-
-UX Fixes Implemented:
-
-1. GND/SNDB Links Redesign:
-   - Changed from large blue boxes to simple inline links
-   - Format: "GND: [link]" and "SNDB: [link]"
-   - Added hover underline effect
-   - Removed misleading visual hierarchy
-
-2. Korrespondenz Placeholder Update:
-   - Removed "Phase 2" reference (misleading)
-   - Honest text: "Derzeit sind nur Anzahlen verfügbar"
-   - Clear about potential future features without promises
-   - Better user expectation management
-
-3. Citation Copy Functionality:
-   - Added styled citation box with monospace font (Courier New)
-   - Implemented one-click copy button using Clipboard API
-   - Success feedback: "Kopiert!" with green highlight (2s)
-   - Gray background box for visual distinction
-   - Responsive: full-width button on mobile
-
-4. Data Quality Icons:
-   - Green checkmark (✓) for available data
-   - Red X (✗) for missing data
-   - Blue info icon (i) for metadata
-   - Circular badge styling (20px, professional look)
-   - Improves scanability at a glance
-
-5. Biography Extraction:
-   - Confirmed already working (448/448 women have biography data)
-   - parseMarkup() function handles SNDB formatting (#s+text#s-)
-   - Displayed correctly in biography card
-
-6. Profession Data Display:
-   - Already implemented and working
-   - 207/448 women (46%) have occupation data
-   - Displayed with type classification
-
-7. Responsive Spacing Optimization:
-   - Enhanced breakpoints at 768px and 480px
-   - Better padding and margins on small screens
-   - Single-column stats cards on very small screens
-   - Citation copy button moves below text on mobile
-   - Word-break for long URLs on mobile devices
-
-Files Modified:
-- docs/js/person.js:
-  - Simplified GND/SNDB HTML structure (removed .source-link divs)
-  - Added quality indicator helper function with icons
-  - Implemented copyCitation() with navigator.clipboard API
-  - Updated placeholder text for Korrespondenz
-- docs/css/person-cards.css:
-  - Removed .source-link button styles
-  - Added .normdaten-link styles (inline with hover)
-  - Added .citation-box and .copy-button styles
-  - Added .quality-icon styles (available/unavailable/info)
-  - Enhanced responsive media queries (768px, 480px)
-
-Technical Implementation:
-- Clipboard API for modern copy functionality
-- Async/await for proper promise handling
-- CSS transitions for smooth feedback
-- Flexbox for responsive layout adjustments
-- ARIA labels for accessibility
-
-User Experience Impact:
-- Cleaner, less cluttered normdaten section
-- Honest communication about data availability
-- One-click citation copying (research workflow)
-- Visual data quality overview (quick assessment)
-- Better mobile experience (touch-friendly)
-
-Research Value:
-- Easy citation copying for academic papers
-- Clear data quality indicators for source criticism
-- Transparent about limitations
-- Professional appearance increases trust
-
-Commits:
-- 2cba019: Improve person page UX with multiple enhancements (205 insertions, 28 deletions)
-
-Total Commits Session 13: 1 commit
-
-### Session 14: Statistical Dashboard Implementation
-
-Context:
-- Requirement US-1.4 (Statistik-Dashboard) still unfulfilled (36% overall completion)
-- Need for quantitative analysis tools to support research questions
-- Data already contains rich statistical patterns
-
-Requirements Analysis:
-- Reviewed all 33 User Stories from requirements document
-- Only 12/33 implemented (36%), largest gap: statistical visualizations
-- No data export functionality (US-1.5)
-- No temporal analysis tools (US-4.3)
-
-Statistical Analysis of Data:
-- Occupations: 207/448 (46%) have data, top: Schriftstellerin (73), Schauspielerin (36)
-- Places: 227/448 with geodata, Weimar dominates (83 = 37%), Berlin (47), Frankfurt (26)
-- Birth cohorts: Peak 1750-1790 (279 persons = 62%), concentration in Goethe era
-- Letter activity: 191 senders, 195 mentioned, 156 both, 218 SNDB-only (transparency)
-- Timeline: Meta.timeline in persons.json contains 1772-1824 distribution
-
-Design Decision: Hybrid Solution:
-- Full dashboard page (stats.html) for detailed analysis
-- Navbar link for direct access
-- Individual export buttons for each chart
-- No sidebar mini-preview (keep map focused)
-
-Implementation: Statistics Dashboard
-
-Files Created:
-- docs/stats.html (125 lines): Professional dashboard layout
-- docs/js/stats.js (612 lines): Chart rendering and export logic
-- docs/css/stats.css (202 lines): Responsive grid styling
-
-Charts Implemented (Apache ECharts 5.5.0):
-
-1. Berufsverteilung (Occupation Distribution):
-   - Horizontal bar chart, Top 15 occupations
-   - Labels inside bars (white text) to prevent overlap
-   - Shows 207/448 (46%) women with occupation data
-   - Grid: left 20%, right 5% for optimal label space
-
-2. Brief-Timeline (Letter Timeline):
-   - Line chart with area fill
-   - Temporal distribution 1772-1824 (15,312 letters)
-   - Smooth curve with blue gradient
-   - Peak activity visible around 1820s
-
-3. Geografische Zentren (Geographic Centers):
-   - Vertical bar chart, Top 10 places
-   - Weimar dominance clearly visible (83 persons)
-   - Forest green color scheme
-   - Shows 227/448 women with location data
-
-4. Generationen (Birth Cohorts):
-   - Histogram by decade (1720er-1820er)
-   - Peak in 1760s-1780s (Goethe generation)
-   - Gray color scheme
-   - 407/448 women with birth data
-
-5. Briefaktivität (Letter Activity):
-   - Stacked bar chart with role colors
-   - Categories: Absenderinnen (191), Erwähnt (195), Beides (156), Nur SNDB (218)
-   - Transparent about data quality (49% indirect evidence)
-   - Color-coded by activity type
-
-Export Functionality:
-- CSV export with proper structure and headers
-- PNG export at 2x resolution for publications
-- Individual export buttons per chart
-- Example formats:
-  - Occupations: Beruf,Anzahl,Prozent
-  - Timeline: Jahr,Briefe
-  - Places: Ort,Anzahl,Latitude,Longitude
-  - Cohorts: Jahrzehnt,Anzahl
-  - Activity: Kategorie,Anzahl,Prozent
-
-Navigation Integration:
-- Updated docs/components/navbar.html: Added Statistik link with 📊 icon
-- Updated docs/css/style.css: nav-link styles with hover effects
-- Active link highlighting on stats page
-- Full navbar with search on all pages
-- Imported GlobalSearch in stats.js for functional search
-
-Technical Architecture:
-- Apache ECharts via CDN (5.5.0, ~800KB but modular)
-- ES6 modules for clean code organization
-- Async data loading with fetch API
-- Window resize handler for responsive charts
-- Grid layout: 2 columns desktop, 1 column mobile
-- Breakpoints: 1200px, 768px, 480px
-
-Chart Configuration:
-- Tooltips on all charts with formatted data
-- Responsive grid system with proper spacing
-- Title positioning (centered)
-- Axis labels with proper margins
-- Color scheme matching design system
-- Font sizes optimized for readability
-
-User Experience:
-- Clean professional dashboard appearance
-- Hover tooltips provide detailed information
-- One-click exports for research workflows
-- Mobile-friendly responsive design
-- Accessible ARIA labels throughout
-- Charts auto-resize on window changes
-
-Research Value:
-- Quantitative evidence for occupation concentration in arts/literature
-- Temporal patterns show increasing correspondence over time
-- Geographic analysis confirms Weimar as cultural center
-- Generational cohorts reveal Goethe-era concentration
-- Data quality transparency enables source criticism
-
-Performance:
-- All 5 charts render in <500ms
-- Export operations <100ms
-- No lag during interaction
-- Smooth transitions and animations
-- Efficient data processing
-
-Bug Fixes During Implementation:
-- Removed "Alle Statistiken exportieren" button (redundant)
-- Fixed occupation chart label overlap (inside bars instead of right)
-- Made timeline CSV export async (await generateTimelineCSV())
-- Added search.css to stats.html for navbar functionality
-- Implemented active link highlighting for navigation
-
-Files Modified:
-- docs/components/navbar.html: Added Statistik link
-- docs/css/style.css: nav-link styles updated
-
-Commits:
-- e9d9a04: Add statistics dashboard with interactive charts (998 insertions, 5 deletions)
-
-Requirements Fulfilled:
-- US-1.4: Statistik-Dashboard (COMPLETED)
-- US-1.5: Datenexport (PARTIALLY - CSV/PNG, missing JSON)
-- Improved overall completion: 36% → 39% (13/33 User Stories)
-
-Research Questions Enabled:
-- What were the most common professions among women in Goethe's network?
-- How did correspondence intensity change over time?
-- Which geographic centers dominated the cultural network?
-- What generational cohorts were most represented?
-- How complete is our data for different categories?
-
-Next Steps (Open Requirements):
-- US-3.4: Zentren-Gravitation (network density visualization)
-- US-4.1: Lebenszeit-Übersicht (lifespan timeline)
-- US-4.2: Kohorten-Analyse (generational comparison)
-- NFR-3: Enhanced accessibility (color patterns, alt texts)
-
-Total Commits Session 14: 1 commit
+> Hinweis: Auf Wunsch ist die **Verbesserte Fassung** vollständig **ohne Metriken/Zahlen** formuliert. Die **Original-Kompaktfassung** bleibt zur Referenz erhalten.
 
 ---
 
-## Session 15: Documentation & Code Refactoring
+## Teil A — Original-Kompaktfassung (Referenz)
 
-Datum: 2025-10-29
-Ziel: Dokumentation vervollständigen, JavaScript refactorieren (DRY), Design-System dokumentieren
+### HerData Journal — Kompaktfassung (gleiche Information, präziser)
 
-### Phase 1-3: CSS & Design System
+## 2025-11-04
 
-Completed CSS token migration (Phases 1-3 from previous session):
+### Session 3 — Data Model Separation & CSS-Analyse integriert
 
-Phase 1: CSS Standardisierung
-- Created docs/css/tokens.css (158 lines, 58 tokens)
-- Standardized breakpoints (480/768/1024/1200/1400)
-- Removed duplicate tokens from stats.css
-- Updated design.md with implementation status
+* **Finale Doku-Konsolidierung:** Trennung Datenmodell vs. Datenquellen; CSS-Konsistenzanalyse in `design.md` integriert; Root bereinigt.
+* **Data Model Separation**
 
-Phase 2: Documentation
-- Added knowledge/design.md Section 13 (435 lines)
-- Documented design-reality gap
-- Lessons learned section
+  * Neu: `data-model.md` (vollständiges `persons.json`-Schema inkl. Feldtypen, Validierungen, Frontend-Transformationen).
+  * `data.md` refaktoriert: nur Datenquellen, Provenienz, Lizenzen, Qualität.
+  * Klarer Schnitt: `data.md` = **WO** Daten herkommen; `data-model.md` = **WIE** sie strukturiert sind.
+* **CSS Analysis Integration**
 
-Phase 3: CSS Migration
-- Added @import tokens.css to person-cards.css, search.css
-- network.css documented as archived
-- Updated docs/README.md with accurate line counts
+  * `CONSISTENCY_ANALYSIS.md` nach `design.md` §13.3.1 übernommen.
+  * 3 kritische CSS-Probleme: Duplikate in `style.css` (Tokens), undefinierte Token-Referenzen, fehlende Status-Farben.
+  * Token-Import-Status: 3/6 CSS-Dateien nutzen `tokens.css` korrekt.
+  * Entfernt: `design-css-analysis.md` (Inhalt integriert).
+* **Root Cleanup**
 
-CSS Documentation (docs/css/README.md):
-- Complete token reference (58 tokens)
-- All 6 CSS files documented
-- Usage guidelines
-- Color accessibility (WCAG AA)
-- Import strategy
+  * Entfernt: `PR_SUMMARY.md` (obsolet, 2025-11-02), `DOCUMENTATION_CONSOLIDATION_PLAN.md` (Plan bereits umgesetzt), `CONSISTENCY_ANALYSIS.md` (integriert).
+* **Knowledge Vault Status**
 
-### JavaScript Refactoring
+  * 10 Dateien in `docs/knowledge/`: `INDEX`, `project`, `data`, `data-model`, `decisions`, `requirements`, `design`, `tech`, `responsive_dossier`, `implementation-quick-wins`.
+  * Alle Cross-Refs aktualisiert; `INDEX.md` spiegelt Finalstruktur.
+* **Commit**
 
-Problem: Code duplication across app.js, person.js, stats.js
-- loadData() implemented 3 times (identical)
-- initSearch() implemented 3 times (identical)
-- allPersons loaded 3x (1.3 MB memory waste)
+  * `8ede5e0`: Add `data-model.md` + Doku-Refactor; Diff: **+431** Zeilen (`data-model.md`), **–817** (obsolet).
+* **Ergebnis**
 
-Solution: Simple shared data module (no overengineering)
+  * Knowledge Vault vollständig, konsolidiert, klare Verantwortlichkeiten.
 
-Created docs/js/data.js (55 lines):
-- loadPersons(): Fetch + in-memory cache
-- getPersonById(persons, id): Find person
-- clearCache(): Clear cache
+---
 
-Benefits:
-- Data loaded once (browser + in-memory cache)
-- 48 lines duplication removed
-- 66% memory reduction (450 KB vs 1.3 MB)
-- SPARQL-ready (simple extension point)
+### Session 2 — Dokumentations-Konsolidierung
 
-Refactored Files:
-- app.js: Use loadPersons() (-20 lines)
-- person.js: Use loadPersons() + getPersonById() (-16 lines)
-- stats.js: Use loadPersons() (-12 lines)
+* **Zentralisierung:** 8 Analyse-/Planungsdoks nach `docs/knowledge/`; `JOURNAL.md` aktualisiert (856 Zeilen, inkl. Provenance-Session); `INDEX.md` restrukturiert; jetzt 17 Dateien zentral in `docs/knowledge/`.
+* **Verschoben nach `docs/knowledge/`:**
 
-JavaScript Documentation (docs/js/README.md):
-- 832 lines complete module reference
-- All 6 modules documented
-- Function signatures with types
-- Usage examples
-- Data flow diagram
-- Extension points (SPARQL code example)
-- Performance metrics
-- Browser compatibility
+  * `debug-system.md` (Provenance-System), `technical-analysis.md` (1488 Zeilen), `requirements-validation.md`, `documentation-assessment.md`, `implementation-quick-wins.md`, `implementation-mobile.md`, `responsive-design.md`.
+* **Vault-Struktur**
 
-### Bug Fixes
+  * Projekt: `project.md`, `research-context.md`
+  * Daten: `data.md`, `debug-system.md`
+  * Design: `design.md`, `responsive-design.md`
+  * Requirements: `requirements.md`, `requirements-validation.md`
+  * Technik: `technical-architecture.md`, `technical-analysis.md`
+  * Entscheidungen: `decisions.md` (8 ADRs)
+  * Netzwerk: `network-relations.md`
+  * Implementierung: `implementation-quick-wins.md`, `implementation-mobile.md`
+  * Doku: `documentation-assessment.md`
+* **Archivierung**
 
-Bug 1: stats.js export buttons
-- Problem: initExportButtons() called before charts rendered
-- Root cause: Charts need time to render DOM elements
-- Fix: setTimeout(500ms) + safety check
-- Removed reference to deleted export-all-btn
+  * Behalten: `hover-network-plan.md` (923 Zeilen), `CLUSTER_HOVER_DEBUG.md` (172 Zeilen).
+  * `documentation/img` → `archive/documentation-img`; kein Wissensverlust.
+* **Updates**
 
-Bug 2: app.js cluster click
-- Problem: Coordinate matching found 0 persons
-- Root cause: Cluster center != original coordinates
-- Fix: Use MapLibre getClusterLeaves() API
-- Removed manual distance calculation (38 lines)
+  * `INDEX.md` komplett neu, `README.md` mit „Last Updated: 2025-11-04“; Root schlank: nur `README.md`, `CLAUDE.md`, `JOURNAL.md`.
+* **Commits**
 
-### Commits
+  * `bdb51db` (Analysedoks verschoben), `c8973ed` (Planungsdoks + JOURNAL), `fbfa1b6` (Navigation & Timestamps).
+* **Ergebnis**
 
-7a2ed10: Update design.md with comprehensive implementation documentation
-27c3caa: Complete Phase 3: CSS token migration
-d31a802: Refactor JavaScript: Shared data module
-2f26f91: Add comprehensive JavaScript documentation
-af60655: Fix bugs in stats.js and app.js
-ad071d8: Fix stats.js export buttons initialization
+  * 27 Markdown-Dateien analysiert/organisiert; 100 % Info erhalten; klare Navigation via `INDEX.md`.
 
-Total: 6 commits
+---
 
-Files Created:
-- docs/css/README.md (200+ lines)
-- docs/js/README.md (832 lines)
-- docs/js/data.js (55 lines)
+### Session 1 — Provenance-System (Phase 1, Backend)
 
-Files Modified:
-- knowledge/design.md (+435 lines)
-- docs/css/person-cards.css, search.css (@import tokens)
-- docs/js/app.js, person.js, stats.js (refactored)
-- docs/README.md (updated line counts)
+* **Pipeline**
 
-Architecture Improvements:
-- DRY: Eliminated 48 lines duplication
-- Single source of truth for data loading
-- Scalable: SPARQL-ready without complexity
-- Documented: Complete technical reference
+  * `track_provenance=True` standard; `add_provenance()` für **11 Felder** in **4 Phasen**; Dual-JSON: `persons.json` (prod) + `persons_debug.json` (debug).
+* **Abdeckung**
 
-Code Quality:
-- No breaking changes
-- Same functionality, cleaner code
-- Easy to test
-- Easy to extend
+  * 3 695 Provenienz-Einträge für 448 Frauen (100 %); Felder: `id`, `name`, `gnd`, `dates` (Geburt/Tod), `letter_count`, `mention_count`, `role`, `places`, `occupations`, `biography`.
+  * Jeder Eintrag: Quelle, XPath, Rohwert, Transformation, Timestamp.
+* **Outputs**
 
-Performance Impact:
-- Memory: 66% reduction
-- Network: Data loaded once (cached)
-- Bundle size: +55 lines (data.js)
+  * `persons.json` 446 KB (prod, **ohne** Provenance, unverändert).
+  * `persons_debug.json` 1,71 MB (debug, `_provenance` pro Person); **+1,28 MB** (+293 %) für volle Transparenz.
+* **Performance**
 
-Total Commits Session 15: 6 commits
+  * Laufzeit 0,67 s (vorher 1,11 s); 48 Tests grün; Prod-Performance unverändert (Dateigröße gleich).
+* **Implementierung**
+
+  * `build_herdata_new.py` +150 Zeilen; Phase 1 (ID, Name, GND, Dates), Phase 2 (Letters/Mentions/Role), Phase 3 (Places HYBRID, Occupations, Biography), Phase 4 (Dual-JSON mit konditionalem `_provenance`).
+* **Wissenschaftlicher Wert**
+
+  * Vollständige Datenlinie; reproduzierbare Pipeline; transparente Transformation; Quellenattribution pro Datenpunkt.
+* **Doku**
+
+  * Neu: `DEBUG_SYSTEM.md`; Backup: `build_herdata_new.py.backup`.
+* **Validierung**
+
+  * Beispiele: Angelica Bellonata Facius (9 Provenienzfelder), Christiane Vulpius (Letter-Count mit GND-Match); alle 448 mit `_provenance`.
+* **Next (Phase 2)**
+
+  * Frontend-Debugpanel; `person.html` Rohdaten-Viewer; Hover-Tooltips; Bedarfserhebung vor Ausweitung.
+
+---
+
+## 2025-10-19
+
+### Session 1 — Data Verification & Initial Docs
+
+* Fix: Skriptpfade; CMIF verifiziert (15 312 Briefe).
+* SNDB: 23 571 Personen (3 617 Frauen/15,3 %), 4 007 Orte; Feldfund: `SEXUS` (nicht `GESCHLECHT`).
+* GND-Abdeckung: 53,4 % SNDB, 93,8 % CMIF-Absender.
+* Neu: `data.md`, `project.md`, `research-context.md`, `TODO-Dokumentation.md`.
+* Erstcommit `[dbef54b]`: 22 Dateien; `TODO` auf neutrale Berichterstattung refaktoriert; `JOURNAL.md` erstellt.
+
+### Session 2 — Projekt-Overview & Repo-Setup
+
+* `README.md` umfassend; `docs/` für GitHub Pages (Platzhalter).
+* `requirements.md`: 14 User Stories, 5 Epics, 10 funktionale Anforderungen.
+* `IMPLEMENTATION_PLAN.md`: 7-Tage Phase-1 Plan.
+* `CLAUDE.md`: Style-Guidelines (keine Fettung/Emojis/Zeitschätzungen).
+* Entscheidung: `.claude/` aus Git, relative Pfade.
+
+### Session 3 — Daten-Pipeline
+
+* Status: 95 % Doku, 5 % Code; `build_herdata.py` (4 Phasen, 1,39 s).
+* Fixes: XML-Felder `SEXUS`, `ART+JAHR`, `SNDB_ID`, `BEZEICHNUNG`, `LATITUDE/LONGITUDE`.
+* Phase 1: 3 617 Frauen, 34,1 % GND, 83,9 % mit Dates.
+* Phase 2: 808 CMIF-Matches (192 Absender, 772 erwähnt).
+* Phase 3: 1 042 Geo-enriched (28,8 %), 979 Occupations.
+* Phase 4: `docs/data/persons.json` (1,49 MB).
+* Windows-Fix: `[OK]` statt Unicode-Häkchen.
+* Befunde: 9 antike Figuren (<1000 CE); Frauen geringere GND-Quote.
+* Tests: `build_herdata_test.py` (48 grün, 1,73 s).
+
+### Session 4 — Frontend
+
+* `docs/` Struktur: `css/`, `js/`, `assets/`; `index.html` (Nav, Filter, Map).
+* CSS Design-System; Datenvalidierungsskript (40 Zeilen, 3 617 Frauen).
+* Favicon.svg; 0 Console Errors; Responsive: ≤640/≤1024/>1024 px.
+* Commit `[860ebce]`: +509 Zeilen.
+
+### Session 4 (weiter) — Design-Refinement
+
+* Farbe: Purple-Gradient → Academic Navy `#1e3a5f`; Akzent Steel Blue `#2c5f8d`; Favicon: Solid Navy.
+* `design.md` §6.1.1 aktualisiert; Begründung: vertrauenswürdigere Sprache.
+* Commit `[8d8c896]`: +75/–32.
+
+### Session 4 (weiter) — Architektur-Entscheidung
+
+* `JOURNAL.md` → `documentation/`; ADR-001 in `decisions.md`: MapLibre vs. Leaflet vs. OpenLayers.
+* Bedarf Phase 2/3: Brushing, Linking, Animationen, Heatmap.
+* Entscheidung: MapLibre GL JS (WebGL); Trade-offs: 220 KB Bundle (vs. Leaflet 40 KB), Lernkurve.
+* Commits `[f579aba]` (Move), `[5290160]` (ADR, 201 Zeilen).
+
+### Session 5 — MapLibre MVP
+
+* Wechsel auf MapLibre GL JS 4.7.1; OSM-Tiles, Center Weimar (11.3235, 50.9795).
+* GeoJSON: 1 042 Features; Clustering (maxZoom=14, radius=50, step-Sizing).
+* Layer: Clusters, Counts, Marker; Farben Rollen: sender/mentioned/both/indirect.
+* Markergrößen: 4→12 px (z5→z15); Klick: Cluster-Zoom, Marker-Popup.
+* Filter → Map in Echtzeit; Tab-Resize bei Karte.
+* Commit `[e75156a]`: 419 JS-Zeilen (+480 Insertions); Bugfixes Glyphs `[97a2869]`, Font `[c2860bd]`.
+
+### Session 6 — Clustering & Multi-Person Popups
+
+* README mit Pages-Link; `clusterMaxZoom` 14→10; `clusterRadius` 50→40; Marker 6/10/16 px.
+* Problem: 217 Frauen auf Weimar-Koords → nur Top klickbar.
+* Lösung: `queryRenderedFeatures()` → Multi-Person-Popup (15 initial, expandierbar).
+* ADR-002; Commit `[734908d]` (Clustering), `[9014a40]` (Multi-Person).
+
+### Session 7 — Suche
+
+* Nav-Suche mit Fuse.js (threshold 0,3); Felder: `name`, `name_variants`, `gnd_name`.
+* Dropdown (max 10) mit Name+Dates+Badges; Klick: Zoom z12 (oder Warnung ohne Koords).
+* Keyboard: Pfeile/Enter/Escape; Outside-Click-Close.
+* Commit: Suche fertig.
+
+### Session 8 — Statistik-Tab
+
+* 4 Sektionen: Overview-Cards, Charts (Role pie, Top-Orte bar, Occupations h-bar), Birth/Death-Histogramme.
+* Responsive Grid, mobil optimiert; Chart.js.
+* Commit: Statistik implementiert.
+
+### Session 9 — Research-Interface
+
+* Feedback: Forschungsinterface nötig; bisher alle Cluster blau.
+* Umbenennung Filter „Rolle“ → „Briefaktivität“; „Normierung“ entfernt; „Berufsgruppe“ (7 Kategorien) hinzu.
+* 231 Berufe → 7 Gruppen (z. B. Künstlerisch 222, Literarisch 199).
+* Clusterfarben nach Mehrheit: blau=writers, grün=mixed, grau=mentioned, hell=SNDB.
+* Legende (BR), Tooltips: „111 Frauen | 45 geschrieben • 58 erwähnt • 8 SNDB“.
+* Commit `[2f2479a]`.
+
+### Session 10 — Timeline & Architektur
+
+* **Initial (D3):** `timeline.js` (252 Zeilen) Histogramm 1762–1824, Brush (`d3.brushX`). Commit `[c452743]`.
+* **Kritischer Bug:** Versuchte `docs/data/ra-cmif.xml` (23,4 MB) zu laden → 404 (nicht deployed).
+
+  * Fix: Pipeline extrahiert `letter_years` je Person; aggregiertes `meta.timeline` (54 Jahre) in `persons.json`.
+  * Timeline lädt aus `persons.json` (1,56 MB statt XML). Commit `[9e1ae34]`.
+* **Architektur-Revision:** Brush entfernt; Hover-Tooltips; Zeitfilter in Sidebar (noUiSlider 15.7.1, Dual-Handle, Anzeige „1762 – 1824“). Commits `[ac1d6df]` (Brush→Sidebar), `[4137177]` (Hover-Fix), `[edfcb00]` (noUiSlider).
+* **Final:** Timeline reine Visualisierung; Sidebar-Rangefilter; Brushing & Linking: Slider ↔ Map ↔ Timeline; Performance: <500 ms Render, <100 ms Updates; Daten: 13 414 datierte Briefe (~13 000 letter-years); ADR-005: Proposed → Implemented → Revised.
+* **Lernen:** Integrationstests (Deployment), nur verarbeitete JSON nutzen, konsistente UX (Sidebar), Iteration (Brush→Hover+Sidebar).
+* **Änderungen:** 6 Commits, ~500 Zeilen.
+
+---
+
+## 2025-10-28
+
+### Session 11 — Kuratiertes Dataset & Pipeline-Refactor
+
+* **Fund:** `new-data/Datenexport 2025-10-27/` (8 XML, 800 KB; 448 Frauen = 12,4 % von 3 617; Struktur `ra_ndb_*`; keine Geodaten `geo_*`).
+* **Vergleich (Neu vs. Alt):**
+
+  * GND: **60,3 %** vs **34,1 %** (+76,8 % rel.)
+  * Dates: **94,0 %** vs **83,9 %** (+12,0 %)
+  * CMIF-Match: **51,3 %** vs **22,3 %** (+130 % rel.)
+  * Geodaten: **50,7 %** vs **28,8 %** (+76,0 %)
+  * Overlap: 447 in beiden; 3 170 nur alt; 1 nur neu.
+  * GND identisch für Schnittmenge (keine neuen Linkages).
+* **Entscheidung:** Nur neues, kuratiertes Dataset (Qualität vor Quantität), Hybrid-Geodaten.
+* **Refactor:** `build_herdata_new.py` (663 Zeilen)
+
+  * P1: `ra_ndb_main.xml`, `ra_ndb_indiv.xml`, `ra_ndb_datierungen.xml`
+  * P2: CMIF-Matching (bessere GND-Basis)
+  * P3: HYBRID Geodaten
+
+    * `ra_ndb_orte.xml` (neu) → SNDB_ID
+    * `geo_main.xml` (alt) → Ortsnamen
+    * `geo_indiv.xml` (alt) → Koordinaten
+    * `ra_ndb_berufe.xml` (neu) → Berufe
+    * `ra_ndb_beziehungen.xml` (neu) → AGRELON
+  * P4: JSON + Meta-Update
+* **Ergebnis & Performance**
+
+  * 448 Frauen; GND 270 (60,3 %); Dates 421 (94,0 %); CMIF 230 (51,3 %; 191 Absender, 195 erwähnt); Geodaten 227 (50,7 %); Occupations 207 (46,2 %); Timeline 53 Jahre.
+  * `persons.json` 0,29 MB (vorher 1,56 MB, −81 %); Runtime 0,63 s (vorher 1,4 s, −55 %); 48 Tests grün.
+* **Warum alte Geodaten nötig**
+
+  * Neu: `ra_ndb_orte.xml` enthält nur SNDB_ID (z. B. 79627 Weimar).
+  * Alt: `geo_main.xml` (Name), `geo_indiv.xml` (Lat 50.9795, Lon 11.3235).
+  * 121 eindeutige SNDB_IDs → vollständig auflösbar; ohne Altdateien keine Karte.
+* **Doku**
+
+  * `knowledge/data.md` aktualisiert (Statistiken, Hybrid-Diagramm); `README.md` Status/Quellen/Struktur; ADR-008 (Qualität>Quantität); `JOURNAL.md` ergänzt.
+* **Insights**
+
+  * Kuratierter Ausschnitt, keine Quality-Updates im Bestand; Auswahl über Regestausgabe-Relevanz.
+* **Tech-Debt**
+
+  * Beide Pipelines behalten (`build_herdata.py` alt, Referenz; `build_herdata_new.py` neu, aktiv); Vergleichstool für Qualität; ADR dokumentiert.
+* **Commits**
+
+  * Dokumentationsphase: 0 Commits (Änderungen in Vorbereitung).
+
+---
+
+### Session 12 — Netzwerk-View (V2 Schritt 1)
+
+* **AGRELON-Extraktion**
+
+  * `nsl_agrelon.xml`: 38 Beziehungstypen; `ra_ndb_beziehungen.xml`: 939 Relationen total; Filter Frauen↔Frauen: 86 Einträge (43 Paare, bidirektional); 67 Frauen haben ≥1 Relation.
+  * Mapping-Fix: `IDENT/BEZIEHUNG` (nicht `ID/BEZEICHNUNG`).
+  * Speicherung: A→B und B→A (semantisch reziprok), Visualisierung dedupliziert auf 43 Kanten.
+* **Implementierung**
+
+  * `docs/network.html` (Standalone), `docs/css/network.css`, `docs/js/network.js` (force-graph v1.43.5).
+  * Nodes 448: blau (connected, 8 px) / grau (isoliert, 2 px); 43 Links mit Partikelrichtung, grau.
+  * Interaktiv: Klick→Personseite, Hover→Tooltip; Filter: Beziehungstyp (38), Namesuche (Highlight), Reset (Zoom to fit), Labels bei Zoom>1.5.
+  * Graph-Daten: Nodes {id, name, gnd_id, letter_count, relationships, hasRelationships}; Links {source, target, type, type_id, reciprocal_type}; Pair-Dedup via sortiertem Key.
+  * Layout: Force (charge −50); Canvas-Rendering.
+* **Performance & UX**
+
+  * 448 Nodes flüssig (WebGL-Beschleunigung); Stabilisierung <2 s; Filter ohne Lag; Tooltip-Fade 0,2 s.
+* **Forschungsfragen**
+
+  * Zentralität, häufige Typen, Cluster, Korrelation Briefe↔Position.
+* **Navigation**
+
+  * Navbar-Link „Netzwerk“; einheitliche Navbar auf `person.html`.
+* **Commits**
+
+  * `199e3f2` (AGRELON in Pipeline), `e204647` (Netzwerk-View).
+* **ROADMAP**
+
+  * Schritt 1: **COMPLETED**; Nächstes: Kontext-Timeline (Footer) + Zeitfilter-Kopplung.
+
+---
 
 ## 2025-10-29
 
-### Session 16: Network Visualization with AGRELON Relations
+### Session 13 — Person-Seite UX
 
-Phase 1: Hover-Network Infrastructure
-- Created network-utils.js (160 lines)
-  - getPersonConnections(): Extract AGRELON relations
-  - getClusterConnections(): Aggregate for clusters
-  - categorizeRelationByAgrelonId(): Familie/Beruflich/Sozial
-  - getConnectionColor(): Color mapping
-- Enhanced app.js with hover events
-  - drawConnectionLines(): Render GeoJSON LineStrings
-  - clearConnectionLines(): Remove on mouseleave
-  - Enhanced mouseenter for persons-layer and clusters
-- UI updates:
-  - Network legend in index.html
-  - .legend-line styles in style.css
-- Test infrastructure:
-  - test-network.html: Module tests
-  - test-network-visual.html: Visual demo with synthetic data
-  - TESTING-NETWORK.md: Testing guide
+* **Probleme**
 
-Phase 2: AGRELON Data Integration
-- Created integrate_relations.py (233 lines)
-  - Parse pers_koerp_beziehungen.xml (6580 relations)
-  - Parse nsl_agrelon.xml (44 relation types)
-  - Map 34 AGRELON IDs to 3 categories
-  - Filter out non-person relations (Werk, Geografikum)
-- Integration results:
-  - 67 persons with relations (of 448 total)
-  - 84 relations added to persons.json
-  - Distribution: Familie 80, Beruflich 2, Sozial 2
-  - 41 persons with geo-located connections
+  * GND/SNDB als große Buttons (verwirrend); Platzhalter „Phase 2“ Korrespondenz (irreführend); Zitation schwer kopierbar; Biografie unklar sichtbar; fehlende Qualitätsindikatoren; mobiles Spacing suboptimal.
+* **Lösungen**
 
-AGRELON Category Mapping:
-- Familie (16 types): 4xxx IDs (Verwandtschaft)
-- Beruflich (11 types): 3xxx IDs (Beruflicher Kontakt)
-- Sozial (7 types): 1xxx/2xxx IDs (Bekanntschaft, Gruppenbeteiligung)
+  1. GND/SNDB als Inline-Links („GND: [link]“, „SNDB: [link]“, Hover-Underline).
+  2. Korrespondenz-Text ehrlich: „Derzeit nur Anzahlen verfügbar“.
+  3. Zitation mit Monospace-Box + One-Click-Copy (Clipboard API, Feedback „Kopiert!“, 2 s; Button mobil vollbreit).
+  4. Qualitäts-Icons: ✓ (grün) vorhanden, ✗ (rot) fehlt, i (blau) Meta; 20 px Rund-Badges.
+  5. Biografie (448/448) bestätigt; `parseMarkup()` rendert SNDB-Format (#s+text#s-).
+  6. Berufe (207/448, 46 %) mit Typ-Klassifikation.
+  7. Responsive-Spacing (Breakpoints 768/480; einspaltige Stats; Copy-Button unter Text; Word-Break für lange URLs).
+* **Dateien geändert**
 
-Bug Fixes:
-- network-utils.js: Check person.places before accessing
-- categorizeRelation(): Use AGRELON ID instead of German text
-  - Issue: All relations categorized as "Unbekannt"
-  - Fix: Use ID prefix (4xxx=Familie, 3xxx=Beruflich, 1xxx/2xxx=Sozial)
-  - Result: Correct color-coded lines
+  * `docs/js/person.js` (Inline-Links, Quality-Icons, `copyCitation()`, Platzhalter-Update).
+  * `docs/css/person-cards.css` (Buttons entfernt, `.normdaten-link`, `.citation-box`, `.copy-button`, `.quality-icon`, Media Queries).
+* **Technik**
 
-Documentation Updates:
-- README.md: Network visualization features
-- docs/README.md: Network components and statistics
-- hover-network-plan.md: Complete 3-phase implementation plan
+  * Clipboard API `navigator.clipboard`; async/await; CSS-Transitions; Flexbox; ARIA.
+* **Impact**
 
-Testing:
-- test-network-visual.html: 3 synthetic persons with connections
-- test-relations-data.html: Real data validation
-- Console logs: "Drawing N connection lines" working
-- User confirmation: "das funktioniert" with real data
+  * Aufgeräumte Normdaten; ehrliche Kommunikation; 1-Klick-Zitieren; visuelle Qualitätsübersicht; besser mobil.
+* **Forschungsnutzen**
 
-Commits:
-- 4b1022f: Implement Phase 1: Hover-based network visualization
-- 3f23e68: Integrate AGRELON relations from SNDB
-- 856abde: Fix network-utils: Check for person.places
-- 414c3cc: Fix categorization: Use AGRELON ID
-- 42a5bb0: Update documentation with network features
+  * Zitierbarkeit; Quellenkritik; Transparenz; Professionalität.
+* **Commit**
 
-Files Created:
-- docs/js/network-utils.js (160 lines)
-- docs/test-network.html
-- docs/test-network-visual.html
-- docs/test-relations-data.html
-- docs/TESTING-NETWORK.md
-- knowledge/hover-network-plan.md (500+ lines)
-- preprocessing/integrate_relations.py (233 lines)
-- preprocessing/list_agrelon_types.py
+  * `2cba019` (+205/–28); **1 Commit**.
 
-Files Modified:
-- docs/js/app.js (+92 lines for network rendering)
-- docs/data/persons.json (+84 relations)
-- docs/index.html (network legend)
-- docs/css/style.css (.legend-line)
-- README.md (network features)
-- docs/README.md (network components)
+---
 
-User Story Progress:
-- US-2.2 (Ego-Network): 100% fulfilled
-- US-3.4 (Gravitation): 90% fulfilled
-- US-3.6 (Network Density): 80% fulfilled
-- Overall: Improved from 52% to 67% (+15%)
+### Session 14 — Statistik-Dashboard
 
-Next Phase (Optional):
-- Filter checkboxes for relation categories
-- Performance optimization for large clusters
-- Hover tooltips with relation details
-- Correspondence network (letter co-mentions)
+* **Kontext/Anforderungen**
 
-Total Commits Session 16: 5 commits
+  * US-1.4 offen (Dashboard); 33 User Stories: 12/33 umgesetzt (36 %); Lücken: Statistik, Export, Temporal-Tools.
+* **Datenbefunde**
+
+  * Berufe: 207/448 (46 %), Top: Schriftstellerin 73, Schauspielerin 36.
+  * Orte: 227/448; Weimar 83 (37 %), Berlin 47, Frankfurt 26.
+  * Kohorten: Peak 1750–1790 (279 = 62 %).
+  * Briefaktivität: 191 Absender, 195 erwähnt, 156 beides, 218 nur SNDB (Transparenz).
+  * Timeline: `meta.timeline` 1772–1824.
+* **Entscheidung**
+
+  * Eigenständige Seite `stats.html` (kein Mini-Preview in Map); Navbar-Link; Export pro Chart.
+* **Implementierung**
+
+  * Neu: `docs/stats.html` (125 Zeilen), `docs/js/stats.js` (612), `docs/css/stats.css` (202).
+  * **ECharts 5.5.0**:
+
+    1. **Berufsverteilung**: h-Bar, Top 15, In-Bar-Labels (weiß), 207/448 (46 %), Grid links 20 %.
+    2. **Brief-Timeline**: Line+Area 1772–1824 (15 312 Briefe), smoothe Kurve, Blau-Gradient.
+    3. **Geo-Zentren**: v-Bar, Top 10, Weimar-Dominanz (83), Forrest-Green.
+    4. **Generationen**: Dekaden-Histogramm (1720er–1820er), Peak 1760er–1780er, Grau; 407/448 Birth-Data.
+    5. **Briefaktivität**: Stacked Bars (Absenderinnen 191, Erwähnt 195, Beides 156, Nur SNDB 218), rollencodierte Farben.
+* **Export**
+
+  * CSV/PNG (2×) je Chart; Formate:
+
+    * Occupations: `Beruf,Anzahl,Prozent`
+    * Timeline: `Jahr,Briefe`
+    * Orte: `Ort,Anzahl,Latitude,Longitude`
+    * Kohorten: `Jahrzehnt,Anzahl`
+    * Aktivität: `Kategorie,Anzahl,Prozent`
+* **Navigation**
+
+  * `docs/components/navbar.html`: Link „Statistik“ (📊); `style.css` Nav-Hover; Active-Highlight; globale Suche in `stats.js`.
+* **Architektur**
+
+  * CDN ECharts (~800 KB, modular); ES6-Module; `fetch` async; Resize-Handler; Grid 2-spaltig (Desktop)/1-spaltig (Mobil); Breakpoints 1200/768/480.
+* **Chart-Config**
+
+  * Tooltips; Titelzentrierung; Achsmargen; Farbschema gemäß Design-System; Schriftgrößen optimiert.
+* **UX**
+
+  * Saubere Optik; Hover-Details; 1-Klick-Export; mobil-freundlich; ARIA.
+* **Forschungsnutzen**
+
+  * Berufe-Konzentration (Kunst/Literatur); zeitliche Muster; Weimar-Zentrum; Generationen; Datenqualität sichtbar.
+* **Performance**
+
+  * Render <500 ms; Export <100 ms; keine Lags; sanfte Transitions; effiziente Verarbeitung.
+* **Bugfixes**
+
+  * Entfernt „Alle Statistiken exportieren“ (redundant); Label-Overlap gefixt (In-Bar); Timeline-CSV async; `search.css` in `stats.html`; Active-Nav-Highlight.
+* **Änderungen**
+
+  * Mod: Navbar + `style.css`; Commit `e9d9a04` (Dashboard, +998/–5).
+* **Requirements**
+
+  * US-1.4 **COMPLETED**; US-1.5 **PARTIAL** (CSV/PNG, JSON fehlt); Gesamtfortschritt 36 %→39 % (13/33).
+* **Offen**
+
+  * US-3.4 Zentren-Gravitation; US-4.1 Lebenszeit-Timeline; US-4.2 Kohorten-Analyse; NFR-3 Accessibility (Pattern/Alt-Texte).
+
+---
+
+### Session 15 — Doku & Code-Refactor
+
+* **CSS/Design-System**
+
+  * `docs/css/tokens.css` (158 Zeilen, 58 Tokens); Breakpoints 480/768/1024/1200/1400; Duplikate aus `stats.css` entfernt; `design.md` §13 Status; `docs/css/README.md` (Token-Referenz, 6 CSS-Dateien, Usage, WCAG-AA, Import-Strategie).
+* **JS-DRY**
+
+  * Problem: `loadData()`/`initSearch()` 3× dupliziert; `allPersons` 3× geladen (~1,3 MB).
+  * Lösung: `docs/js/data.js` (55 Zeilen): `loadPersons()` (Fetch+Cache), `getPersonById()`, `clearCache()`.
+  * Nutzen: 1× Laden (Browser+Memory-Cache); 48 Zeilen Duplikat entfernt; **66 %** Memory-Reduktion (450 KB vs 1,3 MB); SPARQL-Extension point.
+  * Refactors: `app.js` (–20), `person.js` (–16), `stats.js` (–12).
+  * `docs/js/README.md` (832 Zeilen): Modul-Referenz, Signaturen, Beispiele, Dataflow, Extension-Points (SPARQL-Beispiel), Performance, Browser-Kompat.
+* **Bugfixes**
+
+  * `stats.js` Export-Buttons: `initExportButtons()` Timing → `setTimeout(500ms)` + Safety; Ref. auf entfernten „Export-All“ eliminiert.
+  * `app.js` Cluster-Click: Zentroid ≠ Original-Koords → `getClusterLeaves()` statt Distanzmatching (–38 Zeilen).
+* **Commits**
+
+  * `7a2ed10` (design.md Update), `27c3caa` (Phase 3 Token-Migration), `d31a802` (Shared-Data), `2f26f91` (JS-Doku), `af60655` (Fixes stats/app), `ad071d8` (Export-Init Fix).
+* **Ergebnis**
+
+  * DRY; Single Source of Truth Laden; skalierbar/SPARQL-bereit; vollständig dokumentiert; keine Breaking Changes; bessere Testbarkeit/Erweiterbarkeit; Memory −66 %; Bundle +55 Zeilen (`data.js`).
+
+---
+
+## 2025-10-29 (weiter)
+
+### Session 16 — Netzwerk mit AGRELON (Hover-Linien)
+
+* **Phase 1 — Infrastruktur**
+
+  * `docs/js/network-utils.js` (160): `getPersonConnections()`, `getClusterConnections()`, `categorizeRelationByAgrelonId()` (Familie/Beruflich/Sozial), `getConnectionColor()`.
+  * `app.js`: Hover-Events; `drawConnectionLines()` (GeoJSON LineStrings), `clearConnectionLines()`; Legende in `index.html`; `.legend-line` in `style.css`.
+  * Tests: `test-network.html`, `test-network-visual.html` (synthetisch), `TESTING-NETWORK.md`.
+* **Phase 2 — Datenintegration**
+
+  * `preprocessing/integrate_relations.py` (233): `pers_koerp_beziehungen.xml` (6 580 Relationen), `nsl_agrelon.xml` (44 Typen), Mapping 34 AGRELON-IDs → 3 Kategorien, Nicht-Personen gefiltert.
+  * Resultat: 67 Personen mit Relationen (von 448); **84** Relationen in `persons.json`; Verteilung: Familie 80, Beruflich 2, Sozial 2; 41 mit geo-lokalisierten Verbindungen.
+* **AGRELON-Mapping**
+
+  * Familie (16 Typen) IDs 4xxx; Beruflich (11) 3xxx; Sozial (7) 1xxx/2xxx.
+* **Bugfixes**
+
+  * `network-utils.js`: `person.places`-Check; Kategorisierung via AGRELON-ID (Prefix), zuvor alles „Unbekannt“ → jetzt korrekt farbcodiert.
+* **Doku**
+
+  * `README.md` (Netzwerk-Features), `docs/README.md` (Komponenten/Statistiken), `knowledge/hover-network-plan.md` (500+).
+* **Testing**
+
+  * `test-network-visual.html` (3 synthetische Personen); `test-relations-data.html` (Realval.); Console: „Drawing N connection lines“; Nutzer-Feedback: „das funktioniert“.
+* **Commits**
+
+  * `4b1022f` (Phase-1 Hover-Netz), `3f23e68` (AGRELON Integration), `856abde` (places-Check), `414c3cc` (ID-basierte Kategorisierung), `42a5bb0` (Doku).
+* **User Stories Fortschritt**
+
+  * US-2.2 (Ego-Network) 100 %; US-3.4 (Gravitation) 90 %; US-3.6 (Network Density) 80 %; Gesamt 52 %→67 % (+15 %).
+* **Next**
+
+  * Filter-Checkboxen Rel-Kategorien; Performance für große Cluster; Hover-Tooltips mit Details; Korrespondenz-Netz (Brief-Co-Mentions).
+
+---
+
+## Teil B — Verbesserte qualitative Fassung (ohne Metriken)
+
+### 2025-11-04 — Sessions 1–3 (Konsolidierung & Provenienz)
+
+* **Dokumentation & Struktur:** Das Projekt ist konsequent auf einen Knowledge Vault ausgerichtet. Fachinhalte wurden zentralisiert, Querverweise bereinigt und die Rollen einzelner Dateien klar benannt. `data.md` beschreibt Herkunft, Rechtliches und Qualität der Quellen; `data-model.md` definiert das Modell und seine Transformationen für das Frontend.
+* **Provenienzsystem:** Die Pipeline protokolliert für alle relevanten Felder die Herkunft und Transformationen. Neben dem Produktions-JSON existiert eine Debug-Variante mit detaillierten Provenienzangaben je Datensatz. Die Laufzeit blieb praxistauglich, Tests sind vollständig grün. Das schafft Nachvollziehbarkeit und Reproduzierbarkeit im Forschungskontext.
+* **CSS- und Designkonsistenz:** Tokenisierung wurde eingeführt, Inkonsistenzen dokumentiert und in das zentrale Designdokument integriert. Veraltete Einzelanalysen wurden entfernt, der Importstatus der Tokens ist dokumentiert, offene Lücken (z. B. Statusfarben) sind benannt.
+* **Root-Aufräumarbeiten:** Obsolete Pläne und Zwischenstände wurden gelöscht, da sie in den aktualisierten Hauptdokumenten aufgehen.
+
+### 2025-10-19 — Sessions 1–4 (Grundlagen & erste Implementierungen)
+
+* **Validierung & Set-up:** Datenquellen, Felder und Kennzeichnungen wurden überprüft; erste Dokumente zu Projekt, Daten und Kontext angelegt; das Repository auf statische Ausspielung vorbereitet und grundlegende Anforderungen formuliert. Entscheidungen zu Tooling und Pfadkonventionen sind festgehalten.
+* **Pipeline-Entwurf:** Die erste Version extrahiert und normalisiert die Kerndaten, ergänzt Verknüpfungen und Geoinformationen und erzeugt ein statisches JSON für die Website. Besonderheiten wie historische Personen mit sehr frühen Datierungen wurden erfasst. Tests sichern das Verhalten ab.
+* **Frontend-MVP:** Eine einfache, fehlerfreie Startansicht mit Navigation, Filterung und Karte steht. Das Designsystem ist angelegt, eine initiale Datenvalidierung läuft clientseitig. Farb- und Typografieentscheidungen wurden in Richtung einer seriösen, akademischen Anmutung getroffen und dokumentiert.
+* **Architekturentscheidung Karte:** WebGL-basierte Kartenbibliothek wegen Leistungs- und Visualisierungsanforderungen. Trade-offs (Größe, Lernaufwand) sind bewusst akzeptiert und in ADRs dokumentiert.
+
+### Sessions 5–10 (Map, Suche, Statistik, Timeline)
+
+* **Karten-Features:** Clusterung, skalierende Marker und anwendungsnahe Popups sind implementiert. Ein Mehrpersonen-Popup löst das Problem überlagerter Punkte. Filter reagieren direkt in der Karte; die Karte skaliert beim Tab-Wechsel korrekt.
+* **Suche:** Fuzzy-Suche über Namen und Varianten mit Tastaturnavigation und sauberer Interaktion ist integriert.
+* **Statistiken:** Ein eigener Bereich bietet zentrale Visualisierungen zu Berufen, Orten, Zeitverlauf und Kohorten. Exporte als CSV und PNG unterstützen Forschungs-Workflows. Gestaltung und Interaktion folgen dem Designsystem und sind mobil geeignet.
+* **Research-Interface:** Bezeichnungen wurden präzisiert, überflüssige Filter entfernt und eine Gruppierung für Berufsbereiche ergänzt. Clusterfarben bilden nun inhaltliche Mehrheiten ab, eine Legende erklärt die Kodierung, Tooltips sind aussagekräftig.
+* **Timeline & Architektur-Lerneffekte:** Die Timeline basiert nicht mehr auf einem großen Rohdatendokument, sondern auf aggregierten JSON-Daten aus der Pipeline. Die ursprünglich geplante Brush-Interaktion wurde zugunsten eines gut verständlichen Bereichs-Schiebereglers in der Seitenleiste ersetzt. Visualisierung und Filter sind gekoppelt, Performance und Verständlichkeit profitieren. Die entsprechenden Architekturentscheidungen wurden überarbeitet und festgehalten.
+
+### 2025-10-28 — Session 11 (Kuratiertes Dataset & Hybrid-Geodaten)
+
+* **Neuer Export:** Ein kuratiertes Teilset ersetzt die frühere, breitere Ausgangsbasis. Die Abdeckung zentraler Felder ist deutlich konsistenter; Geoinformationen werden über eine Hybridstrategie aus neuem Personenexport und älteren Geodateien zuverlässig aufgelöst. Ohne die älteren Geodateien wären Ortsnamen und Koordinaten nicht vollständig herleitbar.
+* **Pipeline-Refactor:** Die neue Pipeline spiegelt diese Hybridlogik, ergänzt Berufe und Beziehungen und erzeugt ein kompakteres, schneller ladbares JSON inklusive Metainformationen. Tests bestätigen die Stabilität.
+* **Dokumentation & Entscheidungen:** Die Auswahlstrategie „Qualität vor Umfang“ ist in einem ADR fixiert; Diagramme und Statusbeschreibungen sind in den Wissensdokumenten aktualisiert.
+
+### Session 12 (Netzwerk-View)
+
+* **AGRELON-Beziehungen:** Beziehungstypen werden aus einem kontrollierten Vokabular übernommen, Richtungen semantisch gespiegelt und für die Visualisierung dedupliziert. Ein eigener Netzwerk-View zeigt verbundene Personen prominent, isolierte Knoten bleiben als Kontext sichtbar.
+* **Interaktion & Datenmodell:** Filtern nach Beziehungstyp, Suche mit Hervorhebung, zoombare Labels und direkte Navigation zur Personenseite sind vorhanden. Die Graphdaten trennen sauber zwischen Knoten- und Kantenattributen; die Layout-Logik ist performant.
+* **Nächste Schritte:** Zeitliche Einbettung des Netzwerks im Seitenfuß und Kopplung an den globalen Zeitfilter.
+
+### 2025-10-29 — Sessions 13–15 (Person-UX, Dashboard, DRY-Refactor)
+
+* **Personenseiten-UX:** Normdaten-Links sind unaufdringlich, Platzhaltertexte ehrlich, Zitation lässt sich mit einem Klick kopieren, Qualitätsindikatoren sind sichtbar, mobile Abstände sind bereinigt. Biografie-Parsing und Berufsdaten werden verständlich dargestellt.
+* **Dashboard-Feinschliff:** Visuals sind klar, exportierbar und barrierearm gestaltet; unnötige Sammelaktionen wurden entfernt, aktive Navigationszustände ergänzt.
+* **Codequalität & Architektur:** Geteilte Datenlade-Logik verhindert Mehrfachladen, reduziert Redundanz und macht spätere Erweiterungen (z. B. SPARQL) leicht anschlussfähig. Bugs im Export und in der Clusterinteraktion wurden behoben. Die Dokumentation beschreibt Module, Datenfluss und Erweiterungspunkte.
+
+### Session 16 (Hover-Netz mit AGRELON)
+
+* **Interaktive Verbindungen:** Beim Überfahren von Punkten oder Clustern werden Relationen farbcodiert nach Kategorien eingeblendet. Dienstprogramme extrahieren Verbindungen auf Personen- und Cluster-Ebene, prüfen Ortsdaten und weisen Farben stabil zu.
+* **Datenintegration & Tests:** Beziehungen aus verschiedenen Quellen werden zusammengeführt, auf Personenbezüge gefiltert und kategorisiert. Tests und Demos sichern sowohl die Datenlogik als auch die Darstellung ab. Rückmeldungen aus der Nutzung bestätigen die Funktionsfähigkeit.
+* **Weiterführendes:** Kategoriefilter, Performancetuning für dichte Cluster, reichere Tooltips und ein Korrespondenz-Netz basierend auf Briefbezügen sind vorgesehen.
+
+---
+
+## Teil C — Kurzer Glossarblock (zur Lesefreundlichkeit)
+
+* **CMIF:** Korrespondenz-Metadaten aus einem etablierten Format/Corpus.
+* **SNDB:** Personen- und Ortsdatenbasis, die in diesem Projekt selektiv genutzt wird.
+* **AGRELON:** Ontologie/Vokabular für Beziehungsarten zwischen Personen.
+* **ADR:** Architekturentscheidung mit dokumentierten Alternativen und Trade-offs.
+
+---
+
+## Teil D — Checklisten (ohne Zahlen)
+
+* **Validierung pro Release**
+
+  * Läuft die Pipeline mit Provenienzfeldern durch?
+  * Stimmen Modellfelder, Transformationsregeln und Frontend-Rendering überein?
+  * Sind Navigation, Suche, Karte, Netzwerk, Timeline und Dashboard konsistent verlinkt?
+  * Greifen Token-Imports in allen aktiven CSS-Dateien?
+  * Sind Debug- und Produktionsartefakte eindeutig getrennt?
+
+* **Lesefluss der Doku**
+
+  * Index führt zu allen Bereichen ohne Sackgassen.
+  * ADRs verweisen auf die implementierten Stellen im Code.
+  * Sessions erzählen kurz „Was? Warum? Ergebnis? Lerneffekt?“
