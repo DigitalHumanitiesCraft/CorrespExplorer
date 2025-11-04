@@ -232,8 +232,6 @@ function renderTable() {
 
     // Update count
     document.getElementById('table-count').textContent = `${sorted.length} Einträge`;
-    document.getElementById('filtered-count').textContent =
-        sorted.length !== state.allPersons.length ? `(${sorted.length} gefiltert)` : '';
 }
 
 // Format table cell based on column key
