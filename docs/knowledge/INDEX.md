@@ -2,7 +2,7 @@
 
 Zentrale Einstiegsdatei für das HerData-Wissenssystem.
 
-Stand: 2025-11-02
+Stand: 2025-11-04
 
 ## Projekt
 
@@ -14,6 +14,9 @@ Stand: 2025-11-02
 [data.md](data.md) - Datenmodell, Strukturen, Verknüpfungen, CMIF + SNDB
 Enthält: AGRELON-Ontologie, DTD-Schemas, LFDNR-Semantik, Projekt-XMLs, Geodaten
 
+[debug-system.md](debug-system.md) - Data Provenance System
+Dokumentiert vollständige Datenherkunft, Transformationen und Qualitätsindikatoren
+
 ## Design
 
 [design.md](design.md) - UI/UX-System, Informationsarchitektur, Visualisierungsstrategie
@@ -22,14 +25,17 @@ Enthält: AGRELON-Ontologie, DTD-Schemas, LFDNR-Semantik, Projekt-XMLs, Geodaten
 
 [requirements.md](requirements.md) - User Stories, funktionale und nicht-funktionale Anforderungen
 
-## Validierung und Analysen
-
-[../../REQUIREMENTS_VALIDATION.md](../../REQUIREMENTS_VALIDATION.md) - Validierung aller Requirements gegen tatsächliche Daten (2025-10-29)
+[requirements-validation.md](requirements-validation.md) - Validierung aller Requirements gegen tatsächliche Daten (2025-10-29)
 - Datenabdeckungs-Analyse für alle 5 Epics
 - Implementation Gaps identifiziert
 - Empfehlungen für Datenintegration
 
-[../../TECHNICAL_ANALYSIS.md](../../TECHNICAL_ANALYSIS.md) - Umfassende technische Analyse (2025-10-29)
+## Technische Implementierung
+
+[technical-architecture.md](technical-architecture.md) - MapLibre, State Management, Event Handler, Performance
+Enthält: Layer-Struktur, Clustering, Data Transformation, Person Detail Pages, Debug Utilities
+
+[technical-analysis.md](technical-analysis.md) - Umfassende technische Analyse (2025-10-29)
 - Python Pipeline (734 Zeilen, 4-Phasen-Architektur)
 - JavaScript Frontend (1.693 Zeilen, 4 Module)
 - Code-Qualität Assessment
@@ -51,11 +57,6 @@ Enthält: AGRELON-Ontologie, DTD-Schemas, LFDNR-Semantik, Projekt-XMLs, Geodaten
 ## Netzwerk
 
 [network-relations.md](network-relations.md) - AGRELON-Beziehungen und Netzwerk-Visualisierung
-
-## Technische Implementierung
-
-[technical-architecture.md](technical-architecture.md) - MapLibre, State Management, Event Handler, Performance
-Enthält: Layer-Struktur, Clustering, Data Transformation, Person Detail Pages, Debug Utilities
 
 ## Statistiken und Fakten
 
