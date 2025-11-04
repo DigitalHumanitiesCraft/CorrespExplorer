@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HerData Synthese - Prosopographische Datenexploration</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header with meta info -->
+        <header class="app-header">
+            <h1>HerData Synthese</h1>
+            <div class="meta-stats">
+                <span id="total-count">448 Frauen</span>
+                <span id="filtered-count"></span>
+            </div>
+        </header>
+
+        <!-- Main three-column layout -->
+        <main class="main-layout">
+            <!-- Left: Filter Panel -->
+            <aside class="filter-panel">
+                <h2>Filter</h2>
+
+                <div class="filter-section">
+                    <h3>Suche</h3>
+                    <input type="text" id="search-input" placeholder="Name suchen...">
+                </div>
+
+                <div class="filter-section">
+                    <h3>Rolle</h3>
+                    <div class="filter-group">
+                        <label><input type="checkbox" value="sender" checked> Absenderin</label>
+                        <label><input type="checkbox" value="mentioned" checked> Erwähnt</label>
+                        <label><input type="checkbox" value="both" checked> Beides</label>
+                        <label><input type="checkbox" value="indirect" checked> Nur SNDB</label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Lebensdaten</h3>
+                    <div class="range-filter">
+                        <label>
+                            Geburt: <span id="birth-range-label">1700-1850</span>
+                        </label>
+                        <input type="range" id="birth-min" min="1700" max="1850" value="1700">
+                        <input type="range" id="birth-max" min="1700" max="1850" value="1850">
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Normierung</h3>
+                    <div class="filter-group">
+                        <label><input type="checkbox" value="gnd" checked> GND</label>
+                        <label><input type="checkbox" value="sndb" checked> SNDB</label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <button id="reset-filters" class="btn-reset">Filter zurücksetzen</button>
+                </div>
+            </aside>
+
+            <!-- Center: Data Table -->
+            <section class="data-table-container">
+                <div class="table-controls">
+                    <div class="view-mode">
+                        <button class="btn-mode active" data-mode="basis">Basis</button>
+                        <button class="btn-mode" data-mode="korrespondenz">Korrespondenz</button>
+                        <button class="btn-mode" data-mode="biografisch">Biografisch</button>
+                    </div>
+                    <div class="table-info">
+                        <span id="table-count">448 Einträge</span>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="data-table">
+                        <thead>
+                            <tr id="table-headers">
+                                <!-- Dynamic headers based on mode -->
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Right: Detail/Context Panel -->
+            <aside class="detail-panel">
+                <div class="panel-tabs">
+                    <button class="tab-btn active" data-tab="person">Person</button>
+                    <button class="tab-btn" data-tab="wissenskorb">
+                        Wissenskorb <span id="basket-count" class="basket-badge">0</span>
+                    </button>
+                </div>
+
+                <div class="panel-content">
+                    <!-- Person Tab -->
+                    <div class="tab-content active" id="tab-person">
+                        <div id="person-detail" class="person-detail">
+                            <p class="empty-state">Wähle eine Person aus der Tabelle</p>
+                        </div>
+                    </div>
+
+                    <!-- Wissenskorb Tab -->
+                    <div class="tab-content" id="tab-wissenskorb">
+                        <h3>Wissenskorb</h3>
+                        <p class="help-text">Sammle Personen mit dem ⭐ Button</p>
+
+                        <div id="basket-content">
+                            <p class="empty-state">Noch keine Personen im Korb</p>
+                        </div>
+
+                        <div id="basket-actions" style="display: none;">
+                            <hr>
+                            <h4>Export</h4>
+                            <button id="export-basket-csv" class="btn-export">Als CSV exportieren</button>
+                            <button id="export-basket-json" class="btn-export">Als JSON exportieren</button>
+                            <button id="clear-basket" class="btn-clear">Korb leeren</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
