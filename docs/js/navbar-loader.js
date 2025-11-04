@@ -15,7 +15,7 @@ export async function loadNavbar(variant = 'full') {
     } else if (variant === 'map') {
         navbarFile = 'components/navbar-map.html';
     } else if (variant === 'synthesis') {
-        navbarFile = 'components/navbar-synthesis.html';
+        navbarFile = '../components/navbar-synthesis.html';
     } else {
         navbarFile = 'components/navbar.html';
     }

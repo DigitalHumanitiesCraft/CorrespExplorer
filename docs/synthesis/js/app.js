@@ -1,7 +1,7 @@
 // HerData Synthesis - Main Application
 
 // Import navbar loader
-import { loadNavbar } from '../js/navbar-loader.js';
+import { loadNavbar } from '../../js/navbar-loader.js';
 
 // State management
 const state = {
