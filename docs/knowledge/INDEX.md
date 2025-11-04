@@ -21,21 +21,24 @@ Dokumentiert vollständige Datenherkunft, Transformationen und Qualitätsindikat
 
 [design.md](design.md) - UI/UX-System, Informationsarchitektur, Visualisierungsstrategie
 
+[responsive-design.md](responsive-design.md) - Mobile Responsive Design Analyse
+Bewertung der mobilen Nutzbarkeit und Optimierungsempfehlungen
+
 ## Requirements
 
 [requirements.md](requirements.md) - User Stories, funktionale und nicht-funktionale Anforderungen
 
-[requirements-validation.md](requirements-validation.md) - Validierung aller Requirements gegen tatsächliche Daten (2025-10-29)
+[requirements-validation.md](requirements-validation.md) - Validierung aller Requirements gegen tatsächliche Daten
 - Datenabdeckungs-Analyse für alle 5 Epics
 - Implementation Gaps identifiziert
 - Empfehlungen für Datenintegration
 
-## Technische Implementierung
+## Technische Architektur
 
-[technical-architecture.md](technical-architecture.md) - MapLibre, State Management, Event Handler, Performance
-Enthält: Layer-Struktur, Clustering, Data Transformation, Person Detail Pages, Debug Utilities
+[technical-architecture.md](technical-architecture.md) - Frontend-Implementierung Details
+MapLibre, State Management, Event Handler, Performance
 
-[technical-analysis.md](technical-analysis.md) - Umfassende technische Analyse (2025-10-29)
+[technical-analysis.md](technical-analysis.md) - Umfassende technische Analyse
 - Python Pipeline (734 Zeilen, 4-Phasen-Architektur)
 - JavaScript Frontend (1.693 Zeilen, 4 Module)
 - Code-Qualität Assessment
@@ -49,7 +52,7 @@ Enthält: Layer-Struktur, Clustering, Data Transformation, Person Detail Pages, 
 - ADR-002: Multi-Person Popups (Accepted)
 - ADR-003: Cluster Color Encoding (Accepted)
 - ADR-004: Network Visualization Library (Proposed)
-- ADR-005: Timeline Implementation (Accepted - D3.js implementiert)
+- ADR-005: Timeline Implementation (Accepted)
 - ADR-006: State Management Strategy (Deferred)
 - ADR-007: Search Implementation (Proposed)
 - ADR-008: Curated Dataset Selection (Accepted)
@@ -58,10 +61,18 @@ Enthält: Layer-Struktur, Clustering, Data Transformation, Person Detail Pages, 
 
 [network-relations.md](network-relations.md) - AGRELON-Beziehungen und Netzwerk-Visualisierung
 
-## Statistiken und Fakten
+## Implementierung
 
-Alle Zahlen und Statistiken siehe:
-- [data.md](data.md) - Datenmodell mit Kern-Statistiken
+[implementation-quick-wins.md](implementation-quick-wins.md) - 6 Quick Win Features mit Code-Beispielen
+Einfach zu implementierende Features mit hohem Nutzen
+
+[implementation-mobile.md](implementation-mobile.md) - Mobile Responsive Implementation Plan
+4-Stunden-Plan für kritische Responsive-Fixes
+
+## Dokumentation
+
+[documentation-assessment.md](documentation-assessment.md) - Review aller Markdown-Dateien
+Qualitätsbewertung, Konsistenz-Analyse, Lücken-Identifikation
 
 ## Externe Verweise
 

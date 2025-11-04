@@ -2,6 +2,8 @@
 
 Semantic Processing and Visualization of Women in Goethe's Correspondence (1762-1824)
 
+Last Updated: 2025-11-04
+
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![Data Source: Zenodo](https://img.shields.io/badge/Data-Zenodo%2014998880-blue)](https://zenodo.org/records/14998880)
 [![Project: PROPYLÄEN](https://img.shields.io/badge/Project-PROPYL%C3%84EN-green)](https://goethe-biographica.de)
