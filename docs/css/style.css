@@ -1140,13 +1140,15 @@ body {
     color: white;
 }
 
-.view-btn.active {
+.view-btn.active,
+.view-btn.view-btn-active {
     background: rgba(255, 255, 255, 0.25);
     color: white;
     cursor: default;
 }
 
-.view-btn.active:hover {
+.view-btn.active:hover,
+.view-btn.view-btn-active:hover {
     background: rgba(255, 255, 255, 0.25);
 }
 

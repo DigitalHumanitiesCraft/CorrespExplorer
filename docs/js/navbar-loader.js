@@ -9,9 +9,16 @@ export async function loadNavbar(variant = 'full') {
         return;
     }
 
-    const navbarFile = variant === 'simple'
-        ? 'components/navbar-simple.html'
-        : 'components/navbar.html';
+    let navbarFile;
+    if (variant === 'simple') {
+        navbarFile = 'components/navbar-simple.html';
+    } else if (variant === 'map') {
+        navbarFile = 'components/navbar-map.html';
+    } else if (variant === 'synthesis') {
+        navbarFile = 'components/navbar-synthesis.html';
+    } else {
+        navbarFile = 'components/navbar.html';
+    }
 
     try {
         const response = await fetch(navbarFile);

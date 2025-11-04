@@ -89,7 +89,7 @@ function getOccupationGroup(person) {
 // Initialize application
 async function init() {
     log.init("Starting application");
-    await loadNavbar();
+    await loadNavbar('map');
 
     try {
         // Load data using shared module

@@ -1,5 +1,8 @@
 // HerData Synthesis - Main Application
 
+// Import navbar loader
+import { loadNavbar } from '../js/navbar-loader.js';
+
 // State management
 const state = {
     allPersons: [],
@@ -33,6 +36,9 @@ const tableColumns = [
 // Initialize app
 async function init() {
     console.log('Initializing HerData Synthesis...');
+
+    // Load navbar
+    await loadNavbar('synthesis');
 
     try {
         // Load data
