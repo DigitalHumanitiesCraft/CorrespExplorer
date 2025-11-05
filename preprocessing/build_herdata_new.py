@@ -81,15 +81,26 @@ class HerDataPipelineNew:
         # Expected: ~60% GND coverage (new export quality)
         assert 0.50 <= with_gnd/total <= 0.70, f"Expected 50-70% GND coverage for new export, got {with_gnd/total*100:.1f}%"
 
+        # Test name variants
+        with_variants = sum(1 for w in self.women.values() if w.get('name_variants'))
+        total_variants = sum(len(w.get('name_variants', [])) for w in self.women.values())
+
+        # Expected: 350-450 total variants for 200-300 women (based on actual data)
+        assert 350 <= total_variants <= 450, f"Expected 350-450 variants, got {total_variants}"
+        assert 200 <= with_variants <= 300, f"Expected 200-300 women with variants, got {with_variants}"
+
         self.stats['phase1'] = {
             'total_women': total,
             'with_gnd': with_gnd,
             'gnd_coverage': f"{with_gnd/total*100:.1f}%",
             'with_dates': with_dates,
-            'date_coverage': f"{with_dates/total*100:.1f}%"
+            'date_coverage': f"{with_dates/total*100:.1f}%",
+            'with_variants': with_variants,
+            'total_variants': total_variants,
+            'variant_coverage': f"{with_variants/total*100:.1f}%"
         }
 
-        self.log(f"[OK] Phase 1 validation passed: {total} women, {with_gnd/total*100:.1f}% GND")
+        self.log(f"[OK] Phase 1 validation passed: {total} women, {with_gnd/total*100:.1f}% GND, {total_variants} name variants")
         return True
 
     def test_phase2(self):
@@ -307,10 +318,79 @@ class HerDataPipelineNew:
 
         self.log(f"  Added dates for {dates_added} women")
 
+        # Step 4: Load name variants
+        self.load_name_variants()
+
         # Validate Phase 1
         self.test_phase1()
 
         return self.women
+
+    def load_name_variants(self):
+        """Load name variants from ra_ndb_main.xml (LFDNR > 0)"""
+        self.log("Loading name variants from ra_ndb_main.xml...")
+
+        tree = ET.parse(self.herdata_dir / 'ra_ndb_main.xml')
+        root = tree.getroot()
+
+        variants = defaultdict(list)
+
+        for item in root.findall('.//ITEM'):
+            person_id = item.find('ID').text if item.find('ID') is not None else None
+            lfdnr = item.find('LFDNR').text if item.find('LFDNR') is not None else '0'
+
+            # Skip main entries (LFDNR=0)
+            if lfdnr == '0' or not person_id:
+                continue
+
+            # Only process if this person is in our women dict
+            if person_id not in self.women:
+                continue
+
+            # Build variant name
+            nachname = item.find('NACHNAME').text if item.find('NACHNAME') is not None else ''
+            vornamen = item.find('VORNAMEN').text if item.find('VORNAMEN') is not None else ''
+            titel = item.find('TITEL').text if item.find('TITEL') is not None else ''
+            geburtsname = item.find('GEBURTSNAME').text if item.find('GEBURTSNAME') is not None else ''
+
+            # Build variant from available parts
+            name_parts = []
+            if titel:
+                name_parts.append(titel.strip())
+            if vornamen:
+                name_parts.append(vornamen.strip())
+            if nachname:
+                name_parts.append(nachname.strip())
+
+            variant = ' '.join(name_parts) if name_parts else ''
+
+            # Add variant if non-empty and different from main name
+            if variant and variant != self.women[person_id]['name']:
+                variants[person_id].append(variant)
+
+            # Also add birth name if present
+            if geburtsname:
+                geburtsname_clean = geburtsname.strip()
+                if geburtsname_clean and geburtsname_clean not in variants[person_id]:
+                    variants[person_id].append(geburtsname_clean)
+
+            # Track provenance
+            self.add_provenance(person_id, f'name_variant_{lfdnr}', {
+                'file': 'ra_ndb_main.xml',
+                'xpath': f'//ITEM[ID="{person_id}"][LFDNR="{lfdnr}"]',
+                'raw_value': {'variant': variant, 'geburtsname': geburtsname},
+                'transformation': 'concat(TITEL, VORNAMEN, NACHNAME) + GEBURTSNAME'
+            })
+
+        # Add deduplicated variants to women dict
+        variant_count = 0
+        for person_id, variant_list in variants.items():
+            # Deduplicate while preserving order
+            unique_variants = list(dict.fromkeys(variant_list))
+            self.women[person_id]['name_variants'] = unique_variants
+            variant_count += len(unique_variants)
+
+        self.log(f"  Loaded {variant_count} name variants for {len(variants)} women")
 
     # ============================================================
     # PHASE 2: Match CMIF Letters (unchanged)
@@ -801,6 +881,9 @@ class HerDataPipelineNew:
             # Add optional fields only if present
             if woman_data.get('gnd'):
                 person['gnd'] = woman_data['gnd']
+
+            if woman_data.get('name_variants'):
+                person['name_variants'] = woman_data['name_variants']
 
             if woman_data.get('roles'):
                 person['roles'] = woman_data['roles']

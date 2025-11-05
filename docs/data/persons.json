@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2025-11-04T21:12:46.664744",
+    "generated": "2025-11-05T07:23:00.783917",
     "data_source": "NEW export 2025-10-27 (curated 448 women)",
     "total_women": 448,
     "with_cmif_data": 230,
@@ -329,6 +329,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:35217",
+      "name_variants": [
+        "Rose Lawrence",
+        "geb. d'Aguilar"
+      ],
       "dates": {
         "death": "1857"
       },
@@ -359,6 +363,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:35239",
       "gnd": "1156816025",
+      "name_variants": [
+        "Wilhelmine Johanna Hensler",
+        "verh. Alberti"
+      ],
       "roles": [
         "sender"
       ],
@@ -636,6 +644,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:35642",
       "gnd": "116129654",
+      "name_variants": [
+        "von Karoline Friederike Berg"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -851,6 +862,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:35705",
       "gnd": "116147679",
+      "name_variants": [
+        "von Charitas Emilie Buchwald",
+        "verh. Gräfin von Bernstorff"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -1009,6 +1024,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:35757",
+      "name_variants": [
+        "von Karoline Luise Dungern"
+      ],
       "dates": {
         "birth": "1760",
         "death": "1825"
@@ -2305,6 +2323,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:37119",
       "gnd": "1221565680",
+      "name_variants": [
+        "Eleonore Eskeles",
+        "verh. Flies",
+        "Eleonore Fließ",
+        "geb. Eskeles"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -2947,6 +2971,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:37557",
       "gnd": "116774401",
+      "name_variants": [
+        "Emily Gore"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -3535,6 +3562,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:38099",
+      "name_variants": [
+        "Rosalia Häußler",
+        "geb. Meyer"
+      ],
       "dates": {
         "birth": "1764",
         "death": "1821"
@@ -3596,6 +3627,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:38507",
       "gnd": "118560328",
+      "name_variants": [
+        "Anna Luisa Dürbach",
+        "Anna Luisa Hirsekorn",
+        "geb. Dürbach"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -3747,6 +3783,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:38743",
       "gnd": "116300922",
+      "name_variants": [
+        "Wilhelmine Wolf"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -4026,6 +4065,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:39387",
       "gnd": "118730770",
+      "name_variants": [
+        "Gertrud Elisabeth Schmeling",
+        "verh. Mara",
+        "Gertrud Elisabeth Florio",
+        "geb. Schme(h)ling"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -4197,6 +4242,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:39463",
+      "name_variants": [
+        "Emilia Franziska Maximiliana Werndt",
+        "geb. Matiegzeck (Maticzeck)"
+      ],
       "dates": {
         "birth": "1775",
         "death": "1825"
@@ -4282,6 +4331,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:39495",
       "gnd": "1069259314",
+      "name_variants": [
+        "Jeanne Huc-Mazelet"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -4961,6 +5013,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:40230",
       "gnd": "118809695",
+      "name_variants": [
+        "von Henriette (Judith) Arnstein"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -5376,6 +5431,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:40923",
       "gnd": "11933075X",
+      "name_variants": [
+        "Prinzessin von Sophie Dorothea Augusta Luise Württemberg"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -6365,6 +6423,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:40959",
       "gnd": "118649485",
+      "name_variants": [
+        "Comtesse Allstedt"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -7896,6 +7957,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:40967",
       "gnd": "104304219",
+      "name_variants": [
+        "Großherzogin von Maria Pawlowna Sachsen-Weimar-Eisenach",
+        "geb. Großfürstin von Rußland",
+        "Großfürstin von Maria Pawlowna Rußland",
+        "Erbprinzessin von Maria Pawlowna Sachsen-Weimar und Eisenach"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -11623,6 +11690,11 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:41249",
+      "name_variants": [
+        "Johanne Christiana (Sophia) Agnese Grose",
+        "geb. Schmidt",
+        "Johanne Christiana (Sophia) Agnese Müller"
+      ],
       "dates": {
         "birth": "1804",
         "death": "1859"
@@ -12410,6 +12482,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:41693",
+      "name_variants": [
+        "Amalie Friederike Voß"
+      ],
       "dates": {
         "death": "1796",
         "birth": "1764"
@@ -12747,6 +12822,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:42159",
       "gnd": "117434884",
+      "name_variants": [
+        "Cäcilie Waldner von Freundstein"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -12784,6 +12862,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:42250",
       "gnd": "118626175",
+      "name_variants": [
+        "Rahel Levin"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -13102,6 +13183,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:42449",
       "gnd": "142692891",
+      "name_variants": [
+        "von Albertine Junck",
+        "von Albertine Kleist"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -13436,6 +13521,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:42959",
       "gnd": "118962590",
+      "name_variants": [
+        "von Charlotte Seebach",
+        "von Charlotte Ahlefeld"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -13536,6 +13625,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:42965",
       "gnd": "116010010",
+      "name_variants": [
+        "Sophie Albrecht"
+      ],
       "dates": {
         "birth": "1757",
         "death": "1840"
@@ -13567,6 +13659,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43000",
       "gnd": "118504185",
+      "name_variants": [
+        "von Bettina Arnim",
+        "Katharina Elisabeth (Bettina, Bettine) Ludovika Magdalena Brentano",
+        "von Katharina Elisabeth (Bettina, Bettine) Ludovika Magdalena Arnim",
+        "geb. Brentano"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -14140,6 +14238,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43025",
+      "name_variants": [
+        "Gräfin Karoline Bachoff von Echt"
+      ],
       "dates": {
         "death": "1796",
         "birth": "1765"
@@ -14160,6 +14261,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43026",
+      "name_variants": [
+        "Gräfin Karoline Bachoff von Echt"
+      ],
       "dates": {
         "birth": "1738",
         "death": "1808"
@@ -14186,6 +14290,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43039",
+      "name_variants": [
+        "Viktorie Bansa"
+      ],
       "dates": {
         "death": "1866",
         "birth": "1796"
@@ -14207,6 +14314,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43042",
       "gnd": "11605610X",
+      "name_variants": [
+        "von Henriette Bardeleben"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -14250,6 +14360,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43043",
       "gnd": "116056363",
+      "name_variants": [
+        "Karoline Bardua",
+        "Caroline Bardua"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -14434,6 +14548,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43051",
       "gnd": "11608023X",
+      "name_variants": [
+        "von Adelheid Bassewitz"
+      ],
       "roles": [
         "sender"
       ],
@@ -14473,6 +14590,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43060",
       "gnd": "11608149X",
+      "name_variants": [
+        "Amalie Batsch",
+        "Sophie Karolina Amalie Pfündel"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -14675,6 +14796,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43070",
       "gnd": "118955586",
+      "name_variants": [
+        "von Henriette Beaulieu-Marconnay",
+        "Gräfin von und zu Henriette Egloffstein",
+        "von und zu Henriette Egloffstein"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -14937,6 +15063,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43073",
       "gnd": "116100273",
+      "name_variants": [
+        "von Julie Bechtolsheim",
+        "von Julie Keller",
+        "von Juliane (Julie) Auguste Christiane Keller",
+        "von Juliane (Julie) Auguste Christiane Mauchenheim"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -15172,6 +15304,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43086",
       "gnd": "1044049561",
+      "name_variants": [
+        "Karoline Becker"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -15211,6 +15346,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43101",
+      "name_variants": [
+        "Amélie Berczy"
+      ],
       "dates": {
         "birth": "1789",
         "death": "1862"
@@ -15233,6 +15371,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43103",
+      "name_variants": [
+        "Auguste Bergius"
+      ],
       "dates": {
         "birth": "1797",
         "death": "1849"
@@ -15253,6 +15394,11 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43116",
+      "name_variants": [
+        "Henriette Bertuch",
+        "Christiane Henriette Feder",
+        "verh. Bertuch"
+      ],
       "dates": {
         "death": "1852",
         "birth": "1782"
@@ -15274,6 +15420,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43123",
       "gnd": "118510347",
+      "name_variants": [
+        "Friederike Bethmann",
+        "Friederike Auguste Konradine Unzelmann",
+        "Friederike Auguste Konradine Flittner"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -15923,6 +16074,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43138",
       "gnd": "1032972718",
+      "name_variants": [
+        "Gräfin von Philippine Beust"
+      ],
       "dates": {
         "birth": "1786",
         "death": "1834"
@@ -15941,6 +16095,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43159",
+      "name_variants": [
+        "von Friederike Blomberg"
+      ],
       "dates": {
         "birth": "1753",
         "death": "1819"
@@ -15953,6 +16110,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43181",
+      "name_variants": [
+        "Johanna Sophie Wesselhöft",
+        "verh. Bohn"
+      ],
       "dates": {
         "death": "1834",
         "birth": "1769"
@@ -15993,6 +16154,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43215",
+      "name_variants": [
+        "Maria Brand"
+      ],
       "dates": {
         "death": "1856",
         "birth": "1785"
@@ -16026,6 +16190,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43252",
       "gnd": "11867384X",
+      "name_variants": [
+        "Johanna Antonia (Toni) Josepha Brentano"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -16573,6 +16740,13 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43260",
       "gnd": "11858104X",
+      "name_variants": [
+        "Sophie Brentano",
+        "geb. Schubart gesch. Mereau",
+        "Sophie Schubart",
+        "Sophie Mereau",
+        "geb. Schubart"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -16777,6 +16951,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43273",
       "gnd": "116750715",
+      "name_variants": [
+        "Gräfin von Christine Brühl",
+        "Gräfin von Tina Brühl"
+      ],
       "roles": [
         "sender"
       ],
@@ -16848,6 +17026,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43298",
       "gnd": "118517090",
+      "name_variants": [
+        "Elise Hahn"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -17005,6 +17186,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43337",
       "gnd": "1012181154",
+      "name_variants": [
+        "Fanny Caspers"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -17131,6 +17315,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43346",
       "gnd": "116492503",
+      "name_variants": [
+        "Dorothea Chassepot",
+        "von Anna Dorothea Elisabeth Knabenau"
+      ],
       "roles": [
         "sender"
       ],
@@ -17227,6 +17415,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43352",
       "gnd": "119360659",
+      "name_variants": [
+        "von Helmina Chézy"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -17441,6 +17632,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43377",
+      "name_variants": [
+        "Marie Katharine Friederike Sachse",
+        "geb. Leu"
+      ],
       "dates": {
         "death": "1823",
         "birth": "1785"
@@ -17468,6 +17663,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43404",
       "gnd": "1075465354",
+      "name_variants": [
+        "von Henriette Crayen"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -17556,6 +17754,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43518",
       "gnd": "118681370",
+      "name_variants": [
+        "Luise Duttenhofer"
+      ],
       "dates": {
         "death": "1829",
         "birth": "1776"
@@ -17579,6 +17780,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43566",
       "gnd": "116489014",
+      "name_variants": [
+        "Philippine Engelhard"
+      ],
       "roles": [
         "sender"
       ],
@@ -17624,6 +17828,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43592",
       "gnd": "116320567",
+      "name_variants": [
+        "von Marianne Eybenberg"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -18542,6 +18749,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43598",
+      "name_variants": [
+        "Dorothea Färber"
+      ],
       "dates": {
         "birth": "1781",
         "death": "1842"
@@ -18555,6 +18765,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43602",
       "gnd": "116394188",
+      "name_variants": [
+        "Karoline Falk"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -18593,6 +18806,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43624",
       "gnd": "1015492363",
+      "name_variants": [
+        "Gräfin Henriette Finck von Finckenstein"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -18628,6 +18844,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43649",
+      "name_variants": [
+        "Friederike Focke"
+      ],
       "dates": {
         "birth": "1756",
         "death": "1809"
@@ -18640,6 +18859,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43658",
+      "name_variants": [
+        "Renée Foucquet"
+      ],
       "dates": {
         "death": "1845",
         "birth": "1778"
@@ -18661,6 +18883,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43660",
       "gnd": "118692321",
+      "name_variants": [
+        "Karoline Fouqué"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -18738,6 +18963,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43664",
       "gnd": "116698047",
+      "name_variants": [
+        "von Friederike Franckenberg"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -18872,6 +19100,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43682",
+      "name_variants": [
+        "von Amalia Fritsch"
+      ],
       "dates": {
         "death": "1811",
         "birth": "1756"
@@ -18899,6 +19130,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43683",
       "gnd": "116825197",
+      "name_variants": [
+        "von Henriette Fritsch",
+        "von Henriette Albertine Antoine Wolffskeel (Wolfskeel) von Reichenberg"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -19155,6 +19390,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43687",
       "gnd": "131967630",
+      "name_variants": [
+        "Henriette Frölich"
+      ],
       "roles": [
         "sender"
       ],
@@ -19192,6 +19430,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43688",
       "gnd": "116839112",
+      "name_variants": [
+        "Allwina Frommann"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -19380,6 +19621,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43690",
       "gnd": "116839392",
+      "name_variants": [
+        "Johanna Wesselhöft",
+        "Johanna Frommann"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -19967,6 +20212,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43705",
       "gnd": "118537342",
+      "name_variants": [
+        "von Amalia Gallitzin"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -20259,6 +20507,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43722",
       "gnd": "116539941",
+      "name_variants": [
+        "Karoline Christine Böhler"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -20348,6 +20599,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43753",
       "gnd": "10437442X",
+      "name_variants": [
+        "Amalie Gildemeister",
+        "Karoline Amalie Kotzebue",
+        "verh. Gildemeister"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -20415,6 +20671,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43766",
       "gnd": "118695681",
+      "name_variants": [
+        "von Luise Göchhausen",
+        "von Luise Goechhausen",
+        "von Luise Ernestine Christiane Juliane Goechhausen",
+        "Fräulein Sunnemann"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -21048,6 +21310,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43767",
+      "name_variants": [
+        "Emilie Gödör"
+      ],
       "dates": {
         "death": "1866",
         "birth": "1799"
@@ -21060,6 +21325,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43775",
+      "name_variants": [
+        "von Karoline Goertzke"
+      ],
       "dates": {
         "death": "1836",
         "birth": "1772"
@@ -21073,6 +21341,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43779",
       "gnd": "118628011",
+      "name_variants": [
+        "Christiane Vulpius",
+        "verh. Goethe",
+        "von Christiane Goethe",
+        "geb. Vulpius"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -27957,6 +28231,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43781",
       "gnd": "118540246",
+      "name_variants": [
+        "Elisabeth Goethe",
+        "Frau Rat",
+        "Frau Aja"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -30510,6 +30789,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43782",
       "gnd": "118540254",
+      "name_variants": [
+        "von Ottilie Goethe",
+        "von Ottilie Wilhelmine Ernestine Henriette Pogwisch"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -34203,6 +34486,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43841",
       "gnd": "118823663",
+      "name_variants": [
+        "von Friederike Großbritannien",
+        "Friederike Karoline Sophie Alexandrine Cumberland"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -34479,6 +34766,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43849",
       "gnd": "116878428",
+      "name_variants": [
+        "von Sophie Grotthuß",
+        "Sara Meyer",
+        "Sophie Leopoldine Wilhelmine Wulff"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -35011,6 +35303,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43872",
       "gnd": "1182269656",
+      "name_variants": [
+        "von Wilhelmine Günderrode"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -35058,6 +35353,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43892",
+      "name_variants": [
+        "Gräfin von Luise Haeseler"
+      ],
       "dates": {
         "death": "1812",
         "birth": "1773"
@@ -35071,6 +35369,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43894",
       "gnd": "129169420",
+      "name_variants": [
+        "Sophia Häßler"
+      ],
       "roles": [
         "sender"
       ],
@@ -35107,6 +35408,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43920",
+      "name_variants": [
+        "Gräfin von Josephine Harrach"
+      ],
       "dates": {
         "death": "1833",
         "birth": "1763"
@@ -35128,6 +35432,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43928",
       "gnd": "11651177X",
+      "name_variants": [
+        "Henriette Hasenclever",
+        "Kornelia Henriette Franziska Schlosser",
+        "verh. Hasenclever"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -35271,6 +35580,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43958",
       "gnd": "118549006",
+      "name_variants": [
+        "von Anna Amalia Imhoff",
+        "Amalie Helvig",
+        "geb. von Imhoff"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -36103,6 +36417,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43961",
       "gnd": "116700289",
+      "name_variants": [
+        "Gräfin von Ottilie Henckel von Donnersmarck"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -36501,6 +36818,14 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:43984",
       "gnd": "118549561",
+      "name_variants": [
+        "Karoline Herder",
+        "von Karoline Herder",
+        "Karoline Flachsland",
+        "von Karoline Maria Herder",
+        "geb. Flachsland",
+        "Caroline Herder"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -37045,6 +37370,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44000",
+      "name_variants": [
+        "Marianne Hertel"
+      ],
       "dates": {
         "death": "1851",
         "birth": "1769"
@@ -37058,6 +37386,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44010",
       "gnd": "122144651",
+      "name_variants": [
+        "Prinzessin von Luise Hessen-Darmstadt",
+        "geb. Prinzessin von Hessen-Darmstadt",
+        "Großherzogin von Luise Hessen-Darmstadt"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -37175,6 +37508,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44017",
       "gnd": "119314088",
+      "name_variants": [
+        "von Auguste Hessen-Kassel"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -37359,6 +37695,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44018",
       "gnd": "1189378086",
+      "name_variants": [
+        "von Karoline Hessen-Kassel"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -37439,6 +37778,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44029",
       "gnd": "118550675",
+      "name_variants": [
+        "von Karoline Heygendorff",
+        "Karoline Jagemann"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -38899,6 +39242,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44058",
       "gnd": "116953624",
+      "name_variants": [
+        "von Elise Hohenhausen"
+      ],
       "dates": {
         "birth": "1789",
         "death": "1857"
@@ -38917,6 +39263,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44069",
+      "name_variants": [
+        "Gräfin von Karoline Hopffgarten"
+      ],
       "dates": {
         "birth": "1785",
         "death": "1860"
@@ -38930,6 +39279,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44071",
       "gnd": "1052846572",
+      "name_variants": [
+        "von Karoline Hopffgarten"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -39585,6 +39937,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44081",
       "gnd": "118883712",
+      "name_variants": [
+        "Therese Huber",
+        "Therese Heyne",
+        "Therese Forster"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -39708,6 +40065,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44098",
       "gnd": "118554719",
+      "name_variants": [
+        "von Karoline Humboldt",
+        "von Caroline Friederike Dacheröden"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -40268,6 +40629,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44107",
+      "name_variants": [
+        "Christiana Hunnius"
+      ],
       "dates": {
         "death": "1806",
         "birth": "1762"
@@ -40280,6 +40644,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44110",
+      "name_variants": [
+        "Karoline Hunnius"
+      ],
       "dates": {
         "birth": "1772"
       },
@@ -40292,6 +40659,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44131",
       "gnd": "18943127X",
+      "name_variants": [
+        "Betty Jacobi"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -40372,6 +40742,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44141",
       "gnd": "117037699",
+      "name_variants": [
+        "Lene Jacobi"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -40596,6 +40969,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44170",
       "gnd": "11871483X",
+      "name_variants": [
+        "von Charlotte Kalb"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -41064,6 +41440,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44190",
+      "name_variants": [
+        "Charlotte Keil",
+        "geb. Straßburg(er)"
+      ],
       "dates": {
         "birth": "1757",
         "death": "1805"
@@ -41083,6 +41463,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44199",
       "gnd": "118638076",
+      "name_variants": [
+        "Charlotte Kestner",
+        "Charlotte Sophie Henriette Buff",
+        "verh. Kestner"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -41251,6 +41636,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44207",
       "gnd": "116157364",
+      "name_variants": [
+        "Gräfin von Auguste Kielmannsegge"
+      ],
       "dates": {
         "birth": "1777",
         "death": "1863"
@@ -41264,6 +41652,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44209",
       "gnd": "116168218",
+      "name_variants": [
+        "Gräfin von Natalie Kielmannsegge"
+      ],
       "dates": {
         "death": "1883",
         "birth": "1803"
@@ -41283,6 +41674,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44225",
       "gnd": "1211119890",
+      "name_variants": [
+        "von Marie Kleist"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -41343,6 +41737,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44246",
       "gnd": "116251069",
+      "name_variants": [
+        "von Luise Knebel",
+        "Luise Rudorf (Rudorff)"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -42315,6 +42713,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44248",
       "gnd": "116250933",
+      "name_variants": [
+        "von Henriette Knebel"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -42714,6 +43115,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44255",
+      "name_variants": [
+        "Johanna Koels"
+      ],
       "dates": {
         "birth": "1763",
         "death": "1832"
@@ -42735,6 +43139,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44266",
       "gnd": "116297085",
+      "name_variants": [
+        "Emma Körner"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -42847,6 +43254,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44275",
       "gnd": "116301864",
+      "name_variants": [
+        "Agnes Silvia Dorothea Ziegesar"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -42938,6 +43348,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44287",
       "gnd": "1176580663",
+      "name_variants": [
+        "von Maria Koppenfels"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -43050,6 +43463,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44294",
       "gnd": "116345284",
+      "name_variants": [
+        "Christiane Kotzebue"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -43149,6 +43565,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44311",
       "gnd": "116535547",
+      "name_variants": [
+        "Friederike Krickeberg"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -43284,6 +43703,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44314",
       "gnd": "1042981728",
+      "name_variants": [
+        "Karoline Kröber"
+      ],
       "roles": [
         "sender"
       ],
@@ -43321,6 +43743,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44336",
       "gnd": "118680471",
+      "name_variants": [
+        "Herzogin von Dorothea Kurland"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -43513,6 +43938,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44355",
       "gnd": "118569767",
+      "name_variants": [
+        "von Sophie La Roche",
+        "geb. Gutermann von Gutershofen",
+        "Sophie Gutermann von Gutershofen",
+        "Sophie La Roche"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -43764,6 +44195,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44384",
       "gnd": "116207094",
+      "name_variants": [
+        "von Amalie Levetzow"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -43834,6 +44268,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44396",
+      "name_variants": [
+        "Marie Lieber"
+      ],
       "occupations": [
         {
           "name": "Erzieherin",
@@ -43848,6 +44285,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44412",
+      "name_variants": [
+        "von Agnes Mathilde Wegner",
+        "geb. von Lincker (Linker)"
+      ],
       "dates": {
         "death": "1830",
         "birth": "1801"
@@ -43868,6 +44309,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44415",
+      "name_variants": [
+        "von Karoline (Lili) Lincker (Linker) und Lützenwick"
+      ],
       "dates": {
         "death": "1864",
         "birth": "1779"
@@ -43889,6 +44333,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44422",
       "gnd": "136755593",
+      "name_variants": [
+        "(von) Friederike Lisiewska"
+      ],
       "roles": [
         "sender"
       ],
@@ -43936,6 +44383,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44429",
       "gnd": "11708381X",
+      "name_variants": [
+        "von Luise Loder"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -44101,6 +44551,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44502",
+      "name_variants": [
+        "Louise Martin"
+      ],
       "dates": {
         "death": "1831",
         "birth": "1788"
@@ -44120,6 +44573,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44523",
       "gnd": "1052525725",
+      "name_variants": [
+        "Erbgroßherzogin von Karoline Mecklenburg-Schwerin",
+        "Prinzessin von Karoline Sachsen-Weimar und Eisenach"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -45015,6 +45472,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44537",
       "gnd": "11687256X",
+      "name_variants": [
+        "Johanna Melber"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -45229,6 +45689,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44542",
       "gnd": "118580736",
+      "name_variants": [
+        "Fanny Mendelssohn Bartholdy"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -45301,6 +45764,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44543",
       "gnd": "116881119",
+      "name_variants": [
+        "Lea Mendelssohn Bartholdy",
+        "geb. Salomon",
+        "Lea Salomon"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -45386,6 +45854,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44575",
+      "name_variants": [
+        "Sophie Meyer"
+      ],
       "dates": {
         "death": "1872",
         "birth": "1789"
@@ -45399,6 +45870,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44582",
       "gnd": "117041556",
+      "name_variants": [
+        "Anna Milder"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -45536,6 +46010,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44589",
+      "name_variants": [
+        "Johanna Elisabeth Mohr"
+      ],
       "dates": {
         "birth": "1768",
         "death": "1834"
@@ -45563,6 +46040,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44593",
       "gnd": "117133817",
+      "name_variants": [
+        "von Henriette Montenglaut"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -45616,6 +46096,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44630",
+      "name_variants": [
+        "Karoline Willmann",
+        "Karoline Müller"
+      ],
       "dates": {
         "birth": "1788"
       },
@@ -45660,6 +46144,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44686",
       "gnd": "116996617",
+      "name_variants": [
+        "Luise Nicolovius",
+        "Luise Maria Anna Schlosser"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -45825,6 +46313,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44692",
       "gnd": "1032433051",
+      "name_variants": [
+        "von Luise Niebecker"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -45892,6 +46383,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44708",
       "gnd": "1020124741",
+      "name_variants": [
+        "van Elisa Minna Nuys"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -45940,6 +46434,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44716",
       "gnd": "1032419644",
+      "name_variants": [
+        "von Mimi Oertel"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -45994,6 +46491,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44718",
       "gnd": "117106666",
+      "name_variants": [
+        "Friederike Oeser"
+      ],
       "roles": [
         "sender"
       ],
@@ -46025,6 +46525,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44745",
       "gnd": "1036767213",
+      "name_variants": [
+        "Gräfin von Christiane Orttenburg"
+      ],
       "roles": [
         "sender"
       ],
@@ -46062,6 +46565,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44759",
       "gnd": "102139453X",
+      "name_variants": [
+        "Augusta Pallard"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -46344,6 +46850,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44761",
       "gnd": "11908967X",
+      "name_variants": [
+        "van Luise Panhuys"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -46398,6 +46907,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44763",
       "gnd": "119545756",
+      "name_variants": [
+        "Gräfin von Jenny Pappenheim",
+        "von Jenny Gustedt"
+      ],
       "dates": {
         "death": "1890",
         "birth": "1811"
@@ -46425,6 +46938,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44777",
       "gnd": "116066563",
+      "name_variants": [
+        "Karoline Paulus",
+        "Eleutheria Holberg"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -46569,6 +47086,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44799",
+      "name_variants": [
+        "von Luise Phuhl"
+      ],
       "dates": {
         "death": "1818",
         "birth": "1738"
@@ -46590,6 +47110,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44810",
       "gnd": "116192798",
+      "name_variants": [
+        "Luise Pistorius"
+      ],
       "roles": [
         "sender"
       ],
@@ -46629,6 +47152,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44815",
       "gnd": "119219611",
+      "name_variants": [
+        "von Henriette Pogwisch"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -47208,6 +47734,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44816",
       "gnd": "116259779",
+      "name_variants": [
+        "von Ulrike Pogwisch"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -48188,6 +48717,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44829",
       "gnd": "119259737",
+      "name_variants": [
+        "Prinzessin von Marianne Preußen"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -48375,6 +48907,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44861",
       "gnd": "101453124",
+      "name_variants": [
+        "Luise Radziwill"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -48509,6 +49044,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44885",
       "gnd": "118743627",
+      "name_variants": [
+        "von der Elisa Recke"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -48722,6 +49260,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44886",
       "gnd": "124300162",
+      "name_variants": [
+        "Gräfin von Friederike Reden"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -48783,6 +49324,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44915",
       "gnd": "1038466490",
+      "name_variants": [
+        "Sophie Reinhard"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -48974,6 +49518,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44919",
+      "name_variants": [
+        "von Tinette Reitzenstein"
+      ],
       "dates": {
         "death": "1837",
         "birth": "1784"
@@ -49003,6 +49550,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44924",
       "gnd": "129461288",
+      "name_variants": [
+        "Maria Renner"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -49093,6 +49643,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44932",
       "gnd": "116457317",
+      "name_variants": [
+        "Gräfin von Julie Reventlow"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -49152,6 +49705,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44943",
       "gnd": "116543701",
+      "name_variants": [
+        "Karoline Riemer"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -49350,6 +49906,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:44977",
+      "name_variants": [
+        "Dorothea Rost"
+      ],
       "dates": {
         "death": "1844",
         "birth": "1759"
@@ -49377,6 +49936,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45034",
       "gnd": "124959571",
+      "name_variants": [
+        "von Charlotte Sachsen-Gotha und Altenburg",
+        "Prinzessin von Maria Charlotte Amalie Ernestine Wilhelmine Henriette Philippine Sachsen-Meiningen",
+        "verh. Herzogin von Sachsen-Gotha und Altenburg"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -49488,6 +50052,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45046",
       "gnd": "115363688",
+      "name_variants": [
+        "Großherzogin von Luise Sachsen-Weimar-Eisenach",
+        "geb. Prinzessin von Hessen-Darmstadt",
+        "Herzogin von Luise Sachsen-Weimar und Eisenach"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -53042,6 +53611,15 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45051",
       "gnd": "118651102",
+      "name_variants": [
+        "Königin von Maria Luise Augusta Katharina Preußen",
+        "geb. Prinzessin von Sachsen-Weimar-Eisenach",
+        "Kaiserin von Augusta Marie Luise Katharina Deutschland",
+        "Königin von Augusta Preußen",
+        "Prinzessin von Augusta Sachsen-Weimar-Eisenach",
+        "Prinzessin von Augusta Preußen",
+        "Prinzessin von Maria Luise Augusta Katharina Sachsen-Weimar und Eisenach"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -53922,6 +54500,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45063",
       "gnd": "116781025",
+      "name_variants": [
+        "Sophie Sander",
+        "Sophia (Sophie) Friederika Henriette Diederichs",
+        "verh. Sander"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -54125,6 +54708,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45070",
       "gnd": "116809736",
+      "name_variants": [
+        "von Karoline Sartorius",
+        "Karoline Dorothee Voigt",
+        "verh. Sartorius"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -54505,6 +55093,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45082",
       "gnd": "1050552458",
+      "name_variants": [
+        "Henriette Schadow",
+        "Karoline Henriette Marie Rosentiel",
+        "verh. Schadow"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -54596,6 +55189,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45090",
       "gnd": "117106445",
+      "name_variants": [
+        "von Sophie Schardt",
+        "von Friederike Sophie Eleonore Bernstorff",
+        "verh. Schardt"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -54931,6 +55529,11 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45095",
+      "name_variants": [
+        "Sophie Schaumann",
+        "Sophie Luise Koch",
+        "verh. Schaumann"
+      ],
       "dates": {
         "death": "1850",
         "birth": "1775"
@@ -54952,6 +55555,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45110",
       "gnd": "118607065",
+      "name_variants": [
+        "von Pauline Schelling",
+        "Angelika Amalie Pauline Gotter",
+        "verh. Schelling"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -54994,6 +55602,13 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45111",
       "gnd": "118607049",
+      "name_variants": [
+        "von Karoline Schelling",
+        "Dorothea Karoline Albertine Schlegel",
+        "geb. Michaelis",
+        "Dorothea Karoline Albertine Böhmer",
+        "Dorothea Caroline Albertine Michaelis"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -55353,6 +55968,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45127",
       "gnd": "118754971",
+      "name_variants": [
+        "Charlotte Schiller",
+        "geb. von Lengefeld",
+        "von Charlotte Schiller",
+        "von Charlotte Lengefeld"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -56921,6 +57542,13 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45134",
       "gnd": "118607979",
+      "name_variants": [
+        "von Dorothea Schlegel",
+        "Dorothea Veit",
+        "geb. Brendel (Veronika) Mendelssohn gesch. Veit",
+        "Brendel (Veronika) Mendelssohn",
+        "verh. Schlegel"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -57056,6 +57684,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45158",
       "gnd": "116381256",
+      "name_variants": [
+        "Johanna Schlosser",
+        "Johanna Fahlmer"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -57349,6 +57981,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45163",
       "gnd": "117330302",
+      "name_variants": [
+        "Margarete Schlosser"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -57712,6 +58347,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45165",
       "gnd": "117330388",
+      "name_variants": [
+        "Sophie Schlosser"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -58133,6 +58771,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45170",
+      "name_variants": [
+        "von Andrienne Schmidt"
+      ],
       "dates": {
         "death": "1820",
         "birth": "1787"
@@ -58159,6 +58800,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45178",
+      "name_variants": [
+        "Maria Schmidt"
+      ],
       "dates": {
         "birth": "1805"
       },
@@ -58192,6 +58836,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45214",
       "gnd": "118610473",
+      "name_variants": [
+        "Johanna Schopenhauer"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -58819,6 +59466,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45215",
       "gnd": "11880510X",
+      "name_variants": [
+        "Adele Schopenhauer"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -59374,6 +60024,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45261",
+      "name_variants": [
+        "Karolina Schumann",
+        "verh. Wangemann"
+      ],
       "dates": {
         "birth": "1792",
         "death": "1864"
@@ -59395,6 +60049,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45287",
       "gnd": "117418269",
+      "name_variants": [
+        "von Henriette Schwendler",
+        "von Auguste Sophie Henriette Mützschefahl",
+        "von Auguste Sophie Henriette Schlabrendorff (Schlabrendorf)"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -59438,6 +60097,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45296",
       "gnd": "117459240",
+      "name_variants": [
+        "von Alexandrine Seckendorff"
+      ],
       "roles": [
         "sender"
       ],
@@ -59475,6 +60137,13 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45309",
       "gnd": "116868589",
+      "name_variants": [
+        "von Amalie Seebach",
+        "verh. von Groß",
+        "von Amalie Karoline Henriette Charlotte Wilhelmine Luise Groß",
+        "geb. von Seebach",
+        "Amalie Winter"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -59509,6 +60178,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45315",
+      "name_variants": [
+        "Juliane Seebeck"
+      ],
       "dates": {
         "birth": "1774",
         "death": "1861"
@@ -59522,6 +60194,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45320",
       "gnd": "118760653",
+      "name_variants": [
+        "Luise Seidler",
+        "Louise Caroline Sophie Seidler"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -60109,6 +60785,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45327",
       "gnd": "117470309",
+      "name_variants": [
+        "Charlotte Servière"
+      ],
       "roles": [
         "sender"
       ],
@@ -60148,6 +60827,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45328",
       "gnd": "117470317",
+      "name_variants": [
+        "Paula Servière"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -60441,6 +61123,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45363",
       "gnd": "117493406",
+      "name_variants": [
+        "Emilie Spiegel von und zu Pickelsheim"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -60548,6 +61233,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45379",
       "gnd": "118616617",
+      "name_variants": [
+        "Germaine Staël (S.-Holstein)",
+        "geb. Necker"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -61759,6 +62448,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45391",
       "gnd": "118617214",
+      "name_variants": [
+        "von Amalie Stein"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -61850,6 +62542,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45394",
       "gnd": "118617222",
+      "name_variants": [
+        "von Charlotte Stein",
+        "von Charlotte Albertine Ernestine Schardt",
+        "verh. von Stein"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -63399,6 +64096,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45425",
       "gnd": "11726086X",
+      "name_variants": [
+        "Esther Stock"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -63627,6 +64327,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45438",
       "gnd": "117286370",
+      "name_variants": [
+        "Gräfin zu Sophie Stolberg-Stolberg"
+      ],
       "roles": [
         "sender"
       ],
@@ -63658,6 +64361,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45480",
       "gnd": "118837052",
+      "name_variants": [
+        "Fanny Tarnow"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -63746,6 +64452,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45503",
       "gnd": "130110973",
+      "name_variants": [
+        "Eleonore Thon"
+      ],
       "roles": [
         "sender"
       ],
@@ -63818,6 +64527,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45532",
+      "name_variants": [
+        "von Erdmute Trebra"
+      ],
       "dates": {
         "birth": "1764",
         "death": "1844"
@@ -63830,6 +64542,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45545",
+      "name_variants": [
+        "von Eleonore Tümpling"
+      ],
       "dates": {
         "birth": "1766",
         "death": "1840"
@@ -63857,6 +64572,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45551",
       "gnd": "118795333",
+      "name_variants": [
+        "von Lili Elise Türckheim",
+        "von Anna Elisabeth Schönemann"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -63967,6 +64686,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45567",
       "gnd": "117293091",
+      "name_variants": [
+        "Friederike Unger"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -64074,6 +64796,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45574",
       "gnd": "116128143",
+      "name_variants": [
+        "Friederika Unzelmann"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -64277,6 +65002,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45592",
       "gnd": "1283238225",
+      "name_variants": [
+        "von (de) Christiane Vernejoul",
+        "von (de) Christiane Elise Sabine Cramon",
+        "von (de) Christiane Elise Sabine Waldenfels",
+        "von (de) Christiane Elise Sabine Haeften"
+      ],
       "dates": {
         "birth": "1768",
         "death": "1809"
@@ -64304,6 +65035,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45610",
       "gnd": "119333376",
+      "name_variants": [
+        "von Amalie Voigt"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -64483,6 +65217,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45611",
       "gnd": "1118380401",
+      "name_variants": [
+        "Amalie Karoline Friedrike Osann",
+        "geb. Hufeland"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -64691,6 +65429,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45618",
+      "name_variants": [
+        "Susette Voigt"
+      ],
       "dates": {
         "birth": "1792",
         "death": "1877"
@@ -64712,6 +65453,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45619",
       "gnd": "117478598",
+      "name_variants": [
+        "von Jenny Voigts"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -64758,6 +65502,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45623",
+      "name_variants": [
+        "von Amalie Voß"
+      ],
       "dates": {
         "birth": "1763",
         "death": "1809"
@@ -64779,6 +65526,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45628",
       "gnd": "11623346X",
+      "name_variants": [
+        "Ernestine Voß",
+        "Marie Christine Henriette Ernestine Boie"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -64930,6 +65681,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45635",
       "gnd": "103844991X",
+      "name_variants": [
+        "Helene Vulpius"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -65118,6 +65872,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45684",
       "gnd": "117206105",
+      "name_variants": [
+        "von Marianne Wedel",
+        "von Johanna Marianne Henriette Woellwarth-Essingen"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -65262,6 +66020,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45707",
+      "name_variants": [
+        "von Elisabeth (Elise) Werthern"
+      ],
       "dates": {
         "death": "1822",
         "birth": "1790"
@@ -65274,6 +66035,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45710",
+      "name_variants": [
+        "Gräfin von Christiane Werthern (W.-Beichlingen)",
+        "geb. von Globig"
+      ],
       "dates": {
         "birth": "1759",
         "death": "1829"
@@ -65295,6 +66060,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45711",
       "gnd": "1080306722",
+      "name_variants": [
+        "Gräfin von Luise Werthern"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -65329,6 +66097,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45712",
       "gnd": "133524132",
+      "name_variants": [
+        "von Cäcilie Werthern",
+        "Juliane Luise Cäcilie Ziegesar"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -65413,6 +66185,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45714",
       "gnd": "117314005",
+      "name_variants": [
+        "Elisabeth Wesselhöft",
+        "Betty Wesselhöft"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -65583,6 +66359,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45721",
       "gnd": "117327190",
+      "name_variants": [
+        "Christine Westphalen"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -65700,6 +66479,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45726",
       "gnd": "1019765984",
+      "name_variants": [
+        "Maria Anna Theresia Weyrauch",
+        "geb. von Weber",
+        "Jeanette (Maria) Weyhrauch"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -65870,6 +66654,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45745",
       "gnd": "118633252",
+      "name_variants": [
+        "von Marianne Willemer"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -66556,6 +67343,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45769",
       "gnd": "120596954",
+      "name_variants": [
+        "Arnoldine Wolf"
+      ],
       "roles": [
         "sender"
       ],
@@ -66690,6 +67480,11 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45775",
       "gnd": "117447102",
+      "name_variants": [
+        "Anna Amalia Christiane Malcolmi (Malkolmy)",
+        "Anna Amalia Christiane Miller",
+        "Anna Amalia Christiane Becker"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -67336,6 +68131,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45783",
       "gnd": "118771272",
+      "name_variants": [
+        "von Karoline Lengefeld",
+        "von Karoline Beulwitz",
+        "geb. von Lengefeld",
+        "von Karoline Wolzogen"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -68298,6 +69099,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45814",
       "gnd": "11697897X",
+      "name_variants": [
+        "Doris Zelter"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -68610,6 +69414,12 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45830",
       "gnd": "123543029",
+      "name_variants": [
+        "Luise Sophie Amalie Friederike Ziegesar",
+        "geb. von Stein zu Nord- und Ostheim",
+        "von Luise Ziegesar",
+        "von Luise Stein (S. zu Nord- und Ostheim)"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -68718,6 +69528,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45836",
+      "name_variants": [
+        "von Luise Zimmermann"
+      ],
       "dates": {
         "birth": "1755",
         "death": "1826"
@@ -68731,6 +69544,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:45841",
       "gnd": "118721224",
+      "name_variants": [
+        "Angelika Zucchi",
+        "Maria Anna Angelika Katharina Kauffmann"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -69272,6 +70089,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:46093",
       "gnd": "119154048",
+      "name_variants": [
+        "Gräfin von und zu Julie Egloffstein"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -69770,6 +70590,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:46094",
       "gnd": "118956531",
+      "name_variants": [
+        "Gräfin von und zu Karoline Egloffstein"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -70367,6 +71190,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:46882",
       "gnd": "1034654721",
+      "name_variants": [
+        "Luise Ernestine Arnoldine Tittmann",
+        "geb. Becker"
+      ],
       "dates": {
         "death": "1871",
         "birth": "1794"
@@ -70715,6 +71542,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:47071",
       "gnd": "1205681272",
+      "name_variants": [
+        "Auguste Amalie Brawe"
+      ],
       "roles": [
         "sender"
       ],
@@ -70826,6 +71656,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:47261",
+      "name_variants": [
+        "Johanna Geisler"
+      ],
       "dates": {
         "birth": "1767",
         "death": "1823"
@@ -70858,6 +71691,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:47263",
+      "name_variants": [
+        "Sophie Gottschild"
+      ],
       "dates": {
         "death": "1830",
         "birth": "1758"
@@ -70909,6 +71745,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:48315",
       "gnd": "119369281",
+      "name_variants": [
+        "Gräfin zu Augusta Louise Stolberg-Stolberg"
+      ],
       "roles": [
         "sender"
       ],
@@ -70953,6 +71792,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:48678",
       "gnd": "1067698868",
+      "name_variants": [
+        "von Luise (Lulu) Klara Werthern (W.-Beichlingen)"
+      ],
       "roles": [
         "mentioned",
         "sender"
@@ -71019,6 +71861,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:49049",
       "gnd": "116617403",
+      "name_variants": [
+        "Gräfin von Henriette Giech"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -71053,6 +71898,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:49243",
       "gnd": "117392359",
+      "name_variants": [
+        "Maria Szymanowska"
+      ],
       "roles": [
         "sender",
         "mentioned"
@@ -71263,6 +72111,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:49290",
       "gnd": "116696257",
+      "name_variants": [
+        "Elisabeth Cotta von Cottendorf"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -71567,6 +72418,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:50055",
+      "name_variants": [
+        "Luise Diede zum Fürstenstein"
+      ],
       "dates": {
         "death": "1857",
         "birth": "1778"
@@ -71599,6 +72453,9 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:50139",
+      "name_variants": [
+        "Gräfin von Therese Kielmannsegge"
+      ],
       "dates": {
         "death": "1863",
         "birth": "1803"
@@ -71626,6 +72483,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:50164",
       "gnd": "1117564177",
+      "name_variants": [
+        "Thusnelda Lenz",
+        "verh. Salzmann"
+      ],
       "dates": {
         "birth": "1791",
         "death": "1867"
@@ -71651,6 +72512,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:50194",
       "gnd": "116718854",
+      "name_variants": [
+        "Sophie Auguste Friederike Düring",
+        "Sophie Auguste Friederike Crelinger"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -72510,6 +73375,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:50947",
+      "name_variants": [
+        "Charlotte Magdalena Karoline Schwarz",
+        "verh. Nathusius"
+      ],
       "dates": {
         "death": "1843",
         "birth": "1792"
@@ -72942,6 +73811,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:51416",
       "gnd": "113668139",
+      "name_variants": [
+        "J. Satori"
+      ],
       "roles": [
         "sender"
       ],
@@ -73105,6 +73977,9 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:51575",
       "gnd": "116457171",
+      "name_variants": [
+        "Marie Luise Henriette Wilhelmine Löw von und zu Steinfurth"
+      ],
       "dates": {
         "birth": "1807",
         "death": "1864"
@@ -73137,6 +74012,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:51828",
+      "name_variants": [
+        "Augustine Luise Friederike Ernestine Teltz",
+        "verh. Schauroth"
+      ],
       "dates": {
         "death": "1847",
         "birth": "1792"
@@ -73395,6 +74274,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:52064",
+      "name_variants": [
+        "Comtesse de Anne Louise Collot",
+        "Comtesse de Anne Louise Vaudreuil (Rigaud de Vaudreuil)"
+      ],
       "dates": {
         "birth": "1806",
         "death": "1859"
@@ -73477,6 +74360,10 @@
       "normierung": "gnd",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:52968",
       "gnd": "117201286",
+      "name_variants": [
+        "Anna Rosina Magdalene Willemer",
+        "Anna Rosina Magdalene Städel"
+      ],
       "roles": [
         "mentioned"
       ],
@@ -73758,6 +74645,10 @@
       "role": "indirect",
       "normierung": "sndb",
       "sndb_url": "https://ores.klassik-stiftung.de/ords/f?p=900:2:::::P2_ID:53487",
+      "name_variants": [
+        "Elisabeth Katharina (Lisette) Miltenberg",
+        "geb. Runckel"
+      ],
       "dates": {
         "birth": "1752",
         "death": "1815"
