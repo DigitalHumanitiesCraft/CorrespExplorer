@@ -52,6 +52,29 @@
                         <button id="reset-timeline" class="btn-reset-small">Zurücksetzen</button>
                     </div>
                 </div>
+
+                <!-- Activity Filter in Sidebar -->
+                <div class="filter-group" role="group" aria-labelledby="filter-activity-heading">
+                    <h4 id="filter-activity-heading">Briefaktivität</h4>
+                    <div class="activity-checkboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="activity-checkbox" value="sender" checked>
+                            <span>Absenderin</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="activity-checkbox" value="mentioned" checked>
+                            <span>Erwähnt</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="activity-checkbox" value="both" checked>
+                            <span>Beides</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" class="activity-checkbox" value="indirect" checked>
+                            <span>Nur SNDB</span>
+                        </label>
+                    </div>
+                </div>
             </aside>
 
             <!-- Main Content -->
@@ -62,10 +85,10 @@
                     <div id="filter-chips"></div>
                 </div>
 
-                <!-- 2x2 Grid for Charts -->
-            <div class="explorer-grid">
-                <!-- Chart 1: Berufsverteilung -->
-                <section class="explorer-card">
+                <!-- Chart Grid: Full-width Treemap + 2 Charts (Phase 2d) -->
+            <div class="explorer-grid-phase2d">
+                <!-- Chart 1: Berufsverteilung (Full Width) -->
+                <section class="explorer-card explorer-card-full">
                     <div class="explorer-card-header">
                         <h2>Berufsverteilung</h2>
                         <div class="explorer-card-actions">
@@ -109,20 +132,6 @@
                     </div>
                 </section>
 
-                <!-- Chart 4: Briefaktivität -->
-                <section class="explorer-card">
-                    <div class="explorer-card-header">
-                        <h2>Briefaktivität</h2>
-                        <div class="explorer-card-actions">
-                            <button class="btn-export" data-export="activity" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                            <button class="btn-export" data-export="activity" data-format="png" aria-label="Als PNG exportieren">PNG</button>
-                        </div>
-                    </div>
-                    <div class="explorer-card-body">
-                        <div id="chart-activity" class="chart-container"></div>
-                        <p class="chart-note"><span id="note-activity">Verteilung nach Rolle</span></p>
-                    </div>
-                </section>
             </div>
         </main>
         </div>

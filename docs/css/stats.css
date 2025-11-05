@@ -339,11 +339,22 @@
     border-color: var(--color-primary);
 }
 
-/* 2x2 Grid */
+/* 2x2 Grid (Phase 2a-2c) */
 .explorer-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-xl);
+}
+
+/* Phase 2d Layout: Full-width Treemap + 2 Charts */
+.explorer-grid-phase2d {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl);
+}
+
+.explorer-card-full {
+    grid-column: span 2;
 }
 
 .explorer-card {
@@ -417,9 +428,14 @@
 
 /* Responsive for Explorer Layout */
 @media (max-width: 1200px) {
-    .explorer-grid {
+    .explorer-grid,
+    .explorer-grid-phase2d {
         grid-template-columns: 1fr;
         gap: var(--space-lg);
+    }
+
+    .explorer-card-full {
+        grid-column: span 1;
     }
 }
 
@@ -526,3 +542,36 @@
 .filter-chip-remove:hover {
     opacity: 1;
 }
+
+/* Activity Filter Checkboxes */
+.activity-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    padding: var(--space-xs) 0;
+    transition: background 0.2s;
+}
+
+.checkbox-label:hover {
+    background: var(--color-bg-light);
+}
+
+.activity-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.checkbox-label span {
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+}
+

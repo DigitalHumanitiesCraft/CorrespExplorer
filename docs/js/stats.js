@@ -20,7 +20,10 @@ class FilterState {
 
         this.filters = {
             timeRange: null,  // { start: year, end: year }
-            timeMode: 'correspondence'  // 'correspondence' or 'lifespan'
+            timeMode: 'correspondence',  // 'correspondence' or 'lifespan'
+            occupation: null,  // string: selected occupation name
+            place: null,  // string: selected place name
+            activityTypes: ['sender', 'mentioned', 'both', 'indirect']  // array: checked activity types
         };
 
         this.listeners = [];
@@ -44,47 +47,89 @@ class FilterState {
 
     // Get currently filtered persons
     getFilteredPersons() {
-        if (!this.filters.timeRange) {
-            return allPersons;
+        let filtered = allPersons;
+
+        // Filter by time range
+        if (this.filters.timeRange) {
+            const { start, end } = this.filters.timeRange;
+            const { timeMode } = this.filters;
+
+            filtered = filtered.filter(person => {
+                if (timeMode === 'correspondence') {
+                    // Filter by correspondence years
+                    if (!person.correspondence || person.correspondence.length === 0) {
+                        return false;  // Exclude persons without correspondence
+                    }
+                    return person.correspondence.some(corr =>
+                        corr.year >= start && corr.year <= end
+                    );
+                } else {
+                    // Filter by lifespan years
+                    if (!person.dates) return false;
+
+                    const birthYear = person.dates.birth ? parseInt(person.dates.birth) : null;
+                    const deathYear = person.dates.death ? parseInt(person.dates.death) : null;
+
+                    // Person overlaps with time range if:
+                    // - Born before end AND died after start
+                    // - Or born in range (if no death date)
+                    if (birthYear && deathYear) {
+                        return birthYear <= end && deathYear >= start;
+                    } else if (birthYear) {
+                        return birthYear >= start && birthYear <= end;
+                    }
+                    return false;
+                }
+            });
         }
 
-        const { start, end } = this.filters.timeRange;
-        const { timeMode } = this.filters;
+        // Filter by occupation
+        if (this.filters.occupation) {
+            filtered = filtered.filter(person => {
+                if (!person.occupations || person.occupations.length === 0) return false;
+                return person.occupations.some(occ => occ.name === this.filters.occupation);
+            });
+        }
 
-        return allPersons.filter(person => {
-            if (timeMode === 'correspondence') {
-                // Filter by correspondence years
-                if (!person.correspondence || person.correspondence.length === 0) {
-                    return false;  // Exclude persons without correspondence
-                }
-                return person.correspondence.some(corr =>
-                    corr.year >= start && corr.year <= end
+        // Filter by place
+        if (this.filters.place) {
+            filtered = filtered.filter(person => {
+                if (!person.places || person.places.length === 0) return false;
+                return person.places.some(place => place.name === this.filters.place);
+            });
+        }
+
+        // Filter by activity types (only if not all are selected)
+        if (this.filters.activityTypes && this.filters.activityTypes.length < 4) {
+            filtered = filtered.filter(person => {
+                const letterCount = person.letter_count || 0;
+                const mentionCount = person.mention_count || 0;
+
+                const isSender = letterCount > 0 && mentionCount === 0;
+                const isMentioned = letterCount === 0 && mentionCount > 0;
+                const isBoth = letterCount > 0 && mentionCount > 0;
+                const isIndirect = letterCount === 0 && mentionCount === 0;
+
+                return (
+                    (this.filters.activityTypes.includes('sender') && isSender) ||
+                    (this.filters.activityTypes.includes('mentioned') && isMentioned) ||
+                    (this.filters.activityTypes.includes('both') && isBoth) ||
+                    (this.filters.activityTypes.includes('indirect') && isIndirect)
                 );
-            } else {
-                // Filter by lifespan years
-                if (!person.dates) return false;
+            });
+        }
 
-                const birthYear = person.dates.birth ? parseInt(person.dates.birth) : null;
-                const deathYear = person.dates.death ? parseInt(person.dates.death) : null;
-
-                // Person overlaps with time range if:
-                // - Born before end AND died after start
-                // - Or born in range (if no death date)
-                if (birthYear && deathYear) {
-                    return birthYear <= end && deathYear >= start;
-                } else if (birthYear) {
-                    return birthYear >= start && birthYear <= end;
-                }
-                return false;
-            }
-        });
+        return filtered;
     }
 
     // Reset filters
     reset() {
         this.filters = {
             timeRange: null,
-            timeMode: this.filters.timeMode  // Keep current mode
+            timeMode: this.filters.timeMode,  // Keep current mode
+            occupation: null,
+            place: null,
+            activityTypes: ['sender', 'mentioned', 'both', 'indirect']  // Reset to all checked
         };
         this.notifyListeners();
     }
@@ -117,6 +162,7 @@ async function init() {
 
         initSearch();
         initMasterTimeline();
+        initActivityFilter();
         initCharts();
         initExportButtons();
 
@@ -311,6 +357,32 @@ function initMasterTimeline() {
     console.log("⏱️ Master timeline initialized");
 }
 
+// Initialize activity filter checkboxes
+function initActivityFilter() {
+    const filterState = new FilterState();
+    const checkboxes = document.querySelectorAll('.activity-checkbox');
+
+    if (!checkboxes || checkboxes.length === 0) {
+        console.warn("⚠️ Activity checkboxes not found");
+        return;
+    }
+
+    // Add change event listeners to all checkboxes
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            // Collect all checked values
+            const checkedTypes = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+            // Update filter state
+            filterState.update({ activityTypes: checkedTypes });
+        });
+    });
+
+    console.log("✅ Activity filter initialized");
+}
+
 // Update timeline selection display
 function updateTimelineSelection(start, end) {
     const display = document.getElementById('timeline-selection');
@@ -326,7 +398,7 @@ function updateTimelineSelection(start, end) {
 // Update filter chips display
 function updateFilterChips() {
     const filterState = new FilterState();
-    const { timeRange, timeMode } = filterState.filters;
+    const { timeRange, timeMode, occupation, place, activityTypes } = filterState.filters;
 
     const activeFiltersDiv = document.getElementById('active-filters');
     const filterChipsDiv = document.getElementById('filter-chips');
@@ -337,6 +409,7 @@ function updateFilterChips() {
     filterChipsDiv.innerHTML = '';
 
     const chips = [];
+    const filteredPersons = filterState.getFilteredPersons();
 
     // Add time range chip if active
     if (timeRange) {
@@ -344,7 +417,7 @@ function updateFilterChips() {
         chips.push({
             label: `${timeRange.start}–${timeRange.end} (${modeLabel})`,
             onRemove: () => {
-                filterState.reset();
+                filterState.update({ timeRange: null });
                 // Reset dataZoom slider
                 if (charts.masterTimeline) {
                     charts.masterTimeline.dispatchAction({
@@ -353,6 +426,51 @@ function updateFilterChips() {
                         end: 100
                     });
                 }
+            }
+        });
+    }
+
+    // Add occupation chip if active
+    if (occupation) {
+        // Count persons with this occupation in current filter context
+        let count = filteredPersons.length;
+        chips.push({
+            label: `${occupation} (${count})`,
+            onRemove: () => {
+                filterState.update({ occupation: null });
+            }
+        });
+    }
+
+    // Add place chip if active
+    if (place) {
+        // Count persons with this place in current filter context
+        let count = filteredPersons.length;
+        chips.push({
+            label: `${place} (${count})`,
+            onRemove: () => {
+                filterState.update({ place: null });
+            }
+        });
+    }
+
+    // Add activity filter chip if not all types are selected
+    if (activityTypes && activityTypes.length < 4 && activityTypes.length > 0) {
+        const typeLabels = {
+            'sender': 'Absenderin',
+            'mentioned': 'Erwähnt',
+            'both': 'Beides',
+            'indirect': 'Nur SNDB'
+        };
+        const activeLabels = activityTypes.map(type => typeLabels[type]).join(', ');
+        chips.push({
+            label: `Briefaktivität: ${activeLabels}`,
+            onRemove: () => {
+                // Reset to all types
+                filterState.update({ activityTypes: ['sender', 'mentioned', 'both', 'indirect'] });
+                // Also reset checkboxes
+                const checkboxes = document.querySelectorAll('.activity-checkbox');
+                checkboxes.forEach(cb => cb.checked = true);
             }
         });
     }
@@ -383,15 +501,13 @@ function initCharts() {
     renderOccupationsChart();
     renderPlacesChart();
     renderCohortsChart();
-    renderActivityChart();
 
     // Connect charts for coordinated tooltips and highlights
     echarts.connect([
         charts.masterTimeline,
         charts.occupations,
         charts.places,
-        charts.cohorts,
-        charts.activity
+        charts.cohorts
     ]);
 
     console.log('📊 Charts connected for linked brushing');
@@ -402,7 +518,6 @@ function updateAllCharts() {
     renderOccupationsChart();
     renderPlacesChart();
     renderCohortsChart();
-    renderActivityChart();
 }
 
 // Update chart notes with current filter stats
@@ -434,15 +549,9 @@ function updateChartNotes() {
     if (cohortsNote) {
         cohortsNote.textContent = `${cohortsWithData} Frauen mit Lebensdaten`;
     }
-
-    // Update activity note
-    const activityNote = document.getElementById('note-activity');
-    if (activityNote) {
-        activityNote.textContent = `Verteilung nach Rolle (${filteredPersons.length} Frauen)`;
-    }
 }
 
-// Chart 1: Berufsverteilung
+// Chart 1: Berufsverteilung (Treemap)
 function renderOccupationsChart() {
     const container = document.getElementById('chart-occupations');
     if (!charts.occupations) {
@@ -462,59 +571,106 @@ function renderOccupationsChart() {
         }
     });
 
-    // Sort and get top 15
-    const sorted = Object.entries(occCounter)
+    // Convert to treemap data (ALL occupations, not just top 15)
+    const treemapData = Object.entries(occCounter)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 15);
+        .map(([name, value]) => ({
+            name: name,
+            value: value
+        }));
+
+    console.log(`📊 Treemap data: ${treemapData.length} occupations, top 5:`, treemapData.slice(0, 5));
 
     const option = {
         title: {
-            text: 'Top 15 Berufe',
+            text: `Alle Berufe (${treemapData.length})`,
             left: 'center',
+            top: 10,
             textStyle: { fontSize: 14 }
         },
         tooltip: {
-            trigger: 'axis',
-            axisPointer: { type: 'shadow' },
-            formatter: '{b}: {c} Personen'
-        },
-        grid: {
-            left: '25%',
-            right: '5%',
-            top: '15%',
-            bottom: '10%'
-        },
-        xAxis: {
-            type: 'value',
-            name: 'Anzahl'
-        },
-        yAxis: {
-            type: 'category',
-            data: sorted.map(([name]) => name).reverse(),
-            axisLabel: {
-                fontSize: 10,
-                overflow: 'truncate',
-                width: 100
+            formatter: (params) => {
+                return `${params.name}<br/>${params.value} Personen`;
             }
         },
         series: [{
-            type: 'bar',
-            data: sorted.map(([, count]) => count).reverse(),
-            itemStyle: {
-                color: '#2c5f8d',
-                borderRadius: [0, 4, 4, 0]
+            type: 'treemap',
+            data: treemapData,
+            top: 50,
+            bottom: 10,
+            left: 10,
+            right: 10,
+            roam: false,
+            nodeClick: false,
+            breadcrumb: {
+                show: false
             },
             label: {
                 show: true,
-                position: 'inside',
-                formatter: '{c}',
-                color: 'white',
-                fontSize: 10
-            }
+                formatter: (params) => {
+                    // Only show label if rect is large enough
+                    if (params.value < 3) return '';
+                    return `${params.name}\n${params.value}`;
+                },
+                fontSize: 11,
+                color: 'white'
+            },
+            upperLabel: {
+                show: false
+            },
+            itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 2,
+                gapWidth: 2
+            },
+            emphasis: {
+                itemStyle: {
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0,0,0,0.5)',
+                    borderColor: '#2c5f8d',
+                    borderWidth: 3
+                },
+                label: {
+                    fontSize: 12,
+                    fontWeight: 'bold'
+                }
+            },
+            visualMin: 0,
+            visualMax: Math.max(...treemapData.map(d => d.value)),
+            colorMappingBy: 'value',
+            levels: [
+                {
+                    color: ['#88b7d8', '#6ba3c8', '#4e8fb8', '#3d7ea8', '#2c5f8d'],
+                    colorMappingBy: 'value',
+                    itemStyle: {
+                        borderColor: '#fff',
+                        borderWidth: 2,
+                        gapWidth: 2
+                    }
+                }
+            ]
         }]
     };
 
     charts.occupations.setOption(option, true);
+
+    // Add click handler for occupation filtering
+    charts.occupations.off('click');  // Remove old handlers
+    charts.occupations.on('click', (params) => {
+        if (params.componentType === 'series') {
+            const occupation = params.name;
+            console.log(`🔍 Filter by occupation: ${occupation}`);
+
+            // Toggle occupation filter
+            if (filterState.filters.occupation === occupation) {
+                // Click same occupation -> remove filter
+                filterState.update({ occupation: null });
+            } else {
+                // Click different occupation -> set filter
+                filterState.update({ occupation: occupation });
+            }
+        }
+    });
 }
 
 // Chart 2: Geografische Zentren
@@ -590,6 +746,24 @@ function renderPlacesChart() {
     };
 
     charts.places.setOption(option, true);
+
+    // Add click handler for place filtering
+    charts.places.off('click');  // Remove old handlers
+    charts.places.on('click', (params) => {
+        if (params.componentType === 'series') {
+            const place = params.name;
+            console.log(`🔍 Filter by place: ${place}`);
+
+            // Toggle place filter
+            if (filterState.filters.place === place) {
+                // Click same place -> remove filter
+                filterState.update({ place: null });
+            } else {
+                // Click different place -> set filter
+                filterState.update({ place: place });
+            }
+        }
+    });
 }
 
 // Chart 3: Generationen
@@ -664,75 +838,7 @@ function renderCohortsChart() {
 }
 
 // Chart 4: Briefaktivität
-function renderActivityChart() {
-    const container = document.getElementById('chart-activity');
-    if (!charts.activity) {
-        charts.activity = echarts.init(container);
-    }
-
-    const filterState = new FilterState();
-    const persons = filterState.getFilteredPersons();
-
-    // Count activity types
-    const senders = persons.filter(p => (p.letter_count || 0) > 0 && (p.mention_count || 0) === 0).length;
-    const mentioned = persons.filter(p => (p.letter_count || 0) === 0 && (p.mention_count || 0) > 0).length;
-    const both = persons.filter(p => (p.letter_count || 0) > 0 && (p.mention_count || 0) > 0).length;
-    const indirect = persons.filter(p => (p.letter_count || 0) === 0 && (p.mention_count || 0) === 0).length;
-
-    const option = {
-        title: {
-            text: `Briefaktivität (${persons.length} Frauen)`,
-            left: 'center',
-            textStyle: { fontSize: 14 }
-        },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: { type: 'shadow' },
-            formatter: (params) => {
-                const name = params[0].name;
-                const value = params[0].value;
-                const percent = ((value / persons.length) * 100).toFixed(1);
-                return `${name}: ${value} (${percent}%)`;
-            }
-        },
-        grid: {
-            left: '10%',
-            right: '10%',
-            top: '15%',
-            bottom: '20%'
-        },
-        xAxis: {
-            type: 'category',
-            data: ['Nur Absenderin', 'Nur Erwähnt', 'Beides', 'Nur SNDB'],
-            axisLabel: {
-                fontSize: 10,
-                rotate: 20
-            }
-        },
-        yAxis: {
-            type: 'value',
-            name: 'Personen'
-        },
-        series: [{
-            type: 'bar',
-            data: [
-                { value: senders, itemStyle: { color: '#2c5f8d' } },
-                { value: mentioned, itemStyle: { color: '#6c757d' } },
-                { value: both, itemStyle: { color: '#2d6a4f' } },
-                { value: indirect, itemStyle: { color: '#adb5bd' } }
-            ],
-            label: {
-                show: true,
-                position: 'top',
-                formatter: '{c}',
-                fontSize: 10
-            },
-            barMaxWidth: 60
-        }]
-    };
-
-    charts.activity.setOption(option, true);
-}
+// Activity chart removed - now using checkboxes in sidebar (Phase 2d)
 
 // Initialize export buttons
 function initExportButtons() {
