@@ -101,8 +101,6 @@ Eine eigenständige Netzwerknavigation als Hauptfunktion, brieforientierte Vollt
 
 **Zeitliche Attribuierung von Orten (offen).** Zeitbezüge von Wirkungsorten sind derzeit nicht in den Quelldaten vorhanden (places-Array enthält nur name, lat, lon, type). Eine zukünftige Integration hängt von erweiterten Exporten ab.
 
-Konkrete Umsetzungsspezifikationen für priorisierte Features siehe [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md).
-
 ---
 
 ## Regressionsschutz und Pflege

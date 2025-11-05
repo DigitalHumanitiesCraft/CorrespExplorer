@@ -1103,6 +1103,31 @@ td.muted {
     transform: translateY(-50%) translateX(0);
 }
 
+/* Tooltips for KPI cards - appear below */
+.stats-cards [data-tooltip]::before {
+    bottom: auto;
+    top: 100%;
+    transform: translateX(-50%) translateY(5px);
+    margin-bottom: 0;
+    margin-top: 8px;
+}
+
+.stats-cards [data-tooltip]::after {
+    bottom: auto;
+    top: 100%;
+    border-top-color: transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.9);
+    transform: translateX(-50%) translateY(5px);
+    margin-bottom: 0;
+    margin-top: 3px;
+}
+
+.stats-cards [data-tooltip]:hover::before,
+.stats-cards [data-tooltip]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 /* Timeline Popup */
 .timeline-popup {
     position: fixed;

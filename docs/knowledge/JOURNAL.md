@@ -4,6 +4,23 @@
 
 ### HerData Journal — Kompaktfassung (gleiche Information, präziser)
 
+## 2025-11-05
+
+### Session 18 — Phase 2 UI-Verbesserungen & KPI-Karten
+
+* **Token-Konsolidierung:** tokens.css als Single Source of Truth; 75 Zeilen Duplikate entfernt aus style.css, network.css, synthesis/styles.css; 8 fehlende Tokens hinzugefügt.
+* **Visuelle Verbesserungen:** Zebra-Streifenmuster in Tabellen; Tabellendichte optimiert (6px 12px Padding); Filter-Labels korrigiert (Absenderin, Erwähnt, Beides, Nur SNDB); redundante "Filter"-Überschriften entfernt.
+* **KPI-Karten Implementation:**
+  * Dynamische KPI-Karten auf Synthesis-Seite (Personen, Briefe, Orte) mit Echtzeit-Filterung.
+  * Clickable KPI-Karten auf beiden Seiten mit Tooltips und Navigation.
+  * Hauptseite: Briefe → stats.html, Frauen → people.html, Orte → places.html.
+  * Synthesis: Briefe → stats.html, Frauen/Orte → index.html.
+  * Tooltip-Positionierung: Unten für obere Elemente (Synthesis KPI-Karten).
+* **Bug-Fixes:** CSS MIME Type Error (Import-Pfad korrigiert); fehlende Navbar auf Synthesis wiederhergestellt; table-count Element-Referenz entfernt.
+* **Dateien:** index.html, synthesis/index.html, synthesis/js/app.js (updateKPIs()), synthesis/css/styles.css (KPI+Tooltip-Styles), tokens.css, style.css, network.css.
+* **Commits:** 6 Commits (Phase 2 UI, CSS-Fixes, KPI clickable, Tooltip-Fix, Filter-Überschriften).
+* **Ergebnis:** Konsistentes Design-System, verbesserte UX durch dynamische KPIs, keine visuellen Regressionen.
+
 ## 2025-11-04
 
 ### Session 3 — Data Model Separation & CSS-Analyse integriert

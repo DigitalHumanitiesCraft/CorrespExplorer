@@ -38,7 +38,7 @@ Die Live-Seite wird aus dem Hauptzweig über den `docs`-Bereich veröffentlicht.
 [responsive_dossier.md](responsive_dossier.md) fasst Diagnose, Zielbild, Maßnahmen-Backlog und Definition of Done für mobile Nutzung zusammen: Navigation, Touch-Interaktion, Zugänglichkeit, Testleitfaden und Abnahmekriterien.
 
 **Implementierung:**
-[implementation-quick-wins.md](implementation-quick-wins.md) enthält strategische Feature-Bewertungen und Priorisierung (archiviert). [IMPLEMENTATION_PLAN.md](../../IMPLEMENTATION_PLAN.md) dokumentiert die 3 implementierten Features: Namensvarianten-Integration (Pipeline), CSV-Export gefilterter Personen (Frontend), dualer Zeitfilter mit Modi "Korrespondenz" (1762-1824) und "Lebensdaten" (1700-1850).
+[implementation-quick-wins.md](implementation-quick-wins.md) enthält strategische Feature-Bewertungen und Priorisierung (archiviert). Alle priorisierten Quick Win Features (Namensvarianten, CSV-Export, dualer Zeitfilter) sind in requirements.md als abgeschlossen dokumentiert.
 
 ## Testing und Qualität
 
