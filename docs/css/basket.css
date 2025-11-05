@@ -93,6 +93,37 @@
     margin-bottom: var(--space-lg, 1.5rem);
 }
 
+/* Overview Statistics */
+.basket-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm, 0.5rem);
+}
+
+.overview-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-sm, 0.5rem);
+    background: var(--color-bg-light, #f8f9fa);
+    border-radius: 4px;
+}
+
+.overview-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #7f8c8d);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+    text-align: center;
+}
+
+.overview-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary, #2c3e50);
+}
+
 /* Actions */
 .basket-actions {
     display: flex;
@@ -102,27 +133,31 @@
 
 .btn-export,
 .btn-clear {
-    padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-    border: 1px solid var(--color-border, #dfe6e9);
+    padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
+    border: 2px solid var(--color-primary, #2c3e50);
     background: white;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-sm, 0.5rem);
     font-size: var(--font-size-base, 1rem);
+    font-weight: 600;
     font-family: inherit;
     transition: all 0.2s;
+    color: var(--color-primary, #2c3e50);
 }
 
 .btn-export:hover {
-    background: var(--color-bg-light, #f8f9fa);
-    border-color: var(--color-primary, #2c3e50);
+    background: var(--color-primary, #2c3e50);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .btn-export:active {
-    transform: translateY(1px);
+    transform: translateY(0);
 }
 
 .btn-clear {
@@ -133,9 +168,38 @@
 .btn-clear:hover {
     background: var(--color-error, #e74c3c);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
 }
 
 /* Person List */
+.basket-list-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm, 0.5rem);
+    margin-bottom: var(--space-md, 1rem);
+}
+
+.basket-list-header h3 {
+    margin-bottom: 0;
+}
+
+.basket-search-input {
+    width: 100%;
+    padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+    border: 1px solid var(--color-border, #dfe6e9);
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.basket-search-input:focus {
+    outline: none;
+    border-color: var(--color-primary, #2c3e50);
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
 .basket-list {
     display: flex;
     flex-direction: column;

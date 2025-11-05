@@ -37,6 +37,24 @@
             <!-- Sidebar: List & Actions -->
             <aside class="basket-sidebar">
                 <div class="basket-section">
+                    <h3>Übersicht</h3>
+                    <div class="basket-overview">
+                        <div class="overview-stat">
+                            <span class="overview-label">Absenderinnen</span>
+                            <span class="overview-value" id="stat-senders">0</span>
+                        </div>
+                        <div class="overview-stat">
+                            <span class="overview-label">Erwähnte</span>
+                            <span class="overview-value" id="stat-mentioned">0</span>
+                        </div>
+                        <div class="overview-stat">
+                            <span class="overview-label">Beziehungen</span>
+                            <span class="overview-value" id="stat-relationships">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="basket-section">
                     <h3>Aktionen</h3>
                     <div class="basket-actions">
                         <button id="export-csv" class="btn-export" title="Exportiere als CSV-Tabelle">
@@ -55,7 +73,16 @@
                 </div>
 
                 <div class="basket-section">
-                    <h3>Gesammelte Personen</h3>
+                    <div class="basket-list-header">
+                        <h3>Gesammelte Personen</h3>
+                        <input
+                            type="text"
+                            id="basket-search"
+                            class="basket-search-input"
+                            placeholder="Person suchen..."
+                            aria-label="Person suchen"
+                        />
+                    </div>
                     <div class="basket-list" id="basket-list">
                         <div class="empty-state">
                             <i class="fas fa-bookmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>

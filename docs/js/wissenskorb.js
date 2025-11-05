@@ -5,6 +5,7 @@ import { loadNavbar } from './navbar-loader.js';
 import { Toast, Download } from './utils.js';
 
 let allPersons = [];
+let searchQuery = '';
 
 // Initialize page
 async function init() {
@@ -45,6 +46,15 @@ function setupEventListeners() {
     document.getElementById('export-csv').addEventListener('click', handleExportCSV);
     document.getElementById('export-json').addEventListener('click', handleExportJSON);
     document.getElementById('clear-basket').addEventListener('click', handleClearAll);
+
+    // Search listener
+    const searchInput = document.getElementById('basket-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase().trim();
+            renderList();
+        });
+    }
 }
 
 // Main render function
@@ -57,11 +67,39 @@ function render() {
 // Render statistics
 function renderStats() {
     const count = BasketManager.getCount();
-    const countDisplay = document.getElementById('basket-count-display');
+    const items = BasketManager.getAll();
 
+    // Update main count
+    const countDisplay = document.getElementById('basket-count-display');
     if (countDisplay) {
         countDisplay.textContent = count;
     }
+
+    // Calculate role statistics
+    let senderCount = 0;
+    let mentionedCount = 0;
+    let relationshipCount = 0;
+
+    items.forEach(person => {
+        if (person.role === 'sender' || person.role === 'both') {
+            senderCount++;
+        }
+        if (person.role === 'mentioned' || person.role === 'both') {
+            mentionedCount++;
+        }
+        if (person.relationships && person.relationships.length > 0) {
+            relationshipCount += person.relationships.length;
+        }
+    });
+
+    // Update overview stats
+    const statSenders = document.getElementById('stat-senders');
+    const statMentioned = document.getElementById('stat-mentioned');
+    const statRelationships = document.getElementById('stat-relationships');
+
+    if (statSenders) statSenders.textContent = senderCount;
+    if (statMentioned) statMentioned.textContent = mentionedCount;
+    if (statRelationships) statRelationships.textContent = relationshipCount;
 }
 
 // Render person list
@@ -69,7 +107,7 @@ function renderList() {
     const container = document.getElementById('basket-list');
     if (!container) return;
 
-    const items = BasketManager.getAll();
+    let items = BasketManager.getAll();
 
     if (items.length === 0) {
         container.innerHTML = `
@@ -85,6 +123,27 @@ function renderList() {
             </div>
         `;
         return;
+    }
+
+    // Apply search filter
+    if (searchQuery) {
+        items = items.filter(person => {
+            const nameMatch = person.name.toLowerCase().includes(searchQuery);
+            const occupationMatch = person.occupations && person.occupations.some(o =>
+                o.name.toLowerCase().includes(searchQuery)
+            );
+            return nameMatch || occupationMatch;
+        });
+
+        if (items.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                    <p>Keine Personen gefunden für "${searchQuery}"</p>
+                </div>
+            `;
+            return;
+        }
     }
 
     // Sort by date added (newest first)
@@ -147,6 +206,21 @@ function renderNetwork() {
             <div class="empty-state">
                 <i class="fas fa-project-diagram" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
                 <p>Fügen Sie Personen hinzu um Beziehungen zu sehen</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Show notice for large collections
+    if (items.length > 100) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-info-circle" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                <p>Netzwerkvisualisierung für ${items.length} Personen</p>
+                <p class="empty-state-hint">
+                    Bei sehr großen Sammlungen kann die Darstellung unübersichtlich werden.
+                    Exportieren Sie die Daten und verwenden Sie spezialisierte Tools wie Gephi oder Cytoscape.
+                </p>
             </div>
         `;
         return;
