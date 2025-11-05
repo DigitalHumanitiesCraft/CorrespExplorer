@@ -16,8 +16,10 @@ Abdeckungen (alle Zahlen auf Basis von 448):
 - 207 Frauen mit Berufsangaben (46,2%)
 - 448 Frauen mit Hauptbiografie (100% aus projekt_regestausgabe.xml)
 - 67 Frauen mit AGRELON-Beziehungen (15,0%, 86 Beziehungseinträge bidirektional)
+- 1.793 Briefe von/mit Frauen (191 Absenderinnen, 230 mit correspondence-Arrays)
 
 CMIF-Gesamtkorpus: 15.312 Briefe (1762-1824), 2.525 Absender, 633 Orte
+HerData-Subset: 1.793 Briefe mit Frauenbezug (11,7% des CMIF-Korpus)
 
 Quelle: persons.json Meta-Feld, generiert 04.11.2025, 290 KB
 

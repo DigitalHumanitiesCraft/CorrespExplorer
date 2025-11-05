@@ -34,7 +34,7 @@ Filter dienen der kontrollierten Eingrenzung entlang weniger, fachlich verständ
 
 ## Dualer Zeitfilter: Korrespondenz vs. Lebensdaten
 
-Der Zeitfilter bietet zwei Modi zur Filterung: "Korrespondenz" (1762-1824, basierend auf Briefjahren) und "Lebensdaten" (1700-1850, basierend auf Geburts-/Todesjahren). Diese Trennung wurde implementiert, weil beide Zeitdimensionen unterschiedliche Forschungsperspektiven ermöglichen: Korrespondenz zeigt aktive Briefwechsel-Perioden, Lebensdaten ermöglichen biografische Eingrenzung unabhängig von erhaltener Korrespondenz. Eine Zusammenführung in einen einzelnen Filter hätte zu Verwirrung geführt, da Personen ohne Briefaktivität (indirect/SNDB-Einträge) nicht ausgefiltert werden sollten. Status: Dual-Modus implementiert auf Karte und Synthesis-Seite mit identischem UI. Effekt: Klarere Forschungsperspektiven, keine ungewollte Exklusion von Personen ohne Briefdaten.
+Der Zeitfilter bietet zwei Modi zur Filterung: "Korrespondenz" (1762-1824, basierend auf Briefjahren) und "Lebensdaten" (1700-1850, basierend auf Geburts-/Todesjahren). Diese Trennung wurde implementiert, weil beide Zeitdimensionen unterschiedliche Forschungsperspektiven ermöglichen: Korrespondenz zeigt aktive Briefwechsel-Perioden, Lebensdaten ermöglichen biografische Eingrenzung unabhängig von erhaltener Korrespondenz. Eine Zusammenführung in einen einzelnen Filter hätte zu Verwirrung geführt, da Personen ohne Briefaktivität (indirect/SNDB-Einträge) nicht ausgefiltert werden sollten. Status: Dual-Modus implementiert auf Karte und Personen-View mit identischem UI. Effekt: Klarere Forschungsperspektiven, keine ungewollte Exklusion von Personen ohne Briefdaten.
 
 ## CSV-Export für gefilterte Daten
 

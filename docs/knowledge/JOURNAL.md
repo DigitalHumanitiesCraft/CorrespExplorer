@@ -6,6 +6,35 @@
 
 ## 2025-11-05
 
+### Session 19 — Navbar-Umstrukturierung & Brief-Explorer Phase 2a
+
+**Navigation:**
+- Navbar umstrukturiert: View-Switcher (Karte | Personen | Brief-Explorer) gruppiert alle Datenansichten links, Dokumentation (Vault | Orte | Download) rechts
+- "Synthese" → "Personen" umbenannt (synthesis/index.html = detaillierte Personentabelle, nicht Synthese-Tool)
+- Index-Dropdown entfernt: people.html gelöscht (redundant zu synthesis/index.html), places.html als direkter Link
+- Navbar-Komponenten: 4 Varianten (navbar.html, navbar-map.html, navbar-synthesis.html, navbar-stats.html)
+
+**Brief-Explorer Phase 2a:**
+- Sidebar-Layout implementiert: KPI-Cards (1.793 Briefe, 448 Frauen, 227 Orte) + Zeitfilter in Sidebar
+- stats-header entfernt, konsistentes Layout mit Karte/Personen-View
+- Zeitfilter-Modi: "Korrespondenz" (1762-1824) vs "Lebensdaten" (1700-1850) mit ECharts dataZoom
+- 2x2 Chart-Grid im Main-Content (Berufe, Timeline, Orte, Generationen)
+
+**Datenkorrektur:**
+- KPI-Briefzahl korrigiert: 15.312 → 1.793 (15.312 = CMIF-Gesamtkorpus, 1.793 = Briefe von/mit Frauen)
+- Klarstellung in data.md: 1.793 Briefe (11,7% des CMIF-Korpus), 191 Absenderinnen, 230 mit correspondence-Arrays
+- KPI-Cards konsistent: Briefe → stats.html, Frauen → synthesis/index.html, Orte → places.html
+
+**Dateien:**
+- Gelöscht: people.html, people.js (redundant)
+- Geändert: 4 Navbar-Komponenten, stats.html, index.html, synthesis/index.html (Title), 3 Knowledge-Vault-Docs (data.md, requirements.md, decisions.md)
+- CSS: stats.css (sidebar timeline styles, Zeilen 385-416)
+
+**Ergebnis:**
+- Klarere Navigation: 3 Datenansichten im View-Switcher, keine Redundanz
+- Korrekte Datenauszeichnung: 1.793 Frauen-Briefe vs. 15.312 CMIF-Gesamt
+- Konsistentes Sidebar-Layout über alle Views
+
 ### Session 18 — Phase 2 UI-Verbesserungen & KPI-Karten
 
 * **Token-Konsolidierung:** tokens.css als Single Source of Truth; 75 Zeilen Duplikate entfernt aus style.css, network.css, synthesis/styles.css; 8 fehlende Tokens hinzugefügt.

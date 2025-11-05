@@ -94,7 +94,7 @@ class FilterState {
 async function init() {
     console.log("📊 Initializing Brief-Explorer (Phase 2a)");
 
-    await loadNavbar();
+    await loadNavbar('stats');
     highlightActiveNavLink();
 
     try {

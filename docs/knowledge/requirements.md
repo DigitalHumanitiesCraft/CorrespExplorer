@@ -43,7 +43,7 @@ Für kulturinteressierte Leserinnen und Leser bietet HerData einen unmittelbaren
 ### 4. Statistische Übersichten
 
 **Anforderung.** Übersichten zu Berufen, Orten und zeitlichen Mustern fassen das Material verständlich zusammen.
-**Erfüllungsgrad.** Erfüllt: Aggregierte Übersichten sind im Brief-Explorer (stats.html) als interaktives Dashboard bereitgestellt (Berufsverteilung, Brief-Timeline, geografische Zentren mit CSV/PNG-Export).
+**Erfüllungsgrad.** Erfüllt: Aggregierte Übersichten sind im Brief-Explorer (stats.html) als interaktives Dashboard bereitgestellt (Berufsverteilung, Brief-Timeline mit 1.793 Briefen von/mit Frauen, geografische Zentren mit CSV/PNG-Export).
 
 ### 5. Kontextuelle Netzwerkhinweise
 
