@@ -1,26 +1,21 @@
 /* HerData Synthesis - Styles */
+@import url('../css/tokens.css');
 
+/* Synthesis-specific aliases for tokens */
 :root {
-    /* Colors matching HerData design */
-    --color-primary: #1e3a5f;
-    --color-sender: #2c5f8d;
-    --color-mentioned: #6c757d;
-    --color-both: #2d6a4f;
-    --color-indirect: #adb5bd;
+    --color-sender: var(--color-role-sender);
+    --color-mentioned: var(--color-role-mentioned);
+    --color-both: var(--color-role-both);
+    --color-indirect: var(--color-role-indirect);
+    --color-bg-alt: var(--color-bg-light);
+    --font-family: var(--font-base);
 
-    --color-bg: #ffffff;
-    --color-bg-alt: #f8f9fa;
-    --color-border: #dee2e6;
-    --color-text: #212529;
-    --color-text-muted: #6c757d;
-
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-
-    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* Spacing aliases for legacy code */
+    --spacing-xs: var(--space-xs);
+    --spacing-sm: var(--space-sm);
+    --spacing-md: var(--space-md);
+    --spacing-lg: var(--space-lg);
+    --spacing-xl: var(--space-xl);
 }
 
 * {
@@ -34,6 +29,131 @@ body {
     color: var(--color-text);
     background: var(--color-bg);
     line-height: 1.6;
+    padding-top: var(--navbar-height);
+}
+
+/* Navbar - Shared with main site */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--navbar-height);
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--space-xl);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+}
+
+.nav-brand {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    margin-right: var(--space-3xl);
+}
+
+.nav-links {
+    display: flex;
+    gap: var(--space-xl);
+    margin-right: var(--space-xl);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: var(--font-size-base);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.nav-link-text {
+    font-weight: 500;
+}
+
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.nav-dropdown-arrow {
+    font-size: 8px;
+    margin-left: 6px;
+    opacity: 0.8;
+    transition: transform 0.2s;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.nav-dropdown.active .nav-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+    margin-top: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.nav-dropdown.active .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-dropdown-item {
+    display: block;
+    padding: var(--space-sm) var(--space-md);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--font-size-base);
+    transition: background 0.2s;
+}
+
+.nav-dropdown-item:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.nav-dropdown-item:last-child {
+    border-radius: 0 0 6px 6px;
+}
+
+.nav-dropdown-item:hover {
+    background: var(--color-bg-secondary);
 }
 
 /* App Container */
@@ -163,6 +283,45 @@ body {
     font-size: 1.2rem;
     margin-bottom: var(--spacing-lg);
     color: var(--color-primary);
+}
+
+/* KPI Cards in Filter Panel */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.stat-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: var(--spacing-md) var(--spacing-sm);
+    text-align: center;
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stat-value {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 2px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
 }
 
 .filter-section {
@@ -325,8 +484,15 @@ body {
 }
 
 .table-info {
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.table-info strong {
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 1.05rem;
 }
 
 .table-wrapper {
@@ -363,7 +529,7 @@ body {
 }
 
 #data-table td {
-    padding: var(--spacing-md);
+    padding: 6px 12px;
     border-bottom: 1px solid var(--color-border);
     font-size: 0.9rem;
 }
@@ -373,8 +539,13 @@ body {
     transition: background 0.15s;
 }
 
+/* Zebra striping for better scannability */
+#data-table tbody tr:nth-child(even) {
+    background: rgba(45, 55, 72, 0.03);
+}
+
 #data-table tbody tr:hover {
-    background: var(--color-bg-alt);
+    background: rgba(45, 55, 72, 0.06);
 }
 
 #data-table tbody tr.selected {
@@ -384,10 +555,11 @@ body {
 /* Role badges */
 .role-badge {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 3px 8px;
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 500;
+    margin-left: 6px;
 }
 
 .role-badge.sender {

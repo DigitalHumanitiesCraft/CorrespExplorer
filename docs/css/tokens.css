@@ -11,12 +11,16 @@
 
     /* Primary Colors - Academic Professional Palette */
     --color-primary: #1e3a5f;        /* Navy Blue - Navigation, Header */
+    --color-primary-dark: #162d47;   /* Darker Navy - Hover states */
     --color-secondary: #2c5f8d;      /* Steel Blue - Links, Highlights */
     --color-accent: #2d6a4f;         /* Forest Green - Success, Both roles */
     --color-text: #2d3748;           /* Dark Gray - Primary text */
     --color-text-light: #6c757d;     /* Medium Gray - Secondary text */
+    --color-text-secondary: #6c757d; /* Alias for text-light */
+    --color-text-muted: #6c757d;     /* Alias for text-light */
     --color-bg: #ffffff;             /* White - Main background */
     --color-bg-light: #f8f9fa;       /* Light Gray - Secondary background */
+    --color-bg-secondary: #f8f9fa;   /* Alias for bg-light */
     --color-border: #dee2e6;         /* Border color */
 
     /* Functional Colors */
@@ -36,6 +40,12 @@
     --color-badge-gnd-bg: #d8f3dc;   /* Light green background */
     --color-badge-sndb: #9b6b00;     /* Gold text */
     --color-badge-sndb-bg: #fff3cd;  /* Light yellow background */
+
+    /* Relationship Colors (AGRELON Network) */
+    --color-relation-family: #ff0066;      /* Pink - Family relationships */
+    --color-relation-professional: #00ccff; /* Cyan - Professional relationships */
+    --color-relation-social: #ffcc00;      /* Yellow - Social relationships */
+    --color-badge-relation: #ff0066;       /* Default relation badge color */
 
     /* ========================================
      * TYPOGRAPHY
@@ -78,8 +88,10 @@
      * ======================================== */
 
     /* Layout Constants */
-    --sidebar-width: 280px;
+    --sidebar-width: 320px;
     --navbar-height: 60px;
+    --max-width-content: 1200px;  /* Standard content max-width */
+    --max-width-wide: 1400px;     /* Wide content max-width */
 
     /* ========================================
      * RESPONSIVE BREAKPOINTS

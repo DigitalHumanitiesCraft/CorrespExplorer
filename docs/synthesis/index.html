@@ -8,7 +8,7 @@
     <!-- noUiSlider CSS -->
     <link rel="stylesheet" href="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.css" />
 
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tokens.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -22,6 +22,22 @@
             <!-- Left: Filter Panel -->
             <aside class="filter-panel">
                 <h2>Filter</h2>
+
+                <!-- KPI Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-value" id="kpi-persons">448</div>
+                        <div class="stat-label">Frauen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="kpi-letters">15.312</div>
+                        <div class="stat-label">Briefe</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="kpi-places">227</div>
+                        <div class="stat-label">Orte</div>
+                    </div>
+                </div>
 
                 <div class="filter-section">
                     <h3>Suche</h3>
@@ -65,12 +81,6 @@
 
             <!-- Center: Data Table -->
             <section class="data-table-container">
-                <div class="table-controls">
-                    <div class="table-info">
-                        <span id="table-count">448 Einträge</span>
-                    </div>
-                </div>
-
                 <div class="table-wrapper">
                     <table id="data-table">
                         <thead>

@@ -1,57 +1,5 @@
-/* Design System Variables - Academic Professional */
-:root {
-    /* Primary Colors */
-    --color-primary: #1e3a5f;        /* Navy Blue - Navigation, Header */
-    --color-secondary: #2c5f8d;      /* Steel Blue - Links, Highlights */
-    --color-accent: #2d6a4f;         /* Forest Green - Success, Both roles */
-    --color-text: #2d3748;           /* Dark Gray - Text */
-    --color-text-light: #6c757d;     /* Medium Gray - Secondary text */
-    --color-bg: #ffffff;             /* White - Main background */
-    --color-bg-light: #f8f9fa;       /* Light Gray - Secondary background */
-    --color-border: #dee2e6;         /* Border color */
-
-    /* Functional Colors */
-    --color-success: #2d6a4f;        /* Forest Green */
-    --color-info: #0077b6;           /* Academic Blue */
-    --color-warning: #9b6b00;        /* Dark Gold */
-    --color-error: #9b2226;          /* Dark Red */
-
-    /* Role Colors (Map/Network) */
-    --color-role-sender: #2c5f8d;    /* Steel Blue - Absenderin */
-    --color-role-mentioned: #6c757d; /* Medium Gray - Erwähnt */
-    --color-role-both: #2d6a4f;      /* Forest Green - Beide */
-    --color-role-indirect: #adb5bd;  /* Light Gray - Indirekt */
-
-    /* Badge Colors */
-    --color-badge-gnd: #2d6a4f;      /* Green text */
-    --color-badge-gnd-bg: #d8f3dc;   /* Light green background */
-    --color-badge-sndb: #9b6b00;     /* Gold text */
-    --color-badge-sndb-bg: #fff3cd;  /* Light yellow background */
-
-    /* Typography */
-    --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-size-sm: 12px;
-    --font-size-base: 14px;
-    --font-size-md: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 24px;
-    --font-size-2xl: 32px;
-    --font-size-3xl: 48px;
-
-    /* Spacing */
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 12px;
-    --space-lg: 16px;
-    --space-xl: 24px;
-    --space-2xl: 32px;
-    --space-3xl: 48px;
-    --space-4xl: 64px;
-
-    /* Layout */
-    --sidebar-width: 280px;
-    --navbar-height: 60px;
-}
+/* Import Design Tokens */
+@import url('tokens.css');
 
 /* Reset */
 * {
@@ -213,7 +161,7 @@ body {
     width: var(--sidebar-width);
     background: var(--color-bg);
     border-right: 1px solid var(--color-border);
-    padding: var(--space-xl);
+    padding: var(--space-2xl) var(--space-xl);
     overflow-y: auto;
 }
 
@@ -1298,22 +1246,29 @@ body {
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 6px;
-    padding: 12px 8px;
+    padding: var(--space-lg) var(--space-sm);
     text-align: center;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .stat-value {
-    font-size: 20px;
+    font-size: var(--font-size-xl);
     font-weight: 700;
     color: var(--color-primary);
-    margin-bottom: 4px;
+    margin-bottom: var(--space-xs);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
 }
 
 .stat-label {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     color: var(--color-text-light);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    line-height: 1.4;
 }
 
 /* Clickable Stat Cards */

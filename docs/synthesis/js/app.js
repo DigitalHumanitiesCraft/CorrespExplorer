@@ -632,8 +632,46 @@ window.expandBio = function(personId, fullText) {
 
 // Update statistics
 function updateStatistics() {
-    // Statistics are no longer displayed in a separate tab
-    // This function is kept for potential future use
+    updateKPIs();
+}
+
+// Update KPI cards with filtered data
+function updateKPIs() {
+    const filteredCount = state.filteredPersons.length;
+
+    // Calculate total letters from filtered persons
+    const totalLetters = state.filteredPersons.reduce((sum, person) => {
+        return sum + (person.letter_count || 0);
+    }, 0);
+
+    // Calculate unique places from filtered persons
+    const uniquePlaces = new Set();
+    state.filteredPersons.forEach(person => {
+        if (person.places && person.places.length > 0) {
+            person.places.forEach(place => {
+                if (place.name) {
+                    uniquePlaces.add(place.name);
+                }
+            });
+        }
+    });
+
+    // Update KPI display
+    const personsEl = document.getElementById('kpi-persons');
+    const lettersEl = document.getElementById('kpi-letters');
+    const placesEl = document.getElementById('kpi-places');
+
+    if (personsEl) {
+        personsEl.textContent = filteredCount.toLocaleString('de-DE');
+    }
+
+    if (lettersEl) {
+        lettersEl.textContent = totalLetters.toLocaleString('de-DE');
+    }
+
+    if (placesEl) {
+        placesEl.textContent = uniquePlaces.size.toLocaleString('de-DE');
+    }
 }
 
 // Export to CSV
