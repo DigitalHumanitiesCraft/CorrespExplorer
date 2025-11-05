@@ -426,6 +426,10 @@ function drawConnectionLines(connections) {
         id: 'connection-lines',
         type: 'line',
         source: 'connections',
+        layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+        },
         paint: {
             'line-color': [
                 'match',
@@ -439,20 +443,63 @@ function drawConnectionLines(connections) {
                 'interpolate',
                 ['linear'],
                 ['get', 'count'],
-                1, 4,    // 1 connection = 4px (increased from 3)
-                5, 6,    // 5 connections = 6px (increased from 5)
-                10, 8,   // 10 connections = 8px (increased from 7)
-                20, 12   // 20+ connections = 12px (increased from 10)
+                1, 3,     // 1 connection = 3px
+                2, 5,     // 2 connections = 5px
+                3, 7,     // 3 connections = 7px
+                5, 10,    // 5 connections = 10px
+                10, 14,   // 10 connections = 14px
+                20, 20    // 20+ connections = 20px
             ],
-            'line-opacity': 0.9  // Increased from 0.8 for maximum visibility
+            'line-opacity': [
+                'interpolate',
+                ['linear'],
+                ['get', 'count'],
+                1, 0.7,   // 1 connection = 70% opacity
+                3, 0.8,   // 3 connections = 80% opacity
+                5, 0.9,   // 5+ connections = 90% opacity
+                10, 1.0   // 10+ connections = 100% opacity
+            ]
         }
     }, 'persons-layer'); // Insert below markers
+
+    // Add label layer for connection counts (only if count > 1)
+    map.addLayer({
+        id: 'connection-labels',
+        type: 'symbol',
+        source: 'connections',
+        filter: ['>', ['get', 'count'], 1],
+        layout: {
+            'text-field': ['get', 'count'],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 11,
+            'symbol-placement': 'line-center',
+            'text-rotation-alignment': 'map',
+            'text-pitch-alignment': 'viewport'
+        },
+        paint: {
+            'text-color': '#ffffff',
+            'text-halo-color': [
+                'match',
+                ['get', 'category'],
+                'Familie', getConnectionColor('Familie'),
+                'Beruflich', getConnectionColor('Beruflich'),
+                'Sozial', getConnectionColor('Sozial'),
+                '#666666'
+            ],
+            'text-halo-width': 2,
+            'text-halo-blur': 1,
+            'text-opacity': 0.9
+        }
+    })
 
     currentConnections = filtered;
 }
 
 // Clear connection lines from map
 function clearConnectionLines() {
+    if (map.getLayer('connection-labels')) {
+        map.removeLayer('connection-labels');
+    }
     if (map.getLayer('connection-lines')) {
         map.removeLayer('connection-lines');
     }
