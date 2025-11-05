@@ -43,7 +43,7 @@ Für kulturinteressierte Leserinnen und Leser bietet HerData einen unmittelbaren
 ### 4. Statistische Übersichten
 
 **Anforderung.** Übersichten zu Berufen, Orten und zeitlichen Mustern fassen das Material verständlich zusammen.
-**Erfüllungsgrad.** Erfüllt: Aggregierte Übersichten sind in stats.html als interaktives Dashboard bereitgestellt (Berufsverteilung, Brief-Timeline, geografische Zentren mit CSV/PNG-Export).
+**Erfüllungsgrad.** Erfüllt: Aggregierte Übersichten sind im Brief-Explorer (stats.html) als interaktives Dashboard bereitgestellt (Berufsverteilung, Brief-Timeline, geografische Zentren mit CSV/PNG-Export).
 
 ### 5. Kontextuelle Netzwerkhinweise
 
@@ -53,7 +53,7 @@ Für kulturinteressierte Leserinnen und Leser bietet HerData einen unmittelbaren
 ### 6. Zeitliche Perspektiven
 
 **Anforderung.** Kohorten- und Lebenszeit-Blicke sind möglich; brieforientierte Chronologien sind ergänzend vorgesehen, sobald die Metadaten auf Personenebene vorliegen.
-**Erfüllungsgrad.** Erfüllt: Lebenszeit-Daten (birth/death) sind für 421 Frauen (94,0%) vorhanden. Brieforientierte Chronologien sind bereits vollständig integriert: 230 Frauen haben detaillierte correspondence-Arrays mit type, letter_id, recipient, date, year, place, recipient_gnd. Die Brief-Timeline ist in stats.html visuell verfügbar.
+**Erfüllungsgrad.** Erfüllt: Lebenszeit-Daten (birth/death) sind für 421 Frauen (94,0%) vorhanden. Brieforientierte Chronologien sind bereits vollständig integriert: 230 Frauen haben detaillierte correspondence-Arrays mit type, letter_id, recipient, date, year, place, recipient_gnd. Die Brief-Timeline ist im Brief-Explorer (stats.html) visuell verfügbar.
 
 ### 7. Provenance und Unsicherheit
 

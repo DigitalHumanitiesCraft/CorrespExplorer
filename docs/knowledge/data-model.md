@@ -262,7 +262,7 @@ Year-Range-Filter:
 
 ## Aggregierte Datenstrukturen
 
-### stats.html Aggregationen
+### Brief-Explorer Aggregationen
 
 Top-Berufe:
 ```javascript

@@ -238,13 +238,13 @@ Aktuelle Navigation: 2 Seiten (statt 7 geplanter)
 
 - index.html: Interaktive Karte (Haupteinstieg)
 - person.html: Personenprofil
-- stats.html: Statistische Analysen (neu, nicht im Zielbild)
+- stats.html: Brief-Explorer (neu, nicht im Zielbild)
 
 Nicht implementiert: Briefe, Orte, Netzwerk, Stories, Daten/API als separate Seiten.
 
 Begründung: MVP-Fokus auf Kern-Use-Cases (Person finden, räumlich erkunden, quantitativ verstehen). Briefdetail, Ortsprofil und Netzwerkansicht als separierte Seiten wurden zugunsten kontextueller Integration zurückgestellt.
 
-#### 13.1.2 Statistik-Dashboard (neu)
+#### 13.1.2 Brief-Explorer (neu)
 
 Nicht im ursprünglichen Design, aber implementiert zur Unterstützung von Nutzeranforderung "Schnell Überblick gewinnen".
 
@@ -311,7 +311,7 @@ Begründung: Kognitive Last reduzieren; alle Informationen auf einer Seite scrol
 Struktur:
 1. Header: Name, Lebensdaten, Rolle-Badge, GND/SNDB-Links (inline, nicht große Boxen)
 2. Biography Card: SNDB Regestausgabe (Fließtext)
-3. Correspondence Card: Statistiken (Sent/Mentioned), visuelle Indikatoren
+3. Correspondence Card: Übersichten (Sent/Mentioned), visuelle Indikatoren
 4. Locations Card: Mini-Karte mit Wirkungsorten
 5. Occupations Card: Liste mit SNDB-Links
 6. Data Quality Card: Icons (✓/✗/i), Transparency-First
@@ -368,7 +368,7 @@ Begründung (ADR-005, revidiert in Session 10):
 - Timeline als Visualisierung (read-only) schwer mit Filtern kombinierbar
 - Brushing-Paradigma für Laien-Nutzer ungewohnt
 - Konsistenz: Alle Filter in Sidebar (Rolle, Beruf, Zeit)
-- Timeline-Daten jetzt im Statistik-Dashboard (Brief-Timeline Chart)
+- Timeline-Daten jetzt im Brief-Explorer (Brief-Timeline Chart)
 
 #### 13.2.2 Netzwerk als primäre Ansicht
 
@@ -392,7 +392,7 @@ Zukünftige Reaktivierung möglich mit:
 
 Zielbild: 7 Hauptnavigationspunkte
 
-Implementiert: 2 Seiten (index.html, person.html) + 1 Dashboard (stats.html)
+Implementiert: 2 Seiten (index.html, person.html) + 1 Dashboard (Brief-Explorer / stats.html)
 
 Begründung:
 - Stories: Redaktioneller Aufwand (Kuration), keine Inhalte vorhanden
@@ -480,7 +480,7 @@ Rationale:
 - 480px: Small Phones (iPhone SE)
 - 768px: Tablets (iPad Portrait)
 - 1024px: Small Laptops
-- 1200px: Desktops (Statistik-Grid 2-Spalten)
+- 1200px: Desktops (Brief-Explorer Grid 2-Spalten)
 - 1400px: Large Screens
 
 Verwendung:
@@ -514,7 +514,7 @@ Organismen (implementiert):
 Templates (implementiert):
 - Map Explorer (index.html): Navbar + Sidebar + Map Canvas
 - Person Profile (person.html): Navbar + Card Grid
-- Stats Dashboard (stats.html): Navbar + Stats Grid
+- Brief-Explorer (stats.html): Navbar + Sidebar + Stats Grid
 
 Nicht implementiert: Briefliste, Netzwerk-Canvas, Mini-Karte in Tooltips.
 
@@ -545,11 +545,11 @@ Ist-Stand (3 Seiten):
 ```
 Karte (index.html) ←→ Personenprofil (person.html)
                 ↓
-        Statistik (stats.html)
+        Brief-Explorer (stats.html)
 ```
 
 Navigationselemente:
-- Navbar: Brand (→ index.html) + Search + Statistik-Link + Live-Counter
+- Navbar: Brand (→ index.html) + Search + Brief-Explorer-Link + Live-Counter
 - Map Popups: Person-Links (→ person.html?id=...)
 - Person Pages: Zurück-Link (→ index.html)
 
@@ -633,14 +633,14 @@ Design Decisions:
 1. MVP-Fokus überzeugt: 3 Seiten (statt 7) decken Top-3-Tasks ab
    - Person finden: Global Search ✓
    - Räume erkunden: Kartenansicht ✓
-   - Quantitativ verstehen: Statistik-Dashboard ✓
+   - Quantitativ verstehen: Brief-Explorer ✓
 
 2. Card-Layout > Tabs: Alle Informationen sichtbar ohne Klicks
    - Kognitive Last niedriger
    - SEO-freundlicher
    - Mobile-optimiert (scrollbar)
 
-3. Statistik-Dashboard als Hybrid-Lösung: Vollständige Seite besser als eingebettete Mini-Charts
+3. Brief-Explorer als Hybrid-Lösung: Vollständige Seite besser als eingebettete Mini-Charts
    - Export-Funktionalität zentral
    - Detailtiefe ermöglicht
    - Druckbar für Publikationen
@@ -678,7 +678,7 @@ Datenkonflikte:
 Nutzerfeedback-Integration:
 
 - Timeline-Entfernung (Session 10): Brushing-Paradigma zu ungewohnt
-- Statistik-Dashboard (Session 14): Nachfrage nach quantitativen Analysen
+- Brief-Explorer (Session 14): Nachfrage nach quantitativen Analysen
 - Person-Page-UX (Session 13): Große GND-Boxen zu dominant
 
 --- 

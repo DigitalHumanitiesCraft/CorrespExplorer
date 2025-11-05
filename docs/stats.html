@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Statistische Analysen der 448 Frauen in Goethes Briefkorrespondenz">
-    <title>Statistik - HerData</title>
+    <meta name="description" content="Interaktive Analyse der 448 Frauen in Goethes Briefkorrespondenz">
+    <title>Brief-Explorer - HerData</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
     <link rel="stylesheet" href="css/style.css">
@@ -15,35 +15,45 @@
     <!-- Global Navigation Placeholder -->
     <div id="navbar-placeholder"></div>
 
-    <!-- Main Dashboard Container -->
-    <div class="stats-page">
-        <header class="stats-header">
-            <div class="stats-header-content">
-                <h1>Brief-Explorer</h1>
-                <p class="stats-subtitle">Interaktive Analyse der 448 Frauen im Goethe-Netzwerk</p>
-            </div>
-        </header>
+    <!-- Main Container -->
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Sidebar with Timeline Filter -->
+            <aside class="sidebar" role="complementary" aria-label="Filteroptionen">
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <a href="index.html" class="stat-card stat-card-clickable" data-tooltip="Zur Kartenansicht">
+                        <div class="stat-value">15.312</div>
+                        <div class="stat-label">Briefe</div>
+                    </a>
+                    <a href="people.html" class="stat-card stat-card-clickable" data-tooltip="Zur Personenliste">
+                        <div class="stat-value">448</div>
+                        <div class="stat-label">Frauen</div>
+                    </a>
+                    <a href="places.html" class="stat-card stat-card-clickable" data-tooltip="Zur Ortsliste">
+                        <div class="stat-value">227</div>
+                        <div class="stat-label">Orte</div>
+                    </a>
+                </div>
 
-        <main class="explorer-container">
-            <!-- Master Timeline (Full Width) -->
-            <section class="explorer-timeline">
-                <div class="timeline-header">
-                    <h2>Zeitfilter</h2>
+                <!-- Timeline Filter in Sidebar -->
+                <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
+                    <h4 id="filter-time-heading">Zeitfilter</h4>
                     <div class="timeline-mode-toggle">
-                        <button class="mode-btn active" data-mode="correspondence">Korrespondenz (1762-1824)</button>
-                        <button class="mode-btn" data-mode="lifespan">Lebensdaten (1700-1850)</button>
+                        <button class="mode-btn active" data-mode="correspondence">Korrespondenz</button>
+                        <button class="mode-btn" data-mode="lifespan">Lebensdaten</button>
+                    </div>
+                    <div id="master-timeline" class="timeline-chart-sidebar"></div>
+                    <div class="timeline-info-sidebar">
+                        <span id="timeline-selection">Gesamter Zeitraum</span>
+                        <button id="reset-timeline" class="btn-reset-small">Zurücksetzen</button>
                     </div>
                 </div>
-                <div class="timeline-body">
-                    <div id="master-timeline" class="timeline-chart"></div>
-                    <div class="timeline-info">
-                        <span id="timeline-selection">Gesamter Zeitraum ausgewählt</span>
-                        <button id="reset-timeline" class="btn-reset">Zurücksetzen</button>
-                    </div>
-                </div>
-            </section>
+            </aside>
 
-            <!-- 2x2 Grid for Charts -->
+            <!-- Main Content -->
+            <main class="main-content explorer-main" role="main">
+                <!-- 2x2 Grid for Charts -->
             <div class="explorer-grid">
                 <!-- Chart 1: Berufsverteilung -->
                 <section class="explorer-card">
@@ -106,6 +116,7 @@
                 </section>
             </div>
         </main>
+        </div>
 
         <footer class="stats-footer">
             <p>Datenstand: SNDB Oktober 2025 | 448 Frauen | 15.312 Briefe</p>

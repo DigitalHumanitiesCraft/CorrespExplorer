@@ -382,6 +382,39 @@
     padding: var(--space-lg);
 }
 
+/* Sidebar Timeline Styles */
+.timeline-chart-sidebar {
+    width: 100%;
+    height: 180px;
+    margin: var(--space-md) 0;
+}
+
+.timeline-info-sidebar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.btn-reset-small {
+    background: var(--color-bg-light);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-reset-small:hover {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
 /* Responsive for Explorer Layout */
 @media (max-width: 1200px) {
     .explorer-grid {
