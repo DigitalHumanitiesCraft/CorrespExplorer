@@ -4,6 +4,7 @@
 import { loadPersons } from "./data.js";
 import { loadNavbar } from "./navbar-loader.js";
 import { GlobalSearch } from "./search.js";
+import { Toast } from "./utils.js";
 
 // Global state
 let allPersons = [];
@@ -1005,7 +1006,7 @@ function initBasketButton() {
         const filteredPersons = filterState.getFilteredPersons();
 
         if (filteredPersons.length === 0) {
-            showToast('Keine gefilterten Personen zum Hinzufügen', 'warning');
+            Toast.show('Keine gefilterten Personen zum Hinzufügen', 'warning');
             return;
         }
 
@@ -1028,38 +1029,15 @@ function initBasketButton() {
                 ? `1 Person zum Wissenskorb hinzugefügt`
                 : `${added} Personen zum Wissenskorb hinzugefügt`;
             const extra = skipped > 0 ? ` (${skipped} bereits im Korb)` : '';
-            showToast(message + extra);
+            Toast.show(message + extra);
         } else {
-            showToast('Alle Personen bereits im Wissenskorb', 'info');
+            Toast.show('Alle Personen bereits im Wissenskorb', 'info');
         }
 
         console.log(`🧺 Added ${added} persons to basket (${skipped} skipped)`);
     });
 
     console.log('✅ Basket button initialized');
-}
-
-// Show toast notification
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-
-    const icon = document.createElement('i');
-    icon.className = type === 'success' ? 'fas fa-check-circle' :
-                     type === 'warning' ? 'fas fa-exclamation-triangle' :
-                     type === 'error' ? 'fas fa-times-circle' :
-                     'fas fa-info-circle';
-    toast.prepend(icon);
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add('show'), 10);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
 }
 
 // Show error message

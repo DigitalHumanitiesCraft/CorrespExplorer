@@ -2,6 +2,7 @@
 // Displays and manages the user's collection of persons
 
 import { loadNavbar } from './navbar-loader.js';
+import { Toast, Download } from './utils.js';
 
 let allPersons = [];
 
@@ -383,7 +384,7 @@ function handleRemovePerson(personId) {
 
     if (confirm(`${person.name} aus dem Wissenskorb entfernen?`)) {
         BasketManager.remove(personId);
-        showToast(`${person.name} entfernt`);
+        Toast.show(`${person.name} entfernt`);
     }
 }
 
@@ -392,12 +393,12 @@ function handleExportCSV() {
     const csv = BasketManager.exportAsCSV();
 
     if (!csv) {
-        showToast('Wissenskorb ist leer', 'warning');
+        Toast.show('Wissenskorb ist leer', 'warning');
         return;
     }
 
-    downloadFile(csv, 'wissenskorb.csv', 'text/csv');
-    showToast(`${BasketManager.getCount()} Personen als CSV exportiert`);
+    Download.file(csv, 'wissenskorb.csv', 'text/csv');
+    Toast.show(`${BasketManager.getCount()} Personen als CSV exportiert`);
 }
 
 // Handle export JSON
@@ -405,12 +406,12 @@ function handleExportJSON() {
     const json = BasketManager.exportAsJSON();
 
     if (!json) {
-        showToast('Wissenskorb ist leer', 'warning');
+        Toast.show('Wissenskorb ist leer', 'warning');
         return;
     }
 
-    downloadFile(json, 'wissenskorb.json', 'application/json');
-    showToast(`${BasketManager.getCount()} Personen als JSON exportiert`);
+    Download.file(json, 'wissenskorb.json', 'application/json');
+    Toast.show(`${BasketManager.getCount()} Personen als JSON exportiert`);
 }
 
 // Handle clear all
@@ -418,50 +419,14 @@ function handleClearAll() {
     const count = BasketManager.getCount();
 
     if (count === 0) {
-        showToast('Wissenskorb ist bereits leer', 'info');
+        Toast.show('Wissenskorb ist bereits leer', 'info');
         return;
     }
 
     if (confirm(`Alle ${count} Personen aus dem Wissenskorb entfernen?`)) {
         BasketManager.clear();
-        showToast('Wissenskorb geleert');
+        Toast.show('Wissenskorb geleert');
     }
-}
-
-// Download file helper
-function downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-}
-
-// Show toast notification
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-
-    const icon = document.createElement('i');
-    icon.className = type === 'success' ? 'fas fa-check-circle' :
-                     type === 'warning' ? 'fas fa-exclamation-triangle' :
-                     type === 'error' ? 'fas fa-times-circle' :
-                     'fas fa-info-circle';
-    toast.prepend(icon);
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add('show'), 10);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
 }
 
 // Initialize on DOM ready

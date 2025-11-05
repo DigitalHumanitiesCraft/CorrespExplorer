@@ -3,6 +3,7 @@
 import { loadPersons, getPersonById } from './data.js';
 import { loadNavbar } from './navbar-loader.js';
 import { GlobalSearch } from './search.js';
+import { Toast } from './utils.js';
 
 let currentPerson = null;
 let allPersons = [];
@@ -642,10 +643,10 @@ function initBasketButton() {
 
         if (inBasket) {
             BasketManager.remove(currentPerson.id);
-            showToast(`${currentPerson.name} aus Wissenskorb entfernt`);
+            Toast.show(`${currentPerson.name} aus Wissenskorb entfernt`);
         } else {
             BasketManager.add(currentPerson);
-            showToast(`${currentPerson.name} zum Wissenskorb hinzugefügt`);
+            Toast.show(`${currentPerson.name} zum Wissenskorb hinzugefügt`);
         }
 
         updateBasketButton();
@@ -672,29 +673,6 @@ function updateBasketButton() {
         basketBtn.title = 'Zum Wissenskorb hinzufügen';
         basketBtnText.textContent = 'Zum Wissenskorb';
     }
-}
-
-// Show toast notification
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-
-    const icon = document.createElement('i');
-    icon.className = type === 'success' ? 'fas fa-check-circle' :
-                     type === 'warning' ? 'fas fa-exclamation-triangle' :
-                     type === 'error' ? 'fas fa-times-circle' :
-                     'fas fa-info-circle';
-    toast.prepend(icon);
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => toast.classList.add('show'), 10);
-
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
 }
 
 // Show error message
