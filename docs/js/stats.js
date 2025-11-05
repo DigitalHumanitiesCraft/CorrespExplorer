@@ -502,15 +502,11 @@ function initCharts() {
     renderPlacesChart();
     renderCohortsChart();
 
-    // Connect charts for coordinated tooltips and highlights
-    echarts.connect([
-        charts.masterTimeline,
-        charts.occupations,
-        charts.places,
-        charts.cohorts
-    ]);
+    // Note: echarts.connect() removed because coordinated highlighting
+    // doesn't make sense between different chart types (treemap vs bar charts)
+    // with semantically unrelated data (occupations vs places vs cohorts)
 
-    console.log('📊 Charts connected for linked brushing');
+    console.log('📊 Charts initialized');
 }
 
 // Update all charts with filtered data
