@@ -71,6 +71,27 @@ body {
     font-weight: 500;
 }
 
+/* Basket badge in navbar */
+.nav-link-basket {
+    position: relative;
+}
+
+.nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--color-accent, #e74c3c);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    line-height: 1;
+    min-width: 18px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 /* Navbar Dropdown */
 .nav-dropdown {
     position: relative;

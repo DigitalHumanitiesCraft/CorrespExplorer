@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wissenskorb - Sammlung ausgewählter Personen für vergleichende Analyse">
+    <title>Wissenskorb - HerData</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/basket.css">
+</head>
+<body>
+    <!-- Global Navigation Placeholder -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Container -->
+    <div class="basket-container">
+        <header class="basket-header">
+            <div>
+                <h1>Wissenskorb</h1>
+                <p class="basket-subtitle">Ihre persönliche Sammlung für vergleichende Analysen</p>
+            </div>
+            <div class="basket-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="basket-count-display">0</span>
+                    <span class="stat-label">Personen</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="basket-main">
+            <!-- Sidebar: List & Actions -->
+            <aside class="basket-sidebar">
+                <div class="basket-section">
+                    <h3>Aktionen</h3>
+                    <div class="basket-actions">
+                        <button id="export-csv" class="btn-export" title="Exportiere als CSV-Tabelle">
+                            <i class="fas fa-file-csv"></i>
+                            <span>CSV Export</span>
+                        </button>
+                        <button id="export-json" class="btn-export" title="Exportiere als JSON-Datei">
+                            <i class="fas fa-file-code"></i>
+                            <span>JSON Export</span>
+                        </button>
+                        <button id="clear-basket" class="btn-clear" title="Alle Personen aus dem Korb entfernen">
+                            <i class="fas fa-trash"></i>
+                            <span>Alle entfernen</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="basket-section">
+                    <h3>Gesammelte Personen</h3>
+                    <div class="basket-list" id="basket-list">
+                        <div class="empty-state">
+                            <i class="fas fa-bookmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                            <p>Noch keine Personen im Wissenskorb</p>
+                            <p class="empty-state-hint">
+                                Fügen Sie Personen aus der
+                                <a href="index.html">Karte</a>,
+                                <a href="synthesis/index.html">Personenliste</a> oder dem
+                                <a href="stats.html">Brief-Explorer</a> hinzu.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content: Visualizations -->
+            <section class="basket-content">
+                <div class="basket-section">
+                    <h2>Beziehungsnetzwerk</h2>
+                    <p class="section-description">
+                        Visualisierung der Verbindungen zwischen den Personen in Ihrer Sammlung
+                    </p>
+                    <div id="network-graph" class="network-container">
+                        <div class="empty-state">
+                            <i class="fas fa-project-diagram" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                            <p>Fügen Sie Personen hinzu um Beziehungen zu sehen</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Help Section -->
+        <footer class="basket-footer">
+            <div class="help-box">
+                <h4><i class="fas fa-question-circle"></i> Wie verwende ich den Wissenskorb?</h4>
+                <ul>
+                    <li>Sammeln Sie Personen aus verschiedenen Ansichten durch Klick auf das Lesezeichen-Icon</li>
+                    <li>Maximal 50 Personen können gleichzeitig gespeichert werden</li>
+                    <li>Das Beziehungsnetzwerk zeigt nur Verbindungen zwischen Personen im Korb</li>
+                    <li>Exportieren Sie Ihre Auswahl für externe Analysen</li>
+                    <li>Ihre Sammlung bleibt im Browser gespeichert und ist bei jedem Besuch verfügbar</li>
+                </ul>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Load basket manager first -->
+    <script src="js/basket-manager.js"></script>
+    <!-- Then load page logic -->
+    <script type="module" src="js/wissenskorb.js"></script>
+</body>
+</html>
