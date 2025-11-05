@@ -16,9 +16,9 @@ export function getPersonConnections(person, allPersons) {
     }
 
     // 1. AGRELON relationships (family, professional, social)
-    if (person.relations && Array.isArray(person.relations)) {
-        person.relations.forEach(relation => {
-            const targetPerson = allPersons.find(p => p.id === relation.target);
+    if (person.relationships && Array.isArray(person.relationships)) {
+        person.relationships.forEach(relation => {
+            const targetPerson = allPersons.find(p => p.id === relation.target_id);
 
             if (targetPerson && targetPerson.places && targetPerson.places.length > 0) {
                 const targetPlace = targetPerson.places[0];
@@ -26,7 +26,7 @@ export function getPersonConnections(person, allPersons) {
                 connections.push({
                     type: 'agrelon',
                     subtype: relation.type,
-                    category: categorizeRelationByAgrelonId(relation.agrelon_id),
+                    category: categorizeRelationByAgrelonId(relation.type_id),
                     person: targetPerson,
                     from: {
                         lat: person.places[0].lat,
