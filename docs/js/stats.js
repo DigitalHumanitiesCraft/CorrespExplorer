@@ -112,6 +112,7 @@ async function init() {
             console.log("🔄 Filters updated:", filters);
             updateAllCharts();
             updateChartNotes();
+            updateFilterChips();
         });
 
         initSearch();
@@ -322,12 +323,78 @@ function updateTimelineSelection(start, end) {
     }
 }
 
+// Update filter chips display
+function updateFilterChips() {
+    const filterState = new FilterState();
+    const { timeRange, timeMode } = filterState.filters;
+
+    const activeFiltersDiv = document.getElementById('active-filters');
+    const filterChipsDiv = document.getElementById('filter-chips');
+
+    if (!activeFiltersDiv || !filterChipsDiv) return;
+
+    // Clear existing chips
+    filterChipsDiv.innerHTML = '';
+
+    const chips = [];
+
+    // Add time range chip if active
+    if (timeRange) {
+        const modeLabel = timeMode === 'correspondence' ? 'Korrespondenz' : 'Lebensdaten';
+        chips.push({
+            label: `${timeRange.start}–${timeRange.end} (${modeLabel})`,
+            onRemove: () => {
+                filterState.reset();
+                // Reset dataZoom slider
+                if (charts.masterTimeline) {
+                    charts.masterTimeline.dispatchAction({
+                        type: 'dataZoom',
+                        start: 0,
+                        end: 100
+                    });
+                }
+            }
+        });
+    }
+
+    // Show/hide active filters section
+    if (chips.length > 0) {
+        activeFiltersDiv.style.display = 'flex';
+
+        // Render chips
+        chips.forEach(chip => {
+            const chipEl = document.createElement('span');
+            chipEl.className = 'filter-chip';
+            chipEl.innerHTML = `
+                ${chip.label}
+                <button class="filter-chip-remove" aria-label="Filter entfernen">×</button>
+            `;
+
+            chipEl.querySelector('.filter-chip-remove').addEventListener('click', chip.onRemove);
+            filterChipsDiv.appendChild(chipEl);
+        });
+    } else {
+        activeFiltersDiv.style.display = 'none';
+    }
+}
+
 // Initialize all charts
 function initCharts() {
     renderOccupationsChart();
     renderPlacesChart();
     renderCohortsChart();
     renderActivityChart();
+
+    // Connect charts for coordinated tooltips and highlights
+    echarts.connect([
+        charts.masterTimeline,
+        charts.occupations,
+        charts.places,
+        charts.cohorts,
+        charts.activity
+    ]);
+
+    console.log('📊 Charts connected for linked brushing');
 }
 
 // Update all charts with filtered data
@@ -487,34 +554,36 @@ function renderPlacesChart() {
             formatter: '{b}: {c} Personen'
         },
         grid: {
-            left: '10%',
-            right: '10%',
+            left: '30%',
+            right: '5%',
             top: '15%',
-            bottom: '30%'
+            bottom: '10%'
         },
         xAxis: {
-            type: 'category',
-            data: sorted.map(([name]) => name),
-            axisLabel: {
-                rotate: 45,
-                fontSize: 10
-            }
+            type: 'value',
+            name: 'Anzahl'
         },
         yAxis: {
-            type: 'value',
-            name: 'Personen'
+            type: 'category',
+            data: sorted.map(([name]) => name).reverse(),
+            axisLabel: {
+                fontSize: 10,
+                overflow: 'truncate',
+                width: 120
+            }
         },
         series: [{
             type: 'bar',
-            data: sorted.map(([, count]) => count),
+            data: sorted.map(([, count]) => count).reverse(),
             itemStyle: {
                 color: '#2d6a4f',
-                borderRadius: [4, 4, 0, 0]
+                borderRadius: [0, 4, 4, 0]
             },
             label: {
                 show: true,
-                position: 'top',
+                position: 'inside',
                 formatter: '{c}',
+                color: 'white',
                 fontSize: 10
             }
         }]
