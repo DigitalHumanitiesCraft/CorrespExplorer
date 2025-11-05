@@ -26,6 +26,7 @@ const state = {
 // Single comprehensive view configuration
 const tableColumns = [
     { key: 'star', label: '', sortable: false, tooltip: '' },
+    { key: 'detail_link', label: '', sortable: false, tooltip: 'Zur Vollbild-Detailansicht' },
     { key: 'name', label: 'Name', sortable: true, tooltip: 'Klicke zum Sortieren nach Name' },
     { key: 'dates', label: 'Lebensdaten', sortable: false, tooltip: 'Geburts- und Todesjahr' },
     { key: 'role', label: 'Rolle', sortable: true, tooltip: 'Rolle in der Korrespondenz - Klicke zum Sortieren' },
@@ -64,6 +65,216 @@ async function init() {
     }
 }
 
+// Setup global search with dropdown
+function setupGlobalSearch() {
+    const searchInput = document.getElementById('global-search');
+    const searchResults = document.getElementById('search-results');
+
+    if (!searchInput || !searchResults) return;
+
+    let currentFocus = -1;
+
+    // Input event - filter table AND show dropdown
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        state.filters.search = query;
+        applyFilters(); // Filter table
+
+        // Show dropdown results
+        if (!query || query.length < 2) {
+            hideDropdown();
+            return;
+        }
+
+        const results = searchPersonsForDropdown(query);
+        displayDropdown(results, query);
+    });
+
+    // Keyboard navigation
+    searchInput.addEventListener('keydown', (e) => {
+        const items = searchResults.querySelectorAll('.search-result-item');
+        if (items.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            currentFocus++;
+            if (currentFocus >= items.length) currentFocus = 0;
+            setActiveItem(items, currentFocus);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            currentFocus--;
+            if (currentFocus < 0) currentFocus = items.length - 1;
+            setActiveItem(items, currentFocus);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (currentFocus > -1) {
+                items[currentFocus].click();
+            }
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-search')) {
+            hideDropdown();
+        }
+    });
+
+    // Escape closes dropdown
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            hideDropdown();
+            searchInput.blur();
+        }
+    });
+
+    function searchPersonsForDropdown(query) {
+        return state.allPersons
+            .filter(person => {
+                const nameMatch = person.name.toLowerCase().includes(query);
+                const variantMatch = person.name_variants?.some(v => v.toLowerCase().includes(query));
+                return nameMatch || variantMatch;
+            })
+            .slice(0, 10)
+            .sort((a, b) => {
+                const aName = a.name.toLowerCase();
+                const bName = b.name.toLowerCase();
+                const aStarts = aName.startsWith(query);
+                const bStarts = bName.startsWith(query);
+                if (aStarts && !bStarts) return -1;
+                if (!aStarts && bStarts) return 1;
+                return aName.localeCompare(bName);
+            });
+    }
+
+    function displayDropdown(results, query) {
+        currentFocus = -1;
+
+        if (results.length === 0) {
+            searchResults.innerHTML = `<div class="search-no-results">Keine Ergebnisse für "${query}"</div>`;
+            searchResults.classList.add('active');
+            return;
+        }
+
+        searchResults.innerHTML = results.map((person, index) => {
+            const birth = person.dates?.birth || '?';
+            const death = person.dates?.death || '?';
+            const role = getRoleLabel(person.role);
+
+            const variantMatch = !person.name.toLowerCase().includes(query) &&
+                                 person.name_variants?.find(v => v.toLowerCase().includes(query));
+
+            return `
+                <a href="#" class="search-result-item" data-person-id="${person.id}" data-index="${index}">
+                    <div class="search-result-name">${highlightMatch(person.name, query)}</div>
+                    ${variantMatch ? `<div class="search-result-variant">auch: ${highlightMatch(variantMatch, query)}</div>` : ''}
+                    <div class="search-result-meta">${birth}–${death} • ${role}</div>
+                </a>
+            `;
+        }).join('');
+
+        searchResults.classList.add('active');
+
+        // Add click handlers
+        searchResults.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const personId = item.dataset.personId;
+
+                // Select person
+                state.selectedPerson = state.allPersons.find(p => p.id === personId);
+
+                // Update selected row in table
+                document.querySelectorAll('#table-body tr').forEach(tr => {
+                    tr.classList.toggle('selected', tr.dataset.id === personId);
+                });
+
+                // Switch to person tab (inline implementation)
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === 'person');
+                });
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.toggle('active', content.id === 'tab-person');
+                });
+
+                // Render person detail (minimal inline implementation)
+                const container = document.getElementById('person-detail');
+                if (container && state.selectedPerson) {
+                    const p = state.selectedPerson;
+                    let html = `<h2>${p.name}</h2>`;
+                    html += `<div class="detail-section"><h4>Stammdaten</h4><div class="detail-value">`;
+                    html += `<p><strong>Lebensdaten:</strong> ${p.dates?.birth || '?'} - ${p.dates?.death || '?'}</p>`;
+                    html += `<p><strong>Rolle:</strong> <span class="role-badge ${p.role}">${getRoleLabel(p.role)}</span></p>`;
+                    html += `<p><strong>Normierung:</strong> ${p.normierung.toUpperCase()}</p>`;
+                    if (p.gnd) html += `<p><strong>GND:</strong> <a href="https://d-nb.info/gnd/${p.gnd}" target="_blank">${p.gnd}</a></p>`;
+                    html += `</div></div>`;
+
+                    // Occupations
+                    if (p.occupations && p.occupations.length > 0) {
+                        html += `<div class="detail-section"><h4>Berufe</h4><div class="detail-value"><ul>`;
+                        html += p.occupations.map(o => `<li>${o.name}</li>`).join('');
+                        html += `</ul></div></div>`;
+                    }
+
+                    // Correspondence
+                    if (p.letter_count || p.mention_count) {
+                        html += `<div class="detail-section"><h4>Korrespondenz</h4><div class="detail-value">`;
+                        html += `<p><strong>Briefe gesendet:</strong> ${p.letter_count || 0}</p>`;
+                        html += `<p><strong>Erwähnungen:</strong> ${p.mention_count || 0}</p>`;
+                        html += `</div></div>`;
+                    }
+
+                    // Biography
+                    if (p.biography) {
+                        const cleanBio = p.biography.replace(/#s\+/g, '').replace(/#s-/g, '').replace(/#e\+/g, '').replace(/#e-/g, '');
+                        const displayBio = cleanBio.length > 300 ? cleanBio.substring(0, 300) + '...' : cleanBio;
+                        html += `<div class="detail-section"><h4>Biografie</h4><div class="detail-value"><p>${displayBio}</p></div></div>`;
+                    }
+
+                    container.innerHTML = html;
+                }
+
+                // Highlight detail panel
+                const detailPanel = document.querySelector('.detail-panel');
+                if (detailPanel) {
+                    detailPanel.classList.add('highlight');
+                    setTimeout(() => detailPanel.classList.remove('highlight'), 600);
+                }
+
+                hideDropdown();
+                searchInput.value = '';
+                state.filters.search = '';
+                applyFilters();
+            });
+        });
+    }
+
+    function highlightMatch(text, query) {
+        const lowerText = text.toLowerCase();
+        const index = lowerText.indexOf(query);
+        if (index === -1) return text;
+        return text.substring(0, index) +
+               '<strong>' + text.substring(index, index + query.length) + '</strong>' +
+               text.substring(index + query.length);
+    }
+
+    function setActiveItem(items, index) {
+        items.forEach((item, i) => {
+            if (i === index) {
+                item.focus();
+                item.setAttribute('aria-selected', 'true');
+            } else {
+                item.removeAttribute('aria-selected');
+            }
+        });
+    }
+
+    function hideDropdown() {
+        searchResults.classList.remove('active');
+        currentFocus = -1;
+    }
+}
+
 // Setup event listeners
 function setupEventListeners() {
     // Tab buttons
@@ -74,12 +285,8 @@ function setupEventListeners() {
         });
     });
 
-    // Search input
-    const searchInput = document.getElementById('search-input');
-    searchInput.addEventListener('input', (e) => {
-        state.filters.search = e.target.value.toLowerCase();
-        applyFilters();
-    });
+    // Global search - dual functionality: dropdown + table filter
+    setupGlobalSearch();
 
     // Role filters
     document.querySelectorAll('.filter-group input[type="checkbox"]').forEach(checkbox => {
@@ -241,7 +448,10 @@ function resetFilters() {
         birthMax: 1850
     };
 
-    document.getElementById('search-input').value = '';
+    const globalSearch = document.getElementById('global-search');
+    if (globalSearch) {
+        globalSearch.value = '';
+    }
     document.querySelectorAll('.filter-group input[type="checkbox"]').forEach(cb => {
         cb.checked = true;
     });
@@ -317,8 +527,15 @@ function formatCell(person, key) {
             const inBasket = state.basket.some(p => p.id === person.id);
             return `<td style="width: 40px; text-align: center;">
                 <button class="btn-add-basket ${inBasket ? 'in-basket' : ''}" data-id="${person.id}" title="Zum Wissenskorb hinzufügen">
-                    ${inBasket ? '⭐' : '☆'}
+                    <i class="fas fa-bookmark" style="color: ${inBasket ? 'var(--color-accent)' : '#ccc'}; font-size: 0.9rem;"></i>
                 </button>
+            </td>`;
+
+        case 'detail_link':
+            return `<td style="width: 40px; text-align: center;">
+                <a href="../person.html?id=${person.id}" class="btn-detail-link" title="Vollbild-Detailseite öffnen" target="_blank" style="text-decoration: none; color: var(--color-primary); opacity: 0.7; transition: opacity 0.2s;">
+                    <i class="fas fa-external-link-alt" style="font-size: 0.9rem;"></i>
+                </a>
             </td>`;
 
         case 'name':
@@ -477,6 +694,20 @@ function selectPerson(personId) {
     // Switch to person tab and render detail
     switchTab('person');
     renderPersonDetail();
+
+    // Highlight detail panel to draw attention
+    triggerDetailHighlight();
+}
+
+// Trigger visual highlight effect on detail panel
+function triggerDetailHighlight() {
+    const detailPanel = document.querySelector('.detail-panel');
+    if (detailPanel) {
+        detailPanel.classList.add('highlight');
+        setTimeout(() => {
+            detailPanel.classList.remove('highlight');
+        }, 600); // Duration matches CSS animation
+    }
 }
 
 // Switch tab

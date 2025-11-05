@@ -1,10 +1,20 @@
 // HerData - Download Page
 // Data export and vault ZIP generation
 import { loadNavbar } from './navbar-loader.js';
+import { loadPersons } from './data.js';
+import { GlobalSearch } from './search.js';
 
 // Initialize
 async function init() {
     await loadNavbar();
+
+    // Initialize global search
+    try {
+        const data = await loadPersons();
+        new GlobalSearch(data.persons);
+    } catch (error) {
+        console.error('Failed to load persons for search:', error);
+    }
 
     // Setup vault ZIP download
     const vaultZipButton = document.getElementById('download-vault-zip');

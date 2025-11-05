@@ -13,8 +13,8 @@ HerData ist eine statische, robuste Web-Anwendung für Exploration und Prüfung 
 
 ## Technologie-Stack (überblicksartig)
 
-* **Datenaufbereitung:** Python-Pipeline auf Basis der Standardbibliothek; Parsing der Quellen für Personen, Briefe, Orte, Berufe und Relationen; Ergebnis ist ein denormalisiertes JSON für das Frontend. 
-* **Frontend:** Vanilla JavaScript ES6+ mit modularer Struktur; Kartendarstellung mit MapLibre GL JS; ergänzende Visualisierungen für Zeit und Netzwerk nach Bedarf; Layout mit CSS Grid/Flexbox; OSM-Tiles als Basiskarte. 
+* **Datenaufbereitung:** Python-Pipeline auf Basis der Standardbibliothek; Parsing der Quellen für Personen, Briefe, Orte, Berufe und Relationen; Ergebnis ist ein denormalisiertes JSON für das Frontend.
+* **Frontend:** Vanilla JavaScript ES6+ mit modularer Struktur; Kartendarstellung mit MapLibre GL JS; ergänzende Visualisierungen mit ECharts (Brief-Explorer); Icon-System mit Font Awesome 6.5.1 CDN; Layout mit CSS Grid/Flexbox; OSM-Tiles als Basiskarte.
 * **Deployment:** Statisches Hosting über GitHub Pages aus dem `docs`-Bereich des Hauptzweigs; die Artefakte werden derzeit manuell aktualisiert. 
 
 ## Daten-Pipeline (vier Phasen, deskriptiv)

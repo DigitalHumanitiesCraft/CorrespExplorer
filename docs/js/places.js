@@ -1,6 +1,7 @@
 // Places List Page
 import { loadNavbar } from './navbar-loader.js';
 import { loadPersons } from './data.js';
+import { GlobalSearch } from './search.js';
 
 let allPlaces = [];
 let filteredPlaces = [];
@@ -11,6 +12,9 @@ async function init() {
     try {
         const data = await loadPersons();
         const allPersons = data.persons;
+
+        // Initialize global search
+        new GlobalSearch(allPersons);
 
         // Collect all unique places with person counts
         const placesMap = new Map();

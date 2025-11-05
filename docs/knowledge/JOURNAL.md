@@ -35,6 +35,36 @@
 - Korrekte Datenauszeichnung: 1.793 Frauen-Briefe vs. 15.312 CMIF-Gesamt
 - Konsistentes Sidebar-Layout über alle Views
 
+**Session 19 (Fortsetzung) — Font Awesome Integration & Globale Suche:**
+
+**Icon-System:**
+- Font Awesome 6.5.1 CDN in alle 7 HTML-Seiten integriert (index.html, stats.html, person.html, synthesis/index.html, places.html, download.html, vault.html)
+- Emoji-Icons durch Font Awesome ersetzt:
+  - Detail-Link: fas fa-external-link-alt (Personen-Tabelle → person.html Vollansicht)
+  - Wissenskorb: fas fa-bookmark (dynamische Farbe: accent bei gespeichert, #ccc bei leer)
+- CSS-Hover-Effekte: Scale-up 1.15x bei Wissenskorb, Opacity-Transition bei Detail-Link
+
+**Globale Suche:**
+- GlobalSearch-Klasse bereits vorhanden in search.js (Dropdown mit Top-10-Ergebnissen, Keyboard-Navigation)
+- Erweitert auf alle Pages: places.js, download.js, vault.js importieren nun GlobalSearch
+- Konsistente Funktionalität: Suche in Name + Varianten, Navigation zu person.html?id=...
+
+**Personen-View UX:**
+- Dual-Search: Global-Navbar-Dropdown UND Tabellenfilterung parallel (synthesis/js/app.js setupGlobalSearch)
+- Visual Highlight: Detail-Panel pulsiert beim Öffnen (600ms Animation, -8px zu -4px box-shadow)
+- Detail-Link-Icon in Tabelle: Direkter Sprung zur Vollbild-Detailansicht person.html in neuem Tab
+
+**Dateien:**
+- 7 HTML-Seiten: Font Awesome CDN hinzugefügt
+- 3 JS-Dateien: GlobalSearch-Integration (places.js, download.js, vault.js)
+- synthesis/js/app.js: Icon-Rendering (fas fa-bookmark, fas fa-external-link-alt), setupGlobalSearch-Funktion
+- synthesis/css/styles.css: Hover-Effekte für .btn-add-basket, .btn-detail-link
+
+**Technologie-Stack Update:**
+- Font Awesome 6.5.1 als Icon-System (CDN: cdnjs.cloudflare.com)
+- Ersetzt Emoji-basierte Icons für konsistente, skalierbare Darstellung
+- Globale Suche nun auf allen Views verfügbar (außer person.html Detailansicht)
+
 ### Session 18 — Phase 2 UI-Verbesserungen & KPI-Karten
 
 * **Token-Konsolidierung:** tokens.css als Single Source of Truth; 75 Zeilen Duplikate entfernt aus style.css, network.css, synthesis/styles.css; 8 fehlende Tokens hinzugefügt.

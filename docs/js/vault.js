@@ -1,6 +1,8 @@
 // HerData - Promptotyping Vault
 // Wiki-style knowledge documentation viewer
 import { loadNavbar } from './navbar-loader.js';
+import { loadPersons } from './data.js';
+import { GlobalSearch } from './search.js';
 
 // Knowledge documents
 const DOCS = [
@@ -22,6 +24,15 @@ let currentDoc = null;
 // Initialize
 async function init() {
     await loadNavbar();
+
+    // Initialize global search
+    try {
+        const data = await loadPersons();
+        new GlobalSearch(data.persons);
+    } catch (error) {
+        console.error('Failed to load persons for search:', error);
+    }
+
     renderSidebar();
 
     // Setup download button
