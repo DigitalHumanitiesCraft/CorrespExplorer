@@ -258,6 +258,3 @@ if (document.readyState === 'loading') {
 } else {
     BasketManager.init();
 }
-
-// Export for ES6 modules
-export default BasketManager;
