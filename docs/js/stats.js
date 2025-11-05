@@ -4,6 +4,7 @@
 import { loadPersons } from "./data.js";
 import { loadNavbar } from "./navbar-loader.js";
 import { GlobalSearch } from "./search.js";
+import { Toast } from "./utils.js";
 
 // Global state
 let allPersons = [];
@@ -177,6 +178,7 @@ async function init() {
         initActivityFilter();
         initCharts();
         initExportButtons();
+        initBasketButton();
 
         console.log("✅ Brief-Explorer ready (Phase 2a)");
     } catch (error) {
@@ -561,6 +563,14 @@ function updateFilterChips() {
             const personsURL = buildPersonsURL(filterState.filters);
             viewPersonsBtn.href = personsURL;
             viewPersonsCount.textContent = filteredPersons.length;
+        }
+
+        // Update "Add to Basket" button
+        const addFilteredBtn = document.getElementById('add-filtered-to-basket');
+        const addFilteredCount = document.getElementById('add-filtered-count');
+
+        if (addFilteredBtn && addFilteredCount) {
+            addFilteredCount.textContent = filteredPersons.length;
         }
     } else {
         activeFiltersDiv.style.display = 'none';
@@ -980,6 +990,54 @@ function exportPNG(chartId) {
 function exportCSV(chartId) {
     console.log(`📥 CSV export for ${chartId} (filtered data)`);
     alert('CSV-Export wird in Phase 2b implementiert');
+}
+
+// Initialize "Add to Basket" button
+function initBasketButton() {
+    const addFilteredBtn = document.getElementById('add-filtered-to-basket');
+
+    if (!addFilteredBtn) {
+        console.warn('⚠️ Add to basket button not found');
+        return;
+    }
+
+    addFilteredBtn.addEventListener('click', () => {
+        const filterState = new FilterState();
+        const filteredPersons = filterState.getFilteredPersons();
+
+        if (filteredPersons.length === 0) {
+            Toast.show('Keine gefilterten Personen zum Hinzufügen', 'warning');
+            return;
+        }
+
+        // Add all filtered persons to basket
+        let added = 0;
+        let skipped = 0;
+
+        filteredPersons.forEach(person => {
+            if (!BasketManager.has(person.id)) {
+                BasketManager.add(person);
+                added++;
+            } else {
+                skipped++;
+            }
+        });
+
+        // Show feedback
+        if (added > 0) {
+            const message = added === 1
+                ? `1 Person zum Wissenskorb hinzugefügt`
+                : `${added} Personen zum Wissenskorb hinzugefügt`;
+            const extra = skipped > 0 ? ` (${skipped} bereits im Korb)` : '';
+            Toast.show(message + extra);
+        } else {
+            Toast.show('Alle Personen bereits im Wissenskorb', 'info');
+        }
+
+        console.log(`🧺 Added ${added} persons to basket (${skipped} skipped)`);
+    });
+
+    console.log('✅ Basket button initialized');
 }
 
 // Show error message

@@ -8,7 +8,7 @@ const state = {
     allPersons: [],
     filteredPersons: [],
     selectedPerson: null,
-    basket: [],  // Wissenskorb
+    // basket moved to global BasketManager
     filters: {
         search: '',
         roles: ['sender', 'mentioned', 'both', 'indirect'],
@@ -614,7 +614,7 @@ function renderTable() {
 function formatCell(person, key) {
     switch(key) {
         case 'star':
-            const inBasket = state.basket.some(p => p.id === person.id);
+            const inBasket = BasketManager.has(person.id);
             return `<td style="width: 40px; text-align: center;">
                 <button class="btn-add-basket ${inBasket ? 'in-basket' : ''}" data-id="${person.id}" title="Zum Wissenskorb hinzufügen">
                     <i class="fas fa-bookmark" style="color: ${inBasket ? 'var(--color-accent)' : '#ccc'}; font-size: 0.9rem;"></i>
@@ -1190,21 +1190,15 @@ function toggleBasket(personId) {
     const person = state.allPersons.find(p => p.id === personId);
     if (!person) return;
 
-    const index = state.basket.findIndex(p => p.id === personId);
-
-    if (index >= 0) {
+    if (BasketManager.has(personId)) {
         // Remove from basket
-        state.basket.splice(index, 1);
+        BasketManager.remove(personId);
         showToast(`${person.name} aus Wissenskorb entfernt`);
     } else {
-        // Check limit
-        if (state.basket.length >= 20) {
-            showToast('Wissenskorb voll - maximal 20 Personen möglich', 'warning');
-            return;
-        }
         // Add to basket
-        state.basket.push(person);
-        showToast(`${person.name} zum Wissenskorb hinzugefügt (${state.basket.length}/20)`);
+        BasketManager.add(person);
+        const count = BasketManager.getCount();
+        showToast(`${person.name} zum Wissenskorb hinzugefügt (${count} Personen)`);
     }
 
     updateBasketView();
@@ -1212,7 +1206,8 @@ function toggleBasket(personId) {
 }
 
 function updateBasketView() {
-    const count = state.basket.length;
+    const basketItems = BasketManager.getAll();
+    const count = basketItems.length;
     document.getElementById('basket-count').textContent = count;
 
     const container = document.getElementById('basket-content');
@@ -1238,7 +1233,7 @@ function updateBasketView() {
 
     let html = '<div class="basket-list">';
 
-    state.basket.forEach(person => {
+    basketItems.forEach(person => {
         const birth = person.dates?.birth || '?';
         const death = person.dates?.death || '?';
 
@@ -1278,12 +1273,13 @@ function updateBasketView() {
 }
 
 function renderBasketVisualizations() {
-    if (state.basket.length === 0) return '';
+    const basketItems = BasketManager.getAll();
+    if (basketItems.length === 0) return '';
 
     let html = '';
 
     // Timeline visualization (swimlane style)
-    const years = state.basket
+    const years = basketItems
         .filter(p => p.dates?.birth && p.dates?.death)
         .map(p => ({
             name: p.name,
@@ -1307,7 +1303,7 @@ function renderBasketVisualizations() {
                         const left = ((y.birth - minYear) / span) * 100;
                         const width = ((y.death - y.birth) / span) * 100;
                         const top = index * rowHeight;
-                        const person = state.basket.find(p => p.name === y.name);
+                        const person = basketItems.find(p => p.name === y.name);
                         return `
                             <div class="timeline-row" style="top: ${top}px;">
                                 <div class="timeline-bar" style="left: ${left}%; width: ${width}%;"
@@ -1328,12 +1324,12 @@ function renderBasketVisualizations() {
     }
 
     // Relationships
-    const withRelations = state.basket.filter(p => p.relationships && p.relationships.length > 0);
+    const withRelations = basketItems.filter(p => p.relationships && p.relationships.length > 0);
     if (withRelations.length > 0) {
         const connections = [];
         withRelations.forEach(person => {
             person.relationships.forEach(rel => {
-                const target = state.basket.find(p => p.id === rel.target_id);
+                const target = basketItems.find(p => p.id === rel.target_id);
                 if (target) {
                     connections.push({
                         from: person.name,
@@ -1364,44 +1360,33 @@ function renderBasketVisualizations() {
 
 function clearBasket() {
     if (!confirm('Wissenskorb wirklich leeren?')) return;
-    state.basket = [];
+    BasketManager.clear();
     updateBasketView();
     renderTable();
 }
 
 function exportBasketToCSV() {
-    if (state.basket.length === 0) {
+    const csv = BasketManager.exportAsCSV();
+
+    if (!csv) {
         showToast('Wissenskorb ist leer', 'warning');
         return;
     }
 
-    const headers = ['Name', 'Lebensdaten', 'Rolle', 'GND', 'Berufe'];
-    let csv = headers.join(',') + '\n';
-
-    state.basket.forEach(person => {
-        const row = [
-            `"${person.name}"`,
-            `"${person.dates?.birth || '?'}-${person.dates?.death || '?'}"`,
-            `"${getRoleLabel(person.role)}"`,
-            `"${person.gnd || '-'}"`,
-            `"${person.occupations?.map(o => o.name).join('; ') || '-'}"`
-        ];
-        csv += row.join(',') + '\n';
-    });
-
     downloadFile(csv, 'wissenskorb.csv', 'text/csv');
-    showToast(`${state.basket.length} Personen als CSV exportiert`);
+    showToast(`${BasketManager.getCount()} Personen als CSV exportiert`);
 }
 
 function exportBasketToJSON() {
-    if (state.basket.length === 0) {
+    const json = BasketManager.exportAsJSON();
+
+    if (!json) {
         showToast('Wissenskorb ist leer', 'warning');
         return;
     }
 
-    const json = JSON.stringify(state.basket, null, 2);
     downloadFile(json, 'wissenskorb.json', 'application/json');
-    showToast(`${state.basket.length} Personen als JSON exportiert`);
+    showToast(`${BasketManager.getCount()} Personen als JSON exportiert`);
 }
 
 // Initialize on load

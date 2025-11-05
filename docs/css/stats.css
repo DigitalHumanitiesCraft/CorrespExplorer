@@ -543,6 +543,14 @@
     opacity: 1;
 }
 
+/* Filter Actions Container */
+.filter-actions {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+    margin-left: auto;
+}
+
 /* View Persons Button */
 .btn-view-persons {
     background: var(--color-primary);
@@ -558,7 +566,6 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
-    margin-left: auto;
 }
 
 .btn-view-persons:hover {
@@ -571,6 +578,35 @@
 }
 
 #view-persons-count {
+    font-weight: 700;
+}
+
+/* Add to Basket Button */
+.btn-add-filtered {
+    background: var(--color-accent, #e74c3c);
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.btn-add-filtered:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+}
+
+.btn-add-filtered:active {
+    transform: translateY(0);
+}
+
+#add-filtered-count {
     font-weight: 700;
 }
 

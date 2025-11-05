@@ -36,7 +36,13 @@
     <div id="person-content" class="person-page-cards" style="display: none;">
         <!-- Person Header -->
         <header class="person-header" role="banner">
-            <h1 id="person-name"></h1>
+            <div class="person-header-top">
+                <h1 id="person-name"></h1>
+                <button id="person-basket-btn" class="btn-basket-toggle" title="Zum Wissenskorb hinzufügen">
+                    <i class="fas fa-bookmark"></i>
+                    <span id="basket-btn-text">Zum Wissenskorb</span>
+                </button>
+            </div>
             <div class="person-dates" id="person-dates" aria-label="Lebensdaten"></div>
             <div class="person-badges" id="person-badges" role="list" aria-label="Normdaten-Kennzeichnungen"></div>
         </header>
@@ -146,6 +152,8 @@
         <!-- End Two-Column Layout -->
     </div>
 
+    <!-- Load basket manager -->
+    <script src="js/basket-manager.js"></script>
     <script src="js/person.js?v=4" type="module"></script>
 </body>
 </html>

@@ -29,9 +29,10 @@ export async function loadNavbar(variant = 'full') {
         const html = await response.text();
         navbarPlaceholder.innerHTML = html;
 
-        // Initialize dropdown after navbar is loaded (wait for DOM to update)
+        // Initialize dropdown and basket after navbar is loaded (wait for DOM to update)
         setTimeout(() => {
             initDropdown();
+            initBasket();
         }, 0);
 
         console.log(`✅ Navbar component loaded (${variant})`);
@@ -83,4 +84,37 @@ function initDropdown() {
             toggle.setAttribute('aria-expanded', 'false');
         }
     });
+}
+
+// Initialize basket badge
+function initBasket() {
+    if (typeof BasketManager === 'undefined') {
+        console.warn('⚠️ BasketManager not available, skipping basket init');
+        return;
+    }
+
+    console.log('🧺 Initializing basket badge in navbar');
+
+    // Update badge immediately
+    updateBasketBadge();
+
+    // Listen to basket changes
+    BasketManager.on('change', updateBasketBadge);
+    BasketManager.on('add', updateBasketBadge);
+    BasketManager.on('remove', updateBasketBadge);
+    BasketManager.on('clear', updateBasketBadge);
+    BasketManager.on('sync', updateBasketBadge);
+}
+
+// Update basket badge display
+function updateBasketBadge() {
+    const badge = document.getElementById('nav-basket-badge');
+    if (!badge) {
+        console.warn('⚠️ Basket badge element not found');
+        return;
+    }
+
+    const count = BasketManager.getCount();
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline-block' : 'none';
 }

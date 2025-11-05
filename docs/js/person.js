@@ -3,6 +3,7 @@
 import { loadPersons, getPersonById } from './data.js';
 import { loadNavbar } from './navbar-loader.js';
 import { GlobalSearch } from './search.js';
+import { Toast } from './utils.js';
 
 let currentPerson = null;
 let allPersons = [];
@@ -39,6 +40,7 @@ async function init() {
 
         // Render person page
         renderPerson();
+        initBasketButton();
         hideLoading();
 
     } catch (error) {
@@ -623,6 +625,54 @@ function hideLoading() {
 function showNotFound() {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('not-found').style.display = 'block';
+}
+
+// Initialize basket button
+function initBasketButton() {
+    const basketBtn = document.getElementById('person-basket-btn');
+    const basketBtnText = document.getElementById('basket-btn-text');
+
+    if (!basketBtn || !currentPerson) return;
+
+    // Update button state
+    updateBasketButton();
+
+    // Add click handler
+    basketBtn.addEventListener('click', () => {
+        const inBasket = BasketManager.has(currentPerson.id);
+
+        if (inBasket) {
+            BasketManager.remove(currentPerson.id);
+            Toast.show(`${currentPerson.name} aus Wissenskorb entfernt`);
+        } else {
+            BasketManager.add(currentPerson);
+            Toast.show(`${currentPerson.name} zum Wissenskorb hinzugefügt`);
+        }
+
+        updateBasketButton();
+    });
+
+    console.log('✅ Basket button initialized');
+}
+
+// Update basket button visual state
+function updateBasketButton() {
+    const basketBtn = document.getElementById('person-basket-btn');
+    const basketBtnText = document.getElementById('basket-btn-text');
+
+    if (!basketBtn || !currentPerson) return;
+
+    const inBasket = BasketManager.has(currentPerson.id);
+
+    if (inBasket) {
+        basketBtn.classList.add('in-basket');
+        basketBtn.title = 'Aus Wissenskorb entfernen';
+        basketBtnText.textContent = 'Im Wissenskorb';
+    } else {
+        basketBtn.classList.remove('in-basket');
+        basketBtn.title = 'Zum Wissenskorb hinzufügen';
+        basketBtnText.textContent = 'Zum Wissenskorb';
+    }
 }
 
 // Show error message
