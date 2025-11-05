@@ -177,6 +177,7 @@ async function init() {
         initActivityFilter();
         initCharts();
         initExportButtons();
+        initBasketButton();
 
         console.log("✅ Brief-Explorer ready (Phase 2a)");
     } catch (error) {
@@ -561,6 +562,14 @@ function updateFilterChips() {
             const personsURL = buildPersonsURL(filterState.filters);
             viewPersonsBtn.href = personsURL;
             viewPersonsCount.textContent = filteredPersons.length;
+        }
+
+        // Update "Add to Basket" button
+        const addFilteredBtn = document.getElementById('add-filtered-to-basket');
+        const addFilteredCount = document.getElementById('add-filtered-count');
+
+        if (addFilteredBtn && addFilteredCount) {
+            addFilteredCount.textContent = filteredPersons.length;
         }
     } else {
         activeFiltersDiv.style.display = 'none';
@@ -980,6 +989,77 @@ function exportPNG(chartId) {
 function exportCSV(chartId) {
     console.log(`📥 CSV export for ${chartId} (filtered data)`);
     alert('CSV-Export wird in Phase 2b implementiert');
+}
+
+// Initialize "Add to Basket" button
+function initBasketButton() {
+    const addFilteredBtn = document.getElementById('add-filtered-to-basket');
+
+    if (!addFilteredBtn) {
+        console.warn('⚠️ Add to basket button not found');
+        return;
+    }
+
+    addFilteredBtn.addEventListener('click', () => {
+        const filterState = new FilterState();
+        const filteredPersons = filterState.getFilteredPersons();
+
+        if (filteredPersons.length === 0) {
+            showToast('Keine gefilterten Personen zum Hinzufügen', 'warning');
+            return;
+        }
+
+        // Add all filtered persons to basket
+        let added = 0;
+        let skipped = 0;
+
+        filteredPersons.forEach(person => {
+            if (!BasketManager.has(person.id)) {
+                BasketManager.add(person);
+                added++;
+            } else {
+                skipped++;
+            }
+        });
+
+        // Show feedback
+        if (added > 0) {
+            const message = added === 1
+                ? `1 Person zum Wissenskorb hinzugefügt`
+                : `${added} Personen zum Wissenskorb hinzugefügt`;
+            const extra = skipped > 0 ? ` (${skipped} bereits im Korb)` : '';
+            showToast(message + extra);
+        } else {
+            showToast('Alle Personen bereits im Wissenskorb', 'info');
+        }
+
+        console.log(`🧺 Added ${added} persons to basket (${skipped} skipped)`);
+    });
+
+    console.log('✅ Basket button initialized');
+}
+
+// Show toast notification
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    const icon = document.createElement('i');
+    icon.className = type === 'success' ? 'fas fa-check-circle' :
+                     type === 'warning' ? 'fas fa-exclamation-triangle' :
+                     type === 'error' ? 'fas fa-times-circle' :
+                     'fas fa-info-circle';
+    toast.prepend(icon);
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // Show error message

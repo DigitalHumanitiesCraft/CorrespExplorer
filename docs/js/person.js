@@ -39,6 +39,7 @@ async function init() {
 
         // Render person page
         renderPerson();
+        initBasketButton();
         hideLoading();
 
     } catch (error) {
@@ -623,6 +624,77 @@ function hideLoading() {
 function showNotFound() {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('not-found').style.display = 'block';
+}
+
+// Initialize basket button
+function initBasketButton() {
+    const basketBtn = document.getElementById('person-basket-btn');
+    const basketBtnText = document.getElementById('basket-btn-text');
+
+    if (!basketBtn || !currentPerson) return;
+
+    // Update button state
+    updateBasketButton();
+
+    // Add click handler
+    basketBtn.addEventListener('click', () => {
+        const inBasket = BasketManager.has(currentPerson.id);
+
+        if (inBasket) {
+            BasketManager.remove(currentPerson.id);
+            showToast(`${currentPerson.name} aus Wissenskorb entfernt`);
+        } else {
+            BasketManager.add(currentPerson);
+            showToast(`${currentPerson.name} zum Wissenskorb hinzugefügt`);
+        }
+
+        updateBasketButton();
+    });
+
+    console.log('✅ Basket button initialized');
+}
+
+// Update basket button visual state
+function updateBasketButton() {
+    const basketBtn = document.getElementById('person-basket-btn');
+    const basketBtnText = document.getElementById('basket-btn-text');
+
+    if (!basketBtn || !currentPerson) return;
+
+    const inBasket = BasketManager.has(currentPerson.id);
+
+    if (inBasket) {
+        basketBtn.classList.add('in-basket');
+        basketBtn.title = 'Aus Wissenskorb entfernen';
+        basketBtnText.textContent = 'Im Wissenskorb';
+    } else {
+        basketBtn.classList.remove('in-basket');
+        basketBtn.title = 'Zum Wissenskorb hinzufügen';
+        basketBtnText.textContent = 'Zum Wissenskorb';
+    }
+}
+
+// Show toast notification
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+
+    const icon = document.createElement('i');
+    icon.className = type === 'success' ? 'fas fa-check-circle' :
+                     type === 'warning' ? 'fas fa-exclamation-triangle' :
+                     type === 'error' ? 'fas fa-times-circle' :
+                     'fas fa-info-circle';
+    toast.prepend(icon);
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // Show error message

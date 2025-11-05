@@ -3,7 +3,7 @@
 
 const BasketManager = (function() {
     const STORAGE_KEY = 'herdata_basket';
-    const MAX_ITEMS = 50;
+    const MAX_ITEMS = null; // No limit
     const VERSION = '1.0';
 
     let items = [];
@@ -71,12 +71,6 @@ const BasketManager = (function() {
         if (has(person.id)) {
             console.log(`⚠️ Person ${person.name} already in basket`);
             return false;
-        }
-
-        if (items.length >= MAX_ITEMS) {
-            const error = `Wissenskorb voll (max. ${MAX_ITEMS} Personen)`;
-            console.error('❌', error);
-            throw new Error(error);
         }
 
         const item = {

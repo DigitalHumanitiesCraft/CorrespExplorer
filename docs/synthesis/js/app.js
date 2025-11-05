@@ -1196,14 +1196,9 @@ function toggleBasket(personId) {
         showToast(`${person.name} aus Wissenskorb entfernt`);
     } else {
         // Add to basket
-        try {
-            BasketManager.add(person);
-            const count = BasketManager.getCount();
-            showToast(`${person.name} zum Wissenskorb hinzugefügt (${count}/${BasketManager.MAX_ITEMS})`);
-        } catch (error) {
-            showToast(error.message, 'warning');
-            return;
-        }
+        BasketManager.add(person);
+        const count = BasketManager.getCount();
+        showToast(`${person.name} zum Wissenskorb hinzugefügt (${count} Personen)`);
     }
 
     updateBasketView();

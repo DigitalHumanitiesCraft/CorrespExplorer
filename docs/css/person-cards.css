@@ -100,10 +100,50 @@
     border-bottom: 2px solid var(--color-border);
 }
 
+.person-page-cards .person-header-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+
 .person-page-cards .person-header h1 {
     font-size: var(--font-size-3xl);
     color: var(--color-primary);
-    margin-bottom: var(--space-md);
+    margin: 0;
+}
+
+.btn-basket-toggle {
+    background: var(--color-accent, #e74c3c);
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.btn-basket-toggle:hover {
+    background: #c0392b;
+    transform: translateY(-1px);
+}
+
+.btn-basket-toggle:active {
+    transform: translateY(0);
+}
+
+.btn-basket-toggle.in-basket {
+    background: var(--color-primary, #2c5f8d);
+}
+
+.btn-basket-toggle.in-basket:hover {
+    background: #1e4a6b;
 }
 
 .person-page-cards .person-dates {
