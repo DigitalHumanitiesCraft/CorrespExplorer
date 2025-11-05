@@ -24,12 +24,15 @@ Current Phase: Enhanced with Curated Dataset (Export 2025-10-27)
 
 Live Demo: [https://chpollin.github.io/HerData/](https://chpollin.github.io/HerData/)
 
-Latest Update (2025-10-30):
-- NEW: Multi-source biographies integrated (187 women, 41.7% coverage)
-- NEW: 303 biographical texts from SNDB projects (goebriefe, bug, tagebuch)
-- NEW: Biography display on person detail pages with markup parsing
+Latest Update (2025-11-05):
+- NEW: Brief-Explorer Phase 2e complete - statistical visualization with direct person navigation
+- Interactive filtering across all dimensions (time, occupation, place, birth decade, activity)
+- Click-to-filter on all visualizations (treemap, bar charts)
+- "View Persons" button with URL parameter forwarding to filtered person list
+- Multi-source biographies integrated (187 women, 41.7% coverage)
+- 303 biographical texts from SNDB projects (goebriefe, bug, tagebuch)
+- Biography display on person detail pages with markup parsing
 - Data restructuring: herdata/ and sndb/ directories for clarity
-- Repository cleanup: Test files removed, documentation archived
 
 Previous Update (2025-10-29):
 - Network visualization with hover-based connections (Phase 1+2 complete)
@@ -62,12 +65,14 @@ Completed Features:
   - Markup parsing for SNDB formatting (#k#, #r#, #s+)
   - Grouped display by source with visual hierarchy
 - Central search with typeahead and keyboard navigation
-- Statistical dashboard with 5 interactive charts (Apache ECharts)
-  - Berufsverteilung (Top 15 occupations)
-  - Brief-Timeline (1772-1824 temporal distribution)
-  - Geografische Zentren (Top 10 places)
-  - Generationen (Birth cohorts by decade)
-  - Briefaktivität (Activity categories with transparency)
+- **Brief-Explorer with multi-dimensional filtering (Apache ECharts)**
+  - Full-width treemap showing ALL 73 occupations (click-to-filter)
+  - Geografische Zentren with horizontal bars (click-to-filter)
+  - Generationen by birth decade (click-to-filter)
+  - Master timeline with dataZoom (correspondence vs. lifespan modes)
+  - Activity filter checkboxes (Absenderin, Erwähnt, Beides, Nur SNDB)
+  - Filter chips with visual feedback and remove buttons
+  - "X Personen anzeigen" button forwards all filters to person list
   - CSV/PNG export for all charts
 - Comprehensive accessibility (ARIA labels, keyboard navigation)
 - Shared navbar component (DRY principle)
@@ -442,5 +447,5 @@ DOI: 10.5281/zenodo.14998880
 
 ---
 
-*Last Updated: 2025-10-29*
+*Last Updated: 2025-11-05*
 *Project Journal: [documentation/JOURNAL.md](documentation/JOURNAL.md)*

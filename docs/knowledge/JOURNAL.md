@@ -120,6 +120,39 @@
 - Activity-Filter als Checkboxen freien Platz für Treemap
 - Transparente Datendarstellung: Mehrfachberufe explizit kommuniziert
 
+**Phase 2e - Gefilterte Personen anzeigen:**
+- "X Personen anzeigen →" Button erscheint bei aktiven Filtern
+- Button-URL enthält alle aktiven Filter als URL-Parameter
+- URL-Format: synthesis/index.html?occupation=X&place=Y&timeStart=A&timeEnd=B&timeMode=C&activityTypes=D&birthDecade=E
+- Generationen-Chart: Click-to-Filter hinzugefügt (Klick auf 1750er → nur Personen dieser Dekade)
+- Personenliste liest URL-Parameter beim Laden und wendet alle Filter automatisch an
+
+**Technische Details:**
+- buildPersonsURL(): Generiert URL mit allen FilterState-Parametern
+- applyURLFilters(): Liest URLSearchParams und füllt state.filters in synthesis/js/app.js
+- FilterState.birthDecade: Neues Filter-Feld für Geburtsjahrzehnt-Filterung
+- synthesis applyFilters(): Erweitert um occupation, place, birthDecade Filterlogik
+- Generationen-Chart Click-Handler: Extrahiert Dekade aus "1750er" Label
+
+**User Flow:**
+1. Brief-Explorer: Klick Schauspielerin → Filter-Chip "Schauspielerin (36)"
+2. Klick 1780er → Filter-Chip "1780er Generation (12)"
+3. Button: "12 Personen anzeigen →"
+4. Weiterleitung zu synthesis/index.html?occupation=Schauspielerin&birthDecade=1780
+5. Personenliste zeigt nur 12 gefilterte Frauen
+
+**Dateien:**
+- docs/stats.html: "View Persons" Button in active-filters div
+- docs/js/stats.js: buildPersonsURL(), birthDecade Filter, Generationen Click-Handler
+- docs/css/stats.css: btn-view-persons styles (margin-left: auto für rechte Ausrichtung)
+- docs/synthesis/js/app.js: applyURLFilters(), state.filters.birthDecade, occupation/place/birthDecade Filter-Logik
+
+**Ergebnis:**
+- Nahtloser Übergang von statistischer Exploration zu konkreter Personenliste
+- Alle Filter-Dimensionen werden über URL-Parameter weitergegeben
+- Multi-dimensionales Filtern funktioniert über beide Views hinweg
+- Click-to-Filter auf allen 3 Charts (Berufe, Orte, Generationen)
+
 **Personen-View UX:**
 - Dual-Search: Global-Navbar-Dropdown UND Tabellenfilterung parallel (synthesis/js/app.js setupGlobalSearch)
 - Visual Highlight: Detail-Panel pulsiert beim Öffnen (600ms Animation, -8px zu -4px box-shadow)

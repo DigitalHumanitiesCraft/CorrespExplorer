@@ -23,7 +23,8 @@ class FilterState {
             timeMode: 'correspondence',  // 'correspondence' or 'lifespan'
             occupation: null,  // string: selected occupation name
             place: null,  // string: selected place name
-            activityTypes: ['sender', 'mentioned', 'both', 'indirect']  // array: checked activity types
+            activityTypes: ['sender', 'mentioned', 'both', 'indirect'],  // array: checked activity types
+            birthDecade: null  // number: selected birth decade (e.g., 1750)
         };
 
         this.listeners = [];
@@ -119,6 +120,16 @@ class FilterState {
             });
         }
 
+        // Filter by birth decade
+        if (this.filters.birthDecade !== null) {
+            filtered = filtered.filter(person => {
+                if (!person.dates || !person.dates.birth) return false;
+                const birthYear = parseInt(person.dates.birth);
+                const personDecade = Math.floor(birthYear / 10) * 10;
+                return personDecade === this.filters.birthDecade;
+            });
+        }
+
         return filtered;
     }
 
@@ -129,7 +140,8 @@ class FilterState {
             timeMode: this.filters.timeMode,  // Keep current mode
             occupation: null,
             place: null,
-            activityTypes: ['sender', 'mentioned', 'both', 'indirect']  // Reset to all checked
+            activityTypes: ['sender', 'mentioned', 'both', 'indirect'],  // Reset to all checked
+            birthDecade: null
         };
         this.notifyListeners();
     }
@@ -395,10 +407,48 @@ function updateTimelineSelection(start, end) {
     }
 }
 
+// Build URL for filtered persons view
+function buildPersonsURL(filters) {
+    const params = new URLSearchParams();
+
+    // Add time range filter
+    if (filters.timeRange) {
+        params.append('timeStart', filters.timeRange.start);
+        params.append('timeEnd', filters.timeRange.end);
+        params.append('timeMode', filters.timeMode);
+    }
+
+    // Add occupation filter
+    if (filters.occupation) {
+        params.append('occupation', filters.occupation);
+    }
+
+    // Add place filter
+    if (filters.place) {
+        params.append('place', filters.place);
+    }
+
+    // Add birth decade filter
+    if (filters.birthDecade !== null) {
+        params.append('birthDecade', filters.birthDecade);
+    }
+
+    // Add activity types filter (only if not all are selected)
+    if (filters.activityTypes && filters.activityTypes.length < 4 && filters.activityTypes.length > 0) {
+        params.append('activityTypes', filters.activityTypes.join(','));
+    }
+
+    // Build relative URL to synthesis
+    const baseURL = 'synthesis/index.html';
+    const queryString = params.toString();
+
+    return queryString ? `${baseURL}?${queryString}` : baseURL;
+}
+
 // Update filter chips display
 function updateFilterChips() {
     const filterState = new FilterState();
-    const { timeRange, timeMode, occupation, place, activityTypes } = filterState.filters;
+    const { timeRange, timeMode, occupation, place, activityTypes, birthDecade } = filterState.filters;
 
     const activeFiltersDiv = document.getElementById('active-filters');
     const filterChipsDiv = document.getElementById('filter-chips');
@@ -475,6 +525,17 @@ function updateFilterChips() {
         });
     }
 
+    // Add birth decade chip if active
+    if (birthDecade !== null) {
+        let count = filteredPersons.length;
+        chips.push({
+            label: `${birthDecade}er Generation (${count})`,
+            onRemove: () => {
+                filterState.update({ birthDecade: null });
+            }
+        });
+    }
+
     // Show/hide active filters section
     if (chips.length > 0) {
         activeFiltersDiv.style.display = 'flex';
@@ -491,6 +552,16 @@ function updateFilterChips() {
             chipEl.querySelector('.filter-chip-remove').addEventListener('click', chip.onRemove);
             filterChipsDiv.appendChild(chipEl);
         });
+
+        // Update "View Persons" button
+        const viewPersonsBtn = document.getElementById('view-persons-btn');
+        const viewPersonsCount = document.getElementById('view-persons-count');
+
+        if (viewPersonsBtn && viewPersonsCount) {
+            const personsURL = buildPersonsURL(filterState.filters);
+            viewPersonsBtn.href = personsURL;
+            viewPersonsCount.textContent = filteredPersons.length;
+        }
     } else {
         activeFiltersDiv.style.display = 'none';
     }
@@ -841,6 +912,26 @@ function renderCohortsChart() {
     };
 
     charts.cohorts.setOption(option, true);
+
+    // Add click handler for birth decade filtering
+    charts.cohorts.off('click');  // Remove old handlers
+    charts.cohorts.on('click', (params) => {
+        if (params.componentType === 'series') {
+            // Extract decade number from label like "1750er"
+            const decadeStr = params.name.replace('er', '');
+            const decade = parseInt(decadeStr);
+            console.log(`🔍 Filter by birth decade: ${decade}`);
+
+            // Toggle birth decade filter
+            if (filterState.filters.birthDecade === decade) {
+                // Click same decade -> remove filter
+                filterState.update({ birthDecade: null });
+            } else {
+                // Click different decade -> set filter
+                filterState.update({ birthDecade: decade });
+            }
+        }
+    });
 }
 
 // Chart 4: Briefaktivität

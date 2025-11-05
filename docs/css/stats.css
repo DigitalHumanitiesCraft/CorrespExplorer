@@ -543,6 +543,37 @@
     opacity: 1;
 }
 
+/* View Persons Button */
+.btn-view-persons {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-left: auto;
+}
+
+.btn-view-persons:hover {
+    background: #1e4a6b;
+    transform: translateY(-1px);
+}
+
+.btn-view-persons:active {
+    transform: translateY(0);
+}
+
+#view-persons-count {
+    font-weight: 700;
+}
+
 /* Activity Filter Checkboxes */
 .activity-checkboxes {
     display: flex;

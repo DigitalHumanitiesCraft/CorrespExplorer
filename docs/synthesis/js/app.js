@@ -15,7 +15,10 @@ const state = {
         normierung: ['gnd', 'sndb'],
         timeFilterMode: 'correspondence',  // 'correspondence' or 'lifespan'
         yearMin: 1762,
-        yearMax: 1824
+        yearMax: 1824,
+        occupation: null,   // from Brief-Explorer
+        place: null,        // from Brief-Explorer
+        birthDecade: null   // from Brief-Explorer
     },
     sorting: {
         column: 'name',
@@ -36,6 +39,58 @@ const tableColumns = [
     { key: 'biography_preview', label: 'Biografie', sortable: false, tooltip: 'Biografische Kurzinformation' }
 ];
 
+// Apply filters from URL parameters (from Brief-Explorer)
+function applyURLFilters() {
+    const params = new URLSearchParams(window.location.search);
+
+    // Time range filter
+    const timeStart = params.get('timeStart');
+    const timeEnd = params.get('timeEnd');
+    const timeMode = params.get('timeMode');
+
+    if (timeStart && timeEnd) {
+        state.filters.yearMin = parseInt(timeStart);
+        state.filters.yearMax = parseInt(timeEnd);
+        if (timeMode) {
+            state.filters.timeFilterMode = timeMode;
+        }
+        console.log(`📅 Applied time filter: ${timeStart}-${timeEnd} (${timeMode})`);
+    }
+
+    // Occupation filter
+    const occupation = params.get('occupation');
+    if (occupation) {
+        state.filters.occupation = occupation;
+        console.log(`💼 Applied occupation filter: ${occupation}`);
+    }
+
+    // Place filter
+    const place = params.get('place');
+    if (place) {
+        state.filters.place = place;
+        console.log(`📍 Applied place filter: ${place}`);
+    }
+
+    // Birth decade filter
+    const birthDecade = params.get('birthDecade');
+    if (birthDecade) {
+        state.filters.birthDecade = parseInt(birthDecade);
+        console.log(`👶 Applied birth decade filter: ${birthDecade}er`);
+    }
+
+    // Activity types filter
+    const activityTypes = params.get('activityTypes');
+    if (activityTypes) {
+        state.filters.roles = activityTypes.split(',');
+        console.log(`✉️ Applied activity filter: ${activityTypes}`);
+    }
+
+    // If any URL filters were applied, log it
+    if (params.toString()) {
+        console.log('🔗 Filters applied from Brief-Explorer URL');
+    }
+}
+
 // Initialize app
 async function init() {
     console.log('Initializing HerData Synthesis...');
@@ -52,6 +107,9 @@ async function init() {
         state.filteredPersons = [...state.allPersons];
 
         console.log(`Loaded ${state.allPersons.length} persons`);
+
+        // Read URL parameters and apply filters from Brief-Explorer
+        applyURLFilters();
 
         // Setup UI
         setupEventListeners();
@@ -404,6 +462,38 @@ function applyFilters() {
         // Normierung filter
         if (!state.filters.normierung.includes(person.normierung)) {
             return false;
+        }
+
+        // Occupation filter (from Brief-Explorer)
+        if (state.filters.occupation) {
+            if (!person.occupations || person.occupations.length === 0) {
+                return false;
+            }
+            const hasOccupation = person.occupations.some(occ =>
+                occ.name === state.filters.occupation
+            );
+            if (!hasOccupation) return false;
+        }
+
+        // Place filter (from Brief-Explorer)
+        if (state.filters.place) {
+            if (!person.places || person.places.length === 0) {
+                return false;
+            }
+            const hasPlace = person.places.some(place =>
+                place.name === state.filters.place
+            );
+            if (!hasPlace) return false;
+        }
+
+        // Birth decade filter (from Brief-Explorer)
+        if (state.filters.birthDecade !== null) {
+            if (!person.dates || !person.dates.birth) {
+                return false;
+            }
+            const birthYear = parseInt(person.dates.birth);
+            const personDecade = Math.floor(birthYear / 10) * 10;
+            if (personDecade !== state.filters.birthDecade) return false;
         }
 
         // Time filter (correspondence or lifespan mode)
