@@ -244,7 +244,17 @@ function renderTable() {
 function formatCell(person, key) {
     switch(key) {
         case 'name':
-            return `<td><strong>${person.name}</strong></td>`;
+            let nameHtml = `<strong>${person.name}</strong>`;
+            // Show matched variant if searching and variant matched
+            if (state.filters.search && !person.name.toLowerCase().includes(state.filters.search)) {
+                const matchingVariant = person.name_variants?.find(variant =>
+                    variant.toLowerCase().includes(state.filters.search)
+                );
+                if (matchingVariant) {
+                    nameHtml += `<br><small style="color: #666; font-style: italic;">auch: ${matchingVariant}</small>`;
+                }
+            }
+            return `<td>${nameHtml}</td>`;
 
         case 'dates':
             const birth = person.dates?.birth || '?';
