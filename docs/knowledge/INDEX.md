@@ -2,9 +2,9 @@
 
 HerData ist ein kompaktes, nachvollziehbares Wissenssystem zu Frauen im Korrespondenzumfeld Goethes. Diese Einstiegsseite erklärt Zweck und aktuellen Stand, verweist auf die zugehörigen Dateien und nennt die Versionen, damit Dokumentation, Daten und Live-Darstellung übereinstimmen.
 
-**Stand:** 04.11.2025
+**Stand:** 05.11.2025
 **Datensatz-Version:** 27.10.2025
-**Pipeline-Bezeichnung:** build_herdata_new
+**Pipeline-Bezeichnung:** build_herdata
 **Live-Commit:** b36a807
 
 ## Überblick und aktueller Stand
@@ -38,12 +38,12 @@ Die Live-Seite wird aus dem Hauptzweig über den `docs`-Bereich veröffentlicht.
 [responsive_dossier.md](responsive_dossier.md) fasst Diagnose, Zielbild, Maßnahmen-Backlog und Definition of Done für mobile Nutzung zusammen: Navigation, Touch-Interaktion, Zugänglichkeit, Testleitfaden und Abnahmekriterien.
 
 **Implementierung:**
-[implementation-quick-wins.md](implementation-quick-wins.md) beschreibt 6 priorisierte Features (CSV-Export, Vollständigkeits-Badge, PNG-Export, Statistik-Dashboard, Namensvarianten, Volltextsuche) mit Ready/Done-Definitionen.
+[implementation-quick-wins.md](implementation-quick-wins.md) enthält strategische Feature-Bewertungen und Priorisierung (archiviert). [IMPLEMENTATION_PLAN.md](../../IMPLEMENTATION_PLAN.md) dokumentiert die 3 implementierten Features: Namensvarianten-Integration (Pipeline), CSV-Export gefilterter Personen (Frontend), dualer Zeitfilter mit Modi "Korrespondenz" (1762-1824) und "Lebensdaten" (1700-1850).
 
 ## Testing und Qualität
 
 **Pipeline-Testing:**
-Die Daten-Pipeline ([build_herdata_new.py](../../preprocessing/build_herdata_new.py)) implementiert 4 Validierungsmethoden mit 10 Assertions:
+Die Daten-Pipeline ([build_herdata.py](../../preprocessing/build_herdata.py)) implementiert 4 Validierungsmethoden mit 10 Assertions:
 - test_phase1: 448 Frauen (400-500), 60,3% GND (50-70%)
 - test_phase2: CMIF-Matching (senders > 0, with_letters > 0)
 - test_phase3: Geodaten-Coverage (40-70%, 50,7% erreicht)

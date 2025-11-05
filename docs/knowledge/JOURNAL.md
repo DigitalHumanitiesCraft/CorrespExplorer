@@ -1,9 +1,5 @@
 # HerData Journal — Review & Rewrites
 
-> Hinweis: Auf Wunsch ist die **Verbesserte Fassung** vollständig **ohne Metriken/Zahlen** formuliert. Die **Original-Kompaktfassung** bleibt zur Referenz erhalten.
-
----
-
 ## Teil A — Original-Kompaktfassung (Referenz)
 
 ### HerData Journal — Kompaktfassung (gleiche Information, präziser)
@@ -91,13 +87,13 @@
   * Laufzeit 0,67 s (vorher 1,11 s); 48 Tests grün; Prod-Performance unverändert (Dateigröße gleich).
 * **Implementierung**
 
-  * `build_herdata_new.py` +150 Zeilen; Phase 1 (ID, Name, GND, Dates), Phase 2 (Letters/Mentions/Role), Phase 3 (Places HYBRID, Occupations, Biography), Phase 4 (Dual-JSON mit konditionalem `_provenance`).
+  * `build_herdata.py` +150 Zeilen; Phase 1 (ID, Name, GND, Dates), Phase 2 (Letters/Mentions/Role), Phase 3 (Places HYBRID, Occupations, Biography), Phase 4 (Dual-JSON mit konditionalem `_provenance`).
 * **Wissenschaftlicher Wert**
 
   * Vollständige Datenlinie; reproduzierbare Pipeline; transparente Transformation; Quellenattribution pro Datenpunkt.
 * **Doku**
 
-  * Neu: `DEBUG_SYSTEM.md`; Backup: `build_herdata_new.py.backup`.
+  * Neu: `DEBUG_SYSTEM.md`; Backup: `build_herdata.py.backup`.
 * **Validierung**
 
   * Beispiele: Angelica Bellonata Facius (9 Provenienzfelder), Christiane Vulpius (Letter-Count mit GND-Match); alle 448 mit `_provenance`.
@@ -223,7 +219,7 @@
   * Overlap: 447 in beiden; 3 170 nur alt; 1 nur neu.
   * GND identisch für Schnittmenge (keine neuen Linkages).
 * **Entscheidung:** Nur neues, kuratiertes Dataset (Qualität vor Quantität), Hybrid-Geodaten.
-* **Refactor:** `build_herdata_new.py` (663 Zeilen)
+* **Refactor:** `build_herdata.py` (663 Zeilen)
 
   * P1: `ra_ndb_main.xml`, `ra_ndb_indiv.xml`, `ra_ndb_datierungen.xml`
   * P2: CMIF-Matching (bessere GND-Basis)
@@ -252,7 +248,7 @@
   * Kuratierter Ausschnitt, keine Quality-Updates im Bestand; Auswahl über Regestausgabe-Relevanz.
 * **Tech-Debt**
 
-  * Beide Pipelines behalten (`build_herdata.py` alt, Referenz; `build_herdata_new.py` neu, aktiv); Vergleichstool für Qualität; ADR dokumentiert.
+  * Beide Pipelines behalten (`build_herdata.py` alt, Referenz; `build_herdata.py` neu, aktiv); Vergleichstool für Qualität; ADR dokumentiert.
 * **Commits**
 
   * Dokumentationsphase: 0 Commits (Änderungen in Vorbereitung).
@@ -502,6 +498,14 @@
 * **Interaktive Verbindungen:** Beim Überfahren von Punkten oder Clustern werden Relationen farbcodiert nach Kategorien eingeblendet. Dienstprogramme extrahieren Verbindungen auf Personen- und Cluster-Ebene, prüfen Ortsdaten und weisen Farben stabil zu.
 * **Datenintegration & Tests:** Beziehungen aus verschiedenen Quellen werden zusammengeführt, auf Personenbezüge gefiltert und kategorisiert. Tests und Demos sichern sowohl die Datenlogik als auch die Darstellung ab. Rückmeldungen aus der Nutzung bestätigen die Funktionsfähigkeit.
 * **Weiterführendes:** Kategoriefilter, Performancetuning für dichte Cluster, reichere Tooltips und ein Korrespondenz-Netz basierend auf Briefbezügen sind vorgesehen.
+
+### 2025-11-05 — Session 17 (Dualer Zeitfilter, CSV-Export, Dokumentationskonsolidierung)
+
+* **Bereinigung:** Vollständigkeits-Badge und PNG-Export wurden aus Codebase und Dokumentation entfernt. Die Funktionen wurden als nicht benötigt eingestuft und reduzieren nun Komplexität.
+* **Dualer Zeitfilter:** Tab-basierte Umschaltung zwischen "Korrespondenz" (1762-1824, filtert nach Briefjahren) und "Lebensdaten" (1700-1850, filtert nach Geburts-/Todesjahren) wurde auf beiden Hauptseiten (Karte und Synthesis) mit identischem UI implementiert. Personen ohne Datenwerte werden nicht ausgefiltert. Die Lösung nutzt noUiSlider mit kompakten Buttons (padding 4px 8px, font-size 11px).
+* **CSV-Export:** Export gefilterter Personen mit Kernmetadaten (ID, Name, GND, Lebensdaten, Orte, Berufe, Briefanzahl, Rolle) ist auf der Hauptseite verfügbar. UTF-8 mit BOM für Excel-Kompatibilität, korrekte Feld-Quotierung für Sonderzeichen.
+* **UI-Feinkorrekturen:** Synthesis-Tabellen-Header korrigiert (fehlende Stern-Spalte ergänzt), Korrespondenz-Tooltips verbessert ("8 Briefe gesendet, 23× erwähnt").
+* **Dokumentation:** decisions.md, design.md, requirements.md, INDEX.md und IMPLEMENTATION_PLAN.md wurden aktualisiert. Alle drei Features sind als implementiert dokumentiert. Stand auf 05.11.2025 aktualisiert.
 
 ---
 

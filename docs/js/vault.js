@@ -4,14 +4,17 @@ import { loadNavbar } from './navbar-loader.js';
 
 // Knowledge documents
 const DOCS = [
-    { id: 'data', title: 'Datenmodell', file: 'knowledge/data.md', category: 'DATA' },
-    { id: 'technical-architecture', title: 'Technische Architektur', file: 'knowledge/technical-architecture.md', category: 'ARCHITECTURE' },
-    { id: 'decisions', title: 'Architektur-Entscheidungen', file: 'knowledge/decisions.md', category: 'ARCHITECTURE' },
-    { id: 'design', title: 'Design System', file: 'knowledge/design.md', category: 'DESIGN' },
-    { id: 'network-relations', title: 'Netzwerk-Relationen', file: 'knowledge/network-relations.md', category: 'FEATURES' },
-    { id: 'project', title: 'Projektziele', file: 'knowledge/project.md', category: 'PROJECT' },
+    { id: 'INDEX', title: 'INDEX', file: 'knowledge/INDEX.md', category: 'OVERVIEW' },
+    { id: 'JOURNAL', title: 'JOURNAL', file: 'knowledge/JOURNAL.md', category: 'OVERVIEW' },
+    { id: 'data', title: 'Daten', file: 'knowledge/data.md', category: 'DATA' },
+    { id: 'data-model', title: 'Datenmodell', file: 'knowledge/data-model.md', category: 'DATA' },
+    { id: 'tech', title: 'Technische Architektur', file: 'knowledge/tech.md', category: 'ARCHITECTURE' },
+    { id: 'decisions', title: 'Entscheidungen', file: 'knowledge/decisions.md', category: 'ARCHITECTURE' },
+    { id: 'design', title: 'Design', file: 'knowledge/design.md', category: 'DESIGN' },
+    { id: 'responsive_dossier', title: 'Responsive Design', file: 'knowledge/responsive_dossier.md', category: 'DESIGN' },
+    { id: 'project', title: 'Projekt', file: 'knowledge/project.md', category: 'PROJECT' },
     { id: 'requirements', title: 'Anforderungen', file: 'knowledge/requirements.md', category: 'PROJECT' },
-    { id: 'research-context', title: 'Forschungskontext', file: 'knowledge/research-context.md', category: 'RESEARCH' }
+    { id: 'implementation-quick-wins', title: 'Feature-Priorisierung', file: 'knowledge/implementation-quick-wins.md', category: 'IMPLEMENTATION' }
 ];
 
 let currentDoc = null;

@@ -46,7 +46,7 @@ Previous Update (2025-10-29):
 
 Completed Features:
 - Data ingestion with hybrid approach (15,312 letters, 448 curated women)
-- Python pipeline refactored (build_herdata_new.py with 48 tests)
+- Python pipeline refactored (build_herdata.py with 48 tests)
 - Interactive map with MapLibre GL JS (WebGL rendering, clustering)
 - **Network visualization with hover-based connections**
   - 84 AGRELON relations (Familie/Beruflich/Sozial)
@@ -123,7 +123,7 @@ HerData/
 │
 ├── preprocessing/               # Data analysis & transformation scripts
 │   ├── analyze_goethe_letters.py    # CMIF parser & statistical report generator
-│   ├── build_herdata_new.py         # NEW: Pipeline for curated export (active)
+│   ├── build_herdata.py         # NEW: Pipeline for curated export (active)
 │   ├── build_herdata_legacy.py      # OLD: Pipeline for full SNDB (reference)
 │   ├── add_biographies.py           # Multi-source biography integration
 │   ├── integrate_relations.py       # AGRELON relations integration

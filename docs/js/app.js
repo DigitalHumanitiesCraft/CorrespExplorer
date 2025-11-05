@@ -9,7 +9,8 @@ import { getPersonConnections, getClusterConnections, getConnectionColor } from 
 let map;
 let allPersons = [];
 let filteredPersons = [];
-let temporalFilter = null;  // { start: year, end: year }
+let temporalFilter = null;  // { start: year, end: year, mode: 'correspondence'|'lifespan' }
+let timeFilterMode = 'correspondence';  // Current time filter mode
 
 // Tooltip variables (accessible to all event handlers)
 let clusterTooltip = null;
@@ -960,6 +961,34 @@ function initFilters() {
         }
     });
 
+    // Time filter mode tabs
+    const timeFilterTabs = document.querySelectorAll('.time-filter-tab');
+    timeFilterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const mode = tab.dataset.mode;
+            timeFilterMode = mode;
+
+            // Update active tab
+            timeFilterTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Update slider range based on mode
+            if (mode === 'correspondence') {
+                yearRangeSlider.noUiSlider.updateOptions({
+                    range: { 'min': 1762, 'max': 1824 }
+                });
+                yearRangeSlider.noUiSlider.set([1762, 1824]);
+            } else if (mode === 'lifespan') {
+                yearRangeSlider.noUiSlider.updateOptions({
+                    range: { 'min': 1700, 'max': 1850 }
+                });
+                yearRangeSlider.noUiSlider.set([1700, 1850]);
+            }
+
+            log.event(`Time filter mode changed to: ${mode}`);
+        });
+    });
+
     // Year range slider change listener
     yearRangeSlider.noUiSlider.on('update', (values) => {
         const startYear = parseInt(values[0]);
@@ -967,14 +996,17 @@ function initFilters() {
 
         yearRangeText.textContent = `${startYear} – ${endYear}`;
 
-        // Only set filter if range is not full 1762-1824
-        if (startYear === 1762 && endYear === 1824) {
+        // Check if filter is at default range
+        const isDefaultRange = (timeFilterMode === 'correspondence' && startYear === 1762 && endYear === 1824) ||
+                               (timeFilterMode === 'lifespan' && startYear === 1700 && endYear === 1850);
+
+        if (isDefaultRange) {
             temporalFilter = null;
         } else {
-            temporalFilter = { start: startYear, end: endYear };
+            temporalFilter = { start: startYear, end: endYear, mode: timeFilterMode };
         }
 
-        log.event(`Temporal filter: ${startYear}-${endYear}`);
+        log.event(`Temporal filter (${timeFilterMode}): ${startYear}-${endYear}`);
         applyFilters();
     });
 
@@ -1004,6 +1036,74 @@ function initFilters() {
 
         applyFilters();
     });
+
+    // CSV Export button
+    initCSVExport();
+}
+
+// Initialize CSV Export
+function initCSVExport() {
+    const exportBtn = document.getElementById('export-csv');
+    if (!exportBtn) return;
+
+    exportBtn.addEventListener('click', () => {
+        exportFilteredPersonsAsCSV();
+    });
+}
+
+// Export filtered persons as CSV
+function exportFilteredPersonsAsCSV() {
+    if (filteredPersons.length === 0) {
+        alert('Keine Personen zum Exportieren. Bitte Filter anpassen.');
+        return;
+    }
+
+    // CSV Header
+    const headers = ['ID', 'Name', 'GND', 'Geburt', 'Tod', 'Orte', 'Berufe', 'Briefe', 'Rolle'];
+    const rows = [headers];
+
+    // CSV Rows
+    filteredPersons.forEach(person => {
+        const row = [
+            person.id || '',
+            person.name || '',
+            person.gnd || '',
+            person.dates?.birth || '',
+            person.dates?.death || '',
+            person.places?.map(p => p.name).join('; ') || '',
+            person.occupations?.map(o => o.name).join('; ') || '',
+            person.letter_count || 0,
+            person.roles?.join(', ') || ''
+        ];
+
+        // Quote fields containing comma, semicolon, or newline
+        const quotedRow = row.map(field => {
+            const str = String(field);
+            if (str.includes(',') || str.includes(';') || str.includes('\n') || str.includes('"')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        });
+
+        rows.push(quotedRow);
+    });
+
+    // Generate CSV string
+    const csv = rows.map(row => row.join(',')).join('\n');
+
+    // Create download
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    const today = new Date().toISOString().split('T')[0];
+    link.href = url;
+    link.download = `herdata-export-${today}.csv`;
+    link.click();
+
+    URL.revokeObjectURL(url);
+
+    log.init(`CSV export: ${filteredPersons.length} Personen exportiert`);
 }
 
 // Apply filters to data and update map
@@ -1024,12 +1124,30 @@ function applyFilters() {
         // Occupation filter: check if person's occupation group matches
         const occupationMatch = occupationFilters.includes(person.occupation_group);
 
-        // Temporal filter: check if person has letters in selected time range
+        // Temporal filter: check based on mode (correspondence or lifespan)
         let temporalMatch = true;
-        if (temporalFilter && person.letter_years) {
-            temporalMatch = person.letter_years.some(year =>
-                year >= temporalFilter.start && year <= temporalFilter.end
-            );
+        if (temporalFilter) {
+            if (temporalFilter.mode === 'correspondence') {
+                // Filter by letter years
+                if (person.letter_years && person.letter_years.length > 0) {
+                    temporalMatch = person.letter_years.some(year =>
+                        year >= temporalFilter.start && year <= temporalFilter.end
+                    );
+                }
+                // If no letter_years, person passes filter (indirect/SNDB entries)
+            } else if (temporalFilter.mode === 'lifespan') {
+                // Filter by birth/death years
+                const birthYear = person.dates?.birth ? parseInt(person.dates.birth) : null;
+                const deathYear = person.dates?.death ? parseInt(person.dates.death) : null;
+
+                if (birthYear || deathYear) {
+                    // Check if lifespan overlaps with filter range
+                    const personStart = birthYear || temporalFilter.start;
+                    const personEnd = deathYear || temporalFilter.end;
+                    temporalMatch = !(personEnd < temporalFilter.start || personStart > temporalFilter.end);
+                }
+                // If no dates, person passes filter
+            }
         }
 
         // Place type filter: check if person has a place with selected type

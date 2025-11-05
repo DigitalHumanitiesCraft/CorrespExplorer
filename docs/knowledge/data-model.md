@@ -2,12 +2,7 @@
 
 JSON-Schema, Feldtypen und Validierungsregeln für persons.json.
 
-Stand: 04.11.2025
-Datensatz-Version: 27.10.2025
-Pipeline: build_herdata_new
-Live-Commit: b36a807
-
-Siehe [INDEX.md](INDEX.md) für Navigation.
+* Stand: 04.11.2025
 
 ## persons.json Struktur
 
@@ -21,7 +16,7 @@ Siehe [INDEX.md](INDEX.md) für Navigation.
     "with_gnd": 270,
     "with_geodata": 227,
     "with_letters": 230,
-    "pipeline_version": "build_herdata_new"
+    "pipeline_version": "build_herdata"
   },
   "persons": [
     {
@@ -383,5 +378,5 @@ Siehe [data.md](data.md) Section "Provenance" für Details.
 - [data.md](data.md) - Datenquellen, Herkunft, Lizenzen, Qualität
 - [tech.md](tech.md) - Pipeline-Architektur, 4 Phasen
 - [INDEX.md](INDEX.md) - Knowledge Vault Navigation
-- Pipeline-Code: [../../preprocessing/build_herdata_new.py](../../preprocessing/build_herdata_new.py)
+- Pipeline-Code: [../../preprocessing/build_herdata.py](../../preprocessing/build_herdata.py)
 - Produktions-JSON: [../../docs/data/persons.json](../../docs/data/persons.json)

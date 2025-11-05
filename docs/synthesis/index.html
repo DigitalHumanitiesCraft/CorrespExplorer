@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HerData Synthese - Prosopographische Datenexploration</title>
+
+    <!-- noUiSlider CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.css" />
+
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -35,13 +39,14 @@
                 </div>
 
                 <div class="filter-section">
-                    <h3 data-tooltip="Nach Geburtsjahr filtern">Lebensdaten</h3>
-                    <div class="range-filter">
-                        <label>
-                            Geburt: <span id="birth-range-label">1700-1850</span>
-                        </label>
-                        <input type="range" id="birth-min" min="1700" max="1850" value="1700">
-                        <input type="range" id="birth-max" min="1700" max="1850" value="1850">
+                    <h3>Zeitfilter</h3>
+                    <div class="time-filter-tabs">
+                        <button class="time-filter-tab active" data-mode="correspondence">Korrespondenz</button>
+                        <button class="time-filter-tab" data-mode="lifespan">Lebensdaten</button>
+                    </div>
+                    <div id="synthesis-year-range-slider"></div>
+                    <div class="year-range-display">
+                        <span id="synthesis-year-range-text">1762 – 1824</span>
                     </div>
                 </div>
 
@@ -126,11 +131,12 @@
                 <span class="role-badge mentioned">Erwähnt</span> = in Briefen erwähnt •
                 <span class="role-badge both">Beides</span> = Absenderin & erwähnt •
                 <span class="role-badge indirect">SNDB</span> = nur biografische Datenbank
-                <span class="footer-separator">|</span>
-                <span class="footer-meta">448 Frauen erfasst</span>
             </div>
         </footer>
     </div>
+
+    <!-- noUiSlider JS -->
+    <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
 
     <script type="module" src="js/app.js"></script>
 </body>

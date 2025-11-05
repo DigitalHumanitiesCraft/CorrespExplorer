@@ -41,7 +41,7 @@ Dieses Dokument spezifiziert WIE Features umgesetzt werden. Für fachliche Anfor
 * **Zugänglichkeit (leichtgewichtig):** Alle interaktiven Elemente sind per Tastatur erreichbar, haben sprechende Labels/Aria-Attribute und sichtbaren Fokus.
 * **Fallbacks:** Fehlt ein Feld, wird kein Platzhalter erfunden; UI zeigt den nächst sinnvolleren Kontext (z. B. „Keine Berufsangabe“).
 * **Fehlerdarstellung:** Kurze, nicht-technische Meldungen im Kontext der Aktion; kein technischer Stacktrace in der UI.
-* **Lizenz/Quellenhinweise:** Bei Exporten (CSV/PNG) kurzer Herkunfts- und Lizenzhinweis in Metadaten/Legende.
+* **Lizenz/Quellenhinweise:** Bei Exporten (CSV) kurzer Herkunfts- und Lizenzhinweis in Metadaten.
 * **Änderungsmanagement:** Jede Änderung erhält eine einzeilige Notiz im Changelog (siehe unten) und kann ohne Seiteneffekte zurückgerollt werden.
 
 ---
@@ -49,11 +49,9 @@ Dieses Dokument spezifiziert WIE Features umgesetzt werden. Für fachliche Anfor
 ## Feature-Übersicht & Priorisierung
 
 1. **CSV-Export gefilterter Personen**
-2. **Vollständigkeits-Badge pro Person**
-3. **PNG-Export aktueller Visualisierung**
-4. **Statistik-Dashboard (Aggregat-Sichten)**
-5. **Namensvarianten in JSON integrieren (optional, Pipeline)**
-6. **Volltextsuche (fuzzy) über Name/Biografie/Berufe/Orte**
+2. **Statistik-Dashboard (Aggregat-Sichten)**
+3. **Namensvarianten in JSON integrieren (optional, Pipeline)**
+4. **Volltextsuche (fuzzy) über Name/Biografie/Berufe/Orte**
 
 > **Hinweis zu Abhängigkeiten:** Volltextsuche profitiert stark von **Namensvarianten**. Wenn Varianten früh vorliegen, ist eine Vorziehung der Suche sinnvoll.
 
@@ -79,42 +77,7 @@ Dieses Dokument spezifiziert WIE Features umgesetzt werden. Für fachliche Anfor
 
 ---
 
-### 2) Vollständigkeits-Badge pro Person
-
-* **Ziel:** Transparente Anzeige der Feldfülle je Person.
-* **Feldset:** `ID`, `Name`, `GND`, `Geburt`, `Tod`, `Biografie`, `Orte (≥1)`, `Berufe (≥1)`.
-* **UX-Platzierung:** Header der Personenseite rechts neben dem Namen.
-* **Definition of Ready:**
-
-  * Feldset ist fixiert und für alle Teams sichtbar dokumentiert.
-  * Farbgrenzen (niedrig/mittel/hoch) sind semantisch benannt, nicht numerisch.
-* **Definition of Done:**
-
-  * Badge zeigt Klartext („X % vollständig“, „n von m Feldern“).
-  * Farbskala transportiert Semantik (unvollständig/teilweise/vollständig) und ist auch ohne Farbe verständlich (Text).
-* **Fallbacks:** Fehlende Felder reduzieren nur den Zähler; keine Fehlermeldung.
-* **Manueller Test:** Person mit vielen vs. wenigen Feldern öffnen → Badge-Text und Zähler auf Plausibilität prüfen → Farbe/Label nachvollziehbar.
-
----
-
-### 3) PNG-Export aktueller Visualisierung
-
-* **Ziel:** Aktuelle Ansicht (Karte, Timeline etc.) als Bild exportieren.
-* **UX-Platzierung:** Button in der jeweiligen Visualisierung, nahe Zoom/Legende.
-* **Definition of Ready:**
-
-  * Sichtbarer Zustand (Filter, Zoom, Layer) ist UI-seitig abfragbar.
-  * Export enthält eine kurze Legende und Quellenhinweis.
-* **Definition of Done:**
-
-  * Bild repräsentiert exakt die aktuelle Ansicht.
-  * Legende/Quelle sind lesbar, ohne UI-Steuerelemente.
-* **Fallbacks:** Ist ein Canvas/SVG nicht exportierbar, erscheint eine klare Info mit Hinweis auf Screenshot-Alternative.
-* **Manueller Test:** Ansicht einstellen → Export → Bild öffnen → Zoom/Filter/Legende visuell abgleichen.
-
----
-
-### 4) Statistik-Dashboard (Aggregat-Sichten)
+### 2) Statistik-Dashboard (Aggregat-Sichten)
 
 * **Ziel:** Überblick über Muster (Top-Berufe, Ortskonzentrationen, Geburts-Dekaden, Rollen).
 * **UX-Platzierung:** Registerreiter „Statistik“ neben Karte/Zeit/Netz.
@@ -131,7 +94,7 @@ Dieses Dokument spezifiziert WIE Features umgesetzt werden. Für fachliche Anfor
 
 ---
 
-### 5) Namensvarianten in JSON integrieren (Pipeline, optional)
+### 3) Namensvarianten in JSON integrieren (Pipeline, optional)
 
 * **Ziel:** Such-/Findability-Verbesserung durch zusätzliche Schreibweisen.
 * **Ablauf (inhaltlich):** Varianten aus `ra_ndb_main.xml` pro Person extrahieren, normalisieren, Duplikate/Leereinträge entfernen, in `persons.json` ablegen.
@@ -148,7 +111,7 @@ Dieses Dokument spezifiziert WIE Features umgesetzt werden. Für fachliche Anfor
 
 ---
 
-### 6) Volltextsuche (fuzzy)
+### 4) Volltextsuche (fuzzy)
 
 * **Ziel:** Tippfehler-robuste Suche über Name, Biografie, Berufe, Orte.
 * **UX-Platzierung:** Suchfeld prominent in der Sidebar, Auto-Vorschläge unter dem Feld.
@@ -167,7 +130,7 @@ Dieses Dokument spezifiziert WIE Features umgesetzt werden. Für fachliche Anfor
 
 ## Abhängigkeiten & Reihenfolge (narrativ)
 
-* **Sofort:** CSV-Export → Vollständigkeits-Badge → PNG-Export (direkter Nutzen, keine Vorarbeiten).
+* **Sofort:** CSV-Export (direkter Nutzen, keine Vorarbeiten).
 * **Danach:** Statistik-Dashboard (nutzt gefestigte Felddefinitionen).
 * **Optional/ergänzend:** Namensvarianten (verbessern direkt die spätere Suche).
 * **Zum Schluss:** Volltextsuche (profitiert maximal von Namensvarianten und stabilem Feldschema).

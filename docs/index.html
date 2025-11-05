@@ -66,7 +66,11 @@
 
             <!-- Time Period Filter -->
             <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
-                <h4 id="filter-time-heading">Zeitraum</h4>
+                <h4 id="filter-time-heading">Zeitfilter</h4>
+                <div class="time-filter-tabs">
+                    <button class="time-filter-tab active" data-mode="correspondence">Korrespondenz</button>
+                    <button class="time-filter-tab" data-mode="lifespan">Lebensdaten</button>
+                </div>
                 <div id="year-range-slider" aria-label="Jahr-Bereich wählen" role="slider" aria-valuemin="1762" aria-valuemax="1824"></div>
                 <div class="year-range-display">
                     <span id="year-range-text" aria-live="polite">1762 – 1824</span>
@@ -85,6 +89,12 @@
             <div class="filter-buttons">
                 <button id="select-all-filters" aria-label="Alle Filter auswählen">Alle auswählen</button>
                 <button id="reset-filters" aria-label="Alle Filter zurücksetzen">Alle zurücksetzen</button>
+            </div>
+
+            <div class="export-actions">
+                <button id="export-csv" class="btn-export" aria-label="Gefilterte Personen als CSV exportieren">
+                    Als CSV exportieren
+                </button>
             </div>
         </aside>
 

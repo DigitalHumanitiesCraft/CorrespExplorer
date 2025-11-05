@@ -2,7 +2,7 @@
 
 UI/UX-Design, Informationsarchitektur und Visualisierungsstrategie.
 
-Stand: 2025-10-19 (Zielbild) | Updates: 2025-10-29 (Ist-Stand)
+* Stand: 2025-10-19
 
 ## Zweck
 
@@ -295,7 +295,9 @@ Begründung: ADR-001 (WebGL-Performance, native clustering, moderne API).
 Features:
 - Clustering mit Rollenkodierung (Farbe basierend auf überwiegender Rolle im Cluster)
 - Popups: Multi-Person-Popups bei überlappenden Koordinaten (ADR-002)
-- Filter: Briefaktivität (Absenderin/Erwähnt/Nur SNDB), Berufsgruppen (7 Kategorien), Zeitspanne (noUiSlider 15.7.1 dual-handle)
+- Filter: Briefaktivität (Absenderin/Erwähnt/Nur SNDB), Berufsgruppen (7 Kategorien), Zeitfilter mit zwei Modi (noUiSlider 15.7.1 dual-handle)
+- Zeitfilter: Zwei Modi - "Korrespondenz" (1762-1824, Briefjahre) und "Lebensdaten" (1700-1850, Geburt/Tod), kompakte Tab-Umschaltung
+- CSV-Export: Export gefilterter Personen mit Kernmetadaten (ID, Name, GND, Lebensdaten, Orte, Berufe, Briefanzahl, Rolle)
 - Performance: TTI < 3s erreicht (Ziel: ≤ 2s)
 
 Nicht implementiert: Heatmap-Layer, Brushing & Linking zu Timeline/Netz (da Timeline/Netz nicht als primäre Views existieren).

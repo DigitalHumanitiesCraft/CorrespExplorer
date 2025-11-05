@@ -2,9 +2,9 @@
 
 Kompakte, verbindliche Beschreibung dessen, was HerData leisten soll, was bewusst nicht vorgesehen ist und wie der aktuelle Erfüllungsgrad einzuschätzen ist. Rein deskriptiv, ohne technische Fragmente, so dass Dritte den Stand nachvollziehen und fortschreiben können.
 
-**Stand:** 04.11.2025
+**Stand:** 05.11.2025
 **Datensatz-Version:** 27.10.2025
-**Pipeline-Bezeichnung:** build_herdata_new
+**Pipeline-Bezeichnung:** build_herdata
 **Live-Commit:** b36a807
 
 ---
@@ -38,7 +38,7 @@ Für kulturinteressierte Leserinnen und Leser bietet HerData einen unmittelbaren
 ### 3. Filterbare Exploration
 
 **Anforderung.** Eine kleine Zahl klarer Filter (Zeit, einfache Tätigkeitskategorien, Ortstyp, Normierung) reduziert die Menge vorhersagbar, ohne Kontext zu verlieren.
-**Erfüllungsgrad.** Erfüllt: Filter sind nutzbar und verhalten sich erwartungskonform.
+**Erfüllungsgrad.** Erfüllt: Filter sind nutzbar und verhalten sich erwartungskonform. Der Zeitfilter bietet zwei Modi: "Korrespondenz" (1762-1824, filtert nach Briefjahren) und "Lebensdaten" (1700-1850, filtert nach Geburts-/Todesjahren), um unterschiedliche Forschungsperspektiven zu ermöglichen. Personen ohne Datenwerte werden nicht ausgefiltert. CSV-Export gefilterter Personen ist verfügbar (ID, Name, GND, Lebensdaten, Orte, Berufe, Briefanzahl, Rolle).
 
 ### 4. Statistische Übersichten
 
@@ -91,12 +91,17 @@ Eine eigenständige Netzwerknavigation als Hauptfunktion, brieforientierte Vollt
 
 ---
 
-## Abhängigkeiten zur Schließung der offenen Punkte
+## Abgeschlossene und offene Punkte
 
-**Namensvarianten übernehmen.** Varianten aus den Quellen (LFDNR>0 in ra_ndb_main.xml, 797 Einträge für 448 IDs) verbessern Suche und historische Abdeckung.
-**Zeitliche Attribuierung von Orten.** Zeitbezüge von Wirkungsorten sind derzeit nicht in den Quelldaten vorhanden (places-Array enthält nur name, lat, lon, type). Eine zukünftige Integration hängt von erweiterten Exporten ab.
+**Namensvarianten (abgeschlossen).** Integration der Varianten aus ra_ndb_main.xml (LFDNR>0, 797 Einträge für 448 IDs) ist in der Pipeline implementiert und verbessert Suche und historische Abdeckung.
 
-Konkrete Umsetzungsspezifikationen für priorisierte Features siehe [implementation-quick-wins.md](implementation-quick-wins.md).
+**Dualer Zeitfilter (abgeschlossen).** Zwei Modi ("Korrespondenz" 1762-1824 und "Lebensdaten" 1700-1850) ermöglichen unterschiedliche zeitliche Forschungsperspektiven auf beiden Hauptseiten (Karte und Synthesis).
+
+**CSV-Export (abgeschlossen).** Export gefilterter Personen mit Kernmetadaten (ID, Name, GND, Lebensdaten, Orte, Berufe, Briefanzahl, Rolle) ist auf der Hauptseite implementiert.
+
+**Zeitliche Attribuierung von Orten (offen).** Zeitbezüge von Wirkungsorten sind derzeit nicht in den Quelldaten vorhanden (places-Array enthält nur name, lat, lon, type). Eine zukünftige Integration hängt von erweiterten Exporten ab.
+
+Konkrete Umsetzungsspezifikationen für priorisierte Features siehe [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md).
 
 ---
 
@@ -108,4 +113,4 @@ Ein einheitlicher Versionsbanner steht in allen Projektdateien; veraltete Konzep
 
 ## Konsequenz für Design, Daten und Veröffentlichung
 
-Das Design stützt sich auf die bestätigte Karten-Startansicht, das Card-Profil und wenige, klare Filter. Die Datenaufbereitung richtet sich an den beschriebenen Regeln für Verknüpfung, Deduplizierung, Geocoding und Unsicherheit aus. Beziehungen und Briefmetadaten sind bereits vollständig integriert; die Integration von Namensvarianten ist als nächster Schritt vorgesehen. Die Veröffentlichung folgt einem stabilen, nachvollziehbaren Ablauf; Provenance-Hinweise und Lizenzangaben bleiben sichtbar.
+Das Design stützt sich auf die bestätigte Karten-Startansicht, das Card-Profil und wenige, klare Filter. Die Datenaufbereitung richtet sich an den beschriebenen Regeln für Verknüpfung, Deduplizierung, Geocoding und Unsicherheit aus. Beziehungen, Briefmetadaten und Namensvarianten sind vollständig integriert. Der duale Zeitfilter und CSV-Export erweitern die Filterfunktionen für unterschiedliche Forschungsperspektiven. Die Veröffentlichung folgt einem stabilen, nachvollziehbaren Ablauf; Provenance-Hinweise und Lizenzangaben bleiben sichtbar.

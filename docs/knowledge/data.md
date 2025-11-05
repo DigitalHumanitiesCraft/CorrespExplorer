@@ -2,12 +2,7 @@
 
 Datenarchitektur, Strukturen und Verknüpfungen für HerData.
 
-Stand: 04.11.2025
-Datensatz-Version: 27.10.2025
-Pipeline: build_herdata_new
-Live-Commit: b36a807
-
-Siehe [INDEX.md](INDEX.md) für Navigation.
+* Stand: 04.11.2025
 
 ## Grundgesamtheit und Coverage
 
@@ -171,7 +166,7 @@ Datenqualität:
 
 ## Provenance
 
-Provenance-Tracking: Aktiviert (track_provenance=True in build_herdata_new.py)
+Provenance-Tracking: Aktiviert (track_provenance=True in build_herdata.py)
 
 Debug-Datei: docs/data/persons_debug.json (nicht öffentlich)
 Inhalt: Alle Felder + _provenance-Objekt pro Feld
@@ -223,7 +218,7 @@ Quelle: Pipeline-Ausgabe, persons.json Meta-Feld
 
 ## Pipeline-Architektur
 
-Aktive Pipeline: build_herdata_new.py (1009 Zeilen)
+Aktive Pipeline: build_herdata.py (1009 Zeilen)
 Legacy-Pipeline: build_herdata_legacy.py (Referenz, nicht aktiv)
 
 4 Phasen:
@@ -314,6 +309,6 @@ geo_links.xml (1,9 MB, 63.766 Einträge):
 
 - [INDEX.md](INDEX.md) - Navigation im Knowledge Vault
 - [decisions.md](decisions.md) - Architektur- und Produktentscheidungen
-- Pipeline-Code: [../preprocessing/build_herdata_new.py](../preprocessing/build_herdata_new.py)
+- Pipeline-Code: [../preprocessing/build_herdata.py](../preprocessing/build_herdata.py)
 - Produktions-JSON: [../docs/data/persons.json](../docs/data/persons.json)
 - CMIF-Quelle: https://zenodo.org/records/14998880

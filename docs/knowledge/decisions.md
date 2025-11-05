@@ -7,9 +7,9 @@
 
 Dieses Dokument fasst alle maßgeblichen Entscheidungen von HerData in kompakter, begründeter Form zusammen. Jede Entscheidung benennt Ziel, Anlass, getroffene Wahl, beobachteten Effekt und aktuellen Status. Dadurch werden frühere Varianten verständlich, ohne dass Leserinnen und Leser Nebendateien oder technische Details benötigen.
 
-**Stand:** 04.11.2025
+**Stand:** 05.11.2025
 **Datensatz-Version:** 27.10.2025
-**Pipeline-Bezeichnung:** build_herdata_new
+**Pipeline-Bezeichnung:** build_herdata
 **Live-Commit:** b36a807
 
 ## Startansicht und Navigationsmodell
@@ -31,6 +31,14 @@ Beziehungen werden als Hover-basierte Visualisierung auf der Karte dargestellt (
 ## Such- und Filterprinzip
 
 Filter dienen der kontrollierten Eingrenzung entlang weniger, fachlich verständlicher Dimensionen wie Zeitraum, Ortstyp und grundlegenden Tätigkeitskategorien. Eine zentrale Suchfunktion ist als Ergänzung implementiert, bleibt aber nicht primäre Interaktionsform. Status: Filter bestätigt; Suche implementiert als ergänzende Funktion. Effekt: Vorhersagbares Verhalten durch Filter, Flexibilität durch Suche.
+
+## Dualer Zeitfilter: Korrespondenz vs. Lebensdaten
+
+Der Zeitfilter bietet zwei Modi zur Filterung: "Korrespondenz" (1762-1824, basierend auf Briefjahren) und "Lebensdaten" (1700-1850, basierend auf Geburts-/Todesjahren). Diese Trennung wurde implementiert, weil beide Zeitdimensionen unterschiedliche Forschungsperspektiven ermöglichen: Korrespondenz zeigt aktive Briefwechsel-Perioden, Lebensdaten ermöglichen biografische Eingrenzung unabhängig von erhaltener Korrespondenz. Eine Zusammenführung in einen einzelnen Filter hätte zu Verwirrung geführt, da Personen ohne Briefaktivität (indirect/SNDB-Einträge) nicht ausgefiltert werden sollten. Status: Dual-Modus implementiert auf Karte und Synthesis-Seite mit identischem UI. Effekt: Klarere Forschungsperspektiven, keine ungewollte Exklusion von Personen ohne Briefdaten.
+
+## CSV-Export für gefilterte Daten
+
+Ein CSV-Export wurde auf der Hauptseite implementiert, um Forschenden direkten Zugriff auf gefilterte Personendaten zu ermöglichen. Der Export enthält ID, Name, GND, Lebensdaten, Orte, Berufe, Briefanzahl und Rolle im UTF-8-Format mit BOM für Excel-Kompatibilität. Eine automatische Aggregation aller Felder wurde nicht umgesetzt, da der Export auf Kernmetadaten fokussiert. Status: CSV-Export für Hauptseite implementiert. Effekt: Direkte Datennutzung für externe Analysen, niederschwelliger Zugang für Forschende.
 
 ## Datenkurationsstrategie
 

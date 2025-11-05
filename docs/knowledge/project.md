@@ -4,7 +4,7 @@ HerData beschreibt und visualisiert kuratierte Informationen zu Frauen im Umfeld
 
 **Stand:** 04.11.2025
 **Datensatz-Version:** 27.10.2025
-**Pipeline-Bezeichnung:** build_herdata_new
+**Pipeline-Bezeichnung:** build_herdata
 **Live-Commit:** b36a807
 
 Das Zielbild ist eine statische, robuste Webdarstellung, deren Startansicht eine Karte ist. Personen erscheinen in einer kartenbasierten Übersicht und in eigenständigen Cards, die wesentliche Metafelder erklären und externe Verweise sichtbar machen. Netzwerkbezüge werden als kontextuelle Hinweise integriert; eine eigenständige Netz-Navigation ist nicht vorgesehen. Eine frühere Timeline-Variante wurde nach Evaluierung zugunsten der Karten-Startansicht verworfen, weil die Karte die räumliche Orientierung und den Einstieg in Personenprofile zuverlässiger unterstützt.

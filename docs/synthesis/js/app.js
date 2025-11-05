@@ -13,8 +13,9 @@ const state = {
         search: '',
         roles: ['sender', 'mentioned', 'both', 'indirect'],
         normierung: ['gnd', 'sndb'],
-        birthMin: 1700,
-        birthMax: 1850
+        timeFilterMode: 'correspondence',  // 'correspondence' or 'lifespan'
+        yearMin: 1762,
+        yearMax: 1824
     },
     sorting: {
         column: 'name',
@@ -24,6 +25,7 @@ const state = {
 
 // Single comprehensive view configuration
 const tableColumns = [
+    { key: 'star', label: '', sortable: false, tooltip: '' },
     { key: 'name', label: 'Name', sortable: true, tooltip: 'Klicke zum Sortieren nach Name' },
     { key: 'dates', label: 'Lebensdaten', sortable: false, tooltip: 'Geburts- und Todesjahr' },
     { key: 'role', label: 'Rolle', sortable: true, tooltip: 'Rolle in der Korrespondenz - Klicke zum Sortieren' },
@@ -113,6 +115,64 @@ function setupEventListeners() {
     document.getElementById('clear-basket').addEventListener('click', () => {
         clearBasket();
     });
+
+    // Initialize noUiSlider for time filter
+    const yearRangeSlider = document.getElementById('synthesis-year-range-slider');
+    const yearRangeText = document.getElementById('synthesis-year-range-text');
+
+    noUiSlider.create(yearRangeSlider, {
+        start: [1762, 1824],
+        connect: true,
+        step: 1,
+        range: {
+            'min': 1762,
+            'max': 1824
+        },
+        format: {
+            to: value => Math.round(value),
+            from: value => Number(value)
+        }
+    });
+
+    // Time filter mode tabs
+    const timeFilterTabs = document.querySelectorAll('.time-filter-tab');
+    timeFilterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const mode = tab.dataset.mode;
+            state.filters.timeFilterMode = mode;
+
+            // Update active tab
+            timeFilterTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Update slider range based on mode
+            if (mode === 'correspondence') {
+                yearRangeSlider.noUiSlider.updateOptions({
+                    range: { 'min': 1762, 'max': 1824 }
+                });
+                yearRangeSlider.noUiSlider.set([1762, 1824]);
+            } else if (mode === 'lifespan') {
+                yearRangeSlider.noUiSlider.updateOptions({
+                    range: { 'min': 1700, 'max': 1850 }
+                });
+                yearRangeSlider.noUiSlider.set([1700, 1850]);
+            }
+
+            console.log(`Time filter mode changed to: ${mode}`);
+        });
+    });
+
+    // Year range slider change listener
+    yearRangeSlider.noUiSlider.on('update', (values) => {
+        const startYear = parseInt(values[0]);
+        const endYear = parseInt(values[1]);
+
+        yearRangeText.textContent = `${startYear} – ${endYear}`;
+        state.filters.yearMin = startYear;
+        state.filters.yearMax = endYear;
+
+        applyFilters();
+    });
 }
 
 // Apply filters
@@ -139,12 +199,29 @@ function applyFilters() {
             return false;
         }
 
-        // Birth year filter
-        if (person.dates && person.dates.birth) {
-            const birthYear = parseInt(person.dates.birth);
-            if (birthYear < state.filters.birthMin || birthYear > state.filters.birthMax) {
-                return false;
+        // Time filter (correspondence or lifespan mode)
+        if (state.filters.timeFilterMode === 'correspondence') {
+            // Filter by letter years
+            if (person.letter_years && person.letter_years.length > 0) {
+                const hasMatch = person.letter_years.some(year =>
+                    year >= state.filters.yearMin && year <= state.filters.yearMax
+                );
+                if (!hasMatch) return false;
             }
+            // If no letter_years, person passes filter (indirect/SNDB entries)
+        } else if (state.filters.timeFilterMode === 'lifespan') {
+            // Filter by birth/death years
+            const birthYear = person.dates?.birth ? parseInt(person.dates.birth) : null;
+            const deathYear = person.dates?.death ? parseInt(person.dates.death) : null;
+
+            if (birthYear || deathYear) {
+                // Check if lifespan overlaps with filter range
+                const personStart = birthYear || state.filters.yearMin;
+                const personEnd = deathYear || state.filters.yearMax;
+                const overlaps = !(personEnd < state.filters.yearMin || personStart > state.filters.yearMax);
+                if (!overlaps) return false;
+            }
+            // If no dates, person passes filter
         }
 
         return true;
@@ -205,15 +282,9 @@ function renderTable() {
 
     // Render rows
     tbody.innerHTML = sorted.map(person => {
-        const inBasket = state.basket.some(p => p.id === person.id);
         const cells = tableColumns.map(col => formatCell(person, col.key)).join('');
-        const starButton = `<td style="width: 40px; text-align: center;">
-            <button class="btn-add-basket ${inBasket ? 'in-basket' : ''}" data-id="${person.id}" title="Zum Wissenskorb hinzufügen">
-                ${inBasket ? '⭐' : '☆'}
-            </button>
-        </td>`;
         return `<tr data-id="${person.id}" ${state.selectedPerson?.id === person.id ? 'class="selected"' : ''}>
-            ${starButton}${cells}
+            ${cells}
         </tr>`;
     }).join('');
 
@@ -243,6 +314,14 @@ function renderTable() {
 // Format table cell based on column key
 function formatCell(person, key) {
     switch(key) {
+        case 'star':
+            const inBasket = state.basket.some(p => p.id === person.id);
+            return `<td style="width: 40px; text-align: center;">
+                <button class="btn-add-basket ${inBasket ? 'in-basket' : ''}" data-id="${person.id}" title="Zum Wissenskorb hinzufügen">
+                    ${inBasket ? '⭐' : '☆'}
+                </button>
+            </td>`;
+
         case 'name':
             let nameHtml = `<strong>${person.name}</strong>`;
             // Show matched variant if searching and variant matched
@@ -276,9 +355,12 @@ function formatCell(person, key) {
                 return `<td class="muted" style="font-size: 0.85rem;" title="Diese Person erscheint nur in biografischen Quellen, nicht in der erhaltenen Briefkorrespondenz">keine</td>`;
             }
             const corrParts = [];
-            if (sent > 0) corrParts.push(`<span title="${sent} Brief${sent > 1 ? 'e' : ''} gesendet">${sent}B</span>`);
-            if (mentions > 0) corrParts.push(`<span title="${mentions}× erwähnt">${mentions}E</span>`);
-            return `<td style="font-size: 0.85rem;">${corrParts.join(' ')}</td>`;
+            if (sent > 0) corrParts.push(`${sent}B`);
+            if (mentions > 0) corrParts.push(`${mentions}E`);
+            const tooltipText = [];
+            if (sent > 0) tooltipText.push(`${sent} Brief${sent > 1 ? 'e' : ''} gesendet`);
+            if (mentions > 0) tooltipText.push(`${mentions}× erwähnt`);
+            return `<td style="font-size: 0.85rem;" title="${tooltipText.join(', ')}">${corrParts.join(' ')}</td>`;
 
         case 'occupations_compact':
             const occs = person.occupations || [];

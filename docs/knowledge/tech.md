@@ -4,7 +4,7 @@ Technische Beschreibung von HerData: Datenaufbereitung, Web-Applikation, Bereits
 
 **Stand:** 04.11.2025
 **Datensatz-Version:** 27.10.2025
-**Pipeline-Bezeichnung:** build_herdata_new
+**Pipeline-Bezeichnung:** build_herdata
 **Live-Commit:** b36a807
 
 ## Zielbild der Technik

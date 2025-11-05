@@ -216,6 +216,83 @@ body {
     width: 100%;
 }
 
+/* Time Filter Tabs - matching main page style */
+.filter-section .time-filter-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.filter-section .time-filter-tab {
+    flex: 1;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+    color: #2d3748;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 500;
+}
+
+.filter-section .time-filter-tab:hover {
+    background: #dee2e6;
+}
+
+.filter-section .time-filter-tab.active {
+    background: #2c5f8d;
+    color: white;
+    border-color: #2c5f8d;
+}
+
+.filter-section .year-range-display {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* noUiSlider customization for synthesis - matching main page */
+#synthesis-year-range-slider {
+    margin: 12px 0;
+    height: 8px;
+}
+
+#synthesis-year-range-slider .noUi-base {
+    height: 8px;
+}
+
+#synthesis-year-range-slider .noUi-connects {
+    border-radius: 4px;
+}
+
+#synthesis-year-range-slider .noUi-connect {
+    background: #2d6a4f;
+}
+
+#synthesis-year-range-slider .noUi-handle {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #2d6a4f;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    top: -6px;
+    right: -10px;
+}
+
+#synthesis-year-range-slider .noUi-handle:hover {
+    background: #f8f9fa;
+}
+
+#synthesis-year-range-slider .noUi-handle:before,
+#synthesis-year-range-slider .noUi-handle:after {
+    display: none;
+}
+
 .btn-reset {
     width: 100%;
     padding: var(--spacing-sm);

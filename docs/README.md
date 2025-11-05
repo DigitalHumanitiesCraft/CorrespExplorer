@@ -157,7 +157,7 @@ Source → Processing → Visualization:
    - SNDB Geodata: Coordinate resolution (3.6 MB)
 
 2. **Processing:**
-   - Pipeline: preprocessing/build_herdata_new.py
+   - Pipeline: preprocessing/build_herdata.py
    - 7 phases: identification, enrichment, validation
    - Runtime: 0.63 seconds
    - Test suite: 48 tests, all passing

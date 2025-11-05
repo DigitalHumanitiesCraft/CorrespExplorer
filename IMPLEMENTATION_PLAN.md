@@ -5,7 +5,7 @@ Basis: implementation-quick-wins.md, requirements.md
 
 ## Übersicht
 
-4 Features in priorisierter Reihenfolge mit klaren Schritten und kompakten Tests.
+3 Features in priorisierter Reihenfolge mit klaren Schritten und kompakten Tests.
 
 ---
 
@@ -22,7 +22,7 @@ Basis: implementation-quick-wins.md, requirements.md
 
 ### Implementierung
 
-Datei: preprocessing/build_herdata_new.py
+Datei: preprocessing/build_herdata.py
 
 ```python
 def load_name_variants(self):
@@ -86,7 +86,7 @@ def run(self):
 
 ### Test
 
-**Automatischer Test** (in build_herdata_new.py):
+**Automatischer Test** (in build_herdata.py):
 
 ```python
 def test_name_variants(self):
@@ -107,7 +107,7 @@ def test_name_variants(self):
 ```bash
 # 1. Pipeline ausführen
 cd preprocessing
-python build_herdata_new.py
+python build_herdata.py
 
 # 2. Stichprobe: ID 35217 (Rose d'Aguilar / Rose Lawrence)
 node -e "
@@ -135,131 +135,7 @@ console.log('Varianten gesamt:', totalVariants);
 
 ---
 
-## Feature 2: Vollständigkeits-Badge
-
-**Ziel:** Badge im Header der Personenseite zeigt "6 von 8 Feldern (75% vollständig)".
-
-**Felder:** id, name, gnd, birth, death, biography, places (≥1), occupations (≥1)
-
-### Implementierung
-
-Datei: docs/js/person.js
-
-```javascript
-function renderCompletenessIndicator(person) {
-    const fields = [
-        { name: 'id', present: !!person.id },
-        { name: 'name', present: !!person.name },
-        { name: 'gnd', present: !!person.gnd },
-        { name: 'birth', present: !!person.dates?.birth },
-        { name: 'death', present: !!person.dates?.death },
-        { name: 'biography', present: !!person.biography },
-        { name: 'places', present: person.places?.length > 0 },
-        { name: 'occupations', present: person.occupations?.length > 0 }
-    ];
-
-    const present = fields.filter(f => f.present).length;
-    const total = fields.length;
-    const percentage = Math.round((present / total) * 100);
-
-    // Color coding
-    let colorClass = 'low';
-    if (percentage >= 75) colorClass = 'high';
-    else if (percentage >= 50) colorClass = 'medium';
-
-    return `
-        <div class="completeness-badge completeness-${colorClass}">
-            <span class="completeness-text">${present} von ${total} Feldern</span>
-            <span class="completeness-percent">${percentage}% vollständig</span>
-        </div>
-    `;
-}
-
-// In renderPersonHeader():
-const completenessHtml = renderCompletenessIndicator(person);
-// ... add to header after name
-```
-
-Datei: docs/css/person-cards.css
-
-```css
-.completeness-badge {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-end;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    line-height: 1.3;
-}
-
-.completeness-text {
-    font-weight: 600;
-}
-
-.completeness-percent {
-    font-size: 0.75rem;
-    opacity: 0.8;
-}
-
-.completeness-high {
-    background: var(--color-success-bg, #e8f5e9);
-    color: var(--color-success-text, #2e7d32);
-}
-
-.completeness-medium {
-    background: var(--color-warning-bg, #fff3e0);
-    color: var(--color-warning-text, #f57c00);
-}
-
-.completeness-low {
-    background: var(--color-error-bg, #ffebee);
-    color: var(--color-error-text, #c62828);
-}
-```
-
-### Test
-
-**Manueller Test** (3 Minuten):
-
-```bash
-# 1. Browser öffnen
-start http://localhost:8080/person.html?id=1906
-
-# 2. Visuell prüfen:
-# - Badge erscheint im Header rechts neben Name
-# - Zeigt "X von 8 Feldern"
-# - Zeigt "Y% vollständig"
-# - Farbe entspricht Prozentsatz (grün/gelb/rot)
-
-# 3. Mehrere Personen testen:
-# - Vollständig: ID mit GND, Daten, Bio, Orten, Berufen
-# - Teilweise: ID ohne einige Felder
-# - Minimal: ID mit nur Name
-
-# 4. Konsole prüfen (keine Fehler)
-```
-
-**Automatischer Test** (optional, in person.js):
-
-```javascript
-// Während der Entwicklung in Konsole ausführen
-const testPerson = {
-    id: '1906',
-    name: 'Test Person',
-    gnd: '12345',
-    dates: { birth: '1800', death: '1850' },
-    biography: 'Test bio',
-    places: [{ name: 'Weimar' }],
-    occupations: [{ name: 'Schriftstellerin' }]
-};
-console.log(renderCompletenessIndicator(testPerson));
-// Erwartung: "8 von 8 Feldern (100% vollständig)" mit grüner Farbe
-```
-
----
-
-## Feature 3: CSV-Export gefilterte Personen
+## Feature 2: CSV-Export gefilterte Personen
 
 **Ziel:** Button in Filter-Sidebar exportiert aktuell sichtbare Personen als CSV.
 
@@ -403,128 +279,166 @@ start http://localhost:8080/
 
 ---
 
-## Feature 4: PNG-Export Karte
+## Feature 3: Dualer Zeitfilter (Korrespondenz vs. Lebensdaten)
 
-**Ziel:** Button exportiert aktuelle Kartenansicht als PNG mit Legende.
+**Ziel:** Zeitfilter mit zwei Modi für unterschiedliche Forschungsperspektiven: Korrespondenz (Briefjahre) und Lebensdaten (Geburt/Tod).
+
+**Anforderung:** Nutzer möchten entweder nach aktiver Briefperiode oder nach biografischem Zeitraum filtern können. Personen ohne Daten sollen nicht fälschlicherweise ausgefiltert werden.
 
 ### Implementierung
 
-Datei: docs/index.html
+**Dateien:** docs/index.html, docs/synthesis/index.html (identische Lösung auf beiden Seiten)
+
+Struktur:
+- Tab-basierte Umschaltung zwischen "Korrespondenz" (1762-1824) und "Lebensdaten" (1700-1850)
+- noUiSlider 15.7.1 für Dual-Handle-Range-Slider
+- Kompakte Buttons: padding 4px 8px, font-size 11px
+
+HTML (docs/index.html):
 
 ```html
-<!-- Bei map controls, nach zoom buttons -->
-<div class="map-controls">
-    <button id="zoom-in" class="map-control-btn">+</button>
-    <button id="zoom-out" class="map-control-btn">-</button>
-    <button id="export-map" class="map-control-btn" title="Karte als Bild exportieren">
-        <span>📷</span>
-    </button>
+<div class="filter-group" role="group" aria-labelledby="filter-time-heading">
+    <h4 id="filter-time-heading">Zeitfilter</h4>
+    <div class="time-filter-tabs">
+        <button class="time-filter-tab active" data-mode="correspondence">Korrespondenz</button>
+        <button class="time-filter-tab" data-mode="lifespan">Lebensdaten</button>
+    </div>
+    <div id="year-range-slider" aria-label="Jahr-Bereich wählen"></div>
+    <div class="year-range-display">
+        <span id="year-range-text" aria-live="polite">1762 – 1824</span>
+    </div>
 </div>
 ```
 
-Datei: docs/js/app.js
+CSS (docs/css/style.css):
+
+```css
+.time-filter-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: var(--space-md);
+}
+
+.time-filter-tab {
+    flex: 1;
+    padding: 4px 8px;
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.time-filter-tab.active {
+    background: var(--color-secondary);
+    color: white;
+    border-color: var(--color-secondary);
+}
+```
+
+JavaScript (docs/js/app.js):
 
 ```javascript
-function initMapExport() {
-    const exportBtn = document.getElementById('export-map');
-    if (!exportBtn) return;
+// State
+let timeFilterMode = 'correspondence';  // 'correspondence' oder 'lifespan'
+let temporalFilter = null;  // { start: year, end: year, mode: string }
 
-    exportBtn.addEventListener('click', () => {
-        exportMapAsPNG();
+// Tab switching
+const timeFilterTabs = document.querySelectorAll('.time-filter-tab');
+timeFilterTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        const mode = tab.dataset.mode;
+        timeFilterMode = mode;
+
+        // Update active tab
+        timeFilterTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // Update slider range
+        if (mode === 'correspondence') {
+            yearRangeSlider.noUiSlider.updateOptions({
+                range: { 'min': 1762, 'max': 1824 }
+            });
+            yearRangeSlider.noUiSlider.set([1762, 1824]);
+        } else if (mode === 'lifespan') {
+            yearRangeSlider.noUiSlider.updateOptions({
+                range: { 'min': 1700, 'max': 1850 }
+            });
+            yearRangeSlider.noUiSlider.set([1700, 1850]);
+        }
     });
-}
+});
 
-async function exportMapAsPNG() {
-    try {
-        // Wait for map to be idle
-        await new Promise(resolve => {
-            if (map.loaded()) {
-                resolve();
-            } else {
-                map.once('idle', resolve);
-            }
-        });
+// Filter logic in applyFilters()
+if (temporalFilter) {
+    if (temporalFilter.mode === 'correspondence') {
+        // Filter by letter years
+        if (person.letter_years && person.letter_years.length > 0) {
+            temporalMatch = person.letter_years.some(year =>
+                year >= temporalFilter.start && year <= temporalFilter.end
+            );
+        }
+        // If no letter_years, person passes filter (indirect/SNDB entries)
+    } else if (temporalFilter.mode === 'lifespan') {
+        // Filter by birth/death years
+        const birthYear = person.dates?.birth ? parseInt(person.dates.birth) : null;
+        const deathYear = person.dates?.death ? parseInt(person.dates.death) : null;
 
-        // Get map canvas
-        const canvas = map.getCanvas();
-
-        // Create new canvas with extra space for legend
-        const exportCanvas = document.createElement('canvas');
-        const legendHeight = 120;
-        exportCanvas.width = canvas.width;
-        exportCanvas.height = canvas.height + legendHeight;
-
-        const ctx = exportCanvas.getContext('2d');
-
-        // Draw map
-        ctx.drawImage(canvas, 0, 0);
-
-        // Draw legend background
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-        ctx.fillRect(0, canvas.height, canvas.width, legendHeight);
-
-        // Draw legend content
-        ctx.fillStyle = '#333';
-        ctx.font = '14px Arial';
-        ctx.fillText('HerData - Frauen im Goethe-Briefnetzwerk', 20, canvas.height + 25);
-
-        ctx.font = '12px Arial';
-        ctx.fillText('Quelle: Klassik Stiftung Weimar / PROPYLÄEN', 20, canvas.height + 50);
-        ctx.fillText(`Lizenz: CC BY 4.0 | Export: ${new Date().toLocaleDateString('de-DE')}`, 20, canvas.height + 70);
-        ctx.fillText(`Sichtbare Personen: ${getFilteredPersons().length}`, 20, canvas.height + 90);
-
-        // Convert to blob and download
-        exportCanvas.toBlob(blob => {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            const today = new Date().toISOString().split('T')[0];
-            link.href = url;
-            link.download = `herdata-karte-${today}.png`;
-            link.click();
-            URL.revokeObjectURL(url);
-
-            console.log('Map exported as PNG');
-        });
-
-    } catch (error) {
-        console.error('Map export failed:', error);
-        alert('Kartenexport fehlgeschlagen. Bitte Screenshot verwenden.');
+        if (birthYear || deathYear) {
+            // Check if lifespan overlaps with filter range
+            const personStart = birthYear || temporalFilter.start;
+            const personEnd = deathYear || temporalFilter.end;
+            temporalMatch = !(personEnd < temporalFilter.start || personStart > temporalFilter.end);
+        }
+        // If no dates, person passes filter
     }
 }
-
-// In init():
-initMapExport();
 ```
+
+**Identische Implementierung in docs/synthesis/index.html und docs/synthesis/js/app.js** mit angepassten IDs (synthesis-year-range-slider, synthesis-year-range-text).
 
 ### Test
 
-**Manueller Test** (2 Minuten):
+**Manueller Test** (5 Minuten):
 
 ```bash
-# 1. Seite öffnen
+# 1. Hauptseite öffnen
 start http://localhost:8080/
 
-# 2. Karte einstellen:
-# - Nach Weimar zoomen
-# - Filter setzen
-# - Warten bis Karte vollständig geladen
+# 2. Korrespondenz-Modus (Standard):
+# - Zeitraum 1800-1810 einstellen
+# - Prüfen: Nur Personen mit letter_years in diesem Bereich sichtbar
+# - Personen ohne letter_years (indirect/SNDB) bleiben sichtbar
 
-# 3. Export-Button (Kamera-Symbol) klicken
-# - Datei wird heruntergeladen: herdata-karte-2025-11-05.png
+# 3. Lebensdaten-Modus aktivieren:
+# - Tab "Lebensdaten" klicken
+# - Slider sollte auf 1700-1850 erweitern
+# - Zeitraum 1750-1800 einstellen
+# - Prüfen: Personen mit Geburts-/Todesjahr in diesem Bereich sichtbar
+# - Personen ohne Lebensdaten bleiben sichtbar
 
-# 4. PNG öffnen:
-# - Karte wie angezeigt sichtbar
-# - Legende am unteren Rand lesbar
-# - Quellenangabe vorhanden
-# - Datum korrekt
-# - Anzahl sichtbare Personen korrekt
-# - Keine UI-Elemente (Buttons, Sidebar) im Export
+# 4. Synthesis-Seite öffnen
+start http://localhost:8080/synthesis/
 
-# 5. Verschiedene Zoomstufen testen:
-# - Weit herausgezoomt (ganz Europa)
-# - Nah herangezoomt (einzelne Stadt)
-# - Beide Exports sollten funktionieren
+# 5. Prüfen:
+# - Zeitfilter sieht identisch aus (gleiche Button-Größe, Farben)
+# - Tabs funktionieren identisch
+# - Filter-Logik funktioniert identisch
+
+# 6. Grenzfälle:
+# - Person nur mit Geburtsjahr: Wird bis 1850 als lebend angenommen
+# - Person nur mit Todesjahr: Wird ab 1700 als geboren angenommen
+# - Person ohne Daten: Immer sichtbar
 ```
+
+**Erwartetes Verhalten:**
+- Korrespondenz-Modus: 1762-1824 (Briefaktivität)
+- Lebensdaten-Modus: 1700-1850 (biografischer Zeitraum)
+- Keine ungewollte Exklusion von Personen ohne Daten
+- Identisches UI auf beiden Seiten
 
 ---
 
@@ -532,21 +446,20 @@ start http://localhost:8080/
 
 **Reihenfolge:**
 1. Namensvarianten (Backend, 30 Min) → Verbessert Datenqualität
-2. Vollständigkeits-Badge (Frontend, 20 Min) → Schneller Nutzen
-3. CSV-Export (Frontend, 30 Min) → Wichtig für Forschende
-4. PNG-Export (Frontend, 25 Min) → Nice-to-have
+2. CSV-Export (Frontend, 30 Min) → Wichtig für Forschende
+3. Dualer Zeitfilter (Frontend, 45 Min) → Klarere Forschungsperspektiven
 
-**Gesamtaufwand:** ca. 2 Stunden reine Implementierung + 15 Min Tests
+**Gesamtaufwand:** ca. 1 Stunde 45 Min reine Implementierung + 15 Min Tests
 
 **Abhängigkeiten:**
-- Features 2-4 sind unabhängig voneinander
-- Feature 1 läuft zuerst (Backend), dann Features 2-4 parallel möglich
+- Alle Features sind voneinander unabhängig
+- Können parallel implementiert werden
 
 **Testing-Strategie:**
 - Automatische Tests in Pipeline (Feature 1)
-- Manuelle Browser-Tests (Features 2-4)
+- Manuelle Browser-Tests (Feature 2, 3)
 - Stichproben mit echten Daten
-- Grenzfälle prüfen (leere Felder, keine Treffer)
+- Grenzfälle prüfen (leere Felder, keine Treffer, Personen ohne Daten)
 
 **Rollback:**
 - Jedes Feature in separatem Commit
