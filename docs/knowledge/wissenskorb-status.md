@@ -24,11 +24,13 @@ Stand: 05.11.2025
 
 3. **Dedizierte Seite (FERTIG)**
    - docs/wissenskorb.html
-   - Drei-Spalten-Layout
-   - Personenliste mit Sortierung (neueste zuerst)
-   - Beziehungsnetzwerk-Visualisierung (SVG, circular layout)
+   - Zwei-Spalten-Layout (Filter-Panel links, Detail-Panel rechts)
+   - Personentabelle mit Filter und Sortierung
+   - Beziehungsnetzwerk-Visualisierung (Cytoscape.js)
+   - Drei Netzwerk-Modi: AGRELON Beziehungen, gemeinsame Orte, gemeinsame Berufe
+   - Edge-Tooltips zeigen Beziehungstypen und Kardinalität
+   - Edge-Grouping für mehrfache Verbindungen
    - Export-Buttons (CSV/JSON)
-   - Help-Sektion
    - Responsive Design
 
 4. **Synthesis-Integration (FERTIG)**
@@ -81,9 +83,9 @@ Stand: 05.11.2025
 
 2. **Erweiterte Visualisierungen auf Wissenskorb-Seite**
    - Keine Timeline-Visualisierung
-   - Keine Geografische Verteilung
+   - Keine geografische Verteilung (bewusst verworfen, siehe decisions.md)
    - Keine Berufsverteilung
-   - Nur Beziehungsnetzwerk implementiert
+   - Beziehungsnetzwerk mit 3 Modi implementiert (AGRELON, Orte, Berufe)
 
 3. **Sharing-Funktionalität**
    - Keine URL-basierte Sharing-Funktion
@@ -205,8 +207,9 @@ docs/
 
 2. **Netzwerk-Graph Usability**
    - Bei vielen Personen überladen
-   - Keine Zoom/Pan-Funktionalität
-   - Keine Filter für Beziehungstypen
+   - Cytoscape.js bietet Zoom/Pan (minZoom: 0.5, maxZoom: 2)
+   - Filter für "Nur Personen mit Verbindungen" vorhanden
+   - Weitere Filter für Beziehungstypen möglich
 
 3. **Export-Format**
    - CSV ist sehr einfach (nur Stammdaten)

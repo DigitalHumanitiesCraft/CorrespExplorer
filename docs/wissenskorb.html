@@ -18,81 +18,89 @@
     <!-- Global Navigation Placeholder -->
     <div id="navbar-placeholder"></div>
 
-    <!-- Main Container -->
-    <div class="basket-container">
-        <header class="basket-header">
-            <div>
-                <h1>Wissenskorb</h1>
-                <p class="basket-subtitle">Ihre persönliche Sammlung für vergleichende Analysen</p>
-            </div>
-            <div class="basket-stats">
-                <div class="stat-item">
-                    <span class="stat-value" id="basket-count-display">0</span>
-                    <span class="stat-label">Personen</span>
+    <div class="app-container">
+        <main class="main-layout">
+            <!-- Left: Filter Panel -->
+            <aside class="filter-panel">
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-value" id="basket-count-display">0</div>
+                        <div class="stat-label">Personen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-senders">0</div>
+                        <div class="stat-label">Absenderinnen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-mentioned">0</div>
+                        <div class="stat-label">Erwähnte</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-relationships">0</div>
+                        <div class="stat-label">Beziehungen</div>
+                    </div>
                 </div>
-            </div>
-        </header>
 
-        <main class="basket-main">
-            <!-- Left: Filters -->
-            <aside class="basket-filters-sidebar">
-                    <div class="basket-section">
-                        <h3>Übersicht</h3>
-                        <div class="basket-overview">
-                            <div class="overview-stat">
-                                <span class="overview-label">Absenderinnen</span>
-                                <span class="overview-value" id="stat-senders">0</span>
-                            </div>
-                            <div class="overview-stat">
-                                <span class="overview-label">Erwähnte</span>
-                                <span class="overview-value" id="stat-mentioned">0</span>
-                            </div>
-                            <div class="overview-stat">
-                                <span class="overview-label">Beziehungen</span>
-                                <span class="overview-value" id="stat-relationships">0</span>
-                            </div>
-                        </div>
+                <div class="filter-section">
+                    <h3>Rolle</h3>
+                    <div class="filter-group">
+                        <label><input type="checkbox" name="role-filter" value="sender" checked> Absenderin</label>
+                        <label><input type="checkbox" name="role-filter" value="mentioned" checked> Erwähnt</label>
+                        <label><input type="checkbox" name="role-filter" value="both" checked> Beides</label>
+                        <label><input type="checkbox" name="role-filter" value="indirect" checked> Nur SNDB</label>
                     </div>
+                </div>
 
-                    <div class="basket-section">
-                        <h3>Filter</h3>
-                        <div class="basket-filters">
-                            <div class="filter-group-compact">
-                                <label class="filter-label">Rolle</label>
-                                <label class="filter-checkbox"><input type="checkbox" name="role-filter" value="sender" checked> Absenderin</label>
-                                <label class="filter-checkbox"><input type="checkbox" name="role-filter" value="mentioned" checked> Erwähnt</label>
-                                <label class="filter-checkbox"><input type="checkbox" name="role-filter" value="both" checked> Beides</label>
-                                <label class="filter-checkbox"><input type="checkbox" name="role-filter" value="indirect" checked> Nur SNDB</label>
-                            </div>
-                            <div class="filter-group-compact">
-                                <label class="filter-label">Anzeige</label>
-                                <label class="filter-checkbox"><input type="checkbox" id="filter-has-relationships" checked> Mit Beziehungen</label>
-                                <label class="filter-checkbox"><input type="checkbox" id="filter-no-relationships" checked> Ohne Beziehungen</label>
-                            </div>
-                        </div>
+                <div class="filter-section">
+                    <h3>Netzwerk-Modus</h3>
+                    <div class="filter-group">
+                        <button class="network-mode-btn active" data-mode="agrelon">
+                            <i class="fas fa-users"></i>
+                            <span>AGRELON Beziehungen</span>
+                        </button>
+                        <button class="network-mode-btn" data-mode="places">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Gemeinsame Orte</span>
+                        </button>
+                        <button class="network-mode-btn" data-mode="occupations">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Gemeinsame Berufe</span>
+                        </button>
                     </div>
+                </div>
 
-                    <div class="basket-section">
-                        <h3>Aktionen</h3>
-                        <div class="basket-actions">
-                            <button id="export-csv" class="btn-export" title="Exportiere als CSV-Tabelle">
-                                <i class="fas fa-file-csv"></i>
-                                <span>CSV Export</span>
-                            </button>
-                            <button id="export-json" class="btn-export" title="Exportiere als JSON-Datei">
-                                <i class="fas fa-file-code"></i>
-                                <span>JSON Export</span>
-                            </button>
-                            <button id="clear-basket" class="btn-clear" title="Alle Personen aus dem Korb entfernen">
-                                <i class="fas fa-trash"></i>
-                                <span>Alle entfernen</span>
-                            </button>
-                        </div>
+                <div class="filter-section">
+                    <h3>Anzeige</h3>
+                    <div class="filter-group">
+                        <label><input type="checkbox" id="filter-only-connected" checked> Nur Personen mit Verbindungen</label>
+                        <label><input type="checkbox" id="filter-has-relationships" checked> Mit AGRELON Beziehungen</label>
+                        <label><input type="checkbox" id="filter-no-relationships" checked> Ohne AGRELON Beziehungen</label>
                     </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3>Aktionen</h3>
+                    <div class="basket-actions">
+                        <button id="export-csv" class="btn-export" title="Exportiere als CSV-Tabelle">
+                            <i class="fas fa-file-csv"></i>
+                            <span>CSV Export</span>
+                        </button>
+                        <button id="export-json" class="btn-export" title="Exportiere als JSON-Datei">
+                            <i class="fas fa-file-code"></i>
+                            <span>JSON Export</span>
+                        </button>
+                        <button id="clear-basket" class="btn-clear" title="Alle Personen aus dem Korb entfernen">
+                            <i class="fas fa-trash"></i>
+                            <span>Alle entfernen</span>
+                        </button>
+                    </div>
+                </div>
             </aside>
 
-            <!-- Center: Visualization Area -->
-            <section class="basket-content">
+            <!-- Right: Detail Panel -->
+            <section class="detail-panel">
+                <!-- Network Visualization -->
                 <div class="basket-section">
                     <h2>Beziehungsnetzwerk</h2>
                     <p class="section-description">
@@ -105,45 +113,57 @@
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- Right: Person List -->
-            <aside class="basket-person-list-sidebar">
-                <div class="basket-list-header">
-                    <h3>Personen <span id="list-count" class="list-count">(0)</span></h3>
-                    <input
-                        type="text"
-                        id="basket-search"
-                        class="basket-search-input"
-                        placeholder="Suchen..."
-                        aria-label="Person suchen"
-                    />
-                </div>
-                <div class="basket-list" id="basket-list">
-                    <div class="empty-state">
-                        <i class="fas fa-bookmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
-                        <p>Noch keine Personen im Wissenskorb</p>
-                        <p class="empty-state-hint">
-                            Fügen Sie Personen aus der
-                            <a href="index.html">Karte</a>,
-                            <a href="synthesis/index.html">Personenliste</a> oder dem
-                            <a href="stats.html">Brief-Explorer</a> hinzu.
-                        </p>
+                <!-- Person Table -->
+                <div class="data-table-container">
+                    <div class="table-header">
+                        <h2>Personen im Wissenskorb <span id="list-count" class="list-count">(0)</span></h2>
+                        <input
+                            type="text"
+                            id="basket-search"
+                            class="table-search-input"
+                            placeholder="Suchen..."
+                            aria-label="Person suchen"
+                        />
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="basket-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Lebensdaten</th>
+                                    <th>Rolle</th>
+                                    <th>Berufe</th>
+                                    <th>Beziehungen</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody id="basket-table-body">
+                                <tr class="empty-row">
+                                    <td colspan="6" class="empty-state">
+                                        <i class="fas fa-bookmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                                        <p>Noch keine Personen im Wissenskorb</p>
+                                        <p class="empty-state-hint">
+                                            Fügen Sie Personen aus der
+                                            <a href="index.html">Karte</a>,
+                                            <a href="synthesis/index.html">Personenliste</a> oder dem
+                                            <a href="stats.html">Brief-Explorer</a> hinzu.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </aside>
+            </section>
         </main>
 
-        <!-- Help Section -->
-        <footer class="basket-footer">
-            <div class="help-box">
-                <strong>Wissenskorb:</strong> Personen sammeln • Beziehungen erkunden • Daten exportieren • Lokal gespeichert
-            </div>
-        </footer>
     </div>
 
     <!-- Load basket manager first -->
     <script src="js/basket-manager.js"></script>
+    <!-- Cytoscape.js for network visualization -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
     <!-- Then load page logic -->
     <script type="module" src="js/wissenskorb.js"></script>
 </body>

@@ -745,14 +745,71 @@ Fokus auf Beziehungsnetzwerk weil:
 - Zeigt Verbindungen zwischen gesammelten Personen
 - Erkennbar welche Personen zentral sind
 - Interaktiv und explorativ
-- SVG-basiert, keine schwere Bibliothek nötig
-- Erweiterbar mit D3.js für besseres Layout
+- Cytoscape.js für professionelles Graph-Layout
+- Mehrere Netzwerk-Modi: AGRELON Beziehungen, gemeinsame Orte, gemeinsame Berufe
 
 Vorteile gegenüber Timeline:
 - Timeline existiert bereits in synthesis
 - Netzwerk zeigt Struktur statt nur Zeitachse
 - Mehrwert für comparative analysis
 - Unique value proposition
+
+## Implementierte Features
+
+Stand: 05.11.2025
+
+### Netzwerk-Visualisierung
+
+Implementiert mit Cytoscape.js:
+- AGRELON Modus: Direkte Beziehungen zwischen Personen mit Edge-Tooltips
+- Orte-Modus: Hub-and-spoke Struktur mit gemeinsamen Orten als zentrale Knoten
+- Berufe-Modus: Hub-and-spoke Struktur mit gemeinsamen Berufen als zentrale Knoten
+- COSE Layout für force-directed Anordnung
+- Dynamische Node-Größen basierend auf Verbindungsanzahl
+- Edge-Grouping: Mehrfache Verbindungen werden zu einer dicken Kante gruppiert
+
+### Edge-Tooltips (wissenskorb.js:677-724)
+
+Implementierung:
+- Custom Tooltip-DIV wird dynamisch erstellt
+- Zeigt bei Hover über Kanten:
+  - Bei mehreren Verbindungen: Count und Liste der Beziehungstypen
+  - Bei einzelner Verbindung: Beziehungstyp
+  - Limitierung auf 5 Typen mit "+X weitere" Anzeige
+- Folgt Mauszeiger mit 10px Offset
+- Styling: Semi-transparenter dunkler Hintergrund, weiße Schrift
+
+```javascript
+// Edge tooltips
+cy.on('mouseover', 'edge', function(evt) {
+    const edge = evt.target;
+    const count = edge.data('count');
+    const types = edge.data('types');
+
+    let tooltipContent = '';
+    if (count > 1) {
+        tooltipContent = `<strong>${count} Verbindungen</strong><br>`;
+        if (types && types.length > 0) {
+            tooltipContent += types.slice(0, 5).join(', ');
+            if (types.length > 5) {
+                tooltipContent += ` (+${types.length - 5} weitere)`;
+            }
+        }
+    } else {
+        tooltipContent = types && types[0] ? types[0] : 'Verbindung';
+    }
+
+    tooltip.innerHTML = tooltipContent;
+    tooltip.style.display = 'block';
+});
+```
+
+### Verworfene Features
+
+Geografische Visualisierung (05.11.2025):
+- Versuch: Leaflet.js als Kartenhintergrund, Place-Nodes an realen Koordinaten
+- Grund für Verwerfung: Zu komplex, überladene Darstellung
+- Entscheidung: Beibehaltung des einfacheren COSE Layouts für alle Modi
 
 ## Start
 

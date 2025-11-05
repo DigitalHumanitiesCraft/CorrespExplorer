@@ -6,6 +6,43 @@
 
 ## 2025-11-05
 
+### Session 20 — Wissenskorb Edge-Tooltips
+
+**Netzwerk-Visualisierung:**
+- Edge-Tooltips implementiert in wissenskorb.js (Zeilen 677-724)
+- Hover über Kanten zeigt Beziehungstypen und Kardinalität
+- Bei mehreren Verbindungen: Count + Liste der Typen (max. 5 mit "+X weitere")
+- Bei einzelner Verbindung: Beziehungstyp direkt
+- Custom Tooltip-DIV folgt Mauszeiger mit 10px Offset
+- Styling: Semi-transparenter dunkler Hintergrund, weiße Schrift
+
+**Geografische Visualisierung:**
+- Versuch: Leaflet.js als Kartenhintergrund mit Place-Nodes an realen Koordinaten
+- Implementierung: Preset Layout mit latLngToContainerPoint Konvertierung, Person-Nodes clustered um Places
+- Entscheidung: Rückgängig gemacht auf User-Feedback ("zu viel")
+- Grund: Überladene Darstellung, schlechtere Lesbarkeit als force-directed Layout
+- Revert: Leaflet.js entfernt, COSE Layout für Places-Modus wiederhergestellt
+- Code: wissenskorb.js (-54 Zeilen Map-Creation, -28 Zeilen Preset Layout), wissenskorb.html (-1 Script-Tag), basket.css (-15 Zeilen Layering)
+
+**Layout-Struktur:**
+- Places-Modus nutzt jetzt identisches COSE Layout wie Occupations-Modus
+- Hub-and-Spoke Struktur für beide Modi mit zentralen Knoten (Places/Occupations)
+- Consistent nodeRepulsion, idealEdgeLength, gravity Parameter
+
+**Dokumentation:**
+- wissenskorb-implementation.md: Edge-Tooltips dokumentiert, geografische Visualisierung als verworfen markiert
+- wissenskorb-status.md: Netzwerk-Modi aktualisiert, Zoom/Pan-Info ergänzt
+- decisions.md: Neue Entscheidung "Wissenskorb Netzwerk-Visualisierung ohne geografische Karte"
+
+**Dateien:**
+- Geändert: wissenskorb.js, wissenskorb.html, basket.css
+- Dokumentation: wissenskorb-implementation.md, wissenskorb-status.md, decisions.md
+
+**Ergebnis:**
+- Informative Edge-Tooltips zeigen Beziehungskontext beim Hover
+- Einfacheres, klareres Graph-Layout für alle Modi
+- Dokumentierte Entscheidung gegen geografische Komplexität
+
 ### Session 19 — Navbar-Umstrukturierung & Brief-Explorer Phase 2a
 
 **Navigation:**

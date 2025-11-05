@@ -52,9 +52,13 @@ Herkunft und Transformation zentraler Angaben werden deskriptiv dokumentiert. Un
 
 Die produktiven und die Provenance-Artefakte werden derzeit manuell erzeugt und veröffentlicht. Eine automatisierte Ausführung wurde erwogen, ist aber nachrangig, solange der Veröffentlichungsrhythmus niedrig bleibt und die manuelle Qualitätssicherung Vorteile hat. Status: Manuelle Erzeugung bestätigt; Automatisierung perspektivisch. Effekt: Verlässliche Kontrolle vor Geschwindigkeit.
 
+## Wissenskorb Netzwerk-Visualisierung ohne geografische Karte
+
+Für die Netzwerk-Visualisierung im Wissenskorb wurde ein force-directed Graph-Layout (Cytoscape.js COSE) gewählt. Eine geografische Visualisierung mit Leaflet.js, bei der Place-Nodes an realen Koordinaten positioniert werden, wurde implementiert und dann verworfen. Die geografische Variante zeigte Places an ihrer tatsächlichen Position mit Personen in der Nähe, führte aber zu einer überladenen, schwer lesbaren Darstellung. Der COSE-Algorithmus bietet für alle Modi (AGRELON, Orte, Berufe) eine konsistente Hub-and-Spoke Struktur mit klarer visueller Hierarchie. Status: COSE Layout bestätigt; geografische Visualisierung verworfen. Effekt: Klarere Darstellung, einheitliches Layout über alle Modi, bessere Performance (05.11.2025).
+
 ## Terminologie-Harmonisierung
 
-Die Begriffe „Karte“, „Explorer“, „Cards“, „Netzwerkhinweise“, „Provenance“ und „Unsicherheit“ sind verbindlich definiert und werden in allen Dokumenten konsistent genutzt. Status: Harmonisierung abgeschlossen. Effekt: Einheitliche Sprache, weniger Missverständnisse.
+Die Begriffe „Karte", „Explorer", „Cards", „Netzwerkhinweise", „Provenance" und „Unsicherheit" sind verbindlich definiert und werden in allen Dokumenten konsistent genutzt. Status: Harmonisierung abgeschlossen. Effekt: Einheitliche Sprache, weniger Missverständnisse.
 
 ## Konsequenz für abhängige Dokumente
 
