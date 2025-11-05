@@ -307,8 +307,7 @@ function renderTable() {
         });
     });
 
-    // Update count
-    document.getElementById('table-count').textContent = `${sorted.length} Einträge`;
+    // Note: table-count removed - count now shown in KPI cards
 }
 
 // Format table cell based on column key
