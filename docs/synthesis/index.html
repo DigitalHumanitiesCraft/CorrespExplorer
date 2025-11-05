@@ -94,38 +94,8 @@
 
             <!-- Right: Detail/Context Panel -->
             <aside class="detail-panel">
-                <div class="panel-tabs">
-                    <button class="tab-btn active" data-tab="person" data-tooltip="Details zur ausgewählten Person">Person</button>
-                    <button class="tab-btn" data-tab="wissenskorb" data-tooltip="Gesammelte Personen für Vergleiche und Export">
-                        Wissenskorb <span id="basket-count" class="basket-badge">0</span>
-                    </button>
-                </div>
-
-                <div class="panel-content">
-                    <!-- Person Tab -->
-                    <div class="tab-content active" id="tab-person">
-                        <div id="person-detail" class="person-detail">
-                            <p class="empty-state">Wähle eine Person aus der Tabelle</p>
-                        </div>
-                    </div>
-
-                    <!-- Wissenskorb Tab -->
-                    <div class="tab-content" id="tab-wissenskorb">
-                        <h3>Wissenskorb</h3>
-                        <p class="help-text">Sammle Personen mit dem ⭐ Button</p>
-
-                        <div id="basket-content">
-                            <p class="empty-state">Noch keine Personen im Korb</p>
-                        </div>
-
-                        <div id="basket-actions" style="display: none;">
-                            <hr>
-                            <h4>Export</h4>
-                            <button id="export-basket-csv" class="btn-export" data-tooltip="Exportiere gesammelte Personen als CSV-Tabelle">Als CSV exportieren</button>
-                            <button id="export-basket-json" class="btn-export" data-tooltip="Exportiere gesammelte Personen als JSON-Datei">Als JSON exportieren</button>
-                            <button id="clear-basket" class="btn-clear" data-tooltip="Alle Personen aus dem Wissenskorb entfernen">Korb leeren</button>
-                        </div>
-                    </div>
+                <div id="person-detail" class="person-detail">
+                    <p class="empty-state">Wähle eine Person aus der Tabelle</p>
                 </div>
             </aside>
         </main>

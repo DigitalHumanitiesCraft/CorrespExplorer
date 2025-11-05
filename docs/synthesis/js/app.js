@@ -247,14 +247,6 @@ function setupGlobalSearch() {
                     tr.classList.toggle('selected', tr.dataset.id === personId);
                 });
 
-                // Switch to person tab (inline implementation)
-                document.querySelectorAll('.tab-btn').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.tab === 'person');
-                });
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.toggle('active', content.id === 'tab-person');
-                });
-
                 // Render person detail (minimal inline implementation)
                 const container = document.getElementById('person-detail');
                 if (container && state.selectedPerson) {
@@ -335,13 +327,13 @@ function setupGlobalSearch() {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const tabName = e.target.dataset.tab;
-            switchTab(tabName);
-        });
-    });
+    // Tab buttons (removed - no longer using tabs in detail panel)
+    // document.querySelectorAll('.tab-btn').forEach(btn => {
+    //     btn.addEventListener('click', (e) => {
+    //         const tabName = e.target.dataset.tab;
+    //         switchTab(tabName);
+    //     });
+    // });
 
     // Global search - dual functionality: dropdown + table filter
     setupGlobalSearch();
@@ -366,19 +358,6 @@ function setupEventListeners() {
     // Reset filters
     document.getElementById('reset-filters').addEventListener('click', () => {
         resetFilters();
-    });
-
-    // Basket export buttons
-    document.getElementById('export-basket-csv').addEventListener('click', () => {
-        exportBasketToCSV();
-    });
-
-    document.getElementById('export-basket-json').addEventListener('click', () => {
-        exportBasketToJSON();
-    });
-
-    document.getElementById('clear-basket').addEventListener('click', () => {
-        clearBasket();
     });
 
     // Initialize noUiSlider for time filter
