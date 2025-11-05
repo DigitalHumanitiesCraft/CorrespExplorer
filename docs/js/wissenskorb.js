@@ -6,6 +6,16 @@ import { Toast, Download } from './utils.js';
 
 let allPersons = [];
 let searchQuery = '';
+let roleFilters = {
+    sender: true,
+    mentioned: true,
+    both: true,
+    indirect: true
+};
+let relationshipFilters = {
+    hasRelationships: true,
+    noRelationships: true
+};
 
 // Initialize page
 async function init() {
@@ -53,6 +63,35 @@ function setupEventListeners() {
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.toLowerCase().trim();
             renderList();
+        });
+    }
+
+    // Role filter listeners
+    document.querySelectorAll('input[name="role-filter"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+            roleFilters[e.target.value] = e.target.checked;
+            renderList();
+            renderNetwork();
+        });
+    });
+
+    // Relationship filter listeners
+    const hasRelsFilter = document.getElementById('filter-has-relationships');
+    const noRelsFilter = document.getElementById('filter-no-relationships');
+
+    if (hasRelsFilter) {
+        hasRelsFilter.addEventListener('change', (e) => {
+            relationshipFilters.hasRelationships = e.target.checked;
+            renderList();
+            renderNetwork();
+        });
+    }
+
+    if (noRelsFilter) {
+        noRelsFilter.addEventListener('change', (e) => {
+            relationshipFilters.noRelationships = e.target.checked;
+            renderList();
+            renderNetwork();
         });
     }
 }
@@ -105,11 +144,13 @@ function renderStats() {
 // Render person list
 function renderList() {
     const container = document.getElementById('basket-list');
+    const listCount = document.getElementById('list-count');
     if (!container) return;
 
     let items = BasketManager.getAll();
+    const totalItems = items.length;
 
-    if (items.length === 0) {
+    if (totalItems === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-bookmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
@@ -122,8 +163,19 @@ function renderList() {
                 </p>
             </div>
         `;
+        if (listCount) listCount.textContent = '(0)';
         return;
     }
+
+    // Apply role filters
+    items = items.filter(person => roleFilters[person.role || 'indirect']);
+
+    // Apply relationship filters
+    items = items.filter(person => {
+        const hasRels = person.relationships && person.relationships.length > 0;
+        if (hasRels) return relationshipFilters.hasRelationships;
+        return relationshipFilters.noRelationships;
+    });
 
     // Apply search filter
     if (searchQuery) {
@@ -134,16 +186,21 @@ function renderList() {
             );
             return nameMatch || occupationMatch;
         });
+    }
 
-        if (items.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-search" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
-                    <p>Keine Personen gefunden für "${searchQuery}"</p>
-                </div>
-            `;
-            return;
-        }
+    // Update count
+    if (listCount) {
+        listCount.textContent = `(${items.length}${items.length !== totalItems ? ` / ${totalItems}` : ''})`;
+    }
+
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-filter" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                <p>Keine Personen mit aktuellen Filtern</p>
+            </div>
+        `;
+        return;
     }
 
     // Sort by date added (newest first)

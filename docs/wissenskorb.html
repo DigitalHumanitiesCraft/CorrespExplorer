@@ -34,72 +34,67 @@
         </header>
 
         <main class="basket-main">
-            <!-- Sidebar: List & Actions -->
-            <aside class="basket-sidebar">
-                <div class="basket-section">
-                    <h3>Übersicht</h3>
-                    <div class="basket-overview">
-                        <div class="overview-stat">
-                            <span class="overview-label">Absenderinnen</span>
-                            <span class="overview-value" id="stat-senders">0</span>
-                        </div>
-                        <div class="overview-stat">
-                            <span class="overview-label">Erwähnte</span>
-                            <span class="overview-value" id="stat-mentioned">0</span>
-                        </div>
-                        <div class="overview-stat">
-                            <span class="overview-label">Beziehungen</span>
-                            <span class="overview-value" id="stat-relationships">0</span>
+            <!-- Left: Filters & Visualizations -->
+            <div class="basket-left">
+                <!-- Filters Panel -->
+                <aside class="basket-filters-panel">
+                    <div class="basket-section">
+                        <h3>Übersicht</h3>
+                        <div class="basket-overview">
+                            <div class="overview-stat">
+                                <span class="overview-label">Absenderinnen</span>
+                                <span class="overview-value" id="stat-senders">0</span>
+                            </div>
+                            <div class="overview-stat">
+                                <span class="overview-label">Erwähnte</span>
+                                <span class="overview-value" id="stat-mentioned">0</span>
+                            </div>
+                            <div class="overview-stat">
+                                <span class="overview-label">Beziehungen</span>
+                                <span class="overview-value" id="stat-relationships">0</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="basket-section">
-                    <h3>Aktionen</h3>
-                    <div class="basket-actions">
-                        <button id="export-csv" class="btn-export" title="Exportiere als CSV-Tabelle">
-                            <i class="fas fa-file-csv"></i>
-                            <span>CSV Export</span>
-                        </button>
-                        <button id="export-json" class="btn-export" title="Exportiere als JSON-Datei">
-                            <i class="fas fa-file-code"></i>
-                            <span>JSON Export</span>
-                        </button>
-                        <button id="clear-basket" class="btn-clear" title="Alle Personen aus dem Korb entfernen">
-                            <i class="fas fa-trash"></i>
-                            <span>Alle entfernen</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="basket-section">
-                    <div class="basket-list-header">
-                        <h3>Gesammelte Personen</h3>
-                        <input
-                            type="text"
-                            id="basket-search"
-                            class="basket-search-input"
-                            placeholder="Person suchen..."
-                            aria-label="Person suchen"
-                        />
-                    </div>
-                    <div class="basket-list" id="basket-list">
-                        <div class="empty-state">
-                            <i class="fas fa-bookmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
-                            <p>Noch keine Personen im Wissenskorb</p>
-                            <p class="empty-state-hint">
-                                Fügen Sie Personen aus der
-                                <a href="index.html">Karte</a>,
-                                <a href="synthesis/index.html">Personenliste</a> oder dem
-                                <a href="stats.html">Brief-Explorer</a> hinzu.
-                            </p>
+                    <div class="basket-section">
+                        <h3>Filter</h3>
+                        <div class="basket-filters">
+                            <div class="filter-group-compact">
+                                <label class="filter-label">Rolle</label>
+                                <label class="filter-checkbox"><input type="checkbox" name="role-filter" value="sender" checked> Absenderin</label>
+                                <label class="filter-checkbox"><input type="checkbox" name="role-filter" value="mentioned" checked> Erwähnt</label>
+                                <label class="filter-checkbox"><input type="checkbox" name="role-filter" value="both" checked> Beides</label>
+                                <label class="filter-checkbox"><input type="checkbox" name="role-filter" value="indirect" checked> Nur SNDB</label>
+                            </div>
+                            <div class="filter-group-compact">
+                                <label class="filter-label">Anzeige</label>
+                                <label class="filter-checkbox"><input type="checkbox" id="filter-has-relationships" checked> Mit Beziehungen</label>
+                                <label class="filter-checkbox"><input type="checkbox" id="filter-no-relationships" checked> Ohne Beziehungen</label>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </aside>
 
-            <!-- Main Content: Visualizations -->
-            <section class="basket-content">
+                    <div class="basket-section">
+                        <h3>Aktionen</h3>
+                        <div class="basket-actions">
+                            <button id="export-csv" class="btn-export" title="Exportiere als CSV-Tabelle">
+                                <i class="fas fa-file-csv"></i>
+                                <span>CSV Export</span>
+                            </button>
+                            <button id="export-json" class="btn-export" title="Exportiere als JSON-Datei">
+                                <i class="fas fa-file-code"></i>
+                                <span>JSON Export</span>
+                            </button>
+                            <button id="clear-basket" class="btn-clear" title="Alle Personen aus dem Korb entfernen">
+                                <i class="fas fa-trash"></i>
+                                <span>Alle entfernen</span>
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Visualization Area -->
+                <section class="basket-content">
                 <div class="basket-section">
                     <h2>Beziehungsnetzwerk</h2>
                     <p class="section-description">
@@ -113,19 +108,39 @@
                     </div>
                 </div>
             </section>
+            </div>
+
+            <!-- Right: Person List -->
+            <aside class="basket-person-list-panel">
+                <div class="basket-list-header">
+                    <h3>Personen <span id="list-count" class="list-count">(0)</span></h3>
+                    <input
+                        type="text"
+                        id="basket-search"
+                        class="basket-search-input"
+                        placeholder="Suchen..."
+                        aria-label="Person suchen"
+                    />
+                </div>
+                <div class="basket-list" id="basket-list">
+                    <div class="empty-state">
+                        <i class="fas fa-bookmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                        <p>Noch keine Personen im Wissenskorb</p>
+                        <p class="empty-state-hint">
+                            Fügen Sie Personen aus der
+                            <a href="index.html">Karte</a>,
+                            <a href="synthesis/index.html">Personenliste</a> oder dem
+                            <a href="stats.html">Brief-Explorer</a> hinzu.
+                        </p>
+                    </div>
+                </div>
+            </aside>
         </main>
 
         <!-- Help Section -->
         <footer class="basket-footer">
             <div class="help-box">
-                <h4><i class="fas fa-question-circle"></i> Wie verwende ich den Wissenskorb?</h4>
-                <ul>
-                    <li>Sammeln Sie Personen aus verschiedenen Ansichten durch Klick auf das Lesezeichen-Icon</li>
-                    <li>Keine Begrenzung der Anzahl gesammelter Personen</li>
-                    <li>Das Beziehungsnetzwerk zeigt nur Verbindungen zwischen Personen im Korb</li>
-                    <li>Exportieren Sie Ihre Auswahl für externe Analysen</li>
-                    <li>Ihre Sammlung bleibt im Browser gespeichert und ist bei jedem Besuch verfügbar</li>
-                </ul>
+                <strong>Wissenskorb:</strong> Personen sammeln • Beziehungen erkunden • Daten exportieren • Lokal gespeichert
             </div>
         </footer>
     </div>

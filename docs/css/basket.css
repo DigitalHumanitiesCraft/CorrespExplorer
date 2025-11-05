@@ -56,16 +56,29 @@
 /* Main Layout */
 .basket-main {
     display: grid;
-    grid-template-columns: 350px 1fr;
+    grid-template-columns: 1fr 350px;
     gap: var(--space-xl, 2rem);
     margin-bottom: var(--space-xl, 2rem);
+    min-height: calc(100vh - 300px);
 }
 
-/* Sidebar */
-.basket-sidebar {
+/* Left Side: Filters + Visualization */
+.basket-left {
     display: flex;
     flex-direction: column;
+    gap: var(--space-xl, 2rem);
+}
+
+/* Filters Panel */
+.basket-filters-panel {
+    display: flex;
     gap: var(--space-lg, 1.5rem);
+    flex-wrap: wrap;
+}
+
+.basket-filters-panel > .basket-section {
+    flex: 1;
+    min-width: 200px;
 }
 
 .basket-section {
@@ -172,16 +185,36 @@
     box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
 }
 
-/* Person List */
+/* Right Panel: Person List */
+.basket-person-list-panel {
+    background: white;
+    border: 1px solid var(--color-border, #dfe6e9);
+    border-radius: 8px;
+    padding: var(--space-lg, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 250px);
+    position: sticky;
+    top: var(--space-lg, 1.5rem);
+}
+
 .basket-list-header {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm, 0.5rem);
     margin-bottom: var(--space-md, 1rem);
+    flex-shrink: 0;
 }
 
 .basket-list-header h3 {
     margin-bottom: 0;
+    font-size: var(--font-size-lg, 1.25rem);
+}
+
+.list-count {
+    color: var(--color-text-muted, #7f8c8d);
+    font-weight: 400;
+    font-size: 0.9rem;
 }
 
 .basket-search-input {
@@ -204,8 +237,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-sm, 0.5rem);
-    max-height: 500px;
     overflow-y: auto;
+    flex: 1;
 }
 
 .basket-list::-webkit-scrollbar {
@@ -323,11 +356,50 @@
     transform: scale(1.2);
 }
 
+/* Filters */
+.basket-filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md, 1rem);
+}
+
+.filter-group-compact {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs, 0.25rem);
+}
+
+.filter-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #5d6d7e);
+    margin-bottom: var(--space-xs, 0.25rem);
+}
+
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs, 0.25rem);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 2px 0;
+}
+
+.filter-checkbox input[type="checkbox"] {
+    cursor: pointer;
+    margin: 0;
+}
+
+.filter-checkbox:hover {
+    color: var(--color-primary, #2c3e50);
+}
+
 /* Content Area */
 .basket-content {
     display: flex;
     flex-direction: column;
     gap: var(--space-lg, 1.5rem);
+    flex: 1;
 }
 
 /* Network Visualization */
@@ -378,36 +450,11 @@
 .help-box {
     background: #f8f9fa;
     border-left: 4px solid var(--color-primary, #2c3e50);
-    padding: var(--space-lg, 1.5rem);
+    padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
     border-radius: 4px;
-}
-
-.help-box h4 {
-    color: var(--color-primary, #2c3e50);
-    margin-bottom: var(--space-md, 1rem);
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm, 0.5rem);
-}
-
-.help-box ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.help-box li {
-    padding: var(--space-sm, 0.5rem) 0;
-    padding-left: var(--space-lg, 1.5rem);
-    position: relative;
-}
-
-.help-box li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--color-accent, #e74c3c);
-    font-weight: bold;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary, #5d6d7e);
+    text-align: center;
 }
 
 /* Toast Notifications */
@@ -470,21 +517,24 @@
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .basket-main {
         grid-template-columns: 1fr;
     }
 
-    .basket-sidebar {
+    .basket-person-list-panel {
+        position: relative;
+        top: 0;
+        max-height: 400px;
         order: 2;
     }
 
-    .basket-content {
+    .basket-left {
         order: 1;
     }
 
-    .basket-list {
-        max-height: 300px;
+    .basket-filters-panel {
+        flex-direction: column;
     }
 }
 
