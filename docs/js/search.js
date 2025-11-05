@@ -53,18 +53,37 @@ export class GlobalSearch {
         return this.persons
             .filter(person => {
                 const name = person.name.toLowerCase();
-                return name.includes(lowerQuery);
+                if (name.includes(lowerQuery)) return true;
+
+                // Also search in name variants
+                if (person.name_variants && person.name_variants.length > 0) {
+                    return person.name_variants.some(variant =>
+                        variant.toLowerCase().includes(lowerQuery)
+                    );
+                }
+
+                return false;
             })
             .slice(0, 10) // Limit to 10 results
             .sort((a, b) => {
-                // Sort: exact match first, then by name
+                // Sort: exact match in main name first, then variants, then by name
                 const aName = a.name.toLowerCase();
                 const bName = b.name.toLowerCase();
-                const aStarts = aName.startsWith(lowerQuery);
-                const bStarts = bName.startsWith(lowerQuery);
+                const aMainMatch = aName.includes(lowerQuery);
+                const bMainMatch = bName.includes(lowerQuery);
 
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
+                // Prioritize main name matches
+                if (aMainMatch && !bMainMatch) return -1;
+                if (!aMainMatch && bMainMatch) return 1;
+
+                // Within same category, prioritize starts-with
+                if (aMainMatch && bMainMatch) {
+                    const aStarts = aName.startsWith(lowerQuery);
+                    const bStarts = bName.startsWith(lowerQuery);
+                    if (aStarts && !bStarts) return -1;
+                    if (!aStarts && bStarts) return 1;
+                }
+
                 return aName.localeCompare(bName);
             });
     }
@@ -84,6 +103,7 @@ export class GlobalSearch {
 
         this.searchResults.innerHTML = results.map((person, index) => {
             const meta = this.getPersonMeta(person);
+            const variantMatch = this.getVariantMatch(person, query);
             return `
                 <a
                     href="person.html?id=${person.id}"
@@ -93,6 +113,7 @@ export class GlobalSearch {
                     aria-label="Zur Person ${person.name} navigieren"
                 >
                     <div class="search-result-name">${this.highlightMatch(person.name, query)}</div>
+                    ${variantMatch ? `<div class="search-result-variant">auch: ${variantMatch}</div>` : ''}
                     ${meta ? `<div class="search-result-meta">${meta}</div>` : ''}
                 </a>
             `;
@@ -107,6 +128,27 @@ export class GlobalSearch {
                 this.searchInput.value = '';
             });
         });
+    }
+
+    getVariantMatch(person, query) {
+        const lowerQuery = query.toLowerCase();
+
+        // Check if main name matches
+        if (person.name.toLowerCase().includes(lowerQuery)) {
+            return null; // Don't show variant if main name matches
+        }
+
+        // Find matching variant
+        if (person.name_variants && person.name_variants.length > 0) {
+            const matchingVariant = person.name_variants.find(variant =>
+                variant.toLowerCase().includes(lowerQuery)
+            );
+            if (matchingVariant) {
+                return this.highlightMatch(matchingVariant, query);
+            }
+        }
+
+        return null;
     }
 
     highlightMatch(text, query) {

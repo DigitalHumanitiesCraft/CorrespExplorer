@@ -74,6 +74,13 @@
     color: var(--color-primary);
 }
 
+.search-result-variant {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    margin-top: var(--space-xs);
+    font-style: italic;
+}
+
 .search-result-meta {
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
