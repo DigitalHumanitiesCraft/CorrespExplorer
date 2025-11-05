@@ -118,9 +118,15 @@ function setupEventListeners() {
 // Apply filters
 function applyFilters() {
     state.filteredPersons = state.allPersons.filter(person => {
-        // Search filter
-        if (state.filters.search && !person.name.toLowerCase().includes(state.filters.search)) {
-            return false;
+        // Search filter - also search in name variants
+        if (state.filters.search) {
+            const nameMatch = person.name.toLowerCase().includes(state.filters.search);
+            const variantMatch = person.name_variants && person.name_variants.some(variant =>
+                variant.toLowerCase().includes(state.filters.search)
+            );
+            if (!nameMatch && !variantMatch) {
+                return false;
+            }
         }
 
         // Role filter
