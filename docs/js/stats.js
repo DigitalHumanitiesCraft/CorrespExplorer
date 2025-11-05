@@ -523,9 +523,19 @@ function updateChartNotes() {
 
     // Update occupation note
     const occWithData = filteredPersons.filter(p => p.occupations && p.occupations.length > 0).length;
+
+    // Count total occupation assignments (not unique persons)
+    let totalOccAssignments = 0;
+    filteredPersons.forEach(p => {
+        if (p.occupations && p.occupations.length > 0) {
+            totalOccAssignments += p.occupations.length;
+        }
+    });
+
     const occNote = document.getElementById('note-occupations');
     if (occNote) {
-        occNote.textContent = `${occWithData} von ${filteredPersons.length} Frauen (${Math.round(occWithData/filteredPersons.length*100)}%) haben Berufsangaben`;
+        const percentage = Math.round(occWithData/filteredPersons.length*100);
+        occNote.textContent = `${occWithData} von ${filteredPersons.length} Frauen (${percentage}%) haben Berufsangaben. Mehrfachberufe werden mehrfach gezählt.`;
     }
 
     // Update places note

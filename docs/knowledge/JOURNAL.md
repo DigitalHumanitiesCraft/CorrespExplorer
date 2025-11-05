@@ -49,6 +49,77 @@
 - Erweitert auf alle Pages: places.js, download.js, vault.js importieren nun GlobalSearch
 - Konsistente Funktionalität: Suche in Name + Varianten, Navigation zu person.html?id=...
 
+**Session 19 (Fortsetzung) — Brief-Explorer Phase 2b:**
+
+**Externes Feedback (10 Vorschläge):**
+- Evaluiert: Linked Brushing, Horizontal Orte-Chart, Filter Chips = Quick Wins
+- Verworfen: Briefe/Ereignisse-Toggle (Datenquelle unklar: 1.793 hardcoded vs 7.472 Timeline vs 8.039 correspondence-Einträge), Typografie-Tuning (Aufwand > Nutzen)
+
+**Phase 2b Implementierung:**
+- Horizontal Places Chart: Achsen getauscht für bessere Lesbarkeit, eliminiert 45° rotierte Labels
+- Linked Brushing: ECharts connect() verknüpft alle 5 Charts (masterTimeline, occupations, places, cohorts, activity) für koordinierte Tooltips und Highlights
+- Filter Chips: Visuelle Anzeige aktiver Filter mit × Button zum Entfernen (Recognition over Recall Principle)
+
+**Technische Details:**
+- echarts.connect() in initCharts() verbindet alle Charts für Coordinated Multiple Views (CMV)
+- FilterState.subscribe() triggert updateFilterChips() bei dataZoom-Events
+- Filter Chip × Button dispatched dataZoom-Reset-Action
+- Horizontal Bar Chart: left: 30% Grid, reversed data order, inside labels mit weißer Farbe
+
+**Dateien:**
+- docs/js/stats.js: Horizontal Places Chart (Zeilen 554-589), echarts.connect() (Zeilen 387-398), updateFilterChips() (Zeilen 326-379)
+- docs/stats.html: Active Filters Container mit filter-chips div
+- docs/css/stats.css: Filter Chip Styles (pill design, hover states, remove button)
+
+**Design-Entscheidungen:**
+- Horizontale Balken matchen Occupations Chart für Konsistenz
+- Blaue Filter Chips nutzen --color-primary für Brand-Konsistenz
+- Filter Chip × Button: opacity 0.8 default, 1.0 on hover
+- Active Filters Container standardmäßig versteckt, nur bei aktiven Filtern sichtbar
+
+**Ergebnis:**
+- Brief-Explorer Phase 2b komplett: CMV-Pattern mit transparenter Filter-State-Verwaltung
+- Horizontale Orte-Chart verbessert Lesbarkeit signifikant (keine rotierten Labels)
+- Filter Chips ermöglichen schnelles Undo (1 Klick statt Timeline-Manipulation)
+
+**Session 19 (Fortsetzung) — Brief-Explorer Phase 2c+2d:**
+
+**Phase 2c - Treemap & Click-to-Filter:**
+- Berufsverteilung: Bar Chart → Treemap mit ALLEN 73 Berufen (statt Top-10)
+- Farbgradient: Light-to-dark blue basierend auf Personenanzahl (visualMin/visualMax)
+- Click-to-Filter: Klick auf Beruf/Ort aktiviert Filter (Toggle-Verhalten)
+- Multi-dimensionales Filtern: Zeit + Beruf + Ort kombinierbar
+- Filter Chips erweitert: Zeigen Beruf/Ort mit Personenanzahl
+
+**Phase 2d - Layout-Optimierung & Activity-Filter:**
+- Grid-Layout: 2x2 → Full-width Treemap + 2 Charts (Orte + Generationen)
+- Briefaktivität: Chart entfernt, ersetzt durch 4 Checkboxen in Sidebar
+- Activity-Kategorien: Absenderin (nur Briefe gesendet), Erwähnt (nur erwähnt), Beides, Nur SNDB
+- Activity-Filter-Logik: Kategorisiert Personen nach letter_count/mention_count
+- Filter Chips: Zeigen aktive Activity-Filter wenn < 4 Typen selektiert
+
+**UX-Verbesserung:**
+- echarts.connect() entfernt: Verhindert verwirrende Cross-Highlighting zwischen unverbundenen Daten (Sängerin → Wien)
+- Mehrfachberufe-Notiz: "Mehrfachberufe werden mehrfach gezählt" erklärt Treemap-Summen
+- Beispiel: 36 Schauspielerinnen enthalten 12 Personen die auch Sängerin sind (beide gezählt)
+
+**Technische Details:**
+- FilterState erweitert: occupation, place, activityTypes (Array)
+- Treemap: ECharts treemap type mit colorMappingBy: 'value', visualMin/visualMax
+- Activity-Filter: 4 Checkboxen triggern FilterState.update()
+- CSS: explorer-grid-phase2d (full-width + 2 cols), activity-checkboxes styles
+
+**Dateien:**
+- docs/stats.html: Activity-Checkboxen in Sidebar, Phase2d-Grid, Activity-Chart entfernt
+- docs/js/stats.js: renderOccupationsChart() Treemap, initActivityFilter(), updateChartNotes() mit Mehrfachberufe-Hinweis
+- docs/css/stats.css: explorer-grid-phase2d, explorer-card-full, activity-checkboxes styles
+
+**Ergebnis:**
+- Alle 73 Berufe sichtbar (statt 10), bessere Datenexploration
+- Click-to-Filter ermöglicht direkte Interaktion mit Visualisierungen
+- Activity-Filter als Checkboxen freien Platz für Treemap
+- Transparente Datendarstellung: Mehrfachberufe explizit kommuniziert
+
 **Personen-View UX:**
 - Dual-Search: Global-Navbar-Dropdown UND Tabellenfilterung parallel (synthesis/js/app.js setupGlobalSearch)
 - Visual Highlight: Detail-Panel pulsiert beim Öffnen (600ms Animation, -8px zu -4px box-shadow)
