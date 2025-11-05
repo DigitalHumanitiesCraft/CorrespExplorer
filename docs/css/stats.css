@@ -239,3 +239,200 @@
         min-height: 250px;
     }
 }
+
+/* ==========================================
+ * BRIEF-EXPLORER LAYOUT (Phase 2a)
+ * ========================================== */
+
+.explorer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-xl) var(--space-2xl);
+}
+
+/* Master Timeline Section */
+.explorer-timeline {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: var(--space-xl);
+    overflow: hidden;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.timeline-header h2 {
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    margin: 0;
+}
+
+.timeline-mode-toggle {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.mode-btn {
+    background: var(--color-bg-light);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mode-btn:hover {
+    background: var(--color-bg);
+    border-color: var(--color-primary);
+}
+
+.mode-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.timeline-body {
+    padding: var(--space-lg);
+}
+
+.timeline-chart {
+    width: 100%;
+    height: 180px;
+    margin-bottom: var(--space-md);
+}
+
+.timeline-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.btn-reset {
+    background: var(--color-bg-light);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+/* 2x2 Grid */
+.explorer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl);
+}
+
+.explorer-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+
+.explorer-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.explorer-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.explorer-card-header h2 {
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    margin: 0;
+}
+
+.explorer-card-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.explorer-card-body {
+    padding: var(--space-lg);
+}
+
+/* Responsive for Explorer Layout */
+@media (max-width: 1200px) {
+    .explorer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+    }
+}
+
+@media (max-width: 768px) {
+    .explorer-container {
+        padding: 0 var(--space-md) var(--space-xl);
+    }
+
+    .timeline-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+
+    .timeline-mode-toggle {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .mode-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .timeline-chart {
+        height: 150px;
+    }
+
+    .timeline-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+
+    .btn-reset {
+        width: 100%;
+    }
+
+    .explorer-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+
+    .explorer-card-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

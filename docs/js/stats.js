@@ -1,36 +1,125 @@
-// HerData - Statistics Dashboard
-// Renders statistical charts using Apache ECharts
+// HerData - Brief-Explorer (Phase 2a)
+// Interactive statistics dashboard with coordinated multi-view (CMV)
 
 import { loadPersons } from "./data.js";
 import { loadNavbar } from "./navbar-loader.js";
 import { GlobalSearch } from "./search.js";
 
+// Global state
 let allPersons = [];
 let charts = {};
+let timelineData = null;
+
+// FilterState Singleton - manages coordinated view filtering
+class FilterState {
+    constructor() {
+        if (FilterState.instance) {
+            return FilterState.instance;
+        }
+        FilterState.instance = this;
+
+        this.filters = {
+            timeRange: null,  // { start: year, end: year }
+            timeMode: 'correspondence'  // 'correspondence' or 'lifespan'
+        };
+
+        this.listeners = [];
+    }
+
+    // Subscribe to filter changes
+    subscribe(callback) {
+        this.listeners.push(callback);
+    }
+
+    // Update filters and notify listeners
+    update(newFilters) {
+        this.filters = { ...this.filters, ...newFilters };
+        this.notifyListeners();
+    }
+
+    // Notify all subscribers
+    notifyListeners() {
+        this.listeners.forEach(callback => callback(this.filters));
+    }
+
+    // Get currently filtered persons
+    getFilteredPersons() {
+        if (!this.filters.timeRange) {
+            return allPersons;
+        }
+
+        const { start, end } = this.filters.timeRange;
+        const { timeMode } = this.filters;
+
+        return allPersons.filter(person => {
+            if (timeMode === 'correspondence') {
+                // Filter by correspondence years
+                if (!person.correspondence || person.correspondence.length === 0) {
+                    return false;  // Exclude persons without correspondence
+                }
+                return person.correspondence.some(corr =>
+                    corr.year >= start && corr.year <= end
+                );
+            } else {
+                // Filter by lifespan years
+                if (!person.dates) return false;
+
+                const birthYear = person.dates.birth ? parseInt(person.dates.birth) : null;
+                const deathYear = person.dates.death ? parseInt(person.dates.death) : null;
+
+                // Person overlaps with time range if:
+                // - Born before end AND died after start
+                // - Or born in range (if no death date)
+                if (birthYear && deathYear) {
+                    return birthYear <= end && deathYear >= start;
+                } else if (birthYear) {
+                    return birthYear >= start && birthYear <= end;
+                }
+                return false;
+            }
+        });
+    }
+
+    // Reset filters
+    reset() {
+        this.filters = {
+            timeRange: null,
+            timeMode: this.filters.timeMode  // Keep current mode
+        };
+        this.notifyListeners();
+    }
+}
 
 // Initialize dashboard
 async function init() {
-    console.log("📊 Initializing statistics dashboard");
+    console.log("📊 Initializing Brief-Explorer (Phase 2a)");
 
     await loadNavbar();
     highlightActiveNavLink();
 
     try {
-        // Load data using shared module
+        // Load data
         const data = await loadPersons();
         allPersons = data.persons;
+        timelineData = data.meta.timeline;
         console.log(`📊 Loaded ${allPersons.length} persons`);
 
+        // Initialize FilterState singleton
+        const filterState = new FilterState();
+
+        // Subscribe to filter changes
+        filterState.subscribe((filters) => {
+            console.log("🔄 Filters updated:", filters);
+            updateAllCharts();
+            updateChartNotes();
+        });
+
         initSearch();
+        initMasterTimeline();
         initCharts();
+        initExportButtons();
 
-        // Wait for charts to render, then init export buttons
-        // ECharts need time to render before export buttons can be attached
-        setTimeout(() => {
-            initExportButtons();
-        }, 500);
-
-        console.log("✅ Statistics dashboard ready");
+        console.log("✅ Brief-Explorer ready (Phase 2a)");
     } catch (error) {
         console.error('Error loading data:', error);
         showError('Daten konnten nicht geladen werden');
@@ -56,23 +145,249 @@ function initSearch() {
     }
 }
 
+// Initialize master timeline
+function initMasterTimeline() {
+    const container = document.getElementById('master-timeline');
+    if (!container) return;
+
+    const chart = echarts.init(container);
+    charts.masterTimeline = chart;
+
+    const filterState = new FilterState();
+    const mode = filterState.filters.timeMode;
+
+    // Prepare data based on mode
+    let xAxisData, seriesData, minYear, maxYear;
+
+    if (mode === 'correspondence') {
+        // Use timeline from meta
+        xAxisData = timelineData.map(t => t.year);
+        seriesData = timelineData.map(t => t.count);
+        minYear = 1762;
+        maxYear = 1824;
+    } else {
+        // Generate lifespan histogram (births per decade)
+        const decadeCounter = {};
+        allPersons.forEach(person => {
+            if (person.dates && person.dates.birth) {
+                const year = parseInt(person.dates.birth);
+                if (year >= 1700 && year <= 1850) {
+                    const decade = Math.floor(year / 10) * 10;
+                    decadeCounter[decade] = (decadeCounter[decade] || 0) + 1;
+                }
+            }
+        });
+
+        const decades = Object.keys(decadeCounter).sort((a, b) => parseInt(a) - parseInt(b));
+        xAxisData = decades.map(d => parseInt(d));
+        seriesData = decades.map(d => decadeCounter[d]);
+        minYear = 1700;
+        maxYear = 1850;
+    }
+
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            formatter: (params) => {
+                const year = params[0].name;
+                const count = params[0].value;
+                const label = mode === 'correspondence' ? 'Briefe' : 'Geburten';
+                return `${year}: ${count} ${label}`;
+            }
+        },
+        grid: {
+            left: '5%',
+            right: '5%',
+            top: '10%',
+            bottom: '20%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: xAxisData,
+            boundaryGap: false,
+            axisLabel: {
+                interval: mode === 'correspondence' ? 9 : 4,
+                rotate: 0
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: mode === 'correspondence' ? 'Briefe' : 'Personen',
+            nameLocation: 'middle',
+            nameGap: 35,
+            splitLine: { lineStyle: { type: 'dashed' } }
+        },
+        dataZoom: [{
+            type: 'slider',
+            start: 0,
+            end: 100,
+            height: 30,
+            bottom: 10,
+            handleIcon: 'path://M10.7,11.9H9.3c-4.9,0.3-8.8,4.4-8.8,9.4c0,5,3.9,9.1,8.8,9.4h1.3c4.9-0.3,8.8-4.4,8.8-9.4C19.5,16.3,15.6,12.2,10.7,11.9z',
+            handleSize: '120%',
+            handleStyle: {
+                color: '#2c5f8d',
+                shadowBlur: 3,
+                shadowColor: 'rgba(0, 0, 0, 0.3)',
+                shadowOffsetX: 2,
+                shadowOffsetY: 2
+            },
+            labelFormatter: (value, valueStr) => {
+                return xAxisData[value] || '';
+            }
+        }],
+        series: [{
+            type: mode === 'correspondence' ? 'line' : 'bar',
+            data: seriesData,
+            smooth: mode === 'correspondence',
+            lineStyle: mode === 'correspondence' ? {
+                color: '#2c5f8d',
+                width: 2
+            } : undefined,
+            itemStyle: {
+                color: '#2c5f8d',
+                borderRadius: mode === 'lifespan' ? [4, 4, 0, 0] : undefined
+            },
+            areaStyle: mode === 'correspondence' ? {
+                color: 'rgba(44, 95, 141, 0.2)'
+            } : undefined
+        }]
+    };
+
+    chart.setOption(option);
+
+    // Handle dataZoom changes
+    chart.on('dataZoom', (params) => {
+        const startIdx = Math.floor(params.start / 100 * xAxisData.length);
+        const endIdx = Math.ceil(params.end / 100 * xAxisData.length) - 1;
+
+        const startYear = xAxisData[startIdx];
+        const endYear = xAxisData[endIdx];
+
+        // Update FilterState
+        filterState.update({
+            timeRange: { start: startYear, end: endYear }
+        });
+
+        // Update timeline selection display
+        updateTimelineSelection(startYear, endYear);
+    });
+
+    // Mode toggle buttons
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const newMode = btn.dataset.mode;
+            if (newMode === filterState.filters.timeMode) return;
+
+            // Update UI
+            modeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update FilterState and reinitialize timeline
+            filterState.update({ timeMode: newMode, timeRange: null });
+            initMasterTimeline();
+            updateTimelineSelection(null, null);
+        });
+    });
+
+    // Reset button
+    const resetBtn = document.getElementById('reset-timeline');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            chart.dispatchAction({
+                type: 'dataZoom',
+                start: 0,
+                end: 100
+            });
+            filterState.reset();
+            updateTimelineSelection(null, null);
+        });
+    }
+
+    console.log("⏱️ Master timeline initialized");
+}
+
+// Update timeline selection display
+function updateTimelineSelection(start, end) {
+    const display = document.getElementById('timeline-selection');
+    if (!display) return;
+
+    if (!start || !end) {
+        display.textContent = 'Gesamter Zeitraum ausgewählt';
+    } else {
+        display.textContent = `${start} – ${end}`;
+    }
+}
+
 // Initialize all charts
 function initCharts() {
     renderOccupationsChart();
-    renderTimelineChart();
     renderPlacesChart();
     renderCohortsChart();
     renderActivityChart();
 }
 
+// Update all charts with filtered data
+function updateAllCharts() {
+    renderOccupationsChart();
+    renderPlacesChart();
+    renderCohortsChart();
+    renderActivityChart();
+}
+
+// Update chart notes with current filter stats
+function updateChartNotes() {
+    const filterState = new FilterState();
+    const filteredPersons = filterState.getFilteredPersons();
+
+    // Update occupation note
+    const occWithData = filteredPersons.filter(p => p.occupations && p.occupations.length > 0).length;
+    const occNote = document.getElementById('note-occupations');
+    if (occNote) {
+        occNote.textContent = `${occWithData} von ${filteredPersons.length} Frauen (${Math.round(occWithData/filteredPersons.length*100)}%) haben Berufsangaben`;
+    }
+
+    // Update places note
+    const placesWithData = filteredPersons.filter(p => p.places && p.places.length > 0).length;
+    const uniquePlaces = new Set();
+    filteredPersons.forEach(p => {
+        if (p.places) p.places.forEach(place => uniquePlaces.add(place.name));
+    });
+    const placesNote = document.getElementById('note-places');
+    if (placesNote) {
+        placesNote.textContent = `${placesWithData} Frauen mit Ortsangaben (${uniquePlaces.size} verschiedene Orte)`;
+    }
+
+    // Update cohorts note
+    const cohortsWithData = filteredPersons.filter(p => p.dates && p.dates.birth).length;
+    const cohortsNote = document.getElementById('note-cohorts');
+    if (cohortsNote) {
+        cohortsNote.textContent = `${cohortsWithData} Frauen mit Lebensdaten`;
+    }
+
+    // Update activity note
+    const activityNote = document.getElementById('note-activity');
+    if (activityNote) {
+        activityNote.textContent = `Verteilung nach Rolle (${filteredPersons.length} Frauen)`;
+    }
+}
+
 // Chart 1: Berufsverteilung
 function renderOccupationsChart() {
     const container = document.getElementById('chart-occupations');
-    charts.occupations = echarts.init(container);
+    if (!charts.occupations) {
+        charts.occupations = echarts.init(container);
+    }
+
+    const filterState = new FilterState();
+    const persons = filterState.getFilteredPersons();
 
     // Count occupations
     const occCounter = {};
-    allPersons.forEach(person => {
+    persons.forEach(person => {
         if (person.occupations && person.occupations.length > 0) {
             person.occupations.forEach(occ => {
                 occCounter[occ.name] = (occCounter[occ.name] || 0) + 1;
@@ -89,7 +404,7 @@ function renderOccupationsChart() {
         title: {
             text: 'Top 15 Berufe',
             left: 'center',
-            textStyle: { fontSize: 16 }
+            textStyle: { fontSize: 14 }
         },
         tooltip: {
             trigger: 'axis',
@@ -97,24 +412,22 @@ function renderOccupationsChart() {
             formatter: '{b}: {c} Personen'
         },
         grid: {
-            left: '20%',
+            left: '25%',
             right: '5%',
             top: '15%',
             bottom: '10%'
         },
         xAxis: {
             type: 'value',
-            name: 'Anzahl',
-            nameLocation: 'middle',
-            nameGap: 25
+            name: 'Anzahl'
         },
         yAxis: {
             type: 'category',
             data: sorted.map(([name]) => name).reverse(),
             axisLabel: {
-                fontSize: 11,
+                fontSize: 10,
                 overflow: 'truncate',
-                width: 120
+                width: 100
             }
         },
         series: [{
@@ -129,85 +442,27 @@ function renderOccupationsChart() {
                 position: 'inside',
                 formatter: '{c}',
                 color: 'white',
-                fontSize: 11
+                fontSize: 10
             }
         }]
     };
 
-    charts.occupations.setOption(option);
+    charts.occupations.setOption(option, true);
 }
 
-// Chart 2: Brief-Timeline
-function renderTimelineChart() {
-    const container = document.getElementById('chart-timeline');
-    charts.timeline = echarts.init(container);
-
-    // Get timeline data from persons.json meta
-    fetch('data/persons.json')
-        .then(res => res.json())
-        .then(data => {
-            const timeline = data.meta.timeline;
-
-            const option = {
-                title: {
-                    text: 'Briefe pro Jahr (1772-1824)',
-                    left: 'center',
-                    textStyle: { fontSize: 16 }
-                },
-                tooltip: {
-                    trigger: 'axis',
-                    formatter: '{b}: {c} Briefe'
-                },
-                grid: {
-                    left: '10%',
-                    right: '10%',
-                    top: '15%',
-                    bottom: '15%'
-                },
-                xAxis: {
-                    type: 'category',
-                    data: timeline.map(t => t.year),
-                    name: 'Jahr',
-                    nameLocation: 'middle',
-                    nameGap: 30,
-                    axisLabel: {
-                        interval: 4,
-                        rotate: 0
-                    }
-                },
-                yAxis: {
-                    type: 'value',
-                    name: 'Anzahl Briefe',
-                    nameLocation: 'middle',
-                    nameGap: 50
-                },
-                series: [{
-                    type: 'line',
-                    data: timeline.map(t => t.count),
-                    smooth: true,
-                    lineStyle: {
-                        color: '#2c5f8d',
-                        width: 2
-                    },
-                    itemStyle: { color: '#2c5f8d' },
-                    areaStyle: {
-                        color: 'rgba(44, 95, 141, 0.2)'
-                    }
-                }]
-            };
-
-            charts.timeline.setOption(option);
-        });
-}
-
-// Chart 3: Geografische Zentren
+// Chart 2: Geografische Zentren
 function renderPlacesChart() {
     const container = document.getElementById('chart-places');
-    charts.places = echarts.init(container);
+    if (!charts.places) {
+        charts.places = echarts.init(container);
+    }
+
+    const filterState = new FilterState();
+    const persons = filterState.getFilteredPersons();
 
     // Count places
     const placeCounter = {};
-    allPersons.forEach(person => {
+    persons.forEach(person => {
         if (person.places && person.places.length > 0) {
             person.places.forEach(place => {
                 placeCounter[place.name] = (placeCounter[place.name] || 0) + 1;
@@ -224,7 +479,7 @@ function renderPlacesChart() {
         title: {
             text: 'Top 10 Orte',
             left: 'center',
-            textStyle: { fontSize: 16 }
+            textStyle: { fontSize: 14 }
         },
         tooltip: {
             trigger: 'axis',
@@ -235,21 +490,19 @@ function renderPlacesChart() {
             left: '10%',
             right: '10%',
             top: '15%',
-            bottom: '25%'
+            bottom: '30%'
         },
         xAxis: {
             type: 'category',
             data: sorted.map(([name]) => name),
             axisLabel: {
                 rotate: 45,
-                fontSize: 11
+                fontSize: 10
             }
         },
         yAxis: {
             type: 'value',
-            name: 'Anzahl Personen',
-            nameLocation: 'middle',
-            nameGap: 40
+            name: 'Personen'
         },
         series: [{
             type: 'bar',
@@ -261,30 +514,34 @@ function renderPlacesChart() {
             label: {
                 show: true,
                 position: 'top',
-                formatter: '{c}'
+                formatter: '{c}',
+                fontSize: 10
             }
         }]
     };
 
-    charts.places.setOption(option);
+    charts.places.setOption(option, true);
 }
 
-// Chart 4: Generationen (Geburtsjahrzehnte)
+// Chart 3: Generationen
 function renderCohortsChart() {
     const container = document.getElementById('chart-cohorts');
-    charts.cohorts = echarts.init(container);
+    if (!charts.cohorts) {
+        charts.cohorts = echarts.init(container);
+    }
+
+    const filterState = new FilterState();
+    const persons = filterState.getFilteredPersons();
 
     // Count birth decades
     const decadeCounter = {};
-    allPersons.forEach(person => {
+    persons.forEach(person => {
         if (person.dates && person.dates.birth) {
             try {
                 const year = parseInt(person.dates.birth);
                 const decade = Math.floor(year / 10) * 10;
                 decadeCounter[decade] = (decadeCounter[decade] || 0) + 1;
-            } catch (e) {
-                // Skip invalid dates
-            }
+            } catch (e) {}
         }
     });
 
@@ -296,12 +553,12 @@ function renderCohortsChart() {
         title: {
             text: 'Geburtsjahrzehnte',
             left: 'center',
-            textStyle: { fontSize: 16 }
+            textStyle: { fontSize: 14 }
         },
         tooltip: {
             trigger: 'axis',
             axisPointer: { type: 'shadow' },
-            formatter: '{b}er: {c} Personen'
+            formatter: '{b}: {c} Personen'
         },
         grid: {
             left: '10%',
@@ -312,15 +569,11 @@ function renderCohortsChart() {
         xAxis: {
             type: 'category',
             data: sorted.map(([decade]) => decade + 'er'),
-            name: 'Jahrzehnt',
-            nameLocation: 'middle',
-            nameGap: 30
+            axisLabel: { fontSize: 10 }
         },
         yAxis: {
             type: 'value',
-            name: 'Anzahl Personen',
-            nameLocation: 'middle',
-            nameGap: 40
+            name: 'Personen'
         },
         series: [{
             type: 'bar',
@@ -332,52 +585,64 @@ function renderCohortsChart() {
             label: {
                 show: true,
                 position: 'top',
-                formatter: '{c}'
+                formatter: '{c}',
+                fontSize: 10
             }
         }]
     };
 
-    charts.cohorts.setOption(option);
+    charts.cohorts.setOption(option, true);
 }
 
-// Chart 5: Briefaktivität
+// Chart 4: Briefaktivität
 function renderActivityChart() {
     const container = document.getElementById('chart-activity');
-    charts.activity = echarts.init(container);
+    if (!charts.activity) {
+        charts.activity = echarts.init(container);
+    }
+
+    const filterState = new FilterState();
+    const persons = filterState.getFilteredPersons();
 
     // Count activity types
-    const senders = allPersons.filter(p => (p.letter_count || 0) > 0).length;
-    const mentioned = allPersons.filter(p => (p.mention_count || 0) > 0).length;
-    const both = allPersons.filter(p => (p.letter_count || 0) > 0 && (p.mention_count || 0) > 0).length;
-    const indirect = allPersons.filter(p => (p.letter_count || 0) === 0 && (p.mention_count || 0) === 0).length;
+    const senders = persons.filter(p => (p.letter_count || 0) > 0 && (p.mention_count || 0) === 0).length;
+    const mentioned = persons.filter(p => (p.letter_count || 0) === 0 && (p.mention_count || 0) > 0).length;
+    const both = persons.filter(p => (p.letter_count || 0) > 0 && (p.mention_count || 0) > 0).length;
+    const indirect = persons.filter(p => (p.letter_count || 0) === 0 && (p.mention_count || 0) === 0).length;
 
     const option = {
         title: {
-            text: 'Briefaktivität (448 Frauen)',
+            text: `Briefaktivität (${persons.length} Frauen)`,
             left: 'center',
-            textStyle: { fontSize: 16 }
+            textStyle: { fontSize: 14 }
         },
         tooltip: {
             trigger: 'axis',
             axisPointer: { type: 'shadow' },
-            formatter: '{b}: {c} Personen ({d}%)'
+            formatter: (params) => {
+                const name = params[0].name;
+                const value = params[0].value;
+                const percent = ((value / persons.length) * 100).toFixed(1);
+                return `${name}: ${value} (${percent}%)`;
+            }
         },
         grid: {
             left: '10%',
             right: '10%',
             top: '15%',
-            bottom: '15%'
+            bottom: '20%'
         },
         xAxis: {
             type: 'category',
-            data: ['Absenderinnen', 'Erwähnt', 'Beides', 'Nur SNDB'],
-            axisLabel: { fontSize: 12 }
+            data: ['Nur Absenderin', 'Nur Erwähnt', 'Beides', 'Nur SNDB'],
+            axisLabel: {
+                fontSize: 10,
+                rotate: 20
+            }
         },
         yAxis: {
             type: 'value',
-            name: 'Anzahl Personen',
-            nameLocation: 'middle',
-            nameGap: 40
+            name: 'Personen'
         },
         series: [{
             type: 'bar',
@@ -390,24 +655,19 @@ function renderActivityChart() {
             label: {
                 show: true,
                 position: 'top',
-                formatter: '{c}'
+                formatter: '{c}',
+                fontSize: 10
             },
-            barMaxWidth: 80
+            barMaxWidth: 60
         }]
     };
 
-    charts.activity.setOption(option);
+    charts.activity.setOption(option, true);
 }
 
 // Initialize export buttons
 function initExportButtons() {
-    // Individual export buttons
     const exportButtons = document.querySelectorAll('.btn-export');
-
-    if (exportButtons.length === 0) {
-        console.warn('⚠️ No export buttons found - they may not be rendered yet');
-        return;
-    }
 
     exportButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -444,154 +704,10 @@ function exportPNG(chartId) {
     console.log(`📥 Exported ${chartId} as PNG`);
 }
 
-// Export chart data as CSV
-async function exportCSV(chartId) {
-    let csv = '';
-    let filename = `herdata-${chartId}.csv`;
-
-    switch (chartId) {
-        case 'occupations':
-            csv = generateOccupationsCSV();
-            break;
-        case 'timeline':
-            csv = await generateTimelineCSV();
-            break;
-        case 'places':
-            csv = generatePlacesCSV();
-            break;
-        case 'cohorts':
-            csv = generateCohortsCSV();
-            break;
-        case 'activity':
-            csv = generateActivityCSV();
-            break;
-    }
-
-    downloadCSV(csv, filename);
-    console.log(`📥 Exported ${chartId} as CSV`);
-}
-
-// Generate CSV for each chart type
-function generateOccupationsCSV() {
-    const occCounter = {};
-    allPersons.forEach(person => {
-        if (person.occupations && person.occupations.length > 0) {
-            person.occupations.forEach(occ => {
-                occCounter[occ.name] = (occCounter[occ.name] || 0) + 1;
-            });
-        }
-    });
-
-    const sorted = Object.entries(occCounter).sort((a, b) => b[1] - a[1]);
-    let csv = 'Beruf,Anzahl,Prozent\n';
-    const total = sorted.reduce((sum, [, count]) => sum + count, 0);
-
-    sorted.forEach(([name, count]) => {
-        const percent = ((count / total) * 100).toFixed(1);
-        csv += `"${name}",${count},${percent}%\n`;
-    });
-
-    return csv;
-}
-
-function generateTimelineCSV() {
-    return fetch('data/persons.json')
-        .then(res => res.json())
-        .then(data => {
-            let csv = 'Jahr,Briefe\n';
-            data.meta.timeline.forEach(t => {
-                csv += `${t.year},${t.count}\n`;
-            });
-            return csv;
-        });
-}
-
-function generatePlacesCSV() {
-    const placeCounter = {};
-    const placeCoords = {};
-
-    allPersons.forEach(person => {
-        if (person.places && person.places.length > 0) {
-            person.places.forEach(place => {
-                placeCounter[place.name] = (placeCounter[place.name] || 0) + 1;
-                placeCoords[place.name] = { lat: place.lat, lon: place.lon };
-            });
-        }
-    });
-
-    const sorted = Object.entries(placeCounter).sort((a, b) => b[1] - a[1]);
-    let csv = 'Ort,Anzahl,Latitude,Longitude\n';
-
-    sorted.forEach(([name, count]) => {
-        const coords = placeCoords[name];
-        csv += `"${name}",${count},${coords.lat},${coords.lon}\n`;
-    });
-
-    return csv;
-}
-
-function generateCohortsCSV() {
-    const decadeCounter = {};
-    allPersons.forEach(person => {
-        if (person.dates && person.dates.birth) {
-            try {
-                const year = parseInt(person.dates.birth);
-                const decade = Math.floor(year / 10) * 10;
-                decadeCounter[decade] = (decadeCounter[decade] || 0) + 1;
-            } catch (e) {}
-        }
-    });
-
-    const sorted = Object.entries(decadeCounter).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
-    let csv = 'Jahrzehnt,Anzahl\n';
-
-    sorted.forEach(([decade, count]) => {
-        csv += `${decade}er,${count}\n`;
-    });
-
-    return csv;
-}
-
-function generateActivityCSV() {
-    const senders = allPersons.filter(p => (p.letter_count || 0) > 0).length;
-    const mentioned = allPersons.filter(p => (p.mention_count || 0) > 0).length;
-    const both = allPersons.filter(p => (p.letter_count || 0) > 0 && (p.mention_count || 0) > 0).length;
-    const indirect = allPersons.filter(p => (p.letter_count || 0) === 0 && (p.mention_count || 0) === 0).length;
-
-    let csv = 'Kategorie,Anzahl,Prozent\n';
-    const total = allPersons.length;
-
-    csv += `Absenderinnen,${senders},${((senders/total)*100).toFixed(1)}%\n`;
-    csv += `Erwähnt,${mentioned},${((mentioned/total)*100).toFixed(1)}%\n`;
-    csv += `Beides,${both},${((both/total)*100).toFixed(1)}%\n`;
-    csv += `Nur SNDB,${indirect},${((indirect/total)*100).toFixed(1)}%\n`;
-
-    return csv;
-}
-
-// Download CSV helper
-function downloadCSV(csv, filename) {
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-}
-
-// Export all statistics as ZIP
-async function exportAll() {
-    console.log('📥 Exporting all statistics...');
-
-    // Export all CSVs
-    await exportCSV('occupations');
-    await exportCSV('timeline');
-    await exportCSV('places');
-    await exportCSV('cohorts');
-    await exportCSV('activity');
-
-    // Note: Browser will download files individually
-    // For true ZIP, we'd need JSZip library
-    alert('Alle Statistiken wurden als CSV-Dateien heruntergeladen.');
+// Export chart data as CSV (placeholder - will use filtered data)
+function exportCSV(chartId) {
+    console.log(`📥 CSV export for ${chartId} (filtered data)`);
+    alert('CSV-Export wird in Phase 2b implementiert');
 }
 
 // Show error message

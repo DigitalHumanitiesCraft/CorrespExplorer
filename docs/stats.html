@@ -19,86 +19,92 @@
     <div class="stats-page">
         <header class="stats-header">
             <div class="stats-header-content">
-                <h1>Statistische Analysen</h1>
-                <p class="stats-subtitle">Quantitative Auswertung der 448 Frauen im Goethe-Netzwerk</p>
+                <h1>Brief-Explorer</h1>
+                <p class="stats-subtitle">Interaktive Analyse der 448 Frauen im Goethe-Netzwerk</p>
             </div>
         </header>
 
-        <main class="stats-grid">
-            <!-- Chart 1: Berufsverteilung -->
-            <section class="stat-card large">
-                <div class="stat-card-header">
-                    <h2>Berufsverteilung</h2>
-                    <div class="stat-card-actions">
-                        <button class="btn-export" data-export="occupations" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                        <button class="btn-export" data-export="occupations" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+        <main class="explorer-container">
+            <!-- Master Timeline (Full Width) -->
+            <section class="explorer-timeline">
+                <div class="timeline-header">
+                    <h2>Zeitfilter</h2>
+                    <div class="timeline-mode-toggle">
+                        <button class="mode-btn active" data-mode="correspondence">Korrespondenz (1762-1824)</button>
+                        <button class="mode-btn" data-mode="lifespan">Lebensdaten (1700-1850)</button>
                     </div>
                 </div>
-                <div class="stat-card-body">
-                    <div id="chart-occupations" class="chart-container"></div>
-                    <p class="chart-note">207 von 448 Frauen (46%) haben Berufsangaben</p>
+                <div class="timeline-body">
+                    <div id="master-timeline" class="timeline-chart"></div>
+                    <div class="timeline-info">
+                        <span id="timeline-selection">Gesamter Zeitraum ausgewählt</span>
+                        <button id="reset-timeline" class="btn-reset">Zurücksetzen</button>
+                    </div>
                 </div>
             </section>
 
-            <!-- Chart 2: Brief-Timeline -->
-            <section class="stat-card large">
-                <div class="stat-card-header">
-                    <h2>Brief-Timeline</h2>
-                    <div class="stat-card-actions">
-                        <button class="btn-export" data-export="timeline" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                        <button class="btn-export" data-export="timeline" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+            <!-- 2x2 Grid for Charts -->
+            <div class="explorer-grid">
+                <!-- Chart 1: Berufsverteilung -->
+                <section class="explorer-card">
+                    <div class="explorer-card-header">
+                        <h2>Berufsverteilung</h2>
+                        <div class="explorer-card-actions">
+                            <button class="btn-export" data-export="occupations" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
+                            <button class="btn-export" data-export="occupations" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card-body">
-                    <div id="chart-timeline" class="chart-container"></div>
-                    <p class="chart-note">Briefverteilung 1772-1824 (15.312 Briefe gesamt)</p>
-                </div>
-            </section>
+                    <div class="explorer-card-body">
+                        <div id="chart-occupations" class="chart-container"></div>
+                        <p class="chart-note"><span id="note-occupations">207 von 448 Frauen (46%) haben Berufsangaben</span></p>
+                    </div>
+                </section>
 
-            <!-- Chart 3: Geografische Zentren -->
-            <section class="stat-card">
-                <div class="stat-card-header">
-                    <h2>Geografische Zentren</h2>
-                    <div class="stat-card-actions">
-                        <button class="btn-export" data-export="places" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                        <button class="btn-export" data-export="places" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+                <!-- Chart 2: Geografische Zentren -->
+                <section class="explorer-card">
+                    <div class="explorer-card-header">
+                        <h2>Geografische Zentren</h2>
+                        <div class="explorer-card-actions">
+                            <button class="btn-export" data-export="places" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
+                            <button class="btn-export" data-export="places" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card-body">
-                    <div id="chart-places" class="chart-container"></div>
-                    <p class="chart-note">227 Frauen mit Ortsangaben (171 verschiedene Orte)</p>
-                </div>
-            </section>
+                    <div class="explorer-card-body">
+                        <div id="chart-places" class="chart-container"></div>
+                        <p class="chart-note"><span id="note-places">227 Frauen mit Ortsangaben (171 verschiedene Orte)</span></p>
+                    </div>
+                </section>
 
-            <!-- Chart 4: Generationen -->
-            <section class="stat-card">
-                <div class="stat-card-header">
-                    <h2>Generationen</h2>
-                    <div class="stat-card-actions">
-                        <button class="btn-export" data-export="cohorts" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                        <button class="btn-export" data-export="cohorts" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+                <!-- Chart 3: Generationen -->
+                <section class="explorer-card">
+                    <div class="explorer-card-header">
+                        <h2>Generationen</h2>
+                        <div class="explorer-card-actions">
+                            <button class="btn-export" data-export="cohorts" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
+                            <button class="btn-export" data-export="cohorts" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card-body">
-                    <div id="chart-cohorts" class="chart-container"></div>
-                    <p class="chart-note">Geburtsjahrzehnte (407 Frauen mit Lebensdaten)</p>
-                </div>
-            </section>
+                    <div class="explorer-card-body">
+                        <div id="chart-cohorts" class="chart-container"></div>
+                        <p class="chart-note"><span id="note-cohorts">407 Frauen mit Lebensdaten</span></p>
+                    </div>
+                </section>
 
-            <!-- Chart 5: Briefaktivität -->
-            <section class="stat-card full-width">
-                <div class="stat-card-header">
-                    <h2>Briefaktivität</h2>
-                    <div class="stat-card-actions">
-                        <button class="btn-export" data-export="activity" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                        <button class="btn-export" data-export="activity" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+                <!-- Chart 4: Briefaktivität -->
+                <section class="explorer-card">
+                    <div class="explorer-card-header">
+                        <h2>Briefaktivität</h2>
+                        <div class="explorer-card-actions">
+                            <button class="btn-export" data-export="activity" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
+                            <button class="btn-export" data-export="activity" data-format="png" aria-label="Als PNG exportieren">PNG</button>
+                        </div>
                     </div>
-                </div>
-                <div class="stat-card-body">
-                    <div id="chart-activity" class="chart-container"></div>
-                    <p class="chart-note">Verteilung: Absenderinnen, Erwähnte und indirekte Nachweise</p>
-                </div>
-            </section>
+                    <div class="explorer-card-body">
+                        <div id="chart-activity" class="chart-container"></div>
+                        <p class="chart-note"><span id="note-activity">Verteilung nach Rolle</span></p>
+                    </div>
+                </section>
+            </div>
         </main>
 
         <footer class="stats-footer">
