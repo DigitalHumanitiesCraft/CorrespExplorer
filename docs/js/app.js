@@ -5,6 +5,7 @@ import { loadPersons } from "./data.js";
 import { GlobalSearch } from "./search.js";
 import { loadNavbar } from "./navbar-loader.js";
 import { getPersonConnections, getClusterConnections, getConnectionColor } from "./network-utils.js";
+import { Toast } from "./utils.js";
 
 let map;
 let allPersons = [];
@@ -778,6 +779,12 @@ function showSinglePersonPopup(lngLat, properties) {
         stats.push(`<strong>${properties.mention_count}</strong> Erwähnungen`);
     }
 
+    // Check if person is in basket
+    const inBasket = BasketManager && BasketManager.has(properties.id);
+    const basketIcon = inBasket ? 'fa-bookmark' : 'fa-bookmark-o';
+    const basketText = inBasket ? 'Im Wissenskorb' : 'Zum Wissenskorb';
+    const basketClass = inBasket ? 'in-basket' : '';
+
     const html = `
         <div class="popup">
             <h3>${properties.name} ${dates}</h3>
@@ -789,7 +796,14 @@ function showSinglePersonPopup(lngLat, properties) {
                 ${stats.length > 0 ? '<p>' + stats.join(' • ') + '</p>' : ''}
                 <p class="popup-location">${properties.place_name} (${properties.place_type})</p>
             </div>
-            <a href="person.html?id=${properties.id}">Details →</a>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <a href="person.html?id=${properties.id}" style="flex: 1;">Details →</a>
+                <button class="btn-basket-toggle ${basketClass}"
+                        onclick="toggleBasketFromPopup('${properties.id}')"
+                        title="${basketText}">
+                    <i class="fas ${basketIcon}"></i>
+                </button>
+            </div>
         </div>
     `;
 
@@ -828,22 +842,34 @@ function showMultiPersonPopup(lngLat, features) {
             ? `<span class="badge badge-relation" title="${person.relations.length} Verbindungen">🔗 ${person.relations.length}</span>`
             : '';
 
+        // Check if person is in basket
+        const inBasket = BasketManager && BasketManager.has(p.id);
+        const basketIcon = inBasket ? 'fa-bookmark' : 'fa-bookmark-o';
+        const basketTitle = inBasket ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzufügen';
+        const basketClass = inBasket ? 'in-basket' : '';
+
         return `
             <div class="person-item ${hasRelations ? 'has-relations' : ''}"
                  data-id="${p.id}"
-                 data-person='${JSON.stringify(person).replace(/'/g, "&apos;")}'
-                 onclick="window.location.href='person.html?id=${p.id}'"
-                 onmouseenter="showPersonItemJSON(event)"
-                 onmouseleave="hidePersonItemJSON()">
-                <div class="person-name">
-                    <strong>${p.name}</strong> ${dates}
+                 data-person='${JSON.stringify(person).replace(/'/g, "&apos;")}'>
+                <div class="person-item-content" onclick="window.location.href='person.html?id=${p.id}'"
+                     onmouseenter="showPersonItemJSON(event)"
+                     onmouseleave="hidePersonItemJSON()">
+                    <div class="person-name">
+                        <strong>${p.name}</strong> ${dates}
+                    </div>
+                    <div class="person-meta">
+                        ${gndBadge}
+                        <span class="badge badge-sndb">SNDB</span>
+                        ${relationBadge}
+                        ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
+                    </div>
                 </div>
-                <div class="person-meta">
-                    ${gndBadge}
-                    <span class="badge badge-sndb">SNDB</span>
-                    ${relationBadge}
-                    ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
-                </div>
+                <button class="btn-basket-mini ${basketClass}"
+                        onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
+                        title="${basketTitle}">
+                    <i class="fas ${basketIcon}"></i>
+                </button>
             </div>
         `;
     }).join('');
@@ -900,22 +926,34 @@ window.expandPersonList = function(event) {
             ? `<span class="badge badge-relation" title="${person.relations.length} Verbindungen">🔗 ${person.relations.length}</span>`
             : '';
 
+        // Check if person is in basket
+        const inBasket = BasketManager && BasketManager.has(p.id);
+        const basketIcon = inBasket ? 'fa-bookmark' : 'fa-bookmark-o';
+        const basketTitle = inBasket ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzufügen';
+        const basketClass = inBasket ? 'in-basket' : '';
+
         return `
             <div class="person-item ${hasRelations ? 'has-relations' : ''}"
                  data-id="${p.id}"
-                 data-person='${JSON.stringify(person).replace(/'/g, "&apos;")}'
-                 onclick="window.location.href='person.html?id=${p.id}'"
-                 onmouseenter="showPersonItemJSON(event)"
-                 onmouseleave="hidePersonItemJSON()">
-                <div class="person-name">
-                    <strong>${p.name}</strong> ${dates}
+                 data-person='${JSON.stringify(person).replace(/'/g, "&apos;")}'>
+                <div class="person-item-content" onclick="window.location.href='person.html?id=${p.id}'"
+                     onmouseenter="showPersonItemJSON(event)"
+                     onmouseleave="hidePersonItemJSON()">
+                    <div class="person-name">
+                        <strong>${p.name}</strong> ${dates}
+                    </div>
+                    <div class="person-meta">
+                        ${gndBadge}
+                        <span class="badge badge-sndb">SNDB</span>
+                        ${relationBadge}
+                        ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
+                    </div>
                 </div>
-                <div class="person-meta">
-                    ${gndBadge}
-                    <span class="badge badge-sndb">SNDB</span>
-                    ${relationBadge}
-                    ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
-                </div>
+                <button class="btn-basket-mini ${basketClass}"
+                        onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
+                        title="${basketTitle}">
+                    <i class="fas ${basketIcon}"></i>
+                </button>
             </div>
         `;
     }).join('');
@@ -1332,6 +1370,45 @@ window.showPersonItemJSON = function(event) {
 
 window.hidePersonItemJSON = function() {
     // Do nothing - let user close it manually with close button
+};
+
+// Toggle basket from popup
+window.toggleBasketFromPopup = function(personId) {
+    const person = allPersons.find(p => p.id === personId);
+    if (!person) {
+        console.error('Person not found:', personId);
+        return;
+    }
+
+    const inBasket = BasketManager.has(personId);
+
+    if (inBasket) {
+        BasketManager.remove(personId);
+        Toast.show(`${person.name} aus Wissenskorb entfernt`);
+    } else {
+        BasketManager.add(person);
+        Toast.show(`${person.name} zum Wissenskorb hinzugefügt`);
+    }
+
+    // Update all basket buttons in the current popup
+    const popups = document.querySelectorAll('.maplibregl-popup');
+    popups.forEach(popup => {
+        const buttons = popup.querySelectorAll(`[onclick*="${personId}"]`);
+        buttons.forEach(btn => {
+            const nowInBasket = BasketManager.has(personId);
+            const icon = btn.querySelector('i');
+
+            if (nowInBasket) {
+                btn.classList.add('in-basket');
+                btn.title = 'Aus Wissenskorb entfernen';
+                if (icon) icon.className = 'fas fa-bookmark';
+            } else {
+                btn.classList.remove('in-basket');
+                btn.title = 'Zum Wissenskorb hinzufügen';
+                if (icon) icon.className = 'fas fa-bookmark-o';
+            }
+        });
+    });
 };
 
 // Start application when DOM is ready

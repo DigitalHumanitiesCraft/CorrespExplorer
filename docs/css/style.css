@@ -596,6 +596,75 @@ body {
     background: var(--color-primary);
 }
 
+/* Basket buttons in popups */
+.btn-basket-toggle {
+    padding: 6px 12px;
+    background: white;
+    color: var(--color-secondary);
+    border: 2px solid var(--color-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-basket-toggle:hover {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.btn-basket-toggle.in-basket {
+    background: var(--color-secondary);
+    color: white;
+    border-color: var(--color-secondary);
+}
+
+.btn-basket-toggle.in-basket:hover {
+    background: #c9423a;
+    border-color: #c9423a;
+}
+
+/* Mini basket button for multi-person list */
+.person-item {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+.person-item-content {
+    flex: 1;
+    cursor: pointer;
+}
+
+.btn-basket-mini {
+    padding: 4px 8px;
+    background: white;
+    color: var(--color-secondary);
+    border: 1px solid var(--color-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-basket-mini:hover {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.btn-basket-mini.in-basket {
+    background: var(--color-secondary);
+    color: white;
+}
+
+.btn-basket-mini.in-basket:hover {
+    background: #c9423a;
+}
+
 /* Custom scrollbar for person list */
 .person-list::-webkit-scrollbar {
     width: 6px;
