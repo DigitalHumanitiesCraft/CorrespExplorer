@@ -307,6 +307,18 @@ body {
     justify-content: center;
 }
 
+.stat-card-link {
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.stat-card-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border-color: var(--color-primary);
+}
+
 .stat-value {
     font-size: var(--font-size-lg);
     font-weight: 700;
