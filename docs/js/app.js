@@ -22,7 +22,6 @@ let handlersSetup = false;
 
 // Network visualization state
 let currentConnections = [];
-let pinnedConnections = []; // Pinned connections for comparison
 let correspondenceConnectionsCache = []; // Cached woman-to-woman connections
 let networkEnabled = {
     'Familie': true,
@@ -523,11 +522,6 @@ function clearConnectionLines() {
         map.removeSource('connections');
     }
     currentConnections = [];
-
-    // Redraw pinned connections
-    if (pinnedConnections.length > 0) {
-        drawPinnedConnections();
-    }
 }
 
 // Setup event handlers for map interactions (called only once)
@@ -792,11 +786,6 @@ function showSinglePersonPopup(lngLat, properties) {
                         title="${basketText}">
                     <i class="fas ${basketIcon}"></i>
                 </button>
-                <button class="btn-pin-network"
-                        onclick="pinPersonNetwork('${properties.id}')"
-                        title="Netzwerk fixieren">
-                    <i class="fas fa-thumbtack"></i>
-                </button>
             </div>
         </div>
     `;
@@ -842,10 +831,6 @@ function showMultiPersonPopup(lngLat, features) {
         const basketTitle = inBasket ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzufügen';
         const basketClass = inBasket ? 'in-basket' : '';
 
-        // Check if network is pinned
-        const isPinned = pinnedConnections.some(conn => conn.personId === p.id);
-        const pinTitle = isPinned ? 'Netzwerk lösen' : 'Netzwerk fixieren';
-        const pinClass = isPinned ? 'pinned' : '';
 
         return `
             <div class="person-item ${hasRelations ? 'has-relations' : ''}"
@@ -869,11 +854,6 @@ function showMultiPersonPopup(lngLat, features) {
                             onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
                             title="${basketTitle}">
                         <i class="fas ${basketIcon}"></i>
-                    </button>
-                    <button class="btn-pin-mini ${pinClass}"
-                            onclick="event.stopPropagation(); pinPersonNetwork('${p.id}')"
-                            title="${pinTitle}">
-                        <i class="fas fa-thumbtack"></i>
                     </button>
                 </div>
             </div>
@@ -938,10 +918,6 @@ window.expandPersonList = function(event) {
         const basketTitle = inBasket ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzufügen';
         const basketClass = inBasket ? 'in-basket' : '';
 
-        // Check if network is pinned
-        const isPinned = pinnedConnections.some(conn => conn.personId === p.id);
-        const pinTitle = isPinned ? 'Netzwerk lösen' : 'Netzwerk fixieren';
-        const pinClass = isPinned ? 'pinned' : '';
 
         return `
             <div class="person-item ${hasRelations ? 'has-relations' : ''}"
@@ -965,11 +941,6 @@ window.expandPersonList = function(event) {
                             onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
                             title="${basketTitle}">
                         <i class="fas ${basketIcon}"></i>
-                    </button>
-                    <button class="btn-pin-mini ${pinClass}"
-                            onclick="event.stopPropagation(); pinPersonNetwork('${p.id}')"
-                            title="${pinTitle}">
-                        <i class="fas fa-thumbtack"></i>
                     </button>
                 </div>
             </div>
@@ -1401,320 +1372,16 @@ function updateDebugPanel(person) {
     const jsonString = JSON.stringify(person, null, 2);
     const highlighted = syntaxHighlightJSON(jsonString);
 
-    // Check if person network is pinned
-    const isPinned = pinnedConnections.some(conn =>
-        conn.personId === person.id
-    );
-
     debugJson.innerHTML = `
         <div class="debug-person-header">
             <strong>${person.name}</strong>
             <div style="display: flex; gap: 8px; align-items: center;">
                 ${person.gnd ? `<span class="debug-gnd">GND: ${person.gnd}</span>` : ''}
-                <button class="btn-pin-debug ${isPinned ? 'pinned' : ''}"
-                        onclick="pinPersonNetwork('${person.id}')"
-                        title="${isPinned ? 'Netzwerk lösen' : 'Netzwerk fixieren'}">
-                    <i class="fas fa-thumbtack"></i>
-                </button>
             </div>
         </div>
         <pre>${highlighted}</pre>
     `;
 }
-
-// Pin person network
-window.pinPersonNetwork = function(personId) {
-    const person = allPersons.find(p => p.id === personId);
-    if (!person) {
-        log.error(`Person not found: ${personId}`);
-        return;
-    }
-
-    // Check if already pinned
-    const existingIndex = pinnedConnections.findIndex(conn => conn.personId === personId);
-
-    if (existingIndex !== -1) {
-        // Unpin
-        pinnedConnections.splice(existingIndex, 1);
-        log.event(`Unpinned network for ${person.name}`);
-        Toast.show(`Netzwerk von ${person.name} gelöst`, 'info');
-    } else {
-        // Pin
-        const connections = getPersonConnections(person, allPersons, correspondenceConnectionsCache);
-
-        if (connections.length === 0) {
-            Toast.show(`${person.name} hat keine Verbindungen`, 'warning');
-            return;
-        }
-
-        pinnedConnections.push({
-            personId: person.id,
-            personName: person.name,
-            connections: connections,
-            timestamp: Date.now()
-        });
-        log.event(`Pinned ${connections.length} connections for ${person.name}`);
-        Toast.show(`${connections.length} Verbindungen von ${person.name} fixiert`, 'success');
-    }
-
-    // Update UI - if person is currently shown in debug panel
-    const currentPerson = allPersons.find(p => p.id === personId);
-    if (currentPerson) {
-        updateDebugPanel(currentPerson);
-    }
-
-    updatePinnedConnectionsUI();
-    drawPinnedConnections();
-};
-
-// Draw pinned connections
-function drawPinnedConnections() {
-    if (pinnedConnections.length === 0) {
-        // Remove pinned layers if they exist
-        if (map.getLayer('pinned-connection-labels')) {
-            map.removeLayer('pinned-connection-labels');
-        }
-        if (map.getLayer('pinned-connection-lines')) {
-            map.removeLayer('pinned-connection-lines');
-        }
-        if (map.getLayer('pinned-connection-lines-glow')) {
-            map.removeLayer('pinned-connection-lines-glow');
-        }
-        if (map.getSource('pinned-connections')) {
-            map.removeSource('pinned-connections');
-        }
-        return;
-    }
-
-    // Collect all pinned connections
-    const allPinnedConns = pinnedConnections.flatMap(p => p.connections);
-
-    // Filter by enabled categories
-    let filtered = allPinnedConns.filter(conn => networkEnabled[conn.category]);
-
-    // Apply temporal filter
-    if (temporalFilter && temporalFilter.mode === 'correspondence') {
-        filtered = filtered.map(conn => {
-            if (conn.type === 'correspondence' && conn.year) {
-                if (conn.year >= temporalFilter.start && conn.year <= temporalFilter.end) {
-                    return conn;
-                }
-                return null;
-            }
-            return conn;
-        }).filter(conn => conn !== null);
-    }
-
-    // Create GeoJSON
-    const features = filtered.map(conn => {
-        let label = '';
-        if (conn.type === 'agrelon') {
-            label = conn.subtype || conn.category;
-        } else if (conn.type === 'correspondence') {
-            label = conn.strength > 1 ? `${conn.strength}× Brief` : 'Brief';
-        }
-
-        return {
-            type: 'Feature',
-            properties: {
-                category: conn.category,
-                subtype: conn.subtype,
-                strength: conn.strength || 1,
-                label: label,
-                fromPlace: conn.from.name,
-                toPlace: conn.to.name,
-                senderName: conn.sender?.name || conn.person?.name,
-                recipientName: conn.recipient?.name
-            },
-            geometry: {
-                type: 'LineString',
-                coordinates: [
-                    [conn.from.lon, conn.from.lat],
-                    [conn.to.lon, conn.to.lat]
-                ]
-            }
-        };
-    });
-
-    const geojson = {
-        type: 'FeatureCollection',
-        features: features
-    };
-
-    // Remove existing pinned layers
-    if (map.getLayer('pinned-connection-labels')) {
-        map.removeLayer('pinned-connection-labels');
-    }
-    if (map.getLayer('pinned-connection-lines')) {
-        map.removeLayer('pinned-connection-lines');
-    }
-    if (map.getLayer('pinned-connection-lines-glow')) {
-        map.removeLayer('pinned-connection-lines-glow');
-    }
-    if (map.getSource('pinned-connections')) {
-        map.removeSource('pinned-connections');
-    }
-
-    // Add source
-    map.addSource('pinned-connections', {
-        type: 'geojson',
-        data: geojson
-    });
-
-    // Add glow layer (slightly different style for pinned)
-    map.addLayer({
-        id: 'pinned-connection-lines-glow',
-        type: 'line',
-        source: 'pinned-connections',
-        paint: {
-            'line-color': '#ffffff',
-            'line-width': [
-                'interpolate',
-                ['linear'],
-                ['get', 'strength'],
-                1, 10,
-                5, 12,
-                10, 14,
-                20, 16
-            ],
-            'line-opacity': 0.8,
-            'line-blur': 5
-        }
-    }, 'persons-layer');
-
-    // Add main line layer (dashed for pinned)
-    map.addLayer({
-        id: 'pinned-connection-lines',
-        type: 'line',
-        source: 'pinned-connections',
-        layout: {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        paint: {
-            'line-color': [
-                'match',
-                ['get', 'category'],
-                'Familie', getConnectionColor('Familie'),
-                'Beruflich', getConnectionColor('Beruflich'),
-                'Sozial', getConnectionColor('Sozial'),
-                'Korrespondenz', getConnectionColor('Korrespondenz'),
-                getConnectionColor('Unbekannt')
-            ],
-            'line-width': [
-                'interpolate',
-                ['linear'],
-                ['get', 'strength'],
-                1, 4,
-                2, 6,
-                3, 8,
-                5, 11,
-                10, 15,
-                20, 22
-            ],
-            'line-opacity': 0.8,  // Reduced from 1.0 to distinguish from hover (0.6)
-            'line-dasharray': [2, 2] // Dashed pattern for pinned
-        }
-    }, 'persons-layer');
-
-    // Add labels
-    map.addLayer({
-        id: 'pinned-connection-labels',
-        type: 'symbol',
-        source: 'pinned-connections',
-        layout: {
-            'text-field': ['get', 'label'],
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-            'text-size': 12,
-            'symbol-placement': 'line-center',
-            'text-rotation-alignment': 'map',
-            'text-pitch-alignment': 'viewport',
-            'text-allow-overlap': false,
-            'text-ignore-placement': false
-        },
-        paint: {
-            'text-color': '#1e3a5f',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 3,
-            'text-halo-blur': 1,
-            'text-opacity': 1.0
-        }
-    });
-
-    log.event(`Drew ${filtered.length} pinned connections`);
-}
-
-// Update pinned connections UI list
-function updatePinnedConnectionsUI() {
-    const pinnedNetworksDiv = document.getElementById('pinned-networks');
-    const pinnedNetworksList = document.getElementById('pinned-networks-list');
-    const clearAllBtn = document.getElementById('clear-all-pins');
-
-    if (!pinnedNetworksDiv || !pinnedNetworksList || !clearAllBtn) return;
-
-    if (pinnedConnections.length === 0) {
-        pinnedNetworksDiv.style.display = 'none';
-        clearAllBtn.style.display = 'none';
-        return;
-    }
-
-    // Show pinned networks section
-    pinnedNetworksDiv.style.display = 'block';
-    clearAllBtn.style.display = 'block';
-
-    // Build list HTML
-    pinnedNetworksList.innerHTML = pinnedConnections.map((pinned, index) => {
-        const connCount = pinned.connections.length;
-        const categories = {};
-        pinned.connections.forEach(conn => {
-            categories[conn.category] = (categories[conn.category] || 0) + 1;
-        });
-
-        const stats = Object.entries(categories)
-            .map(([cat, count]) => `${count} ${cat}`)
-            .join(', ');
-
-        return `
-            <div class="pinned-network-item">
-                <div class="pinned-network-info">
-                    <div class="pinned-network-name">${pinned.personName}</div>
-                    <div class="pinned-network-stats">${connCount} Verbindungen: ${stats}</div>
-                </div>
-                <button class="btn-unpin" onclick="unpinNetwork(${index})" title="Lösen">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-    }).join('');
-
-    log.event(`${pinnedConnections.length} networks pinned in UI`);
-}
-
-// Unpin specific network
-window.unpinNetwork = function(index) {
-    if (index >= 0 && index < pinnedConnections.length) {
-        const removed = pinnedConnections.splice(index, 1)[0];
-        log.event(`Unpinned network ${index}: ${removed.personName}`);
-        Toast.show(`Netzwerk von ${removed.personName} gelöst`, 'info');
-        updatePinnedConnectionsUI();
-        drawPinnedConnections();
-    }
-};
-
-// Clear all pinned networks
-document.addEventListener('DOMContentLoaded', () => {
-    const clearAllBtn = document.getElementById('clear-all-pins');
-    if (clearAllBtn) {
-        clearAllBtn.addEventListener('click', () => {
-            const count = pinnedConnections.length;
-            pinnedConnections = [];
-            log.event(`Cleared all ${count} pinned networks`);
-            Toast.show(`Alle ${count} Netzwerke gelöst`, 'info');
-            updatePinnedConnectionsUI();
-            drawPinnedConnections();
-        });
-    }
-});
 
 // Show JSON popup for person item in list
 let personItemTooltip = null;

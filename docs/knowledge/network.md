@@ -112,23 +112,7 @@ correspondenceConnectionsCache = extractCorrespondenceConnections(allPersons);
 - Cluster-Popup: Zeigt Verbindungen aller Personen im Cluster
 - Network-Info Badge: "X Verbindungen" mit Kategorien
 
-### 2. Pin-Feature (Fixierung)
-**Nutzung:**
-- 📌 Button in Single-Marker-Popup
-- 📌 Button neben jedem Namen in Cluster-Popup
-- 📌 Button im Debug-Panel Header
-
-**Zustand:**
-- Gepinnt: Gestrichelte Linien, bleibt sichtbar
-- Mehrere Netzwerke gleichzeitig pinnbar
-- "Alle lösen" Button im Debug-Panel
-
-**Anzeige:**
-- Fixierte Netzwerke-Liste im Debug-Panel
-- Pro Netzwerk: Name, Timestamp, Kategorie-Breakdown
-- Mini-Pin-Buttons zum Einzellösen
-
-### 3. Relation-Labels
+### 2. Relation-Labels
 - Text-Layer über Linien: Zeigt AGRELON-Typ
 - Nur bei 1-3 Verbindungen (sonst zu überladen)
 - Font-Size: 8px, autorotate entlang Linie
@@ -258,5 +242,4 @@ correspondenceConnectionsCache = extractCorrespondenceConnections(allPersons);
 ### 2025-10-29
 - AGRELON-Beziehungen integriert (86 Relationen)
 - Hover-basierte Anzeige
-- Pin-Feature für Netzwerk-Vergleich
 - Debug-Panel mit JSON-Inspektion

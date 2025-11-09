@@ -30,7 +30,6 @@ Latest Update (2025-11-09):
 - Wissenskorb navigation controls: Zoom, Fit, Help buttons for network graph
 - Legend moved to sidebar, CSV export removed, debug panel optimizations
 - CSS design tokens for centralized color management
-- Pin feature for network comparison (dashed lines for pinned connections)
 
 Previous Update (2025-11-05):
 - Brief-Explorer Phase 2e complete - statistical visualization with direct person navigation

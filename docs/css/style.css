@@ -958,8 +958,7 @@ body {
     flex-shrink: 0;
 }
 
-.btn-basket-mini,
-.btn-pin-mini {
+.btn-basket-mini {
     padding: 4px 8px;
     background: white;
     color: var(--color-secondary);
@@ -982,27 +981,6 @@ body {
 
 .btn-basket-mini.in-basket:hover {
     background: #c9423a;
-}
-
-.btn-pin-mini {
-    color: #2c5f8d;
-    border-color: #2c5f8d;
-}
-
-.btn-pin-mini:hover {
-    background: #2c5f8d;
-    color: white;
-}
-
-.btn-pin-mini.pinned {
-    background: #ff0066;
-    color: white;
-    border-color: #ff0066;
-    transform: rotate(45deg);
-}
-
-.btn-pin-mini.pinned:hover {
-    background: #cc0052;
 }
 
 /* Custom scrollbar for person list */

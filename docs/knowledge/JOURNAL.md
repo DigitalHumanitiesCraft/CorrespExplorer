@@ -6,6 +6,24 @@
 
 ## 2025-11-09
 
+### Session 23 — Pin-Feature Entfernung
+
+**Grund:**
+- Pin-Feature für Netzwerk-Vergleich auf Karte funktionierte nicht zuverlässig
+- Wissenskorb bietet bessere Alternative für Netzwerk-Analyse
+
+**Entfernt:**
+- JavaScript: pinnedConnections Array und alle zugehörigen Funktionen (ca. 220 Zeilen)
+- HTML: Pinned-Networks Container und Clear-All-Pins Button
+- CSS: Alle .btn-pin-*, .pinned-* Styles (ca. 100 Zeilen)
+- Pin-Buttons aus Single-Marker-Popup, Cluster-Popup, Debug-Panel
+
+**Alternative:**
+- Wissenskorb (wissenskorb.html) für dedizierte Netzwerk-Analyse
+- 3 Modi: AGRELON, Places, Occupations
+- Cytoscape.js Graph-Visualisierung
+- LocalStorage Persistierung
+
 ### Session 22 — Mobile Responsive Navigation
 
 **Mobile Navigation Implementierung:**
