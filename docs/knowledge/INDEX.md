@@ -2,10 +2,10 @@
 
 HerData ist ein kompaktes, nachvollziehbares Wissenssystem zu Frauen im Korrespondenzumfeld Goethes. Diese Einstiegsseite erklärt Zweck und aktuellen Stand, verweist auf die zugehörigen Dateien und nennt die Versionen, damit Dokumentation, Daten und Live-Darstellung übereinstimmen.
 
-**Stand:** 05.11.2025
+**Stand:** 09.11.2025
 **Datensatz-Version:** 27.10.2025
 **Pipeline-Bezeichnung:** build_herdata
-**Live-Commit:** b36a807
+**Live-Commit:** 0fe7cca
 
 ## Überblick und aktueller Stand
 
@@ -36,6 +36,12 @@ Die Live-Seite wird aus dem Hauptzweig über den `docs`-Bereich veröffentlicht.
 
 **Responsive Design:**
 [responsive_dossier.md](responsive_dossier.md) fasst Diagnose, Zielbild, Maßnahmen-Backlog und Definition of Done für mobile Nutzung zusammen: Navigation, Touch-Interaktion, Zugänglichkeit, Testleitfaden und Abnahmekriterien.
+
+**Netzwerk-Visualisierung:**
+[network.md](network.md) dokumentiert AGRELON-Beziehungen und Frau-zu-Frau Korrespondenz: Datenquellen (86 AGRELON + 22 Briefe), Visualisierung (Farben, Linien, Interaktion), technische Implementierung (network-utils.js, MapLibre Layer), Features (Hover, Pin, Labels, Temporalfilter), UI/UX Optimierungen 2025-11-09, Performance-Tests, Limitierungen und Backlog.
+
+**Wissenskorb:**
+[wissenskorb.md](wissenskorb.md) beschreibt globalen, persistenten Wissenskorb: Konzept (LocalStorage-basierte Sammlung), Architektur (basket-manager.js, navbar Integration), Visualisierungen (Cytoscape Netzwerk mit 3 Modi, Timeline, Overview Stats), Navigation Controls (Zoom/Fit/Help seit 2025-11-09), Export-Funktionen (CSV/JSON), Testing und Backlog.
 
 **Implementierung:**
 [implementation-quick-wins.md](implementation-quick-wins.md) enthält strategische Feature-Bewertungen und Priorisierung (archiviert). Alle priorisierten Quick Win Features (Namensvarianten, CSV-Export, dualer Zeitfilter) sind in requirements.md als abgeschlossen dokumentiert.
