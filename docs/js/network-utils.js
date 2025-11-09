@@ -124,8 +124,20 @@ export function getClusterConnections(clusterPersons, allPersons, cachedCorrespo
         const personConnections = getPersonConnections(person, allPersons, cachedCorrespondence);
 
         personConnections.forEach(conn => {
-            // Create unique key to avoid duplicates
-            const key = `${conn.from.lat},${conn.from.lon}-${conn.to.lat},${conn.to.lon}`;
+            // Create unique key including person IDs and connection type to preserve parallel connections
+            // For AGRELON: include source person ID + target person ID + type
+            // For correspondence: sender ID + recipient ID (already handled by extractCorrespondenceConnections)
+            let key;
+            if (conn.type === 'agrelon' && conn.person) {
+                // AGRELON relationship: source person + target person + relation type + coordinates
+                key = `agrelon-${person.id}-${conn.person.id}-${conn.subtype}-${conn.from.lat},${conn.from.lon}-${conn.to.lat},${conn.to.lon}`;
+            } else if (conn.sender && conn.recipient) {
+                // Correspondence: sender + recipient + coordinates
+                key = `correspondence-${conn.sender.id}-${conn.recipient.id}-${conn.from.lat},${conn.from.lon}-${conn.to.lat},${conn.to.lon}`;
+            } else {
+                // Fallback: just coordinates (for any unexpected connection types)
+                key = `${conn.from.lat},${conn.from.lon}-${conn.to.lat},${conn.to.lon}`;
+            }
 
             if (!seen.has(key)) {
                 seen.add(key);

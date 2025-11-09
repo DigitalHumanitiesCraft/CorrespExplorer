@@ -1096,15 +1096,16 @@ function initFilters() {
 
     // Reset button
     resetButton.addEventListener('click', () => {
-        roleCheckboxes.forEach(cb => cb.checked = false);
-        occupationCheckboxes.forEach(cb => cb.checked = false);
-        placeTypeCheckboxes.forEach(cb => cb.checked = false);
+        // Reset to DEFAULT state: all filters ACTIVE (not empty)
+        roleCheckboxes.forEach(cb => cb.checked = true);
+        occupationCheckboxes.forEach(cb => cb.checked = true);
+        placeTypeCheckboxes.forEach(cb => cb.checked = true);
         networkTypeCheckboxes.forEach(cb => {
-            cb.checked = false;
-            networkEnabled[cb.value] = false;
+            cb.checked = true;
+            networkEnabled[cb.value] = true;
         });
 
-        // Reset year range slider
+        // Reset year range slider to full range
         yearRangeSlider.noUiSlider.set([1762, 1824]);
         temporalFilter = null;
 
@@ -1188,15 +1189,16 @@ function applyFilters() {
 
     // Filter persons
     filteredPersons = allPersons.filter(person => {
-        // Role filter: check if person's role matches any selected role
-        const roleMatch = roleFilters.some(r => {
+        // Role filter: empty array = show all, otherwise check matches
+        const roleMatch = roleFilters.length === 0 || roleFilters.some(r => {
             if (person.roles && person.roles.includes(r)) return true;
             if (person.role === r) return true;
             return false;
         });
 
-        // Occupation filter: check if person's occupation group matches
-        const occupationMatch = occupationFilters.includes(person.occupation_group);
+        // Occupation filter: empty array = show all, otherwise check matches
+        const occupationMatch = occupationFilters.length === 0 ||
+                               occupationFilters.includes(person.occupation_group);
 
         // Temporal filter: check based on mode (correspondence or lifespan)
         let temporalMatch = true;
@@ -1224,16 +1226,20 @@ function applyFilters() {
             }
         }
 
-        // Place type filter: check if person has a place with selected type
+        // Place type filter: empty array = show all, otherwise check matches
         let placeTypeMatch = true;
-        if (person.places && person.places.length > 0) {
-            placeTypeMatch = person.places.some(place =>
-                placeTypeFilters.includes(place.type)
-            );
-        } else {
-            // If person has no places, exclude them when place type filter is active
-            placeTypeMatch = false;
+        if (placeTypeFilters.length > 0) {
+            // Filter is active: check if person has matching place
+            if (person.places && person.places.length > 0) {
+                placeTypeMatch = person.places.some(place =>
+                    placeTypeFilters.includes(place.type)
+                );
+            } else {
+                // Person has no places: exclude when filter is active
+                placeTypeMatch = false;
+            }
         }
+        // else: filter is empty, show all persons regardless of places
 
         return roleMatch && occupationMatch && temporalMatch && placeTypeMatch;
     });

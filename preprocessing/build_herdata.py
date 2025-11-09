@@ -485,11 +485,11 @@ class HerDataPipelineNew:
                         self.women[woman_id]['letter_count'] += 1
                         if 'sender' not in self.women[woman_id]['roles']:
                             self.women[woman_id]['roles'].append('sender')
-                        # Add letter year
+                        # Add sent year (separate from mentioned years)
                         if letter_year:
-                            if 'letter_years' not in self.women[woman_id]:
-                                self.women[woman_id]['letter_years'] = []
-                            self.women[woman_id]['letter_years'].append(letter_year)
+                            if 'sent_years' not in self.women[woman_id]:
+                                self.women[woman_id]['sent_years'] = []
+                            self.women[woman_id]['sent_years'].append(letter_year)
 
                         # Add detailed correspondence data
                         if 'correspondence' not in self.women[woman_id]:
@@ -535,11 +535,11 @@ class HerDataPipelineNew:
                         self.women[woman_id]['mention_count'] += 1
                         if 'mentioned' not in self.women[woman_id]['roles']:
                             self.women[woman_id]['roles'].append('mentioned')
-                        # Add letter year
+                        # Add mentioned year (separate from sent years)
                         if letter_year:
-                            if 'letter_years' not in self.women[woman_id]:
-                                self.women[woman_id]['letter_years'] = []
-                            self.women[woman_id]['letter_years'].append(letter_year)
+                            if 'mentioned_years' not in self.women[woman_id]:
+                                self.women[woman_id]['mentioned_years'] = []
+                            self.women[woman_id]['mentioned_years'].append(letter_year)
 
                         # Add detailed mention data
                         if 'correspondence' not in self.women[woman_id]:
@@ -568,7 +568,7 @@ class HerDataPipelineNew:
                                 'transformation': f"count of mentions via GND matching"
                             })
 
-        # Assign combined roles
+        # Assign combined roles and create letter_years for compatibility
         for woman_id, woman_data in self.women.items():
             roles = woman_data['roles']
             if len(roles) == 0:
@@ -579,6 +579,12 @@ class HerDataPipelineNew:
                 woman_data['role'] = 'sender'
             elif 'mentioned' in roles:
                 woman_data['role'] = 'mentioned'
+
+            # Create letter_years for backward compatibility (combines sent + mentioned)
+            sent_years = woman_data.get('sent_years', [])
+            mentioned_years = woman_data.get('mentioned_years', [])
+            if sent_years or mentioned_years:
+                woman_data['letter_years'] = sorted(set(sent_years + mentioned_years))
 
             # Track provenance for role assignment
             self.add_provenance(woman_id, 'role', {
@@ -724,30 +730,57 @@ class HerDataPipelineNew:
 
         self.log(f"  Added {occupations_added} occupation entries from NEW export")
 
-        # Step 6: Load biographical texts from NEW export
-        self.log("Loading projekt_regestausgabe.xml (NEW export)...")
-        projekt_tree = ET.parse(self.herdata_dir / 'projekt_regestausgabe.xml')
-        projekt_root = projekt_tree.getroot()
+        # Step 6: Load biographical texts from multiple sources (NEW + OLD SNDB)
+        bio_sources = [
+            (self.herdata_dir / 'projekt_regestausgabe.xml', 'regestausgabe', 'NEW'),
+            (self.sndb_dir / 'pers_koerp_projekt_goebriefe.xml', 'goebriefe', 'OLD'),
+            (self.sndb_dir / 'pers_koerp_projekt_bug.xml', 'bug', 'OLD'),
+            (self.sndb_dir / 'pers_koerp_projekt_tagebuch.xml', 'tagebuch', 'OLD')
+        ]
 
-        biografien_added = 0
-        for item in projekt_root.findall('.//ITEM'):
-            person_id = item.find('ID').text
-            if person_id in self.women:
-                registereintrag = item.find('REGISTEREINTRAG').text if item.find('REGISTEREINTRAG') is not None else None
-                if registereintrag:
-                    # Store biography text
-                    self.women[person_id]['biography'] = registereintrag
-                    biografien_added += 1
+        biografien_total = 0
+        for file_path, source_key, export_type in bio_sources:
+            if not file_path.exists():
+                self.log(f"  WARNING: {file_path.name} not found, skipping")
+                continue
 
-                    # Track provenance for biography
-                    self.add_provenance(person_id, 'biography', {
-                        'file': 'projekt_regestausgabe.xml',
-                        'xpath': f"//ITEM[ID='{person_id}']/REGISTEREINTRAG",
-                        'raw_value': registereintrag[:100] + '...' if len(registereintrag) > 100 else registereintrag,
-                        'transformation': 'direct extraction of biographical text'
-                    })
+            self.log(f"Loading {file_path.name} ({export_type} export)...")
+            tree = ET.parse(file_path)
+            root = tree.getroot()
 
-        self.log(f"  Added {biografien_added} biographical texts from NEW export")
+            biografien_added = 0
+            for item in root.findall('.//ITEM'):
+                person_id = item.find('ID').text
+                if person_id in self.women:
+                    registereintrag = item.find('REGISTEREINTRAG')
+                    if registereintrag is not None and registereintrag.text:
+                        # Initialize biographies array if needed
+                        if 'biographies' not in self.women[person_id]:
+                            self.women[person_id]['biographies'] = []
+
+                        # Add biography with source metadata
+                        self.women[person_id]['biographies'].append({
+                            'source': source_key,
+                            'text': registereintrag.text
+                        })
+                        biografien_added += 1
+
+                        # Set primary biography to first entry for backward compatibility
+                        if 'biography' not in self.women[person_id]:
+                            self.women[person_id]['biography'] = registereintrag.text
+
+                            # Track provenance for primary biography
+                            self.add_provenance(person_id, 'biography', {
+                                'file': file_path.name,
+                                'xpath': f"//ITEM[ID='{person_id}']/REGISTEREINTRAG",
+                                'raw_value': registereintrag.text[:100] + '...' if len(registereintrag.text) > 100 else registereintrag.text,
+                                'transformation': f'direct extraction from {source_key}'
+                            })
+
+            self.log(f"  Added {biografien_added} biographical texts from {source_key}")
+            biografien_total += biografien_added
+
+        self.log(f"  Total biographical texts: {biografien_total} from {len(bio_sources)} sources")
 
         # Step 7: Load AGRELON relationships from NEW export
         self.log("Loading ra_ndb_beziehungen.xml (NEW export)...")
@@ -830,12 +863,17 @@ class HerDataPipelineNew:
         with_gnd = sum(1 for w in self.women.values() if w.get('gnd'))
 
         # Build aggregated timeline data
-        all_years = []
+        # Build timeline from unique sent letters only (not mentions)
+        unique_letters_by_year = {}
         for woman in self.women.values():
-            if woman.get('letter_years'):
-                all_years.extend(woman['letter_years'])
+            for corr in woman.get('correspondence', []):
+                if corr.get('type') == 'sent' and corr.get('year') and corr.get('letter_id'):
+                    letter_id = corr['letter_id']
+                    year = corr['year']
+                    unique_letters_by_year[letter_id] = year
 
-        year_counts = Counter(all_years)
+        # Count letters per year
+        year_counts = Counter(unique_letters_by_year.values())
         timeline_data = [{'year': year, 'count': count} for year, count in sorted(year_counts.items())]
 
         # Build output structure
@@ -909,6 +947,9 @@ class HerDataPipelineNew:
 
             if woman_data.get('biography'):
                 person['biography'] = woman_data['biography']
+
+            if woman_data.get('biographies'):
+                person['biographies'] = woman_data['biographies']
 
             if woman_data.get('relationships'):
                 person['relationships'] = woman_data['relationships']
