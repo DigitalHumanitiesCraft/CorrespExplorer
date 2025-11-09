@@ -222,45 +222,7 @@ body {
 }
 
 /* View Switcher */
-.view-switcher {
-    display: flex;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.view-btn {
-    padding: var(--spacing-sm) var(--spacing-md);
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    font-family: var(--font-family);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: inline-block;
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.view-btn:last-child {
-    border-right: none;
-}
-
-.view-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.view-btn.active {
-    background: rgba(255, 255, 255, 0.25);
-    color: white;
-    cursor: default;
-}
-
-.view-btn.active:hover {
-    background: rgba(255, 255, 255, 0.25);
-}
+/* View-switcher styles removed - now handled globally in ../css/style.css with responsive breakpoints */
 
 /* Main Layout - Three Columns */
 .main-layout {
