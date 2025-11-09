@@ -196,6 +196,18 @@ body {
     margin-bottom: var(--space-lg);  /* Reduced from 2xl (48px) to lg (24px) for more compact sidebar */
 }
 
+/* Two-column filter layout */
+.filter-group-row {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.filter-group-half {
+    flex: 1;
+    margin-bottom: 0;  /* Override default margin when in row */
+}
+
 .filter-group h4 {
     font-size: var(--font-size-base);
     font-weight: 600;
@@ -1220,23 +1232,7 @@ body {
 }
 
 /* Map Legend */
-.map-legend {
-    position: absolute;
-    bottom: var(--space-lg);
-    right: var(--space-lg);
-    background: white;
-    padding: var(--space-md);
-    border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-}
-
-.map-legend h4 {
-    margin: 0 0 var(--space-sm) 0;
-    font-size: var(--font-size-md);
-    font-weight: 600;
-    color: var(--color-text);
-}
+/* Map legend removed - now in sidebar */
 
 .legend-item {
     display: flex;
@@ -1264,6 +1260,29 @@ body {
     height: 3px;
     border-radius: 2px;
     flex-shrink: 0;
+}
+
+/* Legend in Sidebar */
+.legend-section {
+    margin-top: var(--space-md);
+}
+
+.legend-section:first-child {
+    margin-top: 0;
+}
+
+.legend-section h5 {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+}
+
+.legend-hint {
+    font-size: 11px;
+    margin-top: var(--space-sm);
+    color: var(--color-text-light);
+    font-style: italic;
 }
 
 /* Timeline Styles */
@@ -1338,13 +1357,6 @@ body {
 
     .mini-map {
         height: 300px;
-    }
-
-    .map-legend {
-        bottom: var(--space-md);
-        right: var(--space-md);
-        padding: var(--space-sm);
-        font-size: var(--font-size-xs);
     }
 
     .legend-color {

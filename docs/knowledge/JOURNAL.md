@@ -4,6 +4,42 @@
 
 ### HerData Journal — Kompaktfassung (gleiche Information, präziser)
 
+## 2025-11-09
+
+### Session 21 — UI/UX Optimization & Layout Improvements
+
+**Visuelle Verbesserungen:**
+- Netzwerk-Linienfarben optimiert: Familie #D0388C, Beruflich #147D7E, Sozial #2E7D32, Korrespondenz #6C5CE7
+- Linien-Transparenz: Hover 0.6, Pinned 0.8 (40% weniger visuelles Rauschen)
+- Basemap entsättigt: saturate(0.7) brightness(1.05) für bessere Figur-Grund-Trennung
+
+**Layout-Optimierung:**
+- Sidebar kompakter: Button-Padding 50% reduziert (8×12px statt 16×24px)
+- Filter-Gruppen-Spacing: 48px → 24px
+- 2-Spalten-Layout: Aktivität+Berufsgruppe, Ortstyp+Netzwerk nebeneinander (~120px vertikaler Platz gespart)
+- Legende von Karte in Sidebar verschoben, Netzwerk-Typen aus Legende entfernt (Redundanz)
+
+**Neue Features:**
+- Wissenskorb Navigation: Zoom In/Out, Fit to View, Help-Tooltip für Cytoscape-Graph
+- CSS Design Tokens: Zentrale Farbdefinitionen in design-tokens.css
+- Debug-Panel Pin-Button: Rotation entfernt (nur Farbwechsel)
+
+**Code-Cleanup:**
+- CSV-Export entfernt (Button + initCSVExport() in app.js)
+- .map-legend CSS entfernt (jetzt in Sidebar)
+- Alte Netzwerk-Dokumentation konsolidiert
+
+**Dateien:**
+- Erstellt: design-tokens.css, CHANGES-2025-01-09.md
+- Geändert: network-utils.js, app.js, index.html, style.css, network.css, debug.css, wissenskorb.js, wissenskorb.html
+- Dokumentation: network-visualization-analysis.md, network-enhancement-plan.md, network-implementation-summary.md
+
+**Ergebnis:**
+- Konsistentere Farbpalette (colorblind-safe)
+- 15-20% mehr Platz für Karte
+- Bessere Accessibility-Vorbereitung
+- Zentrale Design-Token-Verwaltung
+
 ## 2025-11-05
 
 ### Session 20 — Wissenskorb Edge-Tooltips

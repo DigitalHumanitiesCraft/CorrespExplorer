@@ -45,25 +45,28 @@
                 </a>
             </div>
 
-            <!-- Letter Activity Filter -->
-            <div class="filter-group" role="group" aria-labelledby="filter-activity-heading">
-                <h4 id="filter-activity-heading">Aktivität</h4>
-                <label><input type="checkbox" name="role" value="sender" checked aria-describedby="filter-activity-heading"> Absenderin</label>
-                <label><input type="checkbox" name="role" value="mentioned" checked aria-describedby="filter-activity-heading"> Erwähnt</label>
-                <label><input type="checkbox" name="role" value="both" checked aria-describedby="filter-activity-heading"> Beides</label>
-                <label><input type="checkbox" name="role" value="indirect" aria-describedby="filter-activity-heading"> Nur SNDB</label>
-            </div>
+            <!-- Activity and Occupation Filters - Two Columns -->
+            <div class="filter-group-row">
+                <!-- Letter Activity Filter -->
+                <div class="filter-group filter-group-half" role="group" aria-labelledby="filter-activity-heading">
+                    <h4 id="filter-activity-heading">Aktivität</h4>
+                    <label><input type="checkbox" name="role" value="sender" checked aria-describedby="filter-activity-heading"> Absenderin</label>
+                    <label><input type="checkbox" name="role" value="mentioned" checked aria-describedby="filter-activity-heading"> Erwähnt</label>
+                    <label><input type="checkbox" name="role" value="both" checked aria-describedby="filter-activity-heading"> Beides</label>
+                    <label><input type="checkbox" name="role" value="indirect" aria-describedby="filter-activity-heading"> Nur SNDB</label>
+                </div>
 
-            <!-- Occupation Groups Filter -->
-            <div class="filter-group" role="group" aria-labelledby="filter-occupation-heading">
-                <h4 id="filter-occupation-heading">Berufsgruppe</h4>
-                <label><input type="checkbox" name="occupation" value="artistic" checked aria-describedby="filter-occupation-heading"> Künstlerisch</label>
-                <label><input type="checkbox" name="occupation" value="literary" checked aria-describedby="filter-occupation-heading"> Literarisch</label>
-                <label><input type="checkbox" name="occupation" value="musical" checked aria-describedby="filter-occupation-heading"> Musikalisch</label>
-                <label><input type="checkbox" name="occupation" value="court" checked aria-describedby="filter-occupation-heading"> Hof/Adel</label>
-                <label><input type="checkbox" name="occupation" value="education" checked aria-describedby="filter-occupation-heading"> Bildung</label>
-                <label><input type="checkbox" name="occupation" value="other" checked aria-describedby="filter-occupation-heading"> Sonstiges</label>
-                <label><input type="checkbox" name="occupation" value="none" checked aria-describedby="filter-occupation-heading"> Kein Beruf angegeben</label>
+                <!-- Occupation Groups Filter -->
+                <div class="filter-group filter-group-half" role="group" aria-labelledby="filter-occupation-heading">
+                    <h4 id="filter-occupation-heading">Berufsgruppe</h4>
+                    <label><input type="checkbox" name="occupation" value="artistic" checked aria-describedby="filter-occupation-heading"> Künstlerisch</label>
+                    <label><input type="checkbox" name="occupation" value="literary" checked aria-describedby="filter-occupation-heading"> Literarisch</label>
+                    <label><input type="checkbox" name="occupation" value="musical" checked aria-describedby="filter-occupation-heading"> Musikalisch</label>
+                    <label><input type="checkbox" name="occupation" value="court" checked aria-describedby="filter-occupation-heading"> Hof/Adel</label>
+                    <label><input type="checkbox" name="occupation" value="education" checked aria-describedby="filter-occupation-heading"> Bildung</label>
+                    <label><input type="checkbox" name="occupation" value="other" checked aria-describedby="filter-occupation-heading"> Sonstiges</label>
+                    <label><input type="checkbox" name="occupation" value="none" checked aria-describedby="filter-occupation-heading"> Kein Beruf angegeben</label>
+                </div>
             </div>
 
             <!-- Time Period Filter -->
@@ -79,33 +82,49 @@
                 </div>
             </div>
 
-            <!-- Place Type Filter -->
-            <div class="filter-group" role="group" aria-labelledby="filter-place-heading">
-                <h4 id="filter-place-heading">Ortstyp</h4>
-                <label><input type="checkbox" name="place-type" value="Wirkungsort" checked aria-describedby="filter-place-heading"> Wirkungsort</label>
-                <label><input type="checkbox" name="place-type" value="Geburtsort" checked aria-describedby="filter-place-heading"> Geburtsort</label>
-                <label><input type="checkbox" name="place-type" value="Sterbeort" checked aria-describedby="filter-place-heading"> Sterbeort</label>
-                <label><input type="checkbox" name="place-type" value="Wohnort" checked aria-describedby="filter-place-heading"> Wohnort</label>
+            <!-- Place Type and Network Type Filters - Two Columns -->
+            <div class="filter-group-row">
+                <!-- Place Type Filter -->
+                <div class="filter-group filter-group-half" role="group" aria-labelledby="filter-place-heading">
+                    <h4 id="filter-place-heading">Ortstyp</h4>
+                    <label><input type="checkbox" name="place-type" value="Wirkungsort" checked aria-describedby="filter-place-heading"> Wirkungsort</label>
+                    <label><input type="checkbox" name="place-type" value="Geburtsort" checked aria-describedby="filter-place-heading"> Geburtsort</label>
+                    <label><input type="checkbox" name="place-type" value="Sterbeort" checked aria-describedby="filter-place-heading"> Sterbeort</label>
+                    <label><input type="checkbox" name="place-type" value="Wohnort" checked aria-describedby="filter-place-heading"> Wohnort</label>
+                </div>
+
+                <!-- Network Type Filter -->
+                <div class="filter-group filter-group-half" role="group" aria-labelledby="filter-network-heading">
+                    <h4 id="filter-network-heading">Netzwerk-Typ</h4>
+                    <label><input type="checkbox" name="network-type" value="Familie" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #D0388C; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Familie</label>
+                    <label><input type="checkbox" name="network-type" value="Beruflich" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #147D7E; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Beruflich</label>
+                    <label><input type="checkbox" name="network-type" value="Sozial" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #2E7D32; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Sozial</label>
+                    <label><input type="checkbox" name="network-type" value="Korrespondenz" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #6C5CE7; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Korrespondenz</label>
+                </div>
             </div>
 
-            <!-- Network Type Filter -->
-            <div class="filter-group" role="group" aria-labelledby="filter-network-heading">
-                <h4 id="filter-network-heading">Netzwerk-Typ</h4>
-                <label><input type="checkbox" name="network-type" value="Familie" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #D0388C; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Familie</label>
-                <label><input type="checkbox" name="network-type" value="Beruflich" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #147D7E; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Beruflich</label>
-                <label><input type="checkbox" name="network-type" value="Sozial" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #2E7D32; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Sozial</label>
-                <label><input type="checkbox" name="network-type" value="Korrespondenz" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #6C5CE7; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Korrespondenz</label>
+            <!-- Map Legend - Cluster Colors Only (Network types shown in filter above) -->
+            <div class="filter-group" role="region" aria-labelledby="legend-heading">
+                <h4 id="legend-heading">Cluster-Farben</h4>
+
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #2c5f8d;" aria-hidden="true"></span>
+                    <span>Überwiegend geschrieben (>50%)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #6c757d;" aria-hidden="true"></span>
+                    <span>Überwiegend erwähnt (>50%)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color" style="background: #2d6a4f;" aria-hidden="true"></span>
+                    <span>Gemischt</span>
+                </div>
+                <p class="legend-hint">Hover über Marker/Cluster zeigt Netzwerk-Verbindungen</p>
             </div>
 
             <div class="filter-buttons">
                 <button id="select-all-filters" aria-label="Alle Filter auswählen">Alle auswählen</button>
                 <button id="reset-filters" aria-label="Alle Filter zurücksetzen">Alle zurücksetzen</button>
-            </div>
-
-            <div class="export-actions">
-                <button id="export-csv" class="btn-export" aria-label="Gefilterte Personen als CSV exportieren">
-                    Als CSV exportieren
-                </button>
             </div>
         </aside>
 
@@ -114,44 +133,6 @@
             <div id="map-view" class="tab-content active">
                 <div id="map" role="application" aria-label="Interaktive Karte der Frauen"></div>
                 <div id="loading" role="status" aria-live="polite">Daten werden geladen...</div>
-
-                <!-- Map Legend -->
-                <div class="map-legend" role="region" aria-label="Kartenlegende">
-                    <h4>Cluster-Farben</h4>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #2c5f8d;" aria-hidden="true"></span>
-                        <span>Überwiegend geschrieben (>50%)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #6c757d;" aria-hidden="true"></span>
-                        <span>Überwiegend erwähnt (>50%)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #2d6a4f;" aria-hidden="true"></span>
-                        <span>Gemischt</span>
-                    </div>
-
-                    <h4 style="margin-top: 16px;">Netzwerk-Verbindungen</h4>
-                    <div class="legend-item">
-                        <span class="legend-line" style="background: #D0388C;" aria-hidden="true"></span>
-                        <span><strong>Familie</strong> (AGRELON)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-line" style="background: #147D7E;" aria-hidden="true"></span>
-                        <span><strong>Beruflich</strong> (AGRELON)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-line" style="background: #2E7D32;" aria-hidden="true"></span>
-                        <span><strong>Sozial</strong> (AGRELON)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-line" style="background: #6C5CE7;" aria-hidden="true"></span>
-                        <span><strong>Korrespondenz</strong> (Briefe)</span>
-                    </div>
-                    <p style="font-size: 11px; margin-top: 8px; color: #6c757d;">
-                        Hover über Marker/Cluster zeigt Verbindungen
-                    </p>
-                </div>
             </div>
         </main>
 

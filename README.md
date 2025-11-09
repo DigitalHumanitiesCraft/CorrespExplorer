@@ -2,7 +2,7 @@
 
 Semantic Processing and Visualization of Women in Goethe's Correspondence (1762-1824)
 
-Last Updated: 2025-11-04
+Last Updated: 2025-11-09
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![Data Source: Zenodo](https://img.shields.io/badge/Data-Zenodo%2014998880-blue)](https://zenodo.org/records/14998880)
@@ -24,15 +24,19 @@ Current Phase: Enhanced with Curated Dataset (Export 2025-10-27)
 
 Live Demo: [https://chpollin.github.io/HerData/](https://chpollin.github.io/HerData/)
 
-Latest Update (2025-11-05):
-- NEW: Brief-Explorer Phase 2e complete - statistical visualization with direct person navigation
+Latest Update (2025-11-09):
+- UI/UX optimization: Network colors, transparency, desaturated basemap
+- Compact sidebar: 2-column filter layout, reduced spacing (50%)
+- Wissenskorb navigation controls: Zoom, Fit, Help buttons for network graph
+- Legend moved to sidebar, CSV export removed, debug panel optimizations
+- CSS design tokens for centralized color management
+- Pin feature for network comparison (dashed lines for pinned connections)
+
+Previous Update (2025-11-05):
+- Brief-Explorer Phase 2e complete - statistical visualization with direct person navigation
 - Interactive filtering across all dimensions (time, occupation, place, birth decade, activity)
 - Click-to-filter on all visualizations (treemap, bar charts)
-- "View Persons" button with URL parameter forwarding to filtered person list
 - Multi-source biographies integrated (187 women, 41.7% coverage)
-- 303 biographical texts from SNDB projects (goebriefe, bug, tagebuch)
-- Biography display on person detail pages with markup parsing
-- Data restructuring: herdata/ and sndb/ directories for clarity
 
 Previous Update (2025-10-29):
 - Network visualization with hover-based connections (Phase 1+2 complete)
