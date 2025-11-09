@@ -16,7 +16,8 @@ const DOCS = [
     { id: 'responsive_dossier', title: 'Responsive Design', file: 'knowledge/responsive_dossier.md', category: 'DESIGN' },
     { id: 'project', title: 'Projekt', file: 'knowledge/project.md', category: 'PROJECT' },
     { id: 'requirements', title: 'Anforderungen', file: 'knowledge/requirements.md', category: 'PROJECT' },
-    { id: 'implementation-quick-wins', title: 'Feature-Priorisierung', file: 'knowledge/implementation-quick-wins.md', category: 'IMPLEMENTATION' }
+    { id: 'network', title: 'Netzwerk-Visualisierung', file: 'knowledge/network.md', category: 'FEATURES' },
+    { id: 'wissenskorb', title: 'Wissenskorb', file: 'knowledge/wissenskorb.md', category: 'FEATURES' }
 ];
 
 let currentDoc = null;
@@ -50,6 +51,9 @@ async function init() {
 
     if (docId) {
         loadDocument(docId);
+    } else {
+        // Load INDEX.md by default
+        loadDocument('INDEX');
     }
 }
 
