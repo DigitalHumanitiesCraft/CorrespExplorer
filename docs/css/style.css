@@ -583,14 +583,14 @@ body {
     .view-btn {
         flex: 1;
         min-height: 44px;
-        padding: 8px 4px;
-        font-size: var(--font-size-sm);
+        padding: 8px 6px;
+        font-size: 12px;
         text-align: center;
         border: none;
         border-radius: 4px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
+        overflow: visible;
+        line-height: 1.2;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -680,7 +680,7 @@ body {
         content: '\f1ea';  /* fa-envelope */
     }
 
-    .view-btn {
+    .view-btn-text {
         font-size: 0;  /* Hide text */
     }
 

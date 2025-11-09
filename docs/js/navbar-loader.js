@@ -25,7 +25,11 @@ export async function loadNavbar(variant = 'full') {
             initDropdown();
             initBurgerMenu();
             setActiveView();
+            updateViewLabels();
             initBasket();
+
+            // Update labels on resize
+            window.addEventListener('resize', updateViewLabels);
         }, 0);
 
         console.log(`✅ Navbar component loaded`);
@@ -105,13 +109,37 @@ function setActiveView() {
     console.log('✅ Active view set based on URL');
 }
 
+// Update view button labels based on screen size
+function updateViewLabels() {
+    const viewButtons = document.querySelectorAll('.view-btn');
+    const isMobile = window.innerWidth <= 768;
+
+    viewButtons.forEach(btn => {
+        const textSpan = btn.querySelector('.view-btn-text');
+        if (!textSpan) return;
+
+        if (isMobile) {
+            const mobileLabel = btn.getAttribute('data-label-mobile');
+            if (mobileLabel) {
+                textSpan.textContent = mobileLabel;
+            }
+        } else {
+            // Restore original labels
+            const view = btn.getAttribute('data-view');
+            if (view === 'map') textSpan.textContent = 'Karte';
+            else if (view === 'synthesis') textSpan.textContent = 'Personen';
+            else if (view === 'stats') textSpan.textContent = 'Brief-Explorer';
+        }
+    });
+}
+
 // Initialize dropdown functionality
 function initDropdown() {
     const dropdown = document.querySelector('.nav-dropdown');
     const toggle = document.querySelector('.nav-dropdown-toggle');
 
     if (!dropdown || !toggle) {
-        console.warn('Dropdown elements not found');
+        // Dropdown is optional, silently skip if not present
         return;
     }
 
