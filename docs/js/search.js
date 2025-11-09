@@ -5,46 +5,63 @@ export class GlobalSearch {
         this.persons = persons;
         this.searchInput = document.getElementById('global-search');
         this.searchResults = document.getElementById('search-results');
+        this.mobileSearchInput = document.getElementById('mobile-search');
+        this.mobileSearchResults = document.getElementById('mobile-search-results');
         this.currentFocus = -1;
 
         this.initEventListeners();
     }
 
     initEventListeners() {
-        // Input event for search
-        this.searchInput.addEventListener('input', (e) => {
-            this.handleSearch(e.target.value);
-        });
+        // Desktop search
+        if (this.searchInput) {
+            this.searchInput.addEventListener('input', (e) => {
+                this.handleSearch(e.target.value, false);
+            });
 
-        // Keyboard navigation
-        this.searchInput.addEventListener('keydown', (e) => {
-            this.handleKeyboardNav(e);
-        });
+            this.searchInput.addEventListener('keydown', (e) => {
+                this.handleKeyboardNav(e, false);
+            });
+        }
+
+        // Mobile search
+        if (this.mobileSearchInput) {
+            this.mobileSearchInput.addEventListener('input', (e) => {
+                this.handleSearch(e.target.value, true);
+            });
+
+            this.mobileSearchInput.addEventListener('keydown', (e) => {
+                this.handleKeyboardNav(e, true);
+            });
+        }
 
         // Close results when clicking outside
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.nav-search')) {
-                this.hideResults();
+            if (!e.target.closest('.nav-search') && !e.target.closest('.nav-mobile-search')) {
+                this.hideResults(false);
+                this.hideResults(true);
             }
         });
 
         // Escape key closes results
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                this.hideResults();
-                this.searchInput.blur();
+                this.hideResults(false);
+                this.hideResults(true);
+                if (this.searchInput) this.searchInput.blur();
+                if (this.mobileSearchInput) this.mobileSearchInput.blur();
             }
         });
     }
 
-    handleSearch(query) {
+    handleSearch(query, isMobile = false) {
         if (!query || query.length < 2) {
-            this.hideResults();
+            this.hideResults(isMobile);
             return;
         }
 
         const results = this.searchPersons(query);
-        this.displayResults(results, query);
+        this.displayResults(results, query, isMobile);
     }
 
     searchPersons(query) {
@@ -88,20 +105,24 @@ export class GlobalSearch {
             });
     }
 
-    displayResults(results, query) {
+    displayResults(results, query, isMobile = false) {
         this.currentFocus = -1;
+        const container = isMobile ? this.mobileSearchResults : this.searchResults;
+        const input = isMobile ? this.mobileSearchInput : this.searchInput;
+
+        if (!container) return;
 
         if (results.length === 0) {
-            this.searchResults.innerHTML = `
+            container.innerHTML = `
                 <div class="search-no-results">
                     Keine Ergebnisse für "${query}"
                 </div>
             `;
-            this.searchResults.classList.add('active');
+            container.classList.add('active');
             return;
         }
 
-        this.searchResults.innerHTML = results.map((person, index) => {
+        container.innerHTML = results.map((person, index) => {
             const meta = this.getPersonMeta(person);
             const variantMatch = this.getVariantMatch(person, query);
             return `
@@ -119,13 +140,13 @@ export class GlobalSearch {
             `;
         }).join('');
 
-        this.searchResults.classList.add('active');
+        container.classList.add('active');
 
         // Add click handlers
-        this.searchResults.querySelectorAll('.search-result-item').forEach(item => {
+        container.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', () => {
-                this.hideResults();
-                this.searchInput.value = '';
+                this.hideResults(isMobile);
+                if (input) input.value = '';
             });
         });
     }
@@ -184,8 +205,11 @@ export class GlobalSearch {
         return parts.join(' • ');
     }
 
-    handleKeyboardNav(e) {
-        const items = this.searchResults.querySelectorAll('.search-result-item');
+    handleKeyboardNav(e, isMobile = false) {
+        const container = isMobile ? this.mobileSearchResults : this.searchResults;
+        if (!container) return;
+
+        const items = container.querySelectorAll('.search-result-item');
         if (items.length === 0) return;
 
         if (e.key === 'ArrowDown') {
@@ -217,8 +241,11 @@ export class GlobalSearch {
         });
     }
 
-    hideResults() {
-        this.searchResults.classList.remove('active');
+    hideResults(isMobile = false) {
+        const container = isMobile ? this.mobileSearchResults : this.searchResults;
+        if (container) {
+            container.classList.remove('active');
+        }
         this.currentFocus = -1;
     }
 }

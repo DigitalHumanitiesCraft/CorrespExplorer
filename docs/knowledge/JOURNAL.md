@@ -6,6 +6,52 @@
 
 ## 2025-11-09
 
+### Session 22 — Mobile Responsive Navigation
+
+**Mobile Navigation Implementierung:**
+- Burger-Menü: Slide-in von rechts mit Overlay (280px breit, max 80vw)
+- View-Switcher: 3 Hauptansichten (Karte/Personen/Brief-Explorer) immer sichtbar auf Mobile
+- Touch-Targets: 44×44px minimum (WCAG 2.1), View-Buttons min-height 44px
+- Icons auf ≤480px: fa-map, fa-users, fa-envelope (Text versteckt, font-size: 0)
+
+**Navigation-Struktur:**
+- Primär (immer sichtbar): Karte, Personen, Brief-Explorer
+- Sekundär (Burger-Menü): Wissenskorb, Vault, Orte, Download, Suche
+- Schließen: Burger-Button, Overlay-Klick, ESC-Taste, Link-Klick
+
+**Landscape-Modus (≤768px):**
+- Navbar-Höhe: 60px → 50px (mehr vertikaler Platz)
+- Touch-Targets: 44px → 40px (akzeptabel)
+- Sidebar/Mobile-Menu: Höhe angepasst (calc(100vh - 50px))
+
+**Navbar-Konsolidierung:**
+- 5 Templates → 1 Template (navbar.html)
+- Automatische URL-basierte Aktivierung (setActiveView())
+- Relative Pfade dynamisch korrigiert für /synthesis/ Subfolder
+- Gelöscht: navbar-map.html, navbar-simple.html, navbar-stats.html, navbar-synthesis.html
+
+**Mobile Search:**
+- Suchfeld im Burger-Menü integriert
+- Separate Event-Handler für Desktop/Mobile in search.js
+- Search-Ergebnisse im Mobile-Context
+
+**Accessibility:**
+- aria-expanded für Burger-Menu
+- aria-pressed für View-Switcher
+- Fokus-Ring auf allen Buttons (2px solid rgba(255,255,255,0.8))
+- Body-Scroll verhindert bei offenem Menü
+- Tastatur-Navigation: Tab, ESC, Enter
+
+**Dateien:**
+- Geändert: navbar.html, navbar-loader.js, search.js, style.css, vault.css
+- Gelöscht: navbar-map.html, navbar-simple.html, navbar-stats.html, navbar-synthesis.html, responsive_dossier.md
+- Dokumentation: design.md (Section 6.6 Responsive Design hinzugefügt)
+
+**Breakpoints:**
+- ≤ 480px: Icon-only view-switcher
+- ≤ 768px: Burger-Menu aktiv
+- > 768px: Desktop-Navigation
+
 ### Session 21 — UI/UX Optimization & Layout Improvements
 
 **Visuelle Verbesserungen:**

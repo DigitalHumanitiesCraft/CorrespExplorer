@@ -15,7 +15,7 @@
 .vault-sidebar {
     background: var(--color-bg-secondary);
     border-right: 1px solid var(--color-border);
-    padding: var(--space-2xl);
+    padding: var(--space-md);  /* Reduced from lg (24px) to md (16px) */
     position: sticky;
     top: 0;
     height: calc(100vh - 60px);
@@ -23,15 +23,15 @@
 }
 
 .vault-sidebar-header {
-    margin-bottom: var(--space-2xl);
-    padding-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);  /* Reduced from lg (24px) to md (16px) */
+    padding-bottom: var(--space-xs);  /* Reduced from sm (8px) to xs (4px) */
     border-bottom: 2px solid var(--color-primary);
 }
 
 .vault-sidebar-header h2 {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-base);  /* Reduced from lg to base */
     color: var(--color-primary);
-    margin-bottom: var(--space-xs);
+    margin-bottom: 0;
 }
 
 .vault-subtitle {
@@ -42,15 +42,15 @@
 
 /* Navigation */
 .vault-nav-category {
-    margin-bottom: var(--space-2xl);
+    margin-bottom: var(--space-md);  /* Reduced from lg (24px) to md (16px) */
 }
 
 .vault-nav-category-title {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--color-text-light);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-xs);  /* Reduced from sm (8px) to xs (4px) */
     font-weight: 600;
 }
 
@@ -61,17 +61,17 @@
 }
 
 .vault-nav-list li {
-    margin-bottom: var(--space-xs);
+    margin-bottom: 1px;  /* Reduced from 2px to 1px */
 }
 
 .vault-nav-link {
     display: block;
-    padding: var(--space-sm) var(--space-md);
+    padding: 4px var(--space-sm);  /* Reduced vertical from 6px to 4px */
     color: var(--color-text);
     text-decoration: none;
     border-radius: 4px;
     transition: all 0.2s ease;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
 }
 
 .vault-nav-link:hover {

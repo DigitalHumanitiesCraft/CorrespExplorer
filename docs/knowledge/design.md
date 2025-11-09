@@ -173,7 +173,37 @@ Rahmenbedingungen:
 ### 6.5 Templates
 
 * Persons Index, Person Profile, Letter Detail, Place Profile, Explorer, Story.
-* Responsiv: 3 Breakpoints (≤ 640, ≤ 1024, > 1024); Karten/Netz im Mobilportrait als Fokus-Ansicht (Panel-Overlay).
+* Responsiv: 3 Breakpoints (≤ 480, ≤ 768, > 768); Karten/Netz im Mobilportrait als Fokus-Ansicht (Panel-Overlay).
+
+### 6.6 Responsive Design (Mobile/Touch)
+
+Breakpoints:
+* ≤ 480px: Very small screens, icon-only view-switcher
+* ≤ 768px: Tablet/Mobile, burger menu for secondary navigation
+* > 768px: Desktop, full navigation
+
+Touch Targets:
+* Minimum 44×44px für alle interaktiven Elemente (WCAG 2.1)
+* View-Switcher: 3 gleichwertige Tabs (Karte/Personen/Brief-Explorer) immer sichtbar
+* Burger-Menu: Sekundäre Navigation (Wissenskorb, Vault, Orte, Download, Suche)
+
+Navigation (Mobile):
+* Burger-Icon (links): Öffnet Slide-in-Menu von rechts
+* View-Switcher (center): Kompakte Buttons mit min-height 44px
+* ≤ 480px: Icons statt Text (fa-map, fa-users, fa-envelope)
+* Overlay-Schließen: Burger-Button, Außenklick, ESC-Taste, Link-Klick
+
+Landscape-Modus (≤ 768px):
+* Navbar-Höhe reduziert: 60px → 50px für mehr vertikalen Platz
+* Touch-Targets: 44px → 40px (akzeptabel im Querformat)
+* Kein horizontales Scrollen
+
+Accessibility:
+* Fokusindikatoren auf allen interaktiven Elementen
+* aria-expanded States für Burger-Menu
+* aria-pressed States für View-Switcher
+* Body-Scroll verhindert bei geöffnetem Menu
+* Tastatur-Navigation: Tab, ESC, Enter
 
 ---
 

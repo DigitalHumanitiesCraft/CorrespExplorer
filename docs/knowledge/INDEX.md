@@ -43,9 +43,6 @@ Die Live-Seite wird aus dem Hauptzweig über den `docs`-Bereich veröffentlicht.
 **Wissenskorb:**
 [wissenskorb.md](wissenskorb.md) beschreibt globalen, persistenten Wissenskorb: Konzept (LocalStorage-basierte Sammlung), Architektur (basket-manager.js, navbar Integration), Visualisierungen (Cytoscape Netzwerk mit 3 Modi, Timeline, Overview Stats), Navigation Controls (Zoom/Fit/Help seit 2025-11-09), Export-Funktionen (CSV/JSON), Testing und Backlog.
 
-**Implementierung:**
-[implementation-quick-wins.md](implementation-quick-wins.md) enthält strategische Feature-Bewertungen und Priorisierung (archiviert). Alle priorisierten Quick Win Features (Namensvarianten, CSV-Export, dualer Zeitfilter) sind in requirements.md als abgeschlossen dokumentiert.
-
 ## Testing und Qualität
 
 **Pipeline-Testing:**

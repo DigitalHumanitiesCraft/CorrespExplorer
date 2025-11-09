@@ -1,12 +1,15 @@
 <!-- Global Navigation Component -->
 <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
+    <button class="nav-burger" id="nav-burger" aria-label="Navigation öffnen" aria-expanded="false">
+        <span class="nav-burger-icon"></span>
+    </button>
     <div class="nav-brand">
         <a href="index.html" style="color: inherit; text-decoration: none;">HerData</a>
     </div>
     <div class="view-switcher" role="navigation" aria-label="Ansichtswechsel">
-        <a href="index.html" class="view-btn" role="button" aria-pressed="false">Karte</a>
-        <a href="synthesis/index.html" class="view-btn" role="button" aria-pressed="false">Personen</a>
-        <a href="stats.html" class="view-btn" role="button" aria-pressed="false">Brief-Explorer</a>
+        <a href="index.html" class="view-btn" data-view="map" role="button" aria-pressed="false">Karte</a>
+        <a href="synthesis/index.html" class="view-btn" data-view="synthesis" role="button" aria-pressed="false">Personen</a>
+        <a href="stats.html" class="view-btn" data-view="stats" role="button" aria-pressed="false">Brief-Explorer</a>
     </div>
     <div class="nav-search">
         <input
@@ -35,3 +38,41 @@
         </a>
     </div>
 </nav>
+
+<!-- Mobile Navigation Overlay -->
+<div class="nav-overlay" id="nav-overlay"></div>
+
+<!-- Mobile Navigation Menu -->
+<div class="nav-mobile-menu" id="nav-mobile-menu">
+    <div class="nav-mobile-content">
+        <div class="nav-mobile-section">
+            <h3 class="nav-mobile-heading">Suche</h3>
+            <div class="nav-mobile-search">
+                <input
+                    type="search"
+                    id="mobile-search"
+                    placeholder="Person suchen..."
+                    aria-label="Person suchen"
+                    autocomplete="off"
+                />
+                <div id="mobile-search-results" class="search-results" role="listbox" aria-label="Suchergebnisse"></div>
+            </div>
+        </div>
+        <div class="nav-mobile-section">
+            <h3 class="nav-mobile-heading">Navigation</h3>
+            <a href="wissenskorb.html" class="nav-mobile-link">
+                <i class="fas fa-bookmark"></i> Wissenskorb
+                <span id="nav-mobile-basket-badge" class="nav-badge" style="display: none;">0</span>
+            </a>
+            <a href="vault.html" class="nav-mobile-link">
+                <i class="fas fa-vault"></i> Vault
+            </a>
+            <a href="places.html" class="nav-mobile-link">
+                <i class="fas fa-map-marker-alt"></i> Orte
+            </a>
+            <a href="download.html" class="nav-mobile-link">
+                <i class="fas fa-download"></i> Download
+            </a>
+        </div>
+    </div>
+</div>
