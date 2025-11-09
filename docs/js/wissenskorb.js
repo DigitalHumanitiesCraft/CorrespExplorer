@@ -690,7 +690,7 @@ function renderNetwork() {
                     'shape': 'round-rectangle',
                     'text-valign': 'center',
                     'text-halign': 'center',
-                    'font-weight': '700',
+                    'font-weight': 'bold',
                     'color': 'white',
                     'text-outline-color': '#f39c12',
                     'text-outline-width': 2
@@ -703,7 +703,7 @@ function renderNetwork() {
                     'shape': 'diamond',
                     'text-valign': 'center',
                     'text-halign': 'center',
-                    'font-weight': '700',
+                    'font-weight': 'bold',
                     'color': 'white',
                     'text-outline-color': '#27ae60',
                     'text-outline-width': 2

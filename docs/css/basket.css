@@ -382,9 +382,17 @@ body {
 /* Network Visualization */
 .network-container {
     height: 500px;
+    min-height: 500px;
+    max-height: 500px;
     background: white;
     border: 1px solid var(--color-border, #dfe6e9);
     border-radius: 4px;
+    overflow: hidden;
+}
+
+.network-container #network-graph {
+    height: 100% !important;
+    width: 100% !important;
 }
 
 /* Relationship Categories */
