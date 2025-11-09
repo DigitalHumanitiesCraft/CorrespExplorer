@@ -193,13 +193,13 @@ body {
 }
 
 .filter-group {
-    margin-bottom: var(--space-2xl);
+    margin-bottom: var(--space-lg);  /* Reduced from 2xl (48px) to lg (24px) for more compact sidebar */
 }
 
 .filter-group h4 {
     font-size: var(--font-size-base);
     font-weight: 600;
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-sm);  /* Reduced from md (16px) to sm (8px) */
     color: var(--color-text);
 }
 
@@ -256,7 +256,7 @@ body {
 
 .filter-buttons button {
     flex: 1;
-    padding: var(--space-md) var(--space-lg);
+    padding: 8px 12px;  /* Reduced from 16px 24px for more compact layout */
     background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: 4px;
@@ -639,7 +639,15 @@ body {
     cursor: pointer;
 }
 
-.btn-basket-mini {
+/* Person item buttons container */
+.person-item-buttons {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.btn-basket-mini,
+.btn-pin-mini {
     padding: 4px 8px;
     background: white;
     color: var(--color-secondary);
@@ -648,7 +656,6 @@ body {
     cursor: pointer;
     font-size: 12px;
     transition: all 0.2s;
-    flex-shrink: 0;
 }
 
 .btn-basket-mini:hover {
@@ -663,6 +670,27 @@ body {
 
 .btn-basket-mini.in-basket:hover {
     background: #c9423a;
+}
+
+.btn-pin-mini {
+    color: #2c5f8d;
+    border-color: #2c5f8d;
+}
+
+.btn-pin-mini:hover {
+    background: #2c5f8d;
+    color: white;
+}
+
+.btn-pin-mini.pinned {
+    background: #ff0066;
+    color: white;
+    border-color: #ff0066;
+    transform: rotate(45deg);
+}
+
+.btn-pin-mini.pinned:hover {
+    background: #cc0052;
 }
 
 /* Custom scrollbar for person list */
@@ -691,6 +719,7 @@ body {
 
 .maplibregl-canvas {
     outline: none;
+    filter: saturate(0.7) brightness(1.05);  /* Desaturate basemap to make network lines more visible */
 }
 
 /* Attribution */
@@ -1382,13 +1411,13 @@ body {
 
 .btn-export {
     width: 100%;
-    padding: var(--space-md) var(--space-lg);
+    padding: 10px 16px;  /* Reduced from 16px 24px for more compact layout */
     background: var(--color-secondary);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);  /* Reduced from base to sm */
     font-weight: 500;
     transition: all 0.2s;
 }

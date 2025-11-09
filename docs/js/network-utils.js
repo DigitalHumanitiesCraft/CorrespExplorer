@@ -7,7 +7,7 @@
  * @param {Array} allPersons - All persons for ID lookup
  * @returns {Array<Object>} Array of connection objects
  */
-export function getPersonConnections(person, allPersons) {
+export function getPersonConnections(person, allPersons, cachedCorrespondence = null) {
     const connections = [];
 
     // Check if person has places (required for connections)
@@ -44,11 +44,15 @@ export function getPersonConnections(person, allPersons) {
         });
     }
 
-    // 2. Letter correspondence connections
-    if (person.briefe && person.briefe.gesamt > 0) {
-        // For now, we'll add correspondence connections in Phase 2
-        // when we have proper sender/recipient data
-    }
+    // 2. Correspondence connections (woman-to-woman letters)
+    // Use cached connections if provided, otherwise compute
+    const corrConnections = cachedCorrespondence || extractCorrespondenceConnections(allPersons);
+    corrConnections.forEach(conn => {
+        // Include connection if person is sender OR recipient
+        if (conn.sender.id === person.id || conn.recipient.id === person.id) {
+            connections.push(conn);
+        }
+    });
 
     return connections;
 }
@@ -112,12 +116,12 @@ function categorizeRelation(relationType) {
  * @param {Array} allPersons - All persons for lookup
  * @returns {Array<Object>} Array of unique connections
  */
-export function getClusterConnections(clusterPersons, allPersons) {
+export function getClusterConnections(clusterPersons, allPersons, cachedCorrespondence = null) {
     const allConnections = [];
     const seen = new Set();
 
     clusterPersons.forEach(person => {
-        const personConnections = getPersonConnections(person, allPersons);
+        const personConnections = getPersonConnections(person, allPersons, cachedCorrespondence);
 
         personConnections.forEach(conn => {
             // Create unique key to avoid duplicates
@@ -134,15 +138,89 @@ export function getClusterConnections(clusterPersons, allPersons) {
 }
 
 /**
+ * Extract woman-to-woman correspondence connections
+ * @param {Array} allPersons - All persons from persons.json
+ * @returns {Array<Object>} Array of correspondence connections
+ */
+export function extractCorrespondenceConnections(allPersons) {
+    const connections = [];
+    const womenByGnd = new Map();
+
+    // Build GND lookup for fast matching
+    allPersons.forEach(p => {
+        if (p.gnd) womenByGnd.set(p.gnd, p);
+    });
+
+    // Find woman-to-woman correspondence
+    allPersons.forEach(sender => {
+        if (!sender.correspondence || !Array.isArray(sender.correspondence)) return;
+        if (!sender.places || sender.places.length === 0) return;
+
+        sender.correspondence.forEach(corr => {
+            const recipientGnd = corr.recipient_gnd;
+            if (!recipientGnd) return;
+
+            const recipient = womenByGnd.get(recipientGnd);
+            if (!recipient) return; // Not a woman in our dataset
+
+            // Recipient must have places for map visualization
+            if (!recipient.places || recipient.places.length === 0) return;
+
+            connections.push({
+                type: 'correspondence',
+                subtype: 'letter',
+                category: 'Korrespondenz',
+                sender: sender,
+                recipient: recipient,
+                from: {
+                    lat: sender.places[0].lat,
+                    lon: sender.places[0].lon,
+                    name: sender.places[0].name
+                },
+                to: {
+                    lat: recipient.places[0].lat,
+                    lon: recipient.places[0].lon,
+                    name: recipient.places[0].name
+                },
+                year: corr.year,
+                date: corr.date,
+                strength: 1 // Will be aggregated
+            });
+        });
+    });
+
+    // Aggregate: Count letters per pair (bidirectional)
+    const aggregated = new Map();
+    connections.forEach(conn => {
+        // Create bidirectional key (sort IDs to avoid duplicates)
+        const ids = [conn.sender.id, conn.recipient.id].sort();
+        const key = `${ids[0]}-${ids[1]}`;
+
+        if (aggregated.has(key)) {
+            aggregated.get(key).strength++;
+            aggregated.get(key).years.push(conn.year);
+        } else {
+            aggregated.set(key, {
+                ...conn,
+                years: [conn.year]
+            });
+        }
+    });
+
+    return Array.from(aggregated.values());
+}
+
+/**
  * Get color for connection based on category
- * @param {string} category - Familie, Beruflich, Sozial, Ort
+ * @param {string} category - Familie, Beruflich, Sozial, Korrespondenz, Ort
  * @returns {string} Hex color code
  */
 export function getConnectionColor(category) {
     const colors = {
-        'Familie': '#ff0066',        // Bright Magenta/Pink - very distinct
-        'Beruflich': '#00ccff',      // Bright Cyan/Blue - very distinct
-        'Sozial': '#ffcc00',         // Bright Yellow/Gold - very distinct
+        'Familie': '#D0388C',        // Magenta - optimized for map readability (was #ff0066)
+        'Beruflich': '#147D7E',      // Teal - professional, distinct (was #00ccff)
+        'Sozial': '#2E7D32',         // Green - neutral, clear (was #ffcc00)
+        'Korrespondenz': '#6C5CE7',  // Purple - for woman-to-woman letters (was #9d4edd)
         'Ort': '#6c757d',            // Gray
         'Unbekannt': '#adb5bd'       // Light gray
     };

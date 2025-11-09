@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
     <link rel="stylesheet" href="css/basket.css">
+    <link rel="stylesheet" href="css/network.css">
 </head>
 <body>
     <!-- Global Navigation Placeholder -->
@@ -110,6 +111,22 @@
                         <div class="empty-state">
                             <i class="fas fa-project-diagram" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
                             <p>Fügen Sie Personen hinzu um Beziehungen zu sehen</p>
+                        </div>
+
+                        <!-- Network Navigation Controls -->
+                        <div id="network-controls" class="network-controls" style="display: none;">
+                            <button id="network-zoom-in" class="network-control-btn" title="Vergrößern">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button id="network-zoom-out" class="network-control-btn" title="Verkleinern">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <button id="network-fit" class="network-control-btn" title="An Ansicht anpassen">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button id="network-help" class="network-control-btn" title="Hilfe">
+                                <i class="fas fa-question"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

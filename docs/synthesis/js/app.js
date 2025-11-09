@@ -1187,10 +1187,19 @@ function toggleBasket(personId) {
 function updateBasketView() {
     const basketItems = BasketManager.getAll();
     const count = basketItems.length;
-    document.getElementById('basket-count').textContent = count;
+
+    const basketCountEl = document.getElementById('basket-count');
+    if (basketCountEl) {
+        basketCountEl.textContent = count;
+    }
 
     const container = document.getElementById('basket-content');
     const actions = document.getElementById('basket-actions');
+
+    // If elements don't exist on this page, just return
+    if (!container || !actions) {
+        return;
+    }
 
     if (count === 0) {
         container.innerHTML = `

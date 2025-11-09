@@ -88,6 +88,15 @@
                 <label><input type="checkbox" name="place-type" value="Wohnort" checked aria-describedby="filter-place-heading"> Wohnort</label>
             </div>
 
+            <!-- Network Type Filter -->
+            <div class="filter-group" role="group" aria-labelledby="filter-network-heading">
+                <h4 id="filter-network-heading">Netzwerk-Typ</h4>
+                <label><input type="checkbox" name="network-type" value="Familie" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #D0388C; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Familie</label>
+                <label><input type="checkbox" name="network-type" value="Beruflich" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #147D7E; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Beruflich</label>
+                <label><input type="checkbox" name="network-type" value="Sozial" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #2E7D32; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Sozial</label>
+                <label><input type="checkbox" name="network-type" value="Korrespondenz" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #6C5CE7; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Korrespondenz</label>
+            </div>
+
             <div class="filter-buttons">
                 <button id="select-all-filters" aria-label="Alle Filter auswählen">Alle auswählen</button>
                 <button id="reset-filters" aria-label="Alle Filter zurücksetzen">Alle zurücksetzen</button>
@@ -124,16 +133,20 @@
 
                     <h4 style="margin-top: 16px;">Netzwerk-Verbindungen</h4>
                     <div class="legend-item">
-                        <span class="legend-line" style="background: #ff0066;" aria-hidden="true"></span>
-                        <span><strong>Familie</strong></span>
+                        <span class="legend-line" style="background: #D0388C;" aria-hidden="true"></span>
+                        <span><strong>Familie</strong> (AGRELON)</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-line" style="background: #00ccff;" aria-hidden="true"></span>
-                        <span><strong>Beruflich</strong></span>
+                        <span class="legend-line" style="background: #147D7E;" aria-hidden="true"></span>
+                        <span><strong>Beruflich</strong> (AGRELON)</span>
                     </div>
                     <div class="legend-item">
-                        <span class="legend-line" style="background: #ffcc00;" aria-hidden="true"></span>
-                        <span><strong>Sozial</strong></span>
+                        <span class="legend-line" style="background: #2E7D32;" aria-hidden="true"></span>
+                        <span><strong>Sozial</strong> (AGRELON)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-line" style="background: #6C5CE7;" aria-hidden="true"></span>
+                        <span><strong>Korrespondenz</strong> (Briefe)</span>
                     </div>
                     <p style="font-size: 11px; margin-top: 8px; color: #6c757d;">
                         Hover über Marker/Cluster zeigt Verbindungen
@@ -141,6 +154,36 @@
                 </div>
             </div>
         </main>
+
+        <!-- Fixed Debug Panel -->
+        <aside id="debug-panel" class="debug-panel" role="complementary" aria-label="Debug-Informationen">
+            <div class="debug-panel-header">
+                <h3><i class="fas fa-code"></i> Debug</h3>
+                <button id="debug-panel-close" class="debug-panel-close" aria-label="Debug-Panel schließen">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="debug-panel-content">
+                <!-- Pinned Networks List -->
+                <div id="pinned-networks" class="pinned-networks" style="display: none;">
+                    <h4><i class="fas fa-thumbtack"></i> Fixierte Netzwerke</h4>
+                    <div id="pinned-networks-list" class="pinned-networks-list"></div>
+                    <button id="clear-all-pins" class="btn-clear-pins" style="display: none;">
+                        <i class="fas fa-times-circle"></i> Alle lösen
+                    </button>
+                </div>
+
+                <!-- JSON Display -->
+                <div id="debug-json" class="debug-json">
+                    <p class="debug-placeholder">Hovere über einen Marker, um Details zu sehen</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Debug Toggle Button -->
+        <button id="debug-toggle" class="debug-toggle" aria-label="Debug-Panel öffnen">
+            <i class="fas fa-bug"></i> Debug
+        </button>
         </div>
         </div>
     </div>

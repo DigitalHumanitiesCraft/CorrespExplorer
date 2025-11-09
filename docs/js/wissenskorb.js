@@ -47,6 +47,9 @@ async function init() {
 
 // Setup all event listeners
 function setupEventListeners() {
+    // Network navigation controls
+    setupNetworkControls();
+
     // Basket change listeners
     BasketManager.on('change', render);
     BasketManager.on('add', render);
@@ -287,14 +290,92 @@ function renderList() {
 // Global variable to store cytoscape instance
 let cy = null;
 
+// Setup network navigation controls
+function setupNetworkControls() {
+    const zoomInBtn = document.getElementById('network-zoom-in');
+    const zoomOutBtn = document.getElementById('network-zoom-out');
+    const fitBtn = document.getElementById('network-fit');
+    const helpBtn = document.getElementById('network-help');
+
+    if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', () => {
+            if (cy) {
+                cy.zoom(cy.zoom() * 1.2);
+                cy.center();
+            }
+        });
+    }
+
+    if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', () => {
+            if (cy) {
+                cy.zoom(cy.zoom() * 0.8);
+                cy.center();
+            }
+        });
+    }
+
+    if (fitBtn) {
+        fitBtn.addEventListener('click', () => {
+            if (cy) {
+                cy.fit(undefined, 50); // 50px padding
+            }
+        });
+    }
+
+    if (helpBtn) {
+        helpBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            // Toggle or create help tooltip
+            let tooltip = document.querySelector('.network-help-tooltip');
+
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'network-help-tooltip';
+                tooltip.innerHTML = `
+                    <strong>Navigation</strong>
+                    <ul>
+                        <li>Ziehen: Netzwerk verschieben</li>
+                        <li>Mausrad: Zoomen</li>
+                        <li>Knoten klicken: Details</li>
+                        <li>Knoten ziehen: Position ändern</li>
+                    </ul>
+                `;
+                document.getElementById('network-controls').appendChild(tooltip);
+            }
+
+            tooltip.classList.toggle('active');
+
+            // Close on outside click
+            const closeTooltip = (event) => {
+                if (!tooltip.contains(event.target) && event.target !== helpBtn) {
+                    tooltip.classList.remove('active');
+                    document.removeEventListener('click', closeTooltip);
+                }
+            };
+
+            if (tooltip.classList.contains('active')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeTooltip);
+                }, 10);
+            }
+        });
+    }
+}
+
 // Render relationship network with Cytoscape.js
 function renderNetwork() {
     const container = document.getElementById('network-graph');
+    const controls = document.getElementById('network-controls');
     if (!container) return;
 
     const items = BasketManager.getAll();
 
     if (items.length === 0) {
+        // Hide network controls when empty
+        if (controls) controls.style.display = 'none';
+
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-project-diagram" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
@@ -307,6 +388,9 @@ function renderNetwork() {
         }
         return;
     }
+
+    // Show network controls when graph is displayed
+    if (controls) controls.style.display = 'flex';
 
     // Build network data based on mode
     const personIds = new Set(items.map(p => p.id));

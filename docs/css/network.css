@@ -147,6 +147,97 @@
     margin-top: var(--space-xs);
 }
 
+/* Network Navigation Controls */
+.network-container {
+    position: relative;
+}
+
+.network-controls {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 1000;
+    background: white;
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.network-control-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f8f9fa;
+    color: #2c5f8d;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.network-control-btn:hover {
+    background: #2c5f8d;
+    color: white;
+    transform: scale(1.05);
+}
+
+.network-control-btn:active {
+    transform: scale(0.95);
+}
+
+.network-help-tooltip {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+    background: #1e3a5f;
+    color: white;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    width: 200px;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    display: none;
+}
+
+.network-help-tooltip.active {
+    display: block;
+}
+
+.network-help-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 16px;
+    border: 6px solid transparent;
+    border-top-color: #1e3a5f;
+}
+
+.network-help-tooltip ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.network-help-tooltip li {
+    padding: 4px 0;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.network-help-tooltip li:before {
+    content: '→';
+    margin-right: 6px;
+    color: #00ccff;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .network-sidebar {
@@ -159,5 +250,22 @@
 
     .network-layout {
         flex-direction: column;
+    }
+
+    .network-controls {
+        bottom: 8px;
+        right: 8px;
+        padding: 4px;
+    }
+
+    .network-control-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    .network-help-tooltip {
+        width: 160px;
+        font-size: 11px;
     }
 }

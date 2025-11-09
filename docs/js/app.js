@@ -4,7 +4,7 @@
 import { loadPersons } from "./data.js";
 import { GlobalSearch } from "./search.js";
 import { loadNavbar } from "./navbar-loader.js";
-import { getPersonConnections, getClusterConnections, getConnectionColor } from "./network-utils.js";
+import { getPersonConnections, getClusterConnections, getConnectionColor, extractCorrespondenceConnections } from "./network-utils.js";
 import { Toast } from "./utils.js";
 
 let map;
@@ -22,10 +22,13 @@ let handlersSetup = false;
 
 // Network visualization state
 let currentConnections = [];
+let pinnedConnections = []; // Pinned connections for comparison
+let correspondenceConnectionsCache = []; // Cached woman-to-woman connections
 let networkEnabled = {
     'Familie': true,
     'Beruflich': true,
-    'Sozial': true
+    'Sozial': true,
+    'Korrespondenz': true
 };
 let clusterHoverTimeout = null;
 
@@ -116,9 +119,14 @@ async function init() {
 
         log.init(`Loaded ${allPersons.length} persons, ${data.meta.with_geodata} with geodata`);
 
+        // Pre-compute correspondence connections for performance
+        correspondenceConnectionsCache = extractCorrespondenceConnections(allPersons);
+        log.init(`Pre-computed ${correspondenceConnectionsCache.length} correspondence connections`);
+
         initMap();
         initFilters();
         initSearch();
+        initDebugPanel();
         log.init('Application ready');
     } catch (error) {
         showError('Initialisierung fehlgeschlagen: ' + error.message);
@@ -348,48 +356,64 @@ function drawConnectionLines(connections) {
     }
 
     // Filter by enabled categories
-    const filtered = connections.filter(conn => networkEnabled[conn.category]);
+    let filtered = connections.filter(conn => networkEnabled[conn.category]);
 
-    log.event(`Drawing ${filtered.length} connection lines`);
+    // Apply temporal filter to correspondence connections
+    if (temporalFilter && temporalFilter.mode === 'correspondence') {
+        filtered = filtered.map(conn => {
+            // For correspondence connections, filter by year
+            if (conn.type === 'correspondence' && conn.year) {
+                if (conn.year >= temporalFilter.start && conn.year <= temporalFilter.end) {
+                    return conn;
+                }
+                return null; // Outside temporal range
+            }
+            // AGRELON connections are not time-filtered
+            return conn;
+        }).filter(conn => conn !== null);
+    }
 
-    // Aggregate connections by same from-to coordinates
-    const aggregated = new Map();
-    filtered.forEach(conn => {
-        const key = `${conn.from.lat},${conn.from.lon}-${conn.to.lat},${conn.to.lon}`;
+    log.event(`Drawing ${filtered.length} connection lines (after filters)`);
 
-        if (!aggregated.has(key)) {
-            aggregated.set(key, {
-                ...conn,
-                count: 1,
-                persons: [conn.person.name]
-            });
-        } else {
-            const existing = aggregated.get(key);
-            existing.count++;
-            existing.persons.push(conn.person.name);
+    // Create GeoJSON features with labels
+    const features = filtered.map(conn => {
+        // Generate label text
+        let label = '';
+
+        if (conn.type === 'agrelon') {
+            // AGRELON: Show exact relation type
+            label = conn.subtype || conn.category;
+        } else if (conn.type === 'correspondence') {
+            // Correspondence: Show count if > 1
+            if (conn.strength > 1) {
+                label = `${conn.strength}× Brief`;
+            } else {
+                label = 'Brief';
+            }
         }
+
+        return {
+            type: 'Feature',
+            properties: {
+                category: conn.category,
+                subtype: conn.subtype,
+                strength: conn.strength || 1,
+                label: label,
+                fromPlace: conn.from.name,
+                toPlace: conn.to.name,
+                // For correspondence, add sender/recipient info
+                senderName: conn.sender?.name || conn.person?.name,
+                recipientName: conn.recipient?.name
+            },
+            geometry: {
+                type: 'LineString',
+                coordinates: [
+                    [conn.from.lon, conn.from.lat],
+                    [conn.to.lon, conn.to.lat]
+                ]
+            }
+        };
     });
-
-    // Create GeoJSON for lines with aggregated counts
-    const features = Array.from(aggregated.values()).map(conn => ({
-        type: 'Feature',
-        properties: {
-            category: conn.category,
-            subtype: conn.subtype,
-            personName: conn.person.name,
-            fromPlace: conn.from.name,
-            toPlace: conn.to.name,
-            count: conn.count,
-            persons: conn.persons.join(', ')
-        },
-        geometry: {
-            type: 'LineString',
-            coordinates: [
-                [conn.from.lon, conn.from.lat],
-                [conn.to.lon, conn.to.lat]
-            ]
-        }
-    }));
 
     const geojson = {
         type: 'FeatureCollection',
@@ -412,11 +436,11 @@ function drawConnectionLines(connections) {
             'line-width': [
                 'interpolate',
                 ['linear'],
-                ['get', 'count'],
-                1, 8,    // 1 connection = 8px glow (increased)
-                5, 10,   // 5 connections = 10px glow
-                10, 12,  // 10 connections = 12px glow
-                20, 14   // 20+ connections = 14px glow
+                ['get', 'strength'],
+                1, 8,    // 1 letter/relation = 8px glow
+                5, 10,   // 5 letters = 10px glow
+                10, 12,  // 10 letters = 12px glow
+                20, 14   // 20+ letters = 14px glow
             ],
             'line-opacity': 0.6,  // Increased from 0.4
             'line-blur': 4        // Increased from 3
@@ -439,55 +463,42 @@ function drawConnectionLines(connections) {
                 'Familie', getConnectionColor('Familie'),
                 'Beruflich', getConnectionColor('Beruflich'),
                 'Sozial', getConnectionColor('Sozial'),
+                'Korrespondenz', getConnectionColor('Korrespondenz'),
                 getConnectionColor('Unbekannt')
             ],
             'line-width': [
                 'interpolate',
                 ['linear'],
-                ['get', 'count'],
-                1, 3,     // 1 connection = 3px
-                2, 5,     // 2 connections = 5px
-                3, 7,     // 3 connections = 7px
-                5, 10,    // 5 connections = 10px
-                10, 14,   // 10 connections = 14px
-                20, 20    // 20+ connections = 20px
+                ['get', 'strength'],
+                1, 3,     // 1 letter/relation = 3px
+                2, 5,     // 2 letters = 5px
+                3, 7,     // 3 letters = 7px
+                5, 10,    // 5 letters = 10px
+                10, 14,   // 10 letters = 14px
+                20, 20    // 20+ letters = 20px
             ],
-            'line-opacity': [
-                'interpolate',
-                ['linear'],
-                ['get', 'count'],
-                1, 0.7,   // 1 connection = 70% opacity
-                3, 0.8,   // 3 connections = 80% opacity
-                5, 0.9,   // 5+ connections = 90% opacity
-                10, 1.0   // 10+ connections = 100% opacity
-            ]
+            'line-opacity': 0.6  // Reduced from interpolated 0.7-1.0 to constant 0.6 for less visual clutter
         }
     }, 'persons-layer'); // Insert below markers
 
-    // Add label layer for connection counts (only if count > 1)
+    // Add label layer for relation types
     map.addLayer({
         id: 'connection-labels',
         type: 'symbol',
         source: 'connections',
-        filter: ['>', ['get', 'count'], 1],
         layout: {
-            'text-field': ['get', 'count'],
-            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-field': ['get', 'label'],
+            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
             'text-size': 11,
             'symbol-placement': 'line-center',
             'text-rotation-alignment': 'map',
-            'text-pitch-alignment': 'viewport'
+            'text-pitch-alignment': 'viewport',
+            'text-allow-overlap': false,
+            'text-ignore-placement': false
         },
         paint: {
-            'text-color': '#ffffff',
-            'text-halo-color': [
-                'match',
-                ['get', 'category'],
-                'Familie', getConnectionColor('Familie'),
-                'Beruflich', getConnectionColor('Beruflich'),
-                'Sozial', getConnectionColor('Sozial'),
-                '#666666'
-            ],
+            'text-color': '#2c3e50',
+            'text-halo-color': '#ffffff',
             'text-halo-width': 2,
             'text-halo-blur': 1,
             'text-opacity': 0.9
@@ -497,7 +508,7 @@ function drawConnectionLines(connections) {
     currentConnections = filtered;
 }
 
-// Clear connection lines from map
+// Clear connection lines from map (but keep pinned)
 function clearConnectionLines() {
     if (map.getLayer('connection-labels')) {
         map.removeLayer('connection-labels');
@@ -512,6 +523,11 @@ function clearConnectionLines() {
         map.removeSource('connections');
     }
     currentConnections = [];
+
+    // Redraw pinned connections
+    if (pinnedConnections.length > 0) {
+        drawPinnedConnections();
+    }
 }
 
 // Setup event handlers for map interactions (called only once)
@@ -663,7 +679,7 @@ function setupEventHandlers() {
                     .map(leaf => allPersons.find(p => p.id === leaf.properties.id))
                     .filter(p => p && p.places && p.places.length > 0);
 
-                const connections = getClusterConnections(clusterPersons, allPersons);
+                const connections = getClusterConnections(clusterPersons, allPersons, correspondenceConnectionsCache);
 
                 // Update tooltip with connection info - search within popup element
                 const popupEl = clusterTooltip ? clusterTooltip.getElement() : null;
@@ -714,49 +730,22 @@ function setupEventHandlers() {
         const props = e.features[0].properties;
         const coordinates = e.features[0].geometry.coordinates.slice();
 
-        // Find person and show connections
+        // Find person and show connections (use cached correspondence)
         const person = allPersons.find(p => p.id === props.id);
         if (person && person.places && person.places.length > 0) {
-            const connections = getPersonConnections(person, allPersons);
+            const connections = getPersonConnections(person, allPersons, correspondenceConnectionsCache);
             drawConnectionLines(connections);
             log.event(`Showing ${connections.length} connections for ${person.name}`);
         }
 
-        // Always show JSON snippet on hover
+        // Update debug panel instead of showing popup
         if (person) {
-            const jsonString = JSON.stringify(person, null, 2);
-            const syntaxHighlightedJSON = syntaxHighlightJSON(jsonString);
-
-            const html = `
-                <div class="hover-tooltip hover-tooltip-json">
-                    <div class="hover-tooltip-header">
-                        <strong>${person.name}</strong>
-                    </div>
-                    <pre class="hover-json-display">${syntaxHighlightedJSON}</pre>
-                </div>
-            `;
-
-            markerTooltip = new maplibregl.Popup({
-                closeButton: true,  // Show close button so user can scroll
-                closeOnClick: false,
-                className: 'hover-tooltip-popup hover-json-popup json-popup-sticky',
-                maxWidth: '500px',
-                offset: [250, 0]  // Offset nach rechts, damit es nicht überlagert
-            })
-                .setLngLat(coordinates)
-                .setHTML(html)
-                .addTo(map);
-
-            // Add event listener for popup close
-            markerTooltip.on('close', () => {
-                markerTooltip = null;
-            });
+            updateDebugPanel(person);
         }
     });
 
     map.on('mouseleave', 'persons-layer', () => {
         map.getCanvas().style.cursor = '';
-        // Don't remove tooltip on mouseleave - let user close it manually
         clearConnectionLines();
     });
 }
@@ -803,6 +792,11 @@ function showSinglePersonPopup(lngLat, properties) {
                         title="${basketText}">
                     <i class="fas ${basketIcon}"></i>
                 </button>
+                <button class="btn-pin-network"
+                        onclick="pinPersonNetwork('${properties.id}')"
+                        title="Netzwerk fixieren">
+                    <i class="fas fa-thumbtack"></i>
+                </button>
             </div>
         </div>
     `;
@@ -848,6 +842,11 @@ function showMultiPersonPopup(lngLat, features) {
         const basketTitle = inBasket ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzufügen';
         const basketClass = inBasket ? 'in-basket' : '';
 
+        // Check if network is pinned
+        const isPinned = pinnedConnections.some(conn => conn.personId === p.id);
+        const pinTitle = isPinned ? 'Netzwerk lösen' : 'Netzwerk fixieren';
+        const pinClass = isPinned ? 'pinned' : '';
+
         return `
             <div class="person-item ${hasRelations ? 'has-relations' : ''}"
                  data-id="${p.id}"
@@ -865,11 +864,18 @@ function showMultiPersonPopup(lngLat, features) {
                         ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
                     </div>
                 </div>
-                <button class="btn-basket-mini ${basketClass}"
-                        onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
-                        title="${basketTitle}">
-                    <i class="fas ${basketIcon}"></i>
-                </button>
+                <div class="person-item-buttons">
+                    <button class="btn-basket-mini ${basketClass}"
+                            onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
+                            title="${basketTitle}">
+                        <i class="fas ${basketIcon}"></i>
+                    </button>
+                    <button class="btn-pin-mini ${pinClass}"
+                            onclick="event.stopPropagation(); pinPersonNetwork('${p.id}')"
+                            title="${pinTitle}">
+                        <i class="fas fa-thumbtack"></i>
+                    </button>
+                </div>
             </div>
         `;
     }).join('');
@@ -932,6 +938,11 @@ window.expandPersonList = function(event) {
         const basketTitle = inBasket ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzufügen';
         const basketClass = inBasket ? 'in-basket' : '';
 
+        // Check if network is pinned
+        const isPinned = pinnedConnections.some(conn => conn.personId === p.id);
+        const pinTitle = isPinned ? 'Netzwerk lösen' : 'Netzwerk fixieren';
+        const pinClass = isPinned ? 'pinned' : '';
+
         return `
             <div class="person-item ${hasRelations ? 'has-relations' : ''}"
                  data-id="${p.id}"
@@ -949,11 +960,18 @@ window.expandPersonList = function(event) {
                         ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
                     </div>
                 </div>
-                <button class="btn-basket-mini ${basketClass}"
-                        onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
-                        title="${basketTitle}">
-                    <i class="fas ${basketIcon}"></i>
-                </button>
+                <div class="person-item-buttons">
+                    <button class="btn-basket-mini ${basketClass}"
+                            onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
+                            title="${basketTitle}">
+                        <i class="fas ${basketIcon}"></i>
+                    </button>
+                    <button class="btn-pin-mini ${pinClass}"
+                            onclick="event.stopPropagation(); pinPersonNetwork('${p.id}')"
+                            title="${pinTitle}">
+                        <i class="fas fa-thumbtack"></i>
+                    </button>
+                </div>
             </div>
         `;
     }).join('');
@@ -1048,12 +1066,26 @@ function initFilters() {
         applyFilters();
     });
 
+    // Network type filter
+    const networkTypeCheckboxes = document.querySelectorAll('input[name="network-type"]');
+    networkTypeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            networkEnabled[e.target.value] = e.target.checked;
+            log.event(`Network filter ${e.target.value}: ${e.target.checked}`);
+            // No need to reapply filters - network lines are redrawn on hover
+        });
+    });
+
     // Select all button
     const selectAllButton = document.getElementById('select-all-filters');
     selectAllButton.addEventListener('click', () => {
         roleCheckboxes.forEach(cb => cb.checked = true);
         occupationCheckboxes.forEach(cb => cb.checked = true);
         placeTypeCheckboxes.forEach(cb => cb.checked = true);
+        networkTypeCheckboxes.forEach(cb => {
+            cb.checked = true;
+            networkEnabled[cb.value] = true;
+        });
 
         // Reset year range slider to full range
         yearRangeSlider.noUiSlider.set([1762, 1824]);
@@ -1067,6 +1099,10 @@ function initFilters() {
         roleCheckboxes.forEach(cb => cb.checked = false);
         occupationCheckboxes.forEach(cb => cb.checked = false);
         placeTypeCheckboxes.forEach(cb => cb.checked = false);
+        networkTypeCheckboxes.forEach(cb => {
+            cb.checked = false;
+            networkEnabled[cb.value] = false;
+        });
 
         // Reset year range slider
         yearRangeSlider.noUiSlider.set([1762, 1824]);
@@ -1288,7 +1324,7 @@ function showError(message) {
     loading.style.color = '#9b2226';
 }
 
-// Syntax highlight JSON for tooltips
+// Syntax highlight JSON
 function syntaxHighlightJSON(jsonString) {
     let json = typeof jsonString === 'string' ? jsonString : JSON.stringify(jsonString, null, 2);
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1309,6 +1345,370 @@ function syntaxHighlightJSON(jsonString) {
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
+
+// Initialize Debug Panel
+function initDebugPanel() {
+    const debugToggle = document.getElementById('debug-toggle');
+    const debugPanel = document.getElementById('debug-panel');
+    const debugClose = document.getElementById('debug-panel-close');
+
+    if (!debugToggle || !debugPanel || !debugClose) {
+        log.error('Debug panel elements not found');
+        return;
+    }
+
+    // Toggle panel
+    debugToggle.addEventListener('click', () => {
+        debugPanel.classList.toggle('active');
+        if (debugPanel.classList.contains('active')) {
+            debugToggle.innerHTML = '<i class="fas fa-bug"></i> Schließen';
+        } else {
+            debugToggle.innerHTML = '<i class="fas fa-bug"></i> Debug';
+        }
+    });
+
+    // Close button
+    debugClose.addEventListener('click', () => {
+        debugPanel.classList.remove('active');
+        debugToggle.innerHTML = '<i class="fas fa-bug"></i> Debug';
+    });
+
+    log.init('Debug panel initialized');
+}
+
+// Update Debug Panel with person data
+function updateDebugPanel(person) {
+    const debugJson = document.getElementById('debug-json');
+    const debugPanel = document.getElementById('debug-panel');
+
+    if (!debugJson) return;
+
+    // Auto-open panel if not already open
+    if (!debugPanel.classList.contains('active')) {
+        debugPanel.classList.add('active');
+        const debugToggle = document.getElementById('debug-toggle');
+        if (debugToggle) {
+            debugToggle.innerHTML = '<i class="fas fa-bug"></i> Schließen';
+        }
+    }
+
+    const jsonString = JSON.stringify(person, null, 2);
+    const highlighted = syntaxHighlightJSON(jsonString);
+
+    // Check if person network is pinned
+    const isPinned = pinnedConnections.some(conn =>
+        conn.personId === person.id
+    );
+
+    debugJson.innerHTML = `
+        <div class="debug-person-header">
+            <strong>${person.name}</strong>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                ${person.gnd ? `<span class="debug-gnd">GND: ${person.gnd}</span>` : ''}
+                <button class="btn-pin-debug ${isPinned ? 'pinned' : ''}"
+                        onclick="pinPersonNetwork('${person.id}')"
+                        title="${isPinned ? 'Netzwerk lösen' : 'Netzwerk fixieren'}">
+                    <i class="fas fa-thumbtack"></i>
+                </button>
+            </div>
+        </div>
+        <pre>${highlighted}</pre>
+    `;
+}
+
+// Pin person network
+window.pinPersonNetwork = function(personId) {
+    const person = allPersons.find(p => p.id === personId);
+    if (!person) {
+        log.error(`Person not found: ${personId}`);
+        return;
+    }
+
+    // Check if already pinned
+    const existingIndex = pinnedConnections.findIndex(conn => conn.personId === personId);
+
+    if (existingIndex !== -1) {
+        // Unpin
+        pinnedConnections.splice(existingIndex, 1);
+        log.event(`Unpinned network for ${person.name}`);
+        Toast.show(`Netzwerk von ${person.name} gelöst`, 'info');
+    } else {
+        // Pin
+        const connections = getPersonConnections(person, allPersons, correspondenceConnectionsCache);
+
+        if (connections.length === 0) {
+            Toast.show(`${person.name} hat keine Verbindungen`, 'warning');
+            return;
+        }
+
+        pinnedConnections.push({
+            personId: person.id,
+            personName: person.name,
+            connections: connections,
+            timestamp: Date.now()
+        });
+        log.event(`Pinned ${connections.length} connections for ${person.name}`);
+        Toast.show(`${connections.length} Verbindungen von ${person.name} fixiert`, 'success');
+    }
+
+    // Update UI - if person is currently shown in debug panel
+    const currentPerson = allPersons.find(p => p.id === personId);
+    if (currentPerson) {
+        updateDebugPanel(currentPerson);
+    }
+
+    updatePinnedConnectionsUI();
+    drawPinnedConnections();
+};
+
+// Draw pinned connections
+function drawPinnedConnections() {
+    if (pinnedConnections.length === 0) {
+        // Remove pinned layers if they exist
+        if (map.getLayer('pinned-connection-labels')) {
+            map.removeLayer('pinned-connection-labels');
+        }
+        if (map.getLayer('pinned-connection-lines')) {
+            map.removeLayer('pinned-connection-lines');
+        }
+        if (map.getLayer('pinned-connection-lines-glow')) {
+            map.removeLayer('pinned-connection-lines-glow');
+        }
+        if (map.getSource('pinned-connections')) {
+            map.removeSource('pinned-connections');
+        }
+        return;
+    }
+
+    // Collect all pinned connections
+    const allPinnedConns = pinnedConnections.flatMap(p => p.connections);
+
+    // Filter by enabled categories
+    let filtered = allPinnedConns.filter(conn => networkEnabled[conn.category]);
+
+    // Apply temporal filter
+    if (temporalFilter && temporalFilter.mode === 'correspondence') {
+        filtered = filtered.map(conn => {
+            if (conn.type === 'correspondence' && conn.year) {
+                if (conn.year >= temporalFilter.start && conn.year <= temporalFilter.end) {
+                    return conn;
+                }
+                return null;
+            }
+            return conn;
+        }).filter(conn => conn !== null);
+    }
+
+    // Create GeoJSON
+    const features = filtered.map(conn => {
+        let label = '';
+        if (conn.type === 'agrelon') {
+            label = conn.subtype || conn.category;
+        } else if (conn.type === 'correspondence') {
+            label = conn.strength > 1 ? `${conn.strength}× Brief` : 'Brief';
+        }
+
+        return {
+            type: 'Feature',
+            properties: {
+                category: conn.category,
+                subtype: conn.subtype,
+                strength: conn.strength || 1,
+                label: label,
+                fromPlace: conn.from.name,
+                toPlace: conn.to.name,
+                senderName: conn.sender?.name || conn.person?.name,
+                recipientName: conn.recipient?.name
+            },
+            geometry: {
+                type: 'LineString',
+                coordinates: [
+                    [conn.from.lon, conn.from.lat],
+                    [conn.to.lon, conn.to.lat]
+                ]
+            }
+        };
+    });
+
+    const geojson = {
+        type: 'FeatureCollection',
+        features: features
+    };
+
+    // Remove existing pinned layers
+    if (map.getLayer('pinned-connection-labels')) {
+        map.removeLayer('pinned-connection-labels');
+    }
+    if (map.getLayer('pinned-connection-lines')) {
+        map.removeLayer('pinned-connection-lines');
+    }
+    if (map.getLayer('pinned-connection-lines-glow')) {
+        map.removeLayer('pinned-connection-lines-glow');
+    }
+    if (map.getSource('pinned-connections')) {
+        map.removeSource('pinned-connections');
+    }
+
+    // Add source
+    map.addSource('pinned-connections', {
+        type: 'geojson',
+        data: geojson
+    });
+
+    // Add glow layer (slightly different style for pinned)
+    map.addLayer({
+        id: 'pinned-connection-lines-glow',
+        type: 'line',
+        source: 'pinned-connections',
+        paint: {
+            'line-color': '#ffffff',
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['get', 'strength'],
+                1, 10,
+                5, 12,
+                10, 14,
+                20, 16
+            ],
+            'line-opacity': 0.8,
+            'line-blur': 5
+        }
+    }, 'persons-layer');
+
+    // Add main line layer (dashed for pinned)
+    map.addLayer({
+        id: 'pinned-connection-lines',
+        type: 'line',
+        source: 'pinned-connections',
+        layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+        },
+        paint: {
+            'line-color': [
+                'match',
+                ['get', 'category'],
+                'Familie', getConnectionColor('Familie'),
+                'Beruflich', getConnectionColor('Beruflich'),
+                'Sozial', getConnectionColor('Sozial'),
+                'Korrespondenz', getConnectionColor('Korrespondenz'),
+                getConnectionColor('Unbekannt')
+            ],
+            'line-width': [
+                'interpolate',
+                ['linear'],
+                ['get', 'strength'],
+                1, 4,
+                2, 6,
+                3, 8,
+                5, 11,
+                10, 15,
+                20, 22
+            ],
+            'line-opacity': 0.8,  // Reduced from 1.0 to distinguish from hover (0.6)
+            'line-dasharray': [2, 2] // Dashed pattern for pinned
+        }
+    }, 'persons-layer');
+
+    // Add labels
+    map.addLayer({
+        id: 'pinned-connection-labels',
+        type: 'symbol',
+        source: 'pinned-connections',
+        layout: {
+            'text-field': ['get', 'label'],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': 12,
+            'symbol-placement': 'line-center',
+            'text-rotation-alignment': 'map',
+            'text-pitch-alignment': 'viewport',
+            'text-allow-overlap': false,
+            'text-ignore-placement': false
+        },
+        paint: {
+            'text-color': '#1e3a5f',
+            'text-halo-color': '#ffffff',
+            'text-halo-width': 3,
+            'text-halo-blur': 1,
+            'text-opacity': 1.0
+        }
+    });
+
+    log.event(`Drew ${filtered.length} pinned connections`);
+}
+
+// Update pinned connections UI list
+function updatePinnedConnectionsUI() {
+    const pinnedNetworksDiv = document.getElementById('pinned-networks');
+    const pinnedNetworksList = document.getElementById('pinned-networks-list');
+    const clearAllBtn = document.getElementById('clear-all-pins');
+
+    if (!pinnedNetworksDiv || !pinnedNetworksList || !clearAllBtn) return;
+
+    if (pinnedConnections.length === 0) {
+        pinnedNetworksDiv.style.display = 'none';
+        clearAllBtn.style.display = 'none';
+        return;
+    }
+
+    // Show pinned networks section
+    pinnedNetworksDiv.style.display = 'block';
+    clearAllBtn.style.display = 'block';
+
+    // Build list HTML
+    pinnedNetworksList.innerHTML = pinnedConnections.map((pinned, index) => {
+        const connCount = pinned.connections.length;
+        const categories = {};
+        pinned.connections.forEach(conn => {
+            categories[conn.category] = (categories[conn.category] || 0) + 1;
+        });
+
+        const stats = Object.entries(categories)
+            .map(([cat, count]) => `${count} ${cat}`)
+            .join(', ');
+
+        return `
+            <div class="pinned-network-item">
+                <div class="pinned-network-info">
+                    <div class="pinned-network-name">${pinned.personName}</div>
+                    <div class="pinned-network-stats">${connCount} Verbindungen: ${stats}</div>
+                </div>
+                <button class="btn-unpin" onclick="unpinNetwork(${index})" title="Lösen">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+    }).join('');
+
+    log.event(`${pinnedConnections.length} networks pinned in UI`);
+}
+
+// Unpin specific network
+window.unpinNetwork = function(index) {
+    if (index >= 0 && index < pinnedConnections.length) {
+        const removed = pinnedConnections.splice(index, 1)[0];
+        log.event(`Unpinned network ${index}: ${removed.personName}`);
+        Toast.show(`Netzwerk von ${removed.personName} gelöst`, 'info');
+        updatePinnedConnectionsUI();
+        drawPinnedConnections();
+    }
+};
+
+// Clear all pinned networks
+document.addEventListener('DOMContentLoaded', () => {
+    const clearAllBtn = document.getElementById('clear-all-pins');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+            const count = pinnedConnections.length;
+            pinnedConnections = [];
+            log.event(`Cleared all ${count} pinned networks`);
+            Toast.show(`Alle ${count} Netzwerke gelöst`, 'info');
+            updatePinnedConnectionsUI();
+            drawPinnedConnections();
+        });
+    }
+});
 
 // Show JSON popup for person item in list
 let personItemTooltip = null;
