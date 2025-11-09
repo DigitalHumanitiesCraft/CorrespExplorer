@@ -1,0 +1,1418 @@
+{
+  "created": 1762691708.4673314,
+  "duration": 1.9742870330810547,
+  "exitcode": 0,
+  "root": "c:\\Users\\chris\\Documents\\GitHub\\Promptotypes\\HerData",
+  "environment": {},
+  "summary": {
+    "passed": 46,
+    "total": 46,
+    "collected": 46
+  },
+  "collectors": [
+    {
+      "nodeid": "",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests",
+          "type": "Dir"
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/frontend",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "tests/test_data_quality.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests/test_data_quality.py::test_no_duplicate_ids",
+          "type": "Function",
+          "lineno": 38
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_no_duplicate_gnd_ids",
+          "type": "Function",
+          "lineno": 47
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_relationships_target_exists",
+          "type": "Function",
+          "lineno": 56
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_correspondence_recipients_exist_if_gnd",
+          "type": "Function",
+          "lineno": 76
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_coordinates_are_valid",
+          "type": "Function",
+          "lineno": 105
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_places_have_required_fields",
+          "type": "Function",
+          "lineno": 140
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_coordinates_are_numbers",
+          "type": "Function",
+          "lineno": 165
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_birth_before_death",
+          "type": "Function",
+          "lineno": 193
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_dates_in_plausible_range",
+          "type": "Function",
+          "lineno": 219
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_correspondence_years_in_corpus_range",
+          "type": "Function",
+          "lineno": 253
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_letter_years_populated_when_year_available",
+          "type": "Function",
+          "lineno": 281
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_all_persons_have_required_fields",
+          "type": "Function",
+          "lineno": 312
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_role_values_valid",
+          "type": "Function",
+          "lineno": 328
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_normierung_values_valid",
+          "type": "Function",
+          "lineno": 344
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_gnd_normierung_has_gnd_field",
+          "type": "Function",
+          "lineno": 360
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_sndb_urls_valid_format",
+          "type": "Function",
+          "lineno": 375
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_meta_counts_match_actual",
+          "type": "Function",
+          "lineno": 394
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_timeline_data_consistent",
+          "type": "Function",
+          "lineno": 422
+        },
+        {
+          "nodeid": "tests/test_data_quality.py::test_coverage_statistics",
+          "type": "Function",
+          "lineno": 455
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_json_schema.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests/test_json_schema.py::test_persons_json_valid_schema",
+          "type": "Function",
+          "lineno": 44
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_meta_structure",
+          "type": "Function",
+          "lineno": 59
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_persons_array_not_empty",
+          "type": "Function",
+          "lineno": 69
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_all_person_ids_are_strings",
+          "type": "Function",
+          "lineno": 77
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_all_coordinates_are_numbers",
+          "type": "Function",
+          "lineno": 87
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_role_values_match_schema",
+          "type": "Function",
+          "lineno": 110
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_normierung_values_match_schema",
+          "type": "Function",
+          "lineno": 124
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_timeline_years_in_range",
+          "type": "Function",
+          "lineno": 138
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_letter_years_in_range",
+          "type": "Function",
+          "lineno": 151
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_birth_death_format",
+          "type": "Function",
+          "lineno": 166
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_correspondence_type_values",
+          "type": "Function",
+          "lineno": 191
+        },
+        {
+          "nodeid": "tests/test_json_schema.py::test_schema_itself_is_valid",
+          "type": "Function",
+          "lineno": 208
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_all_persons_from_xml_present_in_json",
+          "type": "Function",
+          "lineno": 54
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_person_ids_are_from_source_xml",
+          "type": "Function",
+          "lineno": 71
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_occupations_not_duplicated",
+          "type": "Function",
+          "lineno": 92
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_places_not_duplicated",
+          "type": "Function",
+          "lineno": 116
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_dates_are_consistent_format",
+          "type": "Function",
+          "lineno": 149
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_letter_years_are_integers",
+          "type": "Function",
+          "lineno": 180
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_letter_count_is_integer",
+          "type": "Function",
+          "lineno": 197
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_mention_count_is_integer",
+          "type": "Function",
+          "lineno": 212
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_correspondence_recipients_resolved",
+          "type": "Function",
+          "lineno": 231
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_relationship_targets_have_names",
+          "type": "Function",
+          "lineno": 274
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_places_have_coordinates_when_name_exists",
+          "type": "Function",
+          "lineno": 320
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_place_types_are_present",
+          "type": "Function",
+          "lineno": 350
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_letter_count_matches_correspondence",
+          "type": "Function",
+          "lineno": 378
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_mention_count_consistency",
+          "type": "Function",
+          "lineno": 398
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py::test_letter_years_derived_from_correspondence",
+          "type": "Function",
+          "lineno": 422
+        }
+      ]
+    },
+    {
+      "nodeid": "tests/utils",
+      "outcome": "passed",
+      "result": []
+    },
+    {
+      "nodeid": "tests",
+      "outcome": "passed",
+      "result": [
+        {
+          "nodeid": "tests/frontend",
+          "type": "Dir"
+        },
+        {
+          "nodeid": "tests/test_data_quality.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "tests/test_json_schema.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "tests/test_pipeline_processing.py",
+          "type": "Module"
+        },
+        {
+          "nodeid": "tests/utils",
+          "type": "Dir"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "nodeid": "tests/test_data_quality.py::test_no_duplicate_ids",
+      "lineno": 38,
+      "outcome": "passed",
+      "keywords": [
+        "test_no_duplicate_ids",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.062123899999278365,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.006692499999189749,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.000678899999911664,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_no_duplicate_gnd_ids",
+      "lineno": 47,
+      "outcome": "passed",
+      "keywords": [
+        "test_no_duplicate_gnd_ids",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007722999980614986,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.003289799999038223,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0004489999992074445,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_relationships_target_exists",
+      "lineno": 56,
+      "outcome": "passed",
+      "keywords": [
+        "test_relationships_target_exists",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00076949999856879,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0009003000013763085,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0005154999998921994,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_correspondence_recipients_exist_if_gnd",
+      "lineno": 76,
+      "outcome": "passed",
+      "keywords": [
+        "test_correspondence_recipients_exist_if_gnd",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004644999971787911,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.00393390000317595,
+        "outcome": "passed",
+        "stdout": "\nInfo: 1767 correspondence recipients not in dataset (likely male or outside scope)\n"
+      },
+      "teardown": {
+        "duration": 0.0006424999992304947,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_coordinates_are_valid",
+      "lineno": 105,
+      "outcome": "passed",
+      "keywords": [
+        "test_coordinates_are_valid",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004741000011563301,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0011588999986997806,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00040780000199447386,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_places_have_required_fields",
+      "lineno": 140,
+      "outcome": "passed",
+      "keywords": [
+        "test_places_have_required_fields",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000427700000727782,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0007297999982256442,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00041150000106426887,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_coordinates_are_numbers",
+      "lineno": 165,
+      "outcome": "passed",
+      "keywords": [
+        "test_coordinates_are_numbers",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00041599999894970097,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0013708000005863141,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0004555000014079269,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_birth_before_death",
+      "lineno": 193,
+      "outcome": "passed",
+      "keywords": [
+        "test_birth_before_death",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004186000005574897,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0009944999983417802,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00037819999852217734,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_dates_in_plausible_range",
+      "lineno": 219,
+      "outcome": "passed",
+      "keywords": [
+        "test_dates_in_plausible_range",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00042299999768147245,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0008718999997654464,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00035230000139563344,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_correspondence_years_in_corpus_range",
+      "lineno": 253,
+      "outcome": "passed",
+      "keywords": [
+        "test_correspondence_years_in_corpus_range",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007283999984792899,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0031192999995255377,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00043930000174441375,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_letter_years_populated_when_year_available",
+      "lineno": 281,
+      "outcome": "passed",
+      "keywords": [
+        "test_letter_years_populated_when_year_available",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004498999987845309,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0037101999987498857,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00045089999912306666,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_all_persons_have_required_fields",
+      "lineno": 312,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_persons_have_required_fields",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004625999972631689,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.000979099997493904,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00042190000021946616,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_role_values_valid",
+      "lineno": 328,
+      "outcome": "passed",
+      "keywords": [
+        "test_role_values_valid",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004267999975127168,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0008362999978999142,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.001375799998641014,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_normierung_values_valid",
+      "lineno": 344,
+      "outcome": "passed",
+      "keywords": [
+        "test_normierung_values_valid",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000565199999982724,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0007742000016150996,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00043510000250535086,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_gnd_normierung_has_gnd_field",
+      "lineno": 360,
+      "outcome": "passed",
+      "keywords": [
+        "test_gnd_normierung_has_gnd_field",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00044830000115325674,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0006782999989809468,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00043510000250535086,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_sndb_urls_valid_format",
+      "lineno": 375,
+      "outcome": "passed",
+      "keywords": [
+        "test_sndb_urls_valid_format",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004315000005590264,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0010455000010551885,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0009284000007028226,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_meta_counts_match_actual",
+      "lineno": 394,
+      "outcome": "passed",
+      "keywords": [
+        "test_meta_counts_match_actual",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004349000009824522,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0008602999987488147,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003720999993674923,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_timeline_data_consistent",
+      "lineno": 422,
+      "outcome": "passed",
+      "keywords": [
+        "test_timeline_data_consistent",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0003586999991966877,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.003685400002723327,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0006399999983841553,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_data_quality.py::test_coverage_statistics",
+      "lineno": 455,
+      "outcome": "passed",
+      "keywords": [
+        "test_coverage_statistics",
+        "test_data_quality.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0011344999984430615,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.002395499999693129,
+        "outcome": "passed",
+        "stdout": "\n============================================================\nDATA COVERAGE STATISTICS\n============================================================\nTotal persons:        448\nWith GND:              270 ( 60.3%)\nWith dates:            421 ( 94.0%)\n  - Birth date:        407 ( 90.8%)\n  - Death date:        406 ( 90.6%)\nWith places:           227 ( 50.7%)\nWith occupations:      207 ( 46.2%)\nWith relationships:     67 ( 15.0%)\nWith biography:        448 (100.0%)\nWith correspondence:   230 ( 51.3%)\n============================================================\n"
+      },
+      "teardown": {
+        "duration": 0.0008612000019638799,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_persons_json_valid_schema",
+      "lineno": 44,
+      "outcome": "passed",
+      "keywords": [
+        "test_persons_json_valid_schema",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0596213999997417,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 1.154321699999855,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0005974000014248304,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_meta_structure",
+      "lineno": 59,
+      "outcome": "passed",
+      "keywords": [
+        "test_meta_structure",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00045589999717776664,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.00041150000106426887,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003777999991143588,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_persons_array_not_empty",
+      "lineno": 69,
+      "outcome": "passed",
+      "keywords": [
+        "test_persons_array_not_empty",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00039659999674768187,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.00036840000029769726,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00033850000181701034,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_all_person_ids_are_strings",
+      "lineno": 77,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_person_ids_are_strings",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0010465999985171948,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0008705000000190921,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00042460000258870423,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_all_coordinates_are_numbers",
+      "lineno": 87,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_coordinates_are_numbers",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004503999989537988,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0012300000016693957,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00039489999835495837,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_role_values_match_schema",
+      "lineno": 110,
+      "outcome": "passed",
+      "keywords": [
+        "test_role_values_match_schema",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00045339999996940605,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0013674000001628883,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00046210000073187985,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_normierung_values_match_schema",
+      "lineno": 124,
+      "outcome": "passed",
+      "keywords": [
+        "test_normierung_values_match_schema",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004503999989537988,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0007444000002578832,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00042860000030486844,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_timeline_years_in_range",
+      "lineno": 138,
+      "outcome": "passed",
+      "keywords": [
+        "test_timeline_years_in_range",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00039620000097784214,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0004943999992974568,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0004852999991271645,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_letter_years_in_range",
+      "lineno": 151,
+      "outcome": "passed",
+      "keywords": [
+        "test_letter_years_in_range",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00039739999920129776,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0018601999981910922,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0010806000027514528,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_birth_death_format",
+      "lineno": 166,
+      "outcome": "passed",
+      "keywords": [
+        "test_birth_death_format",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.000656100000924198,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.001282000001083361,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0004227999997965526,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_correspondence_type_values",
+      "lineno": 191,
+      "outcome": "passed",
+      "keywords": [
+        "test_correspondence_type_values",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004353000003902707,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.004023000001325272,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0005010000022593886,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_json_schema.py::test_schema_itself_is_valid",
+      "lineno": 208,
+      "outcome": "passed",
+      "keywords": [
+        "test_schema_itself_is_valid",
+        "test_json_schema.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00047139999878709204,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0014460999991570134,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.004613299999618903,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_all_persons_from_xml_present_in_json",
+      "lineno": 54,
+      "outcome": "passed",
+      "keywords": [
+        "test_all_persons_from_xml_present_in_json",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.21217590000014752,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0028925000005983748,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0005612999993900303,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_person_ids_are_from_source_xml",
+      "lineno": 71,
+      "outcome": "passed",
+      "keywords": [
+        "test_person_ids_are_from_source_xml",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005359999995562248,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0026653999993868638,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0007810999995854218,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_occupations_not_duplicated",
+      "lineno": 92,
+      "outcome": "passed",
+      "keywords": [
+        "test_occupations_not_duplicated",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007504999994125683,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0014230999986466486,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00044939999861526303,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_places_not_duplicated",
+      "lineno": 116,
+      "outcome": "passed",
+      "keywords": [
+        "test_places_not_duplicated",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00080339999840362,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0018409000003885012,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00041419999979552813,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_dates_are_consistent_format",
+      "lineno": 149,
+      "outcome": "passed",
+      "keywords": [
+        "test_dates_are_consistent_format",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00041369999962626025,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0013576000019384082,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003648999991128221,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_letter_years_are_integers",
+      "lineno": 180,
+      "outcome": "passed",
+      "keywords": [
+        "test_letter_years_are_integers",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0005430999990494456,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0021554999984800816,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0005189999974390958,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_letter_count_is_integer",
+      "lineno": 197,
+      "outcome": "passed",
+      "keywords": [
+        "test_letter_count_is_integer",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004948999994667247,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.00057820000074571,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0004470000021683518,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_mention_count_is_integer",
+      "lineno": 212,
+      "outcome": "passed",
+      "keywords": [
+        "test_mention_count_is_integer",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004594999991240911,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0006060000014258549,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0003958999986934941,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_correspondence_recipients_resolved",
+      "lineno": 231,
+      "outcome": "passed",
+      "keywords": [
+        "test_correspondence_recipients_resolved",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.001035299999784911,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.004449800002475968,
+        "outcome": "passed",
+        "stdout": "\nKNOWN ISSUE: 22 correspondence entries missing recipient_name\nFirst 3 examples:\n  - Person Johanne Susanne Bohl: Correspondence has recipient_gnd 118649485 (in dataset as Anna Amalia Sachsen-Weimar und Eisenach Herzogin von) but missing recipient_name\n  - Person Fanny Fiala: Correspondence has recipient_gnd 118540246 (in dataset as Katharina Elisabeth Goethe) but missing recipient_name\n  - Person Fanny Fiala: Correspondence has recipient_gnd 118540246 (in dataset as Katharina Elisabeth Goethe) but missing recipient_name\n"
+      },
+      "teardown": {
+        "duration": 0.00046550000115530565,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_relationship_targets_have_names",
+      "lineno": 274,
+      "outcome": "passed",
+      "keywords": [
+        "test_relationship_targets_have_names",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00042610000309650786,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0021004000009270385,
+        "outcome": "passed",
+        "stdout": "\nKNOWN ISSUE: 86 relationships missing target_name\nFirst 3 examples:\n  - Person Charitas Emilie Bernstorff Gr\u00e4fin von: Relationship to 45090 (Friederike Sophie Eleonore Schardt von) missing target_name\n  - Person Charlotte Karoline Adamine Luise Bode von: Relationship to 44010 (Luise Karoline Henriette Hessen-Darmstadt Gro\u00dfherzogin von) missing target_name\n  - Person Marie Louise Eug\u00e9nie Foucquet Marquise de: Relationship to 43658 (Marie Ren\u00e9e Louise Foucquet de) missing target_name\n"
+      },
+      "teardown": {
+        "duration": 0.0004699000019172672,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_places_have_coordinates_when_name_exists",
+      "lineno": 320,
+      "outcome": "passed",
+      "keywords": [
+        "test_places_have_coordinates_when_name_exists",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00048349999997299165,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.001323100001172861,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0004840000001422595,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_place_types_are_present",
+      "lineno": 350,
+      "outcome": "passed",
+      "keywords": [
+        "test_place_types_are_present",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00044859999979962595,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0008643000001029577,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00038239999776124023,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_letter_count_matches_correspondence",
+      "lineno": 378,
+      "outcome": "passed",
+      "keywords": [
+        "test_letter_count_matches_correspondence",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0007700999994995072,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.002412699999695178,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.00041879999844240956,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_mention_count_consistency",
+      "lineno": 398,
+      "outcome": "passed",
+      "keywords": [
+        "test_mention_count_consistency",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.00042519999988144264,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.0006022000015946105,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0004081999977643136,
+        "outcome": "passed"
+      }
+    },
+    {
+      "nodeid": "tests/test_pipeline_processing.py::test_letter_years_derived_from_correspondence",
+      "lineno": 422,
+      "outcome": "passed",
+      "keywords": [
+        "test_letter_years_derived_from_correspondence",
+        "test_pipeline_processing.py",
+        "tests",
+        "HerData",
+        ""
+      ],
+      "setup": {
+        "duration": 0.0004105000007257331,
+        "outcome": "passed"
+      },
+      "call": {
+        "duration": 0.004626399997505359,
+        "outcome": "passed"
+      },
+      "teardown": {
+        "duration": 0.0021616000012727454,
+        "outcome": "passed"
+      }
+    }
+  ]
+}
