@@ -34,6 +34,14 @@ let clusterHoverTimeout = null;
 // Compact logging utility (export for Timeline module)
 export const Debug = {
     log: (type, msg) => {
+        // Check if logging should be enabled
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDebug = urlParams.get('debug') === 'true';
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        
+        // Always show errors, otherwise only in debug/local mode
+        if (type !== 'ERROR' && !isDebug && !isLocal) return;
+
         const icons = {
             'INIT': '🟢',
             'RENDER': '🔵',
@@ -125,7 +133,16 @@ async function init() {
         initMap();
         initFilters();
         initSearch();
-        initDebugPanel();
+        
+        // Initialize Debug Panel only if requested via URL param
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('debug') === 'true') {
+            initDebugPanel();
+            log.init('Debug panel enabled via URL parameter');
+        } else {
+            console.log('💡 Tip: Add ?debug=true to URL to enable Data Provenance & Debug Panel');
+        }
+
         log.init('Application ready');
     } catch (error) {
         showError('Initialisierung fehlgeschlagen: ' + error.message);
@@ -1279,10 +1296,18 @@ async function initializeTimeline() {
 
 // Update statistics in navbar
 function updateStats(meta) {
-    //     document.getElementById('stat-letters').textContent = '15.312 Briefe';
-    //     document.getElementById('stat-women').textContent = `${meta.total_women.toLocaleString('de-DE')} Frauen`;
-    //     document.getElementById('stat-places').textContent = '633 Orte';
-    // Stats now in sidebar, no navbar update needed
+    // Update Data Coverage Info Box in Sidebar
+    const visibleEl = document.getElementById('map-visible-count');
+    const missingEl = document.getElementById('map-missing-count');
+    
+    if (visibleEl && meta.with_geodata) {
+        visibleEl.textContent = meta.with_geodata;
+    }
+    
+    if (missingEl && meta.total_women && meta.with_geodata) {
+        const missing = meta.total_women - meta.with_geodata;
+        missingEl.textContent = missing;
+    }
 }
 
 // Hide loading message

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Benutzungshinweise und Erklärungen zur Datenabdeckung bei HerData">
+    <title>Hilfe & Benutzung - HerData</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/howto.css">
+</head>
+<body>
+    <!-- Global Navigation -->
+    <div id="navbar-placeholder"></div>
+
+    <main class="howto-container">
+        <a href="index.html" class="howto-back"><i class="fas fa-arrow-left"></i> Zurück zur Karte</a>
+
+        <header class="howto-header">
+            <h1>Hilfe & Benutzung</h1>
+        </header>
+
+        <div class="howto-content">
+            <div class="info-box">
+                <h3>Über HerData</h3>
+                <p>HerData visualisiert die Frauen im Korrespondenznetzwerk von Johann Wolfgang von Goethe (1762-1824). Das Projekt verknüpft Briefdaten (CMIF) mit biographischen Normdaten (SNDB).</p>
+            </div>
+
+            <h2>Warum sehe ich nicht alle Personen auf der Karte?</h2>
+            
+            <div class="stats-highlight">
+                <div class="stat-item">
+                    <span class="stat-number">448</span>
+                    <span class="stat-desc">Frauen gesamt im Datensatz</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">227</span>
+                    <span class="stat-desc">Auf der Karte sichtbar (51%)</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">221</span>
+                    <span class="stat-desc">Nur über Suche/Liste auffindbar</span>
+                </div>
+            </div>
+
+            <p><strong>Nicht alle historischen Personen haben bekannte Aufenthaltsorte.</strong></p>
+            <p>Rund die Hälfte der Frauen in unserer Datenbank (49%) hat in den biographischen Quellen keine strukturierte Ortsangabe (wie Geburts- oder Sterbeort). Diese Personen können daher nicht auf der Karte dargestellt werden.</p>
+            
+            <div class="info-box info-box-warning">
+                <strong>Wichtig:</strong> Dass eine Person nicht auf der Karte erscheint, bedeutet nicht, dass sie "weniger wichtig" ist. Es fehlen uns lediglich strukturierte Geodaten für die Visualisierung.
+            </div>
+
+            <h3>Wie finde ich Personen ohne Geodaten?</h3>
+            <p>Sie haben zwei Möglichkeiten, den vollständigen Datensatz zu durchsuchen:</p>
+            <ul>
+                <li><strong>Globale Suche:</strong> Nutzen Sie das Suchfeld oben rechts ("Suche nach Name..."). Hier sind alle 448 Personen enthalten.</li>
+                <li><strong>Personenliste:</strong> Klicken Sie auf <a href="synthesis/index.html">Personen</a> in der Navigation, um die vollständige alphabetische Tabelle aller Frauen zu sehen.</li>
+            </ul>
+
+            <h2>Funktionen der Karte</h2>
+            
+            <h3>Farbkodierung</h3>
+            <p>Die Punkte auf der Karte sind nach der Rolle der Person im Netzwerk eingefärbt:</p>
+            <ul>
+                <li><i class="fas fa-circle" style="color: var(--color-role-sender);"></i> <strong>Absenderin:</strong> Hat Briefe an Goethe geschrieben.</li>
+                <li><i class="fas fa-circle" style="color: var(--color-role-mentioned);"></i> <strong>Erwähnt:</strong> Wird in Briefen an Goethe erwähnt.</li>
+                <li><i class="fas fa-circle" style="color: var(--color-role-both);"></i> <strong>Beides:</strong> Tritt sowohl als Absenderin als auch als Erwähnte auf.</li>
+            </ul>
+
+            <h3>Filterung</h3>
+            <p>Nutzen Sie die Seitenleiste (links), um die Ansicht anzupassen:</p>
+            <ul>
+                <li><strong>Zeitfilter:</strong> Schieben Sie die Regler, um nur Personen anzuzeigen, die in einem bestimmten Zeitraum aktiv waren (Korrespondenz oder Lebensdaten).</li>
+                <li><strong>Berufsgruppen:</strong> Filtern Sie nach sozialen Rollen (z.B. "Künstlerisch tätig", "Hofgesellschaft").</li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/navbar-loader.js" type="module"></script>
+</body>
+</html>

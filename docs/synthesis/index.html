@@ -78,6 +78,17 @@
 
             <!-- Center: Data Table -->
             <section class="data-table-container">
+                <!-- Table Header / Toolbar -->
+                <div class="table-toolbar" style="padding: 12px 16px; background: var(--color-bg-alt); border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                     <div class="result-count" style="font-weight: 600; color: var(--color-text);"><span id="visible-count">448</span> Personen</div>
+                     <div class="table-legend" style="font-size: 0.8rem; color: var(--color-text-muted); display: flex; gap: 12px; align-items: center;">
+                        <span style="display: flex; align-items: center;"><span style="display:inline-block; width:8px; height:8px; background:var(--color-role-sender); border-radius:50%; margin-right:4px;"></span>Absenderin</span>
+                        <span style="display: flex; align-items: center;"><span style="display:inline-block; width:8px; height:8px; background:var(--color-role-mentioned); border-radius:50%; margin-right:4px;"></span>Erwähnt</span>
+                        <span style="display: flex; align-items: center;"><span style="display:inline-block; width:8px; height:8px; background:var(--color-role-both); border-radius:50%; margin-right:4px;"></span>Beides</span>
+                        <span style="display: flex; align-items: center;"><span style="display:inline-block; width:8px; height:8px; background:var(--color-role-indirect); border-radius:50%; margin-right:4px;"></span>SNDB</span>
+                     </div>
+                </div>
+
                 <div class="table-wrapper">
                     <table id="data-table">
                         <thead>
@@ -99,17 +110,6 @@
                 </div>
             </aside>
         </main>
-
-        <!-- Footer Legend -->
-        <footer class="app-footer">
-            <div class="footer-content">
-                <span class="footer-label">Rollen:</span>
-                <span class="role-badge sender">Absenderin</span> = Briefautorin •
-                <span class="role-badge mentioned">Erwähnt</span> = in Briefen erwähnt •
-                <span class="role-badge both">Beides</span> = Absenderin & erwähnt •
-                <span class="role-badge indirect">SNDB</span> = nur biografische Datenbank
-            </div>
-        </footer>
     </div>
 
     <!-- noUiSlider JS -->

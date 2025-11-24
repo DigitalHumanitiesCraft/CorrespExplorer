@@ -1,0 +1,20 @@
+:root {
+    /* Modern Classicism Palette */
+    --primary-color: #2C3E50;      /* Deep Prussian Blue */
+    --accent-color: #D35400;       /* Subtle Terracotta */
+    --bg-body: #F9F9F9;            /* Off-White/Paper */
+    --bg-card: #FFFFFF;            /* Pure White */
+    --text-main: #333333;          /* Main Text */
+    
+    /* Mapping to existing system (Backwards Compatibility) */
+    --color-primary: var(--primary-color);
+    --color-secondary: var(--primary-color); /* Use Primary for secondary/links too unless specified */
+    --color-accent: var(--accent-color);
+    --color-text: var(--text-main);
+    --color-bg: var(--bg-card);
+    --color-bg-light: var(--bg-body);
+    
+    /* Typography */
+    --font-headings: 'Merriweather', serif;
+    --font-base: 'Lato', 'Inter', sans-serif;
+}

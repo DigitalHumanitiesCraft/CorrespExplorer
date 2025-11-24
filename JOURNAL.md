@@ -84,3 +84,20 @@ Entscheidungen:
 - sent_years/mentioned_years werden intern getrennt, aber nicht ins JSON exportiert
 - letter_years bleibt als kombiniertes Feld für UI-Kompatibilität
 - Timeline basiert ausschließlich auf unique sent letters für wissenschaftliche Korrektheit
+
+### Geodaten-Transparenz geschaffen
+
+Adressierung des Problems der "unsichtbaren Frauen" (ca. 50% ohne Koordinaten).
+
+Problem:
+- 227 Frauen (51%) haben Geodaten und sind auf der Karte sichtbar
+- 221 Frauen (49%) haben KEINE strukturierten Orte in SNDB → unsichtbar auf Map
+- Nutzer könnten fälschlicherweise annehmen, diese Personen seien irrelevant
+
+Lösung:
+- UI-Erweiterung (Map Explorer): "Data Coverage Info Box" in Sidebar zeigt transparent "Auf Karte: 227 / Ohne Geodaten: 221"
+- Neue Hilfe-Seite (`docs/how-to.html`): Erklärt Datenlage und gibt Handlungsanweisung (Suche nutzen)
+- Navigation: Link zu "Hilfe" global hinzugefügt
+- Konsistenz: Design-Tokens verwendet (`docs/css/howto.css`)
+
+Status: Implementiert und deployed.
