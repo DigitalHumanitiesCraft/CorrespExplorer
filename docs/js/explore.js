@@ -764,23 +764,66 @@ function updatePersonFilterDisplay() {
     }
 }
 
-// Update filter counts
+// Update filter counts based on current filters (excluding language filter)
 function updateFilterCounts() {
-    // Count letters per language
+    // Get current filter state excluding language
+    const yearRange = getYearRangeValues();
+    const personFilters = currentPersonFilter ? [currentPersonFilter] : [];
+    const topicFilters = currentSubjectFilter ? [currentSubjectFilter] : [];
+
+    // Filter letters without language constraint to show potential counts
+    const lettersWithoutLanguageFilter = allLetters.filter(letter => {
+        // Year filter
+        if (yearRange) {
+            const year = letter.year;
+            if (!year || year < yearRange[0] || year > yearRange[1]) return false;
+        }
+
+        // Person filter
+        if (personFilters.length > 0) {
+            const senderId = letter.sender?.id || letter.sender?.name;
+            const recipientId = letter.recipient?.id || letter.recipient?.name;
+            if (!personFilters.includes(senderId) && !personFilters.includes(recipientId)) return false;
+        }
+
+        // Topic filter
+        if (topicFilters.length > 0) {
+            const subjects = letter.mentions?.subjects || [];
+            const hasSubject = subjects.some(s => topicFilters.includes(s.uri));
+            if (!hasSubject) return false;
+        }
+
+        return true;
+    });
+
+    // Count letters per language in the filtered set
     const languageCounts = {};
-    filteredLetters.forEach(letter => {
+    lettersWithoutLanguageFilter.forEach(letter => {
         if (letter.language?.code) {
             languageCounts[letter.language.code] = (languageCounts[letter.language.code] || 0) + 1;
         }
     });
 
-    // Update count displays
-    Object.keys(languageCounts).forEach(code => {
+    // Update all language count displays
+    const allLanguageCheckboxes = document.querySelectorAll('input[name="language"]');
+    allLanguageCheckboxes.forEach(cb => {
+        const code = cb.value;
         const el = document.getElementById(`count-lang-${code}`);
         if (el) {
-            el.textContent = `(${languageCounts[code]})`;
+            const count = languageCounts[code] || 0;
+            el.textContent = `(${count})`;
         }
     });
+}
+
+// Get year range values from slider
+function getYearRangeValues() {
+    const slider = document.getElementById('year-range-slider');
+    if (slider && slider.noUiSlider) {
+        const values = slider.noUiSlider.get();
+        return [parseInt(values[0]), parseInt(values[1])];
+    }
+    return null;
 }
 
 function getCheckedValues(name) {
