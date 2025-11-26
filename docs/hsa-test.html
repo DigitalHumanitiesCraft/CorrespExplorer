@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSA Data Test</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        h1 { color: #333; }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #2563eb;
+        }
+        .stat {
+            display: inline-block;
+            margin: 0.5rem 1rem 0.5rem 0;
+            padding: 0.5rem 1rem;
+            background: #e0e7ff;
+            border-radius: 4px;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e40af;
+        }
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th { background: #f9fafb; }
+        .success { color: #059669; }
+        .error { color: #dc2626; }
+        #log {
+            font-family: monospace;
+            font-size: 0.875rem;
+            background: #1f2937;
+            color: #10b981;
+            padding: 1rem;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        #log .error { color: #f87171; }
+    </style>
+</head>
+<body>
+    <h1>HSA-CMIF Datentest</h1>
+
+    <div class="card">
+        <h2>Ladestatus</h2>
+        <div id="status">Laden...</div>
+    </div>
+
+    <div class="card">
+        <h2>Metadaten</h2>
+        <div id="meta"></div>
+    </div>
+
+    <div class="card">
+        <h2>Top 10 Sender</h2>
+        <table id="senders">
+            <thead><tr><th>Name</th><th>VIAF</th><th>Briefe gesendet</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Top 10 Orte</h2>
+        <table id="places">
+            <thead><tr><th>Ort</th><th>GeoNames ID</th><th>Briefe</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Sprachen</h2>
+        <table id="languages">
+            <thead><tr><th>Code</th><th>Sprache</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Beispiel-Brief</h2>
+        <pre id="sample-letter"></pre>
+    </div>
+
+    <div class="card">
+        <h2>Konsolen-Log</h2>
+        <div id="log"></div>
+    </div>
+
+    <script type="module">
+        const log = document.getElementById('log');
+        const status = document.getElementById('status');
+
+        function logMessage(msg, isError = false) {
+            const line = document.createElement('div');
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            if (isError) line.className = 'error';
+            log.appendChild(line);
+            console.log(msg);
+        }
+
+        async function loadAndTest() {
+            try {
+                logMessage('Fetching data/hsa-letters.json...');
+                const response = await fetch('data/hsa-letters.json');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                logMessage('Parsing JSON...');
+                const data = await response.json();
+
+                // Validierung
+                logMessage('Validating data structure...');
+
+                if (!data.meta) throw new Error('Missing meta object');
+                if (!data.letters) throw new Error('Missing letters array');
+                if (!data.indices) throw new Error('Missing indices object');
+
+                logMessage(`Found ${data.letters.length} letters`);
+                logMessage(`Found ${Object.keys(data.indices.persons).length} persons in index`);
+                logMessage(`Found ${Object.keys(data.indices.places).length} places in index`);
+                logMessage(`Found ${Object.keys(data.indices.subjects).length} subjects in index`);
+
+                // Status
+                status.innerHTML = '<span class="success">Daten erfolgreich geladen</span>';
+
+                // Meta anzeigen
+                const meta = data.meta;
+                document.getElementById('meta').innerHTML = `
+                    <div class="stat"><span class="stat-value">${meta.total_letters.toLocaleString()}</span><br><span class="stat-label">Briefe</span></div>
+                    <div class="stat"><span class="stat-value">${meta.unique_senders}</span><br><span class="stat-label">Sender</span></div>
+                    <div class="stat"><span class="stat-value">${meta.unique_recipients}</span><br><span class="stat-label">Empfänger</span></div>
+                    <div class="stat"><span class="stat-value">${meta.unique_places}</span><br><span class="stat-label">Orte</span></div>
+                    <div class="stat"><span class="stat-value">${meta.unique_subjects}</span><br><span class="stat-label">Subjects</span></div>
+                    <div class="stat"><span class="stat-value">${meta.languages}</span><br><span class="stat-label">Sprachen</span></div>
+                    <div class="stat"><span class="stat-value">${meta.date_range.min}-${meta.date_range.max}</span><br><span class="stat-label">Zeitraum</span></div>
+                `;
+
+                // Top Sender
+                const sendersSorted = Object.entries(data.indices.persons)
+                    .filter(([id, p]) => p.letters_sent > 0)
+                    .sort((a, b) => b[1].letters_sent - a[1].letters_sent)
+                    .slice(0, 10);
+
+                const sendersBody = document.querySelector('#senders tbody');
+                sendersBody.innerHTML = sendersSorted.map(([id, p]) =>
+                    `<tr><td>${p.name}</td><td><a href="https://viaf.org/viaf/${p.viaf}" target="_blank">${p.viaf}</a></td><td>${p.letters_sent}</td></tr>`
+                ).join('');
+
+                // Top Orte
+                const placesSorted = Object.entries(data.indices.places)
+                    .sort((a, b) => b[1].letter_count - a[1].letter_count)
+                    .slice(0, 10);
+
+                const placesBody = document.querySelector('#places tbody');
+                placesBody.innerHTML = placesSorted.map(([id, p]) =>
+                    `<tr><td>${p.name}</td><td><a href="https://www.geonames.org/${p.geonames_id}" target="_blank">${p.geonames_id || '-'}</a></td><td>${p.letter_count}</td></tr>`
+                ).join('');
+
+                // Sprachen
+                const langsBody = document.querySelector('#languages tbody');
+                langsBody.innerHTML = Object.entries(data.indices.languages)
+                    .map(([code, label]) => `<tr><td>${code}</td><td>${label}</td></tr>`)
+                    .join('');
+
+                // Beispiel-Brief
+                const sampleLetter = data.letters.find(l =>
+                    l.mentions.subjects.length > 0 &&
+                    l.mentions.persons.length > 0
+                );
+                document.getElementById('sample-letter').textContent =
+                    JSON.stringify(sampleLetter, null, 2);
+
+                logMessage('All tests passed');
+
+                // Globale Variable für Konsolen-Debugging
+                window.hsaData = data;
+                logMessage('Data available as window.hsaData');
+
+            } catch (error) {
+                status.innerHTML = `<span class="error">Fehler: ${error.message}</span>`;
+                logMessage(error.message, true);
+            }
+        }
+
+        loadAndTest();
+    </script>
+</body>
+</html>

@@ -1,0 +1,4756 @@
+{
+  "meta": {
+    "source": "Wikidata SPARQL",
+    "total_requested": 949,
+    "total_resolved": 791,
+    "coverage_pct": 83.4
+  },
+  "coordinates": {
+    "2363686": {
+      "lat": 8.25,
+      "lon": 1.183333,
+      "label_en": "Togo",
+      "label_de": "Togo"
+    },
+    "3169778": {
+      "lat": 41.008611111111,
+      "lon": 16.512777777778,
+      "label_en": "Apulia",
+      "label_de": "Apulien"
+    },
+    "3031582": {
+      "lat": 44.837777777778,
+      "lon": -0.57944444444444,
+      "label_en": "Bordeaux",
+      "label_de": "Bordeaux"
+    },
+    "1609350": {
+      "lat": 13.75,
+      "lon": 100.51666666667,
+      "label_en": "Bangkok",
+      "label_de": "Bangkok"
+    },
+    "2892518": {
+      "lat": 51.315777777778,
+      "lon": 9.4979166666667,
+      "label_en": "Kassel",
+      "label_de": "Kassel"
+    },
+    "573081": {
+      "lat": 42.5,
+      "lon": 45.0,
+      "label_en": "Caucasus Mountains",
+      "label_de": "Kaukasus"
+    },
+    "3191281": {
+      "lat": 43.856388888889,
+      "lon": 18.413055555556,
+      "label_en": "Sarajevo",
+      "label_de": "Sarajevo"
+    },
+    "2267430": {
+      "lat": 40.24,
+      "lon": -4.2391666666667,
+      "label_en": "Iberian Peninsula",
+      "label_de": "Iberische Halbinsel"
+    },
+    "3170621": {
+      "lat": 43.933333333333,
+      "lon": 10.916666666667,
+      "label_en": "Pistoia",
+      "label_de": "Pistoia"
+    },
+    "2614165": {
+      "lat": 64.779642,
+      "lon": 14.760936,
+      "label_en": "Scandinavia",
+      "label_de": "Skandinavien"
+    },
+    "4335045": {
+      "lat": 29.976111111111,
+      "lon": -90.078333333333,
+      "label_en": "New Orleans",
+      "label_de": "New Orleans"
+    },
+    "2965140": {
+      "lat": 51.9,
+      "lon": -8.4730555555556,
+      "label_en": "Cork",
+      "label_de": "Cork"
+    },
+    "706483": {
+      "lat": 49.9925,
+      "lon": 36.231111111111,
+      "label_en": "Kharkiv",
+      "label_de": "Charkiw"
+    },
+    "415189": {
+      "lat": 12.8,
+      "lon": 45.033333333333,
+      "label_en": "Aden",
+      "label_de": "Aden"
+    },
+    "3033791": {
+      "lat": 47.6375,
+      "lon": 6.8627777777778,
+      "label_en": "Belfort",
+      "label_de": "Belfort"
+    },
+    "6692189": {
+      "lat": 46.442,
+      "lon": 6.894,
+      "label_en": "Clarens",
+      "label_de": "Clarens"
+    },
+    "681291": {
+      "lat": 46.775,
+      "lon": 23.5917,
+      "label_en": "Cluj County",
+      "label_de": "Kreis Cluj"
+    },
+    "4914570": {
+      "lat": 40.109722222222,
+      "lon": -88.204166666667,
+      "label_en": "Urbana",
+      "label_de": "Urbana"
+    },
+    "3202210": {
+      "lat": 43.812761,
+      "lon": 16.218756,
+      "label_en": "Dalmatia",
+      "label_de": "Dalmatien"
+    },
+    "2671224": {
+      "lat": 58.944138339176,
+      "lon": 11.186365606903,
+      "label_en": "Strömstad",
+      "label_de": "Strömstad"
+    },
+    "3036596": {
+      "lat": 43.345277777778,
+      "lon": -1.6208333333333,
+      "label_en": null,
+      "label_de": null
+    },
+    "8984096": {
+      "lat": 46.48772,
+      "lon": 11.81358,
+      "label_en": "Pordoi Pass",
+      "label_de": "Pordoijoch"
+    },
+    "2623188": {
+      "lat": 55.751111111111,
+      "lon": 12.571944444444,
+      "label_en": "Charlottenlund",
+      "label_de": "Charlottenlund"
+    },
+    "2782052": {
+      "lat": 47.713,
+      "lon": 13.62167,
+      "label_en": "Bad Ischl",
+      "label_de": "Bad Ischl"
+    },
+    "2779640": {
+      "lat": 46.526666666667,
+      "lon": 14.300833333333,
+      "label_en": "Ferlach",
+      "label_de": "Ferlach"
+    },
+    "2766340": {
+      "lat": 47.73979,
+      "lon": 13.44589,
+      "label_en": "Sankt Wolfgang im Salzkammergut",
+      "label_de": "Sankt Wolfgang im Salzkammergut"
+    },
+    "2778436": {
+      "lat": 47.91922,
+      "lon": 13.79909,
+      "label_en": "Gmunden",
+      "label_de": "Gmunden"
+    },
+    "2768497": {
+      "lat": 46.63594,
+      "lon": 14.15452,
+      "label_en": "Pörtschach am Wörther See",
+      "label_de": "Pörtschach am Wörther See"
+    },
+    "2513052": {
+      "lat": 37.23757134,
+      "lon": -5.10120623,
+      "label_en": "Osuna",
+      "label_de": "Osuna"
+    },
+    "2525012": {
+      "lat": 39.5166,
+      "lon": 15.94158,
+      "label_en": "Cetraro",
+      "label_de": "Cetraro"
+    },
+    "3176836": {
+      "lat": 46.4388,
+      "lon": 11.13723,
+      "label_en": "Fondo",
+      "label_de": "Fondo"
+    },
+    "2953410": {
+      "lat": 51.6248,
+      "lon": 10.4596,
+      "label_en": "Bad Lauterberg im Harz",
+      "label_de": "Bad Lauterberg im Harz"
+    },
+    "2953350": {
+      "lat": 51.688,
+      "lon": 12.7374,
+      "label_en": "Bad Schmiedeberg",
+      "label_de": "Bad Schmiedeberg"
+    },
+    "2929670": {
+      "lat": 50.9787,
+      "lon": 11.03283,
+      "label_en": "Erfurt",
+      "label_de": "Erfurt"
+    },
+    "2811909": {
+      "lat": 49.0305748,
+      "lon": 10.9718974,
+      "label_en": "Weißenburg in Bayern",
+      "label_de": "Weißenburg in Bayern"
+    },
+    "3171541": {
+      "lat": 46.53202,
+      "lon": 13.01586,
+      "label_en": "Paluzza",
+      "label_de": "Paluzza"
+    },
+    "3170943": {
+      "lat": 40.62806,
+      "lon": 14.41729,
+      "label_en": "Piano di Sorrento",
+      "label_de": "Piano di Sorrento"
+    },
+    "2771922": {
+      "lat": 47.07398,
+      "lon": 15.02358,
+      "label_en": "Maria Lankowitz",
+      "label_de": null
+    },
+    "2814266": {
+      "lat": 53.79,
+      "lon": 7.8994444444444,
+      "label_en": "Wangerooge",
+      "label_de": null
+    },
+    "3171058": {
+      "lat": 45.05242,
+      "lon": 9.69342,
+      "label_en": null,
+      "label_de": null
+    },
+    "3169522": {
+      "lat": 44.69825,
+      "lon": 10.63125,
+      "label_en": null,
+      "label_de": null
+    },
+    "2661604": {
+      "lat": 47.55839,
+      "lon": 7.57327,
+      "label_en": null,
+      "label_de": null
+    },
+    "2634895": {
+      "lat": 52.35,
+      "lon": -3.6333333333333,
+      "label_en": "Wales",
+      "label_de": "Wales"
+    },
+    "4140963": {
+      "lat": 38.895,
+      "lon": -77.036666666667,
+      "label_en": "Washington, D.C.",
+      "label_de": "Washington, D.C."
+    },
+    "3469034": {
+      "lat": -14.0,
+      "lon": -53.0,
+      "label_en": "Brazil",
+      "label_de": "Brasilien"
+    },
+    "798549": {
+      "lat": 46.0,
+      "lon": 25.0,
+      "label_en": "Romania",
+      "label_de": "Rumänien"
+    },
+    "1269750": {
+      "lat": 22.8,
+      "lon": 83.0,
+      "label_en": "India",
+      "label_de": "Indien"
+    },
+    "3686110": {
+      "lat": 4.0,
+      "lon": -73.25,
+      "label_en": "Colombia",
+      "label_de": "Kolumbien"
+    },
+    "4155751": {
+      "lat": 28.133333333333,
+      "lon": -81.631666666667,
+      "label_en": "Florida",
+      "label_de": "Florida"
+    },
+    "2911298": {
+      "lat": 53.55,
+      "lon": 10.0,
+      "label_en": "Hamburg",
+      "label_de": "Hamburg"
+    },
+    "2945356": {
+      "lat": 52.394555555556,
+      "lon": 13.060333333333,
+      "label_en": "Brandenburg",
+      "label_de": "Brandenburg"
+    },
+    "2618425": {
+      "lat": 55.676111111111,
+      "lon": 12.568888888889,
+      "label_en": "Copenhagen",
+      "label_de": "Kopenhagen"
+    },
+    "3203982": {
+      "lat": 45.898888888889,
+      "lon": 16.842222222222,
+      "label_en": "Bjelovar",
+      "label_de": "Bjelovar"
+    },
+    "2593109": {
+      "lat": 37.405,
+      "lon": -5.9875,
+      "label_en": "Andalusia",
+      "label_de": "Andalusien"
+    },
+    "3176317": {
+      "lat": 45.633333333333,
+      "lon": 10.666666666667,
+      "label_en": "Lake Garda",
+      "label_de": "Gardasee"
+    },
+    "2995469": {
+      "lat": 43.29695,
+      "lon": 5.38107,
+      "label_en": null,
+      "label_de": null
+    },
+    "4035413": {
+      "lat": -13.833333333333,
+      "lon": -171.83333333333,
+      "label_en": "Apia",
+      "label_de": "Apia"
+    },
+    "170063": {
+      "lat": 36.2,
+      "lon": 37.16,
+      "label_en": "Aleppo",
+      "label_de": "Aleppo"
+    },
+    "2657832": {
+      "lat": 57.15,
+      "lon": -2.1,
+      "label_en": "Aberdeen",
+      "label_de": "Aberdeen"
+    },
+    "2751773": {
+      "lat": 52.16,
+      "lon": 4.49,
+      "label_en": "Leiden",
+      "label_de": "Leiden"
+    },
+    "2991214": {
+      "lat": 47.748611111111,
+      "lon": 7.3391666666667,
+      "label_en": "Mulhouse",
+      "label_de": "Mülhausen"
+    },
+    "3202641": {
+      "lat": 42.389444444444,
+      "lon": 18.924722222222,
+      "label_en": "Cetinje",
+      "label_de": "Cetinje"
+    },
+    "2996882": {
+      "lat": 46.306666666667,
+      "lon": 4.8319444444444,
+      "label_en": "Mâcon",
+      "label_de": "Mâcon"
+    },
+    "2657906": {
+      "lat": 47.139166666667,
+      "lon": 8.5383333333333,
+      "label_en": "Zugerberg",
+      "label_de": "Zugerberg"
+    },
+    "2657988": {
+      "lat": 47.199722222222,
+      "lon": 9.3497222222222,
+      "label_en": "Wildhaus",
+      "label_de": "Wildhaus"
+    },
+    "7872993": {
+      "lat": 47.691666666667,
+      "lon": 15.862777777778,
+      "label_en": "Payerbach",
+      "label_de": "Payerbach"
+    },
+    "723120": {
+      "lat": 49.166666666667,
+      "lon": 20.133333333333,
+      "label_en": "High Tatras",
+      "label_de": "Hohe Tatra"
+    },
+    "3016485": {
+      "lat": 42.732222222222,
+      "lon": -0.0094444444444444,
+      "label_en": "Gavarnie",
+      "label_de": "Gavarnie"
+    },
+    "2523227": {
+      "lat": 40.05,
+      "lon": 9.0833333333333,
+      "label_en": "Sardinia",
+      "label_de": "Sardinien"
+    },
+    "2779007": {
+      "lat": 47.4697891,
+      "lon": 10.4759937,
+      "label_en": "Gaishorn",
+      "label_de": "Gaishorn"
+    },
+    "2766459": {
+      "lat": 46.700833333333,
+      "lon": 14.869444444444,
+      "label_en": "Sankt Paul im Lavanttal",
+      "label_de": "St. Paul im Lavanttal"
+    },
+    "3110044": {
+      "lat": 43.29181,
+      "lon": -1.98851,
+      "label_en": "Donostia-San Sebastián",
+      "label_de": "Donostia-San Sebastián"
+    },
+    "2825186": {
+      "lat": 54.63333,
+      "lon": 9.78333,
+      "label_en": "Süderbrarup",
+      "label_de": "Süderbrarup"
+    },
+    "2929567": {
+      "lat": 49.5928616,
+      "lon": 11.0056,
+      "label_en": "Erlangen",
+      "label_de": "Erlangen"
+    },
+    "2890158": {
+      "lat": 49.7339751,
+      "lon": 10.161216,
+      "label_en": "Kitzingen",
+      "label_de": "Kitzingen"
+    },
+    "673619": {
+      "lat": 44.905243,
+      "lon": 22.367303,
+      "label_en": "Mehadia",
+      "label_de": null
+    },
+    "2774347": {
+      "lat": 47.44726,
+      "lon": 12.41496,
+      "label_en": "Kitzbühel",
+      "label_de": null
+    },
+    "2766155": {
+      "lat": 48.45801,
+      "lon": 13.43156,
+      "label_en": "Schärding",
+      "label_de": null
+    },
+    "2765581": {
+      "lat": 47.07092,
+      "lon": 9.94746,
+      "label_en": "Schruns",
+      "label_de": null
+    },
+    "2661527": {
+      "lat": 46.25214,
+      "lon": 7.01141,
+      "label_en": null,
+      "label_de": null
+    },
+    "2735943": {
+      "lat": 41.15556,
+      "lon": -8.62672,
+      "label_en": "Porto",
+      "label_de": null
+    },
+    "3175986": {
+      "lat": 45.94088,
+      "lon": 13.62167,
+      "label_en": null,
+      "label_de": null
+    },
+    "3196359": {
+      "lat": 46.051388888889,
+      "lon": 14.506111111111,
+      "label_en": "Ljubljana",
+      "label_de": "Ljubljana"
+    },
+    "3093133": {
+      "lat": 51.75,
+      "lon": 19.466666666667,
+      "label_en": "Łódź",
+      "label_de": "Łódź"
+    },
+    "264371": {
+      "lat": 37.984166666667,
+      "lon": 23.728055555556,
+      "label_en": "Athens",
+      "label_de": "Athen"
+    },
+    "4347778": {
+      "lat": 39.286388888889,
+      "lon": -76.615,
+      "label_en": "Baltimore",
+      "label_de": "Baltimore"
+    },
+    "2332459": {
+      "lat": 6.5833333333333,
+      "lon": 3.75,
+      "label_en": "Lagos State",
+      "label_de": "Lagos"
+    },
+    "2524169": {
+      "lat": 38.183333333333,
+      "lon": 15.55,
+      "label_en": "Metropolitan City of Messina",
+      "label_de": "Metropolitanstadt Messina"
+    },
+    "3165241": {
+      "lat": 46.0664228,
+      "lon": 11.1257601,
+      "label_en": "Trentino",
+      "label_de": "Trentino"
+    },
+    "935317": {
+      "lat": -21.114444444444,
+      "lon": 55.5325,
+      "label_en": "Réunion",
+      "label_de": "Réunion"
+    },
+    "3036938": {
+      "lat": 43.676944444444,
+      "lon": 4.6286111111111,
+      "label_en": "Arles",
+      "label_de": "Arles"
+    },
+    "2661321": {
+      "lat": 47.056666666667,
+      "lon": 7.6263888888889,
+      "label_en": "Burgdorf",
+      "label_de": "Burgdorf"
+    },
+    "2659900": {
+      "lat": 46.333333333333,
+      "lon": 7.0,
+      "label_en": "Leysin",
+      "label_de": "Leysin"
+    },
+    "2967934": {
+      "lat": 48.8,
+      "lon": 2.1722222222222,
+      "label_en": "Viroflay",
+      "label_de": "Viroflay"
+    },
+    "3573592": {
+      "lat": 10.460555555556,
+      "lon": -61.248611111111,
+      "label_en": "Trinidad",
+      "label_de": "Trinidad"
+    },
+    "2485926": {
+      "lat": 35.696944444444,
+      "lon": -0.63305555555556,
+      "label_en": "Oran",
+      "label_de": "Oran"
+    },
+    "3034475": {
+      "lat": 43.48333,
+      "lon": -1.48333,
+      "label_en": null,
+      "label_de": null
+    },
+    "2998975": {
+      "lat": 48.893333333333,
+      "lon": 2.2877777777778,
+      "label_en": "Levallois-Perret",
+      "label_de": "Levallois-Perret"
+    },
+    "3012937": {
+      "lat": 43.118888888889,
+      "lon": 6.1286111111111,
+      "label_en": "Hyères",
+      "label_de": "Hyères"
+    },
+    "2781423": {
+      "lat": 47.00707,
+      "lon": 11.50653,
+      "label_en": "Brenner Pass",
+      "label_de": "Brennerpass"
+    },
+    "2262744": {
+      "lat": 37.127222222222,
+      "lon": -7.6486111111111,
+      "label_en": "Tavira",
+      "label_de": null
+    },
+    "2395752": {
+      "lat": 6.25,
+      "lon": 1.68333333,
+      "label_en": "Agué",
+      "label_de": "Agué"
+    },
+    "2658284": {
+      "lat": 47.0927,
+      "lon": 7.1609,
+      "label_en": "Twann",
+      "label_de": "Twann"
+    },
+    "2995268": {
+      "lat": 43.388888888889,
+      "lon": -1.0958333333333,
+      "label_en": "Masparraute",
+      "label_de": null
+    },
+    "3055368": {
+      "lat": 45.96,
+      "lon": 17.46,
+      "label_en": "Barcs",
+      "label_de": "Barcs"
+    },
+    "2619807": {
+      "lat": 56.0875,
+      "lon": 12.4587,
+      "label_en": "Hornbæk",
+      "label_de": "Hornbæk"
+    },
+    "3187915": {
+      "lat": 44.52105,
+      "lon": 14.50169722,
+      "label_en": "Veli Lošinj",
+      "label_de": "Veli Lošinj"
+    },
+    "4566967": {
+      "lat": 18.2,
+      "lon": -66.4,
+      "label_en": "Puerto Rico",
+      "label_de": "Puerto Rico"
+    },
+    "2750053": {
+      "lat": 51.8425,
+      "lon": 5.85278,
+      "label_en": "Nijmegen",
+      "label_de": "Nimwegen"
+    },
+    "2764958": {
+      "lat": 47.28121,
+      "lon": 11.50225,
+      "label_en": "Hall in Tirol",
+      "label_de": "Hall in Tirol"
+    },
+    "3129239": {
+      "lat": 43.28174,
+      "lon": -1.94634,
+      "label_en": "Astigarraga",
+      "label_de": "Astigarraga"
+    },
+    "3177532": {
+      "lat": 46.1165,
+      "lon": 8.29313,
+      "label_en": "Domodossola",
+      "label_de": "Domodossola"
+    },
+    "2977299": {
+      "lat": 48.65,
+      "lon": -2.8305555555556,
+      "label_en": "Saint-Quay-Portrieux",
+      "label_de": "Saint-Quay-Portrieux"
+    },
+    "2939951": {
+      "lat": 50.258112,
+      "lon": 10.964463,
+      "label_en": "Coburg",
+      "label_de": "Coburg"
+    },
+    "3177102": {
+      "lat": 41.69119,
+      "lon": 13.2562,
+      "label_en": "Ferentino",
+      "label_de": "Ferentino"
+    },
+    "2950881": {
+      "lat": 47.632222222222,
+      "lon": 13.001944444444,
+      "label_en": "Berchtesgaden",
+      "label_de": "Berchtesgaden"
+    },
+    "2812482": {
+      "lat": 50.97361,
+      "lon": 11.33806,
+      "label_en": "Weimar",
+      "label_de": "Weimar"
+    },
+    "2856278": {
+      "lat": 49.703888888889,
+      "lon": 8.3241666666667,
+      "label_en": "Osthofen",
+      "label_de": "Osthofen"
+    },
+    "2843355": {
+      "lat": 50.713,
+      "lon": 11.3186,
+      "label_en": "Rudolstadt",
+      "label_de": "Rudolstadt"
+    },
+    "2624535": {
+      "lat": 55.4711,
+      "lon": 9.0939,
+      "label_en": "Askov",
+      "label_de": null
+    },
+    "3171728": {
+      "lat": 45.41519,
+      "lon": 11.88181,
+      "label_en": "Padova",
+      "label_de": null
+    },
+    "2732241": {
+      "lat": 41.376128805327,
+      "lon": -8.3114044970115,
+      "label_en": "Vizela",
+      "label_de": null
+    },
+    "3182210": {
+      "lat": 46.14262,
+      "lon": 12.2156,
+      "label_en": null,
+      "label_de": null
+    },
+    "3170647": {
+      "lat": 43.70853,
+      "lon": 10.4036,
+      "label_en": null,
+      "label_de": null
+    },
+    "3181928": {
+      "lat": 44.49381,
+      "lon": 11.33875,
+      "label_en": null,
+      "label_de": null
+    },
+    "2661241": {
+      "lat": 46.51452,
+      "lon": 9.8583,
+      "label_en": null,
+      "label_de": null
+    },
+    "2950159": {
+      "lat": 52.516666666667,
+      "lon": 13.383333333333,
+      "label_en": "Berlin",
+      "label_de": "Berlin"
+    },
+    "2969679": {
+      "lat": 48.805,
+      "lon": 2.135,
+      "label_en": "Versailles",
+      "label_de": "Versailles"
+    },
+    "2464461": {
+      "lat": 34.0,
+      "lon": 10.0,
+      "label_en": "Tunisia",
+      "label_de": "Tunesien"
+    },
+    "3197753": {
+      "lat": 45.547542728,
+      "lon": 13.7306571,
+      "label_en": "Koper",
+      "label_de": "Koper"
+    },
+    "1271157": {
+      "lat": 15.401944444444,
+      "lon": 74.043333333333,
+      "label_en": "Goa",
+      "label_de": "Goa"
+    },
+    "3435910": {
+      "lat": -34.599722222222,
+      "lon": -58.381944444444,
+      "label_en": "Buenos Aires",
+      "label_de": "Buenos Aires"
+    },
+    "2935022": {
+      "lat": 51.0493286,
+      "lon": 13.7381437,
+      "label_en": "Dresden",
+      "label_de": "Dresden"
+    },
+    "658225": {
+      "lat": 60.170833333333,
+      "lon": 24.9375,
+      "label_en": "Helsinki",
+      "label_de": "Helsinki"
+    },
+    "3871336": {
+      "lat": -33.4375,
+      "lon": -70.65,
+      "label_en": "Santiago",
+      "label_de": "Santiago de Chile"
+    },
+    "3336903": {
+      "lat": 43.0,
+      "lon": -2.75,
+      "label_en": "Basque Autonomous Community",
+      "label_de": "Autonome Gemeinschaft Baskenland"
+    },
+    "7729885": {
+      "lat": 12.0,
+      "lon": 3.0,
+      "label_en": "West Africa",
+      "label_de": "Westafrika"
+    },
+    "2660647": {
+      "lat": 46.45,
+      "lon": 6.55,
+      "label_en": "Lake Geneva",
+      "label_de": "Genfersee"
+    },
+    "2661009": {
+      "lat": 46.70341,
+      "lon": 8.8509,
+      "label_en": null,
+      "label_de": null
+    },
+    "2660089": {
+      "lat": 47.318055555556,
+      "lon": 8.5825,
+      "label_en": "Küsnacht",
+      "label_de": "Küsnacht"
+    },
+    "710719": {
+      "lat": 48.290833333333,
+      "lon": 25.934444444444,
+      "label_en": "Chernivtsi",
+      "label_de": "Czernowitz"
+    },
+    "7872462": {
+      "lat": 47.616111111111,
+      "lon": 15.753888888889,
+      "label_en": "Spital am Semmering",
+      "label_de": "Spital am Semmering"
+    },
+    "3002465": {
+      "lat": 45.043333333333,
+      "lon": 3.885,
+      "label_en": "Le Puy-en-Velay",
+      "label_de": "Le Puy-en-Velay"
+    },
+    "667267": {
+      "lat": 45.87,
+      "lon": 24.23,
+      "label_en": "Sibiu County",
+      "label_de": "Kreis Sibiu"
+    },
+    "2638864": {
+      "lat": 56.338888888889,
+      "lon": -2.7988888888889,
+      "label_en": "St Andrews",
+      "label_de": "St Andrews"
+    },
+    "3351663": {
+      "lat": -12.55,
+      "lon": 13.416666666667,
+      "label_en": "Benguela",
+      "label_de": "Benguela"
+    },
+    "2777424": {
+      "lat": 47.633888888889,
+      "lon": 13.864722222222,
+      "label_en": "Grundlsee",
+      "label_de": "Grundlsee"
+    },
+    "2657815": {
+      "lat": 51.833055555556,
+      "lon": -3.0172222222222,
+      "label_en": "Abergavenny",
+      "label_de": "Abergavenny"
+    },
+    "1265911": {
+      "lat": 9.5916666666667,
+      "lon": 76.522222222222,
+      "label_en": "Kottayam",
+      "label_de": "Kottayam"
+    },
+    "3072931": {
+      "lat": 50.075556,
+      "lon": 14.445833,
+      "label_en": "Vinohrady",
+      "label_de": "Vinohrady"
+    },
+    "7872676": {
+      "lat": 47.334166666667,
+      "lon": 9.6452777777778,
+      "label_en": "Götzis",
+      "label_de": "Götzis"
+    },
+    "3203807": {
+      "lat": 46.283377,
+      "lon": 13.858881,
+      "label_en": "Lake Bohinj",
+      "label_de": "Wocheiner See"
+    },
+    "2736144": {
+      "lat": 41.1311,
+      "lon": -7.120431,
+      "label_en": "Pocinho",
+      "label_de": "Pocinho"
+    },
+    "3035404": {
+      "lat": 48.5572,
+      "lon": -0.41383,
+      "label_en": "Bagnoles-de-l'Orne",
+      "label_de": "Bagnoles-de-l'Orne"
+    },
+    "3182851": {
+      "lat": 41.72063,
+      "lon": 12.6723,
+      "label_en": "Ariccia",
+      "label_de": "Ariccia"
+    },
+    "3179703": {
+      "lat": 41.78392,
+      "lon": 14.10653,
+      "label_en": "Castel di Sangro",
+      "label_de": "Castel di Sangro"
+    },
+    "2463609": {
+      "lat": 39.59055556,
+      "lon": 19.82055556,
+      "label_en": "Pelekas",
+      "label_de": "Pelekas"
+    },
+    "2661441": {
+      "lat": 46.348111111111,
+      "lon": 9.6042777777778,
+      "label_en": "Borgonovo",
+      "label_de": "Borgonovo"
+    },
+    "2774851": {
+      "lat": 48.10831,
+      "lon": 16.18686,
+      "label_en": "Kaltenleutgeben",
+      "label_de": "Kaltenleutgeben"
+    },
+    "2764557": {
+      "lat": 47.08809,
+      "lon": 11.48985,
+      "label_en": "Steinach am Brenner",
+      "label_de": "Steinach am Brenner"
+    },
+    "3168508": {
+      "lat": 46.7324,
+      "lon": 12.27855,
+      "label_en": "Innichen",
+      "label_de": "Innichen"
+    },
+    "3167777": {
+      "lat": 43.81725,
+      "lon": 7.7772,
+      "label_en": "San Remo",
+      "label_de": "San Remo"
+    },
+    "2930900": {
+      "lat": 51.5833,
+      "lon": 10.65,
+      "label_en": "Ellrich",
+      "label_de": "Ellrich"
+    },
+    "608036": {
+      "lat": 49.141388888889,
+      "lon": 57.13,
+      "label_en": "Temir",
+      "label_de": null
+    },
+    "3452925": {
+      "lat": -30.03283,
+      "lon": -51.23019,
+      "label_en": "Porto Alegre",
+      "label_de": null
+    },
+    "2907851": {
+      "lat": 48.67852,
+      "lon": 10.15094,
+      "label_en": "Heidenheim an der Brenz",
+      "label_de": null
+    },
+    "3194099": {
+      "lat": 45.33917,
+      "lon": 14.30833,
+      "label_en": null,
+      "label_de": null
+    },
+    "953987": {
+      "lat": -29.0,
+      "lon": 24.0,
+      "label_en": "South Africa",
+      "label_de": "Südafrika"
+    },
+    "2998324": {
+      "lat": 50.631944444444,
+      "lon": 3.0575,
+      "label_en": "Lille",
+      "label_de": "Lille"
+    },
+    "3575830": {
+      "lat": 15.416667,
+      "lon": -61.333333,
+      "label_en": "Dominica",
+      "label_de": "Dominica"
+    },
+    "3508796": {
+      "lat": 18.8,
+      "lon": -70.2,
+      "label_en": "Dominican Republic",
+      "label_de": "Dominikanische Republik"
+    },
+    "1694008": {
+      "lat": 12.0,
+      "lon": 123.0,
+      "label_en": "Philippines",
+      "label_de": "Philippinen"
+    },
+    "2838632": {
+      "lat": 54.470038,
+      "lon": 9.51416,
+      "label_en": "Schleswig-Holstein",
+      "label_de": "Schleswig-Holstein"
+    },
+    "3176525": {
+      "lat": 46.1,
+      "lon": 13.116666666667,
+      "label_en": "Friuli Venezia Giulia",
+      "label_de": "Friaul-Julisch Venetien"
+    },
+    "1850147": {
+      "lat": 35.689444444444,
+      "lon": 139.69166666667,
+      "label_en": "Tokyo",
+      "label_de": "Tokio"
+    },
+    "2879139": {
+      "lat": 51.35,
+      "lon": 12.3833,
+      "label_en": "Leipzig",
+      "label_de": "Leipzig"
+    },
+    "2507480": {
+      "lat": 36.776388888889,
+      "lon": 3.0586111111111,
+      "label_en": "Algiers",
+      "label_de": "Algier"
+    },
+    "3192699": {
+      "lat": 45.227172200883,
+      "lon": 13.595223875762,
+      "label_en": "Poreč",
+      "label_de": "Poreč"
+    },
+    "568595": {
+      "lat": 54.633333333333,
+      "lon": 21.816666666667,
+      "label_en": "Chernyakhovsk",
+      "label_de": "Insterburg"
+    },
+    "6618454": {
+      "lat": 42.482222222222,
+      "lon": 3.1275,
+      "label_en": "Banyuls-sur-Mer",
+      "label_de": "Banyuls-sur-Mer"
+    },
+    "2660904": {
+      "lat": 46.5497,
+      "lon": 9.8959,
+      "label_en": "Engadin",
+      "label_de": "Engadin"
+    },
+    "1648148": {
+      "lat": -1.0,
+      "lon": 114.0,
+      "label_en": "Borneo",
+      "label_de": "Borneo"
+    },
+    "2363255": {
+      "lat": 1.0,
+      "lon": 4.0,
+      "label_en": "Gulf of Guinea",
+      "label_de": "Golf von Guinea"
+    },
+    "747712": {
+      "lat": 41.67304,
+      "lon": 26.57361,
+      "label_en": "Edirne",
+      "label_de": "Edirne"
+    },
+    "675810": {
+      "lat": 47.162222222222,
+      "lon": 27.588888888889,
+      "label_en": "Iași",
+      "label_de": null
+    },
+    "1256237": {
+      "lat": 31.103333333333,
+      "lon": 77.172222222222,
+      "label_en": "Shimla",
+      "label_de": "Shimla"
+    },
+    "3099230": {
+      "lat": 50.294166666667,
+      "lon": 18.665833333333,
+      "label_en": "Gliwice",
+      "label_de": "Gleiwitz"
+    },
+    "3052236": {
+      "lat": 47.6,
+      "lon": 19.366666666667,
+      "label_en": "Gödöllő",
+      "label_de": "Gödöllő"
+    },
+    "2975050": {
+      "lat": 48.1978,
+      "lon": 3.283,
+      "label_en": "Sens",
+      "label_de": null
+    },
+    "2760417": {
+      "lat": 48.603333333333,
+      "lon": 15.168888888889,
+      "label_en": "Zwettl",
+      "label_de": "Zwettl-Niederösterreich"
+    },
+    "3374462": {
+      "lat": 16.891352777778,
+      "lon": -24.987983333333,
+      "label_en": "Mindelo",
+      "label_de": "Mindelo"
+    },
+    "6556939": {
+      "lat": 49.0,
+      "lon": 10.666666666667,
+      "label_en": "Westheim",
+      "label_de": "Westheim"
+    },
+    "2829109": {
+      "lat": 52.466666666667,
+      "lon": 13.333333333333,
+      "label_en": "Steglitz",
+      "label_de": "Steglitz"
+    },
+    "6944436": {
+      "lat": 49.193888888889,
+      "lon": 2.4858333333333,
+      "label_en": "Château de Chantilly",
+      "label_de": "Schloss Chantilly"
+    },
+    "2953775": {
+      "lat": 52.4,
+      "lon": 13.1,
+      "label_en": "Babelsberg",
+      "label_de": "Babelsberg"
+    },
+    "3038233": {
+      "lat": 43.095555555556,
+      "lon": -1.4266666666667,
+      "label_en": "Aldudes",
+      "label_de": null
+    },
+    "4528348": {
+      "lat": 39.7158,
+      "lon": -83.88,
+      "label_en": "Wilberforce",
+      "label_de": "Wilberforce"
+    },
+    "2865682": {
+      "lat": 49.4169,
+      "lon": 8.69194,
+      "label_en": "Neuenheim",
+      "label_de": "Neuenheim"
+    },
+    "2639409": {
+      "lat": 53.321230555556,
+      "lon": -3.4801888888889,
+      "label_en": "Rhyl",
+      "label_de": "Rhyl"
+    },
+    "3183365": {
+      "lat": 41.73187,
+      "lon": 13.3412,
+      "label_en": "Alatri",
+      "label_de": "Alatri"
+    },
+    "2895044": {
+      "lat": 50.928888888889,
+      "lon": 11.59,
+      "label_en": "Jena",
+      "label_de": "Jena"
+    },
+    "2803073": {
+      "lat": 49.67728,
+      "lon": 5.79505,
+      "label_en": "Arlon",
+      "label_de": null
+    },
+    "665087": {
+      "lat": 45.759722222222,
+      "lon": 21.23,
+      "label_en": "Timișoara",
+      "label_de": null
+    },
+    "2762157": {
+      "lat": 47.12175,
+      "lon": 14.1506,
+      "label_en": "Murau",
+      "label_de": null
+    },
+    "2518794": {
+      "lat": 37.28287,
+      "lon": -5.92088,
+      "label_en": "Dos Hermanas",
+      "label_de": null
+    },
+    "2520600": {
+      "lat": 36.52171152,
+      "lon": -6.28414575,
+      "label_en": "Cádiz City",
+      "label_de": null
+    },
+    "3164419": {
+      "lat": 45.55729,
+      "lon": 11.5409,
+      "label_en": "Vicenza",
+      "label_de": null
+    },
+    "3181554": {
+      "lat": 45.53558,
+      "lon": 10.21472,
+      "label_en": null,
+      "label_de": null
+    },
+    "2523650": {
+      "lat": 36.92574,
+      "lon": 14.72443,
+      "label_en": null,
+      "label_de": null
+    },
+    "2782113": {
+      "lat": 48.0,
+      "lon": 14.0,
+      "label_en": "Austria",
+      "label_de": "Österreich"
+    },
+    "2988507": {
+      "lat": 48.856666666667,
+      "lon": 2.3522222222222,
+      "label_en": "Paris",
+      "label_de": "Paris"
+    },
+    "2081918": {
+      "lat": 6.9166666666667,
+      "lon": 158.18333333333,
+      "label_en": "Federated States of Micronesia",
+      "label_de": "Föderierte Staaten von Mikronesien"
+    },
+    "2759794": {
+      "lat": 52.366666666667,
+      "lon": 4.8833333333333,
+      "label_en": "Amsterdam",
+      "label_de": "Amsterdam"
+    },
+    "2538475": {
+      "lat": 34.025277777778,
+      "lon": -6.8361111111111,
+      "label_en": "Rabat",
+      "label_de": "Rabat"
+    },
+    "3021372": {
+      "lat": 47.323055555556,
+      "lon": 5.0419444444444,
+      "label_en": "Dijon",
+      "label_de": "Dijon"
+    },
+    "1018725": {
+      "lat": -29.1,
+      "lon": 26.216666666667,
+      "label_en": "Bloemfontein",
+      "label_de": "Bloemfontein"
+    },
+    "611847": {
+      "lat": 43.003611111111,
+      "lon": 41.019166666667,
+      "label_en": "Sukhumi",
+      "label_de": "Sochumi"
+    },
+    "3068160": {
+      "lat": 49.741388888889,
+      "lon": 13.3825,
+      "label_en": "Plzeň",
+      "label_de": "Pilsen"
+    },
+    "3209498": {
+      "lat": 46.183333333333,
+      "lon": 6.1833333333333,
+      "label_en": "Chêne-Bougeries",
+      "label_de": "Chêne-Bougeries"
+    },
+    "7287173": {
+      "lat": 46.466666666667,
+      "lon": 9.7997222222222,
+      "label_en": "Silvaplana",
+      "label_de": "Silvaplana"
+    },
+    "359796": {
+      "lat": 29.966666666667,
+      "lon": 32.533333333333,
+      "label_en": "Suez",
+      "label_de": "Sues"
+    },
+    "3007477": {
+      "lat": 49.563333333333,
+      "lon": 3.6236111111111,
+      "label_en": "Laon",
+      "label_de": "Laon"
+    },
+    "3042929": {
+      "lat": 47.1,
+      "lon": 17.916666666667,
+      "label_en": "Veszprém",
+      "label_de": "Veszprém"
+    },
+    "675809": {
+      "lat": 47.25,
+      "lon": 27.31,
+      "label_en": "Iași County",
+      "label_de": "Kreis Iași"
+    },
+    "3014031": {
+      "lat": 43.376388888889,
+      "lon": -1.4244444444444,
+      "label_en": null,
+      "label_de": null
+    },
+    "2977214": {
+      "lat": 43.789444444444,
+      "lon": 4.8316666666667,
+      "label_en": "Saint-Rémy-de-Provence",
+      "label_de": "Saint-Rémy-de-Provence"
+    },
+    "3071677": {
+      "lat": 50.53355947692,
+      "lon": 14.131899491403,
+      "label_en": "Litoměřice",
+      "label_de": "Litoměřice"
+    },
+    "3168019": {
+      "lat": 46.263055555556,
+      "lon": 11.803055555556,
+      "label_en": "San Martino di Castrozza",
+      "label_de": "San Martino di Castrozza"
+    },
+    "4796548": {
+      "lat": 18.333333333333,
+      "lon": -64.916666666667,
+      "label_en": "Saint Thomas",
+      "label_de": "Saint Thomas"
+    },
+    "3014392": {
+      "lat": 47.329166666667,
+      "lon": -2.4283333333333,
+      "label_en": null,
+      "label_de": null
+    },
+    "6447190": {
+      "lat": 49.101111111111,
+      "lon": -0.46027777777778,
+      "label_en": "Avenay",
+      "label_de": "Avenay"
+    },
+    "3174326": {
+      "lat": 46.22671,
+      "lon": 10.82582,
+      "label_en": "Madonna di Campiglio",
+      "label_de": "Madonna di Campiglio"
+    },
+    "2741931": {
+      "lat": 40.38333333,
+      "lon": -8.36666667,
+      "label_en": "Serra do Bussaco",
+      "label_de": "Serra do Buçaco"
+    },
+    "2509377": {
+      "lat": 38.42617898,
+      "lon": -6.4193056,
+      "label_en": "Zafra",
+      "label_de": "Zafra"
+    },
+    "3171899": {
+      "lat": 45.79727,
+      "lon": 8.41437,
+      "label_en": "Orta San Giulio",
+      "label_de": "Orta San Giulio"
+    },
+    "2885237": {
+      "lat": 51.75185,
+      "lon": 11.97093,
+      "label_en": "Köthen",
+      "label_de": "Köthen"
+    },
+    "3164301": {
+      "lat": 46.7379014,
+      "lon": 12.169185,
+      "label_en": "Niederdorf",
+      "label_de": null
+    },
+    "2521420": {
+      "lat": 38.87789,
+      "lon": -6.97061,
+      "label_en": "Badajoz city",
+      "label_de": "Badajoz"
+    },
+    "2822939": {
+      "lat": 50.98453,
+      "lon": 13.58054,
+      "label_en": "Tharandt",
+      "label_de": "Tharandt"
+    },
+    "2759544": {
+      "lat": 52.21167,
+      "lon": 5.2875,
+      "label_en": "Baarn",
+      "label_de": "Baarn"
+    },
+    "2745912": {
+      "lat": 52.09083,
+      "lon": 5.12222,
+      "label_en": "Utrecht",
+      "label_de": "Utrecht"
+    },
+    "3117782": {
+      "lat": 43.1,
+      "lon": -3.0,
+      "label_en": "Luiaondo",
+      "label_de": null
+    },
+    "685796": {
+      "lat": 44.87972,
+      "lon": 22.4125,
+      "label_en": null,
+      "label_de": null
+    },
+    "2953352": {
+      "lat": 50.9167,
+      "lon": 14.15,
+      "label_en": "Bad Schandau",
+      "label_de": null
+    },
+    "3172394": {
+      "lat": 40.85631,
+      "lon": 14.24641,
+      "label_en": null,
+      "label_de": null
+    },
+    "6269131": {
+      "lat": 53.0,
+      "lon": -1.0,
+      "label_en": "England",
+      "label_de": "England"
+    },
+    "3088171": {
+      "lat": 52.408333333333,
+      "lon": 16.933611111111,
+      "label_en": "Poznań",
+      "label_de": "Posen"
+    },
+    "498817": {
+      "lat": 59.95,
+      "lon": 30.316666666667,
+      "label_en": "Saint Petersburg",
+      "label_de": "Sankt Petersburg"
+    },
+    "3580239": {
+      "lat": 12.1,
+      "lon": -61.7,
+      "label_en": "Grenada",
+      "label_de": "Grenada"
+    },
+    "2013348": {
+      "lat": 43.115,
+      "lon": 131.88527777778,
+      "label_en": "Vladivostok",
+      "label_de": "Wladiwostok"
+    },
+    "2892794": {
+      "lat": 49.016666666667,
+      "lon": 8.4,
+      "label_en": "Karlsruhe",
+      "label_de": "Karlsruhe"
+    },
+    "4887398": {
+      "lat": 41.881944444444,
+      "lon": -87.627777777778,
+      "label_en": "Chicago",
+      "label_de": "Chicago"
+    },
+    "6557373": {
+      "lat": 51.533888888889,
+      "lon": 9.9355555555556,
+      "label_en": "Göttingen",
+      "label_de": "Göttingen"
+    },
+    "2971549": {
+      "lat": 48.298888888889,
+      "lon": 4.0780555555556,
+      "label_en": "Troyes",
+      "label_de": "Troyes"
+    },
+    "2660522": {
+      "lat": 46.75,
+      "lon": 9.5,
+      "label_en": "Canton of the Grisons",
+      "label_de": "Kanton Graubünden"
+    },
+    "3199180": {
+      "lat": 43.171388888889,
+      "lon": 16.441944444444,
+      "label_en": "Hvar",
+      "label_de": "Hvar"
+    },
+    "588335": {
+      "lat": 58.38,
+      "lon": 26.7225,
+      "label_en": "Tartu",
+      "label_de": "Tartu"
+    },
+    "3094802": {
+      "lat": 50.061388888889,
+      "lon": 19.937222222222,
+      "label_en": "Kraków",
+      "label_de": "Krakau"
+    },
+    "2139685": {
+      "lat": -21.25,
+      "lon": 165.3,
+      "label_en": "New Caledonia",
+      "label_de": "Neukaledonien"
+    },
+    "2990440": {
+      "lat": 43.701944444444,
+      "lon": 7.2683333333333,
+      "label_en": "Nice",
+      "label_de": "Nizza"
+    },
+    "1799397": {
+      "lat": 29.875,
+      "lon": 121.54916666667,
+      "label_en": "Ningbo",
+      "label_de": "Ningbo"
+    },
+    "3337514": {
+      "lat": 45.239166666667,
+      "lon": 13.938611111111,
+      "label_en": "Istria County",
+      "label_de": "Gespanschaft Istrien"
+    },
+    "2660851": {
+      "lat": 46.85,
+      "lon": 6.847222,
+      "label_en": "Estavayer-le-Lac",
+      "label_de": "Estavayer-le-Lac"
+    },
+    "7286105": {
+      "lat": 46.766388888889,
+      "lon": 7.6666666666667,
+      "label_en": "Homberg",
+      "label_de": "Homberg"
+    },
+    "706524": {
+      "lat": 45.338611111111,
+      "lon": 36.468055555556,
+      "label_en": "Kerch",
+      "label_de": "Kertsch"
+    },
+    "2986676": {
+      "lat": 48.7,
+      "lon": -3.8,
+      "label_en": null,
+      "label_de": null
+    },
+    "3013877": {
+      "lat": 43.38377,
+      "lon": -1.30499,
+      "label_en": null,
+      "label_de": null
+    },
+    "2732264": {
+      "lat": 40.656944444444,
+      "lon": -7.9138888888889,
+      "label_en": "Viseu",
+      "label_de": "Viseu"
+    },
+    "3204793": {
+      "lat": 45.666666666667,
+      "lon": 18.983333333333,
+      "label_en": "Apatin",
+      "label_de": "Apatin"
+    },
+    "2989204": {
+      "lat": 48.698055555556,
+      "lon": 2.1875,
+      "label_en": "Orsay",
+      "label_de": "Orsay"
+    },
+    "6544325": {
+      "lat": 42.896666666667,
+      "lon": 0.065,
+      "label_en": "Barèges",
+      "label_de": "Barèges"
+    },
+    "2986715": {
+      "lat": 47.966388888889,
+      "lon": 6.4630555555556,
+      "label_en": "Plombières-les-Bains",
+      "label_de": "Plombières-les-Bains"
+    },
+    "3006627": {
+      "lat": 43.36792,
+      "lon": -1.43976,
+      "label_en": "Larressore",
+      "label_de": null
+    },
+    "6359768": {
+      "lat": 43.131,
+      "lon": -1.66875,
+      "label_en": "Doneztebe/Santesteban",
+      "label_de": "Doneztebe"
+    },
+    "2777196": {
+      "lat": 47.876,
+      "lon": 15.88881,
+      "label_en": "Gutenstein",
+      "label_de": "Gutenstein"
+    },
+    "2520714": {
+      "lat": 38.38138621,
+      "lon": -6.59168483,
+      "label_en": "Burguillos del Cerro",
+      "label_de": "Burguillos del Cerro"
+    },
+    "3114472": {
+      "lat": 42.81276,
+      "lon": -1.64432,
+      "label_en": "Pamplona city",
+      "label_de": "Pamplona-Stadt"
+    },
+    "3166236": {
+      "lat": 42.74071,
+      "lon": 12.73899,
+      "label_en": "Spoleto",
+      "label_de": "Spoleto"
+    },
+    "2820692": {
+      "lat": 47.90938,
+      "lon": 11.2803,
+      "label_en": "Tutzing",
+      "label_de": "Tutzing"
+    },
+    "3117735": {
+      "lat": 40.40841191,
+      "lon": -3.68760088,
+      "label_en": "Madrid city",
+      "label_de": "Stadt Madrid"
+    },
+    "2953384": {
+      "lat": 50.22788,
+      "lon": 9.34782,
+      "label_en": "Bad Orb",
+      "label_de": null
+    },
+    "2907669": {
+      "lat": 49.14,
+      "lon": 9.2205555555556,
+      "label_en": "Heilbronn",
+      "label_de": null
+    },
+    "6440605": {
+      "lat": 43.4709,
+      "lon": -0.9253,
+      "label_en": null,
+      "label_de": null
+    },
+    "6255150": {
+      "lat": -21.0,
+      "lon": -59.0,
+      "label_en": "South America",
+      "label_de": "Südamerika"
+    },
+    "719819": {
+      "lat": 47.0,
+      "lon": 19.0,
+      "label_en": "Hungary",
+      "label_de": "Ungarn"
+    },
+    "360630": {
+      "lat": 30.044444444444,
+      "lon": 31.235833333333,
+      "label_en": "Cairo",
+      "label_de": "Kairo"
+    },
+    "2562770": {
+      "lat": 35.883333333333,
+      "lon": 14.5,
+      "label_en": "Malta",
+      "label_de": "Malta"
+    },
+    "2267057": {
+      "lat": 38.708042,
+      "lon": -9.139016,
+      "label_en": "Lisbon",
+      "label_de": "Lissabon"
+    },
+    "3038033": {
+      "lat": 48.5,
+      "lon": 7.5,
+      "label_en": "Alsace",
+      "label_de": "Elsass"
+    },
+    "1275339": {
+      "lat": 19.075833333333,
+      "lon": 72.8775,
+      "label_en": "Mumbai",
+      "label_de": "Mumbai"
+    },
+    "2525468": {
+      "lat": 39.0,
+      "lon": 16.5,
+      "label_en": "Calabria",
+      "label_de": "Kalabrien"
+    },
+    "3201047": {
+      "lat": 42.640277777778,
+      "lon": 18.108333333333,
+      "label_en": "Dubrovnik",
+      "label_de": "Dubrovnik"
+    },
+    "1636629": {
+      "lat": -2.0,
+      "lon": 128.0,
+      "label_en": "Maluku Islands",
+      "label_de": "Molukken"
+    },
+    "2975249": {
+      "lat": 48.6,
+      "lon": 3.0,
+      "label_en": "Seine-et-Marne",
+      "label_de": "Seine-et-Marne"
+    },
+    "1651531": {
+      "lat": -3.6966666666667,
+      "lon": 128.17833333333,
+      "label_en": "Ambon",
+      "label_de": "Ambon"
+    },
+    "359792": {
+      "lat": 24.088919444444,
+      "lon": 32.899730555556,
+      "label_en": "Aswan",
+      "label_de": "Assuan"
+    },
+    "311046": {
+      "lat": 38.41273,
+      "lon": 27.13838,
+      "label_en": "İzmir",
+      "label_de": "Izmir"
+    },
+    "3038230": {
+      "lat": 48.429722222222,
+      "lon": 0.091944444444444,
+      "label_en": "Alençon",
+      "label_de": "Alençon"
+    },
+    "485699": {
+      "lat": 54.9394,
+      "lon": 20.1565,
+      "label_en": "Svetlogorsk",
+      "label_de": "Swetlogorsk"
+    },
+    "2979214": {
+      "lat": 43.165,
+      "lon": -1.1955555555556,
+      "label_en": null,
+      "label_de": null
+    },
+    "1264521": {
+      "lat": 9.9196611111111,
+      "lon": 78.119394444444,
+      "label_en": "Madurai",
+      "label_de": "Madurai"
+    },
+    "3073803": {
+      "lat": 50.230555555556,
+      "lon": 12.8725,
+      "label_en": "Karlovy Vary",
+      "label_de": "Karlsbad"
+    },
+    "2633842": {
+      "lat": 51.483333333333,
+      "lon": -0.6,
+      "label_en": "Windsor",
+      "label_de": "Windsor"
+    },
+    "2949881": {
+      "lat": 51.027777777778,
+      "lon": 14.758333333333,
+      "label_en": "Berthelsdorf",
+      "label_de": "Berthelsdorf"
+    },
+    "3036079": {
+      "lat": 48.461944444444,
+      "lon": 1.7730555555556,
+      "label_en": "Auneau",
+      "label_de": "Auneau"
+    },
+    "2653265": {
+      "lat": 51.4875,
+      "lon": -0.1684,
+      "label_en": "Chelsea",
+      "label_de": "Chelsea"
+    },
+    "3003375": {
+      "lat": 48.938333333333,
+      "lon": 2.1255555555556,
+      "label_en": "Le Mesnil-le-Roi",
+      "label_de": null
+    },
+    "2756686": {
+      "lat": 52.033333333333,
+      "lon": 5.35,
+      "label_en": "Doorn",
+      "label_de": "Doorn"
+    },
+    "2906947": {
+      "lat": 54.1825,
+      "lon": 7.8852777777778,
+      "label_en": "Heligoland",
+      "label_de": "Helgoland"
+    },
+    "2310307": {
+      "lat": -1.4166666666667,
+      "lon": 5.6333333333333,
+      "label_en": "Annobón Province",
+      "label_de": "Provinz Annobón"
+    },
+    "11071621": {
+      "lat": 49.183333333333,
+      "lon": -0.35,
+      "label_en": "Normandy",
+      "label_de": "Normandie"
+    },
+    "2769013": {
+      "lat": 48.11248,
+      "lon": 16.86208,
+      "label_en": "Petronell-Carnuntum",
+      "label_de": "Petronell-Carnuntum"
+    },
+    "3123622": {
+      "lat": 41.5857756,
+      "lon": -3.07150788,
+      "label_en": "El Burgo de Osma",
+      "label_de": "El Burgo de Osma"
+    },
+    "2797656": {
+      "lat": 51.07304,
+      "lon": 3.73664,
+      "label_en": "Ghent",
+      "label_de": "Gent"
+    },
+    "3181913": {
+      "lat": 46.49961,
+      "lon": 11.35537,
+      "label_en": "Historic centre",
+      "label_de": "Altstadt"
+    },
+    "3182734": {
+      "lat": 45.22018,
+      "lon": 10.41214,
+      "label_en": "Asola",
+      "label_de": "Asola"
+    },
+    "3176854": {
+      "lat": 42.95488,
+      "lon": 12.70268,
+      "label_en": "Foligno",
+      "label_de": "Foligno"
+    },
+    "2410878": {
+      "lat": 1.61667,
+      "lon": 7.4,
+      "label_en": "Príncipe Autonomous Region",
+      "label_de": null
+    },
+    "2773300": {
+      "lat": 47.57909,
+      "lon": 12.20915,
+      "label_en": "Kufstein",
+      "label_de": null
+    },
+    "2660457": {
+      "lat": 46.77617,
+      "lon": 10.15437,
+      "label_en": "Guarda",
+      "label_de": null
+    },
+    "2879109": {
+      "lat": 51.1575,
+      "lon": 12.927777777778,
+      "label_en": "Leisnig",
+      "label_de": null
+    },
+    "3176219": {
+      "lat": 44.41286,
+      "lon": 8.95729,
+      "label_en": "Genoa",
+      "label_de": null
+    },
+    "2318000": {
+      "lat": 8.0,
+      "lon": 4.5,
+      "label_en": "Plateau of Yorubaland",
+      "label_de": null
+    },
+    "3174659": {
+      "lat": 43.54427,
+      "lon": 10.32615,
+      "label_en": null,
+      "label_de": null
+    },
+    "5128581": {
+      "lat": 40.712777777778,
+      "lon": -74.006111111111,
+      "label_en": "New York City",
+      "label_de": "New York City"
+    },
+    "3562981": {
+      "lat": 22.0,
+      "lon": -79.5,
+      "label_en": "Cuba",
+      "label_de": "Kuba"
+    },
+    "2755251": {
+      "lat": 53.218888888889,
+      "lon": 6.5675,
+      "label_en": "Groningen",
+      "label_de": "Groningen"
+    },
+    "3374766": {
+      "lat": 15.3,
+      "lon": -23.7,
+      "label_en": "Cape Verde",
+      "label_de": "Kap Verde"
+    },
+    "3193340": {
+      "lat": 45.5283,
+      "lon": 13.5682,
+      "label_en": "Piran Municipality",
+      "label_de": "Gemeinde Piran"
+    },
+    "4331987": {
+      "lat": 31.0,
+      "lon": -92.0,
+      "label_en": "Louisiana",
+      "label_de": "Louisiana"
+    },
+    "3060972": {
+      "lat": 48.144722222222,
+      "lon": 17.112777777778,
+      "label_en": "Bratislava",
+      "label_de": "Bratislava"
+    },
+    "554234": {
+      "lat": 54.711472222222,
+      "lon": 20.509305555556,
+      "label_en": "Königsberg",
+      "label_de": "Königsberg"
+    },
+    "2693678": {
+      "lat": 55.708313018551,
+      "lon": 13.199164196669,
+      "label_en": "Lund",
+      "label_de": "Lund"
+    },
+    "2210247": {
+      "lat": 32.87519,
+      "lon": 13.18746,
+      "label_en": null,
+      "label_de": null
+    },
+    "2399697": {
+      "lat": 0.3901,
+      "lon": 9.4544,
+      "label_en": "Libreville",
+      "label_de": "Libreville"
+    },
+    "2953504": {
+      "lat": 48.761944444444,
+      "lon": 8.2408333333333,
+      "label_en": "Baden-Baden",
+      "label_de": "Baden-Baden"
+    },
+    "2972315": {
+      "lat": 43.604444444444,
+      "lon": 1.4433333333333,
+      "label_en": "Toulouse",
+      "label_de": "Toulouse"
+    },
+    "7626836": {
+      "lat": 12.2,
+      "lon": -69.0,
+      "label_en": "Curaçao",
+      "label_de": "Curaçao"
+    },
+    "2666199": {
+      "lat": 59.849760548324,
+      "lon": 17.638946597524,
+      "label_en": "Uppsala",
+      "label_de": "Uppsala"
+    },
+    "7729894": {
+      "lat": 47.210277777778,
+      "lon": 102.84777777778,
+      "label_en": "East Asia",
+      "label_de": "Ostasien"
+    },
+    "4033649": {
+      "lat": -17.666666666667,
+      "lon": -149.46666666667,
+      "label_en": "Tahiti",
+      "label_de": "Tahiti"
+    },
+    "1623843": {
+      "lat": -9.712225,
+      "lon": 124.35463611111,
+      "label_en": "Timor",
+      "label_de": "Timor"
+    },
+    "3027301": {
+      "lat": 45.922222222222,
+      "lon": 6.8688888888889,
+      "label_en": "Chamonix-Mont-Blanc",
+      "label_de": "Chamonix-Mont-Blanc"
+    },
+    "6559049": {
+      "lat": 47.45,
+      "lon": 10.266666666667,
+      "label_en": "Fischen im Allgäu",
+      "label_de": "Fischen im Allgäu"
+    },
+    "3172327": {
+      "lat": 41.712222222222,
+      "lon": 12.7025,
+      "label_en": "Lake Nemi",
+      "label_de": "Nemisee"
+    },
+    "8468765": {
+      "lat": 46.65,
+      "lon": 6.7333333333333,
+      "label_en": "Villars-Mendraz",
+      "label_de": "Villars-Mendraz"
+    },
+    "3055566": {
+      "lat": 46.95,
+      "lon": 17.883333333333,
+      "label_en": "Balatonfüred",
+      "label_de": "Balatonfüred"
+    },
+    "2826594": {
+      "lat": 51.566666666667,
+      "lon": 10.949722222222,
+      "label_en": "Stolberg",
+      "label_de": "Stolberg"
+    },
+    "6359759": {
+      "lat": 43.0085,
+      "lon": -1.3186,
+      "label_en": "Orreaga-Roncesvalles",
+      "label_de": "Orreaga-Roncesvalles"
+    },
+    "3002534": {
+      "lat": 47.269722222222,
+      "lon": -2.4277777777778,
+      "label_en": "Le Pouliguen",
+      "label_de": null
+    },
+    "2523889": {
+      "lat": 36.783333333333,
+      "lon": 12.0,
+      "label_en": "Pantelleria Island",
+      "label_de": "Pantelleria"
+    },
+    "3071895": {
+      "lat": 50.758627450995,
+      "lon": 14.040822963173,
+      "label_en": "Libouchec",
+      "label_de": "Libouchec"
+    },
+    "3123504": {
+      "lat": 40.585019,
+      "lon": -4.129706,
+      "label_en": "El Escorial",
+      "label_de": "El Escorial"
+    },
+    "2782053": {
+      "lat": 47.1711,
+      "lon": 13.1047,
+      "label_en": "Bad Hofgastein",
+      "label_de": "Bad Hofgastein"
+    },
+    "2782058": {
+      "lat": 47.1145,
+      "lon": 13.1347,
+      "label_en": "Bad Gastein",
+      "label_de": "Bad Gastein"
+    },
+    "3176589": {
+      "lat": 41.8091,
+      "lon": 12.67942,
+      "label_en": "Frascati",
+      "label_de": "Frascati"
+    },
+    "2510409": {
+      "lat": 39.8565219,
+      "lon": -4.024974933,
+      "label_en": "Toledo city",
+      "label_de": "Toledo"
+    },
+    "2513917": {
+      "lat": 38.91738788,
+      "lon": -6.34417211,
+      "label_en": "Mérida",
+      "label_de": "Mérida"
+    },
+    "2922530": {
+      "lat": 47.49209,
+      "lon": 11.09576,
+      "label_en": "Garmisch-Partenkirchen",
+      "label_de": "Garmisch-Partenkirchen"
+    },
+    "2873759": {
+      "lat": 50.80296,
+      "lon": 8.7625,
+      "label_en": "Marburg",
+      "label_de": "Marburg"
+    },
+    "2823504": {
+      "lat": 48.1333,
+      "lon": 7.81667,
+      "label_en": "Teningen",
+      "label_de": null
+    },
+    "3171366": {
+      "lat": 45.19205,
+      "lon": 9.15917,
+      "label_en": null,
+      "label_de": null
+    },
+    "1861060": {
+      "lat": 35.0,
+      "lon": 136.0,
+      "label_en": "Japan",
+      "label_de": "Japan"
+    },
+    "1880251": {
+      "lat": 1.3,
+      "lon": 103.8,
+      "label_en": "Singapore",
+      "label_de": "Singapur"
+    },
+    "3658394": {
+      "lat": -1.0,
+      "lon": -78.0,
+      "label_en": "Ecuador",
+      "label_de": "Ecuador"
+    },
+    "3351879": {
+      "lat": -12.35,
+      "lon": 17.35,
+      "label_en": "Angola",
+      "label_de": "Angola"
+    },
+    "3174618": {
+      "lat": 45.65,
+      "lon": 9.95,
+      "label_en": "Lombardy",
+      "label_de": "Lombardei"
+    },
+    "2751283": {
+      "lat": 50.866666666667,
+      "lon": 5.6833333333333,
+      "label_en": "Maastricht",
+      "label_de": "Maastricht"
+    },
+    "4560349": {
+      "lat": 39.952777777778,
+      "lon": -75.163611111111,
+      "label_en": "Philadelphia",
+      "label_de": "Philadelphia"
+    },
+    "2911296": {
+      "lat": 53.55,
+      "lon": 9.9333,
+      "label_en": "Altona",
+      "label_de": "Altona"
+    },
+    "2925533": {
+      "lat": 50.110555555556,
+      "lon": 8.6822222222222,
+      "label_en": "Frankfurt",
+      "label_de": "Frankfurt am Main"
+    },
+    "2998517": {
+      "lat": 44.91667,
+      "lon": -0.23333,
+      "label_en": null,
+      "label_de": null
+    },
+    "1645457": {
+      "lat": -8.5536111111111,
+      "lon": 125.57833333333,
+      "label_en": "Dili",
+      "label_de": "Dili"
+    },
+    "2644210": {
+      "lat": 53.407222222222,
+      "lon": -2.9916666666667,
+      "label_en": "Liverpool",
+      "label_de": "Liverpool"
+    },
+    "1248991": {
+      "lat": 6.9266666666667,
+      "lon": 79.860555555556,
+      "label_en": "Colombo",
+      "label_de": "Colombo"
+    },
+    "2747373": {
+      "lat": 52.08,
+      "lon": 4.31,
+      "label_en": "The Hague",
+      "label_de": "Den Haag"
+    },
+    "2985246": {
+      "lat": 44.0,
+      "lon": 6.0,
+      "label_en": "Provence",
+      "label_de": "Provence"
+    },
+    "2878018": {
+      "lat": 52.4428,
+      "lon": 13.295666666667,
+      "label_en": "Lichterfelde",
+      "label_de": "Berlin-Lichterfelde"
+    },
+    "2968054": {
+      "lat": 48.847777777778,
+      "lon": 2.4391666666667,
+      "label_en": "Vincennes",
+      "label_de": "Vincennes"
+    },
+    "3029041": {
+      "lat": 43.358611111111,
+      "lon": -1.4011111111111,
+      "label_en": "Cambo-les-Bains",
+      "label_de": null
+    },
+    "2778067": {
+      "lat": 47.0719,
+      "lon": 15.4408,
+      "label_en": "Innere Stadt",
+      "label_de": "Innere Stadt"
+    },
+    "3006979": {
+      "lat": 44.581066666667,
+      "lon": -0.041219444444444,
+      "label_en": "La Réole",
+      "label_de": "La Réole"
+    },
+    "723526": {
+      "lat": 48.95,
+      "lon": 20.566666666667,
+      "label_en": "Spišská Nová Ves",
+      "label_de": "Spišská Nová Ves"
+    },
+    "7871780": {
+      "lat": 48.64,
+      "lon": 15.7,
+      "label_en": "Rosenburg-Mold",
+      "label_de": "Rosenburg-Mold"
+    },
+    "2761368": {
+      "lat": 48.2119,
+      "lon": 16.3844,
+      "label_en": "Wien",
+      "label_de": "Wienfluss"
+    },
+    "4551177": {
+      "lat": 35.3425,
+      "lon": -96.933888888889,
+      "label_en": "Shawnee",
+      "label_de": "Shawnee"
+    },
+    "3065743": {
+      "lat": 50.075278,
+      "lon": 14.405556,
+      "label_en": "Smíchov",
+      "label_de": "Smíchov"
+    },
+    "2738108": {
+      "lat": 40.38154,
+      "lon": -8.37905,
+      "label_en": "Luso",
+      "label_de": "Luso"
+    },
+    "2779469": {
+      "lat": 48.2572,
+      "lon": 16.4006,
+      "label_en": "Floridsdorf",
+      "label_de": "Floridsdorf"
+    },
+    "2809024": {
+      "lat": 47.6219,
+      "lon": 11.7428,
+      "label_en": "Wildbad Kreuth",
+      "label_de": "Wildbad Kreuth"
+    },
+    "12036340": {
+      "lat": -19.333333333333,
+      "lon": 47.066666666667,
+      "label_en": "Madagascar",
+      "label_de": "Madagaskar"
+    },
+    "2894742": {
+      "lat": 49.03218,
+      "lon": 8.5735,
+      "label_en": "Jöhlingen",
+      "label_de": "Jöhlingen"
+    },
+    "2770720": {
+      "lat": 47.07345,
+      "lon": 14.42651,
+      "label_en": "Neumarkt in Steiermark",
+      "label_de": "Neumarkt in Steiermark"
+    },
+    "2522333": {
+      "lat": 37.4063,
+      "lon": -1.58289,
+      "label_en": "Águilas",
+      "label_de": "Águilas"
+    },
+    "3104219": {
+      "lat": 43.08858,
+      "lon": -2.31408,
+      "label_en": "Zumárraga",
+      "label_de": "Zumarraga"
+    },
+    "2771335": {
+      "lat": 48.07724,
+      "lon": 16.28263,
+      "label_en": "Mödling",
+      "label_de": "Mödling"
+    },
+    "253356": {
+      "lat": 37.261944444444,
+      "lon": 23.159444444444,
+      "label_en": "Spetses",
+      "label_de": null
+    },
+    "2772649": {
+      "lat": 47.34614,
+      "lon": 15.12574,
+      "label_en": "Leoben",
+      "label_de": null
+    },
+    "2660718": {
+      "lat": 46.80237,
+      "lon": 7.15128,
+      "label_en": null,
+      "label_de": null
+    },
+    "1683447": {
+      "lat": 7.18056,
+      "lon": 124.22556,
+      "label_en": "Tamontaka",
+      "label_de": null
+    },
+    "2270184": {
+      "lat": 38.6894,
+      "lon": -9.3357,
+      "label_en": "Carcavelos",
+      "label_de": null
+    },
+    "3165201": {
+      "lat": 45.66673,
+      "lon": 12.2416,
+      "label_en": null,
+      "label_de": null
+    },
+    "2750405": {
+      "lat": 52.316666666667,
+      "lon": 5.55,
+      "label_en": "Netherlands",
+      "label_de": "Niederlande"
+    },
+    "2643743": {
+      "lat": 51.507222222222,
+      "lon": -0.1275,
+      "label_en": "London",
+      "label_de": "London"
+    },
+    "361058": {
+      "lat": 31.1975,
+      "lon": 29.8925,
+      "label_en": "Alexandria",
+      "label_de": "Alexandria"
+    },
+    "727011": {
+      "lat": 42.697886,
+      "lon": 23.321726,
+      "label_en": "Sofia",
+      "label_de": "Sofia"
+    },
+    "3173435": {
+      "lat": 45.46427,
+      "lon": 9.18951,
+      "label_en": null,
+      "label_de": null
+    },
+    "2403846": {
+      "lat": 8.5,
+      "lon": -12.1,
+      "label_en": "Sierra Leone",
+      "label_de": "Sierra Leone"
+    },
+    "3170831": {
+      "lat": 45.25,
+      "lon": 7.9166666666667,
+      "label_en": "Piedmont",
+      "label_de": "Piemont"
+    },
+    "3165048": {
+      "lat": 42.983333333333,
+      "lon": 12.566666666667,
+      "label_en": "Umbria",
+      "label_de": "Umbrien"
+    },
+    "3099434": {
+      "lat": 54.35,
+      "lon": 18.666666666667,
+      "label_en": "Gdańsk",
+      "label_de": "Danzig"
+    },
+    "6542004": {
+      "lat": 45.922777777778,
+      "lon": 8.5519444444444,
+      "label_en": "Verbania",
+      "label_de": "Verbania"
+    },
+    "473249": {
+      "lat": 43.034733,
+      "lon": 44.697338,
+      "label_en": "Vladikavkaz Research Center of the Russian Academy of Sciences",
+      "label_de": null
+    },
+    "3361025": {
+      "lat": -33.936666666667,
+      "lon": 18.861388888889,
+      "label_en": "Stellenbosch",
+      "label_de": "Stellenbosch"
+    },
+    "3579143": {
+      "lat": 16.2595,
+      "lon": -61.5605,
+      "label_en": "Guadeloupe",
+      "label_de": "Guadeloupe"
+    },
+    "2654675": {
+      "lat": 51.453611111111,
+      "lon": -2.5975,
+      "label_en": "Bristol",
+      "label_de": "Bristol"
+    },
+    "6538032": {
+      "lat": 45.8444288,
+      "lon": 8.57785295,
+      "label_en": "Belgirate",
+      "label_de": "Belgirate"
+    },
+    "2990999": {
+      "lat": 48.692777777778,
+      "lon": 6.1836111111111,
+      "label_en": "Nancy",
+      "label_de": "Nancy"
+    },
+    "4945121": {
+      "lat": 41.636111111111,
+      "lon": -70.934722222222,
+      "label_en": "New Bedford",
+      "label_de": "New Bedford"
+    },
+    "358619": {
+      "lat": 31.2625,
+      "lon": 32.306111111111,
+      "label_en": "Port Said",
+      "label_de": "Port Said"
+    },
+    "3633009": {
+      "lat": 10.633333333333,
+      "lon": -71.633333333333,
+      "label_en": "Maracaibo",
+      "label_de": "Maracaibo"
+    },
+    "6358109": {
+      "lat": 43.181944444444,
+      "lon": -2.2652777777778,
+      "label_en": "Azpeitia",
+      "label_de": "Azpeitia"
+    },
+    "2309792": {
+      "lat": 3.5,
+      "lon": 8.7,
+      "label_en": "Bioko",
+      "label_de": "Bioko"
+    },
+    "241274": {
+      "lat": -4.68,
+      "lon": 55.48,
+      "label_en": "Mahé",
+      "label_de": "Mahé"
+    },
+    "2979207": {
+      "lat": 43.163611111111,
+      "lon": -1.2375,
+      "label_en": null,
+      "label_de": null
+    },
+    "3023808": {
+      "lat": 48.184444444,
+      "lon": 5.895555555,
+      "label_en": "Contrexéville",
+      "label_de": null
+    },
+    "1259425": {
+      "lat": 11.93,
+      "lon": 79.83,
+      "label_en": "Pondicherry",
+      "label_de": "Puducherry"
+    },
+    "2658092": {
+      "lat": 46.655555555556,
+      "lon": 9.0983333333333,
+      "label_en": "Vrin",
+      "label_de": "Vrin"
+    },
+    "2659236": {
+      "lat": 46.616666666667,
+      "lon": 6.7166666666667,
+      "label_en": "Peney-le-Jorat",
+      "label_de": "Peney-le-Jorat"
+    },
+    "2644122": {
+      "lat": 52.243538888889,
+      "lon": -3.3854694444444,
+      "label_en": "Llandrindod Wells",
+      "label_de": "Llandrindod Wells"
+    },
+    "4559575": {
+      "lat": 39.918888888889,
+      "lon": -75.389166666667,
+      "label_en": "Media",
+      "label_de": "Media"
+    },
+    "2857179": {
+      "lat": 51.1381,
+      "lon": 14.695,
+      "label_en": "Oppeln",
+      "label_de": "Oppeln"
+    },
+    "2621515": {
+      "lat": 55.7517,
+      "lon": 12.5508,
+      "label_en": "Gentofte",
+      "label_de": "Gentofte"
+    },
+    "1274987": {
+      "lat": 11.868888888889,
+      "lon": 75.355555555556,
+      "label_en": "Kannur",
+      "label_de": "Kannur"
+    },
+    "2792413": {
+      "lat": 50.625555555556,
+      "lon": 5.5983333333333,
+      "label_en": "Liège",
+      "label_de": "Lüttich"
+    },
+    "2772041": {
+      "lat": 46.988611111111,
+      "lon": 13.17,
+      "label_en": "Mallnitz",
+      "label_de": "Mallnitz"
+    },
+    "2953507": {
+      "lat": 50.33544,
+      "lon": 7.71369,
+      "label_en": "Bad Ems",
+      "label_de": "Bad Ems"
+    },
+    "2776595": {
+      "lat": 47.04,
+      "lon": 12.841111111111,
+      "label_en": "Heiligenblut",
+      "label_de": "Heiligenblut"
+    },
+    "2918368": {
+      "lat": 48.11878,
+      "lon": 11.42939,
+      "label_en": null,
+      "label_de": "Gräfelfing"
+    },
+    "3167644": {
+      "lat": 40.60756667,
+      "lon": 14.3737,
+      "label_en": "Sant'Agata sui Due Golfi",
+      "label_de": null
+    },
+    "1818558": {
+      "lat": 22.4603,
+      "lon": 114.003,
+      "label_en": "Tin Shui Wai",
+      "label_de": null
+    },
+    "678459": {
+      "lat": 47.4625,
+      "lon": 26.3,
+      "label_en": "Fălticeni",
+      "label_de": null
+    },
+    "2767521": {
+      "lat": 48.74936,
+      "lon": 15.96236,
+      "label_en": "Retz",
+      "label_de": null
+    },
+    "3448136": {
+      "lat": -23.963333333333,
+      "lon": -46.392222222222,
+      "label_en": null,
+      "label_de": null
+    },
+    "2517643": {
+      "lat": 38.16988677,
+      "lon": -6.65364856,
+      "label_en": "Fregenal de la Sierra",
+      "label_de": null
+    },
+    "2509954": {
+      "lat": 39.47534441,
+      "lon": -0.37565717,
+      "label_en": "City of Valencia",
+      "label_de": null
+    },
+    "2905643": {
+      "lat": 51.016111111111,
+      "lon": 14.743888888889,
+      "label_en": "Herrnhut",
+      "label_de": null
+    },
+    "3718426": {
+      "lat": 18.54349,
+      "lon": -72.33881,
+      "label_en": "Port-au-Prince",
+      "label_de": null
+    },
+    "6440594": {
+      "lat": 43.39028,
+      "lon": -1.65972,
+      "label_en": null,
+      "label_de": null
+    },
+    "6252001": {
+      "lat": 39.828175,
+      "lon": -98.5795,
+      "label_en": "United States",
+      "label_de": "Vereinigte Staaten"
+    },
+    "2623032": {
+      "lat": 56.0,
+      "lon": 10.0,
+      "label_en": "Denmark",
+      "label_de": "Dänemark"
+    },
+    "357994": {
+      "lat": 27.0,
+      "lon": 29.0,
+      "label_en": "Egypt",
+      "label_de": "Ägypten"
+    },
+    "2993457": {
+      "lat": 43.731111111111,
+      "lon": 7.42,
+      "label_en": "Monaco",
+      "label_de": "Monaco"
+    },
+    "2800866": {
+      "lat": 50.846666666667,
+      "lon": 4.3516666666667,
+      "label_en": "City of Brussels",
+      "label_de": "Brüssel"
+    },
+    "3582678": {
+      "lat": 17.066666666667,
+      "lon": -88.7,
+      "label_en": "Belize",
+      "label_de": "Belize"
+    },
+    "2653941": {
+      "lat": 52.208055555556,
+      "lon": 0.1225,
+      "label_en": "Cambridge",
+      "label_de": "Cambridge"
+    },
+    "3932488": {
+      "lat": -9.4,
+      "lon": -76.0,
+      "label_en": "Peru",
+      "label_de": "Peru"
+    },
+    "1327865": {
+      "lat": 22.0,
+      "lon": 96.0,
+      "label_en": "Myanmar",
+      "label_de": "Myanmar"
+    },
+    "3186886": {
+      "lat": 45.813055555556,
+      "lon": 15.977222222222,
+      "label_en": "Zagreb",
+      "label_de": "Zagreb"
+    },
+    "2986495": {
+      "lat": 46.581111111111,
+      "lon": 0.33527777777778,
+      "label_en": "Poitiers",
+      "label_de": "Poitiers"
+    },
+    "3030300": {
+      "lat": 48.39,
+      "lon": -4.4869444444444,
+      "label_en": "Brest",
+      "label_de": "Brest"
+    },
+    "2711537": {
+      "lat": 57.7075,
+      "lon": 11.9675,
+      "label_en": "Gothenburg",
+      "label_de": "Göteborg"
+    },
+    "2969392": {
+      "lat": 46.126944444444,
+      "lon": 3.4258333333333,
+      "label_en": "Vichy",
+      "label_de": "Vichy"
+    },
+    "3083677": {
+      "lat": 50.82567,
+      "lon": 15.52274,
+      "label_en": "Szklarska Poręba",
+      "label_de": "Szklarska Poręba"
+    },
+    "2855334": {
+      "lat": 48.15,
+      "lon": 11.45,
+      "label_en": "Pasing",
+      "label_de": "Pasing"
+    },
+    "1246294": {
+      "lat": 6.0327777777778,
+      "lon": 80.215555555556,
+      "label_en": "Galle",
+      "label_de": "Galle"
+    },
+    "2649258": {
+      "lat": 51.079166666667,
+      "lon": 1.1794444444444,
+      "label_en": "Folkestone",
+      "label_de": "Folkestone"
+    },
+    "3066958": {
+      "lat": 50.607205943943,
+      "lon": 13.954222348018,
+      "label_en": "Řehlovice",
+      "label_de": "Groß Tschochau"
+    },
+    "1272502": {
+      "lat": 20.714997222222,
+      "lon": 70.984358333333,
+      "label_en": "Diu",
+      "label_de": "Diu"
+    },
+    "2641108": {
+      "lat": 56.409722222222,
+      "lon": -5.4725,
+      "label_en": "Oban",
+      "label_de": "Oban"
+    },
+    "2776165": {
+      "lat": 48.247222222222,
+      "lon": 16.483305555556,
+      "label_en": "Hirschstetten",
+      "label_de": "Hirschstetten"
+    },
+    "3076059": {
+      "lat": 50.598655708026,
+      "lon": 13.981784632976,
+      "label_en": "Habrovany",
+      "label_de": "Habrovany u Řehlovic"
+    },
+    "2772641": {
+      "lat": 47.43602,
+      "lon": 12.71556,
+      "label_en": "Leogang",
+      "label_de": "Leogang"
+    },
+    "2768459": {
+      "lat": 48.045,
+      "lon": 16.9477,
+      "label_en": "Potzneusiedl",
+      "label_de": "Potzneusiedl"
+    },
+    "2525545": {
+      "lat": 37.61797,
+      "lon": 13.43895,
+      "label_en": "Bivona",
+      "label_de": "Bivona"
+    },
+    "3171848": {
+      "lat": 43.48539,
+      "lon": 13.48222,
+      "label_en": "Osimo",
+      "label_de": "Osimo"
+    },
+    "3170116": {
+      "lat": 40.81563,
+      "lon": 14.33716,
+      "label_en": "Portici",
+      "label_de": "Portici"
+    },
+    "3170068": {
+      "lat": 45.96088,
+      "lon": 8.68109,
+      "label_en": "Porto Valtravaglia",
+      "label_de": "Porto Valtravaglia"
+    },
+    "3167752": {
+      "lat": 41.23537,
+      "lon": 14.49832,
+      "label_en": "San Salvatore Telesino",
+      "label_de": "San Salvatore Telesino"
+    },
+    "2945024": {
+      "lat": 52.28528,
+      "lon": 10.53528,
+      "label_en": "Braunschweig",
+      "label_de": "Kreisfreie Stadt Braunschweig"
+    },
+    "2522975": {
+      "lat": 37.85206,
+      "lon": 15.28699,
+      "label_en": "Taormina",
+      "label_de": "Taormina"
+    },
+    "2661176": {
+      "lat": 45.83203,
+      "lon": 9.03119,
+      "label_en": null,
+      "label_de": "Chiasso"
+    },
+    "2658055": {
+      "lat": 47.44867,
+      "lon": 9.60495,
+      "label_en": null,
+      "label_de": null
+    },
+    "3121881": {
+      "lat": 43.36859,
+      "lon": -1.79622,
+      "label_en": "Hondarribia",
+      "label_de": null
+    },
+    "3128026": {
+      "lat": 43.26035,
+      "lon": -2.93341,
+      "label_en": "Bilbao City",
+      "label_de": null
+    },
+    "2838673": {
+      "lat": 50.6023,
+      "lon": 11.8038,
+      "label_en": "Schleiz",
+      "label_de": null
+    },
+    "2875881": {
+      "lat": 47.6181,
+      "lon": 7.65887,
+      "label_en": "Lörrach",
+      "label_de": null
+    },
+    "2522876": {
+      "lat": 38.0176,
+      "lon": 12.53617,
+      "label_en": null,
+      "label_de": null
+    },
+    "2967879": {
+      "lat": 48.117777777778,
+      "lon": -1.2058333333333,
+      "label_en": null,
+      "label_de": null
+    },
+    "2264397": {
+      "lat": 38.7,
+      "lon": -9.1833333333333,
+      "label_en": "Portugal",
+      "label_de": "Portugal"
+    },
+    "3996063": {
+      "lat": 23.0,
+      "lon": -102.0,
+      "label_en": "Mexico",
+      "label_de": "Mexiko"
+    },
+    "2921044": {
+      "lat": 51.5,
+      "lon": 10.5,
+      "label_en": "Germany",
+      "label_de": "Deutschland"
+    },
+    "3169070": {
+      "lat": 41.893055555556,
+      "lon": 12.482777777778,
+      "label_en": "Rome",
+      "label_de": "Rom"
+    },
+    "2186224": {
+      "lat": -41.2,
+      "lon": 174.0,
+      "label_en": "New Zealand",
+      "label_de": "Neuseeland"
+    },
+    "2372248": {
+      "lat": 12.0,
+      "lon": -15.0,
+      "label_en": "Guinea-Bissau",
+      "label_de": "Guinea-Bissau"
+    },
+    "1036973": {
+      "lat": -19.0,
+      "lon": 35.0,
+      "label_en": "Mozambique",
+      "label_de": "Mosambik"
+    },
+    "3067696": {
+      "lat": 50.0875,
+      "lon": 14.421388888889,
+      "label_en": "Prague",
+      "label_de": "Prag"
+    },
+    "2411586": {
+      "lat": 36.14,
+      "lon": -5.35,
+      "label_en": "Gibraltar",
+      "label_de": "Gibraltar"
+    },
+    "2659811": {
+      "lat": 47.0523,
+      "lon": 8.3059,
+      "label_en": "Lucerne",
+      "label_de": "Luzern"
+    },
+    "3192224": {
+      "lat": 44.870277777778,
+      "lon": 13.845555555556,
+      "label_en": "Pula",
+      "label_de": "Pula"
+    },
+    "2992166": {
+      "lat": 43.610919444444,
+      "lon": 3.8772305555556,
+      "label_en": "Montpellier",
+      "label_de": "Montpellier"
+    },
+    "3030293": {
+      "lat": 48.0,
+      "lon": -3.0,
+      "label_en": "Brittany",
+      "label_de": "Bretagne"
+    },
+    "2774326": {
+      "lat": 46.616666666667,
+      "lon": 14.3,
+      "label_en": "Klagenfurt am Wörthersee",
+      "label_de": "Klagenfurt am Wörthersee"
+    },
+    "2990363": {
+      "lat": 43.838333333333,
+      "lon": 4.3597222222222,
+      "label_en": "Nîmes",
+      "label_de": "Nîmes"
+    },
+    "541947": {
+      "lat": 54.95,
+      "lon": 22.5,
+      "label_en": "Krasnoznamensk",
+      "label_de": "Krasnosnamensk"
+    },
+    "6614567": {
+      "lat": 43.743888888889,
+      "lon": 4.7952777777778,
+      "label_en": "Les Baux-de-Provence",
+      "label_de": "Les Baux-de-Provence"
+    },
+    "2968653": {
+      "lat": 48.890277777778,
+      "lon": 2.5111111111111,
+      "label_en": "Villemomble",
+      "label_de": "Villemomble"
+    },
+    "8013213": {
+      "lat": 41.8038203,
+      "lon": -8.8540667,
+      "label_en": "Âncora",
+      "label_de": "Âncora"
+    },
+    "3058202": {
+      "lat": 48.583333333333,
+      "lon": 17.833333333333,
+      "label_en": "Piešťany",
+      "label_de": "Piešťany"
+    },
+    "3196194": {
+      "lat": 44.586666666667,
+      "lon": 14.407777777778,
+      "label_en": "Lošinj",
+      "label_de": "Lošinj"
+    },
+    "2996711": {
+      "lat": 43.832777777778,
+      "lon": 4.7819444444444,
+      "label_en": "Maillane",
+      "label_de": "Maillane"
+    },
+    "3049366": {
+      "lat": 47.388794,
+      "lon": 16.540727,
+      "label_en": "Kőszeg",
+      "label_de": "Kőszeg"
+    },
+    "2924770": {
+      "lat": 52.472222,
+      "lon": 13.327778,
+      "label_en": "Friedenau",
+      "label_de": "Friedenau"
+    },
+    "3180523": {
+      "lat": 46.409166666667,
+      "lon": 11.575,
+      "label_en": "Karersee",
+      "label_de": "Karersee"
+    },
+    "2659026": {
+      "lat": 47.04416667,
+      "lon": 8.46666667,
+      "label_en": "Rigi Kaltbad",
+      "label_de": "Rigi Kaltbad"
+    },
+    "2737824": {
+      "lat": 41.18207,
+      "lon": -8.68908,
+      "label_en": "Matosinhos (city)",
+      "label_de": "Matosinhos (Stadt)"
+    },
+    "2941976": {
+      "lat": 48.695277777778,
+      "lon": 8.135,
+      "label_en": null,
+      "label_de": "Bühl"
+    },
+    "3105976": {
+      "lat": 42.23282,
+      "lon": -8.72264,
+      "label_en": "Vigo City",
+      "label_de": "Stadt Vigo"
+    },
+    "2523578": {
+      "lat": 39.57622,
+      "lon": 16.63447,
+      "label_en": "Rossano",
+      "label_de": "Rossano"
+    },
+    "3166034": {
+      "lat": 42.048025,
+      "lon": 13.926198055556,
+      "label_en": "Sulmona",
+      "label_de": "Sulmona"
+    },
+    "2869120": {
+      "lat": 49.35374,
+      "lon": 9.13428,
+      "label_en": "Mosbach",
+      "label_de": "Mosbach"
+    },
+    "2844588": {
+      "lat": 54.0887,
+      "lon": 12.14049,
+      "label_en": "Rostock",
+      "label_de": "Rostock"
+    },
+    "2510911": {
+      "lat": 37.382777777778,
+      "lon": -5.9730555555556,
+      "label_en": "Seville city",
+      "label_de": "Sevilla"
+    },
+    "4318550": {
+      "lat": 29.8639,
+      "lon": -89.9064,
+      "label_en": "Caernarvon",
+      "label_de": null
+    },
+    "8132216": {
+      "lat": 55.835277777778,
+      "lon": 13.298611111111,
+      "label_en": null,
+      "label_de": null
+    },
+    "2792482": {
+      "lat": 50.879130555556,
+      "lon": 4.7008888888889,
+      "label_en": "Leuven",
+      "label_de": null
+    },
+    "2660631": {
+      "lat": 46.99419,
+      "lon": 8.525,
+      "label_en": "Gersau",
+      "label_de": null
+    },
+    "3104499": {
+      "lat": 42.84998,
+      "lon": -2.67268,
+      "label_en": "Vitoria-Gasteiz City",
+      "label_de": null
+    },
+    "2896514": {
+      "lat": 50.6912,
+      "lon": 10.9199,
+      "label_en": "Ilmenau",
+      "label_de": null
+    },
+    "2821216": {
+      "lat": 48.1363,
+      "lon": 8.2365,
+      "label_en": "Triberg im Schwarzwald",
+      "label_de": null
+    },
+    "3165072": {
+      "lat": 46.0693,
+      "lon": 13.23715,
+      "label_en": null,
+      "label_de": null
+    },
+    "3175395": {
+      "lat": 42.5,
+      "lon": 12.5,
+      "label_en": "Italy",
+      "label_de": "Italien"
+    },
+    "174982": {
+      "lat": 40.383333,
+      "lon": 44.95,
+      "label_en": "Armenia",
+      "label_de": "Armenien"
+    },
+    "2996944": {
+      "lat": 45.7675,
+      "lon": 4.835,
+      "label_en": "Lyon",
+      "label_de": "Lyon"
+    },
+    "3096472": {
+      "lat": 50.25,
+      "lon": 19.0,
+      "label_en": "Katowice",
+      "label_de": "Katowice"
+    },
+    "524901": {
+      "lat": 55.750555555556,
+      "lon": 37.6175,
+      "label_en": "Moscow",
+      "label_de": "Moskau"
+    },
+    "3723988": {
+      "lat": 19.0,
+      "lon": -72.8,
+      "label_en": "Haiti",
+      "label_de": "Haiti"
+    },
+    "3617476": {
+      "lat": 13.0,
+      "lon": -85.0,
+      "label_en": "Nicaragua",
+      "label_de": "Nicaragua"
+    },
+    "3355338": {
+      "lat": -23.0,
+      "lon": 17.0,
+      "label_en": "Namibia",
+      "label_de": "Namibia"
+    },
+    "2328926": {
+      "lat": 9.0,
+      "lon": 8.0,
+      "label_en": "Nigeria",
+      "label_de": "Nigeria"
+    },
+    "2809346": {
+      "lat": 50.0825,
+      "lon": 8.24,
+      "label_en": "Wiesbaden",
+      "label_de": "Wiesbaden"
+    },
+    "3688689": {
+      "lat": 4.60971,
+      "lon": -74.08175,
+      "label_en": "Bogotá",
+      "label_de": "Bogotá"
+    },
+    "2306104": {
+      "lat": 5.55602,
+      "lon": -0.1969,
+      "label_en": "Accra",
+      "label_de": "Accra"
+    },
+    "3191518": {
+      "lat": 45.083333333333,
+      "lon": 13.633333333333,
+      "label_en": "Rovinj",
+      "label_de": "Rovinj"
+    },
+    "3028641": {
+      "lat": 43.215833333333,
+      "lon": 2.3513888888889,
+      "label_en": "Carcassonne",
+      "label_de": "Carcassonne"
+    },
+    "2640729": {
+      "lat": 51.751944444444,
+      "lon": -1.2577777777778,
+      "label_en": "Oxford",
+      "label_de": "Oxford"
+    },
+    "2766818": {
+      "lat": 47.8,
+      "lon": 13.045,
+      "label_en": "Salzburg",
+      "label_de": "Salzburg"
+    },
+    "3028808": {
+      "lat": 43.5525,
+      "lon": 7.0213888888889,
+      "label_en": "Cannes",
+      "label_de": "Cannes"
+    },
+    "2659601": {
+      "lat": 46.435,
+      "lon": 6.9125,
+      "label_en": "Montreux",
+      "label_de": "Montreux"
+    },
+    "3578932": {
+      "lat": 14.0,
+      "lon": -61.0,
+      "label_en": "Lesser Antilles",
+      "label_de": "Kleine Antillen"
+    },
+    "3037612": {
+      "lat": 43.476666666667,
+      "lon": -1.5133333333333,
+      "label_en": null,
+      "label_de": null
+    },
+    "3021000": {
+      "lat": 50.370833333333,
+      "lon": 3.0791666666667,
+      "label_en": "Douai",
+      "label_de": "Douai"
+    },
+    "1241622": {
+      "lat": 7.2930555555556,
+      "lon": 80.635,
+      "label_en": "Kandy",
+      "label_de": "Kandy"
+    },
+    "2769057": {
+      "lat": 47.4403,
+      "lon": 11.6953,
+      "label_en": "Pertisau",
+      "label_de": "Pertisau"
+    },
+    "6429122": {
+      "lat": 48.629444444444,
+      "lon": -2.2577777777778,
+      "label_en": "Saint-Cast-le-Guildo",
+      "label_de": "Saint-Cast-le-Guildo"
+    },
+    "3063987": {
+      "lat": 50.642946369408,
+      "lon": 13.994595933251,
+      "label_en": "Trmice",
+      "label_de": "Trmice"
+    },
+    "8014113": {
+      "lat": 41.1174,
+      "lon": -8.00079,
+      "label_en": "Freguesia de Santa Cruz do Douro",
+      "label_de": "Freguesia de Santa Cruz do Douro"
+    },
+    "2651817": {
+      "lat": 51.3727,
+      "lon": -0.1099,
+      "label_en": "Croydon",
+      "label_de": "Croydon"
+    },
+    "2205217": {
+      "lat": -18.0,
+      "lon": 178.0,
+      "label_en": "Fijian Archipelago",
+      "label_de": "Fidschi-Inseln"
+    },
+    "934293": {
+      "lat": -20.3,
+      "lon": 57.583333333333,
+      "label_en": "Mauritius Island",
+      "label_de": "Insel Mauritius"
+    },
+    "2659422": {
+      "lat": 46.38252,
+      "lon": 6.23883,
+      "label_en": "Noviodunum",
+      "label_de": "Colonia Iulia Equestris"
+    },
+    "3167131": {
+      "lat": 46.642903,
+      "lon": 11.356688,
+      "label_en": "Sarnthein",
+      "label_de": "Sarnthein"
+    },
+    "633295": {
+      "lat": 64.7625,
+      "lon": 26.41944444,
+      "label_en": "Utajärvi centre",
+      "label_de": "Utajärvi"
+    },
+    "3177952": {
+      "lat": 46.5369,
+      "lon": 12.13903,
+      "label_en": "Cortina d'Ampezzo",
+      "label_de": "Cortina d'Ampezzo"
+    },
+    "3177558": {
+      "lat": 44.53326,
+      "lon": 7.9451,
+      "label_en": "Dogliani",
+      "label_de": "Dogliani"
+    },
+    "2781371": {
+      "lat": 47.41026,
+      "lon": 15.26276,
+      "label_en": "Bruck an der Mur",
+      "label_de": "Bruck an der Mur"
+    },
+    "3127461": {
+      "lat": 42.34113004,
+      "lon": -3.70419805,
+      "label_en": "Burgos city",
+      "label_de": "Burgos Stadt"
+    },
+    "2844056": {
+      "lat": 49.3771899,
+      "lon": 10.1788809,
+      "label_en": "Rothenburg ob der Tauber",
+      "label_de": "Rothenburg ob der Tauber"
+    },
+    "683890": {
+      "lat": 45.51636,
+      "lon": 25.371402,
+      "label_en": "Bran",
+      "label_de": null
+    },
+    "683902": {
+      "lat": 45.269166666667,
+      "lon": 27.9575,
+      "label_en": "Brăila",
+      "label_de": null
+    },
+    "3169022": {
+      "lat": 46.04934,
+      "lon": 11.40824,
+      "label_en": "Roncegno Terme",
+      "label_de": null
+    },
+    "2659696": {
+      "lat": 45.9221,
+      "lon": 8.98544,
+      "label_en": null,
+      "label_de": null
+    },
+    "2946447": {
+      "lat": 50.73616,
+      "lon": 7.1002,
+      "label_en": "Bonn",
+      "label_de": null
+    },
+    "2852440": {
+      "lat": 49.771388888889,
+      "lon": 11.407777777778,
+      "label_en": "Pottenstein",
+      "label_de": null
+    },
+    "2825297": {
+      "lat": 48.77667,
+      "lon": 9.1775,
+      "label_en": null,
+      "label_de": null
+    },
+    "3165524": {
+      "lat": 45.05,
+      "lon": 7.6666666666667,
+      "label_en": "Torino",
+      "label_de": null
+    },
+    "3177090": {
+      "lat": 44.83804,
+      "lon": 11.62057,
+      "label_en": null,
+      "label_de": null
+    },
+    "6251999": {
+      "lat": 56.0,
+      "lon": -109.0,
+      "label_en": "Canada",
+      "label_de": "Kanada"
+    },
+    "4930956": {
+      "lat": 42.360277777778,
+      "lon": -71.057777777778,
+      "label_en": "Boston",
+      "label_de": "Boston"
+    },
+    "2589581": {
+      "lat": 28.0,
+      "lon": 1.0,
+      "label_en": "Algeria",
+      "label_de": "Algerien"
+    },
+    "756135": {
+      "lat": 52.23,
+      "lon": 21.011111111111,
+      "label_en": "Warsaw",
+      "label_de": "Warschau"
+    },
+    "2983990": {
+      "lat": 48.114166666667,
+      "lon": -1.6808333333333,
+      "label_en": "Rennes",
+      "label_de": "Rennes"
+    },
+    "3595528": {
+      "lat": 15.5,
+      "lon": -90.25,
+      "label_en": "Guatemala",
+      "label_de": "Guatemala"
+    },
+    "611717": {
+      "lat": 41.7225,
+      "lon": 44.7925,
+      "label_en": "Tbilisi",
+      "label_de": "Tiflis"
+    },
+    "2400553": {
+      "lat": -0.68333055555556,
+      "lon": 11.5,
+      "label_en": "Gabon",
+      "label_de": "Gabun"
+    },
+    "281184": {
+      "lat": 31.778888888889,
+      "lon": 35.225555555556,
+      "label_en": "Jerusalem",
+      "label_de": "Jerusalem"
+    },
+    "2759661": {
+      "lat": 51.983333333333,
+      "lon": 5.9166666666667,
+      "label_en": "Arnhem",
+      "label_de": "Arnheim"
+    },
+    "6559171": {
+      "lat": 48.1375,
+      "lon": 11.575,
+      "label_en": "Munich",
+      "label_de": "München"
+    },
+    "3186952": {
+      "lat": 44.114166666667,
+      "lon": 15.2275,
+      "label_en": "Zadar",
+      "label_de": "Zadar"
+    },
+    "1642911": {
+      "lat": -6.2438721203105,
+      "lon": 106.89799635249,
+      "label_en": "Borobudur University",
+      "label_de": null
+    },
+    "2240449": {
+      "lat": -8.8383333333333,
+      "lon": 13.234444444444,
+      "label_en": "Luanda",
+      "label_de": "Luanda"
+    },
+    "2973783": {
+      "lat": 48.573333333333,
+      "lon": 7.7522222222222,
+      "label_en": "Strasbourg",
+      "label_de": "Straßburg"
+    },
+    "3078610": {
+      "lat": 49.195277777778,
+      "lon": 16.608333333333,
+      "label_en": "Brno",
+      "label_de": "Brünn"
+    },
+    "2874978": {
+      "lat": 49.244444444444,
+      "lon": 8.2741666666667,
+      "label_en": "Lustadt",
+      "label_de": "Lustadt"
+    },
+    "2810284": {
+      "lat": 54.91,
+      "lon": 8.3075,
+      "label_en": "Westerland",
+      "label_de": "Westerland"
+    },
+    "2993002": {
+      "lat": 44.017222222222,
+      "lon": 1.355,
+      "label_en": "Montauban",
+      "label_de": "Montauban"
+    },
+    "3195674": {
+      "lat": 44.533888888889,
+      "lon": 14.468055555556,
+      "label_en": "Mali Lošinj",
+      "label_de": "Mali Lošinj"
+    },
+    "2911522": {
+      "lat": 51.4831,
+      "lon": 11.9689,
+      "label_en": "Altstadt",
+      "label_de": "Altstadt"
+    },
+    "2974162": {
+      "lat": 43.876944444444,
+      "lon": 7.4483333333333,
+      "label_en": "Sospel",
+      "label_de": "Sospel"
+    },
+    "3062394": {
+      "lat": 50.06444,
+      "lon": 14.4525,
+      "label_en": "Vršovice",
+      "label_de": "Vršovice"
+    },
+    "3076136": {
+      "lat": 50.120455065226,
+      "lon": 12.35181521379,
+      "label_en": "Františkovy Lázně",
+      "label_de": "Františkovy Lázně"
+    },
+    "2610634": {
+      "lat": 55.4758,
+      "lon": 9.1381,
+      "label_en": "Vejen",
+      "label_de": "Vejen"
+    },
+    "3037689": {
+      "lat": 45.52625,
+      "lon": 4.26021,
+      "label_en": null,
+      "label_de": null
+    },
+    "3153874": {
+      "lat": 60.333333333333,
+      "lon": 6.5,
+      "label_en": "Hardanger",
+      "label_de": "Hardanger"
+    },
+    "1024695": {
+      "lat": -12.32514,
+      "lon": 40.5943,
+      "label_en": "Ibo District",
+      "label_de": "Distrikt Ibo"
+    },
+    "2516548": {
+      "lat": 37.266388888889,
+      "lon": -6.94,
+      "label_en": "Huelva city",
+      "label_de": "Huelva Stadt"
+    },
+    "3173140": {
+      "lat": 46.75774,
+      "lon": 12.10556,
+      "label_en": "Welsberg",
+      "label_de": "Welsberg"
+    },
+    "3174833": {
+      "lat": 41.86125,
+      "lon": 15.35322,
+      "label_en": "Lesina",
+      "label_de": "Lesina"
+    },
+    "3173577": {
+      "lat": 46.67173,
+      "lon": 11.16194,
+      "label_en": "Historic centre",
+      "label_de": "Altstadt"
+    },
+    "2831250": {
+      "lat": 50.3575412,
+      "lon": 11.1691714,
+      "label_en": "Sonneberg",
+      "label_de": "Sonneberg"
+    },
+    "2658872": {
+      "lat": 46.393409,
+      "lon": 6.804338,
+      "label_en": "Saint-Gingolph",
+      "label_de": null
+    },
+    "2658145": {
+      "lat": 46.46299,
+      "lon": 6.84345,
+      "label_en": null,
+      "label_de": null
+    },
+    "2659165": {
+      "lat": 46.3244,
+      "lon": 10.05721,
+      "label_en": "Poschiavo",
+      "label_de": null
+    },
+    "2658569": {
+      "lat": 46.36592,
+      "lon": 9.22155,
+      "label_en": "Soazza",
+      "label_de": null
+    },
+    "3689147": {
+      "lat": 10.96854,
+      "lon": -74.78132,
+      "label_en": "Barranquilla",
+      "label_de": null
+    },
+    "2924656": {
+      "lat": 50.8594,
+      "lon": 10.5721,
+      "label_en": "Friedrichroda",
+      "label_de": null
+    },
+    "2523083": {
+      "lat": 37.08515,
+      "lon": 15.273,
+      "label_en": "Siracusa",
+      "label_de": null
+    },
+    "3164603": {
+      "lat": 45.4389,
+      "lon": 12.33092,
+      "label_en": "Venezia",
+      "label_de": null
+    },
+    "3181528": {
+      "lat": 40.63215,
+      "lon": 17.93607,
+      "label_en": null,
+      "label_de": null
+    },
+    "3165185": {
+      "lat": 45.64325,
+      "lon": 13.7903,
+      "label_en": null,
+      "label_de": null
+    },
+    "660325": {
+      "lat": 59.975,
+      "lon": 23.436111111111,
+      "label_en": "Tammisaari central locality",
+      "label_de": null
+    },
+    "2510769": {
+      "lat": 40.2,
+      "lon": -3.5,
+      "label_en": "Spain",
+      "label_de": "Spanien"
+    },
+    "2077456": {
+      "lat": -25.0,
+      "lon": 133.0,
+      "label_en": "Australia",
+      "label_de": "Australien"
+    },
+    "1275004": {
+      "lat": 22.5675,
+      "lon": 88.37,
+      "label_en": "Kolkata",
+      "label_de": "Kolkata"
+    },
+    "2673730": {
+      "lat": 59.329444444444,
+      "lon": 18.068611111111,
+      "label_en": "Stockholm",
+      "label_de": "Stockholm"
+    },
+    "456172": {
+      "lat": 56.9475,
+      "lon": 24.106944444444,
+      "label_en": "Riga",
+      "label_de": "Riga"
+    },
+    "1273874": {
+      "lat": 9.9666666666667,
+      "lon": 76.283333333333,
+      "label_en": "Kochi",
+      "label_de": "Kochi"
+    },
+    "3383330": {
+      "lat": 5.8666666666667,
+      "lon": -55.166666666667,
+      "label_en": "Paramaribo",
+      "label_de": "Paramaribo"
+    },
+    "2464470": {
+      "lat": 36.800833333333,
+      "lon": 10.18,
+      "label_en": "Tunis",
+      "label_de": "Tunis"
+    },
+    "3191401": {
+      "lat": 46.538333333333,
+      "lon": 15.515277777778,
+      "label_en": "Ruše",
+      "label_de": "Ruše"
+    },
+    "685608": {
+      "lat": 42.0,
+      "lon": 22.0,
+      "label_en": "Balkans",
+      "label_de": "Balkanhalbinsel"
+    },
+    "7729887": {
+      "lat": 30.440741666667,
+      "lon": 9.6817138888889,
+      "label_en": "North Africa",
+      "label_de": "Nordafrika"
+    },
+    "3579132": {
+      "lat": 17.898611111111,
+      "lon": -62.849166666667,
+      "label_en": "Gustavia",
+      "label_de": "Gustavia"
+    },
+    "2762300": {
+      "lat": 47.243611111111,
+      "lon": 9.8938888888889,
+      "label_en": "Vorarlberg",
+      "label_de": "Vorarlberg"
+    },
+    "2772400": {
+      "lat": 48.28377,
+      "lon": 14.31771,
+      "label_en": "Linz",
+      "label_de": "Linz"
+    },
+    "2764581": {
+      "lat": 47.25,
+      "lon": 15.166666666667,
+      "label_en": "Styria",
+      "label_de": "Steiermark"
+    },
+    "1271155": {
+      "lat": 20.426944444444,
+      "lon": 72.85,
+      "label_en": "Daman and Diu",
+      "label_de": "Daman und Diu"
+    },
+    "1263780": {
+      "lat": 12.871666666667,
+      "lon": 74.8425,
+      "label_en": "Mangaluru",
+      "label_de": "Mangaluru"
+    },
+    "2991481": {
+      "lat": 46.564722222222,
+      "lon": 3.3325,
+      "label_en": "Moulins",
+      "label_de": "Moulins"
+    },
+    "723713": {
+      "lat": 48.658611111111,
+      "lon": 20.531388888889,
+      "label_en": "Rožňava",
+      "label_de": "Rožňava"
+    },
+    "2976021": {
+      "lat": 43.3125,
+      "lon": -1.58,
+      "label_en": null,
+      "label_de": null
+    },
+    "3028152": {
+      "lat": 42.889166666667,
+      "lon": -0.11361111111111,
+      "label_en": "Cauterets",
+      "label_de": "Cauterets"
+    },
+    "3050212": {
+      "lat": 46.7675,
+      "lon": 17.24628,
+      "label_en": "Keszthely",
+      "label_de": "Keszthely"
+    },
+    "3166483": {
+      "lat": 46.5444,
+      "lon": 11.5622,
+      "label_en": "Seis am Schlern",
+      "label_de": "Seis am Schlern"
+    },
+    "7871635": {
+      "lat": 46.616388888889,
+      "lon": 14.161388888889,
+      "label_en": "Maria Wörth",
+      "label_de": "Maria Wörth"
+    },
+    "2978131": {
+      "lat": 48.65,
+      "lon": 0.75805555555556,
+      "label_en": "Saint-Maurice-lès-Charencey",
+      "label_de": "Saint-Maurice-lès-Charencey"
+    },
+    "6441006": {
+      "lat": 42.403888888889,
+      "lon": 2.4791666666667,
+      "label_en": "Prats-de-Mollo-la-Preste",
+      "label_de": "Prats-de-Mollo-la-Preste"
+    },
+    "2799108": {
+      "lat": 51.0528,
+      "lon": 3.6617,
+      "label_en": "Drongen",
+      "label_de": "Drongen"
+    },
+    "3180559": {
+      "lat": 46.62027778,
+      "lon": 12.21722222,
+      "label_en": "Schluderbach",
+      "label_de": "Schluderbach"
+    },
+    "2938913": {
+      "lat": 49.8825,
+      "lon": 8.67472,
+      "label_en": "Kreisfreie Stadt Darmstadt",
+      "label_de": "Kreisfreie Stadt Darmstadt"
+    },
+    "2930596": {
+      "lat": 53.3625,
+      "lon": 7.18361,
+      "label_en": "Kreisfreie Stadt Emden",
+      "label_de": "Kreisfreie Stadt Emden"
+    },
+    "2867543": {
+      "lat": 51.95639,
+      "lon": 7.63722,
+      "label_en": "Kreisfreie Stadt Münster",
+      "label_de": "Kreisfreie Stadt Münster"
+    },
+    "2915653": {
+      "lat": 51.06667,
+      "lon": 10.83333,
+      "label_en": "Großfahner",
+      "label_de": "Großfahner"
+    },
+    "2763795": {
+      "lat": 47.71565,
+      "lon": 16.03575,
+      "label_en": "Ternitz",
+      "label_de": "Ternitz"
+    },
+    "2773913": {
+      "lat": 48.3056,
+      "lon": 16.3245,
+      "label_en": "Klosterneuburg",
+      "label_de": "Klosterneuburg"
+    },
+    "2779202": {
+      "lat": 47.28386,
+      "lon": 15.27515,
+      "label_en": "Frohnleiten",
+      "label_de": "Frohnleiten"
+    },
+    "2661593": {
+      "lat": 47.36745,
+      "lon": 8.87905,
+      "label_en": null,
+      "label_de": "Bauma"
+    },
+    "3489941": {
+      "lat": 18.0,
+      "lon": -77.0,
+      "label_en": "Jamaica",
+      "label_de": "Jamaika"
+    },
+    "3170335": {
+      "lat": 40.74574,
+      "lon": 14.49698,
+      "label_en": "Pompei",
+      "label_de": "Pompei"
+    },
+    "8986983": {
+      "lat": 46.53641,
+      "lon": 15.82913,
+      "label_en": "Zavrh",
+      "label_de": null
+    },
+    "1227604": {
+      "lat": 7.5,
+      "lon": 80.75,
+      "label_en": "Sri Lanka",
+      "label_de": null
+    },
+    "3024979": {
+      "lat": 43.382777777778,
+      "lon": -1.6761111111111,
+      "label_en": "Ciboure",
+      "label_de": null
+    },
+    "3173331": {
+      "lat": 44.64783,
+      "lon": 10.92539,
+      "label_en": null,
+      "label_de": null
+    },
+    "3172189": {
+      "lat": 45.44694,
+      "lon": 8.62118,
+      "label_en": null,
+      "label_de": null
+    },
+    "2658434": {
+      "lat": 46.798562,
+      "lon": 8.231973,
+      "label_en": "Switzerland",
+      "label_de": "Schweiz"
+    },
+    "3382998": {
+      "lat": 4.0,
+      "lon": -56.0,
+      "label_en": "Suriname",
+      "label_de": "Suriname"
+    },
+    "2275384": {
+      "lat": 6.533333,
+      "lon": -9.75,
+      "label_en": "Liberia",
+      "label_de": "Liberia"
+    },
+    "2542007": {
+      "lat": 32.0,
+      "lon": -6.0,
+      "label_en": "Morocco",
+      "label_de": "Marokko"
+    },
+    "3553478": {
+      "lat": 23.136666666667,
+      "lon": -82.358888888889,
+      "label_en": "Havana",
+      "label_de": "Havanna"
+    },
+    "2925177": {
+      "lat": 47.995,
+      "lon": 7.85,
+      "label_en": "Freiburg im Breisgau",
+      "label_de": "Freiburg im Breisgau"
+    },
+    "3374333": {
+      "lat": 14.917719444444,
+      "lon": -23.509155555556,
+      "label_en": "Praia",
+      "label_de": "Praia"
+    },
+    "3381670": {
+      "lat": 4.0,
+      "lon": -53.0,
+      "label_en": "French Guiana",
+      "label_de": "Französisch-Guayana"
+    },
+    "3369157": {
+      "lat": -33.925277777778,
+      "lon": 18.423888888889,
+      "label_en": "Cape Town",
+      "label_de": "Kapstadt"
+    },
+    "6541903": {
+      "lat": 40.694722222222,
+      "lon": 14.480277777778,
+      "label_en": "Castellammare di Stabia",
+      "label_de": "Castellammare di Stabia"
+    },
+    "2657970": {
+      "lat": 47.4992,
+      "lon": 8.72671,
+      "label_en": "Winterthur",
+      "label_de": "Winterthur"
+    },
+    "3130380": {
+      "lat": 43.352777777778,
+      "lon": -3.0116666666667,
+      "label_en": "Algorta",
+      "label_de": "Algorta"
+    },
+    "7729901": {
+      "lat": -16.852961,
+      "lon": 148.40522,
+      "label_en": "Polynesia",
+      "label_de": "Polynesien"
+    },
+    "3042400": {
+      "lat": 49.43,
+      "lon": -2.35,
+      "label_en": "Channel Islands",
+      "label_de": "Kanalinseln"
+    },
+    "935264": {
+      "lat": -20.878888888889,
+      "lon": 55.448055555556,
+      "label_en": "Saint-Denis",
+      "label_de": "Saint-Denis"
+    },
+    "4839366": {
+      "lat": 41.308333333333,
+      "lon": -72.925,
+      "label_en": "New Haven",
+      "label_de": "New Haven"
+    },
+    "2661169": {
+      "lat": 46.84986,
+      "lon": 9.53287,
+      "label_en": null,
+      "label_de": null
+    },
+    "3037456": {
+      "lat": 43.58,
+      "lon": 7.1230555555556,
+      "label_en": "Antibes",
+      "label_de": "Antibes"
+    },
+    "2988358": {
+      "lat": 43.300833333333,
+      "lon": -0.37,
+      "label_en": "Pau",
+      "label_de": "Pau"
+    },
+    "548114": {
+      "lat": 43.91,
+      "lon": 42.72,
+      "label_en": "Kislovodsk",
+      "label_de": "Kislowodsk"
+    },
+    "3491552": {
+      "lat": 18.2176,
+      "lon": -67.8639,
+      "label_en": "Antilles",
+      "label_de": "Antillen"
+    },
+    "2463679": {
+      "lat": 39.623888888889,
+      "lon": 19.921388888889,
+      "label_en": "Corfu",
+      "label_de": "Korfu Stadt"
+    },
+    "3008432": {
+      "lat": 43.138055555556,
+      "lon": 6.2344444444444,
+      "label_en": "La Londe-les-Maures",
+      "label_de": "La Londe-les-Maures"
+    },
+    "3239262": {
+      "lat": 46.633333333333,
+      "lon": 16.05,
+      "label_en": "Municipality of Radenci",
+      "label_de": "Radenci"
+    },
+    "6440635": {
+      "lat": 43.116388888889,
+      "lon": -0.8625,
+      "label_en": "Tardets-Sorholus",
+      "label_de": "Tardets-Sorholus"
+    },
+    "6535971": {
+      "lat": 46.51777,
+      "lon": 11.502776,
+      "label_en": "Fiè allo Sciliar",
+      "label_de": "Völs am Schlern-Fiè allo Sciliar"
+    },
+    "3063739": {
+      "lat": 49.069757549526,
+      "lon": 17.459691353499,
+      "label_en": "Uherské Hradiště",
+      "label_de": "Uherské Hradiště"
+    },
+    "2973480": {
+      "lat": 45.840277777778,
+      "lon": 6.2136111111111,
+      "label_en": "Talloires",
+      "label_de": "Talloires"
+    },
+    "3026258": {
+      "lat": 46.561944444444,
+      "lon": 2.2005555555556,
+      "label_en": "Châteaumeillant",
+      "label_de": "Châteaumeillant"
+    },
+    "3196175": {
+      "lat": 45.291666666667,
+      "lon": 14.276388888889,
+      "label_en": "Lovran",
+      "label_de": "Lovran"
+    },
+    "2392308": {
+      "lat": 6.3666666666667,
+      "lon": 2.0833333333333,
+      "label_en": "Ouidah",
+      "label_de": "Ouidah"
+    },
+    "3074166": {
+      "lat": 49.786324971904,
+      "lon": 13.978728301323,
+      "label_en": "Jince",
+      "label_de": "Jince"
+    },
+    "787487": {
+      "lat": 41.116944444444,
+      "lon": 20.801944444444,
+      "label_en": "Ohrid",
+      "label_de": "Ohrid"
+    },
+    "350714": {
+      "lat": 29.472222222222,
+      "lon": 30.614166666667,
+      "label_en": "Lake Moeris",
+      "label_de": "Qarun-See"
+    },
+    "2805762": {
+      "lat": 50.0373241,
+      "lon": 12.0027278,
+      "label_en": "Wunsiedel",
+      "label_de": "Wunsiedel"
+    },
+    "2775018": {
+      "lat": 47.116202,
+      "lon": 15.343539,
+      "label_en": "Judendorf",
+      "label_de": "Judendorf"
+    },
+    "148730": {
+      "lat": -6.1666666666667,
+      "lon": 39.2,
+      "label_en": "Zanzibar City",
+      "label_de": "Sansibar Stadt"
+    },
+    "2767777": {
+      "lat": 47.69509,
+      "lon": 15.84572,
+      "label_en": "Reichenau an der Rax",
+      "label_de": "Reichenau an der Rax"
+    },
+    "3120989": {
+      "lat": 43.31451965,
+      "lon": -2.68146436,
+      "label_en": "Gernika-Lumo",
+      "label_de": "Gernika-Lumo"
+    },
+    "2659435": {
+      "lat": 46.0102,
+      "lon": 8.8561,
+      "label_en": null,
+      "label_de": null
+    },
+    "3118523": {
+      "lat": 43.36417,
+      "lon": -2.50492,
+      "label_en": "Lekeitio",
+      "label_de": null
+    },
+    "2820860": {
+      "lat": 48.5228,
+      "lon": 9.05179,
+      "label_en": "Tübingen",
+      "label_de": null
+    },
+    "3017382": {
+      "lat": 47.0,
+      "lon": 2.0,
+      "label_en": "France",
+      "label_de": "Frankreich"
+    },
+    "2757345": {
+      "lat": 52.011666666667,
+      "lon": 4.3591666666667,
+      "label_en": "Delft",
+      "label_de": "Delft"
+    },
+    "3378535": {
+      "lat": 5.733333,
+      "lon": -59.316667,
+      "label_en": "Guyana",
+      "label_de": "Guyana"
+    },
+    "241170": {
+      "lat": -7.1,
+      "lon": 52.766667,
+      "label_en": "Seychelles",
+      "label_de": "Seychellen"
+    },
+    "3164604": {
+      "lat": 45.733333333333,
+      "lon": 11.85,
+      "label_en": "Veneto",
+      "label_de": "Venetien"
+    },
+    "1264527": {
+      "lat": 13.0825,
+      "lon": 80.275,
+      "label_en": "Chennai",
+      "label_de": "Chennai"
+    },
+    "2761369": {
+      "lat": 48.208333333333,
+      "lon": 16.3725,
+      "label_en": "Vienna",
+      "label_de": "Wien"
+    },
+    "3054643": {
+      "lat": 47.498333333333,
+      "lon": 19.040833333333,
+      "label_en": "Budapest",
+      "label_de": "Budapest"
+    },
+    "3081368": {
+      "lat": 51.11,
+      "lon": 17.0325,
+      "label_en": "Wrocław",
+      "label_de": "Breslau"
+    },
+    "2907911": {
+      "lat": 49.412222222222,
+      "lon": 8.71,
+      "label_en": "Heidelberg",
+      "label_de": "Heidelberg"
+    },
+    "1626198": {
+      "lat": -0.29888888888889,
+      "lon": 101.27083055556,
+      "label_en": "Sumatra",
+      "label_de": "Sumatra"
+    },
+    "1642673": {
+      "lat": -7.4916666666667,
+      "lon": 110.00444444444,
+      "label_en": "Java",
+      "label_de": "Java"
+    },
+    "3114710": {
+      "lat": 43.361388888889,
+      "lon": -5.8477777777778,
+      "label_en": "Asturias",
+      "label_de": "Asturien"
+    },
+    "1796236": {
+      "lat": 31.209768,
+      "lon": 121.453266,
+      "label_en": "Eye and ENT Hospital of Fudan University",
+      "label_de": null
+    },
+    "2990969": {
+      "lat": 47.217222222222,
+      "lon": -1.5538888888889,
+      "label_en": "Nantes",
+      "label_de": "Nantes"
+    },
+    "2661881": {
+      "lat": 47.39254,
+      "lon": 8.04422,
+      "label_en": null,
+      "label_de": null
+    },
+    "3570311": {
+      "lat": 14.65,
+      "lon": -61.015,
+      "label_en": "Martinique",
+      "label_de": "Martinique"
+    },
+    "683506": {
+      "lat": 44.413361111111,
+      "lon": 26.097777777778,
+      "label_en": "Bucharest",
+      "label_de": "Bukarest"
+    },
+    "3504558": {
+      "lat": 19.0,
+      "lon": -71.0,
+      "label_en": "Hispaniola",
+      "label_de": "Hispaniola"
+    },
+    "2659496": {
+      "lat": 46.990277777778,
+      "lon": 6.9305555555556,
+      "label_en": "Neuchâtel",
+      "label_de": "Neuenburg"
+    },
+    "6555826": {
+      "lat": 48.104722222222,
+      "lon": 8.2027777777778,
+      "label_en": "Schönwald im Schwarzwald",
+      "label_de": "Schönwald im Schwarzwald"
+    },
+    "3184081": {
+      "lat": 42.068132,
+      "lon": 19.512138,
+      "label_en": "Shkodër",
+      "label_de": "Shkodra"
+    },
+    "3032797": {
+      "lat": 43.48,
+      "lon": -1.5555555555556,
+      "label_en": null,
+      "label_de": null
+    },
+    "935495": {
+      "lat": -20.2,
+      "lon": 57.75,
+      "label_en": "Mascarene Islands",
+      "label_de": "Maskarenen"
+    },
+    "6159905": {
+      "lat": 49.1833,
+      "lon": -122.85,
+      "label_en": "Surrey",
+      "label_de": "Surrey"
+    },
+    "3096576": {
+      "lat": 50.766666666667,
+      "lon": 15.75,
+      "label_en": "Karpacz",
+      "label_de": "Karpacz"
+    },
+    "2374688": {
+      "lat": 11.5776,
+      "lon": -15.4742,
+      "label_en": "Bolama",
+      "label_de": "Bolama"
+    },
+    "3078910": {
+      "lat": 49.487537313637,
+      "lon": 16.660002080035,
+      "label_en": "Boskovice",
+      "label_de": "Boskovice"
+    },
+    "2934073": {
+      "lat": 52.1833,
+      "lon": 11.5708,
+      "label_en": "Ebendorf",
+      "label_de": "Ebendorf"
+    },
+    "1057213": {
+      "lat": -16.9,
+      "lon": 49.9,
+      "label_en": "Île Sainte-Marie",
+      "label_de": "Sainte Marie"
+    },
+    "11071622": {
+      "lat": 48.583333333333,
+      "lon": 7.75,
+      "label_en": "Grand Est",
+      "label_de": "Grand Est"
+    },
+    "2771277": {
+      "lat": 47.85648,
+      "lon": 13.34908,
+      "label_en": "Mondsee",
+      "label_de": "Mondsee"
+    },
+    "2780207": {
+      "lat": 47.53333,
+      "lon": 14.88333,
+      "label_en": "Eisenerz",
+      "label_de": "Eisenerz"
+    },
+    "3109718": {
+      "lat": 43.46216667,
+      "lon": -3.809722222,
+      "label_en": "Santander City",
+      "label_de": "Santander"
+    },
+    "2511174": {
+      "lat": 28.46285408,
+      "lon": -16.24720629,
+      "label_en": "Santa Cruz de Tenerife",
+      "label_de": "Santa Cruz de Tenerife"
+    },
+    "3171891": {
+      "lat": 46.57603,
+      "lon": 11.67176,
+      "label_en": "Urtijëi",
+      "label_de": "St. Ulrich"
+    },
+    "2861650": {
+      "lat": 49.454166666667,
+      "lon": 11.0775,
+      "label_en": "Nuremberg",
+      "label_de": "Nürnberg"
+    },
+    "2805615": {
+      "lat": 49.79245,
+      "lon": 9.932966,
+      "label_en": "Würzburg",
+      "label_de": "Würzburg"
+    },
+    "2958545": {
+      "lat": 50.01667,
+      "lon": 12.01667,
+      "label_en": "Bad Alexandersbad",
+      "label_de": "Bad Alexandersbad"
+    },
+    "3110458": {
+      "lat": 40.59254063,
+      "lon": -4.14508803,
+      "label_en": "San Lorenzo de El Escorial",
+      "label_de": "San Lorenzo de El Escorial"
+    },
+    "934072": {
+      "lat": -20.40028,
+      "lon": 57.59667,
+      "label_en": "Rose-Belle",
+      "label_de": null
+    },
+    "7289509": {
+      "lat": 51.4147,
+      "lon": -0.067,
+      "label_en": "Anerley",
+      "label_de": null
+    },
+    "3058996": {
+      "lat": 48.965833333333,
+      "lon": 19.139722222222,
+      "label_en": "Ľubochnianska dolina",
+      "label_de": null
+    },
+    "3017924": {
+      "lat": 48.7892,
+      "lon": 2.29285,
+      "label_en": "École normale supérieure de Fontenay-aux-Roses",
+      "label_de": null
+    },
+    "2775220": {
+      "lat": 47.28873,
+      "lon": 11.38158,
+      "label_en": "Innsbruck",
+      "label_de": null
+    },
+    "798544": {
+      "lat": 52.0,
+      "lon": 19.0,
+      "label_en": "Poland",
+      "label_de": "Polen"
+    },
+    "7287650": {
+      "lat": 47.38283,
+      "lon": 8.53071,
+      "label_en": "Zürich",
+      "label_de": null
+    },
+    "1814991": {
+      "lat": 35.844722222222,
+      "lon": 103.45194444444,
+      "label_en": "People's Republic of China",
+      "label_de": "Volksrepublik China"
+    },
+    "3895114": {
+      "lat": -33.0,
+      "lon": -71.0,
+      "label_en": "Chile",
+      "label_de": "Chile"
+    },
+    "3202781": {
+      "lat": 46.22909194,
+      "lon": 15.264128741,
+      "label_en": "Celje",
+      "label_de": "Celje"
+    },
+    "1545739": {
+      "lat": -20.0,
+      "lon": 80.0,
+      "label_en": "Indian Ocean",
+      "label_de": "Indischer Ozean"
+    },
+    "1701668": {
+      "lat": 14.595833333333,
+      "lon": 120.97722222222,
+      "label_en": "Manila",
+      "label_de": "Manila"
+    },
+    "792680": {
+      "lat": 44.817777777778,
+      "lon": 20.456944444444,
+      "label_en": "Belgrade",
+      "label_de": "Belgrad"
+    },
+    "276781": {
+      "lat": 33.886944444444,
+      "lon": 35.513055555556,
+      "label_en": "Beirut",
+      "label_de": "Beirut"
+    },
+    "934154": {
+      "lat": -20.161944444444,
+      "lon": 57.498888888889,
+      "label_en": "Port Louis",
+      "label_de": "Port Louis"
+    },
+    "3183462": {
+      "lat": 42.775833,
+      "lon": 15.426111,
+      "label_en": "Adriatic Sea",
+      "label_de": "Adriatisches Meer"
+    },
+    "1821275": {
+      "lat": 22.19,
+      "lon": 113.53805555556,
+      "label_en": "Macau",
+      "label_de": "Macau"
+    },
+    "3181912": {
+      "lat": 46.50000001,
+      "lon": 11.33333334,
+      "label_en": "South Tyrol",
+      "label_de": "Südtirol"
+    },
+    "1298824": {
+      "lat": 16.795,
+      "lon": 96.16,
+      "label_en": "Yangon",
+      "label_de": "Rangun"
+    },
+    "1734759": {
+      "lat": 2.1888888888889,
+      "lon": 102.25111111111,
+      "label_en": "Malacca",
+      "label_de": "Malakka"
+    },
+    "360502": {
+      "lat": 25.696666666667,
+      "lon": 32.644444444444,
+      "label_en": "Luxor",
+      "label_de": "Luxor"
+    },
+    "1053384": {
+      "lat": -18.155,
+      "lon": 49.41,
+      "label_en": "Toamasina",
+      "label_de": "Toamasina"
+    },
+    "3013534": {
+      "lat": 43.371666666667,
+      "lon": -1.7738888888889,
+      "label_en": null,
+      "label_de": null
+    },
+    "3035961": {
+      "lat": 43.390833333333,
+      "lon": -0.97055555555556,
+      "label_en": null,
+      "label_de": null
+    },
+    "1278860": {
+      "lat": 30.378611111111,
+      "lon": 76.7725,
+      "label_en": "Ambala",
+      "label_de": "Ambala"
+    },
+    "8643247": {
+      "lat": 46.69884,
+      "lon": 11.93104,
+      "label_en": "Al Plan",
+      "label_de": "St. Vigil"
+    },
+    "2659779": {
+      "lat": 46.401388888889,
+      "lon": 9.6958333333333,
+      "label_en": "Maloja",
+      "label_de": "Maloja"
+    },
+    "7873357": {
+      "lat": 46.729444444444,
+      "lon": 15.296111111111,
+      "label_en": "Pölfing-Brunn",
+      "label_de": "Pölfing-Brunn"
+    },
+    "2771896": {
+      "lat": 47.1072,
+      "lon": 15.4914,
+      "label_en": "Mariatrost",
+      "label_de": "Mariatrost"
+    },
+    "2523118": {
+      "lat": 37.566666666667,
+      "lon": 14.266666666667,
+      "label_en": "Sicily",
+      "label_de": "Sizilien"
+    },
+    "2918752": {
+      "lat": 50.94823,
+      "lon": 10.70193,
+      "label_en": "Gotha",
+      "label_de": "Gotha"
+    },
+    "2782055": {
+      "lat": 47.64252,
+      "lon": 13.61609,
+      "label_en": "Bad Goisern",
+      "label_de": "Bad Goisern"
+    },
+    "2765170": {
+      "lat": 47.64224,
+      "lon": 15.8241,
+      "label_en": "Semmering",
+      "label_de": "Semmering"
+    },
+    "2774368": {
+      "lat": 47.51328,
+      "lon": 16.28255,
+      "label_en": "Kirchschlag in der Buckligen Welt",
+      "label_de": "Kirchschlag in der Buckligen Welt"
+    },
+    "2781503": {
+      "lat": 47.50661,
+      "lon": 9.73792,
+      "label_en": "Bregenz",
+      "label_de": "Bregenz"
+    },
+    "3169272": {
+      "lat": 45.88577,
+      "lon": 10.84117,
+      "label_en": "Riva del Garda",
+      "label_de": "Riva del Garda"
+    },
+    "2740637": {
+      "lat": 40.209,
+      "lon": -8.427,
+      "label_en": "Coimbra",
+      "label_de": null
+    },
+    "3035004": {
+      "lat": 43.949883,
+      "lon": -0.044203,
+      "label_en": "Barbotan-les-Thermes",
+      "label_de": null
+    },
+    "672023": {
+      "lat": 45.88333,
+      "lon": 24.05,
+      "label_en": null,
+      "label_de": null
+    },
+    "2782070": {
+      "lat": 47.58651,
+      "lon": 13.78204,
+      "label_en": "Bad Aussee",
+      "label_de": null
+    },
+    "2885679": {
+      "lat": 47.66128,
+      "lon": 9.17518,
+      "label_en": "Konstanz",
+      "label_de": null
+    },
+    "3027867": {
+      "lat": 49.02622,
+      "lon": -1.28283,
+      "label_en": "Cerisy-la-Salle",
+      "label_de": null
+    },
+    "2266988": {
+      "lat": 37.137777777778,
+      "lon": -8.0197222222222,
+      "label_en": "Loulé",
+      "label_de": null
+    },
+    "2530335": {
+      "lat": 35.76727,
+      "lon": -5.79975,
+      "label_en": "Tangier",
+      "label_de": null
+    },
+    "2983344": {
+      "lat": 48.60663,
+      "lon": 7.78606,
+      "label_en": "La Robertsau",
+      "label_de": null
+    }
+  }
+}

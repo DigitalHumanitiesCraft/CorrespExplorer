@@ -1,0 +1,577 @@
+{
+  "overview": {
+    "total_letters": 11576,
+    "unique_senders": 1026,
+    "unique_recipients": 113,
+    "unique_places_sent": 781,
+    "unique_places_mentioned": 336,
+    "unique_subjects": 1622,
+    "unique_persons_mentioned": 2081,
+    "languages": 18
+  },
+  "authority_systems": {
+    "viaf": 11053,
+    "null": 523
+  },
+  "date_formats": [
+    "when"
+  ],
+  "metadata_types": {
+    "mentionsSubject": 23020,
+    "mentionsPerson": 17413,
+    "mentionsPlace": 5955,
+    "hasLanguage": 11576,
+    "isPublishedWith": 11576,
+    "isAvailableAsTEIfile": 11576
+  },
+  "subject_categories": {
+    "hsa_subject": 1272,
+    "lexvo": 148,
+    "hsa_language": 200,
+    "unknown": 2
+  },
+  "languages": {
+    "es": {
+      "label": "Spanisch",
+      "count": 708
+    },
+    "it": {
+      "label": "Italienisch",
+      "count": 980
+    },
+    "de": {
+      "label": "Deutsch",
+      "count": 7896
+    },
+    "en": {
+      "label": "Englisch",
+      "count": 309
+    },
+    "fr": {
+      "label": "Französisch",
+      "count": 1393
+    },
+    "pt": {
+      "label": "Portugiesisch",
+      "count": 186
+    },
+    "oc": {
+      "label": "Okzitanisch",
+      "count": 1
+    },
+    "None": {
+      "label": "Ladinisch",
+      "count": 2
+    },
+    "cy": {
+      "label": "Kymrisch",
+      "count": 6
+    },
+    "hu": {
+      "label": "Ungarisch",
+      "count": 37
+    },
+    "la": {
+      "label": "Klassisches Latein",
+      "count": 11
+    },
+    "eu": {
+      "label": "Baskisch",
+      "count": 22
+    },
+    "da": {
+      "label": "Dänisch",
+      "count": 3
+    },
+    "ca": {
+      "label": "Katalanisch",
+      "count": 5
+    },
+    "ro": {
+      "label": "Rumänisch",
+      "count": 3
+    },
+    "pap": {
+      "label": "Papiamentu",
+      "count": 1
+    },
+    "nl": {
+      "label": "Niederländisch",
+      "count": 11
+    },
+    "eo": {
+      "label": "Esperanto",
+      "count": 2
+    }
+  },
+  "top_senders": {
+    "Schuchardt, Hugo": {
+      "authority_type": "viaf",
+      "authority_id": "261931943",
+      "count": 2446
+    },
+    "Spitzer, Leo": {
+      "authority_type": "viaf",
+      "authority_id": "71397982",
+      "count": 447
+    },
+    "Urquijo Ybarra, Julio de": {
+      "authority_type": "viaf",
+      "authority_id": "18030027",
+      "count": 243
+    },
+    "Lacombe, Georges": {
+      "authority_type": "viaf",
+      "authority_id": "34446283",
+      "count": 235
+    },
+    "Gartner, Theodor": {
+      "authority_type": "viaf",
+      "authority_id": "59114592",
+      "count": 222
+    },
+    "Dodgson, Edward Spencer": {
+      "authority_type": "viaf",
+      "authority_id": "27433725",
+      "count": 181
+    },
+    "Reinisch, Leo": {
+      "authority_type": "viaf",
+      "authority_id": "78145857790123020101",
+      "count": 166
+    },
+    "Katona, Lajos": {
+      "authority_type": "viaf",
+      "authority_id": "53140754",
+      "count": 162
+    },
+    "Gröber, Gustav": {
+      "authority_type": "viaf",
+      "authority_id": "107534006",
+      "count": 155
+    },
+    "Blumentritt, Ferdinand": {
+      "authority_type": "viaf",
+      "authority_id": "66769294",
+      "count": 144
+    },
+    "Ascoli, Graziadio Isaia": {
+      "authority_type": "viaf",
+      "authority_id": "44379269",
+      "count": 140
+    },
+    "Cornu, Julius": {
+      "authority_type": "viaf",
+      "authority_id": "67223190",
+      "count": 133
+    },
+    "Farinelli, Arturo": {
+      "authority_type": "viaf",
+      "authority_id": "64133235",
+      "count": 130
+    },
+    "Cuervo, Rufino José": {
+      "authority_type": "viaf",
+      "authority_id": "71403202",
+      "count": 115
+    },
+    "Zwiedineck, Anna von": {
+      "authority_type": "viaf",
+      "authority_id": "10586611",
+      "count": 102
+    },
+    "Simonyi, Zsigmond": {
+      "authority_type": "viaf",
+      "authority_id": "51710141",
+      "count": 98
+    },
+    "Gaidoz, Henri": {
+      "authority_type": "viaf",
+      "authority_id": "9972548",
+      "count": 97
+    },
+    "Paris, Gaston": {
+      "authority_type": "viaf",
+      "authority_id": "39382261",
+      "count": 97
+    },
+    "Jud, Jakob": {
+      "authority_type": "viaf",
+      "authority_id": "88644299",
+      "count": 82
+    },
+    "Riegler, Richard": {
+      "authority_type": "viaf",
+      "authority_id": "6207147907512579210004",
+      "count": 74
+    }
+  },
+  "top_recipients": {
+    "Schuchardt, Hugo": {
+      "authority_type": "viaf",
+      "authority_id": "261931943",
+      "count": 9130
+    },
+    "Lacombe, Georges": {
+      "authority_type": "viaf",
+      "authority_id": "34446283",
+      "count": 289
+    },
+    "Katona, Lajos": {
+      "authority_type": "viaf",
+      "authority_id": "53140754",
+      "count": 282
+    },
+    "Urquijo Ybarra, Julio de": {
+      "authority_type": "viaf",
+      "authority_id": "18030027",
+      "count": 278
+    },
+    "Köhler, Reinhold": {
+      "authority_type": "viaf",
+      "authority_id": "49335637",
+      "count": 136
+    },
+    "Cuervo, Rufino José": {
+      "authority_type": "viaf",
+      "authority_id": "71403202",
+      "count": 90
+    },
+    "Paris, Gaston": {
+      "authority_type": "viaf",
+      "authority_id": "39382261",
+      "count": 84
+    },
+    "Dodgson, Edward Spencer": {
+      "authority_type": "viaf",
+      "authority_id": "27433725",
+      "count": 74
+    },
+    "Leite de Vasconcelos, José": {
+      "authority_type": "viaf",
+      "authority_id": "7400155",
+      "count": 61
+    },
+    "Zarncke, Friedrich": {
+      "authority_type": "viaf",
+      "authority_id": "7496558",
+      "count": 61
+    }
+  },
+  "top_places_sent": {
+    "Graz": {
+      "geonames_id": "2778067",
+      "count": 2371
+    },
+    "Wien": {
+      "geonames_id": "2761368",
+      "count": 855
+    },
+    "Paris": {
+      "geonames_id": "2988507",
+      "count": 781
+    },
+    "Unbekannt": {
+      "geonames_id": null,
+      "count": 576
+    },
+    "Leipzig": {
+      "geonames_id": "2879139",
+      "count": 247
+    },
+    "Berlin": {
+      "geonames_id": "2950159",
+      "count": 237
+    },
+    "Budapest": {
+      "geonames_id": "3054643",
+      "count": 234
+    },
+    "Halle": {
+      "geonames_id": "2911522",
+      "count": 196
+    },
+    "Gotha": {
+      "geonames_id": "2918752",
+      "count": 192
+    },
+    "Bonn": {
+      "geonames_id": "2946447",
+      "count": 188
+    },
+    "Mailand": {
+      "geonames_id": "3173435",
+      "count": 185
+    },
+    "Leitmeritz": {
+      "geonames_id": "3071677",
+      "count": 149
+    },
+    "Straßburg": {
+      "geonames_id": "2973783",
+      "count": 146
+    },
+    "Saint-Jean-de-Luz": {
+      "geonames_id": "6440594",
+      "count": 144
+    },
+    "Lissabon": {
+      "geonames_id": "2267057",
+      "count": 126
+    },
+    "Innsbruck": {
+      "geonames_id": "2775220",
+      "count": 122
+    },
+    "Prag": {
+      "geonames_id": "3067696",
+      "count": 116
+    },
+    "Sare": {
+      "geonames_id": "2976021",
+      "count": 114
+    },
+    "Zürich": {
+      "geonames_id": "7287650",
+      "count": 109
+    },
+    "München": {
+      "geonames_id": "6559171",
+      "count": 106
+    }
+  },
+  "top_places_mentioned": {
+    "Graz": {
+      "geonames_id": "2778067",
+      "count": 621
+    },
+    "Wien": {
+      "geonames_id": "2761369",
+      "count": 389
+    },
+    "Leipzig": {
+      "geonames_id": "2879139",
+      "count": 243
+    },
+    "Paris": {
+      "geonames_id": "2988507",
+      "count": 233
+    },
+    "Italien": {
+      "geonames_id": "3175395",
+      "count": 175
+    },
+    "Gotha": {
+      "geonames_id": "2918752",
+      "count": 169
+    },
+    "Spanien": {
+      "geonames_id": "2510769",
+      "count": 155
+    },
+    "Bonn": {
+      "geonames_id": "2946447",
+      "count": 150
+    },
+    "Baskenland": {
+      "geonames_id": "3336903",
+      "count": 144
+    },
+    "Rom": {
+      "geonames_id": "3169070",
+      "count": 136
+    },
+    "Österreich": {
+      "geonames_id": "2782113",
+      "count": 131
+    },
+    "Halle": {
+      "geonames_id": "2911522",
+      "count": 126
+    },
+    "Frankreich": {
+      "geonames_id": "3017382",
+      "count": 125
+    },
+    "München": {
+      "geonames_id": "6559171",
+      "count": 106
+    },
+    "Straßburg": {
+      "geonames_id": "2973783",
+      "count": 96
+    },
+    "San Sebastian": {
+      "geonames_id": "3110044",
+      "count": 87
+    },
+    "Sare": {
+      "geonames_id": "2976021",
+      "count": 80
+    },
+    "Saint-Jean-de-Luz": {
+      "geonames_id": "6440594",
+      "count": 78
+    },
+    "Schweiz": {
+      "geonames_id": "2658434",
+      "count": 74
+    },
+    "Madrid": {
+      "geonames_id": "3117735",
+      "count": 74
+    }
+  },
+  "top_subjects": {
+    "http://lexvo.org/id/iso639-3/eus": {
+      "label": "Baskisch",
+      "uri_type": "lexvo",
+      "count": 698
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.948": {
+      "label": "Publikationsversand",
+      "uri_type": "hsa_subject",
+      "count": 627
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.3080": {
+      "label": "Dankschreiben",
+      "uri_type": "hsa_subject",
+      "count": 515
+    },
+    "http://lexvo.org/id/iso639-3/fra": {
+      "label": "Französisch",
+      "uri_type": "lexvo",
+      "count": 401
+    },
+    "http://lexvo.org/id/iso639-3/spa": {
+      "label": "Spanisch",
+      "uri_type": "lexvo",
+      "count": 346
+    },
+    "http://lexvo.org/id/iso639-3/deu": {
+      "label": "Deutsch",
+      "uri_type": "lexvo",
+      "count": 319
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.259": {
+      "label": "Biographisches",
+      "uri_type": "hsa_subject",
+      "count": 315
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.3966": {
+      "label": "Revue internationale des études basques",
+      "uri_type": "hsa_subject",
+      "count": 298
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.3215": {
+      "label": "Publikationsvorhaben",
+      "uri_type": "hsa_subject",
+      "count": 280
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.3085": {
+      "label": "Zeitschrift für romanische Philologie",
+      "uri_type": "hsa_subject",
+      "count": 248
+    },
+    "http://lexvo.org/id/iso639-3/ita": {
+      "label": "Italienisch",
+      "uri_type": "lexvo",
+      "count": 240
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.477": {
+      "label": "Etymologie",
+      "uri_type": "hsa_subject",
+      "count": 218
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.693": {
+      "label": "Universität Graz",
+      "uri_type": "hsa_subject",
+      "count": 208
+    },
+    "https://gams.uni-graz.at/o:hsa.languages#L.886": {
+      "label": "Latein",
+      "uri_type": "hsa_language",
+      "count": 208
+    },
+    "http://lexvo.org/id/iso639-3/por": {
+      "label": "Portugiesisch",
+      "uri_type": "lexvo",
+      "count": 182
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.274": {
+      "label": "Reisen",
+      "uri_type": "hsa_subject",
+      "count": 172
+    },
+    "http://lexvo.org/id/iso639-3/eng": {
+      "label": "Englisch",
+      "uri_type": "lexvo",
+      "count": 169
+    },
+    "http://lexvo.org/id/iso639-3/ron": {
+      "label": "Rumänisch",
+      "uri_type": "lexvo",
+      "count": 167
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.275": {
+      "label": "Gesundheit",
+      "uri_type": "hsa_subject",
+      "count": 164
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.763": {
+      "label": "Rezension",
+      "uri_type": "hsa_subject",
+      "count": 163
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.531": {
+      "label": "Literaturhinweise / bibliographische Angaben",
+      "uri_type": "hsa_subject",
+      "count": 160
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.762": {
+      "label": "Bittschreiben",
+      "uri_type": "hsa_subject",
+      "count": 147
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.4374": {
+      "label": "Universitätsbibliothek Graz",
+      "uri_type": "hsa_subject",
+      "count": 131
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.463": {
+      "label": "Erster Weltkrieg",
+      "uri_type": "hsa_subject",
+      "count": 128
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.461": {
+      "label": "Politik- und Zeitgeschichte",
+      "uri_type": "hsa_subject",
+      "count": 124
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.3144": {
+      "label": "Literaturblatt für germanische und romanische Philologie",
+      "uri_type": "hsa_subject",
+      "count": 123
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.3106": {
+      "label": "Literaturbeschaffung",
+      "uri_type": "hsa_subject",
+      "count": 121
+    },
+    "https://gams.uni-graz.at/o:hsa.subjects#S.3934": {
+      "label": "Universität Wien",
+      "uri_type": "hsa_subject",
+      "count": 121
+    },
+    "http://lexvo.org/id/iso639-3/kat": {
+      "label": "Georgisch",
+      "uri_type": "lexvo",
+      "count": 117
+    },
+    "https://gams.uni-graz.at/o:hsa.languages#L.863": {
+      "label": "Romanische Sprachen",
+      "uri_type": "hsa_language",
+      "count": 114
+    }
+  }
+}
