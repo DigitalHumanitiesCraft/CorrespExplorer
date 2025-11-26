@@ -1552,6 +1552,15 @@ function renderTimeline() {
             container.querySelectorAll('.timeline-bar-wrapper').forEach(w => w.classList.remove('selected'));
             wrapper.classList.add('selected');
         });
+
+        // Tooltip positioning on mouse move
+        const tooltip = wrapper.querySelector('.timeline-bar-tooltip');
+        if (tooltip) {
+            wrapper.addEventListener('mousemove', (e) => {
+                tooltip.style.left = `${e.clientX}px`;
+                tooltip.style.top = `${e.clientY - tooltip.offsetHeight - 10}px`;
+            });
+        }
     });
 
     timelineRendered = true;

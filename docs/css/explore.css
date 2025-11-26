@@ -438,21 +438,18 @@
 }
 
 .timeline-bar-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    position: fixed;
     background: var(--color-text);
     color: white;
-    padding: 4px 8px;
+    padding: 6px 10px;
     border-radius: var(--radius-sm);
     font-size: var(--font-size-xs);
-    z-index: 10;
+    z-index: 1000;
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--transition-fast);
-    margin-bottom: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .timeline-bar-wrapper:hover .timeline-bar-tooltip {
