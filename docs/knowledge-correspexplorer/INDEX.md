@@ -1,40 +1,103 @@
-# Knowledge Base: CorrespExplorer
+# CorrespExplorer
 
-Dokumentation für die Generalisierung des HerData-Projekts zum CorrespExplorer.
+Generisches Tool zur Visualisierung von CMIF-Korrespondenzdaten (Correspondence Metadata Interchange Format).
 
-## Ziel
+## Vision
 
-Entwicklung eines generischen Tools zur Exploration von CMIF-Korrespondenzdaten, das verschiedene Datenquellen verarbeiten kann.
+CorrespExplorer ermoeglicht es Nutzern, beliebige CMIF-XML-Dateien hochzuladen und interaktiv zu explorieren. Das Tool parst die standardisierten Korrespondenz-Metadaten und bietet Visualisierungen fuer:
+
+- Geographische Verteilung (Karte)
+- Zeitliche Entwicklung (Timeline)
+- Netzwerke (Korrespondenten)
+- Themen und Sprachen
+
+## CMIF-Standard
+
+Das Correspondence Metadata Interchange Format ist ein TEI-basierter Standard der TEI Correspondence SIG:
+
+- Kernelement: `<correspDesc>` fuer jeden Brief
+- Absender/Empfaenger: `<persName>` mit Authority-ID (@ref)
+- Orte: `<placeName>` mit GeoNames-ID (@ref)
+- Datum: `<date>` mit @when/@from/@to/@notBefore/@notAfter
+- Erweiterte Metadaten im `<note>`-Element
+
+Unterstuetzte Authority-Systeme:
+- VIAF (Virtual International Authority File)
+- GND (Gemeinsame Normdatei)
+- GeoNames (Orte)
+- Lexvo (Sprachen, ISO 639-3)
 
 ## Dokumentation
 
 | Datei | Inhalt |
 |-------|--------|
-| [PLAN.md](PLAN.md) | Implementierungsplan und Architekturkonzept |
-| [CMIF-Data.md](CMIF-Data.md) | Datenmodell und Struktur der CMIF-Quellen |
-| [JOURNAL.md](JOURNAL.md) | Entwicklungsprotokoll und Entscheidungen |
-| [hsa-structure.json](hsa-structure.json) | Extrahierte Datenstruktur (maschinell) |
+| [CMIF-Data.md](CMIF-Data.md) | CMIF-Standard und Datenmodell |
+| [architecture.md](architecture.md) | Frontend-Architektur und Module |
+| [JOURNAL.md](JOURNAL.md) | Entwicklungsprotokoll |
 
-## Verwandte Dokumentation
+## Beispieldaten
 
-Die HerData-spezifische Dokumentation befindet sich in:
-- [knowledge-herdata/](../knowledge-herdata/) - Projekt-, Daten- und Designdokumentation
+Das Hugo Schuchardt Archiv (HSA) dient als Referenz-Datensatz:
 
-## Datenquellen
+| Metrik | Wert |
+|--------|------|
+| Briefe | 11.576 |
+| Korrespondenten | 846 |
+| Orte | 774 |
+| Zeitraum | 1859-1927 |
 
-### Aktiv
-- **HSA-CMIF**: Hugo Schuchardt Archiv (data/hsa/CMIF.xml)
+HSA-Quelldatei: `data/hsa/CMIF.xml`
+Generierte JSON: `docs/data/hsa-letters.json`
 
-### Referenz
-- **PROPYLÄEN-CMIF**: Goethe-Korrespondenz (data/ra-cmif.xml)
+## Features
 
-## Entwicklungsstatus
+### Implementiert
 
-- Phase 1: Datenanalyse (abgeschlossen)
-- Phase 2: Generalisierte Architektur (geplant)
-- Phase 3: Frontend-Integration (geplant)
-- Phase 4: Multi-Source-Support (geplant)
+- Kartenansicht mit Clustering (MapLibre GL JS)
+- Zeitraum-Filter (noUiSlider)
+- Sprach-Filter
+- Responsive Navigation
 
-## Analyse-Tools
+### Geplant
 
-- `preprocessing/analyze_hsa_cmif.py` - Strukturanalyse der HSA-CMIF-Datei
+- CMIF-Upload (Datei oder URL)
+- Korrespondenten-Liste mit Suche
+- Themen-Explorer
+- Brief-Detail-Ansicht
+- Export-Funktionen
+
+## Technologie
+
+- Frontend: Vanilla JS (ES6 Modules)
+- Karten: MapLibre GL JS
+- Build: Python-Pipeline fuer CMIF-zu-JSON
+
+## Pipeline
+
+```
+CMIF.xml (Upload/URL)
+      |
+      v
+cmif-parser.js (Browser)
+      |
+      v
+Visualisierung
+```
+
+Fuer vorprozessierte Daten:
+```
+data/hsa/CMIF.xml
+      |
+      v
+preprocessing/build_hsa_data.py
+      |
+      +-- resolve_geonames_wikidata.py (Koordinaten)
+      |
+      v
+docs/data/hsa-letters.json
+```
+
+## Lizenz
+
+Die Software steht unter MIT-Lizenz.
+CMIF-Daten stehen typischerweise unter CC-BY 4.0.
