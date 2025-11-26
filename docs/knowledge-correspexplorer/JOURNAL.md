@@ -4,6 +4,107 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Phase 7: Themen-Explorer Implementation)
+
+### Implementiert: Topics View (US-25, US-26, US-27)
+
+Vollstaendige Implementierung des Themen-Explorers:
+
+1. HTML-Struktur (explore.html)
+   - Neuer View-Button in Navigation (topics-view-btn)
+   - Two-Pane Layout: Topics-Liste links, Detail-Panel rechts
+   - Suchfeld und Sortierung fuer Themen
+
+2. CSS-Styles (explore.css)
+   - Topic-Cards mit visuellen Frequenz-Balken
+   - Detail-Panel mit Korrespondenten, Mini-Timeline, verwandten Themen
+   - Subject-Filter-Badge (gruen, distinct von Person-Filter)
+
+3. JavaScript-Logik (explore.js)
+   - Inverted Index (subjectIndex) mit Vorab-Berechnung
+   - Tracking von: count, letterIds, persons, years, cooccurrence
+   - renderTopicsList() mit Suche/Sortierung
+   - selectTopic() fuer Detail-Panel
+   - applySubjectFilter() integriert in globales Filter-System
+   - URL-State Support (subject Parameter)
+
+Technische Entscheidungen:
+- Frequenz-Liste statt Tag-Cloud (bessere Vergleichbarkeit)
+- Expliziter Filter-Button (Explore vs. Filter Trennung)
+- Co-Occurrence basiert auf gleichen Briefen
+- Top 10 Korrespondenten und verwandte Themen im Detail-Panel
+- Mini-Timeline mit automatischer Gruppierung bei langen Zeitraeumen
+
+---
+
+## 2025-11-26 (Phase 7: Netzwerk-View Konzeption)
+
+### Analyse: Ungenutzte Daten
+
+Ueberpruefung der CMIF-Datennutzung ergab:
+
+| Datenfeld | Status |
+|-----------|--------|
+| letters (Briefe) | Vollstaendig genutzt |
+| id, url, date, year | Genutzt |
+| sender, recipient | Genutzt |
+| place_sent | Genutzt (Karte) |
+| language | Genutzt (Filter) |
+| mentions.subjects | Nur im Brief-Detail |
+| mentions.persons | Nur im Brief-Detail |
+| mentions.places | Nur im Brief-Detail |
+| indices.subjects | Komplett ungenutzt |
+| indices.persons.letters_sent/received | Wird neu berechnet |
+
+### Forschungsfragen fuer Romanistik
+
+Diskussion der Kernfrage: "Was macht ein Briefnetzwerk aus?"
+
+Identifizierte Forschungsfragen:
+1. Ueber was haben Romanisten geschrieben? (Themen-Analyse)
+2. Welche Themen verbinden verschiedene Korrespondenten?
+3. Wie verbreiten sich Themen ueber Zeit und Raum?
+4. Wer sind die zentralen Vermittler im Netzwerk?
+5. In welchen Sprachen werden welche Themen diskutiert?
+
+### Visualisierungs-Optionen evaluiert
+
+1. Force-Directed Graph: Klassisches Netzwerk, aber unuebersichtlich bei 846 Personen
+2. Sankey-Diagramm: Gut fuer Aggregationen, verliert Details
+3. Matrix-Heatmap: Kompakt, aber abstrakt
+4. Chord-Diagramm: Aesthetisch, begrenzt auf ca. 50 Elemente
+5. Dashboard: Kombiniert mehrere Visualisierungen
+
+### Entscheidung E12: Themen-Explorer
+
+Empfehlung: Dashboard-Ansatz mit Themen-Fokus
+
+Begruendung:
+- Nutzt den ungenutzten subjects-Index (1.622 Themen)
+- Beantwortet die Kernfrage "Worüber wurde geschrieben"
+- Integrierbar in bestehendes Filter-System
+- Keine Performance-Probleme wie bei grossen Graphen
+
+Aufbau:
+- Top-Themen als klickbare Tags/Wolke
+- Detail-Panel: Korrespondenten, Zeitverlauf, verwandte Themen
+- Integration mit bestehenden Filtern
+
+### Neue User Stories
+
+- US-25: Themen durchsuchen
+- US-26: Thema-Detail ansehen
+- US-27: Nach Thema filtern
+
+### Dokumentation
+
+Neues Konzeptdokument erstellt:
+- `knowledge-correspexplorer/network-view-concept.md`
+- Detaillierte Analyse aller Visualisierungs-Optionen
+- Technische Umsetzungsplanung
+
+---
+
 ## 2025-11-26 (Phase 6: Brief-Details und Timeline-Verbesserung)
 
 ### Neu implementierte Features

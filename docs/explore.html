@@ -50,6 +50,9 @@
             <button class="view-btn" data-view="timeline" aria-pressed="false">
                 <i class="fas fa-chart-line"></i> <span class="view-btn-text">Timeline</span>
             </button>
+            <button class="view-btn" data-view="topics" aria-pressed="false" id="topics-view-btn" style="display: none;">
+                <i class="fas fa-tags"></i> <span class="view-btn-text">Themen</span>
+            </button>
         </div>
         <div class="nav-links">
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
@@ -184,6 +187,63 @@
                         <div id="timeline-chart" class="timeline-chart"></div>
                         <div class="timeline-legend">
                             <span class="timeline-total" id="timeline-total"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topics View -->
+                <div id="topics-view" class="tab-content">
+                    <div class="topics-container">
+                        <div class="topics-header">
+                            <h3>Themen der Korrespondenz</h3>
+                            <p class="topics-info">Klicken Sie auf ein Thema, um Details zu sehen und zu filtern</p>
+                        </div>
+                        <div class="topics-layout">
+                            <!-- Topics List -->
+                            <div class="topics-list-panel">
+                                <div class="list-header">
+                                    <input type="search" id="topic-search" class="list-search" placeholder="Thema suchen..." aria-label="Thema suchen">
+                                    <div class="list-sort">
+                                        <label for="topic-sort">Sortieren:</label>
+                                        <select id="topic-sort">
+                                            <option value="count-desc">Anzahl (absteigend)</option>
+                                            <option value="count-asc">Anzahl (aufsteigend)</option>
+                                            <option value="name-asc">Name (A-Z)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="topics-list" class="entity-list"></div>
+                            </div>
+                            <!-- Topic Detail Panel -->
+                            <div class="topic-detail-panel" id="topic-detail-panel">
+                                <div class="topic-detail-empty">
+                                    <i class="fas fa-hand-pointer"></i>
+                                    <p>Waehlen Sie ein Thema aus der Liste</p>
+                                </div>
+                                <div class="topic-detail-content" id="topic-detail-content" style="display: none;">
+                                    <div class="topic-detail-header">
+                                        <h4 id="topic-detail-title">Thema</h4>
+                                        <span class="topic-detail-count" id="topic-detail-count">0 Briefe</span>
+                                    </div>
+                                    <div class="topic-detail-section">
+                                        <h5>Korrespondenten</h5>
+                                        <div id="topic-correspondents" class="topic-correspondents"></div>
+                                    </div>
+                                    <div class="topic-detail-section">
+                                        <h5>Zeitliche Verteilung</h5>
+                                        <div id="topic-timeline" class="topic-mini-timeline"></div>
+                                    </div>
+                                    <div class="topic-detail-section">
+                                        <h5>Verwandte Themen</h5>
+                                        <div id="topic-related" class="topic-related-tags"></div>
+                                    </div>
+                                    <div class="topic-detail-actions">
+                                        <button class="btn btn-primary" id="topic-filter-btn">
+                                            <i class="fas fa-filter"></i> Briefe filtern
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

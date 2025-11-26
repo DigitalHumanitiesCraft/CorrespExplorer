@@ -250,6 +250,37 @@ Akzeptanzkriterien:
 
 ---
 
+## Themen-Exploration (Neu)
+
+### US-25: Themen durchsuchen
+Als Forschende moechte ich alle Themen des Datensatzes durchsuchen, um relevante Diskurse zu finden.
+
+Akzeptanzkriterien:
+- Liste oder Wolke der Top-Themen
+- Suchfeld fuer Themen
+- Anzeige der Briefanzahl pro Thema
+- Status: IMPLEMENTIERT
+
+### US-26: Thema-Detail ansehen
+Als Forschende moechte ich zu einem Thema sehen, wer darueber geschrieben hat und wann.
+
+Akzeptanzkriterien:
+- Liste der Korrespondenten mit Themen-Erwaehnung
+- Zeitliche Verteilung der Erwaehungen
+- Verwandte Themen (Co-Occurrence)
+- Status: IMPLEMENTIERT
+
+### US-27: Nach Thema filtern
+Als Forschende moechte ich alle Briefe filtern, die ein bestimmtes Thema erwaehnen.
+
+Akzeptanzkriterien:
+- Klick auf Thema aktiviert Filter
+- Filter-Badge in Sidebar
+- Alle Views zeigen nur gefilterte Briefe
+- Status: IMPLEMENTIERT
+
+---
+
 ## Zusammenfassung: Implementierungs-Status
 
 | Kategorie | Implementiert | Teilweise | Offen |
@@ -262,19 +293,20 @@ Akzeptanzkriterien:
 | Filter | 5 | 0 | 1 |
 | Teilen/Export | 3 | 0 | 0 |
 | Vergleich | 0 | 0 | 2 |
-| **Gesamt** | **19** | **2** | **4** |
+| Themen | 3 | 0 | 0 |
+| **Gesamt** | **22** | **2** | **4** |
 
 ---
 
 ## Priorisierung der offenen Features
 
-### Mittlere Prioritaet (neue Analyse-Moeglichkeiten)
+### Hohe Prioritaet (neue Analyse-Moeglichkeiten)
 1. US-11: Netzwerk-Visualisierung - Wer schreibt wem
-2. US-17: Themen-Filter - Fuer Datensaetze mit subjects
-3. US-07: Orts-Details erweitern - Absender im Popup
+2. US-07: Orts-Details erweitern - Absender im Popup
 
 ### Niedrige Prioritaet (Erweiterungen)
-4. US-24: correspSearch-Integration
-5. US-23: Datensatz-Vergleich
-6. US-08: Liste der Orte ohne Koordinaten
+3. US-24: correspSearch-Integration
+4. US-23: Datensatz-Vergleich
+5. US-08: Liste der Orte ohne Koordinaten
+6. US-17: Themen-Filter (Sidebar) - Schnellfilter fuer Top-Themen (optional, Topics View existiert)
 

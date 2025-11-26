@@ -18,6 +18,12 @@ let dateRange = { min: 1800, max: 2000 };
 let handlersSetup = false;
 let mapInitialized = false;
 
+// Topics view state
+let subjectIndex = {};
+let selectedSubjectId = null;
+let topicsSearchTerm = '';
+let topicsSortOrder = 'count-desc';
+
 // Logging utility
 const log = {
     init: (msg) => !IS_PRODUCTION && console.log(`[INIT] ${msg}`),
@@ -68,6 +74,7 @@ async function init() {
         initPersonsView();
         initLettersView();
         initTimeline();
+        initTopicsView();
         initExport();
 
         // Apply initial view from URL
@@ -78,6 +85,11 @@ async function init() {
         // Apply person filter from URL
         if (selectedPersonId) {
             applyPersonFilter(selectedPersonId);
+        }
+
+        // Apply subject filter from URL
+        if (selectedSubjectId) {
+            applySubjectFilter(selectedSubjectId);
         }
 
         hideLoading();
@@ -598,6 +610,8 @@ function initFilters() {
             }
             temporalFilter = null;
             selectedPersonId = null;
+            selectedSubjectId = null;
+            updateSubjectFilterDisplay();
             applyFilters();
         });
     }
@@ -628,7 +642,14 @@ function applyFilters() {
             personMatch = senderId === selectedPersonId || recipientId === selectedPersonId;
         }
 
-        return temporalMatch && languageMatch && personMatch;
+        // Subject filter
+        let subjectMatch = true;
+        if (selectedSubjectId) {
+            const letterSubjects = letter.mentions?.subjects || [];
+            subjectMatch = letterSubjects.some(s => s.id === selectedSubjectId || s.label === selectedSubjectId);
+        }
+
+        return temporalMatch && languageMatch && personMatch && subjectMatch;
     });
 
     // Re-aggregate places based on filtered letters
@@ -752,7 +773,7 @@ function initUrlState() {
 
     // View
     const view = urlParams.get('view');
-    if (view && ['map', 'persons', 'letters', 'timeline'].includes(view)) {
+    if (view && ['map', 'persons', 'letters', 'timeline', 'topics'].includes(view)) {
         currentView = view;
     }
 
@@ -770,6 +791,12 @@ function initUrlState() {
     const person = urlParams.get('person');
     if (person) {
         selectedPersonId = person;
+    }
+
+    // Subject filter
+    const subject = urlParams.get('subject');
+    if (subject) {
+        selectedSubjectId = subject;
     }
 
     // Languages
@@ -801,6 +828,11 @@ function updateUrlState() {
     // Person filter
     if (selectedPersonId) {
         newParams.set('person', selectedPersonId);
+    }
+
+    // Subject filter
+    if (selectedSubjectId) {
+        newParams.set('subject', selectedSubjectId);
     }
 
     // Languages (only if not all selected)
@@ -868,6 +900,8 @@ function switchView(view) {
     } else if (view === 'timeline') {
         // Always re-render timeline when switching to it (to reflect filters)
         renderTimeline();
+    } else if (view === 'topics') {
+        renderTopicsList();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -1432,6 +1466,366 @@ function renderTimeline() {
 
     timelineRendered = true;
 }
+
+// ===================
+// TOPICS VIEW
+// ===================
+
+function initTopicsView() {
+    // Build subject index from letters
+    buildSubjectIndex();
+
+    // Show topics button if subjects exist
+    const topicsBtn = document.getElementById('topics-view-btn');
+    if (topicsBtn && Object.keys(subjectIndex).length > 0) {
+        topicsBtn.style.display = '';
+        log.init(`Topics view enabled: ${Object.keys(subjectIndex).length} subjects`);
+    }
+
+    // Setup search and sort
+    const searchInput = document.getElementById('topic-search');
+    const sortSelect = document.getElementById('topic-sort');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce((e) => {
+            topicsSearchTerm = e.target.value.toLowerCase();
+            renderTopicsList();
+        }, 300));
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            topicsSortOrder = e.target.value;
+            renderTopicsList();
+        });
+    }
+
+    // Setup filter button
+    const filterBtn = document.getElementById('topic-filter-btn');
+    if (filterBtn) {
+        filterBtn.addEventListener('click', () => {
+            if (selectedSubjectId) {
+                applySubjectFilter(selectedSubjectId);
+            }
+        });
+    }
+}
+
+// Build inverted index for subjects
+function buildSubjectIndex() {
+    subjectIndex = {};
+
+    allLetters.forEach(letter => {
+        if (!letter.mentions?.subjects) return;
+
+        const letterSubjects = letter.mentions.subjects;
+        const senderName = letter.sender?.name || 'Unbekannt';
+        const senderId = letter.sender?.id || letter.sender?.name;
+        const year = letter.year;
+
+        letterSubjects.forEach(subject => {
+            const subjectId = subject.id || subject.label;
+            const subjectLabel = subject.label;
+
+            if (!subjectIndex[subjectId]) {
+                subjectIndex[subjectId] = {
+                    id: subjectId,
+                    label: subjectLabel,
+                    count: 0,
+                    letterIds: [],
+                    persons: {},
+                    years: {},
+                    cooccurrence: {}
+                };
+            }
+
+            subjectIndex[subjectId].count++;
+            subjectIndex[subjectId].letterIds.push(letter.id);
+
+            // Track persons
+            if (senderId) {
+                if (!subjectIndex[subjectId].persons[senderId]) {
+                    subjectIndex[subjectId].persons[senderId] = { name: senderName, count: 0 };
+                }
+                subjectIndex[subjectId].persons[senderId].count++;
+            }
+
+            // Track years
+            if (year) {
+                subjectIndex[subjectId].years[year] = (subjectIndex[subjectId].years[year] || 0) + 1;
+            }
+
+            // Track co-occurrence with other subjects in same letter
+            letterSubjects.forEach(otherSubject => {
+                const otherId = otherSubject.id || otherSubject.label;
+                if (otherId !== subjectId) {
+                    subjectIndex[subjectId].cooccurrence[otherId] =
+                        (subjectIndex[subjectId].cooccurrence[otherId] || 0) + 1;
+                }
+            });
+        });
+    });
+
+    log.init(`Subject index built: ${Object.keys(subjectIndex).length} subjects`);
+}
+
+function renderTopicsList() {
+    const container = document.getElementById('topics-list');
+    if (!container) return;
+
+    let topics = Object.values(subjectIndex);
+
+    // Filter by search
+    if (topicsSearchTerm) {
+        topics = topics.filter(t =>
+            t.label.toLowerCase().includes(topicsSearchTerm)
+        );
+    }
+
+    // Sort
+    topics.sort((a, b) => {
+        switch (topicsSortOrder) {
+            case 'count-desc': return b.count - a.count;
+            case 'count-asc': return a.count - b.count;
+            case 'name-asc': return a.label.localeCompare(b.label);
+            default: return 0;
+        }
+    });
+
+    // Find max count for bar scaling
+    const maxCount = topics.length > 0 ? Math.max(...topics.map(t => t.count)) : 1;
+
+    if (topics.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-tags"></i>
+                <p>Keine Themen gefunden</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = topics.map(topic => {
+        const barWidth = (topic.count / maxCount) * 100;
+        const isActive = selectedSubjectId === topic.id;
+
+        return `
+            <div class="topic-card ${isActive ? 'active' : ''}" data-id="${escapeHtml(topic.id)}">
+                <div class="topic-info">
+                    <div class="topic-name">${escapeHtml(topic.label)}</div>
+                    <div class="topic-bar-container">
+                        <div class="topic-bar" style="width: ${barWidth}%"></div>
+                    </div>
+                </div>
+                <div class="topic-count">${topic.count}</div>
+            </div>
+        `;
+    }).join('');
+
+    // Add click handlers
+    container.querySelectorAll('.topic-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const topicId = card.dataset.id;
+            selectTopic(topicId);
+
+            // Update active state
+            container.querySelectorAll('.topic-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+        });
+    });
+}
+
+function selectTopic(topicId) {
+    selectedSubjectId = topicId;
+    const topic = subjectIndex[topicId];
+    if (!topic) return;
+
+    const emptyState = document.querySelector('.topic-detail-empty');
+    const content = document.getElementById('topic-detail-content');
+    const title = document.getElementById('topic-detail-title');
+    const count = document.getElementById('topic-detail-count');
+    const correspondents = document.getElementById('topic-correspondents');
+    const timeline = document.getElementById('topic-timeline');
+    const related = document.getElementById('topic-related');
+    const filterBtn = document.getElementById('topic-filter-btn');
+
+    if (emptyState) emptyState.style.display = 'none';
+    if (content) content.style.display = 'block';
+
+    // Title and count
+    if (title) title.textContent = topic.label;
+    if (count) count.textContent = `${topic.count} Briefe`;
+
+    // Update filter button text
+    if (filterBtn) {
+        filterBtn.innerHTML = `<i class="fas fa-filter"></i> ${topic.count} Briefe filtern`;
+    }
+
+    // Correspondents (top 10)
+    if (correspondents) {
+        const persons = Object.entries(topic.persons)
+            .map(([id, data]) => ({ id, ...data }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
+
+        const maxPersonCount = persons.length > 0 ? persons[0].count : 1;
+
+        correspondents.innerHTML = persons.map(person => {
+            const barWidth = (person.count / maxPersonCount) * 100;
+            return `
+                <div class="topic-correspondent">
+                    <span class="topic-correspondent-name">${escapeHtml(person.name)}</span>
+                    <span class="topic-correspondent-count">${person.count}</span>
+                    <div class="topic-correspondent-bar">
+                        <div class="topic-correspondent-bar-fill" style="width: ${barWidth}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        if (persons.length === 0) {
+            correspondents.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Korrespondenten</p>';
+        }
+    }
+
+    // Mini timeline
+    if (timeline) {
+        const years = Object.entries(topic.years)
+            .map(([year, count]) => ({ year: parseInt(year), count }))
+            .sort((a, b) => a.year - b.year);
+
+        if (years.length > 0) {
+            const minYear = years[0].year;
+            const maxYear = years[years.length - 1].year;
+            const maxYearCount = Math.max(...years.map(y => y.count));
+
+            // Fill gaps
+            const allYears = [];
+            for (let y = minYear; y <= maxYear; y++) {
+                const found = years.find(yr => yr.year === y);
+                allYears.push({ year: y, count: found ? found.count : 0 });
+            }
+
+            // Limit to ~30 bars max
+            let displayYears = allYears;
+            if (allYears.length > 30) {
+                // Group by 5-year periods
+                const grouped = {};
+                allYears.forEach(y => {
+                    const period = Math.floor(y.year / 5) * 5;
+                    grouped[period] = (grouped[period] || 0) + y.count;
+                });
+                displayYears = Object.entries(grouped)
+                    .map(([year, count]) => ({ year: parseInt(year), count }))
+                    .sort((a, b) => a.year - b.year);
+            }
+
+            const displayMax = Math.max(...displayYears.map(y => y.count));
+
+            timeline.innerHTML = displayYears.map(y => {
+                const height = y.count > 0 ? Math.max(4, (y.count / displayMax) * 100) : 0;
+                return `<div class="topic-mini-bar" style="height: ${height}%" data-tooltip="${y.year}: ${y.count}"></div>`;
+            }).join('');
+        } else {
+            timeline.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Jahresdaten</p>';
+        }
+    }
+
+    // Related topics (co-occurrence)
+    if (related) {
+        const relatedTopics = Object.entries(topic.cooccurrence)
+            .map(([id, count]) => {
+                const relatedTopic = subjectIndex[id];
+                return {
+                    id,
+                    label: relatedTopic?.label || id,
+                    count
+                };
+            })
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
+
+        related.innerHTML = relatedTopics.map(rt => `
+            <span class="topic-related-tag" data-id="${escapeHtml(rt.id)}">
+                ${escapeHtml(rt.label)}
+                <span class="topic-related-tag-count">(${rt.count})</span>
+            </span>
+        `).join('');
+
+        // Add click handlers to related tags
+        related.querySelectorAll('.topic-related-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                const relatedId = tag.dataset.id;
+                selectTopic(relatedId);
+                // Update list selection
+                const container = document.getElementById('topics-list');
+                container?.querySelectorAll('.topic-card').forEach(c => {
+                    c.classList.toggle('active', c.dataset.id === relatedId);
+                });
+            });
+        });
+
+        if (relatedTopics.length === 0) {
+            related.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine verwandten Themen</p>';
+        }
+    }
+}
+
+// Apply subject filter
+function applySubjectFilter(subjectId) {
+    selectedSubjectId = subjectId;
+    applyFilters();
+    updateSubjectFilterDisplay();
+    switchView('letters');
+    updateUrlState();
+}
+
+// Clear subject filter
+function clearSubjectFilter() {
+    selectedSubjectId = null;
+    applyFilters();
+    updateSubjectFilterDisplay();
+}
+
+// Update subject filter display in sidebar
+function updateSubjectFilterDisplay() {
+    let filterDisplay = document.getElementById('subject-filter-display');
+
+    if (selectedSubjectId && subjectIndex[selectedSubjectId]) {
+        const topic = subjectIndex[selectedSubjectId];
+
+        if (!filterDisplay) {
+            // Create filter display element
+            const sidebar = document.querySelector('.sidebar');
+            const statsCards = document.querySelector('.stats-cards');
+            filterDisplay = document.createElement('div');
+            filterDisplay.id = 'subject-filter-display';
+            filterDisplay.className = 'subject-filter-active';
+            sidebar.insertBefore(filterDisplay, statsCards.nextSibling);
+        }
+
+        filterDisplay.innerHTML = `
+            <div class="filter-badge subject-badge">
+                <i class="fas fa-tag"></i>
+                <span>${escapeHtml(topic.label)}</span>
+                <button class="filter-clear" title="Filter entfernen">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        filterDisplay.style.display = 'block';
+
+        // Add click handler
+        filterDisplay.querySelector('.filter-clear').addEventListener('click', clearSubjectFilter);
+    } else if (filterDisplay) {
+        filterDisplay.style.display = 'none';
+    }
+}
+
+// Global function for filtering by subject
+window.filterBySubject = function(subjectId) {
+    applySubjectFilter(subjectId);
+};
 
 // ===================
 // EXPORT
