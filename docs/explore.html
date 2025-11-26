@@ -61,6 +61,10 @@
             </button>
         </div>
         <div class="nav-links">
+            <button id="basket-btn" class="nav-link basket-btn" aria-label="Wissenskorb oeffnen" title="Wissenskorb">
+                <i class="fas fa-shopping-basket"></i>
+                <span class="basket-badge" id="basket-badge" style="display: none;">0</span>
+            </button>
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
                 <i class="fas fa-download"></i> <span class="nav-link-text">Export</span>
             </button>
@@ -411,6 +415,58 @@
             </div>
             <div class="modal-body" id="missing-places-body">
                 <!-- Content filled by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Basket Modal -->
+    <div id="basket-modal" class="modal" style="display: none;">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-shopping-basket"></i> Wissenskorb</h3>
+                <button class="modal-close" aria-label="Schliessen">&times;</button>
+            </div>
+            <div class="modal-body" id="basket-modal-body">
+                <div class="basket-tabs">
+                    <button class="basket-tab active" data-tab="letters">
+                        <i class="fas fa-envelope"></i> Briefe <span class="basket-tab-count" id="basket-letters-count">0</span>
+                    </button>
+                    <button class="basket-tab" data-tab="persons">
+                        <i class="fas fa-user"></i> Personen <span class="basket-tab-count" id="basket-persons-count">0</span>
+                    </button>
+                    <button class="basket-tab" data-tab="places">
+                        <i class="fas fa-map-marker-alt"></i> Orte <span class="basket-tab-count" id="basket-places-count">0</span>
+                    </button>
+                </div>
+                <div class="basket-content">
+                    <div class="basket-panel active" id="basket-letters-panel">
+                        <div class="basket-list" id="basket-letters-list"></div>
+                    </div>
+                    <div class="basket-panel" id="basket-persons-panel">
+                        <div class="basket-list" id="basket-persons-list"></div>
+                    </div>
+                    <div class="basket-panel" id="basket-places-panel">
+                        <div class="basket-list" id="basket-places-list"></div>
+                    </div>
+                </div>
+                <div class="basket-empty" id="basket-empty" style="display: none;">
+                    <i class="fas fa-shopping-basket"></i>
+                    <p>Ihr Wissenskorb ist leer</p>
+                    <small>Klicken Sie auf das Stern-Symbol bei Briefen, Personen oder Orten, um sie zu merken.</small>
+                </div>
+            </div>
+            <div class="modal-footer" id="basket-modal-footer">
+                <button class="btn btn-secondary" id="basket-clear-btn">
+                    <i class="fas fa-trash"></i> Korb leeren
+                </button>
+                <div class="basket-export-group">
+                    <button class="btn btn-primary" id="basket-export-csv">
+                        <i class="fas fa-file-csv"></i> CSV
+                    </button>
+                    <button class="btn btn-primary" id="basket-export-json">
+                        <i class="fas fa-file-code"></i> JSON
+                    </button>
+                </div>
             </div>
         </div>
     </div>

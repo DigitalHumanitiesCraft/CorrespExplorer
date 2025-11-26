@@ -2,6 +2,7 @@
 // Displays data from sessionStorage (uploaded/loaded via upload.js)
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS } from './constants.js';
+import { initBasketUI, createBasketToggle, setupBasketToggles } from './basket-ui.js';
 
 // Utility: Debounce function
 function debounce(fn, delay) {
@@ -237,6 +238,7 @@ async function init() {
         initNetworkView();
         initExport();
         initMissingPlacesModal();
+        initBasketUI(dataIndices, allLetters);
 
         // Apply initial view (use detected first available if map not available)
         switchView(currentView);
@@ -1278,6 +1280,7 @@ function renderPersonsList() {
                     </div>
                 </div>
                 <div class="person-actions">
+                    ${createBasketToggle('persons', personKey)}
                     ${correspSearchUrl ? `
                         <a href="${correspSearchUrl}" target="_blank" class="btn-correspsearch"
                            title="Weitere Briefe bei correspSearch suchen" onclick="event.stopPropagation()">
@@ -1289,6 +1292,9 @@ function renderPersonsList() {
             </div>
         `;
     }).join('');
+
+    // Setup basket toggle buttons
+    setupBasketToggles(container);
 
     // Add click handlers for person filtering
     container.querySelectorAll('.person-card').forEach(card => {
@@ -1385,7 +1391,10 @@ function renderLettersList() {
                         <span class="letter-arrow"><i class="fas fa-arrow-right"></i></span>
                         ${escapeHtml(recipient)}
                     </div>
-                    <div class="letter-date">${date}</div>
+                    <div class="letter-header-actions">
+                        ${letter.id ? createBasketToggle('letters', letter.id) : ''}
+                        <div class="letter-date">${date}</div>
+                    </div>
                 </div>
                 <div class="letter-meta">
                     ${place ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
@@ -1395,6 +1404,9 @@ function renderLettersList() {
             </div>
         `;
     }).join('');
+
+    // Setup basket toggle buttons
+    setupBasketToggles(container);
 
     // Show count info if limited
     if (letters.length > 500) {
@@ -1408,8 +1420,8 @@ function renderLettersList() {
     // Add click handlers for letter details
     container.querySelectorAll('.letter-card').forEach(card => {
         card.addEventListener('click', (e) => {
-            // Don't open modal if clicking on external link
-            if (e.target.closest('a')) return;
+            // Don't open modal if clicking on external link or basket toggle
+            if (e.target.closest('a') || e.target.closest('.basket-toggle')) return;
 
             const letterId = card.dataset.id;
             if (letterId) {
@@ -2362,14 +2374,20 @@ function renderPlacesList() {
                     <div class="place-name">${escapeHtml(place.name)}</div>
                     <div class="place-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
                 </div>
+                ${createBasketToggle('places', place.id)}
                 <div class="place-count">${place.filteredCount}</div>
             </div>
         `;
     }).join('');
 
+    // Setup basket toggle buttons
+    setupBasketToggles(container);
+
     // Add click handlers
     container.querySelectorAll('.place-card').forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+            // Don't select place if clicking basket toggle
+            if (e.target.closest('.basket-toggle')) return;
             const placeId = card.dataset.placeId;
             selectPlace(placeId);
         });

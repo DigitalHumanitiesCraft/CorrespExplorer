@@ -6,7 +6,7 @@ Stand: 2025-11-26
 
 ## Aktueller Implementierungsstand
 
-### Vollstaendig implementiert (27 User Stories)
+### Vollstaendig implementiert (29 User Stories)
 
 | US | Feature | Beschreibung |
 |----|---------|--------------|
@@ -37,6 +37,8 @@ Stand: 2025-11-26
 | US-25 | Themen-Liste | Topics View mit Suche |
 | US-26 | Themen-Details | Korrespondenten, Timeline, verwandte Themen |
 | US-27 | Themen-Filter | Integration ins Filter-System |
+| US-30 | Adaptive Views | Views basierend auf Datenverfuegbarkeit |
+| US-31 | Wissenskorb | Sammeln von Briefen, Personen, Orten mit Export |
 
 ### Offen (2 User Stories)
 
@@ -161,12 +163,13 @@ Status: Bereits vorhanden, wird automatisch von Claude Code genutzt.
 ### Phase 3: Erweiterte Features
 
 6. ~~US-11: Netzwerk-Visualisierung~~ - erledigt
-7. Wissenskorb
+7. ~~Wissenskorb (US-31)~~ - erledigt
 
 ### Phase 4: Polish
 
 8. Design-System Konsolidierung
 9. US-23: Datensatz-Vergleich (optional)
+10. ~~US-30: Adaptive Views~~ - erledigt
 
 ---
 
