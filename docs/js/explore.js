@@ -1422,8 +1422,9 @@ function renderTimeline() {
 
     // Render bars
     container.innerHTML = displayData.map((data, index) => {
-        const height = data.totalCount > 0 ? Math.max(4, (data.count / displayMaxCount) * 100) : 0;
-        const bgHeight = data.totalCount > 0 ? Math.max(4, (data.totalCount / displayMaxCount) * 100) : 0;
+        // Use higher minimum height (8%) for bars with data so small values are visible
+        const height = data.count > 0 ? Math.max(8, (data.count / displayMaxCount) * 100) : 0;
+        const bgHeight = data.totalCount > 0 ? Math.max(8, (data.totalCount / displayMaxCount) * 100) : 0;
         const showLabel = index % labelInterval === 0 || index === displayData.length - 1;
         const tooltipText = isFiltered
             ? `${data.label}: ${data.count} von ${data.totalCount} Briefen`
