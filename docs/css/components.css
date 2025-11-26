@@ -1,13 +1,9 @@
 /* CorrespExplorer Shared Components
  * Gemeinsame UI-Komponenten fuer alle Seiten
- * Importiert tokens.css fuer Design-Tokens
  */
-
-@import url('tokens.css');
 
 /* ==========================================
  * SIDEBAR INFO SECTION
- * Verwendet in: stats.html, synthesis/index.html, index.html
  * ========================================== */
 
 .sidebar-info {
@@ -38,73 +34,9 @@
     margin: 0 0 var(--space-sm) 0;
 }
 
-.info-list {
-    margin: 0;
-    padding-left: var(--space-lg);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    line-height: 1.6;
-    list-style-type: disc;
-}
-
-.info-list li {
-    margin-bottom: var(--space-xs);
-}
-
 /* ==========================================
- * CATEGORY LEGEND (Berufsgruppen)
- * Verwendet in: stats.html Sidebar
+ * FILTER GROUP
  * ========================================== */
-
-.category-legend {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-xs);
-}
-
-.category-legend li {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    margin-bottom: 0;
-}
-
-.category-legend .dot,
-.legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-/* ==========================================
- * FILTER SECTION / FILTER GROUP
- * Einheitliche Filter-Container fuer Sidebars
- * ========================================== */
-
-.filter-section {
-    margin-bottom: var(--space-lg);
-    padding-bottom: var(--space-lg);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.filter-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.filter-section h3 {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    margin-bottom: var(--space-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--color-text-light);
-}
 
 .filter-group {
     margin-bottom: var(--space-lg);
@@ -155,7 +87,6 @@
 
 /* ==========================================
  * YEAR RANGE DISPLAY
- * Anzeige des ausgewaehlten Zeitraums
  * ========================================== */
 
 .year-range-display {
@@ -168,7 +99,6 @@
 
 /* ==========================================
  * RESET BUTTON
- * Filter zuruecksetzen
  * ========================================== */
 
 .btn-reset {
@@ -190,26 +120,8 @@
     border-color: var(--color-primary);
 }
 
-.btn-reset-small {
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--color-bg-light);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-sm);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.btn-reset-small:hover {
-    background: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-}
-
 /* ==========================================
  * STAT CARDS (KPI Boxes)
- * Verwendet in: stats.html, synthesis/index.html, index.html
  * ========================================== */
 
 .stats-cards {
@@ -235,10 +147,6 @@
     transform: translateY(-2px);
 }
 
-.stat-card-clickable {
-    cursor: pointer;
-}
-
 .stat-value {
     font-size: var(--font-size-xl);
     font-weight: 700;
@@ -252,355 +160,4 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-top: var(--space-xs);
-}
-
-/* ==========================================
- * EXPORT BUTTONS
- * CSV/PNG Export
- * ========================================== */
-
-.btn-export {
-    background: white;
-    color: var(--color-primary);
-    border: 1px solid var(--color-primary);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.btn-export:hover {
-    background: var(--color-primary);
-    color: white;
-}
-
-.btn-export:focus {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-}
-
-/* ==========================================
- * CHECKBOX LABELS
- * Einheitliche Checkbox-Styles
- * ========================================== */
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    cursor: pointer;
-    padding: var(--space-xs) 0;
-    transition: background var(--transition-fast);
-}
-
-.checkbox-label:hover {
-    background: var(--color-bg-light);
-}
-
-.checkbox-label input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    accent-color: var(--color-primary);
-}
-
-.checkbox-label span {
-    font-size: var(--font-size-sm);
-    color: var(--color-text);
-}
-
-/* ==========================================
- * ACTIVITY CHECKBOXES
- * Briefaktivitaet Filter
- * ========================================== */
-
-.activity-checkboxes {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-}
-
-/* ==========================================
- * MOBILE FILTER BAR
- * Kompakte Filterleiste fuer Mobile (< 768px)
- * Verwendet in: index, synthesis, stats, narrative
- * ========================================== */
-
-.mobile-filter-bar {
-    display: none; /* Hidden on desktop */
-    position: sticky;
-    top: var(--navbar-height);
-    z-index: 100;
-    background: var(--color-bg);
-    border-bottom: 1px solid var(--color-border);
-    padding: var(--space-sm);
-    gap: var(--space-sm);
-    flex-direction: column;
-}
-
-.mobile-filter-bar .filter-row {
-    display: flex;
-    gap: var(--space-xs);
-    align-items: center;
-}
-
-/* Role Toggle Buttons */
-.mobile-filter-bar .role-toggles {
-    display: flex;
-    gap: 4px;
-    flex: 1;
-}
-
-.mobile-filter-bar .role-toggle {
-    flex: 1;
-    padding: 8px 4px;
-    border: 2px solid transparent;
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-light);
-    cursor: pointer;
-    font-size: 10px;
-    font-weight: 600;
-    text-align: center;
-    transition: all var(--transition-fast);
-    color: var(--color-text-light);
-    min-width: 0;
-}
-
-.mobile-filter-bar .role-toggle.active {
-    color: white;
-}
-
-.mobile-filter-bar .role-toggle[data-role="sender"] {
-    border-color: var(--color-role-sender, #2c5f8d);
-}
-.mobile-filter-bar .role-toggle[data-role="sender"].active {
-    background: var(--color-role-sender, #2c5f8d);
-}
-
-.mobile-filter-bar .role-toggle[data-role="mentioned"] {
-    border-color: var(--color-role-mentioned, #6c757d);
-}
-.mobile-filter-bar .role-toggle[data-role="mentioned"].active {
-    background: var(--color-role-mentioned, #6c757d);
-}
-
-.mobile-filter-bar .role-toggle[data-role="both"] {
-    border-color: var(--color-role-both, #2d6a4f);
-}
-.mobile-filter-bar .role-toggle[data-role="both"].active {
-    background: var(--color-role-both, #2d6a4f);
-}
-
-.mobile-filter-bar .role-toggle[data-role="indirect"] {
-    border-color: var(--color-role-indirect, #95a5a6);
-}
-.mobile-filter-bar .role-toggle[data-role="indirect"].active {
-    background: var(--color-role-indirect, #95a5a6);
-}
-
-/* Search Input */
-.mobile-filter-bar .mobile-search {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    padding: 0 var(--space-sm);
-    flex: 1;
-}
-
-.mobile-filter-bar .mobile-search input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 8px 0;
-    font-size: var(--font-size-sm);
-    outline: none;
-}
-
-.mobile-filter-bar .mobile-search i {
-    color: var(--color-text-light);
-    font-size: 14px;
-}
-
-/* Result Count */
-.mobile-filter-bar .result-count {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-    white-space: nowrap;
-    padding: 0 var(--space-xs);
-}
-
-.mobile-filter-bar .result-count strong {
-    color: var(--color-primary);
-}
-
-/* Show on mobile */
-@media (max-width: 768px) {
-    .mobile-filter-bar {
-        display: flex;
-    }
-}
-
-/* ==========================================
- * CARD BASE COMPONENT
- * Basis-Styling fuer alle Card-Komponenten
- * ========================================== */
-
-.card-base {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    margin-bottom: var(--space-sm);
-}
-
-.card-base:hover {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-sm);
-}
-
-.card-base.active {
-    border-color: var(--color-primary);
-    background: rgba(30, 64, 175, 0.05);
-}
-
-.card-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.card-title {
-    font-weight: 600;
-    color: var(--color-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.card-meta {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-    margin-top: 2px;
-}
-
-.card-count {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--color-primary);
-    flex-shrink: 0;
-}
-
-/* ==========================================
- * DETAIL PANEL BASE
- * Basis-Styling fuer Detail-Panels
- * ========================================== */
-
-.detail-panel {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg);
-    overflow-y: auto;
-}
-
-.detail-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: var(--color-text-light);
-    text-align: center;
-}
-
-.detail-empty i {
-    font-size: 48px;
-    margin-bottom: var(--space-md);
-    opacity: 0.5;
-}
-
-.detail-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--space-lg);
-    padding-bottom: var(--space-md);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.detail-header h4 {
-    margin: 0;
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
-}
-
-.detail-count {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    background: var(--color-bg);
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-sm);
-}
-
-.detail-section {
-    margin-bottom: var(--space-lg);
-}
-
-.detail-section h5 {
-    margin: 0 0 var(--space-sm) 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.detail-actions {
-    display: flex;
-    gap: var(--space-sm);
-    padding-top: var(--space-md);
-    border-top: 1px solid var(--color-border);
-}
-
-/* ==========================================
- * MINI TIMELINE
- * Kleine Timeline fuer Detail-Panels
- * ========================================== */
-
-.mini-timeline {
-    padding: var(--space-sm) 0;
-}
-
-.mini-timeline-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: 1px;
-    height: 50px;
-}
-
-.mini-timeline-bar {
-    flex: 1;
-    background: var(--color-primary);
-    border-radius: 2px 2px 0 0;
-    min-height: 2px;
-}
-
-.mini-timeline-bar:hover {
-    opacity: 0.8;
-}
-
-.mini-timeline-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-top: var(--space-xs);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
 }

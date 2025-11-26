@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CorrespExplorer - Wissenskorb fuer gesammelte Korrespondenten">
+    <title>Wissenskorb - CorrespExplorer</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- MapLibre GL JS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/wissenskorb.css">
+</head>
+<body>
+    <!-- Simple Navigation -->
+    <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
+        <div class="nav-brand">
+            <a href="explore.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-arrow-left" style="font-size: 0.9em;"></i>
+                <span class="brand-text">Wissenskorb</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <span class="basket-count-display">
+                <i class="fas fa-user"></i> <span id="person-count">0</span> Personen
+            </span>
+            <button id="share-btn" class="nav-link" aria-label="Korb teilen" title="Link zum Teilen kopieren">
+                <i class="fas fa-share-alt"></i> <span class="nav-link-text">Teilen</span>
+            </button>
+            <button id="clear-btn" class="nav-link" aria-label="Korb leeren" title="Alle Personen entfernen">
+                <i class="fas fa-trash"></i> <span class="nav-link-text">Leeren</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="wissenskorb-container">
+        <!-- Empty State -->
+        <div class="empty-state" id="empty-state" style="display: none;">
+            <i class="fas fa-shopping-basket"></i>
+            <h2>Ihr Wissenskorb ist leer</h2>
+            <p>Fuegen Sie Personen aus der Korrespondenten-Ansicht hinzu, um sie hier zu analysieren.</p>
+            <a href="explore.html" class="btn btn-primary">
+                <i class="fas fa-users"></i> Zur Korrespondenten-Ansicht
+            </a>
+        </div>
+
+        <!-- Main Content (visible when basket has items) -->
+        <div class="wissenskorb-content" id="wissenskorb-content">
+            <!-- Left Panel: Person List -->
+            <aside class="person-list-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-users"></i> Gesammelte Personen</h3>
+                    <span class="person-list-count" id="person-list-count">0 / 50</span>
+                </div>
+                <div class="person-list" id="person-list">
+                    <!-- Persons will be rendered here -->
+                </div>
+            </aside>
+
+            <!-- Right Panel: Visualizations -->
+            <main class="visualization-panel">
+                <!-- Summary Stats -->
+                <div class="summary-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-letters">0</div>
+                        <div class="stat-label">Briefe gesamt</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-years">0</div>
+                        <div class="stat-label">Jahre aktiv</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-places">0</div>
+                        <div class="stat-label">Orte</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-connections">0</div>
+                        <div class="stat-label">Verbindungen</div>
+                    </div>
+                </div>
+
+                <!-- Visualization Tabs -->
+                <div class="viz-tabs">
+                    <button class="viz-tab active" data-viz="timeline">
+                        <i class="fas fa-chart-line"></i> Timeline
+                    </button>
+                    <button class="viz-tab" data-viz="network">
+                        <i class="fas fa-project-diagram"></i> Netzwerk
+                    </button>
+                    <button class="viz-tab" data-viz="map">
+                        <i class="fas fa-map"></i> Karte
+                    </button>
+                    <button class="viz-tab" data-viz="details">
+                        <i class="fas fa-list"></i> Details
+                    </button>
+                </div>
+
+                <!-- Visualization Panels -->
+                <div class="viz-content">
+                    <!-- Timeline Panel -->
+                    <div class="viz-panel active" id="viz-timeline">
+                        <div class="viz-header">
+                            <h4>Zeitliche Aktivitaet</h4>
+                            <p class="viz-info">Aktivitaetszeitraum der gesammelten Personen</p>
+                        </div>
+                        <div id="timeline-chart" class="timeline-chart"></div>
+                        <div class="timeline-legend" id="timeline-legend"></div>
+                    </div>
+
+                    <!-- Network Panel -->
+                    <div class="viz-panel" id="viz-network">
+                        <div class="viz-header">
+                            <h4>Korrespondenz-Netzwerk</h4>
+                            <p class="viz-info">Verbindungen zwischen gesammelten Personen</p>
+                        </div>
+                        <div id="network-chart" class="network-chart"></div>
+                    </div>
+
+                    <!-- Map Panel -->
+                    <div class="viz-panel" id="viz-map">
+                        <div class="viz-header">
+                            <h4>Geografische Verteilung</h4>
+                            <p class="viz-info">Absendeorte der Korrespondenz</p>
+                        </div>
+                        <div id="basket-map" class="basket-map"></div>
+                    </div>
+
+                    <!-- Details Panel -->
+                    <div class="viz-panel" id="viz-details">
+                        <div class="viz-header">
+                            <h4>Detail-Uebersicht</h4>
+                            <p class="viz-info">Alle Briefe der gesammelten Personen</p>
+                        </div>
+                        <div class="details-filters">
+                            <input type="search" id="details-search" class="list-search" placeholder="Suchen..." aria-label="Briefe durchsuchen">
+                            <select id="details-sort" class="list-sort-select">
+                                <option value="date-desc">Datum (neueste)</option>
+                                <option value="date-asc">Datum (aelteste)</option>
+                                <option value="sender-asc">Absender (A-Z)</option>
+                            </select>
+                        </div>
+                        <div id="details-list" class="details-list"></div>
+                    </div>
+                </div>
+
+                <!-- Export Section -->
+                <div class="export-section">
+                    <h4>Daten exportieren</h4>
+                    <div class="export-buttons">
+                        <button class="btn btn-secondary" id="export-csv-btn">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="btn btn-secondary" id="export-json-btn">
+                            <i class="fas fa-file-code"></i> JSON
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" style="display: none;">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Aktion erfolgreich</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="js/wissenskorb.js" type="module"></script>
+</body>
+</html>

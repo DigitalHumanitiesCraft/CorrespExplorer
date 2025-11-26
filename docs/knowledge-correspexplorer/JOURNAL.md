@@ -4,6 +4,78 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Phase 10: Code-Refactoring)
+
+### Refactoring: Shared Utils und CSS Cleanup
+
+Konsolidierung von dupliziertem Code und Entfernung von Legacy-Komponenten.
+
+1. Neue Datei: js/utils.js (183 Zeilen)
+   - Gemeinsame Utility-Funktionen extrahiert
+   - `escapeHtml()` - HTML-Escape (vorher in 3 Dateien)
+   - `debounce()` - Debounce-Funktion (vorher in 2 Dateien)
+   - `downloadFile()` - File-Download (vorher in 2 Dateien)
+   - `showToast()` - Toast-Benachrichtigungen
+   - `copyToClipboard()` - Clipboard-API
+   - `buildAuthorityLink()` - GND/VIAF/GeoNames Links
+   - `getUrlParams()`, `setUrlParam()` - URL-Parameter-Handling
+
+2. Aktualisierte Dateien
+   - wissenskorb.js: Importiert utils.js, 35 Zeilen entfernt
+   - basket-ui.js: Importiert utils.js, 21 Zeilen entfernt
+
+3. CSS Cleanup: components.css (606 -> 163 Zeilen)
+   Entfernte HerData-Legacy-Klassen:
+   - category-legend, legend-dot
+   - filter-section, checkbox-label
+   - activity-checkboxes
+   - mobile-filter-bar, role-toggle
+   - card-base, card-info, card-title, card-meta, card-count
+   - detail-panel, detail-empty, detail-header, detail-section
+   - mini-timeline, mini-timeline-bars, mini-timeline-bar
+
+   Beibehaltene Klassen (in Benutzung):
+   - sidebar-info, info-text
+   - filter-group, filter-count
+   - year-range-display
+   - btn-reset
+   - stats-cards, stat-card, stat-value, stat-label
+
+Ergebnis: 316 Zeilen Code reduziert (12296 -> 11980)
+
+---
+
+## 2025-11-26 (Phase 9: Wissenskorb Erweiterung)
+
+### Implementiert: Dedizierte Wissenskorb-Seite
+
+Erweiterung des Wissenskorb-Features von Modal zu dedizierter Analyse-Seite:
+
+1. Neue Dateien
+   - wissenskorb.html: Dedizierte Analyse-Seite
+   - js/wissenskorb.js: Seiten-Logik mit D3/MapLibre
+   - css/wissenskorb.css: Seiten-spezifische Styles
+
+2. Visualisierungen
+   - Timeline: D3.js Stacked Bar Chart der Aktivitaetszeitraeume
+   - Netzwerk: D3.js Force-Directed Graph der Verbindungen
+   - Karte: MapLibre mit Absendeorten
+   - Details: Alle Briefe mit Suche und Sortierung
+
+3. Features
+   - Multi-Tab-Synchronisation via Storage Events
+   - Kapazitaetslimits (50 Personen, 100 Briefe, 50 Orte)
+   - Export als CSV oder JSON
+   - Teilen via URL mit Basket-IDs
+   - Toast-Benachrichtigungen
+
+4. Technische Aenderungen
+   - basket.js: Storage Event Listener, hasCapacity(), getRemainingCapacity()
+   - basket-ui.js: Click-Handler entfernt (Link statt Button)
+   - explore.html: Basket-Button ist jetzt Link zu wissenskorb.html
+
+---
+
 ## 2025-11-26 (Phase 8: Integration und Netzwerk)
 
 ### Test: Externe CMIF-URL Laden

@@ -15,6 +15,8 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 
+import { escapeHtml, downloadFile } from './utils.js';
+
 // State
 let currentTab = 'letters';
 let dataIndicesRef = null;
@@ -52,12 +54,11 @@ export function initBasketUI(dataIndices, allLetters) {
 
 /**
  * Setup basket button in navbar
+ * Note: The basket button is now a link to wissenskorb.html
+ * This function only ensures the badge is updated
  */
 function setupBasketButton() {
-    const basketBtn = document.getElementById('basket-btn');
-    if (basketBtn) {
-        basketBtn.addEventListener('click', openBasketModal);
-    }
+    // No click handler needed - basket button is now a link
 }
 
 /**
@@ -434,30 +435,7 @@ function generateBasketCSV(resolved) {
     return lines.join('\n');
 }
 
-/**
- * Download file helper
- */
-function downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-}
-
-/**
- * Escape HTML helper
- */
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+// Note: escapeHtml and downloadFile imported from utils.js
 
 // ===================
 // PUBLIC API for adding items

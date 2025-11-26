@@ -3,6 +3,11 @@
 
 const STORAGE_KEY = 'correspexplorer-basket';
 
+// Capacity limits
+const MAX_PERSONS = 50;
+const MAX_LETTERS = 100;
+const MAX_PLACES = 50;
+
 // Basket data structure
 let basket = {
     letters: [],    // Array of letter IDs
@@ -12,6 +17,9 @@ let basket = {
 
 // Event listeners for basket changes
 const listeners = [];
+
+// Storage event listener for multi-tab sync
+let storageListenerInitialized = false;
 
 /**
  * Initialize basket from localStorage
@@ -31,7 +39,34 @@ export function initBasket() {
         console.warn('Could not load basket from localStorage:', e);
         basket = { letters: [], persons: [], places: [] };
     }
+
+    // Setup storage event listener for multi-tab sync
+    if (!storageListenerInitialized) {
+        window.addEventListener('storage', handleStorageEvent);
+        storageListenerInitialized = true;
+    }
+
     notifyListeners();
+}
+
+/**
+ * Handle storage events from other tabs
+ */
+function handleStorageEvent(e) {
+    if (e.key === STORAGE_KEY) {
+        console.log('[Basket] Storage updated from another tab');
+        try {
+            const parsed = JSON.parse(e.newValue || '{}');
+            basket = {
+                letters: parsed.letters || [],
+                persons: parsed.persons || [],
+                places: parsed.places || []
+            };
+            notifyListeners();
+        } catch (err) {
+            console.warn('[Basket] Error parsing storage event:', err);
+        }
+    }
 }
 
 /**
@@ -47,14 +82,54 @@ function saveBasket() {
 }
 
 /**
+ * Get capacity limit for a type
+ * @param {string} type
+ * @returns {number}
+ */
+function getCapacityLimit(type) {
+    switch (type) {
+        case 'persons': return MAX_PERSONS;
+        case 'letters': return MAX_LETTERS;
+        case 'places': return MAX_PLACES;
+        default: return 50;
+    }
+}
+
+/**
+ * Check if basket has capacity for a type
+ * @param {string} type
+ * @returns {boolean}
+ */
+export function hasCapacity(type) {
+    if (!basket[type]) return false;
+    return basket[type].length < getCapacityLimit(type);
+}
+
+/**
+ * Get remaining capacity for a type
+ * @param {string} type
+ * @returns {number}
+ */
+export function getRemainingCapacity(type) {
+    if (!basket[type]) return 0;
+    return getCapacityLimit(type) - basket[type].length;
+}
+
+/**
  * Add item to basket
  * @param {string} type - 'letters', 'persons', or 'places'
  * @param {string} id - Item ID
- * @returns {boolean} - true if added, false if already exists
+ * @returns {boolean|string} - true if added, false if already exists, 'full' if capacity reached
  */
 export function addToBasket(type, id) {
     if (!basket[type]) return false;
     if (basket[type].includes(id)) return false;
+
+    // Check capacity
+    if (!hasCapacity(type)) {
+        console.warn(`[Basket] Capacity limit reached for ${type}`);
+        return 'full';
+    }
 
     basket[type].push(id);
     saveBasket();

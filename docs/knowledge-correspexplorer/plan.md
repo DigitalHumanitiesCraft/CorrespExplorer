@@ -38,7 +38,7 @@ Stand: 2025-11-26
 | US-26 | Themen-Details | Korrespondenten, Timeline, verwandte Themen |
 | US-27 | Themen-Filter | Integration ins Filter-System |
 | US-30 | Adaptive Views | Views basierend auf Datenverfuegbarkeit |
-| US-31 | Wissenskorb | Sammeln von Briefen, Personen, Orten mit Export |
+| US-31 | Wissenskorb | Dedizierte Seite mit Timeline, Netzwerk, Karte, Multi-Tab-Sync |
 
 ### Offen (2 User Stories)
 
@@ -68,21 +68,28 @@ Technische Umsetzung:
 - `applyPlaceFilter()` im Filter-System
 - URL-Parameter `place`
 
-### 2. Wissenskorb (Knowledge Basket)
+### 2. Wissenskorb (Knowledge Basket) - Erweitert
 
-Sammlung von ausgewaehlten Briefen/Personen/Orten fuer spaetere Analyse.
+Dedizierte Seite fuer die Analyse gesammelter Personen.
 
 Funktionen:
-- "Merken"-Button bei Briefen, Personen, Orten
-- Persistenz via localStorage
-- Basket-Uebersicht als Modal oder eigene View
-- Export der gesammelten Elemente
+- Stern-Button bei Personen zum Hinzufuegen
+- Dedizierte Seite `wissenskorb.html` mit Visualisierungen
+- Timeline: Aktivitaetszeitraum der gesammelten Personen (D3.js stacked bar chart)
+- Netzwerk: Verbindungen zwischen gesammelten Personen (D3.js force-directed graph)
+- Karte: Geografische Verteilung der Korrespondenz (MapLibre)
+- Details: Alle Briefe der gesammelten Personen
+- Export als CSV oder JSON
 - Teilen via URL (IDs als Parameter)
+- Multi-Tab Synchronisation via Storage Events
+- Kapazitaetslimit: 50 Personen, 100 Briefe, 50 Orte
 
 Technische Umsetzung:
-- `basket` Objekt im localStorage
-- UI-Komponente fuer Basket-Badge und Modal
-- Funktionen: `addToBasket()`, `removeFromBasket()`, `exportBasket()`
+- `basket.js`: localStorage-Persistenz mit Storage Events
+- `basket-ui.js`: Toggle-Buttons und Badge-Updates
+- `wissenskorb.html`: Dedizierte Analyse-Seite
+- `wissenskorb.js`: Visualisierungslogik
+- `wissenskorb.css`: Seiten-spezifische Styles
 
 ### 3. About-Seite
 
