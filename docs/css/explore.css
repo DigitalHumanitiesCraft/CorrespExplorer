@@ -1546,3 +1546,16 @@
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-sm);
 }
+
+.ego-badge {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+}
+
+.ego-badge i {
+    margin-right: 4px;
+}

@@ -2438,7 +2438,8 @@ function downloadFile(content, filename, mimeType) {
 // NETWORK VIEW
 // ===================
 
-let networkMinLetters = 5;
+let networkMinLetters = 1;
+let networkMaxNodes = 30;
 let networkLayout = 'force';
 let networkSimulation = null;
 let networkSvg = null;
@@ -2446,12 +2447,20 @@ let networkZoom = null;
 
 function initNetworkView() {
     const minLettersInput = document.getElementById('network-min-letters');
+    const maxNodesInput = document.getElementById('network-max-nodes');
     const layoutSelect = document.getElementById('network-layout');
     const resetZoomBtn = document.getElementById('network-reset-zoom');
 
     if (minLettersInput) {
         minLettersInput.addEventListener('change', (e) => {
-            networkMinLetters = parseInt(e.target.value) || 5;
+            networkMinLetters = parseInt(e.target.value) || 1;
+            renderNetwork();
+        });
+    }
+
+    if (maxNodesInput) {
+        maxNodesInput.addEventListener('change', (e) => {
+            networkMaxNodes = parseInt(e.target.value) || 30;
             renderNetwork();
         });
     }
@@ -2470,15 +2479,17 @@ function initNetworkView() {
     log.init('Network view initialized');
 }
 
-function buildNetworkData(letters, minLetters = 5) {
+function buildNetworkData(letters, minLetters = 5, maxNodes = 50) {
     const edges = new Map();
     const nodeStats = new Map();
 
     letters.forEach(letter => {
         const senderId = letter.sender?.id || letter.sender?.name;
-        const receiverId = letter.receiver?.id || letter.receiver?.name;
+        // Support both 'receiver' and 'recipient' field names
+        const recipient = letter.receiver || letter.recipient;
+        const receiverId = recipient?.id || recipient?.name;
         const senderName = letter.sender?.name;
-        const receiverName = letter.receiver?.name;
+        const receiverName = recipient?.name;
 
         if (!senderId || !receiverId || !senderName || !receiverName) return;
         if (senderId === receiverId) return;
@@ -2508,7 +2519,10 @@ function buildNetworkData(letters, minLetters = 5) {
     });
 
     // Filter edges by minimum letters
-    const filteredEdges = Array.from(edges.values()).filter(e => e.count >= minLetters);
+    let filteredEdges = Array.from(edges.values()).filter(e => e.count >= minLetters);
+
+    // Sort edges by count and limit to prevent overcrowding
+    filteredEdges.sort((a, b) => b.count - a.count);
 
     // Get nodes that appear in filtered edges
     const activeNodeIds = new Set();
@@ -2517,7 +2531,7 @@ function buildNetworkData(letters, minLetters = 5) {
         activeNodeIds.add(e.target);
     });
 
-    const nodes = Array.from(nodeStats.values())
+    let nodes = Array.from(nodeStats.values())
         .filter(n => activeNodeIds.has(n.id))
         .map(n => ({
             ...n,
@@ -2525,7 +2539,22 @@ function buildNetworkData(letters, minLetters = 5) {
             type: n.sent > 0 && n.received > 0 ? 'both' : (n.sent > 0 ? 'sender' : 'receiver')
         }));
 
-    return { nodes, links: filteredEdges };
+    // Limit nodes for performance (keep top by total letters)
+    if (nodes.length > maxNodes) {
+        nodes.sort((a, b) => b.total - a.total);
+        const topNodeIds = new Set(nodes.slice(0, maxNodes).map(n => n.id));
+        nodes = nodes.filter(n => topNodeIds.has(n.id));
+        // Re-filter edges to only include top nodes
+        filteredEdges = filteredEdges.filter(e => topNodeIds.has(e.source) && topNodeIds.has(e.target));
+    }
+
+    // Detect ego network (one node has >80% of connections)
+    const isEgoNetwork = nodes.length > 0 && nodes.some(n => {
+        const nodeEdges = filteredEdges.filter(e => e.source === n.id || e.target === n.id);
+        return nodeEdges.length / filteredEdges.length > 0.8;
+    });
+
+    return { nodes, links: filteredEdges, isEgoNetwork };
 }
 
 function renderNetwork() {
@@ -2533,13 +2562,17 @@ function renderNetwork() {
     if (!container) return;
 
     // Build network data from filtered letters
-    const data = buildNetworkData(filteredLetters, networkMinLetters);
+    const data = buildNetworkData(filteredLetters, networkMinLetters, networkMaxNodes);
 
     // Update stats
     const nodeCount = document.getElementById('network-node-count');
     const edgeCount = document.getElementById('network-edge-count');
+    const egoIndicator = document.getElementById('network-ego-indicator');
     if (nodeCount) nodeCount.textContent = data.nodes.length;
     if (edgeCount) edgeCount.textContent = data.links.length;
+    if (egoIndicator) {
+        egoIndicator.style.display = data.isEgoNetwork ? 'inline' : 'none';
+    }
 
     // Clear previous
     container.innerHTML = '';
@@ -2596,20 +2629,27 @@ function renderNetwork() {
         'both': '#8b5cf6'
     };
 
-    // Create simulation
+    // Find central node (most connections)
+    const centralNode = data.nodes.reduce((a, b) => a.total > b.total ? a : b);
+
+    // Create simulation - use radial for ego networks automatically
+    const useRadial = networkLayout === 'radial' || data.isEgoNetwork;
+
     networkSimulation = d3.forceSimulation(data.nodes)
         .force('link', d3.forceLink(data.links)
             .id(d => d.id)
-            .distance(100))
-        .force('charge', d3.forceManyBody().strength(-300))
+            .distance(d => useRadial ? 80 : 100))
+        .force('charge', d3.forceManyBody().strength(useRadial ? -150 : -300))
         .force('center', d3.forceCenter(width / 2, height / 2))
         .force('collision', d3.forceCollide().radius(d => nodeScale(d.total) + 5));
 
-    if (networkLayout === 'radial') {
-        // Radial layout: central node is the one with most connections
-        const centralNode = data.nodes.reduce((a, b) => a.total > b.total ? a : b);
-        networkSimulation.force('radial', d3.forceRadial(150, width / 2, height / 2)
-            .strength(d => d.id === centralNode.id ? 0 : 0.5));
+    if (useRadial) {
+        // Radial layout: central node in center, others around
+        networkSimulation.force('radial', d3.forceRadial(
+            d => d.id === centralNode.id ? 0 : Math.min(width, height) / 3,
+            width / 2,
+            height / 2
+        ).strength(d => d.id === centralNode.id ? 0 : 0.8));
     }
 
     // Draw edges

@@ -329,7 +329,11 @@
                         <div class="network-controls">
                             <div class="network-control-group">
                                 <label for="network-min-letters">Min. Briefe:</label>
-                                <input type="number" id="network-min-letters" value="5" min="1" max="100">
+                                <input type="number" id="network-min-letters" value="1" min="1" max="500">
+                            </div>
+                            <div class="network-control-group">
+                                <label for="network-max-nodes">Max. Personen:</label>
+                                <input type="number" id="network-max-nodes" value="30" min="5" max="100">
                             </div>
                             <div class="network-control-group">
                                 <label for="network-layout">Layout:</label>
@@ -345,6 +349,9 @@
                         <div class="network-stats">
                             <span><i class="fas fa-circle"></i> <span id="network-node-count">0</span> Personen</span>
                             <span><i class="fas fa-arrows-alt-h"></i> <span id="network-edge-count">0</span> Verbindungen</span>
+                            <span id="network-ego-indicator" class="ego-badge" style="display: none;" title="Zentrales Netzwerk mit einem Hauptknoten">
+                                <i class="fas fa-star"></i> Ego-Netzwerk
+                            </span>
                         </div>
                         <div id="network-graph" class="network-graph"></div>
                         <div class="network-legend">
