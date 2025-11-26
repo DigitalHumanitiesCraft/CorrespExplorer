@@ -645,8 +645,10 @@ function applyFilters() {
 
 // Apply person filter
 function applyPersonFilter(personId) {
+    log.event(`Applying person filter: ${personId}`);
     selectedPersonId = personId;
     applyFilters();
+    log.event(`Filtered letters count: ${filteredLetters.length}`);
 
     // Update UI to show active filter
     updatePersonFilterDisplay();
@@ -864,9 +866,8 @@ function switchView(view) {
     } else if (view === 'letters') {
         renderLettersList();
     } else if (view === 'timeline') {
-        if (!timelineRendered) {
-            renderTimeline();
-        }
+        // Always re-render timeline when switching to it (to reflect filters)
+        renderTimeline();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -1107,7 +1108,186 @@ function renderLettersList() {
             </div>
         `);
     }
+
+    // Add click handlers for letter details
+    container.querySelectorAll('.letter-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            // Don't open modal if clicking on external link
+            if (e.target.closest('a')) return;
+
+            const letterId = card.dataset.id;
+            if (letterId) {
+                showLetterDetail(letterId);
+            }
+        });
+    });
 }
+
+// ===================
+// LETTER DETAIL MODAL
+// ===================
+
+function showLetterDetail(letterId) {
+    const letter = allLetters.find(l => l.id === letterId);
+    if (!letter) return;
+
+    const modal = document.getElementById('letter-modal');
+    const title = document.getElementById('letter-modal-title');
+    const body = document.getElementById('letter-modal-body');
+
+    if (!modal || !body) return;
+
+    // Build title
+    const sender = letter.sender?.name || 'Unbekannt';
+    const recipient = letter.recipient?.name || 'Unbekannt';
+    title.textContent = `${sender} an ${recipient}`;
+
+    // Build content
+    let html = '<div class="letter-detail">';
+
+    // Basic info section
+    html += '<div class="letter-detail-section">';
+    html += '<h4>Grunddaten</h4>';
+
+    html += `<div class="letter-detail-row">
+        <span class="letter-detail-label">Datum</span>
+        <span class="letter-detail-value">${letter.date || 'Unbekannt'}</span>
+    </div>`;
+
+    html += `<div class="letter-detail-row">
+        <span class="letter-detail-label">Absender</span>
+        <span class="letter-detail-value">${buildPersonLink(letter.sender)}</span>
+    </div>`;
+
+    html += `<div class="letter-detail-row">
+        <span class="letter-detail-label">Empfaenger</span>
+        <span class="letter-detail-value">${buildPersonLink(letter.recipient)}</span>
+    </div>`;
+
+    if (letter.place_sent?.name) {
+        html += `<div class="letter-detail-row">
+            <span class="letter-detail-label">Absendeort</span>
+            <span class="letter-detail-value">${buildPlaceLink(letter.place_sent)}</span>
+        </div>`;
+    }
+
+    if (letter.language?.label) {
+        html += `<div class="letter-detail-row">
+            <span class="letter-detail-label">Sprache</span>
+            <span class="letter-detail-value">${escapeHtml(letter.language.label)}</span>
+        </div>`;
+    }
+
+    html += '</div>';
+
+    // Mentions section (if available)
+    if (letter.mentions) {
+        // Mentioned subjects
+        if (letter.mentions.subjects?.length > 0) {
+            html += '<div class="letter-detail-section">';
+            html += '<h4>Erwaehnte Themen</h4>';
+            html += '<div class="letter-detail-tags">';
+            letter.mentions.subjects.forEach(subject => {
+                html += `<span class="letter-detail-tag">${escapeHtml(subject.label)}</span>`;
+            });
+            html += '</div></div>';
+        }
+
+        // Mentioned persons
+        if (letter.mentions.persons?.length > 0) {
+            html += '<div class="letter-detail-section">';
+            html += '<h4>Erwaehnte Personen</h4>';
+            html += '<div class="letter-detail-tags">';
+            letter.mentions.persons.forEach(person => {
+                html += `<span class="letter-detail-tag">${buildPersonLink(person, true)}</span>`;
+            });
+            html += '</div></div>';
+        }
+
+        // Mentioned places
+        if (letter.mentions.places?.length > 0) {
+            html += '<div class="letter-detail-section">';
+            html += '<h4>Erwaehnte Orte</h4>';
+            html += '<div class="letter-detail-tags">';
+            letter.mentions.places.forEach(place => {
+                html += `<span class="letter-detail-tag">${buildPlaceLink(place, true)}</span>`;
+            });
+            html += '</div></div>';
+        }
+    }
+
+    // Actions section
+    html += '<div class="letter-detail-actions">';
+    if (letter.url) {
+        html += `<a href="${letter.url}" target="_blank" class="btn btn-primary">
+            <i class="fas fa-external-link-alt"></i> Zur Quelle
+        </a>`;
+    }
+    html += `<button class="btn btn-secondary" onclick="filterByPerson('${letter.sender?.id || letter.sender?.name}')">
+        <i class="fas fa-filter"></i> Briefe von ${escapeHtml(letter.sender?.name || 'Absender')}
+    </button>`;
+    html += '</div>';
+
+    html += '</div>';
+
+    body.innerHTML = html;
+
+    // Show modal
+    modal.style.display = 'flex';
+
+    // Setup close handlers
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    };
+}
+
+// Helper to build person link with authority URL
+function buildPersonLink(person, compact = false) {
+    if (!person) return 'Unbekannt';
+
+    const name = escapeHtml(person.name);
+    let url = null;
+
+    if (person.id && person.authority) {
+        switch (person.authority) {
+            case 'viaf':
+                url = `https://viaf.org/viaf/${person.id}`;
+                break;
+            case 'gnd':
+                url = `https://d-nb.info/gnd/${person.id}`;
+                break;
+        }
+    }
+
+    if (url) {
+        return `<a href="${url}" target="_blank" title="In ${person.authority.toUpperCase()} ansehen">${name}</a>`;
+    }
+    return name;
+}
+
+// Helper to build place link with GeoNames URL
+function buildPlaceLink(place, compact = false) {
+    if (!place) return 'Unbekannt';
+
+    const name = escapeHtml(place.name);
+
+    if (place.geonames_id) {
+        return `<a href="https://www.geonames.org/${place.geonames_id}" target="_blank" title="In GeoNames ansehen">${name}</a>`;
+    }
+    return name;
+}
+
+// Global function for onclick handler
+window.filterByPerson = function(personId) {
+    const modal = document.getElementById('letter-modal');
+    if (modal) modal.style.display = 'none';
+
+    applyPersonFilter(personId);
+    switchView('letters');
+    updateUrlState();
+};
 
 // ===================
 // TIMELINE
@@ -1124,33 +1304,46 @@ function renderTimeline() {
     const totalEl = document.getElementById('timeline-total');
     if (!container) return;
 
+    // Use filtered letters if filter is active, otherwise all letters
+    const lettersToCount = filteredLetters.length < allLetters.length ? filteredLetters : allLetters;
+    const isFiltered = filteredLetters.length < allLetters.length;
+
     // Count letters per year
     const yearCounts = {};
-    allLetters.forEach(letter => {
+    lettersToCount.forEach(letter => {
         if (letter.year) {
             yearCounts[letter.year] = (yearCounts[letter.year] || 0) + 1;
         }
     });
 
-    const years = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
+    // Use full date range from all letters for consistent display
+    const allYearCounts = {};
+    allLetters.forEach(letter => {
+        if (letter.year) {
+            allYearCounts[letter.year] = (allYearCounts[letter.year] || 0) + 1;
+        }
+    });
+
+    const years = Object.keys(allYearCounts).map(Number).sort((a, b) => a - b);
     if (years.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfügbar</p></div>';
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfuegbar</p></div>';
         return;
     }
 
     // Fill gaps in years
     const minYear = years[0];
     const maxYear = years[years.length - 1];
-    const allYears = [];
+    const allYearsData = [];
     for (let y = minYear; y <= maxYear; y++) {
-        allYears.push({
+        allYearsData.push({
             year: y,
-            count: yearCounts[y] || 0
+            count: yearCounts[y] || 0,
+            totalCount: allYearCounts[y] || 0
         });
     }
 
-    // Find max count for scaling
-    const maxCount = Math.max(...allYears.map(y => y.count));
+    // Find max count for scaling (use total for consistent scaling)
+    const maxCount = Math.max(...allYearsData.map(y => y.totalCount));
 
     // Determine if we should group by decade (for large spans)
     const yearSpan = maxYear - minYear;
@@ -1160,39 +1353,51 @@ function renderTimeline() {
     if (groupByDecade) {
         // Group by decade
         const decadeCounts = {};
-        allYears.forEach(({ year, count }) => {
+        const decadeTotalCounts = {};
+        allYearsData.forEach(({ year, count, totalCount }) => {
             const decade = Math.floor(year / 10) * 10;
             decadeCounts[decade] = (decadeCounts[decade] || 0) + count;
+            decadeTotalCounts[decade] = (decadeTotalCounts[decade] || 0) + totalCount;
         });
         displayData = Object.entries(decadeCounts).map(([decade, count]) => ({
-            label: `${decade}er`,
+            label: `${decade}s`,
             year: parseInt(decade),
             yearEnd: parseInt(decade) + 9,
-            count
+            count,
+            totalCount: decadeTotalCounts[decade]
         }));
     } else {
-        displayData = allYears.map(({ year, count }) => ({
+        displayData = allYearsData.map(({ year, count, totalCount }) => ({
             label: year.toString(),
             year,
             yearEnd: year,
-            count
+            count,
+            totalCount
         }));
     }
 
-    const displayMaxCount = Math.max(...displayData.map(d => d.count));
+    const displayMaxCount = Math.max(...displayData.map(d => d.totalCount));
+
+    // Calculate label interval - show roughly 10-15 labels
+    const labelInterval = Math.max(1, Math.ceil(displayData.length / 15));
 
     // Render bars
     container.innerHTML = displayData.map((data, index) => {
-        const height = data.count > 0 ? Math.max(4, (data.count / displayMaxCount) * 100) : 0;
-        const showLabel = displayData.length <= 20 || index % Math.ceil(displayData.length / 20) === 0;
+        const height = data.totalCount > 0 ? Math.max(4, (data.count / displayMaxCount) * 100) : 0;
+        const bgHeight = data.totalCount > 0 ? Math.max(4, (data.totalCount / displayMaxCount) * 100) : 0;
+        const showLabel = index % labelInterval === 0 || index === displayData.length - 1;
+        const tooltipText = isFiltered
+            ? `${data.label}: ${data.count} von ${data.totalCount} Briefen`
+            : `${data.label}: ${data.count} Briefe`;
 
         return `
-            <div class="timeline-bar"
-                 style="height: ${height}%"
-                 data-year="${data.year}"
-                 data-year-end="${data.yearEnd}"
-                 data-count="${data.count}">
-                <div class="timeline-bar-tooltip">${data.label}: ${data.count} Briefe</div>
+            <div class="timeline-bar-wrapper" data-year="${data.year}" data-year-end="${data.yearEnd}">
+                ${isFiltered ? `<div class="timeline-bar-bg" style="height: ${bgHeight}%"></div>` : ''}
+                <div class="timeline-bar ${isFiltered ? 'timeline-bar-filtered' : ''}"
+                     style="height: ${height}%"
+                     data-count="${data.count}">
+                </div>
+                <div class="timeline-bar-tooltip">${tooltipText}</div>
                 ${showLabel ? `<span class="timeline-bar-label">${data.label}</span>` : ''}
             </div>
         `;
@@ -1200,14 +1405,18 @@ function renderTimeline() {
 
     // Update total
     if (totalEl) {
-        totalEl.textContent = `${allLetters.length.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}`;
+        if (isFiltered) {
+            totalEl.textContent = `${lettersToCount.length.toLocaleString('de-DE')} von ${allLetters.length.toLocaleString('de-DE')} Briefen (${minYear}-${maxYear})`;
+        } else {
+            totalEl.textContent = `${allLetters.length.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}`;
+        }
     }
 
-    // Add click handlers
-    container.querySelectorAll('.timeline-bar').forEach(bar => {
-        bar.addEventListener('click', () => {
-            const yearStart = parseInt(bar.dataset.year);
-            const yearEnd = parseInt(bar.dataset.yearEnd);
+    // Add click handlers to wrapper elements
+    container.querySelectorAll('.timeline-bar-wrapper').forEach(wrapper => {
+        wrapper.addEventListener('click', () => {
+            const yearStart = parseInt(wrapper.dataset.year);
+            const yearEnd = parseInt(wrapper.dataset.yearEnd);
 
             // Update year slider
             const slider = document.getElementById('year-range-slider');
@@ -1216,8 +1425,8 @@ function renderTimeline() {
             }
 
             // Visual feedback
-            container.querySelectorAll('.timeline-bar').forEach(b => b.classList.remove('selected'));
-            bar.classList.add('selected');
+            container.querySelectorAll('.timeline-bar-wrapper').forEach(w => w.classList.remove('selected'));
+            wrapper.classList.add('selected');
         });
     });
 

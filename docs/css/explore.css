@@ -192,6 +192,12 @@
     box-shadow: var(--shadow-lg);
 }
 
+.modal-content.modal-lg {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -359,25 +365,53 @@
     border-bottom: 2px solid var(--color-border);
 }
 
-.timeline-bar {
+.timeline-bar-wrapper {
     flex: 1;
     min-width: 8px;
     max-width: 40px;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+}
+
+.timeline-bar {
+    width: 100%;
     background: var(--color-primary);
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-    cursor: pointer;
     transition: all var(--transition-fast);
-    position: relative;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
-.timeline-bar:hover {
+.timeline-bar-bg {
+    width: 100%;
+    background: var(--color-border);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.5;
+}
+
+.timeline-bar-filtered {
+    z-index: 1;
+}
+
+.timeline-bar-wrapper:hover .timeline-bar {
     background: #2563eb;
-    transform: scaleY(1.02);
-    transform-origin: bottom;
 }
 
-.timeline-bar.selected {
+.timeline-bar-wrapper.selected .timeline-bar {
     background: #1d4ed8;
+}
+
+.timeline-bar-wrapper.selected {
     box-shadow: 0 0 0 2px var(--color-primary);
 }
 
@@ -401,6 +435,7 @@
     padding: 4px 8px;
     border-radius: var(--radius-sm);
     font-size: var(--font-size-xs);
+    z-index: 10;
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
@@ -408,7 +443,7 @@
     margin-bottom: 4px;
 }
 
-.timeline-bar:hover .timeline-bar-tooltip {
+.timeline-bar-wrapper:hover .timeline-bar-tooltip {
     opacity: 1;
 }
 
@@ -428,6 +463,121 @@
     padding-top: var(--space-md);
     font-size: var(--font-size-xs);
     color: var(--color-text-light);
+}
+
+/* Responsive */
+/* Letter Detail Modal */
+.letter-detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.letter-detail-section {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-md);
+}
+
+.letter-detail-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.letter-detail-section h4 {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.letter-detail-row {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.letter-detail-row:last-child {
+    margin-bottom: 0;
+}
+
+.letter-detail-label {
+    font-weight: 600;
+    color: var(--color-text);
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.letter-detail-value {
+    color: var(--color-text);
+}
+
+.letter-detail-value a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.letter-detail-value a:hover {
+    text-decoration: underline;
+}
+
+.letter-detail-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.letter-detail-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text);
+}
+
+.letter-detail-tag a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.letter-detail-tag a:hover {
+    color: var(--color-primary);
+}
+
+.letter-detail-actions {
+    display: flex;
+    gap: var(--space-md);
+    padding-top: var(--space-md);
+}
+
+.letter-detail-actions .btn {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.letter-detail-actions .btn-primary {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+}
+
+.letter-detail-actions .btn-primary:hover {
+    background: #2563eb;
+}
+
+.letter-detail-actions .btn-secondary {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+.letter-detail-actions .btn-secondary:hover {
+    border-color: var(--color-primary);
 }
 
 /* Responsive */
@@ -453,5 +603,14 @@
 
     .export-options {
         flex-direction: column;
+    }
+
+    .letter-detail-row {
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+
+    .letter-detail-label {
+        min-width: auto;
     }
 }

@@ -4,6 +4,38 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Phase 6: Brief-Details und Timeline-Verbesserung)
+
+### Neu implementierte Features
+
+1. Brief-Detail-Modal (US-13)
+   - Klick auf Brief-Karte oeffnet Modal mit allen Metadaten
+   - Zeigt Grunddaten: Datum, Absender, Empfaenger, Ort, Sprache
+   - Zeigt erwaehnte Entitaeten: Themen, Personen, Orte (mentions)
+   - Links zu Authority-Dateien (VIAF, GND, GeoNames)
+   - Button zum Filtern nach Absender
+   - Link zur Original-Quelle
+
+2. Verbesserte Timeline
+   - Zeigt gefilterte vs. ungefilterte Briefe (Hintergrund-Balken)
+   - Dynamische Label-Intervalle (ca. 15 Labels)
+   - Tooltips zeigen "X von Y Briefen" bei aktivem Filter
+   - Re-Rendering bei Filterwechsel
+
+3. User Stories Dokument
+   - 25 User Stories dokumentiert
+   - 19 implementiert, 2 teilweise, 4 offen
+   - Priorisierung der offenen Features
+
+### Technische Verbesserungen
+
+- Timeline HTML-Struktur: Wrapper-Element fuer Hintergrund-Balken
+- CSS: Neue Styles fuer Letter-Detail-Modal
+- Helper-Funktionen: buildPersonLink(), buildPlaceLink()
+- Global: filterByPerson() fuer onclick-Handler
+
+---
+
 ## 2025-11-26 (Phase 5: Erweiterte Features)
 
 ### Neu implementierte Features
