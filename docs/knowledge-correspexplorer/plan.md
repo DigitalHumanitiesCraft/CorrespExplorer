@@ -50,7 +50,7 @@ Stand: 2025-11-26
 
 ---
 
-## Neue Features (aus HerData-Konzept)
+## Neue Features
 
 ### 1. Orte-Index (Places View)
 

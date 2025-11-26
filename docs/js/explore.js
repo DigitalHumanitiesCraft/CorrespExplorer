@@ -1,7 +1,16 @@
 // Explore View - Generic CMIF visualization
 // Displays data from sessionStorage (uploaded/loaded via upload.js)
 
-import { debounce } from './utils.js';
+import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS } from './constants.js';
+
+// Utility: Debounce function
+function debounce(fn, delay) {
+    let timeout;
+    return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), delay);
+    };
+}
 
 const IS_PRODUCTION = true;
 
@@ -1427,36 +1436,7 @@ window.filterByPerson = function(personId) {
 let timelineRendered = false;
 let timelineStackMode = 'language'; // 'language' or 'correspondent'
 
-// Color palette for stacked bars
-const LANGUAGE_COLORS = {
-    'de': '#1e40af', // German - primary blue
-    'fr': '#dc2626', // French - red
-    'it': '#16a34a', // Italian - green
-    'en': '#9333ea', // English - purple
-    'es': '#ea580c', // Spanish - orange
-    'pt': '#0891b2', // Portuguese - cyan
-    'la': '#78716c', // Latin - gray
-    'hu': '#be185d', // Hungarian - pink
-    'nl': '#f59e0b', // Dutch - amber
-    'other': '#64748b' // Other - slate
-};
-
-// Language labels for display
-const LANGUAGE_LABELS = {
-    'de': 'Deutsch',
-    'fr': 'Franzoesisch',
-    'it': 'Italienisch',
-    'en': 'Englisch',
-    'es': 'Spanisch',
-    'pt': 'Portugiesisch',
-    'la': 'Latein',
-    'hu': 'Ungarisch',
-    'nl': 'Niederlaendisch',
-    'cy': 'Walisisch',
-    'oc': 'Okzitanisch',
-    'None': 'Unbekannt',
-    'other': 'Andere'
-};
+// LANGUAGE_COLORS and LANGUAGE_LABELS imported from constants.js
 
 function initTimeline() {
     // Setup stack mode toggle

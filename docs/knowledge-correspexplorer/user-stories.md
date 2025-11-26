@@ -81,7 +81,7 @@ Akzeptanzkriterien:
 - Popup mit Ortsname
 - Anzahl Briefe
 - Liste der Absender (Top 5)
-- Status: TEILWEISE (Popup zeigt nur Anzahl)
+- Status: IMPLEMENTIERT
 
 ### US-08: Fehlende Koordinaten erkennen
 Als Forschende moechte ich wissen, welche Orte keine Koordinaten haben, um die Datenqualitaet einschaetzen zu koennen.
@@ -287,14 +287,14 @@ Akzeptanzkriterien:
 |-----------|---------------|-----------|-------|
 | Daten-Import | 3 | 0 | 0 |
 | Ueberblick | 2 | 0 | 0 |
-| Raeumlich | 1 | 2 | 0 |
+| Raeumlich | 2 | 1 | 0 |
 | Personen | 2 | 0 | 1 |
 | Briefe | 3 | 0 | 0 |
 | Filter | 5 | 0 | 1 |
 | Teilen/Export | 3 | 0 | 0 |
 | Vergleich | 0 | 0 | 2 |
 | Themen | 3 | 0 | 0 |
-| **Gesamt** | **22** | **2** | **4** |
+| **Gesamt** | **23** | **1** | **4** |
 
 ---
 

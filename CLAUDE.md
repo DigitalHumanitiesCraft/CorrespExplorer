@@ -1,6 +1,6 @@
 # Claude Code Guidelines
 
-This document defines coding and documentation style rules for the HerData project when working with Claude.
+This document defines coding and documentation style rules for the CorrespExplorer project when working with Claude.
 
 ## Documentation Style
 
@@ -83,7 +83,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 ## File Naming
 
 - Lowercase with underscores: `build_pipeline.py`
-- Descriptive names: `analyze_goethe_letters.py` not `script.py`
+- Descriptive names: `build_hsa_data.py` not `script.py`
 - Markdown files in UPPERCASE: `README.md`, `JOURNAL.md`
 
 ## Comments
@@ -111,7 +111,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 - Documentation can be in German or English as appropriate
 - User stories in German: "Als Nutzer*in möchte ich..."
-- Technical terms use original forms (GND, SNDB, TEI, CMIF)
+- Technical terms use original forms (GND, VIAF, TEI, CMIF)
 - Code comments in English
 
 ## This File

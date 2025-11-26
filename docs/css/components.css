@@ -1,4 +1,4 @@
-/* HerData Shared Components
+/* CorrespExplorer Shared Components
  * Gemeinsame UI-Komponenten fuer alle Seiten
  * Importiert tokens.css fuer Design-Tokens
  */
@@ -443,4 +443,164 @@
     .mobile-filter-bar {
         display: flex;
     }
+}
+
+/* ==========================================
+ * CARD BASE COMPONENT
+ * Basis-Styling fuer alle Card-Komponenten
+ * ========================================== */
+
+.card-base {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-bottom: var(--space-sm);
+}
+
+.card-base:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-base.active {
+    border-color: var(--color-primary);
+    background: rgba(30, 64, 175, 0.05);
+}
+
+.card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-title {
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-meta {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    margin-top: 2px;
+}
+
+.card-count {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+/* ==========================================
+ * DETAIL PANEL BASE
+ * Basis-Styling fuer Detail-Panels
+ * ========================================== */
+
+.detail-panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    overflow-y: auto;
+}
+
+.detail-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.detail-empty i {
+    font-size: 48px;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.detail-header h4 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+}
+
+.detail-count {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    background: var(--color-bg);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+}
+
+.detail-section {
+    margin-bottom: var(--space-lg);
+}
+
+.detail-section h5 {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-actions {
+    display: flex;
+    gap: var(--space-sm);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+}
+
+/* ==========================================
+ * MINI TIMELINE
+ * Kleine Timeline fuer Detail-Panels
+ * ========================================== */
+
+.mini-timeline {
+    padding: var(--space-sm) 0;
+}
+
+.mini-timeline-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    height: 50px;
+}
+
+.mini-timeline-bar {
+    flex: 1;
+    background: var(--color-primary);
+    border-radius: 2px 2px 0 0;
+    min-height: 2px;
+}
+
+.mini-timeline-bar:hover {
+    opacity: 0.8;
+}
+
+.mini-timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
 }
