@@ -323,49 +323,39 @@
                 <div id="network-view" class="tab-content">
                     <div class="network-container">
                         <div class="network-header">
-                            <h3>Korrespondenznetzwerk</h3>
-                            <p class="network-info">Visualisierung der Kommunikationsbeziehungen zwischen Korrespondenten</p>
+                            <h3>Netzwerk-Analyse</h3>
+                            <p class="network-info" id="network-info-text">Korrespondenten die in denselben Jahren aktiv sind</p>
                         </div>
                         <div class="network-controls">
                             <div class="network-control-group">
-                                <label for="network-min-letters">Min. Briefe:</label>
-                                <input type="number" id="network-min-letters" value="1" min="1" max="500">
-                            </div>
-                            <div class="network-control-group">
-                                <label for="network-max-nodes">Max. Personen:</label>
-                                <input type="number" id="network-max-nodes" value="30" min="5" max="200">
-                            </div>
-                            <div class="network-control-group">
-                                <label for="network-layout">Layout:</label>
-                                <select id="network-layout">
-                                    <option value="force">Force-Directed</option>
-                                    <option value="radial">Radial</option>
+                                <label for="network-type">Netzwerk-Typ:</label>
+                                <select id="network-type">
+                                    <option value="contemporaries">Zeitgenossen</option>
                                 </select>
+                            </div>
+                            <div class="network-control-group">
+                                <label for="network-threshold" id="network-threshold-label">Min. gemeinsame Jahre:</label>
+                                <input type="number" id="network-threshold" value="3" min="1" max="50">
+                            </div>
+                            <div class="network-control-group">
+                                <label for="network-max-nodes">Max. Knoten:</label>
+                                <input type="number" id="network-max-nodes" value="50" min="10" max="200">
                             </div>
                             <button id="network-reset-zoom" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-compress-arrows-alt"></i> Zoom zuruecksetzen
                             </button>
                         </div>
                         <div class="network-stats">
-                            <span><i class="fas fa-circle"></i> <span id="network-node-count">0</span> Personen</span>
+                            <span><i class="fas fa-circle"></i> <span id="network-node-count">0</span> Knoten</span>
                             <span><i class="fas fa-arrows-alt-h"></i> <span id="network-edge-count">0</span> Verbindungen</span>
-                            <span><i class="fas fa-envelope"></i> <span id="network-letter-count">0</span> Briefe</span>
-                            <span id="network-ego-indicator" class="ego-badge" style="display: none;" title="Zentrales Netzwerk mit einem Hauptknoten">
-                                <i class="fas fa-star"></i> Ego-Netzwerk
-                            </span>
                         </div>
                         <div class="network-coverage" id="network-coverage"></div>
                         <div id="network-graph" class="network-graph"></div>
-                        <div class="network-legend">
+                        <div class="network-legend" id="network-legend">
                             <div class="legend-item">
-                                <span class="legend-circle legend-sender"></span> Nur Absender
+                                <span class="legend-circle" style="background: #3b82f6;"></span> Zeitgenossen-Netzwerk
                             </div>
-                            <div class="legend-item">
-                                <span class="legend-circle legend-receiver"></span> Nur Empfaenger
-                            </div>
-                            <div class="legend-item">
-                                <span class="legend-circle legend-both"></span> Beides
-                            </div>
+                            <div class="legend-hint">Klick auf Knoten filtert Briefe | Hover fuer Details</div>
                         </div>
                     </div>
                 </div>

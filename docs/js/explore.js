@@ -2438,36 +2438,46 @@ function downloadFile(content, filename, mimeType) {
 // NETWORK VIEW
 // ===================
 
-let networkMinLetters = 1;
-let networkMaxNodes = 30;
-let networkLayout = 'force';
+let networkType = 'contemporaries'; // 'contemporaries', 'topics', 'correspondence'
+let networkMinYears = 3; // Min shared years for contemporaries
+let networkMinCooccurrence = 5; // Min co-occurrence for topics
+let networkMaxNodes = 50;
 let networkSimulation = null;
 let networkSvg = null;
 let networkZoom = null;
 
 function initNetworkView() {
-    const minLettersInput = document.getElementById('network-min-letters');
+    const typeSelect = document.getElementById('network-type');
+    const thresholdInput = document.getElementById('network-threshold');
     const maxNodesInput = document.getElementById('network-max-nodes');
-    const layoutSelect = document.getElementById('network-layout');
     const resetZoomBtn = document.getElementById('network-reset-zoom');
 
-    if (minLettersInput) {
-        minLettersInput.addEventListener('change', (e) => {
-            networkMinLetters = parseInt(e.target.value) || 1;
+    // Check if topics are available and update UI
+    updateNetworkTypeOptions();
+
+    if (typeSelect) {
+        typeSelect.addEventListener('change', (e) => {
+            networkType = e.target.value;
+            updateNetworkThresholdLabel();
+            renderNetwork();
+        });
+    }
+
+    if (thresholdInput) {
+        thresholdInput.addEventListener('change', (e) => {
+            const val = parseInt(e.target.value) || 1;
+            if (networkType === 'contemporaries') {
+                networkMinYears = val;
+            } else if (networkType === 'topics') {
+                networkMinCooccurrence = val;
+            }
             renderNetwork();
         });
     }
 
     if (maxNodesInput) {
         maxNodesInput.addEventListener('change', (e) => {
-            networkMaxNodes = parseInt(e.target.value) || 30;
-            renderNetwork();
-        });
-    }
-
-    if (layoutSelect) {
-        layoutSelect.addEventListener('change', (e) => {
-            networkLayout = e.target.value;
+            networkMaxNodes = parseInt(e.target.value) || 50;
             renderNetwork();
         });
     }
@@ -2479,101 +2489,227 @@ function initNetworkView() {
     log.init('Network view initialized');
 }
 
-function buildNetworkData(letters, minLetters = 5, maxNodes = 50) {
-    const edges = new Map();
-    const nodeStats = new Map();
+function updateNetworkTypeOptions() {
+    const typeSelect = document.getElementById('network-type');
+    if (!typeSelect) return;
+
+    // Check if we have subjects data
+    const hasSubjects = allLetters.some(l =>
+        l.mentions?.subjects && l.mentions.subjects.length > 0
+    );
+
+    // Update options
+    typeSelect.innerHTML = `
+        <option value="contemporaries">Zeitgenossen</option>
+        ${hasSubjects ? '<option value="topics">Themen-Netzwerk</option>' : ''}
+    `;
+
+    updateNetworkThresholdLabel();
+}
+
+function updateNetworkThresholdLabel() {
+    const label = document.getElementById('network-threshold-label');
+    const input = document.getElementById('network-threshold');
+    if (!label || !input) return;
+
+    if (networkType === 'contemporaries') {
+        label.textContent = 'Min. gemeinsame Jahre:';
+        input.value = networkMinYears;
+        input.min = 1;
+        input.max = 50;
+    } else if (networkType === 'topics') {
+        label.textContent = 'Min. Co-Occurrence:';
+        input.value = networkMinCooccurrence;
+        input.min = 1;
+        input.max = 100;
+    }
+}
+
+// Build contemporaries network: persons who correspond in the same years
+function buildContemporariesNetwork(letters, minYears = 3, maxNodes = 50) {
+    // Group letters by year and person
+    const yearPersons = new Map();
+    const personInfo = new Map();
 
     letters.forEach(letter => {
+        const year = letter.year;
         const senderId = letter.sender?.id || letter.sender?.name;
-        // Support both 'receiver' and 'recipient' field names
-        const recipient = letter.receiver || letter.recipient;
-        const receiverId = recipient?.id || recipient?.name;
         const senderName = letter.sender?.name;
-        const receiverName = recipient?.name;
 
-        if (!senderId || !receiverId || !senderName || !receiverName) return;
-        if (senderId === receiverId) return;
+        if (!year || !senderId || !senderName) return;
 
-        // Track node stats
-        if (!nodeStats.has(senderId)) {
-            nodeStats.set(senderId, { id: senderId, name: senderName, sent: 0, received: 0 });
-        }
-        if (!nodeStats.has(receiverId)) {
-            nodeStats.set(receiverId, { id: receiverId, name: receiverName, sent: 0, received: 0 });
-        }
-        nodeStats.get(senderId).sent++;
-        nodeStats.get(receiverId).received++;
-
-        // Track edges (bidirectional key)
-        const edgeKey = [senderId, receiverId].sort().join('|');
-        if (!edges.has(edgeKey)) {
-            edges.set(edgeKey, {
-                source: senderId,
-                target: receiverId,
-                sourceName: senderName,
-                targetName: receiverName,
-                count: 0
+        // Track person info
+        if (!personInfo.has(senderId)) {
+            personInfo.set(senderId, {
+                id: senderId,
+                name: senderName,
+                years: new Set(),
+                letterCount: 0
             });
         }
-        edges.get(edgeKey).count++;
+        personInfo.get(senderId).years.add(year);
+        personInfo.get(senderId).letterCount++;
+
+        // Track year -> persons
+        if (!yearPersons.has(year)) {
+            yearPersons.set(year, new Set());
+        }
+        yearPersons.get(year).add(senderId);
     });
 
-    // Store totals before filtering
-    const totalNodes = nodeStats.size;
-    const totalEdges = edges.size;
+    // Calculate shared years between person pairs
+    const edges = new Map();
+    const persons = Array.from(personInfo.values());
 
-    // Filter edges by minimum letters
-    let filteredEdges = Array.from(edges.values()).filter(e => e.count >= minLetters);
-    const edgesAfterMinFilter = filteredEdges.length;
+    for (let i = 0; i < persons.length; i++) {
+        for (let j = i + 1; j < persons.length; j++) {
+            const p1 = persons[i];
+            const p2 = persons[j];
 
-    // Sort edges by count and limit to prevent overcrowding
-    filteredEdges.sort((a, b) => b.count - a.count);
+            // Count shared years
+            const sharedYears = [...p1.years].filter(y => p2.years.has(y));
 
-    // Get nodes that appear in filtered edges
+            if (sharedYears.length >= minYears) {
+                const edgeKey = [p1.id, p2.id].sort().join('|');
+                edges.set(edgeKey, {
+                    source: p1.id,
+                    target: p2.id,
+                    sourceName: p1.name,
+                    targetName: p2.name,
+                    sharedYears: sharedYears.length,
+                    yearRange: [Math.min(...sharedYears), Math.max(...sharedYears)]
+                });
+            }
+        }
+    }
+
+    // Sort edges and limit nodes
+    let filteredEdges = Array.from(edges.values());
+    filteredEdges.sort((a, b) => b.sharedYears - a.sharedYears);
+
+    // Get active nodes
     const activeNodeIds = new Set();
     filteredEdges.forEach(e => {
         activeNodeIds.add(e.source);
         activeNodeIds.add(e.target);
     });
 
-    let nodes = Array.from(nodeStats.values())
-        .filter(n => activeNodeIds.has(n.id))
-        .map(n => ({
-            ...n,
-            total: n.sent + n.received,
-            type: n.sent > 0 && n.received > 0 ? 'both' : (n.sent > 0 ? 'sender' : 'receiver')
+    let nodes = persons
+        .filter(p => activeNodeIds.has(p.id))
+        .map(p => ({
+            id: p.id,
+            name: p.name,
+            total: p.letterCount,
+            yearsActive: p.years.size
         }));
 
-    const nodesAfterMinFilter = nodes.length;
-
-    // Limit nodes for performance (keep top by total letters)
+    // Limit to top nodes by letter count
     if (nodes.length > maxNodes) {
         nodes.sort((a, b) => b.total - a.total);
         const topNodeIds = new Set(nodes.slice(0, maxNodes).map(n => n.id));
         nodes = nodes.filter(n => topNodeIds.has(n.id));
-        // Re-filter edges to only include top nodes
-        filteredEdges = filteredEdges.filter(e => topNodeIds.has(e.source) && topNodeIds.has(e.target));
+        filteredEdges = filteredEdges.filter(e =>
+            topNodeIds.has(e.source) && topNodeIds.has(e.target)
+        );
     }
-
-    // Detect ego network (one node has >80% of connections)
-    const isEgoNetwork = nodes.length > 0 && nodes.some(n => {
-        const nodeEdges = filteredEdges.filter(e => e.source === n.id || e.target === n.id);
-        return nodeEdges.length / filteredEdges.length > 0.8;
-    });
-
-    // Calculate total letters in displayed network
-    const totalLettersInNetwork = filteredEdges.reduce((sum, e) => sum + e.count, 0);
 
     return {
         nodes,
         links: filteredEdges,
-        isEgoNetwork,
+        networkType: 'contemporaries',
         stats: {
-            totalNodes,
-            totalEdges,
-            nodesAfterMinFilter,
-            edgesAfterMinFilter,
-            totalLettersInNetwork
+            totalPersons: personInfo.size,
+            totalConnections: edges.size,
+            displayedPersons: nodes.length,
+            displayedConnections: filteredEdges.length
+        }
+    };
+}
+
+// Build topic co-occurrence network
+function buildTopicsNetwork(letters, minCooccurrence = 5, maxNodes = 50) {
+    const topicInfo = new Map();
+    const cooccurrence = new Map();
+
+    letters.forEach(letter => {
+        const subjects = letter.mentions?.subjects || [];
+        if (subjects.length < 2) return;
+
+        // Track topic info
+        subjects.forEach(s => {
+            const sid = s.id || s.label;
+            if (!sid) return;
+            if (!topicInfo.has(sid)) {
+                topicInfo.set(sid, {
+                    id: sid,
+                    label: s.label || sid,
+                    letterCount: 0
+                });
+            }
+            topicInfo.get(sid).letterCount++;
+        });
+
+        // Track co-occurrences
+        for (let i = 0; i < subjects.length; i++) {
+            for (let j = i + 1; j < subjects.length; j++) {
+                const s1 = subjects[i].id || subjects[i].label;
+                const s2 = subjects[j].id || subjects[j].label;
+                if (!s1 || !s2) continue;
+
+                const edgeKey = [s1, s2].sort().join('|');
+                if (!cooccurrence.has(edgeKey)) {
+                    cooccurrence.set(edgeKey, {
+                        source: s1,
+                        target: s2,
+                        sourceName: subjects[i].label || s1,
+                        targetName: subjects[j].label || s2,
+                        count: 0
+                    });
+                }
+                cooccurrence.get(edgeKey).count++;
+            }
+        }
+    });
+
+    // Filter by minimum co-occurrence
+    let filteredEdges = Array.from(cooccurrence.values())
+        .filter(e => e.count >= minCooccurrence);
+    filteredEdges.sort((a, b) => b.count - a.count);
+
+    // Get active topics
+    const activeTopicIds = new Set();
+    filteredEdges.forEach(e => {
+        activeTopicIds.add(e.source);
+        activeTopicIds.add(e.target);
+    });
+
+    let nodes = Array.from(topicInfo.values())
+        .filter(t => activeTopicIds.has(t.id))
+        .map(t => ({
+            id: t.id,
+            name: t.label,
+            total: t.letterCount
+        }));
+
+    // Limit to top nodes
+    if (nodes.length > maxNodes) {
+        nodes.sort((a, b) => b.total - a.total);
+        const topNodeIds = new Set(nodes.slice(0, maxNodes).map(n => n.id));
+        nodes = nodes.filter(n => topNodeIds.has(n.id));
+        filteredEdges = filteredEdges.filter(e =>
+            topNodeIds.has(e.source) && topNodeIds.has(e.target)
+        );
+    }
+
+    return {
+        nodes,
+        links: filteredEdges,
+        networkType: 'topics',
+        stats: {
+            totalTopics: topicInfo.size,
+            totalConnections: cooccurrence.size,
+            displayedTopics: nodes.length,
+            displayedConnections: filteredEdges.length
         }
     };
 }
@@ -2582,49 +2718,67 @@ function renderNetwork() {
     const container = document.getElementById('network-graph');
     if (!container) return;
 
-    // Build network data from filtered letters
-    const data = buildNetworkData(filteredLetters, networkMinLetters, networkMaxNodes);
+    // Build network data based on selected type
+    let data;
+    if (networkType === 'topics') {
+        data = buildTopicsNetwork(filteredLetters, networkMinCooccurrence, networkMaxNodes);
+    } else {
+        data = buildContemporariesNetwork(filteredLetters, networkMinYears, networkMaxNodes);
+    }
 
-    // Update stats
+    // Update stats display
     const nodeCount = document.getElementById('network-node-count');
     const edgeCount = document.getElementById('network-edge-count');
-    const letterCount = document.getElementById('network-letter-count');
-    const egoIndicator = document.getElementById('network-ego-indicator');
     const coverageDiv = document.getElementById('network-coverage');
+    const infoText = document.getElementById('network-info-text');
 
     if (nodeCount) nodeCount.textContent = data.nodes.length;
     if (edgeCount) edgeCount.textContent = data.links.length;
-    if (letterCount) letterCount.textContent = data.stats.totalLettersInNetwork.toLocaleString('de-DE');
-    if (egoIndicator) {
-        egoIndicator.style.display = data.isEgoNetwork ? 'inline' : 'none';
+
+    // Update info text based on network type
+    if (infoText) {
+        if (networkType === 'topics') {
+            infoText.textContent = 'Themen die gemeinsam in Briefen erwaehnt werden';
+        } else {
+            infoText.textContent = 'Korrespondenten die in denselben Jahren aktiv sind';
+        }
     }
 
     // Update coverage info
     if (coverageDiv) {
-        const nodePercent = data.stats.totalNodes > 0
-            ? Math.round((data.nodes.length / data.stats.totalNodes) * 100)
-            : 0;
-        const letterPercent = filteredLetters.length > 0
-            ? Math.round((data.stats.totalLettersInNetwork / filteredLetters.length) * 100)
-            : 0;
-
-        coverageDiv.innerHTML = `
-            <span class="coverage-info">
-                Anzeige: ${data.nodes.length} von ${data.stats.totalNodes} Personen (${nodePercent}%)
-                | ${data.stats.totalLettersInNetwork.toLocaleString('de-DE')} von ${filteredLetters.length.toLocaleString('de-DE')} Briefen (${letterPercent}%)
-            </span>
-        `;
+        if (networkType === 'topics') {
+            const pct = data.stats.totalTopics > 0
+                ? Math.round((data.stats.displayedTopics / data.stats.totalTopics) * 100) : 0;
+            coverageDiv.innerHTML = `
+                <span class="coverage-info">
+                    Anzeige: ${data.stats.displayedTopics} von ${data.stats.totalTopics} Themen (${pct}%)
+                    | ${data.stats.displayedConnections} von ${data.stats.totalConnections} Verbindungen
+                </span>
+            `;
+        } else {
+            const pct = data.stats.totalPersons > 0
+                ? Math.round((data.stats.displayedPersons / data.stats.totalPersons) * 100) : 0;
+            coverageDiv.innerHTML = `
+                <span class="coverage-info">
+                    Anzeige: ${data.stats.displayedPersons} von ${data.stats.totalPersons} Personen (${pct}%)
+                    | ${data.stats.displayedConnections} von ${data.stats.totalConnections} Verbindungen
+                </span>
+            `;
+        }
     }
 
     // Clear previous
     container.innerHTML = '';
 
     if (data.nodes.length === 0) {
+        const thresholdText = networkType === 'topics'
+            ? `mindestens ${networkMinCooccurrence} gemeinsamen Erwaehungen`
+            : `mindestens ${networkMinYears} gemeinsamen Jahren`;
         container.innerHTML = `
             <div class="network-empty">
                 <i class="fas fa-project-diagram"></i>
-                <p>Keine Verbindungen mit mindestens ${networkMinLetters} Briefen gefunden.</p>
-                <p>Versuchen Sie, den Mindestbriefe-Wert zu reduzieren.</p>
+                <p>Keine Verbindungen mit ${thresholdText} gefunden.</p>
+                <p>Versuchen Sie, den Schwellenwert zu reduzieren.</p>
             </div>
         `;
         return;
@@ -2652,47 +2806,33 @@ function renderNetwork() {
 
     networkSvg.call(networkZoom);
 
-    // Calculate node sizes based on total letters
+    // Calculate node sizes
     const maxTotal = Math.max(...data.nodes.map(n => n.total));
     const nodeScale = d3.scaleSqrt()
         .domain([1, maxTotal])
-        .range([5, 30]);
+        .range([8, 35]);
 
-    // Calculate edge widths
-    const maxCount = Math.max(...data.links.map(l => l.count));
+    // Calculate edge widths based on network type
+    const edgeValueFn = networkType === 'topics'
+        ? d => d.count
+        : d => d.sharedYears;
+    const maxEdgeValue = Math.max(...data.links.map(edgeValueFn));
+    const minEdgeValue = networkType === 'topics' ? networkMinCooccurrence : networkMinYears;
     const edgeScale = d3.scaleLinear()
-        .domain([networkMinLetters, maxCount])
+        .domain([minEdgeValue, maxEdgeValue])
         .range([1, 8]);
 
-    // Color scale for node types
-    const colorScale = {
-        'sender': '#3b82f6',
-        'receiver': '#10b981',
-        'both': '#8b5cf6'
-    };
+    // Color for network types
+    const nodeColor = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
 
-    // Find central node (most connections)
-    const centralNode = data.nodes.reduce((a, b) => a.total > b.total ? a : b);
-
-    // Create simulation - use radial for ego networks automatically
-    const useRadial = networkLayout === 'radial' || data.isEgoNetwork;
-
+    // Create simulation
     networkSimulation = d3.forceSimulation(data.nodes)
         .force('link', d3.forceLink(data.links)
             .id(d => d.id)
-            .distance(d => useRadial ? 80 : 100))
-        .force('charge', d3.forceManyBody().strength(useRadial ? -150 : -300))
+            .distance(80))
+        .force('charge', d3.forceManyBody().strength(-200))
         .force('center', d3.forceCenter(width / 2, height / 2))
         .force('collision', d3.forceCollide().radius(d => nodeScale(d.total) + 5));
-
-    if (useRadial) {
-        // Radial layout: central node in center, others around
-        networkSimulation.force('radial', d3.forceRadial(
-            d => d.id === centralNode.id ? 0 : Math.min(width, height) / 3,
-            width / 2,
-            height / 2
-        ).strength(d => d.id === centralNode.id ? 0 : 0.8));
-    }
 
     // Draw edges
     const link = g.append('g')
@@ -2701,8 +2841,8 @@ function renderNetwork() {
         .data(data.links)
         .join('line')
         .attr('stroke', '#999')
-        .attr('stroke-opacity', 0.6)
-        .attr('stroke-width', d => edgeScale(d.count));
+        .attr('stroke-opacity', 0.5)
+        .attr('stroke-width', d => edgeScale(edgeValueFn(d)));
 
     // Draw nodes
     const node = g.append('g')
@@ -2719,30 +2859,40 @@ function renderNetwork() {
     // Node circles
     node.append('circle')
         .attr('r', d => nodeScale(d.total))
-        .attr('fill', d => colorScale[d.type])
+        .attr('fill', nodeColor)
         .attr('stroke', '#fff')
         .attr('stroke-width', 2);
 
     // Node labels (only for larger nodes)
-    node.filter(d => d.total > maxTotal * 0.1)
+    node.filter(d => d.total > maxTotal * 0.15)
         .append('text')
-        .text(d => d.name.length > 15 ? d.name.substring(0, 15) + '...' : d.name)
+        .text(d => d.name.length > 20 ? d.name.substring(0, 20) + '...' : d.name)
         .attr('x', d => nodeScale(d.total) + 5)
         .attr('y', 4)
-        .attr('font-size', '10px')
+        .attr('font-size', '11px')
         .attr('fill', '#333');
 
     // Tooltips
-    node.append('title')
-        .text(d => `${d.name}\nGesendet: ${d.sent}\nEmpfangen: ${d.received}`);
+    if (networkType === 'topics') {
+        node.append('title')
+            .text(d => `${d.name}\n${d.total} Briefe`);
+        link.append('title')
+            .text(d => `${d.sourceName} + ${d.targetName}\n${d.count}x gemeinsam erwaehnt`);
+    } else {
+        node.append('title')
+            .text(d => `${d.name}\n${d.total} Briefe\n${d.yearsActive} Jahre aktiv`);
+        link.append('title')
+            .text(d => `${d.sourceName} & ${d.targetName}\n${d.sharedYears} gemeinsame Jahre\n(${d.yearRange[0]}-${d.yearRange[1]})`);
+    }
 
-    link.append('title')
-        .text(d => `${d.sourceName} ↔ ${d.targetName}: ${d.count} Briefe`);
-
-    // Click handler for filtering
+    // Click handler
     node.on('click', (event, d) => {
         event.stopPropagation();
-        applyPersonFilter(d.id);
+        if (networkType === 'topics') {
+            applySubjectFilter(d.id);
+        } else {
+            applyPersonFilter(d.id);
+        }
         switchView('letters');
     });
 

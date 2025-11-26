@@ -1556,6 +1556,13 @@
     display: inline-block;
 }
 
+.legend-hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted, #9ca3af);
+    font-style: italic;
+    margin-top: var(--space-xs);
+}
+
 .btn-sm {
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-sm);
