@@ -221,8 +221,10 @@ def parse_cmif(file_path: Path) -> dict:
                     if target not in subjects_index:
                         subjects_index[target] = {
                             'label': label,
-                            'category': subj_type
+                            'category': subj_type,
+                            'count': 0
                         }
+                    subjects_index[target]['count'] += 1
 
                 elif meta_type == 'mentionsPlace':
                     geo_id, _ = extract_id_from_uri(target)

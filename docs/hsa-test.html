@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HSA Data Test</title>
+    <link href="https://unpkg.com/maplibre-gl@4.1.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@4.1.2/dist/maplibre-gl.js"></script>
     <style>
         body {
             font-family: system-ui, sans-serif;
@@ -64,6 +66,63 @@
             overflow-y: auto;
         }
         #log .error { color: #f87171; }
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 8px;
+        }
+        .map-legend {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .maplibregl-popup-content {
+            font-family: system-ui, sans-serif;
+            padding: 0.75rem;
+        }
+        .popup-title {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        .popup-count {
+            color: #2563eb;
+        }
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            margin-right: 0.5rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        .filter-btn:hover {
+            background: #f3f4f6;
+        }
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        #subjects tbody {
+            max-height: 400px;
+            display: block;
+            overflow-y: auto;
+        }
+        #subjects thead, #subjects tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        .category-tag {
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            background: #e5e7eb;
+        }
+        .category-tag.lexvo { background: #dcfce7; color: #166534; }
+        .category-tag.hsa_subject { background: #dbeafe; color: #1e40af; }
+        .category-tag.hsa_language { background: #fef3c7; color: #92400e; }
     </style>
 </head>
 <body>
@@ -88,17 +147,38 @@
     </div>
 
     <div class="card">
+        <h2>Karte der Absende-Orte</h2>
+        <div id="map"></div>
+        <div class="map-legend" id="map-legend"></div>
+    </div>
+
+    <div class="card">
         <h2>Top 10 Orte</h2>
         <table id="places">
-            <thead><tr><th>Ort</th><th>GeoNames ID</th><th>Briefe</th></tr></thead>
+            <thead><tr><th>Ort</th><th>GeoNames ID</th><th>Koordinaten</th><th>Briefe</th></tr></thead>
             <tbody></tbody>
         </table>
     </div>
 
     <div class="card">
-        <h2>Sprachen</h2>
+        <h2>Sprachen (Briefsprachen)</h2>
         <table id="languages">
             <thead><tr><th>Code</th><th>Sprache</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Subjects</h2>
+        <div id="subject-filters" style="margin-bottom: 1rem;">
+            <button class="filter-btn active" data-category="all">Alle</button>
+            <button class="filter-btn" data-category="lexvo">Lexvo (ISO 639-3)</button>
+            <button class="filter-btn" data-category="hsa_subject">HSA-Subjects</button>
+            <button class="filter-btn" data-category="hsa_language">HSA-Languages</button>
+        </div>
+        <div id="subject-stats" style="margin-bottom: 0.5rem; font-size: 0.875rem; color: #6b7280;"></div>
+        <table id="subjects">
+            <thead><tr><th>Subject</th><th>Kategorie</th><th>Vorkommen</th></tr></thead>
             <tbody></tbody>
         </table>
     </div>
@@ -181,15 +261,22 @@
                     .slice(0, 10);
 
                 const placesBody = document.querySelector('#places tbody');
-                placesBody.innerHTML = placesSorted.map(([id, p]) =>
-                    `<tr><td>${p.name}</td><td><a href="https://www.geonames.org/${p.geonames_id}" target="_blank">${p.geonames_id || '-'}</a></td><td>${p.letter_count}</td></tr>`
-                ).join('');
+                placesBody.innerHTML = placesSorted.map(([id, p]) => {
+                    const coords = (p.lat && p.lon) ? `${p.lat.toFixed(2)}, ${p.lon.toFixed(2)}` : '-';
+                    return `<tr><td>${p.name}</td><td><a href="https://www.geonames.org/${p.geonames_id}" target="_blank">${p.geonames_id || '-'}</a></td><td>${coords}</td><td>${p.letter_count}</td></tr>`;
+                }).join('');
+
+                // Karte initialisieren
+                initMap(data);
 
                 // Sprachen
                 const langsBody = document.querySelector('#languages tbody');
                 langsBody.innerHTML = Object.entries(data.indices.languages)
                     .map(([code, label]) => `<tr><td>${code}</td><td>${label}</td></tr>`)
                     .join('');
+
+                // Subjects
+                initSubjectsTable(data);
 
                 // Beispiel-Brief
                 const sampleLetter = data.letters.find(l =>
@@ -209,6 +296,195 @@
                 status.innerHTML = `<span class="error">Fehler: ${error.message}</span>`;
                 logMessage(error.message, true);
             }
+        }
+
+        function initMap(data) {
+            // Orte mit Koordinaten filtern
+            const placesWithCoords = Object.entries(data.indices.places)
+                .filter(([id, p]) => p.lat && p.lon)
+                .map(([id, p]) => ({
+                    id,
+                    name: p.name,
+                    lat: p.lat,
+                    lon: p.lon,
+                    count: p.letter_count,
+                    geonames_id: p.geonames_id
+                }));
+
+            const placesWithoutCoords = Object.entries(data.indices.places)
+                .filter(([id, p]) => !p.lat || !p.lon).length;
+
+            logMessage(`Map: ${placesWithCoords.length} places with coordinates, ${placesWithoutCoords} without`);
+
+            // Legend
+            document.getElementById('map-legend').textContent =
+                `${placesWithCoords.length} Orte mit Koordinaten dargestellt, ${placesWithoutCoords} ohne Koordinaten`;
+
+            // GeoJSON FeatureCollection erstellen
+            const geojson = {
+                type: 'FeatureCollection',
+                features: placesWithCoords.map(p => ({
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [p.lon, p.lat]
+                    },
+                    properties: {
+                        name: p.name,
+                        count: p.count,
+                        geonames_id: p.geonames_id
+                    }
+                }))
+            };
+
+            // Maximale Briefanzahl für Skalierung
+            const maxCount = Math.max(...placesWithCoords.map(p => p.count));
+
+            // Map initialisieren
+            const map = new maplibregl.Map({
+                container: 'map',
+                style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+                center: [10, 48], // Zentraleuropa
+                zoom: 4
+            });
+
+            map.on('load', () => {
+                // Datenquelle hinzufügen
+                map.addSource('places', {
+                    type: 'geojson',
+                    data: geojson
+                });
+
+                // Heatmap Layer
+                map.addLayer({
+                    id: 'places-heat',
+                    type: 'heatmap',
+                    source: 'places',
+                    maxzoom: 9,
+                    paint: {
+                        'heatmap-weight': [
+                            'interpolate', ['linear'], ['get', 'count'],
+                            0, 0,
+                            maxCount, 1
+                        ],
+                        'heatmap-intensity': [
+                            'interpolate', ['linear'], ['zoom'],
+                            0, 1,
+                            9, 3
+                        ],
+                        'heatmap-radius': [
+                            'interpolate', ['linear'], ['zoom'],
+                            0, 2,
+                            9, 20
+                        ],
+                        'heatmap-opacity': 0.7
+                    }
+                });
+
+                // Kreis Layer für einzelne Punkte
+                map.addLayer({
+                    id: 'places-point',
+                    type: 'circle',
+                    source: 'places',
+                    minzoom: 5,
+                    paint: {
+                        'circle-radius': [
+                            'interpolate', ['linear'], ['get', 'count'],
+                            1, 5,
+                            100, 15,
+                            maxCount, 30
+                        ],
+                        'circle-color': '#2563eb',
+                        'circle-stroke-color': '#fff',
+                        'circle-stroke-width': 1,
+                        'circle-opacity': [
+                            'interpolate', ['linear'], ['zoom'],
+                            5, 0,
+                            7, 0.8
+                        ]
+                    }
+                });
+
+                // Popup bei Klick
+                map.on('click', 'places-point', (e) => {
+                    const props = e.features[0].properties;
+                    new maplibregl.Popup()
+                        .setLngLat(e.lngLat)
+                        .setHTML(`
+                            <div class="popup-title">${props.name}</div>
+                            <div class="popup-count">${props.count} Briefe</div>
+                        `)
+                        .addTo(map);
+                });
+
+                // Cursor ändern bei Hover
+                map.on('mouseenter', 'places-point', () => {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
+                map.on('mouseleave', 'places-point', () => {
+                    map.getCanvas().style.cursor = '';
+                });
+
+                logMessage('Map initialized successfully');
+            });
+
+            // Globale Variable für Debugging
+            window.hsaMap = map;
+        }
+
+        function initSubjectsTable(data) {
+            const subjects = data.indices.subjects;
+
+            // Subjects als Array mit allen Daten
+            const subjectsArray = Object.entries(subjects).map(([id, s]) => ({
+                id,
+                label: s.label,
+                category: s.category,
+                count: s.count
+            })).sort((a, b) => b.count - a.count);
+
+            // Statistiken nach Kategorie
+            const stats = {
+                all: subjectsArray.length,
+                lexvo: subjectsArray.filter(s => s.category === 'lexvo').length,
+                hsa_subject: subjectsArray.filter(s => s.category === 'hsa_subject').length,
+                hsa_language: subjectsArray.filter(s => s.category === 'hsa_language').length
+            };
+
+            logMessage(`Subjects: ${stats.all} total (${stats.lexvo} lexvo, ${stats.hsa_subject} hsa_subject, ${stats.hsa_language} hsa_language)`);
+
+            // Render-Funktion
+            function renderSubjects(category) {
+                const filtered = category === 'all'
+                    ? subjectsArray
+                    : subjectsArray.filter(s => s.category === category);
+
+                const tbody = document.querySelector('#subjects tbody');
+                tbody.innerHTML = filtered.slice(0, 100).map(s => `
+                    <tr>
+                        <td>${s.label}</td>
+                        <td><span class="category-tag ${s.category}">${s.category}</span></td>
+                        <td>${s.count}</td>
+                    </tr>
+                `).join('');
+
+                const statsEl = document.getElementById('subject-stats');
+                const shown = Math.min(filtered.length, 100);
+                statsEl.textContent = `Zeige ${shown} von ${filtered.length} Subjects`;
+            }
+
+            // Initial render
+            renderSubjects('all');
+
+            // Filter-Buttons
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderSubjects(btn.dataset.category);
+                });
+            });
         }
 
         loadAndTest();

@@ -192,6 +192,90 @@ Treemap-Hierarchie erfordert manuelle Kategorisierung der 1.272 HSA-Subjects - d
 
 ### Nächste Schritte (aktualisiert)
 
-1. Test-Seite erweitern: Karte mit Koordinaten anzeigen
+1. ~~Test-Seite erweitern: Karte mit Koordinaten anzeigen~~ Erledigt
 2. Einfache Subject-Liste im Frontend
 3. Architektur-Dokument für Dual-View erstellen
+
+---
+
+## 2025-11-26 (Karten-Visualisierung)
+
+### MapLibre Integration
+
+Die Test-Seite `docs/hsa-test.html` wurde um eine interaktive Karte erweitert:
+
+**Technologie:** MapLibre GL JS 4.1.2 mit CartoDB Positron Basemap
+
+**Features:**
+- Heatmap-Layer zeigt Briefdichte bei niedrigem Zoom
+- Punkt-Layer zeigt einzelne Orte bei höherem Zoom
+- Kreisgröße skaliert mit Briefanzahl
+- Klick auf Punkt zeigt Popup mit Ortsnamen und Briefanzahl
+- Legende zeigt Anzahl der Orte mit/ohne Koordinaten
+
+**Ergebnis:**
+- 616 Orte mit Koordinaten auf der Karte
+- 158 Orte ohne Koordinaten (nicht dargestellt)
+- Klare Konzentration auf Graz, Wien, Paris sichtbar
+
+### Subject-Liste implementiert
+
+Die Test-Seite enthält nun eine filterbare Subject-Liste:
+
+**Features:**
+- Tabelle mit Subject-Name, Kategorie und Vorkommen
+- Filter-Buttons für Kategorien (Alle, Lexvo, HSA-Subjects, HSA-Languages)
+- Farbkodierte Kategorie-Tags
+- Scrollbare Liste (max. 100 Einträge angezeigt)
+- Statistik-Anzeige unter Filter-Buttons
+
+**Subject-Verteilung im HSA:**
+- Lexvo (ISO 639-3): Sprachen, die im Brief diskutiert werden
+- HSA-Subjects: Themen, Institutionen, Konzepte
+- HSA-Languages: HSA-interne Sprachcodes
+
+### Nächste Schritte
+
+1. ~~Architektur-Dokument für Dual-View erstellen~~ Erledigt (config.js)
+2. Timeline-Komponente für zeitliche Verteilung
+3. Integration der Test-Komponenten in Hauptanwendung
+
+---
+
+## 2025-11-26 (Multi-Source Architektur)
+
+### Konfigurationssystem implementiert
+
+Neue Dateien erstellt:
+
+**docs/js/config.js**
+- Definiert DATA_SOURCES mit Konfiguration pro Datenquelle
+- HerData (persons-centric) und HSA (letters-centric)
+- Feature-Flags pro Quelle (hasSubjects, hasMentionsPlace, etc.)
+- UI-Konfiguration (Farben, Labels)
+- Funktionen: getCurrentSource(), setCurrentSource(), hasFeature()
+- URL-Parameter-Erkennung: ?source=hsa
+
+**docs/js/data.js (erweitert)**
+- Multi-Source Cache statt globaler Variable
+- loadData() als generische Ladefunktion
+- loadPersons() und loadLetters() für Abwärtskompatibilität
+- Neue Hilfsfunktionen: getLetterById(), getPersonFromIndex(), getPlaceFromIndex()
+
+### Architektur-Entscheidung E6: URL-basierte Quellenauswahl
+
+Datenquelle wird via URL-Parameter gesteuert:
+- `index.html` -> HerData (Standard)
+- `index.html?source=hsa` -> HSA
+
+Vorteile:
+- Keine Code-Duplizierung
+- Einfaches Umschalten
+- Verlinkbar/Bookmarkable
+- Bestehende Views bleiben funktional
+
+### Nächste Schritte
+
+1. Views anpassen für bedingte Darstellung basierend auf hasFeature()
+2. Datenquellen-Switcher in der Navbar
+3. Timeline-Komponente für HSA-Daten
