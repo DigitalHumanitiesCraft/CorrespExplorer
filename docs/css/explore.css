@@ -938,6 +938,57 @@
     background: #059669;
 }
 
+/* Map Popup Styles */
+.popup h3 {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+}
+
+.popup-stats p {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: var(--font-size-sm);
+}
+
+.popup-year-range {
+    color: var(--color-text-light);
+}
+
+.popup-top-senders {
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+}
+
+.popup-label {
+    font-weight: 500;
+    margin-bottom: var(--space-xs);
+}
+
+.popup-top-senders ul {
+    margin: 0;
+    padding-left: var(--space-md);
+    font-size: var(--font-size-xs);
+}
+
+.popup-top-senders li {
+    margin-bottom: 2px;
+}
+
+.popup-sender-count {
+    color: var(--color-text-light);
+}
+
+.popup-more {
+    color: var(--color-text-light);
+    font-style: italic;
+}
+
+.popup-languages {
+    margin-top: var(--space-sm);
+    color: var(--color-text-light);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .list-header {

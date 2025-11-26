@@ -255,7 +255,7 @@ function aggregateLettersByPlace(letters, placesIndex) {
                 lon: lon,
                 letter_count: 0,
                 years: new Set(),
-                senders: new Set(),
+                senderCounts: {},
                 languages: new Set(),
                 letterIds: []
             };
@@ -264,15 +264,23 @@ function aggregateLettersByPlace(letters, placesIndex) {
         places[placeId].letter_count++;
         places[placeId].letterIds.push(letter.id);
         if (letter.year) places[placeId].years.add(letter.year);
-        if (letter.sender?.name) places[placeId].senders.add(letter.sender.name);
+        if (letter.sender?.name) {
+            const senderName = letter.sender.name;
+            places[placeId].senderCounts[senderName] = (places[placeId].senderCounts[senderName] || 0) + 1;
+        }
         if (letter.language?.code) places[placeId].languages.add(letter.language.code);
     });
 
-    // Convert Sets to arrays
+    // Convert Sets to arrays and calculate top senders
     Object.values(places).forEach(place => {
         place.years = Array.from(place.years).sort();
-        place.senders = Array.from(place.senders);
         place.languages = Array.from(place.languages);
+        // Sort senders by letter count (descending)
+        place.topSenders = Object.entries(place.senderCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([name, count]) => ({ name, count }));
+        place.senderCount = Object.keys(place.senderCounts).length;
     });
 
     return places;
@@ -382,11 +390,11 @@ function placesToGeoJSON(places) {
                 id: place.id,
                 name: place.name,
                 letter_count: place.letter_count,
-                sender_count: place.senders.length,
+                sender_count: place.senderCount,
                 language_count: place.languages.length,
                 year_min: place.years.length > 0 ? Math.min(...place.years) : null,
                 year_max: place.years.length > 0 ? Math.max(...place.years) : null,
-                senders: place.senders.slice(0, 5).join(', '),
+                top_senders: JSON.stringify(place.topSenders),
                 languages: place.languages.join(', ')
             }
         });
@@ -544,13 +552,35 @@ function showPlacePopup(lngLat, props) {
         ? `${props.year_min}–${props.year_max}`
         : 'unbekannt';
 
+    // Parse top senders from JSON
+    let topSendersHtml = '';
+    if (props.top_senders) {
+        try {
+            const topSenders = JSON.parse(props.top_senders);
+            if (topSenders.length > 0) {
+                const senderItems = topSenders.map(s =>
+                    `<li>${escapeHtml(s.name)} <span class="popup-sender-count">(${s.count})</span></li>`
+                ).join('');
+                const moreText = props.sender_count > 5 ? `<li class="popup-more">... und ${props.sender_count - 5} weitere</li>` : '';
+                topSendersHtml = `
+                    <div class="popup-top-senders">
+                        <p class="popup-label">Top Absender:</p>
+                        <ul>${senderItems}${moreText}</ul>
+                    </div>
+                `;
+            }
+        } catch (e) {
+            // Fallback if JSON parsing fails
+        }
+    }
+
     const html = `
         <div class="popup">
             <h3>${props.name}</h3>
             <div class="popup-stats">
-                <p><strong>${props.letter_count}</strong> Briefe</p>
-                <p>${props.sender_count} Absender | ${yearRange}</p>
-                ${props.senders ? `<p class="popup-senders"><small>${props.senders}${props.sender_count > 5 ? '...' : ''}</small></p>` : ''}
+                <p><strong>${props.letter_count}</strong> Briefe von ${props.sender_count} Absendern</p>
+                <p class="popup-year-range">${yearRange}</p>
+                ${topSendersHtml}
                 ${props.languages ? `<p class="popup-languages"><small>Sprachen: ${props.languages}</small></p>` : ''}
             </div>
         </div>

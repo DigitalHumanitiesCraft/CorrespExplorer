@@ -31,13 +31,13 @@ Stand: 2025-11-26
 | US-25 | Themen-Liste | Topics View mit Suche |
 | US-26 | Themen-Details | Korrespondenten, Timeline, verwandte Themen |
 | US-27 | Themen-Filter | Integration ins Filter-System |
+| US-07 | Orts-Details | Top-5 Absender im Map-Popup mit Briefanzahl |
 
-### Teilweise implementiert (2 User Stories)
+### Teilweise implementiert (1 User Story)
 
 | US | Feature | Status | Offene Aufgaben |
 |----|---------|--------|-----------------|
-| US-07 | Orts-Details | Popup zeigt nur Anzahl | Top-5 Absender im Popup anzeigen |
-| US-08 | Fehlende Koordinaten | Anzahl wird gezeigt | Liste der Orte ohne Koordinaten |
+| US-08 | Fehlende Koordinaten | Anzahl wird gezeigt | Liste der Orte ohne Koordinaten
 
 ### Offen (4 User Stories)
 
@@ -152,7 +152,7 @@ Status: Bereits vorhanden, wird automatisch von Claude Code genutzt.
 
 ### Phase 1: Kern-Verbesserungen
 
-1. US-07: Orts-Details erweitern (Top-5 Absender im Popup)
+1. ~~US-07: Orts-Details erweitern (Top-5 Absender im Popup)~~ - erledigt
 2. Orte-Index View (Places View)
 3. About-Seite
 
