@@ -6,6 +6,23 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ## 2025-11-26 (Phase 8: Integration und Netzwerk)
 
+### Test: Externe CMIF-URL Laden
+
+Erfolgreicher Test mit Schnitzler-Reinhardt CMIF-Datei:
+- URL: `https://raw.githubusercontent.com/arthur-schnitzler/schnitzler-cmif/main/1971_Schnitzler_Reinhardt.xml`
+- 104 Briefe, 10 Absender, 8 Orte
+- Zeitraum: 1902-1921
+- Keine Koordinaten (8 Orte ohne Geodaten)
+
+Erkenntnisse:
+1. GitHub Raw-URLs funktionieren direkt (CORS erlaubt)
+2. Orte-View zeigt korrekt alle Orte auch ohne Koordinaten
+3. Netzwerk-View und Timeline funktionieren
+
+Bekannte externe CMIF-Repositories:
+- arthur-schnitzler/schnitzler-cmif (GitHub)
+- Weitere Quellen: siehe cmif-sources.md
+
 ### Repository-Bereinigung
 
 Entfernung aller HerData-bezogenen Dateien:

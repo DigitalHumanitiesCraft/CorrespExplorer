@@ -6,7 +6,7 @@ Stand: 2025-11-26
 
 ## Aktueller Implementierungsstand
 
-### Vollstaendig implementiert (25 User Stories)
+### Vollstaendig implementiert (27 User Stories)
 
 | US | Feature | Beschreibung |
 |----|---------|--------------|
@@ -32,6 +32,8 @@ Stand: 2025-11-26
 | US-22 | JSON-Export | Strukturierte Daten |
 | US-11 | Netzwerk-Graph | D3.js Force-Directed Graph mit Zoom und Drag |
 | US-24 | correspSearch-Integration | Button in Personen-Liste und Brief-Modal |
+| US-28 | correspSearch Direkt-Suche | Suchformular auf Landing-Page |
+| US-29 | Externe CMIF-URLs | Laden von GitHub und anderen Quellen |
 | US-25 | Themen-Liste | Topics View mit Suche |
 | US-26 | Themen-Details | Korrespondenten, Timeline, verwandte Themen |
 | US-27 | Themen-Filter | Integration ins Filter-System |
