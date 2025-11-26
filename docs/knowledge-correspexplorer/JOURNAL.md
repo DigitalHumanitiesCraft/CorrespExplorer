@@ -13,6 +13,34 @@ Entfernung aller HerData-bezogenen Dateien:
 - Fokus nun ausschliesslich auf CorrespExplorer
 - README.md und CLAUDE.md aktualisiert
 
+### Implementiert: correspSearch API Integration (Direkt-Suche)
+
+Vollstaendige Integration der correspSearch API v2.0 als Datenquelle:
+
+1. Neues Modul correspsearch-api.js
+   - searchCorrespSearch(params) fuer Suche mit Parametern
+   - fetchFromCorrespSearchUrl() fuer direkte URL-Eingabe
+   - getResultCount() fuer Ergebnis-Vorschau
+   - Automatische Paginierung (10 Briefe pro Seite)
+   - TEI-JSON zu internem Format Transformation
+
+2. Suchformular auf Landing-Page (index.html)
+   - Person-Feld (GND-URI Eingabe)
+   - Absende-Ort-Feld (GeoNames-URI Eingabe)
+   - Zeitraum-Filter (Start- und Enddatum)
+   - Ergebnis-Vorschau mit Gesamtanzahl
+   - Limit bei 5000 Briefen (sessionStorage-Schutz)
+
+3. Integration in cmif-parser.js
+   - Erkennung von correspSearch API URLs
+   - Automatische Delegation an API-Modul
+   - Progress-Callback fuer Lade-Anzeige
+
+4. CSS-Styling (upload.css)
+   - Responsives Suchformular
+   - Hover-Effekte und Focus-States
+   - Mobile-optimierte Darstellung
+
 ### Implementiert: correspSearch Integration (US-24)
 
 1. Helper-Funktion buildCorrespSearchUrl()

@@ -128,6 +128,29 @@ function parseAuthorityRef(url) {
 }
 ```
 
+### correspsearch-api.js
+
+Integration der correspSearch API v2.0:
+
+```javascript
+// Oeffentliche API
+export function isCorrespSearchUrl(url) { ... }
+export async function searchCorrespSearch(params, onProgress) { ... }
+export async function fetchFromCorrespSearchUrl(url, onProgress) { ... }
+export async function getResultCount(params) { ... }
+
+// Parameter
+// - correspondent: GND/VIAF URI
+// - placeSender: GeoNames URI
+// - startdate/enddate: YYYY-MM-DD
+```
+
+Features:
+- Automatische Paginierung (10 pro Seite)
+- TEI-JSON zu internem Format Transformation
+- Ergebnis-Vorschau mit Gesamtanzahl
+- Retry-Logik bei Netzwerkfehlern
+
 ### upload.js
 
 Handler fuer die Landing-Page:
@@ -138,6 +161,7 @@ function handleFileSelect(e) { ... }
 function handleDragDrop(e) { ... }
 function handleUrlSubmit() { ... }
 function handleDatasetSelect(card) { ... }
+function handleCorrespSearchSubmit() { ... }
 
 // Datenverarbeitung
 async function processFile(file) {
