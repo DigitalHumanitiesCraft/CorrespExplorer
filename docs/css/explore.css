@@ -1,0 +1,316 @@
+/* Explore View Specific Styles */
+
+/* List View Header */
+.list-header {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-light);
+    border-bottom: 1px solid var(--color-border);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.list-search {
+    flex: 1;
+    min-width: 200px;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+}
+
+.list-search:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
+}
+
+.list-sort {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.list-sort label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.list-sort select {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    background: var(--color-bg);
+}
+
+/* Entity List */
+.entity-list {
+    overflow-y: auto;
+    height: calc(100vh - var(--navbar-height) - 80px);
+    padding: var(--space-md);
+}
+
+/* Person Card */
+.person-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.person-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.person-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+    flex-shrink: 0;
+}
+
+.person-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.person-name {
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.person-stats {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.person-stats span {
+    margin-right: var(--space-md);
+}
+
+.person-count {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-primary);
+    min-width: 50px;
+    text-align: right;
+}
+
+/* Letter Card */
+.letter-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.letter-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.letter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-sm);
+}
+
+.letter-participants {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.letter-arrow {
+    color: var(--color-primary);
+    margin: 0 var(--space-sm);
+}
+
+.letter-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    white-space: nowrap;
+}
+
+.letter-meta {
+    display: flex;
+    gap: var(--space-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.letter-meta span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    max-width: 400px;
+    width: 90%;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-text-light);
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--color-text);
+}
+
+.modal-body {
+    padding: var(--space-lg);
+}
+
+.modal-body p {
+    margin-bottom: var(--space-md);
+    color: var(--color-text-light);
+}
+
+/* Export Options */
+.export-options {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.export-option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    background: var(--color-bg-light);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.export-option:hover {
+    border-color: var(--color-primary);
+    background: rgba(30, 64, 175, 0.05);
+}
+
+.export-option i {
+    font-size: 2rem;
+    color: var(--color-primary);
+}
+
+.export-option span {
+    font-weight: 600;
+}
+
+.export-option small {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.export-info {
+    font-size: var(--font-size-sm);
+    text-align: center;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3xl);
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .list-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .list-search {
+        width: 100%;
+    }
+
+    .person-card {
+        flex-wrap: wrap;
+    }
+
+    .person-count {
+        width: 100%;
+        text-align: left;
+        margin-top: var(--space-sm);
+    }
+
+    .export-options {
+        flex-direction: column;
+    }
+}

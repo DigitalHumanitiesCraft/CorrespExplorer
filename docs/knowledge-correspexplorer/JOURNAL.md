@@ -4,6 +4,65 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Feature-Komplett)
+
+### Implementierte Features
+
+Phase 1-4 vollstaendig umgesetzt:
+
+1. CMIF-Parser (js/cmif-parser.js)
+   - Browser-basiertes XML-Parsing mit DOMParser
+   - Unterstuetzung fuer Datei-Upload, URL-Fetch, String-Input
+   - Authority-Erkennung (VIAF, GND, GeoNames, Lexvo)
+   - Index-Generierung fuer Personen, Orte, Sprachen, Themen
+
+2. Upload-Interface (index.html, js/upload.js)
+   - Drag-and-Drop fuer CMIF-Dateien
+   - URL-Input mit CORS-Fehlerbehandlung
+   - Beispiel-Datensaetze (HSA als Default)
+   - Weiterleitung zu explore.html
+
+3. Visualisierung (explore.html, js/explore.js)
+   - Kartenansicht mit MapLibre GL JS Clustering
+   - Korrespondenten-Liste mit Suche und Sortierung
+   - Brief-Liste mit Suche und Sortierung
+   - Dynamische Filter (Zeitraum, Sprache)
+   - View-Switching zwischen Karte/Personen/Briefe
+
+4. Export
+   - CSV-Export der gefilterten Briefe
+   - JSON-Export der gefilterten Briefe
+   - Modal-Dialog mit Format-Auswahl
+
+### Entscheidung E10: Hybrides Speichermodell
+
+Grosse Datensaetze (HSA) werden via URL-Parameter geladen:
+- `explore.html?dataset=hsa` laedt vorprozessierte JSON direkt
+- Umgeht sessionStorage-Limit von ca. 5MB
+
+Kleinere Datensaetze (Upload) nutzen sessionStorage:
+- Funktioniert fuer Datensaetze bis ca. 3000 Briefe
+- Bei Quota-Ueberschreitung: Fehlermeldung mit Hinweis
+
+### Dateistruktur
+
+```
+docs/
+  index.html          - Landing-Page mit Upload
+  explore.html        - Visualisierung (Karte, Listen, Export)
+  css/
+    upload.css        - Upload-Komponenten-Styles
+    explore.css       - Listen- und Modal-Styles
+  js/
+    cmif-parser.js    - Browser-CMIF-Parser
+    upload.js         - Upload-Handler
+    explore.js        - Visualisierungs-Logik
+  data/
+    hsa-letters.json  - Vorprozessierte HSA-Daten
+```
+
+---
+
 ## 2025-11-26 (Projektvision)
 
 ### Ziel: Generischer CMIF-Explorer
@@ -59,11 +118,11 @@ Ergebnis: 82% der Orte mit Koordinaten angereichert.
 
 Modulare JavaScript-Struktur:
 
+- `js/cmif-parser.js` - Browser-basierter CMIF-XML-Parser
+- `js/upload.js` - Upload-Handler (Datei, URL, Beispiele)
+- `js/explore.js` - Visualisierung (Karte, Listen, Export)
 - `js/config.js` - Konfiguration (Zeitraum, Features, UI)
-- `js/data.js` - Datenladung und Caching
-- `js/app.js` - Hauptanwendung mit Kartenlogik
-- `js/navbar-loader.js` - Navigation
-- `js/utils.js` - Hilfsfunktionen
+- `js/utils.js` - Hilfsfunktionen (debounce, Toast, Download)
 
 ### Kartenvisualisierung
 
@@ -152,28 +211,20 @@ Top-Themen: Baskisch (698), Publikationsversand (627), Dankschreiben (515)
 
 ---
 
-## Naechste Schritte
+## Moegliche Erweiterungen
 
-### Phase 1: CMIF-Parser
+### Timeline-Ansicht
+- Zeitliche Verteilung der Korrespondenz
+- Brush-Selection fuer Zeitraum-Filter
 
-- Browser-basierter XML-Parser
-- Erkennung von Authority-Typen
-- Normalisierung der Datenstruktur
+### Netzwerk-Visualisierung
+- Wer schreibt wem (Force-Directed Graph)
+- Clustern nach Korrespondenten-Gruppen
 
-### Phase 2: Upload-Interface
+### Koordinaten-Aufloesung fuer Uploads
+- Wikidata SPARQL-Abfrage im Browser
+- Progressives Enrichment
 
-- Drag-and-Drop fuer CMIF-Dateien
-- URL-Input fuer Remote-CMIF
-- Beispiel-Datensaetze zur Auswahl
-
-### Phase 3: Dynamische Visualisierung
-
-- Automatische Erkennung des Zeitraums
-- Dynamische Filter basierend auf Daten
-- Anpassung der UI-Labels
-
-### Phase 4: Export
-
-- Download der visualisierten Daten
-- Export als CSV/JSON
-- Teilen via URL-Parameter
+### URL-Sharing
+- Aktuelle Filter als URL-Parameter
+- Direktlinks zu gefilterten Ansichten

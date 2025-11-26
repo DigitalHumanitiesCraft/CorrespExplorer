@@ -18,6 +18,7 @@
 
     <link rel="stylesheet" href="css/tokens.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/explore.css">
 </head>
 <body>
     <!-- Fullscreen Loading Overlay -->
@@ -36,7 +37,21 @@
                 <span class="brand-text" id="dataset-title">CorrespExplorer</span>
             </a>
         </div>
+        <div class="view-switcher" role="navigation" aria-label="Ansichtswechsel">
+            <button class="view-btn active" data-view="map" aria-pressed="true">
+                <i class="fas fa-map"></i> <span class="view-btn-text">Karte</span>
+            </button>
+            <button class="view-btn" data-view="persons" aria-pressed="false">
+                <i class="fas fa-users"></i> <span class="view-btn-text">Korrespondenten</span>
+            </button>
+            <button class="view-btn" data-view="letters" aria-pressed="false">
+                <i class="fas fa-envelope"></i> <span class="view-btn-text">Briefe</span>
+            </button>
+        </div>
         <div class="nav-links">
+            <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
+                <i class="fas fa-download"></i> <span class="nav-link-text">Export</span>
+            </button>
             <a href="index.html" class="nav-link" aria-label="Anderen Datensatz laden">
                 <span class="nav-link-text">Neuer Datensatz</span>
             </a>
@@ -115,14 +130,73 @@
 
             <!-- Main Content -->
             <main class="main-content" role="main">
+                <!-- Map View -->
                 <div id="map-view" class="tab-content active">
                     <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
-                    <!-- Map Layer Switcher Button -->
                     <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln">
                         <i class="fas fa-sun"></i>
                     </button>
                 </div>
+
+                <!-- Persons View -->
+                <div id="persons-view" class="tab-content">
+                    <div class="list-header">
+                        <input type="search" id="person-search" class="list-search" placeholder="Korrespondent suchen..." aria-label="Korrespondent suchen">
+                        <div class="list-sort">
+                            <label for="person-sort">Sortieren:</label>
+                            <select id="person-sort">
+                                <option value="letters-desc">Briefe (absteigend)</option>
+                                <option value="letters-asc">Briefe (aufsteigend)</option>
+                                <option value="name-asc">Name (A-Z)</option>
+                                <option value="name-desc">Name (Z-A)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="persons-list" class="entity-list"></div>
+                </div>
+
+                <!-- Letters View -->
+                <div id="letters-view" class="tab-content">
+                    <div class="list-header">
+                        <input type="search" id="letter-search" class="list-search" placeholder="Brief suchen..." aria-label="Brief suchen">
+                        <div class="list-sort">
+                            <label for="letter-sort">Sortieren:</label>
+                            <select id="letter-sort">
+                                <option value="date-desc">Datum (neueste)</option>
+                                <option value="date-asc">Datum (aelteste)</option>
+                                <option value="sender-asc">Absender (A-Z)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="letters-list" class="entity-list"></div>
+                </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div id="export-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Daten exportieren</h3>
+                <button class="modal-close" aria-label="Schliessen">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Exportiere die aktuell gefilterten Daten:</p>
+                <div class="export-options">
+                    <button class="export-option" data-format="csv">
+                        <i class="fas fa-file-csv"></i>
+                        <span>CSV</span>
+                        <small>Tabellenformat</small>
+                    </button>
+                    <button class="export-option" data-format="json">
+                        <i class="fas fa-file-code"></i>
+                        <span>JSON</span>
+                        <small>Strukturierte Daten</small>
+                    </button>
+                </div>
+                <p class="export-info" id="export-info"></p>
+            </div>
         </div>
     </div>
 

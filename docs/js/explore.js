@@ -61,6 +61,10 @@ async function init() {
 
         initMap();
         initFilters();
+        initViewSwitcher();
+        initPersonsView();
+        initLettersView();
+        initExport();
 
         hideLoading();
         log.init('Application ready');
@@ -652,6 +656,372 @@ function showError(message) {
     setTimeout(() => {
         window.location.href = 'index.html';
     }, 2000);
+}
+
+// ===================
+// VIEW SWITCHING
+// ===================
+
+let currentView = 'map';
+
+function initViewSwitcher() {
+    const viewButtons = document.querySelectorAll('.view-btn');
+
+    viewButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+            switchView(view);
+        });
+    });
+}
+
+function switchView(view) {
+    currentView = view;
+
+    // Update buttons
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        const isActive = btn.dataset.view === view;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', isActive);
+    });
+
+    // Update content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    const viewElement = document.getElementById(`${view}-view`);
+    if (viewElement) {
+        viewElement.classList.add('active');
+    }
+
+    // Render view-specific content
+    if (view === 'persons') {
+        renderPersonsList();
+    } else if (view === 'letters') {
+        renderLettersList();
+    } else if (view === 'map' && map) {
+        map.resize();
+    }
+}
+
+// ===================
+// PERSONS LIST
+// ===================
+
+let personsSortOrder = 'letters-desc';
+let personsSearchTerm = '';
+
+function initPersonsView() {
+    const searchInput = document.getElementById('person-search');
+    const sortSelect = document.getElementById('person-sort');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce((e) => {
+            personsSearchTerm = e.target.value.toLowerCase();
+            renderPersonsList();
+        }, 300));
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            personsSortOrder = e.target.value;
+            renderPersonsList();
+        });
+    }
+}
+
+function renderPersonsList() {
+    const container = document.getElementById('persons-list');
+    if (!container) return;
+
+    // Build persons from filtered letters
+    const personsMap = {};
+
+    filteredLetters.forEach(letter => {
+        // Count as sender
+        if (letter.sender?.name) {
+            const key = letter.sender.id || letter.sender.name;
+            if (!personsMap[key]) {
+                personsMap[key] = {
+                    name: letter.sender.name,
+                    id: letter.sender.id,
+                    sent: 0,
+                    received: 0
+                };
+            }
+            personsMap[key].sent++;
+        }
+
+        // Count as recipient
+        if (letter.recipient?.name) {
+            const key = letter.recipient.id || letter.recipient.name;
+            if (!personsMap[key]) {
+                personsMap[key] = {
+                    name: letter.recipient.name,
+                    id: letter.recipient.id,
+                    sent: 0,
+                    received: 0
+                };
+            }
+            personsMap[key].received++;
+        }
+    });
+
+    let persons = Object.values(personsMap);
+
+    // Filter by search
+    if (personsSearchTerm) {
+        persons = persons.filter(p =>
+            p.name.toLowerCase().includes(personsSearchTerm)
+        );
+    }
+
+    // Sort
+    persons.sort((a, b) => {
+        const totalA = a.sent + a.received;
+        const totalB = b.sent + b.received;
+
+        switch (personsSortOrder) {
+            case 'letters-desc': return totalB - totalA;
+            case 'letters-asc': return totalA - totalB;
+            case 'name-asc': return a.name.localeCompare(b.name);
+            case 'name-desc': return b.name.localeCompare(a.name);
+            default: return 0;
+        }
+    });
+
+    // Render
+    if (persons.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <p>Keine Korrespondenten gefunden</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = persons.map(person => {
+        const initials = person.name.split(' ')
+            .map(n => n[0])
+            .slice(0, 2)
+            .join('')
+            .toUpperCase();
+        const total = person.sent + person.received;
+
+        return `
+            <div class="person-card" data-id="${person.id || ''}">
+                <div class="person-avatar">${initials}</div>
+                <div class="person-info">
+                    <div class="person-name">${escapeHtml(person.name)}</div>
+                    <div class="person-stats">
+                        <span><i class="fas fa-paper-plane"></i> ${person.sent} gesendet</span>
+                        <span><i class="fas fa-inbox"></i> ${person.received} empfangen</span>
+                    </div>
+                </div>
+                <div class="person-count">${total}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ===================
+// LETTERS LIST
+// ===================
+
+let lettersSortOrder = 'date-desc';
+let lettersSearchTerm = '';
+
+function initLettersView() {
+    const searchInput = document.getElementById('letter-search');
+    const sortSelect = document.getElementById('letter-sort');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce((e) => {
+            lettersSearchTerm = e.target.value.toLowerCase();
+            renderLettersList();
+        }, 300));
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            lettersSortOrder = e.target.value;
+            renderLettersList();
+        });
+    }
+}
+
+function renderLettersList() {
+    const container = document.getElementById('letters-list');
+    if (!container) return;
+
+    let letters = [...filteredLetters];
+
+    // Filter by search
+    if (lettersSearchTerm) {
+        letters = letters.filter(l =>
+            (l.sender?.name || '').toLowerCase().includes(lettersSearchTerm) ||
+            (l.recipient?.name || '').toLowerCase().includes(lettersSearchTerm) ||
+            (l.place_sent?.name || '').toLowerCase().includes(lettersSearchTerm)
+        );
+    }
+
+    // Sort
+    letters.sort((a, b) => {
+        switch (lettersSortOrder) {
+            case 'date-desc':
+                return (b.date || '').localeCompare(a.date || '');
+            case 'date-asc':
+                return (a.date || '').localeCompare(b.date || '');
+            case 'sender-asc':
+                return (a.sender?.name || '').localeCompare(b.sender?.name || '');
+            default: return 0;
+        }
+    });
+
+    // Limit to first 500 for performance
+    const displayLetters = letters.slice(0, 500);
+
+    if (displayLetters.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-envelope"></i>
+                <p>Keine Briefe gefunden</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = displayLetters.map(letter => {
+        const sender = letter.sender?.name || 'Unbekannt';
+        const recipient = letter.recipient?.name || 'Unbekannt';
+        const date = letter.date || 'Datum unbekannt';
+        const place = letter.place_sent?.name || '';
+        const language = letter.language?.label || '';
+
+        return `
+            <div class="letter-card" data-id="${letter.id || ''}">
+                <div class="letter-header">
+                    <div class="letter-participants">
+                        ${escapeHtml(sender)}
+                        <span class="letter-arrow"><i class="fas fa-arrow-right"></i></span>
+                        ${escapeHtml(recipient)}
+                    </div>
+                    <div class="letter-date">${date}</div>
+                </div>
+                <div class="letter-meta">
+                    ${place ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
+                    ${language ? `<span><i class="fas fa-language"></i> ${escapeHtml(language)}</span>` : ''}
+                    ${letter.url ? `<span><a href="${letter.url}" target="_blank"><i class="fas fa-external-link-alt"></i> Quelle</a></span>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Show count info if limited
+    if (letters.length > 500) {
+        container.insertAdjacentHTML('beforeend', `
+            <div class="empty-state">
+                <p>Zeige 500 von ${letters.length} Briefen. Nutzen Sie die Suche oder Filter.</p>
+            </div>
+        `);
+    }
+}
+
+// ===================
+// EXPORT
+// ===================
+
+function initExport() {
+    const exportBtn = document.getElementById('export-btn');
+    const modal = document.getElementById('export-modal');
+    const closeBtn = modal?.querySelector('.modal-close');
+    const exportOptions = modal?.querySelectorAll('.export-option');
+
+    if (exportBtn && modal) {
+        exportBtn.addEventListener('click', () => {
+            const info = document.getElementById('export-info');
+            if (info) {
+                info.textContent = `${filteredLetters.length} Briefe werden exportiert`;
+            }
+            modal.style.display = 'flex';
+        });
+
+        closeBtn?.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        exportOptions?.forEach(option => {
+            option.addEventListener('click', () => {
+                const format = option.dataset.format;
+                exportData(format);
+                modal.style.display = 'none';
+            });
+        });
+    }
+}
+
+function exportData(format) {
+    const data = filteredLetters.map(letter => ({
+        id: letter.id,
+        date: letter.date,
+        year: letter.year,
+        sender_name: letter.sender?.name || '',
+        sender_id: letter.sender?.id || '',
+        recipient_name: letter.recipient?.name || '',
+        recipient_id: letter.recipient?.id || '',
+        place_name: letter.place_sent?.name || '',
+        place_geonames: letter.place_sent?.geonames_id || '',
+        language: letter.language?.code || '',
+        url: letter.url || ''
+    }));
+
+    let content, filename, mimeType;
+
+    if (format === 'csv') {
+        const headers = Object.keys(data[0] || {});
+        const rows = data.map(row =>
+            headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(',')
+        );
+        content = [headers.join(','), ...rows].join('\n');
+        filename = 'korrespondenz.csv';
+        mimeType = 'text/csv;charset=utf-8';
+    } else {
+        content = JSON.stringify(data, null, 2);
+        filename = 'korrespondenz.json';
+        mimeType = 'application/json';
+    }
+
+    downloadFile(content, filename, mimeType);
+}
+
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+// ===================
+// UTILITIES
+// ===================
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // Start application

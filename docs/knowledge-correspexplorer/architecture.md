@@ -6,26 +6,80 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                        Browser                               │
 ├─────────────────────────────────────────────────────────────┤
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │   Upload     │  │   Parser     │  │   Store      │       │
-│  │  (Datei/URL) │──│  (CMIF-XML)  │──│  (Memory)    │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘       │
-│           │                                   │              │
-│           v                                   v              │
-│  ┌──────────────────────────────────────────────────┐       │
-│  │                 Visualisierung                     │       │
-│  │  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  │       │
-│  │  │ Karte  │  │Timeline│  │Netzwerk│  │ Liste  │  │       │
-│  │  └────────┘  └────────┘  └────────┘  └────────┘  │       │
-│  └──────────────────────────────────────────────────┘       │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │                   index.html                          │   │
+│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐      │   │
+│  │  │  Upload    │  │   URL      │  │  Beispiel  │      │   │
+│  │  │  (Drag&Drop)│  │  (Fetch)  │  │  (HSA)     │      │   │
+│  │  └─────┬──────┘  └─────┬──────┘  └─────┬──────┘      │   │
+│  │        │               │               │              │   │
+│  │        v               v               v              │   │
+│  │  ┌──────────────────────────────────────────────┐    │   │
+│  │  │              cmif-parser.js                   │    │   │
+│  │  │         (DOMParser, Index-Builder)            │    │   │
+│  │  └──────────────────────┬───────────────────────┘    │   │
+│  │                         │                             │   │
+│  │        ┌────────────────┴────────────────┐           │   │
+│  │        │                                 │           │   │
+│  │        v                                 v           │   │
+│  │  sessionStorage                    URL-Parameter     │   │
+│  │  (kleine Daten)                    (?dataset=hsa)    │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                         │                                    │
+│                         v                                    │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │                  explore.html                         │   │
+│  │  ┌────────┐  ┌────────────┐  ┌──────────┐            │   │
+│  │  │ Karte  │  │Korresponden│  │  Briefe  │            │   │
+│  │  │MapLibre│  │   Liste    │  │  Liste   │            │   │
+│  │  └────────┘  └────────────┘  └──────────┘            │   │
+│  │       │           │              │                    │   │
+│  │       └───────────┴──────────────┘                    │   │
+│  │                   │                                   │   │
+│  │                   v                                   │   │
+│  │            ┌──────────┐                               │   │
+│  │            │  Export  │                               │   │
+│  │            │ CSV/JSON │                               │   │
+│  │            └──────────┘                               │   │
+│  └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Seiten-Struktur
+
+### index.html - Landing-Page
+
+Einstiegspunkt fuer alle Nutzer:
+- Upload-Zone (Drag-and-Drop, Datei-Auswahl)
+- URL-Input fuer Remote-CMIF
+- Beispiel-Datensaetze (HSA als Default)
+
+Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
+
+### explore.html - Visualisierung
+
+Hauptansicht mit drei Views:
+1. Karte (MapLibre GL JS mit Clustering)
+2. Korrespondenten (sortierbare/suchbare Liste)
+3. Briefe (sortierbare/suchbare Liste)
+
+Sidebar mit:
+- Statistik-Cards
+- Zeitraum-Filter (noUiSlider)
+- Sprach-Filter (Checkboxen)
+- Legende
+
+Navigation mit:
+- View-Switcher
+- Export-Button
+- "Neuer Datensatz"-Link
+
 ## Module
 
-### cmif-parser.js (geplant)
+### cmif-parser.js
 
-Browser-basierter CMIF-Parser:
+Browser-basierter CMIF-Parser mit TEI-Namespace-Handling:
 
 ```javascript
 // Oeffentliche API
@@ -34,129 +88,142 @@ export async function parseCMIF(source) {
   const xml = await loadXML(source);
   const letters = extractLetters(xml);
   const indices = buildIndices(letters);
+  const meta = extractMeta(xml, letters);
   return { letters, indices, meta };
 }
 
-// Erkennt Authority-Typ aus URL
+export function enrichWithCoordinates(data, coordsCache) {
+  // Reichert Orte mit Koordinaten aus Cache an
+}
+```
+
+Authority-Erkennung:
+```javascript
 function parseAuthorityRef(url) {
-  if (url.includes('viaf.org')) return { type: 'viaf', id: extractId(url) };
-  if (url.includes('d-nb.info/gnd')) return { type: 'gnd', id: extractId(url) };
-  if (url.includes('geonames.org')) return { type: 'geonames', id: extractId(url) };
+  if (url.includes('viaf.org')) return { type: 'viaf', id: '...' };
+  if (url.includes('d-nb.info/gnd')) return { type: 'gnd', id: '...' };
+  if (url.includes('geonames.org')) return { type: 'geonames', id: '...' };
+  if (url.includes('lexvo.org')) return { type: 'lexvo', id: '...' };
   return { type: 'unknown', id: url };
 }
 ```
 
-### data.js
+### upload.js
 
-Datenmanagement und Caching:
-
-```javascript
-import { CONFIG } from './config.js';
-
-let cache = null;
-
-export async function loadData() {
-  if (cache) return cache;
-  const response = await fetch(CONFIG.dataFile);
-  cache = await response.json();
-  return cache;
-}
-
-export function getPersonFromIndex(id) {
-  return cache?.indices?.persons?.[id];
-}
-
-export function getPlaceFromIndex(id) {
-  return cache?.indices?.places?.[id];
-}
-```
-
-### config.js
-
-Anwendungskonfiguration:
+Handler fuer die Landing-Page:
 
 ```javascript
-export const CONFIG = {
-  name: 'CorrespExplorer',
-  dataFile: 'data/hsa-letters.json',  // Vorprozessiert
-  dateRange: { min: 1859, max: 1927 },
-  features: {
-    hasSubjects: true,
-    hasMentionsPlace: true,
-    hasMentionsPerson: true,
-    hasLanguage: true
-  },
-  ui: {
-    primaryColor: '#1e40af',
-    entityLabel: 'Briefe'
+// Event-Handler
+function handleFileSelect(e) { ... }
+function handleDragDrop(e) { ... }
+function handleUrlSubmit() { ... }
+function handleDatasetSelect(card) { ... }
+
+// Datenverarbeitung
+async function processFile(file) {
+  const data = await parseCMIF(file);
+  await processData(data, sourceInfo);
+}
+
+async function processData(data, sourceInfo) {
+  // Koordinaten anreichern (falls Cache vorhanden)
+  enrichWithCoordinates(data, coordsCache);
+
+  // Speichern
+  try {
+    sessionStorage.setItem('cmif-data', JSON.stringify(data));
+    window.location.href = 'explore.html';
+  } catch (e) {
+    // Quota exceeded - zu gross fuer sessionStorage
+    showError('Datensatz zu gross...');
   }
-};
+}
 ```
 
-### app.js
+### explore.js
 
-Hauptanwendung mit Kartenlogik:
+Visualisierungs-Logik:
 
 ```javascript
-import { loadData } from './data.js';
-import { CONFIG } from './config.js';
-
-let map;
-let allLetters = [];
-let filteredLetters = [];
-
+// Initialisierung
 async function init() {
-  const data = await loadData();
-  allLetters = data.letters;
+  const data = await loadData();  // URL-Parameter oder sessionStorage
   initMap();
-  initFilters(data);
-  renderMarkers();
+  initFilters();
+  initViewSwitcher();
+  initPersonsView();
+  initLettersView();
+  initExport();
 }
 
-function aggregateLettersByPlace(letters, placesIndex) {
-  // Gruppiert Briefe nach Absendeort
-  // Reichert mit Koordinaten aus Index an
+// Datenladung
+async function loadData() {
+  const dataset = new URLSearchParams(location.search).get('dataset');
+
+  if (dataset === 'hsa') {
+    // Vorprozessierte Daten direkt laden
+    return await fetch('data/hsa-letters.json').then(r => r.json());
+  }
+
+  // Aus sessionStorage
+  return JSON.parse(sessionStorage.getItem('cmif-data'));
 }
 
-function renderMarkers(places) {
-  // GeoJSON generieren
-  // MapLibre-Layer aktualisieren
+// View-Switching
+function switchView(view) {
+  // 'map', 'persons', 'letters'
+  updateButtons(view);
+  showViewContent(view);
+  renderViewContent(view);
+}
+
+// Export
+function exportData(format) {
+  // 'csv' oder 'json'
+  const data = prepareExportData(filteredLetters);
+  downloadFile(content, filename, mimeType);
 }
 ```
 
 ## Datenfluss
 
-### 1. Vorprozessierte Daten (aktuell)
+### 1. HSA (Vorprozessiert)
 
 ```
-CMIF.xml
+CMIF.xml (data/hsa/)
     │
     v
 build_hsa_data.py ──────────────────┐
     │                               │
     v                               v
 hsa-letters.json            geonames_coordinates.json
+    │                               │
+    v                               v
+explore.html?dataset=hsa    (Koordinaten-Cache)
     │
     v
-data.js (fetch)
-    │
-    v
-app.js (visualize)
+explore.js (fetch + visualize)
 ```
 
-### 2. Browser-Upload (geplant)
+### 2. Upload (Browser-Parsing)
 
 ```
 User Upload (File/URL)
     │
     v
+upload.js
+    │
+    v
 cmif-parser.js (DOMParser)
     │
     v
-Memory Store
+sessionStorage (JSON)
     │
     v
-app.js (visualize)
+explore.html
+    │
+    v
+explore.js (load + visualize)
 ```
 
 ## Datenmodell
@@ -218,9 +285,17 @@ app.js (visualize)
       "letter_count": 45
     }
   },
+  "languages": {
+    "es": {
+      "code": "es",
+      "label": "Spanisch",
+      "letter_count": 708
+    }
+  },
   "subjects": {
     "S.4567": {
       "label": "Baskisch",
+      "uri": "...",
       "category": "lexvo",
       "letter_count": 698
     }
@@ -228,66 +303,21 @@ app.js (visualize)
 }
 ```
 
-## CMIF-Parsing
+### Meta
 
-### XPath-Ausdruecke
-
-```xpath
-// Alle Briefe
-//tei:correspDesc
-
-// Sender
-.//tei:correspAction[@type='sent']/tei:persName
-
-// Empfaenger
-.//tei:correspAction[@type='received']/tei:persName
-
-// Absende-Ort
-.//tei:correspAction[@type='sent']/tei:placeName
-
-// Datum
-.//tei:correspAction[@type='sent']/tei:date/@when
-
-// Briefsprache
-.//tei:note/tei:ref[contains(@type, 'hasLanguage')]/@target
-
-// Erwahnte Themen
-.//tei:note/tei:ref[contains(@type, 'mentionsSubject')]
-```
-
-### Namespace-Handling
-
-CMIF-Dateien verwenden TEI-Namespace:
-```javascript
-const TEI_NS = 'http://www.tei-c.org/ns/1.0';
-
-function getElementsByTagNameNS(element, localName) {
-  return element.getElementsByTagNameNS(TEI_NS, localName);
-}
-```
-
-## Koordinaten-Aufloesung
-
-### Wikidata SPARQL
-
-```sparql
-SELECT ?geonames ?lat ?lon WHERE {
-  VALUES ?geonames { "2988507" "6440594" }
-  ?item wdt:P1566 ?geonames .
-  ?item p:P625 ?coordStatement .
-  ?coordStatement ps:P625 ?coord .
-  BIND(geof:latitude(?coord) AS ?lat)
-  BIND(geof:longitude(?coord) AS ?lon)
-}
-```
-
-### Caching
-
-Koordinaten werden in `geonames_coordinates.json` gecacht:
 ```json
 {
-  "2988507": { "lat": 48.8566, "lon": 2.3522, "name": "Paris" },
-  "6440594": { "lat": 43.3882, "lon": -1.6603, "name": "Saint-Jean-de-Luz" }
+  "title": "Hugo Schuchardt Korrespondenz",
+  "publisher": "Universitaet Graz",
+  "total_letters": 11576,
+  "unique_senders": 846,
+  "unique_recipients": 112,
+  "unique_places": 774,
+  "date_range": {
+    "min": 1859,
+    "max": 1927
+  },
+  "generated": "2025-11-26T..."
 }
 ```
 
@@ -296,33 +326,74 @@ Koordinaten werden in `geonames_coordinates.json` gecacht:
 ### Kartenansicht
 
 - MapLibre GL JS 4.x
-- CartoDB Basemap (Light/Dark)
-- GeoJSON-Clustering
+- CartoDB Basemap (Light/Dark Toggle)
+- GeoJSON-Clustering mit Aggregation
 - Popup mit Orts-Statistiken
+
+### Korrespondenten-Liste
+
+- Suche nach Name
+- Sortierung: Briefanzahl, Name (A-Z/Z-A)
+- Avatar mit Initialen
+- Statistik: Gesendet/Empfangen
+
+### Brief-Liste
+
+- Suche nach Sender, Empfaenger, Ort
+- Sortierung: Datum, Absender
+- Link zur Quelle (falls URL vorhanden)
+- Limit: 500 Briefe (Performance)
 
 ### Filter
 
 - noUiSlider fuer Zeitraum
-- Checkboxen fuer Sprachen
+- Checkboxen fuer Sprachen (Top 10)
 - Reset-Button
 
-### Navigation
+### Export-Modal
 
-- Responsive Navbar
-- View-Switcher (Karte, Personen, Briefe, Themen, Orte)
-- Mobile Burger-Menu
+- CSV-Format (Tabellenstruktur)
+- JSON-Format (Strukturierte Daten)
+- Zeigt Anzahl der exportierten Briefe
 
-## Performance
+## CSS-Struktur
 
-### Strategien
+```
+css/
+  tokens.css      - Design-Tokens (Farben, Spacing, Fonts)
+  components.css  - Wiederverwendbare Komponenten
+  style.css       - Haupt-Styles (Navbar, Sidebar, Map)
+  upload.css      - Upload-Zone, Dataset-Cards
+  explore.css     - Listen, Modal, View-Switching
+```
 
-1. Lazy Loading der Daten
-2. Debouncing der Filter-Updates
-3. Clustering fuer Karten-Performance
-4. Index-basierte Lookups
+## Performance-Strategien
 
-### Limits
+1. Lazy Rendering: Listen nur rendern wenn View aktiv
+2. Debouncing: Filter-Updates mit 300ms Verzoegerung
+3. Clustering: MapLibre-Cluster fuer 1000+ Punkte
+4. Limit: Brief-Liste auf 500 Eintraege begrenzt
+5. Index-Lookups: O(1) Zugriff auf Personen/Orte
 
-- Getestet mit 11.576 Briefen
-- GeoJSON-Clustering bis 50.000 Punkte performant
-- Browser-Parsing bis ca. 50MB XML praktikabel
+## Limits und Einschraenkungen
+
+| Aspekt | Limit | Begruendung |
+|--------|-------|-------------|
+| sessionStorage | ~5MB | Browser-Limit |
+| Brief-Liste | 500 | DOM-Performance |
+| Sprach-Filter | 10 | UI-Uebersichtlichkeit |
+| CMIF-Upload | ~50MB | Browser-Parsing |
+
+## Browser-Kompatibilitaet
+
+Getestet mit:
+- Chrome 120+
+- Firefox 120+
+- Safari 17+
+- Edge 120+
+
+Erforderlich:
+- ES6 Module Support
+- DOMParser API
+- sessionStorage
+- Fetch API
