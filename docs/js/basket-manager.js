@@ -5,16 +5,23 @@ const BasketManager = (function() {
     const STORAGE_KEY = 'herdata_basket';
     const MAX_ITEMS = null; // No limit
     const VERSION = '1.0';
+    const DEBUG = false; // Set to true for debug logging
 
     let items = [];
     let listeners = {};
 
+    // Simple logger that respects DEBUG flag
+    const log = {
+        debug: (msg) => DEBUG && console.log(`[Basket] ${msg}`),
+        error: (msg, error) => console.error(`[Basket] ${msg}`, error || '')
+    };
+
     // Initialize basket from localStorage
     function init() {
-        console.log('🧺 Initializing BasketManager...');
+        log.debug('Initializing BasketManager');
         load();
         setupStorageListener();
-        console.log(`✅ BasketManager loaded with ${items.length} items`);
+        log.debug(`BasketManager loaded with ${items.length} items`);
     }
 
     // Load basket from localStorage
@@ -28,14 +35,14 @@ const BasketManager = (function() {
                 if (data.version === VERSION && Array.isArray(data.items)) {
                     items = data.items;
                 } else {
-                    console.warn('⚠️ Basket data version mismatch or invalid format, resetting...');
+                    log.debug('Basket data version mismatch or invalid format, resetting');
                     items = [];
                 }
             } else {
                 items = [];
             }
         } catch (error) {
-            console.error('❌ Error loading basket from localStorage:', error);
+            log.error('Error loading basket from localStorage:', error);
             items = [];
         }
     }
@@ -50,9 +57,9 @@ const BasketManager = (function() {
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             emit('change');
-            console.log(`💾 Basket saved with ${items.length} items`);
+            log.debug(`Basket saved with ${items.length} items`);
         } catch (error) {
-            console.error('❌ Error saving basket to localStorage:', error);
+            log.error('Error saving basket to localStorage:', error);
 
             // Check if quota exceeded
             if (error.name === 'QuotaExceededError') {
@@ -64,12 +71,12 @@ const BasketManager = (function() {
     // Add person to basket
     function add(person) {
         if (!person || !person.id) {
-            console.error('❌ Invalid person object:', person);
+            log.error('Invalid person object:', person);
             return false;
         }
 
         if (has(person.id)) {
-            console.log(`⚠️ Person ${person.name} already in basket`);
+            log.debug(`Person ${person.name} already in basket`);
             return false;
         }
 
@@ -91,7 +98,7 @@ const BasketManager = (function() {
         items.push(item);
         save();
         emit('add', item);
-        console.log(`✅ Added ${person.name} to basket`);
+        log.debug(`Added ${person.name} to basket`);
         return true;
     }
 
@@ -100,7 +107,7 @@ const BasketManager = (function() {
         const index = items.findIndex(p => p.id === personId);
 
         if (index === -1) {
-            console.log(`⚠️ Person ${personId} not found in basket`);
+            log.debug(`Person ${personId} not found in basket`);
             return false;
         }
 
@@ -108,7 +115,7 @@ const BasketManager = (function() {
         items.splice(index, 1);
         save();
         emit('remove', person);
-        console.log(`✅ Removed ${person.name} from basket`);
+        log.debug(`Removed ${person.name} from basket`);
         return true;
     }
 
@@ -118,7 +125,7 @@ const BasketManager = (function() {
         items = [];
         save();
         emit('clear');
-        console.log(`✅ Cleared basket (removed ${count} items)`);
+        log.debug(`Cleared basket (removed ${count} items)`);
     }
 
     // Check if person is in basket
@@ -144,7 +151,7 @@ const BasketManager = (function() {
     // Export as CSV
     function exportAsCSV() {
         if (items.length === 0) {
-            console.warn('⚠️ Basket is empty, nothing to export');
+            log.debug('Basket is empty, nothing to export');
             return null;
         }
 
@@ -169,14 +176,14 @@ const BasketManager = (function() {
             csv += row.join(',') + '\n';
         });
 
-        console.log(`📊 Exported ${items.length} items as CSV`);
+        log.debug(`Exported ${items.length} items as CSV`);
         return csv;
     }
 
     // Export as JSON
     function exportAsJSON() {
         if (items.length === 0) {
-            console.warn('⚠️ Basket is empty, nothing to export');
+            log.debug('Basket is empty, nothing to export');
             return null;
         }
 
@@ -186,7 +193,7 @@ const BasketManager = (function() {
             items: items
         };
 
-        console.log(`📊 Exported ${items.length} items as JSON`);
+        log.debug(`Exported ${items.length} items as JSON`);
         return JSON.stringify(exportData, null, 2);
     }
 
@@ -196,7 +203,7 @@ const BasketManager = (function() {
             listeners[event] = [];
         }
         listeners[event].push(callback);
-        console.log(`🎧 Registered listener for '${event}' event`);
+        log.debug(`Registered listener for '${event}' event`);
     }
 
     // Event system - unregister listener
@@ -213,7 +220,7 @@ const BasketManager = (function() {
             try {
                 callback(data);
             } catch (error) {
-                console.error(`❌ Error in ${event} listener:`, error);
+                log.error(`Error in ${event} listener:`, error);
             }
         });
     }
@@ -222,7 +229,7 @@ const BasketManager = (function() {
     function setupStorageListener() {
         window.addEventListener('storage', (e) => {
             if (e.key === STORAGE_KEY) {
-                console.log('🔄 Storage changed in another tab, reloading basket...');
+                log.debug('Storage changed in another tab, reloading basket');
                 load();
                 emit('sync');
             }

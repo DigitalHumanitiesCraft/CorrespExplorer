@@ -11,6 +11,69 @@ let allPersons = [];
 let charts = {};
 let timelineData = null;
 
+// Occupation categories matching map sidebar (app.js)
+const OCCUPATION_CATEGORIES = {
+    'Künstlerisch': {
+        color: '#2980b9',
+        occupations: ['Schauspielerin', 'Malerin', 'Tänzerin', 'Bildhauerin',
+                      'Miniaturmalerin', 'Radiererin', 'Stecherin', 'Kupferstecherin',
+                      'Zeichnerin', 'Stempelschneiderin', 'Gemmenschneiderin',
+                      'Silhouettenschneiderin', 'Illustratorin', 'Bildnismalerin',
+                      'Scherenschneiderin', 'Kunststickerin']
+    },
+    'Literarisch': {
+        color: '#27ae60',
+        occupations: ['Schriftstellerin', 'Übersetzerin', 'Dichterin',
+                      'Zeitschriftenredakteurin', 'Redakteurin', 'Lyrikerin', 'Publizistin']
+    },
+    'Musikalisch': {
+        color: '#e67e22',
+        occupations: ['Sängerin', 'Pianistin', 'Komponistin', 'Organistin', 'Harfenistin',
+                      'Gesanglehrerin', 'Kammersängerin', 'Musiklehrerin', 'Deklamatorin']
+    },
+    'Hof/Adel': {
+        color: '#8e44ad',
+        occupations: ['Hofdame', 'Oberhofmeisterin', 'Stiftsdame', 'Kammerfrau',
+                      'Prinzessin', 'Fürstin', 'Herzogin', 'Staatsdame',
+                      'Regentin', 'Oberkammerherrin', 'Herzogin von Sachsen-Weimar',
+                      'Großherzogin', 'Hofmeisterin', 'Königin von Preußen', 'deutsche Kaiserin']
+    },
+    'Bildung': {
+        color: '#16a085',
+        occupations: ['Erzieherin', 'Pädagogin', 'Lehrerin', 'Gouvernante',
+                      'Kunsterzieherin', 'Zeichenlehrerin']
+    }
+};
+
+// Get category for an occupation
+function getOccupationCategory(occupationName) {
+    for (const [category, data] of Object.entries(OCCUPATION_CATEGORIES)) {
+        if (data.occupations.includes(occupationName)) {
+            return category;
+        }
+    }
+    return 'Sonstige';
+}
+
+// Adjust color brightness (positive percent = lighter, negative = darker)
+function adjustColorBrightness(hex, percent) {
+    // Remove # if present
+    hex = hex.replace(/^#/, '');
+
+    // Parse RGB
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+
+    // Adjust brightness (blend towards white for positive percent)
+    r = Math.min(255, Math.round(r + (255 - r) * (percent / 100)));
+    g = Math.min(255, Math.round(g + (255 - g) * (percent / 100)));
+    b = Math.min(255, Math.round(b + (255 - b) * (percent / 100)));
+
+    // Convert back to hex
+    return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
 // FilterState Singleton - manages coordinated view filtering
 class FilterState {
     constructor() {
@@ -21,7 +84,6 @@ class FilterState {
 
         this.filters = {
             timeRange: null,  // { start: year, end: year }
-            timeMode: 'correspondence',  // 'correspondence' or 'lifespan'
             occupation: null,  // string: selected occupation name
             place: null,  // string: selected place name
             activityTypes: ['sender', 'mentioned', 'both', 'indirect'],  // array: checked activity types
@@ -51,45 +113,38 @@ class FilterState {
     getFilteredPersons() {
         let filtered = allPersons;
 
-        // Filter by time range
+        // Filter by time range (correspondence mode only)
         if (this.filters.timeRange) {
             const { start, end } = this.filters.timeRange;
-            const { timeMode } = this.filters;
 
             filtered = filtered.filter(person => {
-                if (timeMode === 'correspondence') {
-                    // Filter by correspondence years
-                    if (!person.correspondence || person.correspondence.length === 0) {
-                        return false;  // Exclude persons without correspondence
-                    }
-                    return person.correspondence.some(corr =>
-                        corr.year >= start && corr.year <= end
-                    );
-                } else {
-                    // Filter by lifespan years
-                    if (!person.dates) return false;
-
-                    const birthYear = person.dates.birth ? parseInt(person.dates.birth) : null;
-                    const deathYear = person.dates.death ? parseInt(person.dates.death) : null;
-
-                    // Person overlaps with time range if:
-                    // - Born before end AND died after start
-                    // - Or born in range (if no death date)
-                    if (birthYear && deathYear) {
-                        return birthYear <= end && deathYear >= start;
-                    } else if (birthYear) {
-                        return birthYear >= start && birthYear <= end;
-                    }
-                    return false;
+                // Filter by correspondence years
+                if (!person.correspondence || person.correspondence.length === 0) {
+                    return false;  // Exclude persons without correspondence
                 }
+                return person.correspondence.some(corr =>
+                    corr.year >= start && corr.year <= end
+                );
             });
         }
 
-        // Filter by occupation
+        // Filter by occupation (supports both individual occupations and category names)
         if (this.filters.occupation) {
+            const filterValue = this.filters.occupation;
+
+            // Check if filter is a category name
+            const isCategory = OCCUPATION_CATEGORIES.hasOwnProperty(filterValue) || filterValue === 'Sonstige';
+
             filtered = filtered.filter(person => {
                 if (!person.occupations || person.occupations.length === 0) return false;
-                return person.occupations.some(occ => occ.name === this.filters.occupation);
+
+                if (isCategory) {
+                    // Filter by category - check if any occupation belongs to this category
+                    return person.occupations.some(occ => getOccupationCategory(occ.name) === filterValue);
+                } else {
+                    // Filter by specific occupation name
+                    return person.occupations.some(occ => occ.name === filterValue);
+                }
             });
         }
 
@@ -138,7 +193,6 @@ class FilterState {
     reset() {
         this.filters = {
             timeRange: null,
-            timeMode: this.filters.timeMode,  // Keep current mode
             occupation: null,
             place: null,
             activityTypes: ['sender', 'mentioned', 'both', 'indirect'],  // Reset to all checked
@@ -150,8 +204,6 @@ class FilterState {
 
 // Initialize dashboard
 async function init() {
-    console.log("📊 Initializing Brief-Explorer (Phase 2a)");
-
     await loadNavbar('stats');
     highlightActiveNavLink();
 
@@ -160,14 +212,12 @@ async function init() {
         const data = await loadPersons();
         allPersons = data.persons;
         timelineData = data.meta.timeline;
-        console.log(`📊 Loaded ${allPersons.length} persons`);
 
         // Initialize FilterState singleton
         const filterState = new FilterState();
 
         // Subscribe to filter changes
         filterState.subscribe((filters) => {
-            console.log("🔄 Filters updated:", filters);
             updateAllCharts();
             updateChartNotes();
             updateFilterChips();
@@ -177,10 +227,7 @@ async function init() {
         initMasterTimeline();
         initActivityFilter();
         initCharts();
-        initExportButtons();
         initBasketButton();
-
-        console.log("✅ Brief-Explorer ready (Phase 2a)");
     } catch (error) {
         console.error('Error loading data:', error);
         showError('Daten konnten nicht geladen werden');
@@ -202,7 +249,6 @@ function highlightActiveNavLink() {
 function initSearch() {
     if (allPersons.length > 0) {
         new GlobalSearch(allPersons);
-        console.log("🔍 Global search initialized");
     }
 }
 
@@ -215,36 +261,10 @@ function initMasterTimeline() {
     charts.masterTimeline = chart;
 
     const filterState = new FilterState();
-    const mode = filterState.filters.timeMode;
 
-    // Prepare data based on mode
-    let xAxisData, seriesData, minYear, maxYear;
-
-    if (mode === 'correspondence') {
-        // Use timeline from meta
-        xAxisData = timelineData.map(t => t.year);
-        seriesData = timelineData.map(t => t.count);
-        minYear = 1762;
-        maxYear = 1824;
-    } else {
-        // Generate lifespan histogram (births per decade)
-        const decadeCounter = {};
-        allPersons.forEach(person => {
-            if (person.dates && person.dates.birth) {
-                const year = parseInt(person.dates.birth);
-                if (year >= 1700 && year <= 1850) {
-                    const decade = Math.floor(year / 10) * 10;
-                    decadeCounter[decade] = (decadeCounter[decade] || 0) + 1;
-                }
-            }
-        });
-
-        const decades = Object.keys(decadeCounter).sort((a, b) => parseInt(a) - parseInt(b));
-        xAxisData = decades.map(d => parseInt(d));
-        seriesData = decades.map(d => decadeCounter[d]);
-        minYear = 1700;
-        maxYear = 1850;
-    }
+    // Timeline data - correspondence mode only
+    const xAxisData = timelineData.map(t => t.year);
+    const seriesData = timelineData.map(t => t.count);
 
     const option = {
         tooltip: {
@@ -253,8 +273,7 @@ function initMasterTimeline() {
             formatter: (params) => {
                 const year = params[0].name;
                 const count = params[0].value;
-                const label = mode === 'correspondence' ? 'Briefe' : 'Geburten';
-                return `${year}: ${count} ${label}`;
+                return `${year}: ${count} Briefe`;
             }
         },
         grid: {
@@ -269,13 +288,13 @@ function initMasterTimeline() {
             data: xAxisData,
             boundaryGap: false,
             axisLabel: {
-                interval: mode === 'correspondence' ? 9 : 4,
+                interval: 9,
                 rotate: 0
             }
         },
         yAxis: {
             type: 'value',
-            name: mode === 'correspondence' ? 'Briefe' : 'Personen',
+            name: 'Briefe',
             nameLocation: 'middle',
             nameGap: 35,
             splitLine: { lineStyle: { type: 'dashed' } }
@@ -300,20 +319,19 @@ function initMasterTimeline() {
             }
         }],
         series: [{
-            type: mode === 'correspondence' ? 'line' : 'bar',
+            type: 'line',
             data: seriesData,
-            smooth: mode === 'correspondence',
-            lineStyle: mode === 'correspondence' ? {
+            smooth: true,
+            lineStyle: {
                 color: '#2c5f8d',
                 width: 2
-            } : undefined,
-            itemStyle: {
-                color: '#2c5f8d',
-                borderRadius: mode === 'lifespan' ? [4, 4, 0, 0] : undefined
             },
-            areaStyle: mode === 'correspondence' ? {
+            itemStyle: {
+                color: '#2c5f8d'
+            },
+            areaStyle: {
                 color: 'rgba(44, 95, 141, 0.2)'
-            } : undefined
+            }
         }]
     };
 
@@ -336,24 +354,6 @@ function initMasterTimeline() {
         updateTimelineSelection(startYear, endYear);
     });
 
-    // Mode toggle buttons
-    const modeButtons = document.querySelectorAll('.mode-btn');
-    modeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const newMode = btn.dataset.mode;
-            if (newMode === filterState.filters.timeMode) return;
-
-            // Update UI
-            modeButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Update FilterState and reinitialize timeline
-            filterState.update({ timeMode: newMode, timeRange: null });
-            initMasterTimeline();
-            updateTimelineSelection(null, null);
-        });
-    });
-
     // Reset button
     const resetBtn = document.getElementById('reset-timeline');
     if (resetBtn) {
@@ -367,8 +367,6 @@ function initMasterTimeline() {
             updateTimelineSelection(null, null);
         });
     }
-
-    console.log("⏱️ Master timeline initialized");
 }
 
 // Initialize activity filter checkboxes
@@ -377,7 +375,6 @@ function initActivityFilter() {
     const checkboxes = document.querySelectorAll('.activity-checkbox');
 
     if (!checkboxes || checkboxes.length === 0) {
-        console.warn("⚠️ Activity checkboxes not found");
         return;
     }
 
@@ -393,8 +390,6 @@ function initActivityFilter() {
             filterState.update({ activityTypes: checkedTypes });
         });
     });
-
-    console.log("✅ Activity filter initialized");
 }
 
 // Update timeline selection display
@@ -417,7 +412,6 @@ function buildPersonsURL(filters) {
     if (filters.timeRange) {
         params.append('timeStart', filters.timeRange.start);
         params.append('timeEnd', filters.timeRange.end);
-        params.append('timeMode', filters.timeMode);
     }
 
     // Add occupation filter
@@ -441,7 +435,7 @@ function buildPersonsURL(filters) {
     }
 
     // Build relative URL to synthesis
-    const baseURL = 'synthesis/index.html';
+    const baseURL = 'synthesis.html';
     const queryString = params.toString();
 
     return queryString ? `${baseURL}?${queryString}` : baseURL;
@@ -450,7 +444,7 @@ function buildPersonsURL(filters) {
 // Update filter chips display
 function updateFilterChips() {
     const filterState = new FilterState();
-    const { timeRange, timeMode, occupation, place, activityTypes, birthDecade } = filterState.filters;
+    const { timeRange, occupation, place, activityTypes, birthDecade } = filterState.filters;
 
     const activeFiltersDiv = document.getElementById('active-filters');
     const filterChipsDiv = document.getElementById('filter-chips');
@@ -465,9 +459,8 @@ function updateFilterChips() {
 
     // Add time range chip if active
     if (timeRange) {
-        const modeLabel = timeMode === 'correspondence' ? 'Korrespondenz' : 'Lebensdaten';
         chips.push({
-            label: `${timeRange.start}–${timeRange.end} (${modeLabel})`,
+            label: `${timeRange.start}–${timeRange.end}`,
             onRemove: () => {
                 filterState.update({ timeRange: null });
                 // Reset dataZoom slider
@@ -586,8 +579,6 @@ function initCharts() {
     // Note: echarts.connect() removed because coordinated highlighting
     // doesn't make sense between different chart types (treemap vs bar charts)
     // with semantically unrelated data (occupations vs places vs cohorts)
-
-    console.log('📊 Charts initialized');
 }
 
 // Update all charts with filtered data
@@ -638,7 +629,7 @@ function updateChartNotes() {
     }
 }
 
-// Chart 1: Berufsverteilung (Treemap)
+// Chart 1: Berufsverteilung (Treemap) - grouped by semantic categories with drill-down
 function renderOccupationsChart() {
     const container = document.getElementById('chart-occupations');
     if (!charts.occupations) {
@@ -647,37 +638,148 @@ function renderOccupationsChart() {
 
     const filterState = new FilterState();
     const persons = filterState.getFilteredPersons();
+    const activeCategory = filterState.filters.occupation;
 
-    // Count occupations
-    const occCounter = {};
-    persons.forEach(person => {
-        if (person.occupations && person.occupations.length > 0) {
-            person.occupations.forEach(occ => {
-                occCounter[occ.name] = (occCounter[occ.name] || 0) + 1;
+    // Check if we're in drill-down mode (category filter is active)
+    const isCategory = activeCategory && (OCCUPATION_CATEGORIES.hasOwnProperty(activeCategory) || activeCategory === 'Sonstige');
+
+    let treemapData = [];
+    let titleText = '';
+
+    if (isCategory) {
+        // DRILL-DOWN MODE: Show individual occupations within the selected category
+        const occupationCounter = {};
+
+        persons.forEach(person => {
+            if (person.occupations && person.occupations.length > 0) {
+                person.occupations.forEach(occ => {
+                    const category = getOccupationCategory(occ.name);
+                    if (category === activeCategory) {
+                        occupationCounter[occ.name] = (occupationCounter[occ.name] || 0) + 1;
+                    }
+                });
+            }
+        });
+
+        // Get category base color
+        const baseColor = activeCategory === 'Sonstige'
+            ? '#95a5a6'
+            : OCCUPATION_CATEGORIES[activeCategory]?.color || '#95a5a6';
+
+        // Build treemap data for individual occupations
+        const occupations = Object.entries(occupationCounter).sort((a, b) => b[1] - a[1]);
+        const totalOccupations = occupations.length;
+
+        occupations.forEach(([occName, count], index) => {
+            // Create color shades: darkest for largest, lightest for smallest
+            const shadeFactor = totalOccupations > 1 ? index / (totalOccupations - 1) : 0;
+            const shadeColor = adjustColorBrightness(baseColor, shadeFactor * 40); // 0% to 40% lighter
+
+            treemapData.push({
+                name: occName,
+                value: count,
+                _occupation: occName,
+                itemStyle: { color: shadeColor }
+            });
+        });
+
+        titleText = `${activeCategory} (${treemapData.length} Berufe) - Klick zum Zurueck`;
+
+    } else {
+        // CATEGORY MODE: Show occupation categories
+        const categoryCounter = {};
+        const categoryDetails = {};
+
+        // Initialize categories
+        for (const category of Object.keys(OCCUPATION_CATEGORIES)) {
+            categoryCounter[category] = 0;
+            categoryDetails[category] = {};
+        }
+        categoryCounter['Sonstige'] = 0;
+        categoryDetails['Sonstige'] = {};
+
+        // Count unique persons per category (not occupation entries)
+        const categoryPersons = {};
+        for (const category of Object.keys(OCCUPATION_CATEGORIES)) {
+            categoryPersons[category] = new Set();
+        }
+        categoryPersons['Sonstige'] = new Set();
+
+        persons.forEach(person => {
+            if (person.occupations && person.occupations.length > 0) {
+                person.occupations.forEach(occ => {
+                    const category = getOccupationCategory(occ.name);
+                    categoryCounter[category]++;
+                    categoryDetails[category][occ.name] = (categoryDetails[category][occ.name] || 0) + 1;
+                    // Track unique persons per category
+                    categoryPersons[category].add(person.id);
+                });
+            }
+        });
+
+        // Build treemap data with category colors
+        for (const [category, data] of Object.entries(OCCUPATION_CATEGORIES)) {
+            if (categoryCounter[category] > 0) {
+                const details = Object.entries(categoryDetails[category])
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([name, count]) => `${name} (${count})`)
+                    .join(', ');
+                const personCount = categoryPersons[category].size;
+                treemapData.push({
+                    name: category,
+                    value: categoryCounter[category],
+                    _tooltip: details,
+                    _category: category,
+                    _personCount: personCount,
+                    itemStyle: { color: data.color }
+                });
+            }
+        }
+
+        // Add "Sonstige" category
+        if (categoryCounter['Sonstige'] > 0) {
+            const details = Object.entries(categoryDetails['Sonstige'])
+                .sort((a, b) => b[1] - a[1])
+                .map(([name, count]) => `${name} (${count})`)
+                .join(', ');
+            const personCount = categoryPersons['Sonstige'].size;
+            treemapData.push({
+                name: 'Sonstige',
+                value: categoryCounter['Sonstige'],
+                _tooltip: details,
+                _category: 'Sonstige',
+                _personCount: personCount,
+                itemStyle: { color: '#95a5a6' }
             });
         }
-    });
 
-    // Convert to treemap data (ALL occupations, not just top 15)
-    const treemapData = Object.entries(occCounter)
-        .sort((a, b) => b[1] - a[1])
-        .map(([name, value]) => ({
-            name: name,
-            value: value
-        }));
-
-    console.log(`📊 Treemap data: ${treemapData.length} occupations, top 5:`, treemapData.slice(0, 5));
+        treemapData.sort((a, b) => b.value - a.value);
+        titleText = `Berufsgruppen (${treemapData.length} Kategorien)`;
+    }
 
     const option = {
         title: {
-            text: `Alle Berufe (${treemapData.length})`,
+            text: titleText,
             left: 'center',
             top: 10,
-            textStyle: { fontSize: 14 }
+            textStyle: {
+                fontSize: 14,
+                color: isCategory ? '#2c5f8d' : '#333'
+            },
+            triggerEvent: isCategory  // Make title clickable in drill-down mode
         },
         tooltip: {
             formatter: (params) => {
-                return `${params.name}<br/>${params.value} Personen`;
+                if (params.data._tooltip) {
+                    const personCount = params.data._personCount || params.value;
+                    const entryCount = params.value;
+                    const countText = params.data._personCount
+                        ? `${personCount} Personen (${entryCount} Eintraege)`
+                        : `${entryCount} Eintraege`;
+                    return `<strong>${params.name}</strong><br/>${countText}<br/><span style="font-size:11px;color:#666;max-width:300px;display:block;white-space:normal;">${params.data._tooltip}</span>`;
+                }
+                const personCount = params.data._personCount || params.value;
+                return `<strong>${params.name}</strong><br/>${personCount} Personen`;
             }
         },
         series: [{
@@ -695,11 +797,11 @@ function renderOccupationsChart() {
             label: {
                 show: true,
                 formatter: (params) => {
-                    // Only show label if rect is large enough
-                    if (params.value < 3) return '';
-                    return `${params.name}\n${params.value}`;
+                    // Show person count if available (category mode), otherwise entries count
+                    const count = params.data._personCount || params.value;
+                    return `${params.name}\n${count}`;
                 },
-                fontSize: 11,
+                fontSize: 12,
                 color: 'white'
             },
             upperLabel: {
@@ -714,28 +816,14 @@ function renderOccupationsChart() {
                 itemStyle: {
                     shadowBlur: 10,
                     shadowColor: 'rgba(0,0,0,0.5)',
-                    borderColor: '#2c5f8d',
+                    borderColor: '#2c3e50',
                     borderWidth: 3
                 },
                 label: {
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: 'bold'
                 }
-            },
-            visualMin: 0,
-            visualMax: Math.max(...treemapData.map(d => d.value)),
-            colorMappingBy: 'value',
-            levels: [
-                {
-                    color: ['#88b7d8', '#6ba3c8', '#4e8fb8', '#3d7ea8', '#2c5f8d'],
-                    colorMappingBy: 'value',
-                    itemStyle: {
-                        borderColor: '#fff',
-                        borderWidth: 2,
-                        gapWidth: 2
-                    }
-                }
-            ]
+            }
         }]
     };
 
@@ -745,17 +833,23 @@ function renderOccupationsChart() {
     charts.occupations.off('click');  // Remove old handlers
     charts.occupations.on('click', (params) => {
         if (params.componentType === 'series') {
-            const occupation = params.name;
-            console.log(`🔍 Filter by occupation: ${occupation}`);
+            const clickedName = params.name;
 
-            // Toggle occupation filter
-            if (filterState.filters.occupation === occupation) {
-                // Click same occupation -> remove filter
-                filterState.update({ occupation: null });
+            if (isCategory) {
+                // In drill-down mode: click on specific occupation filters to that occupation
+                // Filter to specific occupation (this will show category view with filtered persons)
+                filterState.update({ occupation: clickedName });
             } else {
-                // Click different occupation -> set filter
-                filterState.update({ occupation: occupation });
+                // In category mode: click drills down into category
+                if (filterState.filters.occupation === clickedName) {
+                    filterState.update({ occupation: null });
+                } else {
+                    filterState.update({ occupation: clickedName });
+                }
             }
+        } else if (params.componentType === 'title' && isCategory) {
+            // Click on title goes back to category overview
+            filterState.update({ occupation: null });
         }
     });
 }
@@ -770,12 +864,34 @@ function renderPlacesChart() {
     const filterState = new FilterState();
     const persons = filterState.getFilteredPersons();
 
-    // Count places
+    // Count places AND track occupation categories per place
     const placeCounter = {};
+    const placeOccupations = {};
+
     persons.forEach(person => {
         if (person.places && person.places.length > 0) {
             person.places.forEach(place => {
                 placeCounter[place.name] = (placeCounter[place.name] || 0) + 1;
+
+                // Track occupations for this place
+                if (!placeOccupations[place.name]) {
+                    placeOccupations[place.name] = {
+                        'Literarisch': 0, 'Künstlerisch': 0, 'Musikalisch': 0,
+                        'Hof/Adel': 0, 'Bildung': 0, 'Sonstige': 0
+                    };
+                }
+
+                // Count occupation categories
+                if (person.occupations && person.occupations.length > 0) {
+                    const categories = new Set();
+                    person.occupations.forEach(occ => {
+                        const cat = getOccupationCategory(occ.name);
+                        categories.add(cat);
+                    });
+                    categories.forEach(cat => {
+                        placeOccupations[place.name][cat]++;
+                    });
+                }
             });
         }
     });
@@ -784,6 +900,16 @@ function renderPlacesChart() {
     const sorted = Object.entries(placeCounter)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10);
+
+    // Colors for occupation categories
+    const catColors = {
+        'Künstlerisch': '#2980b9',
+        'Literarisch': '#27ae60',
+        'Musikalisch': '#e67e22',
+        'Hof/Adel': '#8e44ad',
+        'Bildung': '#16a085',
+        'Sonstige': '#7f8c8d'
+    };
 
     const option = {
         title: {
@@ -794,7 +920,24 @@ function renderPlacesChart() {
         tooltip: {
             trigger: 'axis',
             axisPointer: { type: 'shadow' },
-            formatter: '{b}: {c} Personen'
+            confine: true,
+            formatter: (params) => {
+                const placeName = params[0].name;
+                const count = params[0].value;
+                const occs = placeOccupations[placeName];
+
+                // Compact occupation display
+                let occParts = [];
+                const categories = ['Literarisch', 'Künstlerisch', 'Musikalisch', 'Hof/Adel', 'Bildung', 'Sonstige'];
+                categories.forEach(cat => {
+                    if (occs && occs[cat] > 0) {
+                        occParts.push(`<span style="color:${catColors[cat]}">●</span>${occs[cat]}`);
+                    }
+                });
+
+                const occLine = occParts.length > 0 ? `<br/>${occParts.join(' ')}` : '';
+                return `<strong>${placeName}</strong>: ${count}${occLine}`;
+            }
         },
         grid: {
             left: '30%',
@@ -839,7 +982,6 @@ function renderPlacesChart() {
     charts.places.on('click', (params) => {
         if (params.componentType === 'series') {
             const place = params.name;
-            console.log(`🔍 Filter by place: ${place}`);
 
             // Toggle place filter
             if (filterState.filters.place === place) {
@@ -853,7 +995,7 @@ function renderPlacesChart() {
     });
 }
 
-// Chart 3: Generationen
+// Chart 3: Generationen with occupation breakdown in tooltip
 function renderCohortsChart() {
     const container = document.getElementById('chart-cohorts');
     if (!charts.cohorts) {
@@ -863,14 +1005,30 @@ function renderCohortsChart() {
     const filterState = new FilterState();
     const persons = filterState.getFilteredPersons();
 
-    // Count birth decades
+    // Count birth decades AND occupation categories per decade
     const decadeCounter = {};
+    const decadeOccupations = {};
+
     persons.forEach(person => {
         if (person.dates && person.dates.birth) {
             try {
                 const year = parseInt(person.dates.birth);
                 const decade = Math.floor(year / 10) * 10;
                 decadeCounter[decade] = (decadeCounter[decade] || 0) + 1;
+
+                // Count occupations for this decade
+                if (!decadeOccupations[decade]) {
+                    decadeOccupations[decade] = {
+                        'Literarisch': 0, 'Künstlerisch': 0, 'Musikalisch': 0,
+                        'Hof/Adel': 0, 'Bildung': 0, 'Sonstige': 0
+                    };
+                }
+                if (person.occupations) {
+                    person.occupations.forEach(occ => {
+                        const cat = getOccupationCategory(occ.name);
+                        decadeOccupations[decade][cat]++;
+                    });
+                }
             } catch (e) {}
         }
     });
@@ -878,6 +1036,12 @@ function renderCohortsChart() {
     // Sort by decade
     const sorted = Object.entries(decadeCounter)
         .sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+
+    // Category colors for tooltip
+    const catColors = {
+        'Literarisch': '#27ae60', 'Künstlerisch': '#2980b9', 'Musikalisch': '#e67e22',
+        'Hof/Adel': '#8e44ad', 'Bildung': '#16a085', 'Sonstige': '#95a5a6'
+    };
 
     const option = {
         title: {
@@ -888,7 +1052,26 @@ function renderCohortsChart() {
         tooltip: {
             trigger: 'axis',
             axisPointer: { type: 'shadow' },
-            formatter: '{b}: {c} Personen'
+            confine: true,
+            formatter: (params) => {
+                const decade = params[0].name.replace('er', '');
+                const count = params[0].value;
+                const occs = decadeOccupations[decade];
+
+                if (!occs) return `${params[0].name}: ${count}`;
+
+                // Compact occupation display
+                let occParts = [];
+                const categories = ['Literarisch', 'Künstlerisch', 'Musikalisch', 'Hof/Adel', 'Bildung', 'Sonstige'];
+                categories.forEach(cat => {
+                    if (occs[cat] > 0) {
+                        occParts.push(`<span style="color:${catColors[cat]}">●</span>${occs[cat]}`);
+                    }
+                });
+
+                const occLine = occParts.length > 0 ? `<br/>${occParts.join(' ')}` : '';
+                return `<strong>${params[0].name}</strong>: ${count}${occLine}`;
+            }
         },
         grid: {
             left: '10%',
@@ -930,7 +1113,6 @@ function renderCohortsChart() {
             // Extract decade number from label like "1750er"
             const decadeStr = params.name.replace('er', '');
             const decade = parseInt(decadeStr);
-            console.log(`🔍 Filter by birth decade: ${decade}`);
 
             // Toggle birth decade filter
             if (filterState.filters.birthDecade === decade) {
@@ -946,51 +1128,7 @@ function renderCohortsChart() {
 
 // Chart 4: Briefaktivität
 // Activity chart removed - now using checkboxes in sidebar (Phase 2d)
-
-// Initialize export buttons
-function initExportButtons() {
-    const exportButtons = document.querySelectorAll('.btn-export');
-
-    exportButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const chartId = e.target.dataset.export;
-            const format = e.target.dataset.format;
-
-            if (format === 'csv') {
-                exportCSV(chartId);
-            } else if (format === 'png') {
-                exportPNG(chartId);
-            }
-        });
-    });
-
-    console.log(`✅ Initialized ${exportButtons.length} export buttons`);
-}
-
-// Export chart as PNG
-function exportPNG(chartId) {
-    const chart = charts[chartId];
-    if (!chart) return;
-
-    const url = chart.getDataURL({
-        type: 'png',
-        pixelRatio: 2,
-        backgroundColor: '#fff'
-    });
-
-    const link = document.createElement('a');
-    link.download = `herdata-${chartId}.png`;
-    link.href = url;
-    link.click();
-
-    console.log(`📥 Exported ${chartId} as PNG`);
-}
-
-// Export chart data as CSV (placeholder - will use filtered data)
-function exportCSV(chartId) {
-    console.log(`📥 CSV export for ${chartId} (filtered data)`);
-    alert('CSV-Export wird in Phase 2b implementiert');
-}
+// Export buttons removed - functionality moved to download.html
 
 // Initialize "Add to Basket" button
 function initBasketButton() {
@@ -1033,11 +1171,7 @@ function initBasketButton() {
         } else {
             Toast.show('Alle Personen bereits im Wissenskorb', 'info');
         }
-
-        console.log(`🧺 Added ${added} persons to basket (${skipped} skipped)`);
     });
-
-    console.log('✅ Basket button initialized');
 }
 
 // Show error message

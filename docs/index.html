@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="HerData visualisiert 448 Frauen in der Briefkorrespondenz von Johann Wolfgang von Goethe (1762-1824)">
-    <title>HerData - Frauen in Goethes Briefkorrespondenz</title>
+    <meta name="description" content="Hugo Schuchardt Archiv - Interaktive Visualisierung der Korrespondenz des Sprachwissenschaftlers Hugo Schuchardt (1859-1927)">
+    <title>HSA CorrespExplorer - Hugo Schuchardt Archiv</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
     <!-- MapLibre GL JS CSS -->
@@ -18,9 +18,16 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
-    <link rel="stylesheet" href="css/debug.css">
 </head>
 <body>
+    <!-- Fullscreen Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner">
+            <i class="fas fa-envelope fa-spin"></i>
+        </div>
+        <div class="loading-text">Lade HSA Korrespondenz...</div>
+    </div>
+
     <!-- Global Navigation Placeholder -->
     <div id="navbar-placeholder"></div>
 
@@ -29,136 +36,98 @@
         <div class="content-wrapper">
             <!-- Sidebar Filters -->
             <aside class="sidebar" role="complementary" aria-label="Filteroptionen">
-            <!-- Stats Cards -->
-            <div class="stats-cards">
-                <a href="stats.html" class="stat-card stat-card-clickable" data-tooltip="Zum Brief-Explorer">
-                    <div class="stat-value">1.793</div>
-                    <div class="stat-label">Briefe</div>
-                </a>
-                <a href="synthesis/index.html" class="stat-card stat-card-clickable" data-tooltip="Detaillierte Personenliste">
-                    <div class="stat-value">448</div>
-                    <div class="stat-label">Frauen</div>
-                </a>
-                <a href="places.html" class="stat-card stat-card-clickable" data-tooltip="Zur Ortsliste">
-                    <div class="stat-value">227</div>
-                    <div class="stat-label">Orte</div>
-                </a>
-            </div>
-
-            <!-- Data Coverage Info Box -->
-            <div class="data-coverage-info" style="background: #f8f9fa; border-left: 3px solid #95a5a6; padding: 10px; margin: 0 0 15px 0; font-size: 0.85rem; color: #555; border-radius: 0 4px 4px 0;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                    <strong>Auf der Karte:</strong>
-                    <span id="map-visible-count">227</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <strong>Ohne Geodaten:</strong>
-                    <span id="map-missing-count">221</span>
-                </div>
-                <div style="font-size: 0.8rem; color: #7f8c8d; border-top: 1px solid #eee; padding-top: 6px; margin-top: 6px;">
-                    <i class="fas fa-info-circle"></i> Nur Personen mit bekannten Orten sind sichtbar. <a href="how-to.html" style="color: #2c3e50; text-decoration: underline;">Warum?</a>
-                </div>
-            </div>
-
-            <!-- Activity and Occupation Filters - Two Columns -->
-            <div class="filter-group-row">
-                <!-- Letter Activity Filter -->
-                <div class="filter-group filter-group-half" role="group" aria-labelledby="filter-activity-heading">
-                    <h4 id="filter-activity-heading">Aktivität</h4>
-                    <label><input type="checkbox" name="role" value="sender" checked aria-describedby="filter-activity-heading"> Absenderin</label>
-                    <label><input type="checkbox" name="role" value="mentioned" checked aria-describedby="filter-activity-heading"> Erwähnt</label>
-                    <label><input type="checkbox" name="role" value="both" checked aria-describedby="filter-activity-heading"> Beides</label>
-                    <label><input type="checkbox" name="role" value="indirect" aria-describedby="filter-activity-heading"> Nur SNDB</label>
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-letters-count">11.576</div>
+                        <div class="stat-label">Briefe</div>
+                    </div>
+                    <a href="persons.html" class="stat-card stat-card-clickable" title="Zur Korrespondentenliste">
+                        <div class="stat-value">846</div>
+                        <div class="stat-label">Korrespondenten</div>
+                    </a>
+                    <a href="places.html" class="stat-card stat-card-clickable" title="Zur Ortsliste">
+                        <div class="stat-value">774</div>
+                        <div class="stat-label">Orte</div>
+                    </a>
                 </div>
 
-                <!-- Occupation Groups Filter -->
-                <div class="filter-group filter-group-half" role="group" aria-labelledby="filter-occupation-heading">
-                    <h4 id="filter-occupation-heading">Berufsgruppe</h4>
-                    <label><input type="checkbox" name="occupation" value="artistic" checked aria-describedby="filter-occupation-heading"> Künstlerisch</label>
-                    <label><input type="checkbox" name="occupation" value="literary" checked aria-describedby="filter-occupation-heading"> Literarisch</label>
-                    <label><input type="checkbox" name="occupation" value="musical" checked aria-describedby="filter-occupation-heading"> Musikalisch</label>
-                    <label><input type="checkbox" name="occupation" value="court" checked aria-describedby="filter-occupation-heading"> Hof/Adel</label>
-                    <label><input type="checkbox" name="occupation" value="education" checked aria-describedby="filter-occupation-heading"> Bildung</label>
-                    <label><input type="checkbox" name="occupation" value="other" checked aria-describedby="filter-occupation-heading"> Sonstiges</label>
-                    <label><input type="checkbox" name="occupation" value="none" checked aria-describedby="filter-occupation-heading"> Kein Beruf angegeben</label>
-                </div>
-            </div>
-
-            <!-- Time Period Filter -->
-            <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
-                <h4 id="filter-time-heading">Zeitfilter</h4>
-                <div class="time-filter-tabs">
-                    <button class="time-filter-tab active" data-mode="correspondence">Korrespondenz</button>
-                    <button class="time-filter-tab" data-mode="lifespan">Lebensdaten</button>
-                </div>
-                <div id="year-range-slider" aria-label="Jahr-Bereich wählen" role="slider" aria-valuemin="1762" aria-valuemax="1824"></div>
-                <div class="year-range-display">
-                    <span id="year-range-text" aria-live="polite">1762 – 1824</span>
-                </div>
-            </div>
-
-            <!-- Place Type and Network Type Filters - Two Columns -->
-            <div class="filter-group-row">
-                <!-- Place Type Filter -->
-                <div class="filter-group filter-group-half" role="group" aria-labelledby="filter-place-heading">
-                    <h4 id="filter-place-heading">Ortstyp</h4>
-                    <label><input type="checkbox" name="place-type" value="Wirkungsort" checked aria-describedby="filter-place-heading"> Wirkungsort</label>
-                    <label><input type="checkbox" name="place-type" value="Geburtsort" checked aria-describedby="filter-place-heading"> Geburtsort</label>
-                    <label><input type="checkbox" name="place-type" value="Sterbeort" checked aria-describedby="filter-place-heading"> Sterbeort</label>
-                    <label><input type="checkbox" name="place-type" value="Wohnort" checked aria-describedby="filter-place-heading"> Wohnort</label>
+                <!-- Data Coverage Info Box -->
+                <div class="data-coverage-info" style="background: var(--bg-light); border-left: 3px solid #1e40af; padding: 10px; margin: 0 0 15px 0; font-size: 0.85rem; color: var(--text-main); border-radius: 0 4px 4px 0;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span title="Orte auf der Karte"><i class="fas fa-map-marker-alt" style="color: #1e40af;"></i> <strong id="map-visible-count">616</strong> Orte verortet</span>
+                        <span class="text-muted">|</span>
+                        <span title="Orte ohne Koordinaten">
+                            <i class="fas fa-ban" style="color: #e74c3c;"></i> <strong id="map-missing-count">158</strong> ohne Geodaten
+                        </span>
+                    </div>
                 </div>
 
-                <!-- Network Type Filter -->
-                <div class="filter-group filter-group-half" role="group" aria-labelledby="filter-network-heading">
-                    <h4 id="filter-network-heading">Netzwerk-Typ</h4>
-                    <label><input type="checkbox" name="network-type" value="Familie" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #D0388C; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Familie</label>
-                    <label><input type="checkbox" name="network-type" value="Beruflich" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #147D7E; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Beruflich</label>
-                    <label><input type="checkbox" name="network-type" value="Sozial" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #2E7D32; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Sozial</label>
-                    <label><input type="checkbox" name="network-type" value="Korrespondenz" checked aria-describedby="filter-network-heading"> <span class="legend-line" style="background: #6C5CE7; display: inline-block; width: 20px; height: 3px; vertical-align: middle;"></span> Korrespondenz</label>
+                <!-- Time Period Filter -->
+                <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
+                    <h4 id="filter-time-heading">Zeitraum</h4>
+                    <div id="year-range-slider" aria-label="Jahr-Bereich waehlen" role="slider"></div>
+                    <div class="year-range-display">
+                        <span id="year-range-text" aria-live="polite">1859 - 1927</span>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Map Legend - Cluster Colors Only (Network types shown in filter above) -->
-            <div class="filter-group" role="region" aria-labelledby="legend-heading">
-                <h4 id="legend-heading">Cluster-Farben</h4>
-
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #2c5f8d;" aria-hidden="true"></span>
-                    <span>Überwiegend geschrieben (>50%)</span>
+                <!-- Language Filter -->
+                <div class="filter-group" role="group" aria-labelledby="filter-language-heading">
+                    <h4 id="filter-language-heading">Briefsprache</h4>
+                    <label><input type="checkbox" name="language" value="de" checked> <span>Deutsch</span> <span class="filter-count" id="count-lang-de"></span></label>
+                    <label><input type="checkbox" name="language" value="fr" checked> <span>Franzoesisch</span> <span class="filter-count" id="count-lang-fr"></span></label>
+                    <label><input type="checkbox" name="language" value="it" checked> <span>Italienisch</span> <span class="filter-count" id="count-lang-it"></span></label>
+                    <label><input type="checkbox" name="language" value="es" checked> <span>Spanisch</span> <span class="filter-count" id="count-lang-es"></span></label>
+                    <label><input type="checkbox" name="language" value="en" checked> <span>Englisch</span> <span class="filter-count" id="count-lang-en"></span></label>
+                    <label><input type="checkbox" name="language" value="pt" checked> <span>Portugiesisch</span> <span class="filter-count" id="count-lang-pt"></span></label>
+                    <label><input type="checkbox" name="language" value="nl" checked> <span>Niederlaendisch</span> <span class="filter-count" id="count-lang-nl"></span></label>
+                    <label><input type="checkbox" name="language" value="eu" checked> <span>Baskisch</span> <span class="filter-count" id="count-lang-eu"></span></label>
                 </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #6c757d;" aria-hidden="true"></span>
-                    <span>Überwiegend erwähnt (>50%)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-color" style="background: #2d6a4f;" aria-hidden="true"></span>
-                    <span>Gemischt</span>
-                </div>
-                <p class="legend-hint">Hover über Marker/Cluster zeigt Netzwerk-Verbindungen</p>
-            </div>
 
-            <div class="filter-buttons">
-                <button id="select-all-filters" aria-label="Alle Filter auswählen">Alle auswählen</button>
-                <button id="reset-filters" aria-label="Alle Filter zurücksetzen">Alle zurücksetzen</button>
-            </div>
-        </aside>
+                <!-- Map Legend -->
+                <div class="filter-group" role="region" aria-labelledby="legend-heading">
+                    <h4 id="legend-heading">Legende</h4>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #1e40af;" aria-hidden="true"></span>
+                        <span>Absendeort (Groesse = Briefanzahl)</span>
+                    </div>
+                    <p class="legend-hint">Klick auf Marker zeigt Details zum Ort</p>
+                </div>
 
-        <!-- Main Content -->
-        <main class="main-content" role="main">
-            <div id="map-view" class="tab-content active">
-                <div id="map" role="application" aria-label="Interaktive Karte der Frauen"></div>
-                <div id="loading" role="status" aria-live="polite">Daten werden geladen...</div>
-            </div>
-        </main>
-        </div>
+                <div class="filter-buttons">
+                    <button id="reset-filters" class="btn-reset" aria-label="Alle Filter zuruecksetzen">Filter zuruecksetzen</button>
+                </div>
+
+                <!-- Context Info -->
+                <div class="sidebar-info">
+                    <h4>Ueber diese Daten</h4>
+                    <p class="info-text">
+                        11.576 Briefe aus der Korrespondenz von Hugo Schuchardt (1842-1927), Sprachwissenschaftler an der Universitaet Graz.
+                    </p>
+                    <p class="info-text">
+                        <a href="https://gams.uni-graz.at/context:hsa" target="_blank">HSA Website</a> |
+                        <a href="https://correspsearch.net" target="_blank">correspSearch</a>
+                    </p>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content" role="main">
+                <div id="map-view" class="tab-content active">
+                    <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
+                    <!-- Map Layer Switcher Button -->
+                    <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                </div>
+            </main>
         </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
-    <script src="js/basket-manager.js"></script>
-    <script src="js/debug.js" type="module"></script>
     <script src="js/app.js" type="module"></script>
 </body>
 </html>

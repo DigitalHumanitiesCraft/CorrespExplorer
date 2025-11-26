@@ -97,6 +97,20 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Context Info -->
+                <div class="filter-section sidebar-info">
+                    <h3>Ueber diese Funktion</h3>
+                    <p class="info-text">
+                        Sammeln Sie Personen aus verschiedenen Ansichten fuer vergleichende Analysen.
+                    </p>
+                    <h3>Interaktion</h3>
+                    <ul class="info-list">
+                        <li>Netzwerk zeigt Beziehungen</li>
+                        <li>Export als CSV oder JSON</li>
+                        <li>Personen per Stern hinzufuegen</li>
+                    </ul>
+                </div>
             </aside>
 
             <!-- Right: Detail Panel -->
@@ -128,6 +142,13 @@
                                 <i class="fas fa-question"></i>
                             </button>
                         </div>
+                    </div>
+                    <!-- Network Legend -->
+                    <div id="network-legend" class="network-legend" style="display: none;">
+                        <span class="legend-item"><span class="legend-dot" style="background-color: #3498db;"></span> Absenderin</span>
+                        <span class="legend-item"><span class="legend-dot" style="background-color: #e67e22;"></span> Erwähnt</span>
+                        <span class="legend-item"><span class="legend-dot" style="background-color: #9b59b6;"></span> Beides</span>
+                        <span class="legend-item"><span class="legend-dot" style="background-color: #95a5a6;"></span> Indirekt</span>
                     </div>
                 </div>
 
@@ -163,7 +184,7 @@
                                         <p class="empty-state-hint">
                                             Fügen Sie Personen aus der
                                             <a href="index.html">Karte</a>,
-                                            <a href="synthesis/index.html">Personenliste</a> oder dem
+                                            <a href="synthesis.html">Personenliste</a> oder dem
                                             <a href="stats.html">Brief-Explorer</a> hinzu.
                                         </p>
                                     </td>

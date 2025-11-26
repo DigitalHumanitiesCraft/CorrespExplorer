@@ -1,217 +1,216 @@
-// HerData - MapLibre GL JS Implementation
-// Interactive map visualization with filtering
+// HSA CorrespExplorer - MapLibre GL JS Implementation
+// Interactive map visualization of Hugo Schuchardt correspondence
 
-import { loadPersons } from "./data.js";
-import { GlobalSearch } from "./search.js";
+import { loadData } from "./data.js";
+import { CONFIG } from "./config.js";
 import { loadNavbar } from "./navbar-loader.js";
-import { getPersonConnections, getClusterConnections, getConnectionColor, extractCorrespondenceConnections } from "./network-utils.js";
-import { Toast } from "./utils.js";
+import { debounce } from "./utils.js";
+
+const IS_PRODUCTION = true;
 
 let map;
-let allPersons = [];
-let filteredPersons = [];
-let temporalFilter = null;  // { start: year, end: year, mode: 'correspondence'|'lifespan' }
-let timeFilterMode = 'correspondence';  // Current time filter mode
+let allLetters = [];
+let filteredLetters = [];
+let placeAggregation = {};
+let dataIndices = {};
+let temporalFilter = null;
 
-// Tooltip variables (accessible to all event handlers)
-let clusterTooltip = null;
-let markerTooltip = null;
-
-// Track if event handlers are already set up
+// Track state
 let handlersSetup = false;
+let mapInitialized = false;
 
-// Network visualization state
-let currentConnections = [];
-let correspondenceConnectionsCache = []; // Cached woman-to-woman connections
-let networkEnabled = {
-    'Familie': true,
-    'Beruflich': true,
-    'Sozial': true,
-    'Korrespondenz': true
-};
-let clusterHoverTimeout = null;
-
-// Compact logging utility (export for Timeline module)
-export const Debug = {
-    log: (type, msg) => {
-        // Check if logging should be enabled
-        const urlParams = new URLSearchParams(window.location.search);
-        const isDebug = urlParams.get('debug') === 'true';
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        
-        // Always show errors, otherwise only in debug/local mode
-        if (type !== 'ERROR' && !isDebug && !isLocal) return;
-
-        const icons = {
-            'INIT': '🟢',
-            'RENDER': '🔵',
-            'EVENT': '🟡',
-            'CLICK': '🟠',
-            'ERROR': '🔴'
-        };
-        const icon = icons[type] || '⚪';
-        console.log(`${icon} ${type}: ${msg}`);
-    }
-};
-
-// Backward compatibility
+// Logging utility
 const log = {
-    init: (msg) => Debug.log('INIT', msg),
-    render: (msg) => Debug.log('RENDER', msg),
-    event: (msg) => Debug.log('EVENT', msg),
-    click: (msg) => Debug.log('CLICK', msg),
-    error: (msg) => Debug.log('ERROR', msg)
+    init: (msg) => !IS_PRODUCTION && console.log(`[INIT] ${msg}`),
+    render: (msg) => !IS_PRODUCTION && console.log(`[RENDER] ${msg}`),
+    event: (msg) => !IS_PRODUCTION && console.log(`[EVENT] ${msg}`),
+    error: (msg) => console.error(`[ERROR] ${msg}`)
 };
 
-// Role colors matching design.md
-const ROLE_COLORS = {
-    'sender': '#2c5f8d',      // Steel Blue - Hat geschrieben
-    'mentioned': '#6c757d',   // Medium Gray - Wurde erwähnt
-    'both': '#2d6a4f',        // Forest Green - Beide
-    'indirect': '#adb5bd'     // Light Gray - Nur SNDB
-};
-
-// Occupation group definitions
-const OCCUPATION_GROUPS = {
-    'artistic': ['Schauspielerin', 'Malerin', 'Tänzerin', 'Stempelschneiderin', 'Gemmenschneiderin',
-                 'Bildhauerin', 'Miniaturmalerin', 'Radiererin', 'Stecherin', 'Kupferstecherin', 'Zeichnerin'],
-    'literary': ['Schriftstellerin', 'Übersetzerin', 'Dichterin'],
-    'musical': ['Sängerin', 'Pianistin', 'Komponistin', 'Organistin', 'Harfenistin'],
-    'court': ['Hofdame', 'Oberhofmeisterin', 'Stiftsdame', 'Kammerfrau', 'Prinzessin', 'Fürstin', 'Herzogin'],
-    'education': ['Erzieherin', 'Pädagogin', 'Lehrerin']
-};
-
-// Classify person's occupation group
-function getOccupationGroup(person) {
-    if (!person.occupations || person.occupations.length === 0) {
-        return 'none';
-    }
-
-    for (const occ of person.occupations) {
-        for (const [group, occupations] of Object.entries(OCCUPATION_GROUPS)) {
-            if (occupations.includes(occ.name)) {
-                return group;
-            }
-        }
-    }
-
-    return 'other';
-}
+// HSA color
+const HSA_COLOR = CONFIG.ui.primaryColor;
 
 // Initialize application
 async function init() {
-    log.init("Starting application");
+    log.init("Starting HSA CorrespExplorer");
     await loadNavbar('map');
 
     try {
-        // Load data using shared module
-        const loading = document.getElementById('loading');
-        loading.textContent = 'Daten werden geladen...';
+        const data = await loadData();
 
-        const data = await loadPersons();
+        allLetters = data.letters;
+        filteredLetters = allLetters;
+        dataIndices = data.indices || {};
 
-        // Add occupation group to each person
-        allPersons = data.persons.map(person => ({
-            ...person,
-            occupation_group: getOccupationGroup(person)
-        }));
-        filteredPersons = allPersons;
+        placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
 
-        // Update stats in navbar
         updateStats(data.meta);
-
-        loading.textContent = `${data.meta.total_women} Frauen geladen`;
-        loading.style.background = '#d8f3dc';
-        loading.style.color = '#2d6a4f';
-
-        log.init(`Loaded ${allPersons.length} persons, ${data.meta.with_geodata} with geodata`);
-
-        // Pre-compute correspondence connections for performance
-        correspondenceConnectionsCache = extractCorrespondenceConnections(allPersons);
-        log.init(`Pre-computed ${correspondenceConnectionsCache.length} correspondence connections`);
+        log.init(`Loaded ${allLetters.length} letters, ${Object.keys(placeAggregation).length} places with coordinates`);
 
         initMap();
-        initFilters();
-        initSearch();
-        
-        // Initialize Debug Panel only if requested via URL param
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('debug') === 'true') {
-            initDebugPanel();
-            log.init('Debug panel enabled via URL parameter');
-        } else {
-            console.log('💡 Tip: Add ?debug=true to URL to enable Data Provenance & Debug Panel');
-        }
+        initFilters(data);
 
         log.init('Application ready');
     } catch (error) {
         showError('Initialisierung fehlgeschlagen: ' + error.message);
         log.error('Init failed: ' + error.message);
+        hideLoading();
     }
 }
 
-// Initialize global search
-let globalSearch = null;
-function initSearch() {
-    if (allPersons.length > 0 && !globalSearch) {
-        globalSearch = new GlobalSearch(allPersons);
-        console.log("🔍 Global search initialized");
-    }
+// Aggregate letters by place_sent for map visualization
+function aggregateLettersByPlace(letters, placesIndex) {
+    const places = {};
+
+    letters.forEach(letter => {
+        if (!letter.place_sent) return;
+
+        const placeId = letter.place_sent.geonames_id;
+        if (!placeId) return;
+
+        let lat = letter.place_sent.lat;
+        let lon = letter.place_sent.lon;
+
+        if (!lat || !lon) {
+            const indexedPlace = placesIndex[placeId];
+            if (indexedPlace && indexedPlace.lat && indexedPlace.lon) {
+                lat = indexedPlace.lat;
+                lon = indexedPlace.lon;
+            }
+        }
+
+        if (!lat || !lon) return;
+
+        if (!places[placeId]) {
+            places[placeId] = {
+                id: placeId,
+                name: letter.place_sent.name,
+                lat: lat,
+                lon: lon,
+                letter_count: 0,
+                years: new Set(),
+                senders: new Set(),
+                languages: new Set(),
+                letterIds: []
+            };
+        }
+
+        places[placeId].letter_count++;
+        places[placeId].letterIds.push(letter.id);
+        if (letter.year) places[placeId].years.add(letter.year);
+        if (letter.sender?.name) places[placeId].senders.add(letter.sender.name);
+        if (letter.language?.code) places[placeId].languages.add(letter.language.code);
+    });
+
+    // Convert Sets to arrays
+    Object.values(places).forEach(place => {
+        place.years = Array.from(place.years).sort();
+        place.senders = Array.from(place.senders);
+        place.languages = Array.from(place.languages);
+    });
+
+    return places;
 }
 
-// Initialize MapLibre map
+// Update stats display
+function updateStats(meta) {
+    const visibleEl = document.getElementById('map-visible-count');
+    const missingEl = document.getElementById('map-missing-count');
+    const totalEl = document.getElementById('total-letters-count');
+
+    const placesWithCoords = Object.keys(placeAggregation).length;
+
+    if (visibleEl) visibleEl.textContent = placesWithCoords;
+    if (missingEl) missingEl.textContent = meta.unique_places - placesWithCoords;
+    if (totalEl) totalEl.textContent = meta.total_letters.toLocaleString('de-DE');
+}
+
+// Map styles
+let currentMapStyle = 'dark';
+
+const mapStyles = {
+    'light': {
+        name: 'CartoDB Positron',
+        url: 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
+        attribution: '&copy; OpenStreetMap &copy; CARTO'
+    },
+    'dark': {
+        name: 'CartoDB Dark Matter',
+        url: 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+        attribution: '&copy; OpenStreetMap &copy; CARTO'
+    }
+};
+
 function initMap() {
     map = new maplibregl.Map({
         container: 'map',
         style: {
             version: 8,
             glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-            sources: {
-                'osm-tiles': {
-                    type: 'raster',
-                    tiles: [
-                        'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                    ],
-                    tileSize: 256,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                }
-            },
-            layers: [
-                {
-                    id: 'osm-tiles-layer',
-                    type: 'raster',
-                    source: 'osm-tiles',
-                    minzoom: 0,
-                    maxzoom: 19
-                }
-            ]
+            sources: {},
+            layers: []
         },
-        center: [11.3235, 50.9795], // Weimar
-        zoom: 5
+        center: [15.44, 47.07], // Graz (Schuchardt's location)
+        zoom: 4
     });
 
-    // Add navigation controls
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-    // Wait for map to load, then add markers
     map.on('load', () => {
-        renderMarkers(filteredPersons);
+        renderPlaceMarkers(placeAggregation);
+        setMapStyle(currentMapStyle);
+        mapInitialized = true;
         hideLoading();
     });
+
+    // Layer switcher button
+    const layerSwitcherBtn = document.getElementById('layer-switcher');
+    if (layerSwitcherBtn) {
+        layerSwitcherBtn.addEventListener('click', () => {
+            currentMapStyle = (currentMapStyle === 'light') ? 'dark' : 'light';
+            setMapStyle(currentMapStyle);
+        });
+    }
 }
 
-// Convert persons to GeoJSON format
-function personsToGeoJSON(persons) {
+function setMapStyle(styleKey) {
+    const style = mapStyles[styleKey];
+    if (!style) return;
+
+    if (map.getLayer('base-tiles-layer')) {
+        map.removeLayer('base-tiles-layer');
+    }
+    if (map.getSource('base-tiles')) {
+        map.removeSource('base-tiles');
+    }
+
+    map.addSource('base-tiles', {
+        type: 'raster',
+        tiles: [style.url],
+        tileSize: 256,
+        attribution: style.attribution
+    });
+
+    map.addLayer({
+        id: 'base-tiles-layer',
+        type: 'raster',
+        source: 'base-tiles',
+        minzoom: 0,
+        maxzoom: 19
+    }, 'places-clusters');
+
+    const layerSwitcherBtn = document.getElementById('layer-switcher');
+    if (layerSwitcherBtn) {
+        layerSwitcherBtn.innerHTML = (styleKey === 'light') ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        layerSwitcherBtn.title = (styleKey === 'light') ? 'Dunklen Kartenlayer aktivieren' : 'Hellen Kartenlayer aktivieren';
+    }
+}
+
+// Convert place aggregation to GeoJSON
+function placesToGeoJSON(places) {
     const features = [];
 
-    persons.forEach(person => {
-        if (!person.places || person.places.length === 0) return;
-
-        // Use first place (primary location)
-        const place = person.places[0];
-
+    Object.values(places).forEach(place => {
         features.push({
             type: 'Feature',
             geometry: {
@@ -219,17 +218,15 @@ function personsToGeoJSON(persons) {
                 coordinates: [place.lon, place.lat]
             },
             properties: {
-                id: person.id,
-                name: person.name,
-                role: person.role,
-                normierung: person.normierung,
-                gnd: person.gnd || null,
-                birth: person.dates?.birth || null,
-                death: person.dates?.death || null,
-                letter_count: person.letter_count || 0,
-                mention_count: person.mention_count || 0,
-                place_name: place.name,
-                place_type: place.type
+                id: place.id,
+                name: place.name,
+                letter_count: place.letter_count,
+                sender_count: place.senders.length,
+                language_count: place.languages.length,
+                year_min: place.years.length > 0 ? Math.min(...place.years) : null,
+                year_max: place.years.length > 0 ? Math.max(...place.years) : null,
+                senders: place.senders.slice(0, 5).join(', '),
+                languages: place.languages.join(', ')
             }
         });
     });
@@ -240,73 +237,55 @@ function personsToGeoJSON(persons) {
     };
 }
 
-// Render markers on map
-function renderMarkers(persons) {
-    const geojson = personsToGeoJSON(persons);
+// Render place markers on map
+function renderPlaceMarkers(places) {
+    const geojson = placesToGeoJSON(places);
 
-    // Check if source exists - update data or create new source
-    if (map.getSource('persons')) {
-        // Update existing source data (preserves layers and event handlers)
-        log.render(`Updating data: ${geojson.features.length} markers (via setData)`);
-        map.getSource('persons').setData(geojson);
+    if (map.getSource('places')) {
+        log.render(`Updating data: ${geojson.features.length} places`);
+        map.getSource('places').setData(geojson);
     } else {
-        // First time: create source with clustering
-        log.render(`Creating source: ${geojson.features.length} markers (initial)`);
-        map.addSource('persons', {
+        log.render(`Creating source: ${geojson.features.length} places`);
+        map.addSource('places', {
             type: 'geojson',
             data: geojson,
             cluster: true,
             clusterMaxZoom: 10,
             clusterRadius: 40,
             clusterProperties: {
-                // Count persons by role in each cluster (only letter-relevant roles)
-                'sender_count': ['+', ['case', ['==', ['get', 'role'], 'sender'], 1, 0]],
-                'mentioned_count': ['+', ['case', ['==', ['get', 'role'], 'mentioned'], 1, 0]],
-                'both_count': ['+', ['case', ['==', ['get', 'role'], 'both'], 1, 0]]
-                // indirect_count omitted - not color-encoded (no letter connection)
+                'total_letters': ['+', ['get', 'letter_count']]
             }
         });
     }
 
-    // Only add layers if they don't exist yet
-    if (!map.getLayer('persons-clusters')) {
-        log.render('Adding layers (first time)');
+    if (!map.getLayer('places-clusters')) {
         addMapLayers();
     }
 
-    // Only setup event handlers once
     if (!handlersSetup) {
-        log.render('Setting up event handlers (first time)');
         setupEventHandlers();
         handlersSetup = true;
     }
 }
 
-// Add map layers (called only once)
+// Add map layers
 function addMapLayers() {
-    // Cluster circles
+    // Cluster layer
     map.addLayer({
-        id: 'persons-clusters',
+        id: 'places-clusters',
         type: 'circle',
-        source: 'persons',
+        source: 'places',
         filter: ['has', 'point_count'],
         paint: {
-            'circle-color': [
-                'case',
-                // If >50% wrote letters (sender + both) -> Steel Blue
-                ['>', ['+', ['get', 'sender_count'], ['get', 'both_count']], ['*', ['get', 'point_count'], 0.5]], ROLE_COLORS.sender,
-                // If >50% only mentioned -> Medium Gray
-                ['>', ['get', 'mentioned_count'], ['*', ['get', 'point_count'], 0.5]], ROLE_COLORS.mentioned,
-                // Mixed (no majority) -> Forest Green
-                ROLE_COLORS.both
-            ],
+            'circle-color': HSA_COLOR,
             'circle-radius': [
                 'step',
-                ['get', 'point_count'],
-                15,  // radius for count < 10
-                10, 20,  // radius for count 10-50
-                50, 25,  // radius for count 50-100
-                100, 30  // radius for count >= 100
+                ['get', 'total_letters'],
+                15,
+                50, 20,
+                200, 25,
+                500, 30,
+                1000, 35
             ],
             'circle-opacity': 0.7,
             'circle-stroke-width': 2,
@@ -314,11 +293,11 @@ function addMapLayers() {
         }
     });
 
-    // Cluster count labels
+    // Cluster count label
     map.addLayer({
-        id: 'persons-cluster-count',
+        id: 'places-cluster-count',
         type: 'symbol',
-        source: 'persons',
+        source: 'places',
         filter: ['has', 'point_count'],
         layout: {
             'text-field': '{point_count_abbreviated}',
@@ -330,29 +309,23 @@ function addMapLayers() {
         }
     });
 
-    // Individual person markers
+    // Individual place markers
     map.addLayer({
-        id: 'persons-layer',
+        id: 'places-layer',
         type: 'circle',
-        source: 'persons',
+        source: 'places',
         filter: ['!', ['has', 'point_count']],
         paint: {
-            'circle-color': [
-                'match',
-                ['get', 'role'],
-                'sender', ROLE_COLORS.sender,
-                'mentioned', ROLE_COLORS.mentioned,
-                'both', ROLE_COLORS.both,
-                'indirect', ROLE_COLORS.indirect,
-                ROLE_COLORS.indirect
-            ],
+            'circle-color': HSA_COLOR,
             'circle-radius': [
                 'interpolate',
                 ['linear'],
-                ['zoom'],
-                5, 6,    // radius at zoom 5 (was 4)
-                10, 10,  // radius at zoom 10 (was 8)
-                15, 16   // radius at zoom 15 (was 12)
+                ['get', 'letter_count'],
+                1, 6,
+                10, 10,
+                50, 14,
+                200, 18,
+                500, 22
             ],
             'circle-stroke-width': 2,
             'circle-stroke-color': '#ffffff',
@@ -361,448 +334,63 @@ function addMapLayers() {
     });
 }
 
-// Draw connection lines on map
-function drawConnectionLines(connections) {
-    // Remove existing lines first
-    clearConnectionLines();
-
-    if (connections.length === 0) {
-        log.event('No connections to draw');
-        return;
-    }
-
-    // Filter by enabled categories
-    let filtered = connections.filter(conn => networkEnabled[conn.category]);
-
-    // Apply temporal filter to correspondence connections
-    if (temporalFilter && temporalFilter.mode === 'correspondence') {
-        filtered = filtered.map(conn => {
-            // For correspondence connections, filter by year
-            if (conn.type === 'correspondence' && conn.year) {
-                if (conn.year >= temporalFilter.start && conn.year <= temporalFilter.end) {
-                    return conn;
-                }
-                return null; // Outside temporal range
-            }
-            // AGRELON connections are not time-filtered
-            return conn;
-        }).filter(conn => conn !== null);
-    }
-
-    log.event(`Drawing ${filtered.length} connection lines (after filters)`);
-
-    // Create GeoJSON features with labels
-    const features = filtered.map(conn => {
-        // Generate label text
-        let label = '';
-
-        if (conn.type === 'agrelon') {
-            // AGRELON: Show exact relation type
-            label = conn.subtype || conn.category;
-        } else if (conn.type === 'correspondence') {
-            // Correspondence: Show count if > 1
-            if (conn.strength > 1) {
-                label = `${conn.strength}× Brief`;
-            } else {
-                label = 'Brief';
-            }
-        }
-
-        return {
-            type: 'Feature',
-            properties: {
-                category: conn.category,
-                subtype: conn.subtype,
-                strength: conn.strength || 1,
-                label: label,
-                fromPlace: conn.from.name,
-                toPlace: conn.to.name,
-                // For correspondence, add sender/recipient info
-                senderName: conn.sender?.name || conn.person?.name,
-                recipientName: conn.recipient?.name
-            },
-            geometry: {
-                type: 'LineString',
-                coordinates: [
-                    [conn.from.lon, conn.from.lat],
-                    [conn.to.lon, conn.to.lat]
-                ]
-            }
-        };
-    });
-
-    const geojson = {
-        type: 'FeatureCollection',
-        features: features
-    };
-
-    // Add source for connection lines
-    map.addSource('connections', {
-        type: 'geojson',
-        data: geojson
-    });
-
-    // Add shadow/glow layer for connection lines (for better visibility)
-    map.addLayer({
-        id: 'connection-lines-glow',
-        type: 'line',
-        source: 'connections',
-        paint: {
-            'line-color': '#ffffff',
-            'line-width': [
-                'interpolate',
-                ['linear'],
-                ['get', 'strength'],
-                1, 8,    // 1 letter/relation = 8px glow
-                5, 10,   // 5 letters = 10px glow
-                10, 12,  // 10 letters = 12px glow
-                20, 14   // 20+ letters = 14px glow
-            ],
-            'line-opacity': 0.6,  // Increased from 0.4
-            'line-blur': 4        // Increased from 3
-        }
-    }, 'persons-layer'); // Insert below markers
-
-    // Add main connection lines layer
-    map.addLayer({
-        id: 'connection-lines',
-        type: 'line',
-        source: 'connections',
-        layout: {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        paint: {
-            'line-color': [
-                'match',
-                ['get', 'category'],
-                'Familie', getConnectionColor('Familie'),
-                'Beruflich', getConnectionColor('Beruflich'),
-                'Sozial', getConnectionColor('Sozial'),
-                'Korrespondenz', getConnectionColor('Korrespondenz'),
-                getConnectionColor('Unbekannt')
-            ],
-            'line-width': [
-                'interpolate',
-                ['linear'],
-                ['get', 'strength'],
-                1, 3,     // 1 letter/relation = 3px
-                2, 5,     // 2 letters = 5px
-                3, 7,     // 3 letters = 7px
-                5, 10,    // 5 letters = 10px
-                10, 14,   // 10 letters = 14px
-                20, 20    // 20+ letters = 20px
-            ],
-            'line-opacity': 0.6  // Reduced from interpolated 0.7-1.0 to constant 0.6 for less visual clutter
-        }
-    }, 'persons-layer'); // Insert below markers
-
-    // Add label layer for relation types
-    map.addLayer({
-        id: 'connection-labels',
-        type: 'symbol',
-        source: 'connections',
-        layout: {
-            'text-field': ['get', 'label'],
-            'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-            'text-size': 11,
-            'symbol-placement': 'line-center',
-            'text-rotation-alignment': 'map',
-            'text-pitch-alignment': 'viewport',
-            'text-allow-overlap': false,
-            'text-ignore-placement': false
-        },
-        paint: {
-            'text-color': '#2c3e50',
-            'text-halo-color': '#ffffff',
-            'text-halo-width': 2,
-            'text-halo-blur': 1,
-            'text-opacity': 0.9
-        }
-    })
-
-    currentConnections = filtered;
-}
-
-// Clear connection lines from map (but keep pinned)
-function clearConnectionLines() {
-    if (map.getLayer('connection-labels')) {
-        map.removeLayer('connection-labels');
-    }
-    if (map.getLayer('connection-lines')) {
-        map.removeLayer('connection-lines');
-    }
-    if (map.getLayer('connection-lines-glow')) {
-        map.removeLayer('connection-lines-glow');
-    }
-    if (map.getSource('connections')) {
-        map.removeSource('connections');
-    }
-    currentConnections = [];
-}
-
-// Setup event handlers for map interactions (called only once)
+// Setup event handlers
 function setupEventHandlers() {
-    log.event('Registering event handlers');
-
-    // Click handler for individual markers
-    map.on('click', 'persons-layer', (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
-            layers: ['persons-layer']
-        });
-        log.click(`Marker: ${features.length} person(s) at location`);
-
-        if (features.length === 1) {
-            showSinglePersonPopup(e.lngLat, features[0].properties);
-        } else {
-            showMultiPersonPopup(e.lngLat, features);
-        }
+    // Click on individual place
+    map.on('click', 'places-layer', (e) => {
+        const props = e.features[0].properties;
+        showPlacePopup(e.lngLat, props);
     });
 
-    // Click handler for clusters
-    map.on('click', 'persons-clusters', (e) => {
-        log.click('Cluster clicked - processing...');
+    // Click on cluster
+    map.on('click', 'places-clusters', (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ['places-clusters'] });
+        if (!features.length) return;
 
-        // Remove hover tooltip first
-        if (clusterTooltip) {
-            clusterTooltip.remove();
-            clusterTooltip = null;
-        }
-
-        const features = map.queryRenderedFeatures(e.point, {
-            layers: ['persons-clusters']
-        });
-
-        if (!features || features.length === 0) {
-            log.error('No cluster features found at click point');
-            return;
-        }
-
-        const clusterCoords = features[0].geometry.coordinates;
-        const pointCount = features[0].properties.point_count;
-        log.click(`Cluster: ${pointCount} persons at [${clusterCoords[0].toFixed(4)}, ${clusterCoords[1].toFixed(4)}]`);
-
-        // Get cluster source and ID
-        const source = map.getSource('persons');
         const clusterId = features[0].properties.cluster_id;
+        const source = map.getSource('places');
 
-        // For small clusters (≤50), show popup with persons
-        if (pointCount <= 50) {
-            log.click(`Finding persons at cluster location from data (≤50 threshold)`);
-
-            // Get persons in this cluster from MapLibre (Promise API)
-            source.getClusterLeaves(clusterId, pointCount)
-                .then(leaves => {
-                    log.click(`Found ${leaves.length} persons in cluster from MapLibre`);
-
-                    if (leaves.length > 0) {
-                        // Convert coordinates array to lngLat object
-                        const lngLat = { lng: clusterCoords[0], lat: clusterCoords[1] };
-                        showMultiPersonPopup(lngLat, leaves);
-                    } else {
-                        log.error('No persons found in cluster - zooming instead');
-                        // Zoom to cluster as fallback
-                        source.getClusterExpansionZoom(clusterId)
-                            .then(zoom => {
-                                map.easeTo({
-                                    center: clusterCoords,
-                                    zoom: zoom
-                                });
-                            })
-                            .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
-                    }
-                })
-                .catch(error => {
-                    log.error(`Failed to get cluster leaves: ${error.message}`);
-                    // Fallback: zoom to cluster
-                    source.getClusterExpansionZoom(clusterId)
-                        .then(zoom => {
-                            map.easeTo({
-                                center: clusterCoords,
-                                zoom: zoom
-                            });
-                        })
-                        .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
-                });
-
-            return; // Exit early, promise handles rest
-        }
-
-        // For large clusters (>50), zoom to expand
         source.getClusterExpansionZoom(clusterId)
             .then(zoom => {
                 map.easeTo({
-                    center: clusterCoords,
+                    center: features[0].geometry.coordinates,
                     zoom: zoom
                 });
-            })
-            .catch(err => log.error(`getClusterExpansionZoom failed: ${err.message}`));
-    });
-
-    // Hover tooltips for clusters
-    map.on('mouseenter', 'persons-clusters', (e) => {
-        map.getCanvas().style.cursor = 'pointer';
-
-        const props = e.features[0].properties;
-        const pointCount = props.point_count;
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const clusterId = props.cluster_id;
-
-        log.event(`Cluster hover: ${pointCount} persons, cluster_id=${clusterId}`);
-
-        // Build composition breakdown
-        const senderCount = (props.sender_count || 0) + (props.both_count || 0);
-        const mentionedCount = (props.mentioned_count || 0) + (props.both_count || 0);
-        const indirectCount = props.indirect_count || 0;
-
-        let details = [];
-        if (senderCount > 0) details.push(`${senderCount} geschrieben`);
-        if (mentionedCount > 0) details.push(`${mentionedCount} erwähnt`);
-        if (indirectCount > 0) details.push(`${indirectCount} SNDB`);
-
-        // Show initial tooltip immediately (without connection count)
-        const html = `
-            <div class="hover-tooltip">
-                <strong>${pointCount} Frauen</strong><br>
-                <small>${details.join(' • ')}</small><br>
-                <small id="network-info" style="color: #999;">Verbindungen werden geladen...</small>
-            </div>
-        `;
-
-        clusterTooltip = new maplibregl.Popup({
-            closeButton: false,
-            closeOnClick: false,
-            className: 'hover-tooltip-popup'
-        })
-            .setLngLat(coordinates)
-            .setHTML(html)
-            .addTo(map);
-
-        // Get persons in cluster - use Promise API (MapLibre changed from callbacks to Promises!)
-        const source = map.getSource('persons');
-
-        source.getClusterLeaves(clusterId, pointCount)
-            .then(leaves => {
-                log.event(`Promise resolved: got ${leaves.length} leaves from cluster`);
-
-                // Convert features to person objects
-                const clusterPersons = leaves
-                    .map(leaf => allPersons.find(p => p.id === leaf.properties.id))
-                    .filter(p => p && p.places && p.places.length > 0);
-
-                const connections = getClusterConnections(clusterPersons, allPersons, correspondenceConnectionsCache);
-
-                // Update tooltip with connection info - search within popup element
-                const popupEl = clusterTooltip ? clusterTooltip.getElement() : null;
-                const networkInfoEl = popupEl ? popupEl.querySelector('#network-info') : null;
-
-                log.event(`Found ${connections.length} connections, networkInfoEl=${!!networkInfoEl}`);
-                if (networkInfoEl && connections.length > 0) {
-                    // Count by category
-                    const familieCount = connections.filter(c => c.category === 'Familie').length;
-                    const beruflichCount = connections.filter(c => c.category === 'Beruflich').length;
-                    const sozialCount = connections.filter(c => c.category === 'Sozial').length;
-
-                    const connDetails = [];
-                    if (familieCount > 0) connDetails.push(`<span style="color: #ff0066; font-weight: bold;">${familieCount} Familie</span>`);
-                    if (beruflichCount > 0) connDetails.push(`<span style="color: #00ccff; font-weight: bold;">${beruflichCount} Beruflich</span>`);
-                    if (sozialCount > 0) connDetails.push(`<span style="color: #ffcc00; font-weight: bold;">${sozialCount} Sozial</span>`);
-
-                    networkInfoEl.innerHTML = `<strong style="color: #fff;">${connections.length} Verbindungen:</strong> ${connDetails.join(' • ')}`;
-                    networkInfoEl.style.color = '#fff';
-                } else if (networkInfoEl) {
-                    networkInfoEl.innerHTML = 'Keine Verbindungen';
-                    networkInfoEl.style.color = '#999';
-                }
-
-                // Draw connection lines
-                drawConnectionLines(connections);
-                log.event(`Showing ${connections.length} connections for cluster (${clusterPersons.length} persons)`);
-            })
-            .catch(error => {
-                log.error(`getClusterLeaves Promise rejected: ${error.message}`);
             });
     });
 
-    map.on('mouseleave', 'persons-clusters', () => {
-        map.getCanvas().style.cursor = '';
-
-        if (clusterTooltip) {
-            clusterTooltip.remove();
-            clusterTooltip = null;
-        }
-        clearConnectionLines();
-    });
-
-    // Hover tooltips for individual markers
-    map.on('mouseenter', 'persons-layer', (e) => {
+    // Hover effects
+    map.on('mouseenter', 'places-layer', () => {
         map.getCanvas().style.cursor = 'pointer';
-
-        const props = e.features[0].properties;
-        const coordinates = e.features[0].geometry.coordinates.slice();
-
-        // Find person and show connections (use cached correspondence)
-        const person = allPersons.find(p => p.id === props.id);
-        if (person && person.places && person.places.length > 0) {
-            const connections = getPersonConnections(person, allPersons, correspondenceConnectionsCache);
-            drawConnectionLines(connections);
-            log.event(`Showing ${connections.length} connections for ${person.name}`);
-        }
-
-        // Update debug panel instead of showing popup
-        if (person) {
-            updateDebugPanel(person);
-        }
     });
 
-    map.on('mouseleave', 'persons-layer', () => {
+    map.on('mouseleave', 'places-layer', () => {
         map.getCanvas().style.cursor = '';
-        clearConnectionLines();
+    });
+
+    map.on('mouseenter', 'places-clusters', () => {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'places-clusters', () => {
+        map.getCanvas().style.cursor = '';
     });
 }
 
-// Show popup for single person
-function showSinglePersonPopup(lngLat, properties) {
-    const dates = properties.birth || properties.death
-        ? `(${properties.birth || '?'} – ${properties.death || '?'})`
-        : '';
-
-    const gndBadge = properties.gnd
-        ? '<span class="badge badge-gnd">GND</span>'
-        : '';
-
-    const stats = [];
-    if (properties.letter_count > 0) {
-        stats.push(`<strong>${properties.letter_count}</strong> Briefe`);
-    }
-    if (properties.mention_count > 0) {
-        stats.push(`<strong>${properties.mention_count}</strong> Erwähnungen`);
-    }
-
-    // Check if person is in basket
-    const inBasket = BasketManager && BasketManager.has(properties.id);
-    const basketIcon = inBasket ? 'fa-bookmark' : 'fa-bookmark-o';
-    const basketText = inBasket ? 'Im Wissenskorb' : 'Zum Wissenskorb';
-    const basketClass = inBasket ? 'in-basket' : '';
+// Show popup for a place
+function showPlacePopup(lngLat, props) {
+    const yearRange = props.year_min && props.year_max
+        ? `${props.year_min}${props.year_max}`
+        : 'unbekannt';
 
     const html = `
         <div class="popup">
-            <h3>${properties.name} ${dates}</h3>
-            <div class="popup-badges">
-                ${gndBadge}
-                <span class="badge badge-sndb">SNDB</span>
-            </div>
+            <h3>${props.name}</h3>
             <div class="popup-stats">
-                ${stats.length > 0 ? '<p>' + stats.join(' • ') + '</p>' : ''}
-                <p class="popup-location">${properties.place_name} (${properties.place_type})</p>
-            </div>
-            <div style="display: flex; gap: 8px; margin-top: 8px;">
-                <a href="person.html?id=${properties.id}" style="flex: 1;">Details →</a>
-                <button class="btn-basket-toggle ${basketClass}"
-                        onclick="toggleBasketFromPopup('${properties.id}')"
-                        title="${basketText}">
-                    <i class="fas ${basketIcon}"></i>
-                </button>
+                <p><strong>${props.letter_count}</strong> Briefe</p>
+                <p>${props.sender_count} Absender | ${yearRange}</p>
+                ${props.senders ? `<p class="popup-senders"><small>${props.senders}${props.sender_count > 5 ? '...' : ''}</small></p>` : ''}
+                ${props.languages ? `<p class="popup-languages"><small>Sprachen: ${props.languages}</small></p>` : ''}
             </div>
         </div>
     `;
@@ -813,703 +401,137 @@ function showSinglePersonPopup(lngLat, properties) {
         .addTo(map);
 }
 
-// Show popup for multiple people at same location
-function showMultiPersonPopup(lngLat, features) {
-    const count = features.length;
-    const firstFeature = features[0].properties;
-    const locationName = firstFeature.place_name;
-    const locationType = firstFeature.place_type;
-
-    // Build list of persons (show first 15, with option to expand)
-    const maxInitial = 15;
-    const showAll = count <= maxInitial;
-    const personsToShow = showAll ? features : features.slice(0, maxInitial);
-
-    let personItems = personsToShow.map(feature => {
-        const p = feature.properties;
-        const dates = p.birth || p.death ? `(${p.birth || '?'} – ${p.death || '?'})` : '';
-        const gndBadge = p.gnd ? '<span class="badge badge-gnd">GND</span>' : '';
-
-        const stats = [];
-        if (p.letter_count > 0) stats.push(`${p.letter_count} Briefe`);
-        if (p.mention_count > 0) stats.push(`${p.mention_count} Erw.`);
-        const statsText = stats.length > 0 ? stats.join(' • ') : '';
-
-        // Check if person has relations
-        const person = allPersons.find(person => person.id === p.id);
-        const hasRelations = person && person.relations && person.relations.length > 0;
-        const relationBadge = hasRelations
-            ? `<span class="badge badge-relation" title="${person.relations.length} Verbindungen">🔗 ${person.relations.length}</span>`
-            : '';
-
-        // Check if person is in basket
-        const inBasket = BasketManager && BasketManager.has(p.id);
-        const basketIcon = inBasket ? 'fa-bookmark' : 'fa-bookmark-o';
-        const basketTitle = inBasket ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzufügen';
-        const basketClass = inBasket ? 'in-basket' : '';
-
-
-        return `
-            <div class="person-item ${hasRelations ? 'has-relations' : ''}"
-                 data-id="${p.id}"
-                 data-person='${JSON.stringify(person).replace(/'/g, "&apos;")}'>
-                <div class="person-item-content" onclick="window.location.href='person.html?id=${p.id}'"
-                     onmouseenter="showPersonItemJSON(event)"
-                     onmouseleave="hidePersonItemJSON()">
-                    <div class="person-name">
-                        <strong>${p.name}</strong> ${dates}
-                    </div>
-                    <div class="person-meta">
-                        ${gndBadge}
-                        <span class="badge badge-sndb">SNDB</span>
-                        ${relationBadge}
-                        ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
-                    </div>
-                </div>
-                <div class="person-item-buttons">
-                    <button class="btn-basket-mini ${basketClass}"
-                            onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
-                            title="${basketTitle}">
-                        <i class="fas ${basketIcon}"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    const showMoreButton = !showAll
-        ? `<button class="show-more-btn" onclick="expandPersonList(event)">Zeige alle ${count} Frauen</button>`
-        : '';
-
-    const html = `
-        <div class="multi-person-popup">
-            <h3>${locationName}</h3>
-            <p class="location-info">${count} Frauen • ${locationType}</p>
-            <div class="person-list">
-                ${personItems}
-            </div>
-            ${showMoreButton}
-        </div>
-    `;
-
-    new maplibregl.Popup({
-        maxWidth: '400px'
-    })
-        .setLngLat(lngLat)
-        .setHTML(html)
-        .addTo(map);
-
-    // Store all features for potential expansion
-    map._currentPopupFeatures = features;
-}
-
-// Expand person list to show all entries
-window.expandPersonList = function(event) {
-    event.preventDefault();
-    const features = map._currentPopupFeatures;
-    if (!features) return;
-
-    const firstFeature = features[0].properties;
-
-    // Rebuild popup with all persons
-    let personItems = features.map(feature => {
-        const p = feature.properties;
-        const dates = p.birth || p.death ? `(${p.birth || '?'} – ${p.death || '?'})` : '';
-        const gndBadge = p.gnd ? '<span class="badge badge-gnd">GND</span>' : '';
-
-        const stats = [];
-        if (p.letter_count > 0) stats.push(`${p.letter_count} Briefe`);
-        if (p.mention_count > 0) stats.push(`${p.mention_count} Erw.`);
-        const statsText = stats.length > 0 ? stats.join(' • ') : '';
-
-        // Get full person object for JSON and check relations
-        const person = allPersons.find(person => person.id === p.id);
-        const hasRelations = person && person.relations && person.relations.length > 0;
-        const relationBadge = hasRelations
-            ? `<span class="badge badge-relation" title="${person.relations.length} Verbindungen">🔗 ${person.relations.length}</span>`
-            : '';
-
-        // Check if person is in basket
-        const inBasket = BasketManager && BasketManager.has(p.id);
-        const basketIcon = inBasket ? 'fa-bookmark' : 'fa-bookmark-o';
-        const basketTitle = inBasket ? 'Aus Wissenskorb entfernen' : 'Zum Wissenskorb hinzufügen';
-        const basketClass = inBasket ? 'in-basket' : '';
-
-
-        return `
-            <div class="person-item ${hasRelations ? 'has-relations' : ''}"
-                 data-id="${p.id}"
-                 data-person='${JSON.stringify(person).replace(/'/g, "&apos;")}'>
-                <div class="person-item-content" onclick="window.location.href='person.html?id=${p.id}'"
-                     onmouseenter="showPersonItemJSON(event)"
-                     onmouseleave="hidePersonItemJSON()">
-                    <div class="person-name">
-                        <strong>${p.name}</strong> ${dates}
-                    </div>
-                    <div class="person-meta">
-                        ${gndBadge}
-                        <span class="badge badge-sndb">SNDB</span>
-                        ${relationBadge}
-                        ${statsText ? `<span class="person-stats">${statsText}</span>` : ''}
-                    </div>
-                </div>
-                <div class="person-item-buttons">
-                    <button class="btn-basket-mini ${basketClass}"
-                            onclick="event.stopPropagation(); toggleBasketFromPopup('${p.id}')"
-                            title="${basketTitle}">
-                        <i class="fas ${basketIcon}"></i>
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    // Update popup content
-    const popupContent = event.target.closest('.maplibregl-popup-content');
-    if (popupContent) {
-        const personList = popupContent.querySelector('.person-list');
-        const showMoreBtn = popupContent.querySelector('.show-more-btn');
-
-        if (personList) personList.innerHTML = personItems;
-        if (showMoreBtn) showMoreBtn.remove();
-    }
-}
-
-// Initialize filter system
-function initFilters() {
-    const roleCheckboxes = document.querySelectorAll('input[name="role"]');
-    const occupationCheckboxes = document.querySelectorAll('input[name="occupation"]');
-    const placeTypeCheckboxes = document.querySelectorAll('input[name="place-type"]');
-    const resetButton = document.getElementById('reset-filters');
-
-    // Attach change listeners
-    roleCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
-    occupationCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
-    placeTypeCheckboxes.forEach(cb => cb.addEventListener('change', applyFilters));
-
-    // Initialize noUiSlider for year range
+// Initialize filters
+function initFilters(data) {
     const yearRangeSlider = document.getElementById('year-range-slider');
     const yearRangeText = document.getElementById('year-range-text');
+    const languageCheckboxes = document.querySelectorAll('input[name="language"]');
+    const resetButton = document.getElementById('reset-filters');
 
-    noUiSlider.create(yearRangeSlider, {
-        start: [1762, 1824],
-        connect: true,
-        step: 1,
-        range: {
-            'min': 1762,
-            'max': 1824
-        },
-        format: {
-            to: value => Math.round(value),
-            from: value => Number(value)
-        }
-    });
-
-    // Time filter mode tabs
-    const timeFilterTabs = document.querySelectorAll('.time-filter-tab');
-    timeFilterTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const mode = tab.dataset.mode;
-            timeFilterMode = mode;
-
-            // Update active tab
-            timeFilterTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            // Update slider range based on mode
-            if (mode === 'correspondence') {
-                yearRangeSlider.noUiSlider.updateOptions({
-                    range: { 'min': 1762, 'max': 1824 }
-                });
-                yearRangeSlider.noUiSlider.set([1762, 1824]);
-            } else if (mode === 'lifespan') {
-                yearRangeSlider.noUiSlider.updateOptions({
-                    range: { 'min': 1700, 'max': 1850 }
-                });
-                yearRangeSlider.noUiSlider.set([1700, 1850]);
-            }
-
-            log.event(`Time filter mode changed to: ${mode}`);
-        });
-    });
-
-    // Year range slider change listener
-    yearRangeSlider.noUiSlider.on('update', (values) => {
-        const startYear = parseInt(values[0]);
-        const endYear = parseInt(values[1]);
-
-        yearRangeText.textContent = `${startYear} – ${endYear}`;
-
-        // Check if filter is at default range
-        const isDefaultRange = (timeFilterMode === 'correspondence' && startYear === 1762 && endYear === 1824) ||
-                               (timeFilterMode === 'lifespan' && startYear === 1700 && endYear === 1850);
-
-        if (isDefaultRange) {
-            temporalFilter = null;
-        } else {
-            temporalFilter = { start: startYear, end: endYear, mode: timeFilterMode };
-        }
-
-        log.event(`Temporal filter (${timeFilterMode}): ${startYear}-${endYear}`);
-        applyFilters();
-    });
-
-    // Network type filter
-    const networkTypeCheckboxes = document.querySelectorAll('input[name="network-type"]');
-    networkTypeCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', (e) => {
-            networkEnabled[e.target.value] = e.target.checked;
-            log.event(`Network filter ${e.target.value}: ${e.target.checked}`);
-            // No need to reapply filters - network lines are redrawn on hover
-        });
-    });
-
-    // Select all button
-    const selectAllButton = document.getElementById('select-all-filters');
-    selectAllButton.addEventListener('click', () => {
-        roleCheckboxes.forEach(cb => cb.checked = true);
-        occupationCheckboxes.forEach(cb => cb.checked = true);
-        placeTypeCheckboxes.forEach(cb => cb.checked = true);
-        networkTypeCheckboxes.forEach(cb => {
-            cb.checked = true;
-            networkEnabled[cb.value] = true;
-        });
-
-        // Reset year range slider to full range
-        yearRangeSlider.noUiSlider.set([1762, 1824]);
-        temporalFilter = null;
-
-        applyFilters();
-    });
-
-    // Reset button
-    resetButton.addEventListener('click', () => {
-        // Reset to DEFAULT state: all filters ACTIVE (not empty)
-        roleCheckboxes.forEach(cb => cb.checked = true);
-        occupationCheckboxes.forEach(cb => cb.checked = true);
-        placeTypeCheckboxes.forEach(cb => cb.checked = true);
-        networkTypeCheckboxes.forEach(cb => {
-            cb.checked = true;
-            networkEnabled[cb.value] = true;
-        });
-
-        // Reset year range slider to full range
-        yearRangeSlider.noUiSlider.set([1762, 1824]);
-        temporalFilter = null;
-
-        applyFilters();
-    });
-
-    // CSV Export button
-    initCSVExport();
-}
-
-// Initialize CSV Export
-function initCSVExport() {
-    const exportBtn = document.getElementById('export-csv');
-    if (!exportBtn) return;
-
-    exportBtn.addEventListener('click', () => {
-        exportFilteredPersonsAsCSV();
-    });
-}
-
-// Export filtered persons as CSV
-function exportFilteredPersonsAsCSV() {
-    if (filteredPersons.length === 0) {
-        alert('Keine Personen zum Exportieren. Bitte Filter anpassen.');
+    if (!yearRangeSlider) {
+        log.init('Filter elements not found, skipping filter init');
         return;
     }
 
-    // CSV Header
-    const headers = ['ID', 'Name', 'GND', 'Geburt', 'Tod', 'Orte', 'Berufe', 'Briefe', 'Rolle'];
-    const rows = [headers];
+    const debouncedApply = debounce(applyFilters, 300);
 
-    // CSV Rows
-    filteredPersons.forEach(person => {
-        const row = [
-            person.id || '',
-            person.name || '',
-            person.gnd || '',
-            person.dates?.birth || '',
-            person.dates?.death || '',
-            person.places?.map(p => p.name).join('; ') || '',
-            person.occupations?.map(o => o.name).join('; ') || '',
-            person.letter_count || 0,
-            person.roles?.join(', ') || ''
-        ];
-
-        // Quote fields containing comma, semicolon, or newline
-        const quotedRow = row.map(field => {
-            const str = String(field);
-            if (str.includes(',') || str.includes(';') || str.includes('\n') || str.includes('"')) {
-                return '"' + str.replace(/"/g, '""') + '"';
+    // Year range slider
+    if (typeof noUiSlider !== 'undefined') {
+        noUiSlider.create(yearRangeSlider, {
+            start: [CONFIG.dateRange.min, CONFIG.dateRange.max],
+            connect: true,
+            step: 1,
+            range: { 'min': CONFIG.dateRange.min, 'max': CONFIG.dateRange.max },
+            format: {
+                to: value => Math.round(value),
+                from: value => Number(value)
             }
-            return str;
         });
 
-        rows.push(quotedRow);
-    });
+        yearRangeSlider.noUiSlider.on('update', (values) => {
+            const startYear = parseInt(values[0]);
+            const endYear = parseInt(values[1]);
+            if (yearRangeText) {
+                yearRangeText.textContent = `${startYear} - ${endYear}`;
+            }
+            const isDefaultRange = startYear === CONFIG.dateRange.min && endYear === CONFIG.dateRange.max;
+            temporalFilter = isDefaultRange ? null : { start: startYear, end: endYear };
+            debouncedApply();
+        });
+    }
 
-    // Generate CSV string
-    const csv = rows.map(row => row.join(',')).join('\n');
+    // Language checkboxes
+    languageCheckboxes.forEach(cb => cb.addEventListener('change', debouncedApply));
 
-    // Create download
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    // Reset button
+    if (resetButton) {
+        resetButton.addEventListener('click', () => {
+            languageCheckboxes.forEach(cb => cb.checked = true);
+            if (yearRangeSlider.noUiSlider) {
+                yearRangeSlider.noUiSlider.set([CONFIG.dateRange.min, CONFIG.dateRange.max]);
+            }
+            temporalFilter = null;
+            applyFilters();
+        });
+    }
 
-    const today = new Date().toISOString().split('T')[0];
-    link.href = url;
-    link.download = `herdata-export-${today}.csv`;
-    link.click();
-
-    URL.revokeObjectURL(url);
-
-    log.init(`CSV export: ${filteredPersons.length} Personen exportiert`);
+    // Initialize filter counts
+    updateFilterCounts();
 }
 
-// Apply filters to data and update map
+// Apply filters and re-render map
 function applyFilters() {
-    const roleFilters = getCheckedValues('role');
-    const occupationFilters = getCheckedValues('occupation');
-    const placeTypeFilters = getCheckedValues('place-type');
+    const languageFilters = getCheckedValues('language');
 
-    // Filter persons
-    filteredPersons = allPersons.filter(person => {
-        // Role filter: empty array = show all, otherwise check matches
-        const roleMatch = roleFilters.length === 0 || roleFilters.some(r => {
-            if (person.roles && person.roles.includes(r)) return true;
-            if (person.role === r) return true;
-            return false;
-        });
-
-        // Occupation filter: empty array = show all, otherwise check matches
-        const occupationMatch = occupationFilters.length === 0 ||
-                               occupationFilters.includes(person.occupation_group);
-
-        // Temporal filter: check based on mode (correspondence or lifespan)
+    filteredLetters = allLetters.filter(letter => {
+        // Time filter
         let temporalMatch = true;
-        if (temporalFilter) {
-            if (temporalFilter.mode === 'correspondence') {
-                // Filter by letter years
-                if (person.letter_years && person.letter_years.length > 0) {
-                    temporalMatch = person.letter_years.some(year =>
-                        year >= temporalFilter.start && year <= temporalFilter.end
-                    );
-                }
-                // If no letter_years, person passes filter (indirect/SNDB entries)
-            } else if (temporalFilter.mode === 'lifespan') {
-                // Filter by birth/death years
-                const birthYear = person.dates?.birth ? parseInt(person.dates.birth) : null;
-                const deathYear = person.dates?.death ? parseInt(person.dates.death) : null;
-
-                if (birthYear || deathYear) {
-                    // Check if lifespan overlaps with filter range
-                    const personStart = birthYear || temporalFilter.start;
-                    const personEnd = deathYear || temporalFilter.end;
-                    temporalMatch = !(personEnd < temporalFilter.start || personStart > temporalFilter.end);
-                }
-                // If no dates, person passes filter
-            }
+        if (temporalFilter && letter.year) {
+            temporalMatch = letter.year >= temporalFilter.start && letter.year <= temporalFilter.end;
         }
 
-        // Place type filter: empty array = show all, otherwise check matches
-        let placeTypeMatch = true;
-        if (placeTypeFilters.length > 0) {
-            // Filter is active: check if person has matching place
-            if (person.places && person.places.length > 0) {
-                placeTypeMatch = person.places.some(place =>
-                    placeTypeFilters.includes(place.type)
-                );
-            } else {
-                // Person has no places: exclude when filter is active
-                placeTypeMatch = false;
-            }
+        // Language filter
+        let languageMatch = true;
+        if (languageFilters.length > 0 && letter.language) {
+            languageMatch = languageFilters.includes(letter.language.code);
         }
-        // else: filter is empty, show all persons regardless of places
 
-        return roleMatch && occupationMatch && temporalMatch && placeTypeMatch;
+        return temporalMatch && languageMatch;
     });
 
-    log.render(`Filters applied: ${filteredPersons.length} / ${allPersons.length} persons (place types: ${placeTypeFilters.join(', ')})`);
+    // Re-aggregate places based on filtered letters
+    placeAggregation = aggregateLettersByPlace(filteredLetters, dataIndices.places || {});
 
-    // Update map
-    if (map && map.loaded()) {
-        renderMarkers(filteredPersons);
+    if (map && map.loaded() && mapInitialized) {
+        renderPlaceMarkers(placeAggregation);
+    }
+
+    updateFilterCounts();
+}
+
+// Update filter counts
+function updateFilterCounts() {
+    // Count letters per language
+    const languageCounts = {};
+    filteredLetters.forEach(letter => {
+        if (letter.language?.code) {
+            languageCounts[letter.language.code] = (languageCounts[letter.language.code] || 0) + 1;
+        }
+    });
+
+    // Update count displays
+    Object.keys(languageCounts).forEach(code => {
+        const el = document.getElementById(`count-lang-${code}`);
+        if (el) {
+            el.textContent = `(${languageCounts[code]})`;
+        }
+    });
+
+    // Update total filtered count
+    const filteredCountEl = document.getElementById('filtered-letters-count');
+    if (filteredCountEl) {
+        filteredCountEl.textContent = filteredLetters.length.toLocaleString('de-DE');
     }
 }
 
-// Get checked checkbox values
 function getCheckedValues(name) {
     const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
     return Array.from(checkboxes).map(cb => cb.value);
 }
 
-// Initialize tab switching
-function initTabs() {
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const targetTab = tab.dataset.tab;
-
-            // Update active tab
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-
-            // Show corresponding content
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-                if (content.id === `${targetTab}-view`) {
-                    content.classList.add('active');
-                }
-            });
-
-            // Resize map if switching to map tab
-            if (targetTab === 'map' && map) {
-                setTimeout(() => map.resize(), 100);
-            }
-
-            // Initialize timeline if switching to timeline tab
-            if (targetTab === 'timeline' && !timeline) {
-                initializeTimeline();
-            }
-        });
-    });
-}
-
-// Initialize timeline
-async function initializeTimeline() {
-    log.init('Initializing timeline...');
-
-    timeline = new Timeline('timeline-chart');
-
-    try {
-        await timeline.initialize();
-        log.init('Timeline initialized successfully');
-    } catch (error) {
-        log.error(`Timeline initialization failed: ${error.message}`);
-    }
-}
-
-// Update statistics in navbar
-function updateStats(meta) {
-    // Update Data Coverage Info Box in Sidebar
-    const visibleEl = document.getElementById('map-visible-count');
-    const missingEl = document.getElementById('map-missing-count');
-    
-    if (visibleEl && meta.with_geodata) {
-        visibleEl.textContent = meta.with_geodata;
-    }
-    
-    if (missingEl && meta.total_women && meta.with_geodata) {
-        const missing = meta.total_women - meta.with_geodata;
-        missingEl.textContent = missing;
-    }
-}
-
-// Hide loading message
 function hideLoading() {
-    const loading = document.getElementById('loading');
-    setTimeout(() => {
-        loading.style.display = 'none';
-    }, 500);
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        loadingOverlay.classList.add('hidden');
+    }
 }
 
-// Show error message
 function showError(message) {
-    const loading = document.getElementById('loading');
-    loading.textContent = message;
-    loading.style.background = '#f8d7da';
-    loading.style.color = '#9b2226';
+    console.error(`Error: ${message}`);
+    hideLoading();
 }
 
-// Syntax highlight JSON
-function syntaxHighlightJSON(jsonString) {
-    let json = typeof jsonString === 'string' ? jsonString : JSON.stringify(jsonString, null, 2);
-    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-        let cls = 'json-number';
-        if (/^"/.test(match)) {
-            if (/:$/.test(match)) {
-                cls = 'json-key';
-            } else {
-                cls = 'json-string';
-            }
-        } else if (/true|false/.test(match)) {
-            cls = 'json-boolean';
-        } else if (/null/.test(match)) {
-            cls = 'json-null';
-        }
-        return '<span class="' + cls + '">' + match + '</span>';
-    });
-}
-
-// Initialize Debug Panel
-function initDebugPanel() {
-    const debugToggle = document.getElementById('debug-toggle');
-    const debugPanel = document.getElementById('debug-panel');
-    const debugClose = document.getElementById('debug-panel-close');
-
-    if (!debugToggle || !debugPanel || !debugClose) {
-        log.error('Debug panel elements not found');
-        return;
-    }
-
-    // Toggle panel
-    debugToggle.addEventListener('click', () => {
-        debugPanel.classList.toggle('active');
-        if (debugPanel.classList.contains('active')) {
-            debugToggle.innerHTML = '<i class="fas fa-bug"></i> Schließen';
-        } else {
-            debugToggle.innerHTML = '<i class="fas fa-bug"></i> Debug';
-        }
-    });
-
-    // Close button
-    debugClose.addEventListener('click', () => {
-        debugPanel.classList.remove('active');
-        debugToggle.innerHTML = '<i class="fas fa-bug"></i> Debug';
-    });
-
-    log.init('Debug panel initialized');
-}
-
-// Update Debug Panel with person data
-function updateDebugPanel(person) {
-    const debugJson = document.getElementById('debug-json');
-    const debugPanel = document.getElementById('debug-panel');
-
-    if (!debugJson) return;
-
-    // Auto-open panel if not already open
-    if (!debugPanel.classList.contains('active')) {
-        debugPanel.classList.add('active');
-        const debugToggle = document.getElementById('debug-toggle');
-        if (debugToggle) {
-            debugToggle.innerHTML = '<i class="fas fa-bug"></i> Schließen';
-        }
-    }
-
-    const jsonString = JSON.stringify(person, null, 2);
-    const highlighted = syntaxHighlightJSON(jsonString);
-
-    debugJson.innerHTML = `
-        <div class="debug-person-header">
-            <strong>${person.name}</strong>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                ${person.gnd ? `<span class="debug-gnd">GND: ${person.gnd}</span>` : ''}
-            </div>
-        </div>
-        <pre>${highlighted}</pre>
-    `;
-}
-
-// Show JSON popup for person item in list
-let personItemTooltip = null;
-window.showPersonItemJSON = function(event) {
-    const personItem = event.currentTarget;
-    const personData = personItem.getAttribute('data-person');
-
-    if (!personData) return;
-
-    try {
-        const person = JSON.parse(personData.replace(/&apos;/g, "'"));
-        const jsonString = JSON.stringify(person, null, 2);
-        const syntaxHighlightedJSON = syntaxHighlightJSON(jsonString);
-
-        const rect = personItem.getBoundingClientRect();
-        const mapContainer = document.getElementById('map');
-        const mapRect = mapContainer.getBoundingClientRect();
-
-        // Calculate position relative to map
-        const x = rect.right - mapRect.left + 10;
-        const y = rect.top - mapRect.top;
-
-        // Convert to lng/lat (approximate - use item center)
-        const point = map.unproject([rect.right + 10, rect.top + rect.height / 2]);
-
-        const html = `
-            <div class="hover-tooltip hover-tooltip-json">
-                <div class="hover-tooltip-header">
-                    <strong>${person.name}</strong>
-                </div>
-                <pre class="hover-json-display">${syntaxHighlightedJSON}</pre>
-            </div>
-        `;
-
-        // Remove old tooltip
-        if (personItemTooltip) {
-            personItemTooltip.remove();
-        }
-
-        personItemTooltip = new maplibregl.Popup({
-            closeButton: true,  // Show close button
-            closeOnClick: false,  // Don't close on map click
-            className: 'hover-tooltip-popup hover-json-popup json-popup-sticky',
-            maxWidth: '500px',
-            offset: [10, 0]
-        })
-            .setLngLat(point)
-            .setHTML(html)
-            .addTo(map);
-
-        // Add event listener for popup close
-        personItemTooltip.on('close', () => {
-            personItemTooltip = null;
-        });
-    } catch (e) {
-        console.error('Error showing person JSON:', e);
-    }
-};
-
-window.hidePersonItemJSON = function() {
-    // Do nothing - let user close it manually with close button
-};
-
-// Toggle basket from popup
-window.toggleBasketFromPopup = function(personId) {
-    const person = allPersons.find(p => p.id === personId);
-    if (!person) {
-        console.error('Person not found:', personId);
-        return;
-    }
-
-    const inBasket = BasketManager.has(personId);
-
-    if (inBasket) {
-        BasketManager.remove(personId);
-        Toast.show(`${person.name} aus Wissenskorb entfernt`);
-    } else {
-        BasketManager.add(person);
-        Toast.show(`${person.name} zum Wissenskorb hinzugefügt`);
-    }
-
-    // Update all basket buttons in the current popup
-    const popups = document.querySelectorAll('.maplibregl-popup');
-    popups.forEach(popup => {
-        const buttons = popup.querySelectorAll(`[onclick*="${personId}"]`);
-        buttons.forEach(btn => {
-            const nowInBasket = BasketManager.has(personId);
-            const icon = btn.querySelector('i');
-
-            if (nowInBasket) {
-                btn.classList.add('in-basket');
-                btn.title = 'Aus Wissenskorb entfernen';
-                if (icon) icon.className = 'fas fa-bookmark';
-            } else {
-                btn.classList.remove('in-basket');
-                btn.title = 'Zum Wissenskorb hinzufügen';
-                if (icon) icon.className = 'fas fa-bookmark-o';
-            }
-        });
-    });
-};
-
-// Start application when DOM is ready
+// Start application
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {

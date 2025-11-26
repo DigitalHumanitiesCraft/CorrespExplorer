@@ -21,8 +21,6 @@ let filterOnlyConnected = true;
 
 // Initialize page
 async function init() {
-    console.log('Initializing Wissenskorb page...');
-
     // Load navbar
     await loadNavbar('full');
 
@@ -31,9 +29,8 @@ async function init() {
         const response = await fetch('data/persons.json');
         const data = await response.json();
         allPersons = data.persons;
-        console.log(`✅ Loaded ${allPersons.length} persons for reference`);
     } catch (error) {
-        console.error('❌ Error loading persons data:', error);
+        console.error('Error loading persons data:', error);
     }
 
     // Setup event listeners
@@ -41,8 +38,6 @@ async function init() {
 
     // Initial render
     render();
-
-    console.log('✅ Wissenskorb page initialized');
 }
 
 // Setup all event listeners
@@ -185,15 +180,37 @@ function renderList() {
     if (totalItems === 0) {
         tbody.innerHTML = `
             <tr class="empty-row">
-                <td colspan="6" class="empty-state">
-                    <i class="fas fa-bookmark" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
-                    <p>Noch keine Personen im Wissenskorb</p>
-                    <p class="empty-state-hint">
-                        Fügen Sie Personen aus der
-                        <a href="index.html">Karte</a>,
-                        <a href="synthesis/index.html">Personenliste</a> oder dem
-                        <a href="stats.html">Brief-Explorer</a> hinzu.
-                    </p>
+                <td colspan="6" class="empty-state-container">
+                    <div class="smart-empty-state">
+                        <div class="empty-icon-wrapper">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Ihr Wissenskorb ist noch leer</h3>
+                        <p class="empty-subtitle">Der Wissenskorb ist Ihr zentrales Werkzeug für vergleichende Analysen. Starten Sie Ihre Recherche hier:</p>
+                        
+                        <div class="action-cards">
+                            <a href="stats.html" class="action-card">
+                                <div class="action-icon"><i class="fas fa-chart-pie"></i></div>
+                                <h4>Muster finden</h4>
+                                <p>Nutzen Sie den <strong>Brief-Explorer</strong>, um nach Berufsgruppen oder Generationen zu filtern und interessante Cluster zu entdecken.</p>
+                                <span class="btn-text">Zu den Statistiken <i class="fas fa-arrow-right"></i></span>
+                            </a>
+                            
+                            <a href="index.html" class="action-card">
+                                <div class="action-icon"><i class="fas fa-map-marked-alt"></i></div>
+                                <h4>Raum analysieren</h4>
+                                <p>Erkunden Sie auf der <strong>Karte</strong> geografische Netzwerke und identifizieren Sie Korrespondenz-Zentren.</p>
+                                <span class="btn-text">Zur Karte <i class="fas fa-arrow-right"></i></span>
+                            </a>
+                            
+                            <a href="synthesis.html" class="action-card">
+                                <div class="action-icon"><i class="fas fa-list"></i></div>
+                                <h4>Gezielt suchen</h4>
+                                <p>Nutzen Sie die <strong>Personenliste</strong>, um gezielt nach Namen zu suchen – auch nach Frauen ohne Geodaten.</p>
+                                <span class="btn-text">Zur Liste <i class="fas fa-arrow-right"></i></span>
+                            </a>
+                        </div>
+                    </div>
                 </td>
             </tr>
         `;
@@ -368,13 +385,15 @@ function setupNetworkControls() {
 function renderNetwork() {
     const container = document.getElementById('network-graph');
     const controls = document.getElementById('network-controls');
+    const legend = document.getElementById('network-legend');
     if (!container) return;
 
     const items = BasketManager.getAll();
 
     if (items.length === 0) {
-        // Hide network controls when empty
+        // Hide network controls and legend when empty
         if (controls) controls.style.display = 'none';
+        if (legend) legend.style.display = 'none';
 
         container.innerHTML = `
             <div class="empty-state">
@@ -389,8 +408,9 @@ function renderNetwork() {
         return;
     }
 
-    // Show network controls when graph is displayed
+    // Show network controls and legend when graph is displayed
     if (controls) controls.style.display = 'flex';
+    if (legend) legend.style.display = 'flex';
 
     // Build network data based on mode
     const personIds = new Set(items.map(p => p.id));
@@ -644,7 +664,7 @@ function renderNetwork() {
                 selector: 'node',
                 style: {
                     'background-color': 'data(role)',
-                    'label': 'data(label)',
+                    'label': '',
                     'color': '#2c3e50',
                     'text-valign': 'bottom',
                     'text-halign': 'center',
@@ -693,7 +713,8 @@ function renderNetwork() {
                     'font-weight': 'bold',
                     'color': 'white',
                     'text-outline-color': '#f39c12',
-                    'text-outline-width': 2
+                    'text-outline-width': 2,
+                    'label': 'data(label)'
                 }
             },
             {
@@ -706,7 +727,14 @@ function renderNetwork() {
                     'font-weight': 'bold',
                     'color': 'white',
                     'text-outline-color': '#27ae60',
-                    'text-outline-width': 2
+                    'text-outline-width': 2,
+                    'label': 'data(label)'
+                }
+            },
+            {
+                selector: 'node.show-label',
+                style: {
+                    'label': 'data(label)'
                 }
             },
             {
@@ -787,6 +815,12 @@ function renderNetwork() {
     cy.on('mouseover', 'node', function(evt) {
         const node = evt.target;
         node.style('cursor', 'pointer');
+        node.addClass('show-label');
+    });
+
+    cy.on('mouseout', 'node', function(evt) {
+        const node = evt.target;
+        node.removeClass('show-label');
     });
 
     // Edge tooltips
@@ -837,8 +871,6 @@ function renderNetwork() {
         tooltip.style.left = evt.originalEvent.pageX + 10 + 'px';
         tooltip.style.top = evt.originalEvent.pageY + 10 + 'px';
     });
-
-    console.log(`✅ Network rendered with ${items.length} nodes and ${relationships.length} edges`);
 }
 
 

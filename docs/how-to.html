@@ -18,70 +18,62 @@
     <!-- Global Navigation -->
     <div id="navbar-placeholder"></div>
 
-    <main class="howto-container">
-        <a href="index.html" class="howto-back"><i class="fas fa-arrow-left"></i> Zurück zur Karte</a>
+        <main class="howto-main-wrapper">
+            <div class="howto-container">
+                <a href="index.html" class="howto-back"><i class="fas fa-arrow-left"></i> Zurück zur Karte</a>
+    
+                <header class="howto-header">
+                    <h1>Hilfe & Benutzung</h1>
+                </header>
+    
+                <div class="howto-content">
+                    <div class="card info-box">
+                        <h3><i class="fas fa-info-circle"></i> Über HerData</h3>
+                        <p>HerData visualisiert Frauen im Korrespondenznetzwerk von Johann Wolfgang von Goethe. Das Projekt verknüpft Briefmetadaten aus dem CMIF-Standard mit biographischen Normdaten der Klassik Stiftung Weimar (SNDB). Der Datensatz umfasst 448 Frauen, die als Absenderinnen oder Erwähnungen in Goethes Korrespondenz dokumentiert sind.</p>
+                    </div>
 
-        <header class="howto-header">
-            <h1>Hilfe & Benutzung</h1>
-        </header>
+                    <h2>Datenabdeckung</h2>
 
-        <div class="howto-content">
-            <div class="info-box">
-                <h3>Über HerData</h3>
-                <p>HerData visualisiert die Frauen im Korrespondenznetzwerk von Johann Wolfgang von Goethe (1762-1824). Das Projekt verknüpft Briefdaten (CMIF) mit biographischen Normdaten (SNDB).</p>
-            </div>
+                    <p>Der Datensatz enthält 448 Frauen. Davon erscheinen 227 (51%) auf der Karte, weil für sie Ortsangaben wie Geburts-, Sterbe- oder Wirkungsorte dokumentiert sind. Die übrigen 221 Frauen (49%) haben in den biographischen Quellen keine Geodaten. Diese Personen sind über die Personenliste und die Suche zugänglich.</p>
 
-            <h2>Warum sehe ich nicht alle Personen auf der Karte?</h2>
-            
-            <div class="stats-highlight">
-                <div class="stat-item">
-                    <span class="stat-number">448</span>
-                    <span class="stat-desc">Frauen gesamt im Datensatz</span>
+                    <p>Das Fehlen von Geodaten ist kein Qualitätsmerkmal. Es spiegelt den Überlieferungszustand der historischen Quellen wider.</p>
+
+                    <h2>Ansichten</h2>
+
+                    <h3>Karte</h3>
+                    <p>Die Kartenansicht zeigt Personen an ihren dokumentierten Orten. Mehrere Personen am gleichen Ort werden als Cluster dargestellt. Ein Klick auf einen Cluster zoomt näher heran. Ein Klick auf einen einzelnen Punkt öffnet ein Popup mit Kurzinformationen zur Person.</p>
+
+                    <p>Die Farbe der Punkte kennzeichnet die Rolle im Korrespondenznetzwerk:</p>
+                    <ul>
+                        <li><i class="fas fa-circle" style="color: var(--color-role-sender);"></i> Absenderin: Hat Briefe an Goethe geschrieben</li>
+                        <li><i class="fas fa-circle" style="color: var(--color-role-mentioned);"></i> Erwähnt: Wird in Briefen an Goethe erwähnt</li>
+                        <li><i class="fas fa-circle" style="color: var(--color-role-both);"></i> Beides: Sowohl Absenderin als auch erwähnt</li>
+                        <li><i class="fas fa-circle" style="color: var(--color-role-indirect);"></i> Indirekt: Im SNDB dokumentiert, aber ohne direkte Briefverbindung</li>
+                    </ul>
+
+                    <p>Die Seitenleiste enthält Filter für Aktivität, Berufsgruppe und Zeitraum. Der Zeitfilter filtert nach Jahren mit Briefaktivität (1762-1824).</p>
+
+                    <h3>Netzwerk-Visualisierung</h3>
+                    <p>Beim Überfahren eines Kartenpunkts mit der Maus werden Verbindungslinien zu anderen Personen eingeblendet. Diese zeigen zwei Beziehungstypen: familiäre und berufliche Beziehungen aus dem AGRELON-Vokabular sowie Korrespondenzverbindungen zwischen Frauen. Die Linienfarbe unterscheidet die Beziehungsart, die Linienstärke zeigt die Anzahl der Verbindungen.</p>
+
+                    <h3>Personen</h3>
+                    <p>Die Personenliste zeigt alle 448 Frauen in tabellarischer Form. Die Tabelle ist sortierbar nach Name, Lebensdaten, Rolle und Korrespondenzaktivität. Ein Klick auf eine Zeile öffnet das Detailpanel mit Biographie, Berufen, Orten und Korrespondenzliste.</p>
+
+                    <h3>Brief-Explorer</h3>
+                    <p>Der Brief-Explorer zeigt statistische Auswertungen: Berufsverteilung, geografische Schwerpunkte und Altersverteilung. Alle Diagramme sind interaktiv. Ein Klick auf ein Segment filtert die Daten. Die Ergebnisse können als CSV oder PNG exportiert werden.</p>
+
+                    <h3>Wissenskorb</h3>
+                    <p>Der Wissenskorb dient zum Sammeln von Personen für vergleichende Analysen. Ein Klick auf das Lesezeichen-Symbol in der Personenliste fügt eine Person hinzu. Der Wissenskorb bleibt beim Seitenwechsel erhalten und kann als CSV oder JSON exportiert werden. Die gesammelten Personen werden als Netzwerkgraph und Zeitleiste visualisiert.</p>
+
+                    <h2>Suche</h2>
+                    <p>Das Suchfeld in der Navigation durchsucht alle 448 Personen nach Namen. Die Suche berücksichtigt auch Namensvarianten. Ergebnisse erscheinen als Dropdown-Liste während der Eingabe.</p>
+
+                    <h2>Datenquellen</h2>
+                    <p>Die Briefmetadaten stammen aus dem PROPYLÄEN-Projekt der Klassik Stiftung Weimar (15.312 Briefe im CMIF-Format). Die biographischen Daten stammen aus der Systematischen Namensdatei Briefeschreiber (SNDB). Externe Verlinkungen führen zur Gemeinsamen Normdatei (GND) der Deutschen Nationalbibliothek.</p>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">227</span>
-                    <span class="stat-desc">Auf der Karte sichtbar (51%)</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">221</span>
-                    <span class="stat-desc">Nur über Suche/Liste auffindbar</span>
-                </div>
             </div>
-
-            <p><strong>Nicht alle historischen Personen haben bekannte Aufenthaltsorte.</strong></p>
-            <p>Rund die Hälfte der Frauen in unserer Datenbank (49%) hat in den biographischen Quellen keine strukturierte Ortsangabe (wie Geburts- oder Sterbeort). Diese Personen können daher nicht auf der Karte dargestellt werden.</p>
-            
-            <div class="info-box info-box-warning">
-                <strong>Wichtig:</strong> Dass eine Person nicht auf der Karte erscheint, bedeutet nicht, dass sie "weniger wichtig" ist. Es fehlen uns lediglich strukturierte Geodaten für die Visualisierung.
-            </div>
-
-            <h3>Wie finde ich Personen ohne Geodaten?</h3>
-            <p>Sie haben zwei Möglichkeiten, den vollständigen Datensatz zu durchsuchen:</p>
-            <ul>
-                <li><strong>Globale Suche:</strong> Nutzen Sie das Suchfeld oben rechts ("Suche nach Name..."). Hier sind alle 448 Personen enthalten.</li>
-                <li><strong>Personenliste:</strong> Klicken Sie auf <a href="synthesis/index.html">Personen</a> in der Navigation, um die vollständige alphabetische Tabelle aller Frauen zu sehen.</li>
-            </ul>
-
-            <h2>Funktionen der Karte</h2>
-            
-            <h3>Farbkodierung</h3>
-            <p>Die Punkte auf der Karte sind nach der Rolle der Person im Netzwerk eingefärbt:</p>
-            <ul>
-                <li><i class="fas fa-circle" style="color: var(--color-role-sender);"></i> <strong>Absenderin:</strong> Hat Briefe an Goethe geschrieben.</li>
-                <li><i class="fas fa-circle" style="color: var(--color-role-mentioned);"></i> <strong>Erwähnt:</strong> Wird in Briefen an Goethe erwähnt.</li>
-                <li><i class="fas fa-circle" style="color: var(--color-role-both);"></i> <strong>Beides:</strong> Tritt sowohl als Absenderin als auch als Erwähnte auf.</li>
-            </ul>
-
-            <h3>Filterung</h3>
-            <p>Nutzen Sie die Seitenleiste (links), um die Ansicht anzupassen:</p>
-            <ul>
-                <li><strong>Zeitfilter:</strong> Schieben Sie die Regler, um nur Personen anzuzeigen, die in einem bestimmten Zeitraum aktiv waren (Korrespondenz oder Lebensdaten).</li>
-                <li><strong>Berufsgruppen:</strong> Filtern Sie nach sozialen Rollen (z.B. "Künstlerisch tätig", "Hofgesellschaft").</li>
-            </ul>
-        </div>
-    </main>
-
+        </main>
     <!-- Scripts -->
-    <script src="js/navbar-loader.js" type="module"></script>
+    <script src="js/howto.js" type="module"></script>
 </body>
 </html>

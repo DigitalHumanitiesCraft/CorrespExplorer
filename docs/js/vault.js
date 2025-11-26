@@ -35,6 +35,7 @@ async function init() {
     }
 
     renderSidebar();
+    setupMobileSidebarToggle();
 
     // Setup download button
     const downloadBtn = document.getElementById('vault-download-btn');
@@ -54,6 +55,41 @@ async function init() {
     } else {
         // Load INDEX.md by default
         loadDocument('INDEX');
+    }
+}
+
+// Setup mobile sidebar toggle
+function setupMobileSidebarToggle() {
+    const toggle = document.getElementById('vault-sidebar-toggle');
+    const sidebar = document.getElementById('vault-sidebar');
+
+    if (!toggle || !sidebar) return;
+
+    toggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        toggle.classList.toggle('active');
+
+        // Update button text
+        const span = toggle.querySelector('span');
+        if (sidebar.classList.contains('open')) {
+            span.textContent = 'Dokumente ausblenden';
+        } else {
+            span.textContent = 'Dokumente anzeigen';
+        }
+    });
+}
+
+// Close mobile sidebar after document selection
+function closeMobileSidebar() {
+    if (window.innerWidth <= 768) {
+        const toggle = document.getElementById('vault-sidebar-toggle');
+        const sidebar = document.getElementById('vault-sidebar');
+        if (toggle && sidebar) {
+            sidebar.classList.remove('open');
+            toggle.classList.remove('active');
+            const span = toggle.querySelector('span');
+            if (span) span.textContent = 'Dokumente anzeigen';
+        }
     }
 }
 
@@ -91,6 +127,7 @@ function renderSidebar() {
             e.preventDefault();
             const docId = e.currentTarget.getAttribute('data-doc-id');
             loadDocument(docId);
+            closeMobileSidebar();
         });
     });
 }

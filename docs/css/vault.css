@@ -5,52 +5,56 @@
 /* Container */
 .vault-container {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: var(--sidebar-width) 1fr; /* Use global sidebar width */
     min-height: calc(100vh - var(--navbar-height));
     max-width: 1600px;
     margin: 0 auto;
+    padding-left: var(--space-md); /* Align with main sidebar margin */
+    padding-top: var(--navbar-height); /* Space for fixed navbar */
+}
+
+/* Mobile toggle button - hidden on desktop */
+.vault-sidebar-toggle {
+    display: none;
 }
 
 /* Sidebar */
 .vault-sidebar {
-    background: var(--color-bg-secondary);
-    border-right: 1px solid var(--color-border);
-    padding: var(--space-md);  /* Reduced from lg (24px) to md (16px) */
+    background: var(--color-bg); /* Use pure white background */
+    border-right: none; /* Remove hard border */
+    box-shadow: var(--shadow-sm); /* Add soft shadow to separate from main content */
+    border-radius: var(--radius-md); /* Apply rounded corners */
+    padding: var(--space-xl) var(--space-lg); /* Increased padding for more breathing room */
     position: sticky;
-    top: 0;
-    height: calc(100vh - 60px);
+    top: var(--navbar-height); /* Align with new fixed navbar */
+    height: calc(100vh - var(--navbar-height) - var(--space-md)); /* Adjust height to fit */
     overflow-y: auto;
+    margin-top: var(--space-md); /* Add some space from navbar */
 }
 
 .vault-sidebar-header {
-    margin-bottom: var(--space-md);  /* Reduced from lg (24px) to md (16px) */
-    padding-bottom: var(--space-xs);  /* Reduced from sm (8px) to xs (4px) */
-    border-bottom: 2px solid var(--color-primary);
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--color-border); /* Keep border but soften it */
 }
 
 .vault-sidebar-header h2 {
-    font-size: var(--font-size-base);  /* Reduced from lg to base */
+    font-size: var(--font-size-lg);
     color: var(--color-primary);
     margin-bottom: 0;
+    font-weight: 700;
 }
 
-.vault-subtitle {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    font-style: italic;
-}
-
-/* Navigation */
 .vault-nav-category {
-    margin-bottom: var(--space-md);  /* Reduced from lg (24px) to md (16px) */
+    margin-bottom: var(--space-lg);
 }
 
 .vault-nav-category-title {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-sm);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--color-text-light);
-    margin-bottom: var(--space-xs);  /* Reduced from sm (8px) to xs (4px) */
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xs);
     font-weight: 600;
 }
 
@@ -61,21 +65,21 @@
 }
 
 .vault-nav-list li {
-    margin-bottom: 1px;  /* Reduced from 2px to 1px */
+    margin: 0;
 }
 
 .vault-nav-link {
     display: block;
-    padding: 4px var(--space-sm);  /* Reduced vertical from 6px to 4px */
+    padding: var(--space-sm) var(--space-md);
     color: var(--color-text);
     text-decoration: none;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-base);
+    font-size: var(--font-size-base);
 }
 
 .vault-nav-link:hover {
-    background: var(--color-bg);
+    background: var(--color-bg-light);
     color: var(--color-primary);
 }
 
@@ -87,8 +91,9 @@
 
 /* Main Content */
 .vault-content {
-    padding: var(--space-3xl);
+    padding: var(--space-3xl); /* Use tokens consistently */
     max-width: 900px;
+    margin-left: var(--space-xl); /* Add margin to separate from sidebar */
 }
 
 .vault-header {
@@ -101,6 +106,8 @@
     font-size: var(--font-size-3xl);
     color: var(--color-primary);
     margin-bottom: var(--space-sm);
+    font-family: var(--font-headings); /* Use heading font */
+    font-weight: 800; /* Bolder for impact */
 }
 
 .vault-meta {
@@ -242,17 +249,71 @@
 @media (max-width: 768px) {
     .vault-container {
         grid-template-columns: 1fr;
+        padding-left: 0;
+        padding-top: var(--navbar-height);
     }
 
     .vault-sidebar {
-        position: static;
+        position: fixed;
+        top: var(--navbar-height);
+        left: 0;
+        right: 0;
         height: auto;
-        border-right: none;
+        max-height: 0;
+        overflow: hidden;
+        margin-top: 0;
+        border-radius: 0;
         border-bottom: 1px solid var(--color-border);
+        box-shadow: var(--shadow-md);
+        z-index: 500;
+        transition: max-height 0.3s ease;
+    }
+
+    .vault-sidebar.open {
+        max-height: 60vh;
+        overflow-y: auto;
     }
 
     .vault-content {
-        padding: var(--space-xl);
+        padding: var(--space-lg);
+        margin-left: 0;
+    }
+
+    .vault-header h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    .vault-article h1 {
+        font-size: var(--font-size-lg);
+    }
+
+    .vault-article h2 {
+        font-size: var(--font-size-base);
+    }
+
+    /* Mobile toggle button for vault sidebar */
+    .vault-sidebar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-sm);
+        width: 100%;
+        padding: var(--space-md);
+        background: var(--color-bg-light);
+        border: none;
+        border-bottom: 1px solid var(--color-border);
+        cursor: pointer;
+        font-size: var(--font-size-base);
+        color: var(--color-primary);
+        font-weight: 600;
+    }
+
+    .vault-sidebar-toggle i {
+        transition: transform 0.3s ease;
+    }
+
+    .vault-sidebar-toggle.active i {
+        transform: rotate(180deg);
     }
 }
 

@@ -277,5 +277,233 @@ Vorteile:
 ### Nächste Schritte
 
 1. Views anpassen für bedingte Darstellung basierend auf hasFeature()
-2. Datenquellen-Switcher in der Navbar
+2. ~~Datenquellen-Switcher in der Navbar~~ Erledigt
 3. Timeline-Komponente für HSA-Daten
+
+---
+
+## 2025-11-26 (Navbar Source Switcher)
+
+### Datenquellen-Switcher implementiert
+
+Der Benutzer kann nun zwischen den Datenquellen umschalten:
+
+**docs/components/navbar.html**
+- Desktop: Select-Element neben dem Brand-Logo
+- Mobile: Select-Element im Mobile-Menu (oberster Eintrag)
+- Optionen: HerData (Goethe) und HSA (Schuchardt)
+
+**docs/css/style.css**
+- `.data-source-switcher` Styles für Desktop (transparenter Hintergrund, weisse Schrift)
+- `.nav-mobile-source-switcher` Styles für Mobile
+- Responsives Verhalten: Desktop-Switcher versteckt auf Mobile
+
+**docs/js/navbar-loader.js**
+- Import von config.js Funktionen
+- `initSourceSwitcher()` initialisiert beide Select-Elemente
+- `switchDataSource()` wechselt die Quelle via URL-Parameter
+- `updateBrandText()` aktualisiert den Brand-Text basierend auf der Quelle
+- Synchronisation zwischen Desktop und Mobile Selects
+
+### Funktionsweise
+
+1. Beim Laden erkennt `detectSourceFromUrl()` die aktuelle Quelle
+2. Select-Elemente werden auf den korrekten Wert gesetzt
+3. Brand-Text wird auf den Quellennamen aktualisiert
+4. Bei Wechsel wird die Seite mit neuem URL-Parameter neu geladen
+5. HerData ist Standard (kein URL-Parameter), HSA verwendet ?source=hsa
+
+### Nächste Schritte
+
+1. app.js anpassen: `loadData()` statt `loadPersons()` verwenden
+2. Feature-basierte Darstellung mit `hasFeature()` implementieren
+3. Sidebar-Filter für HSA-spezifische Features (Subjects, Languages)
+
+---
+
+## 2025-11-26 (Merge mit aktualisiertem HerData-Interface)
+
+### Situation
+
+Die HerData-UI wurde parallel weiterentwickelt mit neuen Features:
+- Logo-Bild statt Text-Brand
+- Neue Views: narrative.html, synthesis.html (nicht mehr in Subfolder)
+- Neue JS-Module: narrative.js, synthesis.js, howto.js, mobile-filter.js
+- Neue CSS: components.css, synthesis.css
+- Entfernt: Tests-Link, synthesis/-Subfolder
+
+Diese Änderungen hatten die Multi-Source-Architektur überschrieben.
+
+### Re-Integration der Multi-Source-Funktionalität
+
+Die folgenden Änderungen wurden wieder eingefügt:
+
+**docs/js/data.js**
+- Import von config.js wiederhergestellt
+- `loadData()` als generische Funktion für beide Quellen
+- Multi-Source Cache (herdata, hsa)
+- Helper-Funktionen für Letters und Indices
+
+**docs/js/navbar-loader.js**
+- Import von config.js hinzugefügt
+- `initSourceSwitcher()` Funktion wiederhergestellt
+- `switchDataSource()` für URL-basierte Quellenauswahl
+
+**docs/components/navbar.html**
+- Desktop: `data-source-switcher` mit Select-Element
+- Mobile: `nav-mobile-source-switcher` im Mobile-Menu
+
+**docs/css/style.css**
+- `.data-source-switcher` Styles für Desktop
+- `.nav-mobile-source-switcher` Styles für Mobile
+- Responsives Verhalten (Desktop-Switcher auf Mobile versteckt)
+
+### Ergebnis
+
+Die Multi-Source-Architektur ist nun mit dem aktualisierten HerData-Interface kompatibel:
+- Alle neuen UI-Features (Logo, neue Views) bleiben erhalten
+- Datenquellen-Switcher ermöglicht Wechsel zwischen HerData und HSA
+- URL-Parameter `?source=hsa` funktioniert wieder
+
+### Nächste Schritte
+
+1. ~~app.js testen mit beiden Datenquellen~~ Erledigt
+2. Views für HSA-spezifische Features anpassen (Subjects, mentionsPlace)
+3. Error-Handling wenn HSA-Quelle gewählt aber person-centric View geladen wird
+
+---
+
+## 2025-11-26 (HSA-Kartenansicht implementiert)
+
+### app.js für Multi-Source-Rendering erweitert
+
+Die Hauptanwendung (app.js) unterstützt nun beide Datentypen direkt:
+
+**Neue Datenstrukturen:**
+- `currentDataType`: 'persons' oder 'letters'
+- `allLetters`, `filteredLetters`: Brief-Arrays für HSA
+- `placeAggregation`: Aggregierte Orte mit Briefzahlen
+
+**Neue Funktionen:**
+
+1. `aggregateLettersByPlace(letters, placesIndex)` - Aggregiert Briefe pro Absendeort
+   - Sammelt letter_count, years, senders, languages pro Ort
+   - Nutzt Koordinaten aus place_sent oder indices.places als Fallback
+
+2. `placesToGeoJSON(places)` - Konvertiert Ortsaggregation zu GeoJSON
+   - Properties: id, name, letter_count, sender_count, year_min/max, etc.
+
+3. `renderPlaceMarkers(places)` - Rendert Ortsmarker auf der Karte
+   - Clustering mit total_letters als Aggregat
+   - HSA-Farbe (#1e40af) statt Rollen-Farben
+
+4. `addPlaceMapLayers()` - MapLibre-Layer für Orte
+   - Kreisgröße skaliert mit Briefanzahl (1-500+ Briefe)
+   - Cluster zeigen Anzahl der Orte
+
+5. `setupPlaceEventHandlers()` - Event-Handler für Orte
+   - Klick auf Ort zeigt Popup mit Statistiken
+   - Klick auf Cluster zoomt rein
+
+6. `showPlacePopup(lngLat, props)` - Popup für einen Ort
+   - Zeigt Briefanzahl, Absenderanzahl, Zeitraum
+   - Liste der Top-5-Absender und Sprachen
+
+**Entscheidung E7: Keine Redirect-Lösung**
+
+Die initiale Idee, bei HSA-Auswahl auf hsa-test.html zu redirecten, wurde verworfen.
+Stattdessen wird app.js selbst angepasst, um beide Datentypen zu rendern.
+
+Begründung:
+- Einheitliches Interface für alle Datenquellen
+- Kein Bruch in der User Experience
+- Wiederverwendung der bestehenden Komponenten (Navbar, Map, etc.)
+
+### Kartenlayer-Anpassung
+
+Die `setMapStyle`-Funktion wurde angepasst, um den richtigen Layer-Namen zu verwenden:
+- Bei persons: 'persons-clusters'
+- Bei letters: 'places-clusters'
+
+### Nächste Schritte
+
+1. ~~Filter-Panel für HSA anpassen~~ Erledigt
+2. ~~Timeline-Slider für HSA-Zeitraum (1859-1927)~~ Erledigt
+3. Brief-Liste im Popup (klickbar zur Brief-Detailseite)
+
+---
+
+## 2025-11-26 (HSA-Only Fokus)
+
+### Entscheidung E8: HerData komplett entfernen
+
+Auf Wunsch des Nutzers wurde die Multi-Source-Architektur zugunsten eines HSA-only Fokus aufgegeben.
+
+Begründung:
+- Einfachere Codebasis ohne Conditionals
+- Schnellere Entwicklung der HSA-spezifischen Features
+- HerData kann bei Bedarf als separates Projekt bestehen
+
+### Durchgeführte Änderungen
+
+**config.js (komplett neu)**
+- Nur noch HSA-Konfiguration
+- `CONFIG` statt `DATA_SOURCES`
+- Einfachere Funktionen: `getConfig()`, `hasFeature()`
+- Fester Zeitraum: 1859-1927
+
+**data.js (vereinfacht)**
+- Nur noch HSA-Datenladung
+- Kein Multi-Source-Cache mehr
+- Neue Helper: `getSubjectFromIndex()`
+
+**navbar.html (HSA-spezifisch)**
+- Brand: "Hugo Schuchardt Archiv"
+- Views: Karte, Korrespondenten, Brief-Explorer, Themen, Orte
+- Source-Switcher entfernt
+- Wissenskorb/Vault entfernt (HerData-spezifisch)
+
+**navbar-loader.js (vereinfacht)**
+- Keine Source-Switcher-Logik mehr
+- Angepasste View-Labels
+
+**app.js (komplett neu für HSA)**
+- Nur noch Brief-zentrierte Logik
+- Aggregation nach Absendeorten
+- Filter: Zeitraum (1859-1927), Briefsprache
+- Kartenzentrum: Graz (15.44, 47.07)
+- HSA-Farbe: #1e40af
+
+**index.html (HSA-Layout)**
+- Titel: "HSA CorrespExplorer"
+- Stats: Briefe, Korrespondenten, Orte
+- Filter: Zeitraum, Sprache (de, fr, it, es, en, pt, nl, eu)
+- Legende für HSA-Farbe
+- Links zu HSA-Website und correspSearch
+
+### Entfernte Dateien/Features
+
+- HerData-spezifische Filter (Rollen, Berufe, Ortstypen, Netzwerk)
+- Onboarding-Modal (HerData-spezifisch)
+- Wissenskorb-Feature
+- Mobile-Filter-Bar (HerData-spezifisch)
+- Source-Switcher in Navbar
+
+### Verfügbare Sprachen im HSA
+
+Die 8 häufigsten Briefsprachen:
+- Deutsch (de)
+- Französisch (fr)
+- Italienisch (it)
+- Spanisch (es)
+- Englisch (en)
+- Portugiesisch (pt)
+- Niederländisch (nl)
+- Baskisch (eu)
+
+### Nächste Schritte
+
+1. Korrespondenten-Seite (persons.html) erstellen
+2. Themen-Seite (subjects.html) erstellen
+3. Brief-Explorer (stats.html) für HSA anpassen
+4. Suche für Briefe und Personen implementieren

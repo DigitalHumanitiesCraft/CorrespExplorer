@@ -1,46 +1,36 @@
-<!-- Global Navigation Component -->
+<!-- Global Navigation Component - HSA -->
 <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
     <button class="nav-burger" id="nav-burger" aria-label="Navigation öffnen" aria-expanded="false">
         <span class="nav-burger-icon"></span>
     </button>
     <div class="nav-brand">
-        <a href="index.html" style="color: inherit; text-decoration: none;">HerData</a>
+        <a href="index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+            <span class="brand-text">Hugo Schuchardt Archiv</span>
+        </a>
     </div>
     <div class="view-switcher" role="navigation" aria-label="Ansichtswechsel">
         <a href="index.html" class="view-btn" data-view="map" data-label-mobile="Karte" role="button" aria-pressed="false"><span class="view-btn-text">Karte</span></a>
-        <a href="synthesis/index.html" class="view-btn" data-view="synthesis" data-label-mobile="Personen" role="button" aria-pressed="false"><span class="view-btn-text">Personen</span></a>
+        <a href="persons.html" class="view-btn" data-view="persons" data-label-mobile="Personen" role="button" aria-pressed="false"><span class="view-btn-text">Korrespondenten</span></a>
         <a href="stats.html" class="view-btn" data-view="stats" data-label-mobile="Briefe" role="button" aria-pressed="false"><span class="view-btn-text">Brief-Explorer</span></a>
+        <a href="subjects.html" class="view-btn" data-view="subjects" data-label-mobile="Themen" role="button" aria-pressed="false"><span class="view-btn-text">Themen</span></a>
+        <a href="places.html" class="view-btn" data-view="places" data-label-mobile="Orte" role="button" aria-pressed="false"><span class="view-btn-text">Orte</span></a>
     </div>
     <div class="nav-search">
         <input
             type="search"
             id="global-search"
-            placeholder="Person suchen..."
-            aria-label="Person suchen"
+            placeholder="Brief oder Person suchen..."
+            aria-label="Suchen"
             autocomplete="off"
         />
         <div id="search-results" class="search-results" role="listbox" aria-label="Suchergebnisse"></div>
     </div>
     <div class="nav-links">
-        <a href="wissenskorb.html" class="nav-link nav-link-basket" aria-label="Wissenskorb">
-            <i class="fas fa-bookmark"></i>
-            <span class="nav-link-text">Wissenskorb</span>
-            <span id="nav-basket-badge" class="nav-badge" style="display: none;">0</span>
-        </a>
-        <a href="vault.html" class="nav-link" aria-label="Knowledge Vault">
-            <span class="nav-link-text">Vault</span>
-        </a>
         <a href="how-to.html" class="nav-link" aria-label="Hilfe und Benutzung">
             <span class="nav-link-text">Hilfe</span>
         </a>
-        <a href="places.html" class="nav-link" aria-label="Ortsindex">
-            <span class="nav-link-text">Orte</span>
-        </a>
         <a href="download.html" class="nav-link" aria-label="Daten Export">
             <span class="nav-link-text">Download</span>
-        </a>
-        <a href="tests.html" class="nav-link" aria-label="Test-Dashboard">
-            <span class="nav-link-text">Tests</span>
         </a>
     </div>
 </nav>
@@ -52,38 +42,30 @@
 <div class="nav-mobile-menu" id="nav-mobile-menu">
     <div class="nav-mobile-content">
         <div class="nav-mobile-section">
-            <h3 class="nav-mobile-heading">Suche</h3>
-            <div class="nav-mobile-search">
-                <input
-                    type="search"
-                    id="mobile-search"
-                    placeholder="Person suchen..."
-                    aria-label="Person suchen"
-                    autocomplete="off"
-                />
-                <div id="mobile-search-results" class="search-results" role="listbox" aria-label="Suchergebnisse"></div>
-            </div>
-        </div>
-        <div class="nav-mobile-section">
-            <h3 class="nav-mobile-heading">Navigation</h3>
-            <a href="wissenskorb.html" class="nav-mobile-link">
-                <i class="fas fa-bookmark"></i> Wissenskorb
-                <span id="nav-mobile-basket-badge" class="nav-badge" style="display: none;">0</span>
+            <h3 class="nav-mobile-heading">Ansichten</h3>
+            <a href="index.html" class="nav-mobile-link">
+                <i class="fas fa-map"></i> Karte
             </a>
-            <a href="vault.html" class="nav-mobile-link">
-                <i class="fas fa-vault"></i> Vault
+            <a href="persons.html" class="nav-mobile-link">
+                <i class="fas fa-users"></i> Korrespondenten
             </a>
-            <a href="how-to.html" class="nav-mobile-link">
-                <i class="fas fa-question-circle"></i> Hilfe
+            <a href="stats.html" class="nav-mobile-link">
+                <i class="fas fa-envelope"></i> Brief-Explorer
+            </a>
+            <a href="subjects.html" class="nav-mobile-link">
+                <i class="fas fa-tags"></i> Themen
             </a>
             <a href="places.html" class="nav-mobile-link">
                 <i class="fas fa-map-marker-alt"></i> Orte
             </a>
+        </div>
+        <div class="nav-mobile-section">
+            <h3 class="nav-mobile-heading">Weitere</h3>
+            <a href="how-to.html" class="nav-mobile-link">
+                <i class="fas fa-question-circle"></i> Hilfe
+            </a>
             <a href="download.html" class="nav-mobile-link">
                 <i class="fas fa-download"></i> Download
-            </a>
-            <a href="tests.html" class="nav-mobile-link">
-                <i class="fas fa-vial"></i> Tests
             </a>
         </div>
     </div>

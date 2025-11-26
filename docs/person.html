@@ -14,146 +14,568 @@
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/search.css">
-    <link rel="stylesheet" href="css/person-cards.css">
-    <link rel="stylesheet" href="css/debug.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <style>
+        /* Story-style person page */
+        .person-story-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: var(--space-xl);
+            background: var(--color-bg);
+        }
+
+        /* Hero Section */
+        .story-hero {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            padding-bottom: var(--space-xl);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .story-portrait {
+            width: 200px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--space-lg);
+        }
+
+        .story-portrait-placeholder {
+            width: 200px;
+            height: 250px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-border) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--space-lg);
+        }
+
+        .placeholder-initials {
+            font-family: var(--font-headings);
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-text-muted);
+        }
+
+        .placeholder-icon {
+            font-size: 2rem;
+            opacity: 0.3;
+            margin-top: var(--space-xs);
+            color: var(--color-text-muted);
+        }
+
+        .story-name {
+            font-family: var(--font-headings);
+            font-size: var(--font-size-2xl);
+            margin: 0 0 var(--space-sm) 0;
+            color: var(--color-text);
+        }
+
+        .story-dates {
+            font-size: var(--font-size-lg);
+            color: var(--color-text-light);
+            margin: 0 0 var(--space-md) 0;
+        }
+
+        .story-badges {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: var(--space-md);
+        }
+
+        .story-occupations {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .story-occupation {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+        }
+
+        .story-basket-btn {
+            margin-top: var(--space-md);
+            background: var(--color-bg-light);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: var(--font-size-sm);
+            transition: var(--transition-fast);
+        }
+
+        .story-basket-btn:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .story-basket-btn.in-basket {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        /* Sections */
+        .story-section {
+            margin-bottom: var(--space-2xl);
+        }
+
+        .story-section-title {
+            font-family: var(--font-headings);
+            font-size: var(--font-size-xl);
+            color: var(--color-primary);
+            margin: 0 0 var(--space-md) 0;
+            padding-bottom: var(--space-sm);
+            border-bottom: 2px solid var(--color-border);
+        }
+
+        .story-bio {
+            font-size: var(--font-size-md);
+            line-height: var(--line-height-loose);
+            color: var(--color-text);
+        }
+
+        /* Places grid */
+        .story-places-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+        }
+
+        .story-map {
+            height: 300px;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .story-places-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .story-place-item {
+            padding: var(--space-sm);
+            background: var(--color-bg-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .story-place-type {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-light);
+            background: var(--color-bg);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* Letters */
+        .story-letters-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .story-letter-stat {
+            background: var(--color-bg-light);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .story-letter-stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        .story-letter-stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-light);
+        }
+
+        .story-context-box {
+            background: var(--color-bg-light);
+            border-left: 3px solid var(--color-text-light);
+            padding: var(--space-md);
+            margin-top: var(--space-md);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-light);
+        }
+
+        /* Relations */
+        .story-relations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .story-relation-category {
+            margin-bottom: var(--space-lg);
+        }
+
+        .story-relation-category h3 {
+            font-size: var(--font-size-md);
+            margin: 0 0 var(--space-sm) 0;
+        }
+
+        .story-relation-item {
+            padding: var(--space-sm);
+            background: var(--color-bg-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-sm);
+        }
+
+        .story-relation-type {
+            font-size: var(--font-size-xs);
+            text-transform: uppercase;
+            margin-bottom: var(--space-xs);
+        }
+
+        .story-relation-name {
+            font-weight: 600;
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        .story-relation-name:hover {
+            text-decoration: underline;
+        }
+
+        .story-relation-dates {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-light);
+        }
+
+        /* Sources */
+        .story-sources-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .story-sources-list li {
+            margin-bottom: var(--space-sm);
+        }
+
+        .story-sources-list a {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--color-primary);
+            text-decoration: none;
+            padding: var(--space-sm) var(--space-md);
+            background: var(--color-bg-light);
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
+        }
+
+        .story-sources-list a:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        /* Data Quality */
+        .story-quality-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .story-quality-list li {
+            padding: var(--space-sm) 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .quality-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .quality-icon.available {
+            background: #d4edda;
+            color: #28a745;
+        }
+
+        .quality-icon.unavailable {
+            background: #f8d7da;
+            color: #dc3545;
+        }
+
+        .quality-icon.info {
+            background: #d1ecf1;
+            color: #17a2b8;
+        }
+
+        /* Citation */
+        .story-citation-box {
+            background: var(--color-bg-light);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            position: relative;
+        }
+
+        .story-citation-text {
+            font-family: var(--font-mono);
+            font-size: var(--font-size-sm);
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .story-copy-btn {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: var(--font-size-xs);
+        }
+
+        /* Commons Gallery */
+        .commons-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .commons-gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--color-bg-light);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .commons-gallery-item:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-md);
+        }
+
+        .commons-gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .commons-gallery-item .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: var(--space-md) var(--space-sm) var(--space-sm);
+            font-size: var(--font-size-xs);
+            line-height: 1.3;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .commons-gallery-item:hover .gallery-caption {
+            opacity: 1;
+        }
+
+        .commons-gallery-link {
+            display: block;
+            text-align: center;
+            margin-top: var(--space-md);
+            color: var(--color-primary);
+            font-size: var(--font-size-sm);
+        }
+
+        /* Back Navigation */
+        .story-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--color-primary);
+            text-decoration: none;
+            margin-bottom: var(--space-lg);
+            font-size: var(--font-size-sm);
+        }
+
+        .story-back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading and Error */
+        .loading-message, .error-message {
+            text-align: center;
+            padding: var(--space-2xl);
+        }
+
+        .error-message h2 {
+            color: var(--color-text);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .person-story-container {
+                padding: var(--space-md);
+            }
+
+            .story-places-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .story-letters-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Global Navigation Placeholder -->
     <div id="navbar-placeholder"></div>
 
     <!-- Loading State -->
-    <div id="loading" class="loading-message" role="status" aria-live="polite">Person wird geladen...</div>
+    <div id="loading" class="loading-message" role="status" aria-live="polite">
+        <i class="fas fa-spinner fa-spin"></i> Person wird geladen...
+    </div>
 
     <!-- Person Not Found -->
     <div id="not-found" class="error-message" role="alert" style="display: none;">
         <h2>Person nicht gefunden</h2>
         <p>Die angeforderte Person konnte nicht gefunden werden.</p>
-        <a href="index.html">← Zurück zur Karte</a>
+        <a href="index.html" class="story-back-link"><i class="fas fa-arrow-left"></i> Zurueck zur Karte</a>
     </div>
 
     <!-- Main Content -->
-    <div id="person-content" class="person-page-cards" style="display: none;">
-        <!-- Person Header -->
-        <header class="person-header" role="banner">
-            <div class="person-header-top">
-                <h1 id="person-name"></h1>
-                <button id="person-basket-btn" class="btn-basket-toggle" title="Zum Wissenskorb hinzufügen">
-                    <i class="fas fa-bookmark"></i>
-                    <span id="basket-btn-text">Zum Wissenskorb</span>
-                </button>
-            </div>
-            <div class="person-dates" id="person-dates" aria-label="Lebensdaten"></div>
-            <div class="person-badges" id="person-badges" role="list" aria-label="Normdaten-Kennzeichnungen"></div>
-        </header>
+    <div id="person-content" class="person-story-container" style="display: none;">
+        <!-- Hero Section -->
+        <div class="story-hero" id="story-hero">
+            <!-- Portrait, name, dates, badges, occupations rendered by JS -->
+        </div>
 
-        <!-- Stats Overview -->
-        <section class="stats-cards">
-            <div class="stat-card">
-                <div class="stat-value" id="stat-letters">0</div>
-                <div class="stat-label">Briefe gesendet</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-mentions">0</div>
-                <div class="stat-label">Erwähnungen</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-places">0</div>
-                <div class="stat-label">Orte</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="stat-occupations">0</div>
-                <div class="stat-label">Berufe</div>
+        <!-- Biography Section -->
+        <section class="story-section" id="biography-section">
+            <h2 class="story-section-title">Biografie</h2>
+            <div id="biography-content">
+                <p class="story-bio">Keine Biografie verfuegbar.</p>
             </div>
         </section>
 
-        <!-- Two-Column Layout: Content Left, Raw Data Right -->
-        <div class="person-layout-wrapper">
-            <!-- Left Column: Content Cards -->
-            <div class="cards-container">
-                <!-- Biography Card -->
-            <section class="content-card" id="biography-card">
-                <h2>Biographie</h2>
-                <div id="biography-content" class="card-content">
-                    <p class="placeholder-text">Keine Biographie verfügbar.</p>
-                </div>
-            </section>
-
-            <!-- Letters Card -->
-            <section class="content-card" id="letters-card">
-                <h2>Korrespondenz</h2>
-                <div id="letters-content" class="card-content">
+        <!-- Places Section -->
+        <section class="story-section" id="places-section" style="display: none;">
+            <h2 class="story-section-title">Lebensstationen</h2>
+            <div class="story-places-grid">
+                <div id="places-map" class="story-map"></div>
+                <ul id="places-list" class="story-places-list">
                     <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Places Card with Map -->
-            <section class="content-card" id="places-card">
-                <h2>Orte</h2>
-                <div id="places-list" class="card-content places-list">
-                    <!-- Populated by JS -->
-                </div>
-                <div id="places-map" class="mini-map"></div>
-            </section>
-
-            <!-- Occupations Card -->
-            <section class="content-card" id="occupations-card">
-                <h2>Berufe und Tätigkeiten</h2>
-                <div id="occupations-content" class="card-content">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Relations Card -->
-            <section class="content-card" id="relations-card" style="display: none;">
-                <h2>Netzwerk-Verbindungen</h2>
-                <div id="relations-content" class="card-content">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Additional Biographies Card -->
-            <section class="content-card" id="additional-biographies-card" style="display: none;">
-                <h2>Zusätzliche biografische Quellen</h2>
-                <div id="additional-biographies-content" class="card-content">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Sources Card -->
-            <section class="content-card" id="sources-card">
-                <h2>Quellen und Normdaten</h2>
-                <div id="sources-content" class="card-content">
-                    <!-- Populated by JS -->
-                </div>
-
-                <h3 style="margin-top: var(--space-xl);">Datenqualität</h3>
-                <div id="data-quality" class="card-content">
-                    <!-- Populated by JS -->
-                </div>
-
-                <h3 style="margin-top: var(--space-xl);">Zitierhinweis</h3>
-                <div id="citation-content" class="card-content">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
+                </ul>
             </div>
-            <!-- End Left Column -->
+        </section>
 
-            <!-- Right Column: Raw JSON Data (Sticky) -->
-            <aside class="raw-data-sidebar">
-                <div class="raw-data-sidebar-inner">
-                    <h2>Raw Data (JSON)</h2>
-                    <div id="raw-data-container" class="raw-data-display"></div>
+        <!-- Correspondence Section -->
+        <section class="story-section" id="letters-section">
+            <h2 class="story-section-title">Korrespondenz</h2>
+            <div id="letters-content">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Relations Section -->
+        <section class="story-section" id="relations-section" style="display: none;">
+            <h2 class="story-section-title">Beziehungen im Netzwerk</h2>
+            <div id="relations-content">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Additional Biographies Section -->
+        <section class="story-section" id="additional-biographies-section" style="display: none;">
+            <h2 class="story-section-title">Weitere biografische Quellen</h2>
+            <div id="additional-biographies-content">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Commons Gallery Section -->
+        <section class="story-section" id="commons-gallery-section" style="display: none;">
+            <h2 class="story-section-title">Wikimedia Commons Galerie</h2>
+            <div id="commons-gallery-content">
+                <div id="commons-gallery-loading" style="text-align: center; padding: var(--space-lg); color: var(--color-text-light);">
+                    <i class="fas fa-spinner fa-spin"></i> Lade Bilder aus Wikimedia Commons...
                 </div>
-            </aside>
-            <!-- End Right Column -->
-        </div>
-        <!-- End Two-Column Layout -->
+                <div id="commons-gallery-grid" class="commons-gallery-grid"></div>
+            </div>
+        </section>
+
+        <!-- Sources Section -->
+        <section class="story-section" id="sources-section">
+            <h2 class="story-section-title">Quellen und Links</h2>
+            <div id="sources-content">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Data Quality Section -->
+        <section class="story-section" id="quality-section">
+            <h2 class="story-section-title">Datenqualitaet</h2>
+            <div id="quality-content">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- Citation Section -->
+        <section class="story-section" id="citation-section">
+            <h2 class="story-section-title">Zitierhinweis</h2>
+            <div id="citation-content">
+                <!-- Populated by JS -->
+            </div>
+        </section>
+
+        <!-- DEBUG: Raw JSON Data Section -->
+        <section class="story-section" id="debug-section" style="background: #1e1e1e; border-radius: var(--radius-md); padding: var(--space-lg);">
+            <h2 class="story-section-title" style="color: #569cd6;">DEBUG: Raw JSON Data</h2>
+            <div id="debug-content" style="max-height: 600px; overflow-y: auto;">
+                <pre id="debug-json" style="color: #d4d4d4; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; margin: 0;"></pre>
+            </div>
+        </section>
     </div>
 
     <!-- Load basket manager -->
     <script src="js/basket-manager.js"></script>
-    <script src="js/person.js?v=4" type="module"></script>
+    <script type="module">
+        import { loadNavbar } from './js/navbar-loader.js';
+        loadNavbar();
+    </script>
+    <script src="js/person.js" type="module"></script>
 </body>
 </html>

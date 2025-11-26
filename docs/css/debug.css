@@ -2,6 +2,7 @@
  * Debug Panel Styles
  * For data provenance and review functionality
  */
+@import url('tokens.css');
 
 /* Debug Toggle Button */
 .debug-toggle {

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Biografische Portraits der 448 Frauen in Goethes Korrespondenznetzwerk">
+    <title>Geschichten - HerData</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/search.css">
+
+    <style>
+        /* Override main-content for gallery */
+        .main-content {
+            display: block !important;
+            overflow-y: auto;
+        }
+
+        /* Gallery Grid in Main Content Area */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            padding: 16px;
+        }
+
+        /* Person Card */
+        .person-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .person-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Bookmark Button */
+        .btn-bookmark {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-bookmark:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .btn-bookmark i {
+            font-size: 14px;
+            color: #ccc;
+            transition: color 0.2s;
+        }
+
+        .btn-bookmark.in-basket i {
+            color: var(--color-accent);
+        }
+
+        .btn-bookmark:hover i {
+            color: var(--color-accent);
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            overflow: hidden;
+            background: var(--color-bg-light);
+            position: relative;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition-base);
+        }
+
+        .person-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        .card-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-border) 100%);
+            color: var(--color-text-light);
+        }
+
+        .placeholder-initials {
+            font-family: var(--font-headings);
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-text-muted);
+        }
+
+        .placeholder-icon {
+            font-size: 2rem;
+            opacity: 0.3;
+            margin-top: var(--space-xs);
+        }
+
+        .card-content {
+            padding: var(--space-sm);
+        }
+
+        .card-name {
+            font-family: var(--font-headings);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            margin: 0 0 var(--space-xs) 0;
+            line-height: 1.3;
+            color: var(--color-text);
+        }
+
+        .card-dates {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-light);
+            margin: 0 0 var(--space-xs) 0;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: var(--space-xs);
+            flex-wrap: wrap;
+        }
+
+        .card-badge {
+            font-size: 10px;
+            padding: 2px 5px;
+            border-radius: var(--radius-sm);
+            background: var(--color-bg-light);
+            color: var(--color-text-light);
+        }
+
+        .card-badge.sender {
+            background: var(--color-role-sender);
+            color: white;
+        }
+
+        .card-badge.mentioned {
+            background: var(--color-role-mentioned);
+            color: white;
+        }
+
+        .card-badge.both {
+            background: var(--color-role-both);
+            color: white;
+        }
+
+        .card-badge.letters {
+            background: var(--color-badge-gnd-bg);
+            color: var(--color-badge-gnd);
+        }
+
+        /* Loading indicator */
+        .gallery-loading {
+            text-align: center;
+            padding: var(--space-2xl);
+            color: var(--color-text-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Global Navigation Placeholder -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Mobile Filter Bar -->
+    <div class="mobile-filter-bar">
+        <div class="filter-row">
+            <div class="role-toggles">
+                <button class="role-toggle active" data-role="sender" title="Frauen, die Briefe an Goethe geschrieben haben">Absenderin</button>
+                <button class="role-toggle active" data-role="mentioned" title="Frauen, die in Briefen erwaehnt wurden">Erwaehnt</button>
+                <button class="role-toggle active" data-role="both" title="Frauen, die sowohl Briefe schrieben als auch erwaehnt wurden">Beides</button>
+                <button class="role-toggle active" data-role="indirect" title="Frauen nur aus biografischen Quellen (SNDB), nicht in Briefen">SNDB</button>
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="mobile-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="mobile-search-input" placeholder="Name suchen...">
+            </div>
+            <div class="result-count"><strong id="mobile-result-count">448</strong> Personen</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="complementary" aria-label="Filteroptionen">
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-count">448</div>
+                        <div class="stat-label">Frauen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="image-count">124</div>
+                        <div class="stat-label">mit Portrait</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="visible-count">448</div>
+                        <div class="stat-label">sichtbar</div>
+                    </div>
+                </div>
+
+                <!-- Sort -->
+                <div class="filter-group">
+                    <h4>Sortierung</h4>
+                    <select id="sort-select" class="filter-select" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--color-border);">
+                        <option value="letters" selected>Briefaktivitaet</option>
+                        <option value="name">Alphabetisch</option>
+                        <option value="birth">Geburtsjahr</option>
+                        <option value="image">Mit Portrait zuerst</option>
+                    </select>
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-group">
+                    <h4>Daten</h4>
+                    <label><input type="checkbox" id="filter-image"> <span>Nur mit Portrait</span> <span class="filter-count" id="count-image"></span></label>
+                    <label><input type="checkbox" id="filter-letters"> <span>Nur mit Briefen</span> <span class="filter-count" id="count-letters"></span></label>
+                    <label><input type="checkbox" id="filter-adel"> <span>Nur Adelige</span> <span class="filter-count" id="count-adel"></span></label>
+                </div>
+
+                <!-- Role Filter -->
+                <div class="filter-group">
+                    <h4>Rolle im Netzwerk</h4>
+                    <label><input type="checkbox" id="filter-role-sender"> <span>Absenderin</span> <span class="filter-count" id="count-role-sender"></span></label>
+                    <label><input type="checkbox" id="filter-role-mentioned"> <span>Erwaehnt</span> <span class="filter-count" id="count-role-mentioned"></span></label>
+                    <label><input type="checkbox" id="filter-role-both"> <span>Beides</span> <span class="filter-count" id="count-role-both"></span></label>
+                    <label><input type="checkbox" id="filter-role-indirect"> <span>Indirekt</span> <span class="filter-count" id="count-role-indirect"></span></label>
+                </div>
+
+                <!-- Occupation Filter -->
+                <div class="filter-group">
+                    <h4>Beruf</h4>
+                    <select id="filter-occupation" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--color-border);">
+                        <option value="">Alle Berufe</option>
+                        <option value="Schriftstellerin">Schriftstellerin</option>
+                        <option value="Schauspielerin">Schauspielerin</option>
+                        <option value="Hofdame">Hofdame</option>
+                        <option value="Saengerin">Saengerin</option>
+                        <option value="Malerin">Malerin</option>
+                        <option value="Uebersetzerin">Uebersetzerin</option>
+                        <option value="Saloniere">Saloniere</option>
+                        <option value="Erzieherin">Erzieherin</option>
+                        <option value="Paedagogin">Paedagogin</option>
+                        <option value="other">Andere Berufe</option>
+                    </select>
+                </div>
+
+                <!-- Search -->
+                <div class="filter-group">
+                    <h4>Suche</h4>
+                    <input type="text" id="search-input" placeholder="Name eingeben..." style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid var(--color-border);">
+                </div>
+
+                <!-- Info -->
+                <div class="sidebar-info">
+                    <h4>Ueber diese Ansicht</h4>
+                    <p class="info-text">
+                        Biografische Portraits der 448 Frauen. 124 haben Bilder aus Wikimedia Commons.
+                    </p>
+                    <h4>Interaktion</h4>
+                    <ul class="info-list">
+                        <li>Klick auf Portrait oeffnet Biografie</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content" role="main">
+                <div id="gallery-grid" class="gallery-grid">
+                    <!-- Cards werden dynamisch eingefuegt -->
+                </div>
+                <div id="gallery-loading" class="gallery-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Lade Portraits...
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/basket-manager.js"></script>
+    <script type="module">
+        import { loadNavbar } from './js/navbar-loader.js';
+        loadNavbar();
+    </script>
+    <script src="js/mobile-filter.js"></script>
+    <script src="js/narrative.js"></script>
+</body>
+</html>

@@ -80,8 +80,25 @@ export const Download = {
     }
 };
 
+/**
+ * Debounce utility
+ * delays execution of a function until after a wait period
+ * @param {Function} func - Function to debounce
+ * @param {number} wait - Wait time in ms
+ * @returns {Function} Debounced function
+ */
+export function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
+
 // Make available globally for non-module scripts
 if (typeof window !== 'undefined') {
     window.Toast = Toast;
     window.Download = Download;
+    window.debounce = debounce;
 }

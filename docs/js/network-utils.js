@@ -229,10 +229,10 @@ export function extractCorrespondenceConnections(allPersons) {
  */
 export function getConnectionColor(category) {
     const colors = {
-        'Familie': '#D0388C',        // Magenta - optimized for map readability (was #ff0066)
-        'Beruflich': '#147D7E',      // Teal - professional, distinct (was #00ccff)
-        'Sozial': '#2E7D32',         // Green - neutral, clear (was #ffcc00)
-        'Korrespondenz': '#6C5CE7',  // Purple - for woman-to-woman letters (was #9d4edd)
+        'Familie': '#D0388C',        // Magenta/Pink - family relations
+        'Beruflich': '#3498db',      // Blue - professional, distinct from Sozial
+        'Sozial': '#f39c12',         // Orange/Amber - social, warm color contrast
+        'Korrespondenz': '#6C5CE7',  // Purple - for woman-to-woman letters
         'Ort': '#6c757d',            // Gray
         'Unbekannt': '#adb5bd'       // Light gray
     };

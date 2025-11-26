@@ -6,6 +6,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: var(--space-3xl) var(--space-xl);
+    padding-top: calc(var(--navbar-height) + var(--space-2xl)); /* Space for fixed navbar */
 }
 
 /* Header */
@@ -229,14 +230,50 @@
 /* Responsive */
 @media (max-width: 768px) {
     .download-container {
-        padding: var(--space-2xl) var(--space-lg);
+        padding: var(--space-lg);
+        padding-top: calc(var(--navbar-height) + var(--space-lg));
+    }
+
+    .download-header {
+        margin-bottom: var(--space-2xl);
+        padding-bottom: var(--space-lg);
+    }
+
+    .download-header h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    .download-section {
+        margin-bottom: var(--space-2xl);
+    }
+
+    .download-section h2 {
+        font-size: var(--font-size-lg);
     }
 
     .download-cards {
         grid-template-columns: 1fr;
+        gap: var(--space-lg);
+    }
+
+    .download-card {
+        padding: var(--space-lg);
+    }
+
+    .download-card-header h3 {
+        font-size: var(--font-size-lg);
     }
 
     .source-links {
         grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .source-link {
+        padding: var(--space-md);
+    }
+
+    .source-link h4 {
+        font-size: var(--font-size-base);
     }
 }

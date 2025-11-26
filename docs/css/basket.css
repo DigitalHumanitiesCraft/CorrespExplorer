@@ -1,4 +1,6 @@
 /* Wissenskorb Page Styles */
+@import url('tokens.css');
+@import url('components.css');
 
 body {
     display: flex;
@@ -15,29 +17,7 @@ body {
     overflow: hidden;
 }
 
-/* Stats Cards in Filter Panel (matching synthesis) */
-.stats-cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-sm, 0.5rem);
-    margin-bottom: var(--space-lg, 1.5rem);
-    padding-bottom: var(--space-lg, 1.5rem);
-    border-bottom: 1px solid var(--color-border, #dfe6e9);
-}
-
-.stat-card {
-    background: white;
-    border: 1px solid var(--color-border, #dfe6e9);
-    border-radius: 6px;
-    padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
-    text-align: center;
-    transition: all 0.2s;
-}
-
-.stat-card:hover {
-    border-color: var(--color-primary, #2c3e50);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+/* Stats Cards - base styles in components.css */
 
 .stat-value {
     font-size: 1.5rem;
@@ -67,79 +47,20 @@ body {
 
 /* Left: Filter Panel (matching synthesis) */
 .filter-panel {
-    background: var(--color-bg-light, #f8f9fa);
-    border-right: 1px solid var(--color-border, #dfe6e9);
-    padding: var(--space-lg, 1.5rem);
+    background: var(--color-bg); /* Use pure white background */
+    border-right: none; /* Remove hard border */
+    box-shadow: var(--shadow-sm); /* Add soft shadow to separate from main content */
+    border-radius: var(--radius-md); /* Apply rounded corners */
+    padding: var(--space-xl); /* Increased padding for more breathing room */
     overflow-y: auto;
+    margin-top: var(--space-md);
+    margin-left: var(--space-md);
+    height: calc(100vh - var(--navbar-height) - 2 * var(--space-md));
+    position: sticky;
+    top: var(--navbar-height);
 }
 
-/* Right: Detail Panel (matching synthesis) */
-.detail-panel {
-    background: var(--color-bg-light, #f8f9fa);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    padding: var(--space-xl, 2rem);
-    gap: var(--space-xl, 2rem);
-}
-
-.basket-section {
-    background: white;
-    border: 1px solid var(--color-border, #dfe6e9);
-    border-radius: 8px;
-    padding: var(--space-lg, 1.5rem);
-}
-
-.basket-section h2 {
-    font-size: var(--font-size-xl, 1.5rem);
-    color: var(--color-primary, #2c3e50);
-    margin-bottom: var(--space-sm, 0.5rem);
-}
-
-.section-description {
-    color: var(--color-text-muted, #7f8c8d);
-    font-size: 0.9rem;
-    margin-bottom: var(--space-lg, 1.5rem);
-}
-
-/* Filter Sections (matching synthesis) */
-.filter-section {
-    margin-bottom: var(--space-lg, 1.5rem);
-    padding-bottom: var(--space-lg, 1.5rem);
-    border-bottom: 1px solid var(--color-border, #dfe6e9);
-}
-
-.filter-section:last-child {
-    border-bottom: none;
-}
-
-.filter-section h3 {
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: var(--space-sm, 0.5rem);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--color-text-muted, #7f8c8d);
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm, 0.5rem);
-}
-
-.filter-group label {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm, 0.5rem);
-    font-size: 0.9rem;
-    cursor: pointer;
-}
-
-.filter-group input[type="checkbox"] {
-    cursor: pointer;
-    margin: 0;
-}
+/* .filter-section and .filter-group styles now in components.css */
 
 /* Network Mode Buttons */
 .network-mode-btn {
@@ -390,6 +311,34 @@ body {
     overflow: hidden;
 }
 
+/* Network Legend */
+.network-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md, 1rem);
+    padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+    background: var(--color-bg-light, #f8f9fa);
+    border: 1px solid var(--color-border, #dfe6e9);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    font-size: 0.85rem;
+    color: var(--color-text-muted, #7f8c8d);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs, 0.25rem);
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
 .network-container #network-graph {
     height: 100% !important;
     width: 100% !important;
@@ -605,6 +554,11 @@ body {
     .filter-panel {
         border-right: none;
         border-bottom: 1px solid var(--color-border, #dfe6e9);
+        height: auto;
+        position: relative;
+        top: 0;
+        margin: var(--space-md);
+        padding: var(--space-lg);
     }
 
     .detail-panel {
@@ -613,26 +567,283 @@ body {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding-top: var(--navbar-height, 60px);
+    }
+
+    .app-container {
+        overflow: visible;
+    }
+
+    .main-layout {
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+        min-height: auto;
+    }
+
+    .filter-panel {
+        margin: var(--space-sm);
+        padding: var(--space-md);
+        height: auto;
+        position: relative;
+        overflow: visible;
+    }
+
     .stats-cards {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+    }
+
+    .stat-card {
+        padding: var(--space-sm);
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.6rem;
+    }
+
+    .filter-section h3 {
+        font-size: 0.9rem;
+        margin-bottom: var(--space-xs);
+    }
+
+    .filter-group {
+        gap: var(--space-xs);
+    }
+
+    .filter-group label {
+        font-size: 0.85rem;
+    }
+
+    .network-mode-btn {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 0.8rem;
+    }
+
+    .network-mode-btn span {
+        display: inline;
+    }
+
+    .basket-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .btn-export,
+    .btn-clear {
+        flex: 1;
+        min-width: 100px;
+        padding: var(--space-sm) var(--space-md);
+        font-size: 0.85rem;
+    }
+
+    .btn-export span,
+    .btn-clear span {
+        display: none;
+    }
+
+    .sidebar-info {
+        display: none;
     }
 
     .detail-panel {
-        padding: var(--space-md, 1rem);
+        padding: var(--space-sm);
+    }
+
+    .basket-section {
+        margin-bottom: var(--space-md);
+    }
+
+    .basket-section h2 {
+        font-size: 1.1rem;
+        margin-bottom: var(--space-xs);
+    }
+
+    .section-description {
+        font-size: 0.85rem;
+        margin-bottom: var(--space-sm);
     }
 
     .network-container {
-        min-height: 400px;
-        height: 400px;
+        min-height: 300px;
+        height: 300px;
+        max-height: 300px;
     }
 
-    .basket-list {
+    .network-legend {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        padding: var(--space-xs) var(--space-sm);
+        font-size: 0.75rem;
+    }
+
+    .data-table-container {
+        margin-top: var(--space-md);
+    }
+
+    .table-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-sm);
+        padding: var(--space-md);
+    }
+
+    .table-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .table-search-input {
+        min-width: 100%;
+    }
+
+    .table-wrapper {
         max-height: 400px;
+    }
+
+    #basket-table th,
+    #basket-table td {
+        padding: var(--space-sm);
+        font-size: 0.85rem;
+    }
+
+    #basket-table th:nth-child(4),
+    #basket-table td:nth-child(4),
+    #basket-table th:nth-child(5),
+    #basket-table td:nth-child(5) {
+        display: none;
     }
 
     .toast {
         bottom: var(--space-md, 1rem);
         right: var(--space-md, 1rem);
         left: var(--space-md, 1rem);
+    }
+}
+
+/* Smart Empty State (New) */
+.empty-state-container {
+    padding: 3rem 2rem !important;
+}
+
+.smart-empty-state {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.empty-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    background: var(--color-bg-light, #f8f9fa);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+}
+
+.empty-icon-wrapper i {
+    font-size: 2rem;
+    color: var(--color-primary, #2c3e50);
+}
+
+.smart-empty-state h3 {
+    font-size: 1.5rem;
+    color: var(--color-primary, #2c3e50);
+    margin-bottom: 0.5rem;
+}
+
+.empty-subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-muted, #7f8c8d);
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    text-align: left;
+}
+
+.action-card {
+    background: white;
+    border: 1px solid var(--color-border, #dfe6e9);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-primary, #2c3e50);
+}
+
+.action-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--color-bg-light, #f8f9fa);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.action-icon i {
+    font-size: 1.25rem;
+    color: var(--color-primary, #2c3e50);
+}
+
+.action-card h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary, #2c3e50);
+    margin: 0 0 0.75rem 0;
+}
+
+.action-card p {
+    font-size: 0.95rem;
+    color: var(--color-text-muted, #7f8c8d);
+    line-height: 1.5;
+    margin: 0 0 1.5rem 0;
+    flex-grow: 1;
+}
+
+.btn-text {
+    font-weight: 600;
+    color: var(--color-secondary, #2980b9);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.action-card:hover .btn-text {
+    color: var(--color-primary, #2c3e50);
+}
+
+@media (max-width: 768px) {
+    .action-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .empty-state-container {
+        padding: 2rem 1rem !important;
     }
 }

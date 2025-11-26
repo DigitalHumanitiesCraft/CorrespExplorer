@@ -20,35 +20,43 @@
 /* Right Sidebar: Raw JSON Data */
 .raw-data-sidebar {
     position: sticky;
-    top: 80px;
-    height: fit-content;
-    max-height: calc(100vh - 100px);
+    top: var(--navbar-height); /* Align with navbar */
+    height: calc(100vh - var(--navbar-height) - var(--space-xl)); /* Adjust height to fit */
+    max-height: calc(100vh - var(--navbar-height) - var(--space-xl));
     overflow-y: auto;
+    background: var(--color-bg);
+    border-radius: var(--radius-md); /* Apply rounded corners */
+    box-shadow: var(--shadow-sm); /* Add soft shadow */
+    margin-right: var(--space-md); /* Add some space from right edge */
+    padding: var(--space-lg); /* Add internal padding */
 }
 
 .raw-data-sidebar-inner {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: var(--space-lg);
+    background: none; /* No background, use parent */
+    border: none; /* No border, use parent shadow */
+    border-radius: none; /* No radius, use parent */
+    padding: 0; /* No extra padding */
 }
 
 .raw-data-sidebar-inner h2 {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-md); /* Smaller heading */
     margin-bottom: var(--space-md);
-    color: var(--color-primary);
+    color: var(--color-text); /* Darker text */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
 }
 
 .raw-json-display {
-    background: #ffffff;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
+    background: var(--color-bg-light); /* Light background for code */
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     padding: var(--space-md);
     font-family: 'Courier New', monospace;
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 11px; /* Slightly smaller font */
+    line-height: 1.4;
     overflow-x: auto;
-    max-height: calc(100vh - 250px);
+    max-height: calc(100vh - var(--navbar-height) - 150px); /* Adjust max-height */
     overflow-y: auto;
 }
 

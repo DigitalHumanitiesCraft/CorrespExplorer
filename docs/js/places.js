@@ -43,12 +43,13 @@ async function init() {
         allPlaces = Array.from(placesMap.values());
         filteredPlaces = [...allPlaces];
 
+        // Default sort by count (descending)
+        filteredPlaces.sort((a, b) => b.count - a.count);
+
         renderList();
         initFilters();
-
-        console.log(`✅ Loaded ${allPlaces.length} places`);
     } catch (error) {
-        console.error('❌ Failed to load places:', error);
+        console.error('Failed to load places:', error);
         document.getElementById('places-list').innerHTML = `
             <div class="error-message">
                 <p>Fehler beim Laden der Daten.</p>
@@ -67,16 +68,11 @@ function renderList() {
 
     let html = '';
     filteredPlaces.forEach(place => {
-        const coords = place.lat && place.lon
-            ? `${place.lat.toFixed(4)}, ${place.lon.toFixed(4)}`
-            : 'Keine Koordinaten';
-
         html += `
             <div class="list-item">
                 <h3 class="list-item-title">
                     ${place.name}
                 </h3>
-                <div class="list-item-meta">${coords}</div>
                 <div class="list-item-stats">
                     <div class="list-item-stat">
                         <strong>${place.count}</strong> ${place.count === 1 ? 'Person' : 'Personen'}

@@ -11,12 +11,32 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/search.css">
     <link rel="stylesheet" href="css/stats.css">
 </head>
 <body>
     <!-- Global Navigation Placeholder -->
     <div id="navbar-placeholder"></div>
+
+    <!-- Mobile Filter Bar -->
+    <div class="mobile-filter-bar">
+        <div class="filter-row">
+            <div class="role-toggles">
+                <button class="role-toggle active" data-role="sender" title="Frauen, die Briefe an Goethe geschrieben haben">Absenderin</button>
+                <button class="role-toggle active" data-role="mentioned" title="Frauen, die in Briefen erwaehnt wurden">Erwaehnt</button>
+                <button class="role-toggle active" data-role="both" title="Frauen, die sowohl Briefe schrieben als auch erwaehnt wurden">Beides</button>
+                <button class="role-toggle active" data-role="indirect" title="Frauen nur aus biografischen Quellen (SNDB), nicht in Briefen">SNDB</button>
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="mobile-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="mobile-search-input" placeholder="Name suchen...">
+            </div>
+            <div class="result-count"><strong id="mobile-result-count">448</strong> Personen</div>
+        </div>
+    </div>
 
     <!-- Main Container -->
     <div class="container">
@@ -25,15 +45,15 @@
             <aside class="sidebar" role="complementary" aria-label="Filteroptionen">
                 <!-- Stats Cards -->
                 <div class="stats-cards">
-                    <a href="stats.html" class="stat-card stat-card-clickable" data-tooltip="Statistische Analyse">
+                    <a href="stats.html" class="stat-card stat-card-clickable" title="Statistische Analyse">
                         <div class="stat-value">1.793</div>
                         <div class="stat-label">Briefe</div>
                     </a>
-                    <a href="synthesis/index.html" class="stat-card stat-card-clickable" data-tooltip="Detaillierte Personenliste">
+                    <a href="synthesis.html" class="stat-card stat-card-clickable" title="Detaillierte Personenliste">
                         <div class="stat-value">448</div>
                         <div class="stat-label">Frauen</div>
                     </a>
-                    <a href="places.html" class="stat-card stat-card-clickable" data-tooltip="Zur Ortsliste">
+                    <a href="places.html" class="stat-card stat-card-clickable" title="Zur Ortsliste">
                         <div class="stat-value">227</div>
                         <div class="stat-label">Orte</div>
                     </a>
@@ -41,21 +61,17 @@
 
                 <!-- Timeline Filter in Sidebar -->
                 <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
-                    <h4 id="filter-time-heading">Zeitfilter</h4>
-                    <div class="timeline-mode-toggle">
-                        <button class="mode-btn active" data-mode="correspondence">Korrespondenz</button>
-                        <button class="mode-btn" data-mode="lifespan">Lebensdaten</button>
-                    </div>
+                    <h4 id="filter-time-heading" title="Filtert nach Jahren mit Briefaktivitaet">Zeitfilter</h4>
                     <div id="master-timeline" class="timeline-chart-sidebar"></div>
                     <div class="timeline-info-sidebar">
                         <span id="timeline-selection">Gesamter Zeitraum</span>
-                        <button id="reset-timeline" class="btn-reset-small">Zurücksetzen</button>
+                        <button id="reset-timeline" class="btn-reset-small">Zuruecksetzen</button>
                     </div>
                 </div>
 
                 <!-- Activity Filter in Sidebar -->
                 <div class="filter-group" role="group" aria-labelledby="filter-activity-heading">
-                    <h4 id="filter-activity-heading">Briefaktivität</h4>
+                    <h4 id="filter-activity-heading">Briefaktivitaet</h4>
                     <div class="activity-checkboxes">
                         <label class="checkbox-label">
                             <input type="checkbox" class="activity-checkbox" value="sender" checked>
@@ -63,7 +79,7 @@
                         </label>
                         <label class="checkbox-label">
                             <input type="checkbox" class="activity-checkbox" value="mentioned" checked>
-                            <span>Erwähnt</span>
+                            <span>Erwaehnt</span>
                         </label>
                         <label class="checkbox-label">
                             <input type="checkbox" class="activity-checkbox" value="both" checked>
@@ -74,6 +90,28 @@
                             <span>Nur SNDB</span>
                         </label>
                     </div>
+                </div>
+
+                <!-- Context Info -->
+                <div class="filter-group sidebar-info">
+                    <h4>Ueber diese Daten</h4>
+                    <p class="info-text">
+                        448 Frauen aus Goethes Korrespondenz (SNDB). Berufe aus der GND in 6 Kategorien:
+                    </p>
+                    <ul class="info-list category-legend">
+                        <li><span class="dot" style="background:#27ae60"></span>Literarisch</li>
+                        <li><span class="dot" style="background:#2980b9"></span>Kuenstlerisch</li>
+                        <li><span class="dot" style="background:#e67e22"></span>Musikalisch</li>
+                        <li><span class="dot" style="background:#8e44ad"></span>Hof/Adel</li>
+                        <li><span class="dot" style="background:#16a085"></span>Bildung</li>
+                        <li><span class="dot" style="background:#7f8c8d"></span>Sonstige</li>
+                    </ul>
+                    <h4>Interaktion</h4>
+                    <ul class="info-list">
+                        <li>Klick auf Kachel/Balken filtert</li>
+                        <li>Hover zeigt Details</li>
+                        <li>Timeline: Ziehen zum Einschraenken</li>
+                    </ul>
                 </div>
             </aside>
 
@@ -100,10 +138,6 @@
                 <section class="explorer-card explorer-card-full">
                     <div class="explorer-card-header">
                         <h2>Berufsverteilung</h2>
-                        <div class="explorer-card-actions">
-                            <button class="btn-export" data-export="occupations" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                            <button class="btn-export" data-export="occupations" data-format="png" aria-label="Als PNG exportieren">PNG</button>
-                        </div>
                     </div>
                     <div class="explorer-card-body">
                         <div id="chart-occupations" class="chart-container"></div>
@@ -115,10 +149,6 @@
                 <section class="explorer-card">
                     <div class="explorer-card-header">
                         <h2>Geografische Zentren</h2>
-                        <div class="explorer-card-actions">
-                            <button class="btn-export" data-export="places" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                            <button class="btn-export" data-export="places" data-format="png" aria-label="Als PNG exportieren">PNG</button>
-                        </div>
                     </div>
                     <div class="explorer-card-body">
                         <div id="chart-places" class="chart-container"></div>
@@ -130,10 +160,6 @@
                 <section class="explorer-card">
                     <div class="explorer-card-header">
                         <h2>Generationen</h2>
-                        <div class="explorer-card-actions">
-                            <button class="btn-export" data-export="cohorts" data-format="csv" aria-label="Als CSV exportieren">CSV</button>
-                            <button class="btn-export" data-export="cohorts" data-format="png" aria-label="Als PNG exportieren">PNG</button>
-                        </div>
                     </div>
                     <div class="explorer-card-body">
                         <div id="chart-cohorts" class="chart-container"></div>
@@ -142,6 +168,7 @@
                 </section>
 
             </div>
+
         </main>
         </div>
 
@@ -154,6 +181,7 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     <!-- Load basket manager -->
     <script src="js/basket-manager.js"></script>
+    <script src="js/mobile-filter.js"></script>
     <script src="js/stats.js" type="module"></script>
 </body>
 </html>

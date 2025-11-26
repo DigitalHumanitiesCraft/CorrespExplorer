@@ -1,6 +1,6 @@
 /* Import Design Tokens */
 @import url('tokens.css');
-@import url('variables.css');
+@import url('components.css');
 
 /* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Lato:wght@300;400;700&family=Merriweather:wght@400;700&display=swap');
@@ -26,50 +26,48 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-primary);
 }
 
-/* Global Card Style */
+/* Global Card Style - Modernized */
 .card {
     background: var(--bg-card);
     border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius: var(--radius-lg); /* Softer corners */
+    box-shadow: var(--shadow-sm); /* Soft elevation */
     padding: var(--space-xl);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
 }
 
-/* Update existing stat-card to match new design */
-.stat-card {
-    background: var(--bg-card);
-    border: none;
-    border-radius: 8px;
-    padding: var(--space-lg) var(--space-sm);
-    text-align: center;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
+
+/* stat-card styles moved to components.css for consistency */
 
 /* Global Button Style */
 button, .btn {
     font-family: var(--font-base);
 }
 
-/* Navbar */
+/* Navbar - Glassmorphism Style */
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     height: var(--navbar-height);
-    background: var(--color-primary);
-    color: white;
+    background: rgba(255, 255, 255, 0.9); /* High opacity white */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    color: var(--color-primary); /* Dark text for light navbar */
     display: flex;
     align-items: center;
     padding: 0 var(--space-xl);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
     z-index: 1000;
+    transition: all 0.3s ease;
 }
+
+/* Scrolled state logic can be added later via JS for even more transparency at top */
 
 /* Burger Menu Button */
 .nav-burger {
@@ -83,28 +81,22 @@ button, .btn {
     padding: 10px;
     cursor: pointer;
     margin-right: var(--space-sm);
-    border-radius: 4px;
+    border-radius: var(--radius-md);
     transition: background 0.2s;
     flex-shrink: 0;
 }
 
 .nav-burger:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.nav-burger:focus {
-    outline: 2px solid rgba(255, 255, 255, 0.8);
-    outline-offset: 2px;
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .nav-burger-icon {
     display: block;
-    position: relative;
-    width: 24px;
+    width: 22px;
     height: 2px;
-    background: white;
-    border-radius: 2px;
-    transition: all 0.3s;
+    background: var(--color-primary);
+    position: relative;
+    transition: background 0.2s;
 }
 
 .nav-burger-icon::before,
@@ -112,19 +104,18 @@ button, .btn {
     content: '';
     position: absolute;
     left: 0;
-    width: 24px;
+    width: 22px;
     height: 2px;
-    background: white;
-    border-radius: 2px;
-    transition: all 0.3s;
+    background: var(--color-primary);
+    transition: transform 0.2s, top 0.2s;
 }
 
 .nav-burger-icon::before {
-    top: -8px;
+    top: -7px;
 }
 
 .nav-burger-icon::after {
-    bottom: -8px;
+    top: 7px;
 }
 
 .nav-burger.active .nav-burger-icon {
@@ -137,19 +128,58 @@ button, .btn {
 }
 
 .nav-burger.active .nav-burger-icon::after {
-    bottom: 0;
+    top: 0;
     transform: rotate(-45deg);
 }
 
 .nav-brand {
     font-size: var(--font-size-xl);
+    font-family: var(--font-headings);
     font-weight: 700;
-    margin-right: var(--space-3xl);
+    margin-right: var(--space-xl);
+    color: var(--color-primary);
+    letter-spacing: -0.5px;
+}
+
+/* Data Source Switcher */
+.data-source-switcher {
+    margin-right: var(--space-xl);
+}
+
+.data-source-switcher select {
+    background: var(--color-primary);
+    color: white;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-base);
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M6 8L2 4h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 28px;
+}
+
+.data-source-switcher select:hover {
+    background-color: var(--color-primary-dark, #1a252f);
+}
+
+.data-source-switcher select:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.data-source-switcher select option {
+    background: var(--color-primary);
+    color: white;
 }
 
 .nav-links {
     display: flex;
-    gap: var(--space-xl);
+    gap: var(--space-lg);
     margin-right: var(--space-xl);
 }
 
@@ -157,26 +187,28 @@ button, .btn {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-text);
     text-decoration: none;
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
     padding: var(--space-sm) var(--space-md);
-    border-radius: 4px;
+    border-radius: 20px; /* Pill shape */
     transition: all 0.2s;
 }
 
 .nav-link:hover {
+    color: var(--color-primary);
+    background: rgba(44, 62, 80, 0.05);
+}
+
+.nav-link.active {
+    background: var(--color-primary);
     color: white;
-    background: rgba(255, 255, 255, 0.1);
 }
 
-.nav-link-icon {
-    font-size: 18px;
-    line-height: 1;
-}
-
-.nav-link-text {
-    font-weight: 500;
+.nav-link.active:hover {
+    background: var(--color-primary);
+    color: white;
 }
 
 /* Basket badge in navbar */
@@ -186,18 +218,18 @@ button, .btn {
 
 .nav-badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -2px;
+    right: -2px;
     background: var(--color-accent, #e74c3c);
     color: white;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    padding: 2px 6px;
+    padding: 2px 5px;
     border-radius: 10px;
     line-height: 1;
-    min-width: 18px;
+    min-width: 16px;
     text-align: center;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: 2px solid white; /* Cutout effect */
 }
 
 /* Navbar Dropdown */
@@ -289,79 +321,81 @@ button, .btn {
 .sidebar {
     width: var(--sidebar-width);
     background: var(--color-bg);
-    border-right: 1px solid var(--color-border);
-    padding: var(--space-2xl) var(--space-xl);
+    padding: var(--space-xl) var(--space-lg); /* Slightly reduced vertical padding for tighter look */
+    border-right: none; /* Remove hard border */
+    box-shadow: var(--shadow-sm); /* Add soft shadow to separate from main content */
+    border-radius: var(--radius-md); /* Apply rounded corners */
     overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: var(--space-md); /* Add some space from navbar */
+    margin-left: var(--space-md); /* Add some space from left edge */
+    height: calc(100vh - var(--navbar-height) - 2 * var(--space-md)); /* Adjust height to fit */
+    position: sticky; /* Keep it in place */
+    top: var(--navbar-height); /* Align with navbar */
 }
 
 .sidebar h3 {
     font-size: var(--font-size-lg);
-    margin-bottom: var(--space-xl);
+    margin-bottom: var(--space-lg); /* Slightly reduced spacing */
     color: var(--color-text);
+    font-weight: 700;
 }
 
-.filter-group {
-    margin-bottom: var(--space-lg);  /* Reduced from 2xl (48px) to lg (24px) for more compact sidebar */
-}
+/* .filter-group base styles now in components.css */
 
-/* Two-column filter layout */
 .filter-group-row {
-    display: flex;
-    gap: var(--space-md);
     margin-bottom: var(--space-lg);
 }
 
-.filter-group-half {
-    flex: 1;
-    margin-bottom: 0;  /* Override default margin when in row */
-}
-
+/* Override for index.html sidebar - uses h4 instead of h3 */
 .filter-group h4 {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     font-weight: 600;
-    margin-bottom: var(--space-sm);  /* Reduced from md (16px) to sm (8px) */
-    color: var(--color-text);
-}
-
-.filter-group label {
-    display: block;
     margin-bottom: var(--space-sm);
-    cursor: pointer;
-    font-size: var(--font-size-base);
-}
-
-.filter-group input[type="checkbox"] {
-    margin-right: var(--space-sm);
-    cursor: pointer;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* Year Range Filter with noUiSlider */
 #year-range-slider {
     margin: var(--space-md) 0;
+    height: 8px;
 }
 
-.year-range-display {
-    text-align: center;
-    margin-top: var(--space-sm);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
-    font-weight: 500;
-}
+/* year-range-display - Moved to components.css for consistency */
 
 /* noUiSlider customization */
+#year-range-slider .noUi-base {
+    height: 8px;
+}
+
+#year-range-slider .noUi-connects {
+    border-radius: var(--radius-sm);
+}
+
 #year-range-slider .noUi-connect {
     background: var(--color-accent);
 }
 
 #year-range-slider .noUi-handle {
+    width: 20px;
+    height: 20px;
     border: 2px solid var(--color-accent);
     border-radius: 50%;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background: var(--color-bg);
+    box-shadow: var(--shadow-sm);
+    top: -6px;
+    right: -10px;
 }
 
 #year-range-slider .noUi-handle:hover {
     background: var(--color-bg-light);
+}
+
+#year-range-slider .noUi-handle:before,
+#year-range-slider .noUi-handle:after {
+    display: none;
 }
 
 #year-range-slider .noUi-tooltip {
@@ -370,35 +404,10 @@ button, .btn {
 
 /* Filter buttons */
 .filter-buttons {
-    display: flex;
-    gap: var(--space-sm);
+    margin-top: var(--space-lg);
 }
 
-.filter-buttons button {
-    flex: 1;
-    padding: 8px 12px;  /* Reduced from 16px 24px for more compact layout */
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: var(--font-size-sm);
-    transition: all 0.2s;
-}
-
-.filter-buttons button:hover {
-    background: var(--color-border);
-}
-
-#select-all-filters {
-    background: var(--color-secondary);
-    color: white;
-    border-color: var(--color-secondary);
-}
-
-#select-all-filters:hover {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-}
+/* Reset button uses unified .btn-reset from components.css */
 
 /* Main Content */
 .main-content {
@@ -406,6 +415,7 @@ button, .btn {
     display: flex;
     flex-direction: column;
     background: var(--color-bg);
+    margin-top: var(--space-md); /* Align with sidebar */
 }
 
 /* Tabs */
@@ -570,11 +580,8 @@ button, .btn {
     text-align: center;
 }
 
-.nav-mobile-search {
-    position: relative;
-}
-
-.nav-mobile-search input {
+/* Mobile Source Switcher */
+.nav-mobile-source-switcher select {
     width: 100%;
     padding: var(--space-md);
     border: 1px solid var(--color-border);
@@ -582,19 +589,12 @@ button, .btn {
     font-size: var(--font-size-base);
     background: var(--color-bg);
     color: var(--color-text);
+    cursor: pointer;
 }
 
-.nav-mobile-search input:focus {
+.nav-mobile-source-switcher select:focus {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
-}
-
-.nav-mobile-search .search-results {
-    position: relative;
-    top: 0;
-    left: 0;
-    right: 0;
-    margin-top: var(--space-sm);
 }
 
 /* Mobile (≤768px) */
@@ -611,8 +611,9 @@ button, .btn {
     .view-switcher {
         display: flex;
         flex: 1;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
+        background: var(--bg-subtle, #f5f5f5);
+        border: 1px solid var(--border-color, #e0e0e0);
+        border-radius: var(--radius-md);
         padding: 4px;
         gap: 4px;
         margin-right: var(--space-sm);
@@ -632,11 +633,13 @@ button, .btn {
         display: flex;
         align-items: center;
         justify-content: center;
+        color: var(--text-muted, #666);
+        background: transparent;
     }
 
     .view-btn.active,
     .view-btn[aria-pressed="true"] {
-        background: rgba(255, 255, 255, 0.25);
+        background: var(--color-primary, #2c3e50);
         color: white;
         font-weight: 600;
     }
@@ -646,6 +649,10 @@ button, .btn {
     }
 
     .nav-links {
+        display: none;
+    }
+
+    .data-source-switcher {
         display: none;
     }
 
@@ -670,12 +677,19 @@ button, .btn {
     .main-content {
         width: 100%;
     }
+
+    .content-wrapper {
+        overflow: visible;
+        flex-direction: column;
+    }
 }
 
 /* Mobile (≤480px) */
 @media (max-width: 480px) {
     .navbar {
         padding: 0 var(--space-sm);
+        background: rgba(255, 255, 255, 0.98); /* Stronger background on mobile */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow for separation */
     }
 
     .nav-brand {
@@ -716,6 +730,14 @@ button, .btn {
 
     .view-btn[data-view="stats"]::before {
         content: '\f1ea';  /* fa-envelope */
+    }
+
+    .view-btn[data-view="narrative"]::before {
+        content: '\f02d';  /* fa-book */
+    }
+
+    .view-btn[data-view="places"]::before {
+        content: '\f3c5';  /* fa-map-marker-alt */
     }
 
     .view-btn-text {
@@ -1255,27 +1277,7 @@ button, .btn {
     margin-bottom: var(--space-2xl);
 }
 
-.stat-card {
-    background: var(--color-bg-light);
-    padding: var(--space-xl);
-    border-radius: 8px;
-    text-align: center;
-    border: 1px solid var(--color-border);
-}
-
-.stat-value {
-    font-size: var(--font-size-3xl);
-    font-weight: 700;
-    color: var(--color-secondary);
-    margin-bottom: var(--space-sm);
-}
-
-.stat-label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+/* stat-card, stat-value, stat-label moved to components.css */
 
 /* Biography Section */
 .biography-section {
@@ -1504,26 +1506,28 @@ button, .btn {
     gap: var(--space-lg);
 }
 
-/* View Switcher */
+/* View Switcher - Updated for light navbar */
 .view-switcher {
     display: flex;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 4px;
+    background: var(--bg-subtle, #f5f5f5);
+    border-radius: var(--radius-md);
     overflow: hidden;
+    border: 1px solid var(--border-color, #e0e0e0);
 }
 
 .view-btn {
     padding: var(--space-sm) var(--space-md);
     border: none;
     background: transparent;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: var(--font-size-base);
+    color: var(--text-muted, #666);
+    font-size: var(--font-size-sm);
     font-family: var(--font-base);
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
     text-decoration: none;
     display: inline-block;
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-right: 1px solid var(--border-color, #e0e0e0);
 }
 
 .view-btn:last-child {
@@ -1531,20 +1535,20 @@ button, .btn {
 }
 
 .view-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+    background: var(--bg-hover, #e8e8e8);
+    color: var(--color-primary, #2c3e50);
 }
 
 .view-btn.active,
 .view-btn.view-btn-active {
-    background: rgba(255, 255, 255, 0.25);
+    background: var(--color-primary, #2c3e50);
     color: white;
     cursor: default;
 }
 
 .view-btn.active:hover,
 .view-btn.view-btn-active:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: var(--color-primary, #2c3e50);
 }
 
 /* Map Legend */
@@ -1563,11 +1567,11 @@ button, .btn {
 }
 
 .legend-color {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    border: 2px solid white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: 3px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     flex-shrink: 0;
 }
 
@@ -1750,33 +1754,262 @@ button, .btn {
     transform: translateY(0);
 }
 
-/* Time Filter Tabs */
-.time-filter-tabs {
+/* Time Filter Tabs - Moved to components.css for consistency */
+
+/* Loading Overlay */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-body); /* Paper white background */
     display: flex;
-    gap: 4px;
-    margin-bottom: var(--space-md);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
 }
 
-.time-filter-tab {
-    flex: 1;
-    padding: 4px 8px;
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border);
-    border-radius: 3px;
+#loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.spinner {
+    font-size: 4rem; /* Large icon size */
+    color: var(--primary-color);
+    animation: pulse 1.5s infinite ease-in-out;
+    margin-bottom: var(--space-xl);
+}
+
+.loading-text {
+    font-family: var(--font-headings); /* Merriweather */
+    font-size: var(--font-size-2xl);
+    color: var(--text-main);
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Map Layer Switcher Button */
+.map-control-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    background-color: var(--bg-card);
+    color: var(--primary-color);
+    border: none;
+    border-radius: 4px;
+    padding: 10px 12px;
     cursor: pointer;
-    font-size: 11px;
-    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 10; /* Above the map */
+    font-size: 1.2rem;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.map-control-btn:hover {
+    background-color: var(--color-bg-light);
+    transform: translateY(-1px);
+}
+
+
+/* Data Context Box for Person Page */
+.data-context-box {
+    background: var(--color-bg-light);
+    border-left: 4px solid var(--color-info);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-xl);
+}
+
+.data-context-box .context-info-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Modal Base Styles (General-Proofed) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6); /* Light overlay */
+    backdrop-filter: blur(8px); /* Strong blur for focus */
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-xl);
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content { /* Generic modal content */
+    background: white;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 560px; /* Default max-width, can be overridden */
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Specific styles for the onboarding modal (animations) */
+.modal-content.onboarding-card {
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Elegant spring */
+}
+
+@keyframes slideUp {
+    from { transform: translateY(40px) scale(0.98); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Clean Header - Now part of generic modal-header */
+.modal-header {
+    background: white; /* Always white for consistency */
+    color: var(--color-primary);
+    padding: var(--space-2xl) var(--space-2xl) 0 var(--space-2xl); /* Adjust padding */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.modal-header h2 {
+    color: var(--color-primary);
+    font-size: 1.75rem;
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-family: var(--font-headings);
+}
+
+.modal-close-btn {
+    background: var(--color-bg-light);
+    border: none;
     color: var(--color-text);
-    font-weight: 500;
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
 }
 
-.time-filter-tab:hover {
-    background: var(--color-border);
+.modal-close-btn:hover {
+    background: #e0e0e0;
+    transform: rotate(90deg);
 }
 
-.time-filter-tab.active {
-    background: var(--color-secondary);
+.modal-body {
+    padding: var(--space-2xl);
+}
+
+.onboarding-step {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 32px;
+    align-items: flex-start;
+}
+
+.onboarding-step:last-child {
+    margin-bottom: 0;
+}
+
+.step-icon {
+    width: 48px;
+    height: 48px;
+    background: #f0f4f8; /* Subtle blue-grey */
+    border-radius: 16px; /* Squircle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--color-secondary);
+}
+
+.step-icon i {
+    font-size: 1.25rem;
+}
+
+.warning-step .step-icon {
+    background: #fff8e1; /* Subtle yellow */
+    color: #b7791f;
+}
+
+.step-text h3 {
+    font-size: 1.1rem;
+    margin: 0 0 6px 0;
+    color: var(--color-text);
+    font-weight: 700;
+}
+
+.step-text p {
+    font-size: 0.95rem;
+    color: var(--color-text-light);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.modal-footer {
+    padding: 24px 32px;
+    background: white; /* Seamless continuation */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: none; /* Removed border for cleaner look */
+    padding-top: 0; /* Closer to content */
+}
+
+.dont-show-again {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.dont-show-again:hover {
+    background: var(--color-bg-light);
+}
+
+.btn-primary {
+    background: var(--color-primary);
     color: white;
-    border-color: var(--color-secondary);
+    border: none;
+    padding: 14px 28px;
+    border-radius: 30px; /* Pill button */
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
 }
 
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3);
+    background: var(--color-primary-dark);
+}
