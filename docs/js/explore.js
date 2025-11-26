@@ -768,8 +768,8 @@ function updatePersonFilterDisplay() {
 function updateFilterCounts() {
     // Get current filter state excluding language
     const yearRange = getYearRangeValues();
-    const personFilters = currentPersonFilter ? [currentPersonFilter] : [];
-    const topicFilters = currentSubjectFilter ? [currentSubjectFilter] : [];
+    const personFilters = selectedPersonId ? [selectedPersonId] : [];
+    const topicFilters = selectedSubjectId ? [selectedSubjectId] : [];
 
     // Filter letters without language constraint to show potential counts
     const lettersWithoutLanguageFilter = allLetters.filter(letter => {
@@ -789,7 +789,9 @@ function updateFilterCounts() {
         // Topic filter
         if (topicFilters.length > 0) {
             const subjects = letter.mentions?.subjects || [];
-            const hasSubject = subjects.some(s => topicFilters.includes(s.uri));
+            const hasSubject = subjects.some(s =>
+                topicFilters.includes(s.id) || topicFilters.includes(s.label) || topicFilters.includes(s.uri)
+            );
             if (!hasSubject) return false;
         }
 
