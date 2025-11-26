@@ -24,6 +24,12 @@ let selectedSubjectId = null;
 let topicsSearchTerm = '';
 let topicsSortOrder = 'count-desc';
 
+// Places view state
+let placesIndex = {};
+let selectedPlaceId = null;
+let placesSearchTerm = '';
+let placesSortOrder = 'count-desc';
+
 // Logging utility
 const log = {
     init: (msg) => !IS_PRODUCTION && console.log(`[INIT] ${msg}`),
@@ -75,6 +81,7 @@ async function init() {
         initLettersView();
         initTimeline();
         initTopicsView();
+        initPlacesView();
         initExport();
 
         // Apply initial view from URL
@@ -990,6 +997,8 @@ function switchView(view) {
         renderTimeline();
     } else if (view === 'topics') {
         renderTopicsList();
+    } else if (view === 'places') {
+        renderPlacesList();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -2032,6 +2041,279 @@ function updateSubjectFilterDisplay() {
 window.filterBySubject = function(subjectId) {
     applySubjectFilter(subjectId);
 };
+
+// ===================
+// PLACES VIEW
+// ===================
+
+function initPlacesView() {
+    buildPlacesIndex();
+
+    const searchInput = document.getElementById('place-search');
+    const sortSelect = document.getElementById('place-sort');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce((e) => {
+            placesSearchTerm = e.target.value.toLowerCase();
+            renderPlacesList();
+        }, 300));
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+            placesSortOrder = e.target.value;
+            renderPlacesList();
+        });
+    }
+
+    // Filter button
+    const filterBtn = document.getElementById('place-filter-btn');
+    if (filterBtn) {
+        filterBtn.addEventListener('click', () => {
+            if (selectedPlaceId) {
+                applyPlaceFilter(selectedPlaceId);
+                switchView('letters');
+            }
+        });
+    }
+
+    log.init(`Places view initialized: ${Object.keys(placesIndex).length} places`);
+}
+
+function buildPlacesIndex() {
+    placesIndex = {};
+
+    allLetters.forEach(letter => {
+        if (!letter.place_sent?.geonames_id) return;
+
+        const placeId = letter.place_sent.geonames_id;
+
+        if (!placesIndex[placeId]) {
+            placesIndex[placeId] = {
+                id: placeId,
+                name: letter.place_sent.name,
+                lat: letter.place_sent.lat,
+                lon: letter.place_sent.lon,
+                letterCount: 0,
+                letters: [],
+                senders: {},
+                languages: {},
+                years: []
+            };
+        }
+
+        placesIndex[placeId].letterCount++;
+        placesIndex[placeId].letters.push(letter.id);
+        if (letter.year) placesIndex[placeId].years.push(letter.year);
+
+        if (letter.sender?.name) {
+            const senderName = letter.sender.name;
+            placesIndex[placeId].senders[senderName] = (placesIndex[placeId].senders[senderName] || 0) + 1;
+        }
+
+        if (letter.language?.code) {
+            const langCode = letter.language.code;
+            placesIndex[placeId].languages[langCode] = (placesIndex[placeId].languages[langCode] || 0) + 1;
+        }
+    });
+
+    // Calculate top senders and year range for each place
+    Object.values(placesIndex).forEach(place => {
+        place.topSenders = Object.entries(place.senders)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([name, count]) => ({ name, count }));
+        place.senderCount = Object.keys(place.senders).length;
+        place.yearMin = place.years.length > 0 ? Math.min(...place.years) : null;
+        place.yearMax = place.years.length > 0 ? Math.max(...place.years) : null;
+    });
+}
+
+function renderPlacesList() {
+    const container = document.getElementById('places-list');
+    if (!container) return;
+
+    // Get places filtered by current filters
+    const filteredPlaceIds = new Set();
+    filteredLetters.forEach(letter => {
+        if (letter.place_sent?.geonames_id) {
+            filteredPlaceIds.add(letter.place_sent.geonames_id);
+        }
+    });
+
+    // Count letters per place in filtered set
+    const filteredPlaceCounts = {};
+    filteredLetters.forEach(letter => {
+        if (letter.place_sent?.geonames_id) {
+            const placeId = letter.place_sent.geonames_id;
+            filteredPlaceCounts[placeId] = (filteredPlaceCounts[placeId] || 0) + 1;
+        }
+    });
+
+    let places = Object.values(placesIndex)
+        .filter(place => filteredPlaceIds.has(place.id))
+        .map(place => ({
+            ...place,
+            filteredCount: filteredPlaceCounts[place.id] || 0
+        }));
+
+    // Apply search filter
+    if (placesSearchTerm) {
+        places = places.filter(place =>
+            place.name.toLowerCase().includes(placesSearchTerm)
+        );
+    }
+
+    // Apply sort
+    switch (placesSortOrder) {
+        case 'count-desc':
+            places.sort((a, b) => b.filteredCount - a.filteredCount);
+            break;
+        case 'count-asc':
+            places.sort((a, b) => a.filteredCount - b.filteredCount);
+            break;
+        case 'name-asc':
+            places.sort((a, b) => a.name.localeCompare(b.name, 'de'));
+            break;
+        case 'name-desc':
+            places.sort((a, b) => b.name.localeCompare(a.name, 'de'));
+            break;
+    }
+
+    // Render list
+    container.innerHTML = places.map(place => {
+        const isActive = selectedPlaceId === place.id;
+        const yearRange = place.yearMin && place.yearMax
+            ? `${place.yearMin}-${place.yearMax}`
+            : '';
+        return `
+            <div class="place-card ${isActive ? 'active' : ''}" data-place-id="${place.id}">
+                <div class="place-info">
+                    <div class="place-name">${escapeHtml(place.name)}</div>
+                    <div class="place-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
+                </div>
+                <div class="place-count">${place.filteredCount}</div>
+            </div>
+        `;
+    }).join('');
+
+    // Add click handlers
+    container.querySelectorAll('.place-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const placeId = card.dataset.placeId;
+            selectPlace(placeId);
+        });
+    });
+}
+
+function selectPlace(placeId) {
+    selectedPlaceId = placeId;
+    const place = placesIndex[placeId];
+
+    if (!place) return;
+
+    // Update active state in list
+    document.querySelectorAll('.place-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.placeId === placeId);
+    });
+
+    // Show detail panel
+    const emptyState = document.querySelector('.place-detail-empty');
+    const content = document.getElementById('place-detail-content');
+
+    if (emptyState) emptyState.style.display = 'none';
+    if (content) content.style.display = 'block';
+
+    // Calculate filtered count for this place
+    const filteredCount = filteredLetters.filter(l =>
+        l.place_sent?.geonames_id === placeId
+    ).length;
+
+    // Update title and count
+    document.getElementById('place-detail-title').textContent = place.name;
+    document.getElementById('place-detail-count').textContent = `${filteredCount} Briefe`;
+
+    // Render top senders
+    const sendersContainer = document.getElementById('place-top-senders');
+    if (sendersContainer) {
+        sendersContainer.innerHTML = place.topSenders.map(s =>
+            `<div class="place-sender-item">
+                <span class="place-sender-name">${escapeHtml(s.name)}</span>
+                <span class="place-sender-count">${s.count}</span>
+            </div>`
+        ).join('');
+    }
+
+    // Render mini timeline
+    const timelineContainer = document.getElementById('place-timeline');
+    if (timelineContainer && place.yearMin && place.yearMax) {
+        const yearCounts = {};
+        place.years.forEach(year => {
+            yearCounts[year] = (yearCounts[year] || 0) + 1;
+        });
+
+        const maxCount = Math.max(...Object.values(yearCounts));
+        const years = [];
+        for (let y = place.yearMin; y <= place.yearMax; y++) {
+            years.push({ year: y, count: yearCounts[y] || 0 });
+        }
+
+        timelineContainer.innerHTML = `
+            <div class="mini-timeline-bars">
+                ${years.map(y => {
+                    const height = y.count > 0 ? Math.max(10, (y.count / maxCount) * 100) : 0;
+                    return `<div class="mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
+                }).join('')}
+            </div>
+            <div class="mini-timeline-labels">
+                <span>${place.yearMin}</span>
+                <span>${place.yearMax}</span>
+            </div>
+        `;
+    } else if (timelineContainer) {
+        timelineContainer.innerHTML = '<p class="no-data">Keine Zeitdaten</p>';
+    }
+
+    // Render languages
+    const languagesContainer = document.getElementById('place-languages');
+    if (languagesContainer) {
+        const langEntries = Object.entries(place.languages)
+            .sort((a, b) => b[1] - a[1]);
+
+        languagesContainer.innerHTML = langEntries.map(([code, count]) => {
+            const label = LANGUAGE_LABELS[code] || code.toUpperCase();
+            const color = LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other;
+            return `<span class="place-language-tag" style="border-left: 3px solid ${color}">${label} (${count})</span>`;
+        }).join('');
+    }
+
+    // Update GeoNames link
+    const geonamesLink = document.getElementById('place-geonames-link');
+    if (geonamesLink) {
+        geonamesLink.href = `https://www.geonames.org/${placeId}`;
+    }
+}
+
+function applyPlaceFilter(placeId) {
+    log.event(`Applying place filter: ${placeId}`);
+
+    // Filter letters by place
+    filteredLetters = allLetters.filter(letter =>
+        letter.place_sent?.geonames_id === placeId
+    );
+
+    // Update aggregation and UI
+    placeAggregation = aggregateLettersByPlace(filteredLetters, dataIndices.places || {});
+
+    if (map && map.loaded() && mapInitialized) {
+        renderPlaceMarkers(placeAggregation);
+    }
+
+    updateFilterCounts();
+    updateUrlState();
+
+    log.event(`Filtered letters count: ${filteredLetters.length}`);
+}
 
 // ===================
 // EXPORT

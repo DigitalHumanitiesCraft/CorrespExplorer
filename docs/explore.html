@@ -53,6 +53,9 @@
             <button class="view-btn" data-view="topics" aria-pressed="false" id="topics-view-btn" style="display: none;">
                 <i class="fas fa-tags"></i> <span class="view-btn-text">Themen</span>
             </button>
+            <button class="view-btn" data-view="places" aria-pressed="false" id="places-view-btn">
+                <i class="fas fa-map-marker-alt"></i> <span class="view-btn-text">Orte</span>
+            </button>
         </div>
         <div class="nav-links">
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
@@ -242,6 +245,67 @@
                                         <button class="btn btn-primary" id="topic-filter-btn">
                                             <i class="fas fa-filter"></i> Briefe filtern
                                         </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Places View -->
+                <div id="places-view" class="tab-content">
+                    <div class="places-container">
+                        <div class="places-header">
+                            <h3>Absendeorte der Korrespondenz</h3>
+                            <p class="places-info">Klicken Sie auf einen Ort, um Details zu sehen und zu filtern</p>
+                        </div>
+                        <div class="places-layout">
+                            <!-- Places List -->
+                            <div class="places-list-panel">
+                                <div class="list-header">
+                                    <input type="search" id="place-search" class="list-search" placeholder="Ort suchen..." aria-label="Ort suchen">
+                                    <div class="list-sort">
+                                        <label for="place-sort">Sortieren:</label>
+                                        <select id="place-sort">
+                                            <option value="count-desc">Briefe (absteigend)</option>
+                                            <option value="count-asc">Briefe (aufsteigend)</option>
+                                            <option value="name-asc">Name (A-Z)</option>
+                                            <option value="name-desc">Name (Z-A)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="places-list" class="entity-list"></div>
+                            </div>
+                            <!-- Place Detail Panel -->
+                            <div class="place-detail-panel" id="place-detail-panel">
+                                <div class="place-detail-empty">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <p>Waehlen Sie einen Ort aus der Liste</p>
+                                </div>
+                                <div class="place-detail-content" id="place-detail-content" style="display: none;">
+                                    <div class="place-detail-header">
+                                        <h4 id="place-detail-title">Ort</h4>
+                                        <span class="place-detail-count" id="place-detail-count">0 Briefe</span>
+                                    </div>
+                                    <div class="place-detail-section">
+                                        <h5>Top Absender</h5>
+                                        <div id="place-top-senders" class="place-top-senders"></div>
+                                    </div>
+                                    <div class="place-detail-section">
+                                        <h5>Zeitliche Verteilung</h5>
+                                        <div id="place-timeline" class="place-mini-timeline"></div>
+                                    </div>
+                                    <div class="place-detail-section">
+                                        <h5>Sprachen</h5>
+                                        <div id="place-languages" class="place-languages"></div>
+                                    </div>
+                                    <div class="place-detail-actions">
+                                        <button class="btn btn-primary" id="place-filter-btn">
+                                            <i class="fas fa-filter"></i> Briefe filtern
+                                        </button>
+                                        <a id="place-geonames-link" href="#" target="_blank" class="btn btn-secondary">
+                                            <i class="fas fa-external-link-alt"></i> GeoNames
+                                        </a>
                                     </div>
                                 </div>
                             </div>

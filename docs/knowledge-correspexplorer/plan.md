@@ -153,7 +153,7 @@ Status: Bereits vorhanden, wird automatisch von Claude Code genutzt.
 ### Phase 1: Kern-Verbesserungen
 
 1. ~~US-07: Orts-Details erweitern (Top-5 Absender im Popup)~~ - erledigt
-2. Orte-Index View (Places View)
+2. ~~Orte-Index View (Places View)~~ - erledigt
 3. About-Seite
 
 ### Phase 2: Integration
