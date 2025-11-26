@@ -662,6 +662,11 @@ function applyFilters() {
     updateFilterCounts();
     updateUrlState();
     updatePersonFilterDisplay();
+
+    // Re-render topics view if active
+    if (currentView === 'topics') {
+        renderTopicsList();
+    }
 }
 
 // Apply person filter
@@ -1573,7 +1578,26 @@ function renderTopicsList() {
     const container = document.getElementById('topics-list');
     if (!container) return;
 
-    let topics = Object.values(subjectIndex);
+    // Build dynamic topic counts based on filtered letters
+    const filteredTopicCounts = {};
+    filteredLetters.forEach(letter => {
+        if (!letter.mentions?.subjects) return;
+        letter.mentions.subjects.forEach(subject => {
+            const subjectId = subject.id || subject.label;
+            if (!filteredTopicCounts[subjectId]) {
+                filteredTopicCounts[subjectId] = 0;
+            }
+            filteredTopicCounts[subjectId]++;
+        });
+    });
+
+    // Create topics array with filtered counts
+    let topics = Object.values(subjectIndex)
+        .map(topic => ({
+            ...topic,
+            filteredCount: filteredTopicCounts[topic.id] || 0
+        }))
+        .filter(t => t.filteredCount > 0); // Only show topics with matches in filtered letters
 
     // Filter by search
     if (topicsSearchTerm) {
@@ -1582,18 +1606,18 @@ function renderTopicsList() {
         );
     }
 
-    // Sort
+    // Sort (use filteredCount instead of count)
     topics.sort((a, b) => {
         switch (topicsSortOrder) {
-            case 'count-desc': return b.count - a.count;
-            case 'count-asc': return a.count - b.count;
+            case 'count-desc': return b.filteredCount - a.filteredCount;
+            case 'count-asc': return a.filteredCount - b.filteredCount;
             case 'name-asc': return a.label.localeCompare(b.label);
             default: return 0;
         }
     });
 
-    // Find max count for bar scaling
-    const maxCount = topics.length > 0 ? Math.max(...topics.map(t => t.count)) : 1;
+    // Find max count for bar scaling (use filteredCount)
+    const maxCount = topics.length > 0 ? Math.max(...topics.map(t => t.filteredCount)) : 1;
 
     if (topics.length === 0) {
         container.innerHTML = `
@@ -1606,7 +1630,7 @@ function renderTopicsList() {
     }
 
     container.innerHTML = topics.map(topic => {
-        const barWidth = (topic.count / maxCount) * 100;
+        const barWidth = (topic.filteredCount / maxCount) * 100;
         const isActive = selectedSubjectId === topic.id;
 
         return `
@@ -1617,7 +1641,7 @@ function renderTopicsList() {
                         <div class="topic-bar" style="width: ${barWidth}%"></div>
                     </div>
                 </div>
-                <div class="topic-count">${topic.count}</div>
+                <div class="topic-count">${topic.filteredCount}</div>
             </div>
         `;
     }).join('');
@@ -1640,6 +1664,47 @@ function selectTopic(topicId) {
     const topic = subjectIndex[topicId];
     if (!topic) return;
 
+    // Calculate filtered data for this topic
+    const filteredTopicLetters = filteredLetters.filter(letter => {
+        const subjects = letter.mentions?.subjects || [];
+        return subjects.some(s => (s.id || s.label) === topicId);
+    });
+
+    const filteredCount = filteredTopicLetters.length;
+
+    // Build filtered correspondents
+    const filteredPersons = {};
+    filteredTopicLetters.forEach(letter => {
+        const senderId = letter.sender?.id || letter.sender?.name;
+        const senderName = letter.sender?.name || 'Unbekannt';
+        if (senderId) {
+            if (!filteredPersons[senderId]) {
+                filteredPersons[senderId] = { name: senderName, count: 0 };
+            }
+            filteredPersons[senderId].count++;
+        }
+    });
+
+    // Build filtered years
+    const filteredYears = {};
+    filteredTopicLetters.forEach(letter => {
+        if (letter.year) {
+            filteredYears[letter.year] = (filteredYears[letter.year] || 0) + 1;
+        }
+    });
+
+    // Build filtered cooccurrence
+    const filteredCooccurrence = {};
+    filteredTopicLetters.forEach(letter => {
+        const subjects = letter.mentions?.subjects || [];
+        subjects.forEach(s => {
+            const otherId = s.id || s.label;
+            if (otherId !== topicId) {
+                filteredCooccurrence[otherId] = (filteredCooccurrence[otherId] || 0) + 1;
+            }
+        });
+    });
+
     const emptyState = document.querySelector('.topic-detail-empty');
     const content = document.getElementById('topic-detail-content');
     const title = document.getElementById('topic-detail-title');
@@ -1652,18 +1717,18 @@ function selectTopic(topicId) {
     if (emptyState) emptyState.style.display = 'none';
     if (content) content.style.display = 'block';
 
-    // Title and count
+    // Title and count (show filtered count)
     if (title) title.textContent = topic.label;
-    if (count) count.textContent = `${topic.count} Briefe`;
+    if (count) count.textContent = `${filteredCount} Briefe`;
 
     // Update filter button text
     if (filterBtn) {
-        filterBtn.innerHTML = `<i class="fas fa-filter"></i> ${topic.count} Briefe filtern`;
+        filterBtn.innerHTML = `<i class="fas fa-filter"></i> ${filteredCount} Briefe filtern`;
     }
 
-    // Correspondents (top 10)
+    // Correspondents (top 10, from filtered data)
     if (correspondents) {
-        const persons = Object.entries(topic.persons)
+        const persons = Object.entries(filteredPersons)
             .map(([id, data]) => ({ id, ...data }))
             .sort((a, b) => b.count - a.count)
             .slice(0, 10);
@@ -1688,9 +1753,9 @@ function selectTopic(topicId) {
         }
     }
 
-    // Mini timeline
+    // Mini timeline (from filtered data)
     if (timeline) {
-        const years = Object.entries(topic.years)
+        const years = Object.entries(filteredYears)
             .map(([year, count]) => ({ year: parseInt(year), count }))
             .sort((a, b) => a.year - b.year);
 
@@ -1731,9 +1796,9 @@ function selectTopic(topicId) {
         }
     }
 
-    // Related topics (co-occurrence)
+    // Related topics (co-occurrence from filtered data)
     if (related) {
-        const relatedTopics = Object.entries(topic.cooccurrence)
+        const relatedTopics = Object.entries(filteredCooccurrence)
             .map(([id, count]) => {
                 const relatedTopic = subjectIndex[id];
                 return {
