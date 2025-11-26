@@ -699,9 +699,11 @@ function applyFilters() {
     updateUrlState();
     updatePersonFilterDisplay();
 
-    // Re-render topics view if active
+    // Re-render active view
     if (currentView === 'topics') {
         renderTopicsList();
+    } else if (currentView === 'timeline') {
+        renderTimeline();
     }
 }
 
