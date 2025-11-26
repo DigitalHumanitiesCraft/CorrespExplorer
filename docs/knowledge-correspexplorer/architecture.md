@@ -59,28 +59,41 @@ Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
 
 ### explore.html - Visualisierung
 
-Hauptansicht mit vier Views:
+Hauptansicht mit sieben Views:
 1. Karte (MapLibre GL JS mit Clustering)
 2. Korrespondenten (sortierbare/suchbare Liste)
 3. Briefe (sortierbare/suchbare Liste)
-4. Timeline (Balkendiagramm nach Jahr/Dekade)
+4. Timeline (Balkendiagramm nach Jahr mit Sprachverteilung)
+5. Themen (Topics View mit Detail-Panel)
+6. Orte (Places View mit Detail-Panel)
+7. Netzwerk (D3.js Force-Directed Graph)
 
 Sidebar mit:
-- Statistik-Cards
-- Person-Filter-Badge (wenn aktiv)
+- Statistik-Cards (Briefe, Absender, Orte)
+- Geodaten-Info (Orte mit/ohne Koordinaten)
 - Zeitraum-Filter (noUiSlider)
-- Sprach-Filter (Checkboxen)
+- Sprach-Filter (Checkboxen, Top 10)
+- Person/Thema/Ort-Filter-Badge (wenn aktiv)
 - Legende
 
 Navigation mit:
-- View-Switcher (4 Buttons)
+- View-Switcher (7 Buttons)
 - Export-Button
 - "Neuer Datensatz"-Link
+- About-Link
 
 URL-State:
 - Filter werden in URL gespeichert
-- Parameter: dataset, view, yearMin, yearMax, person, langs
+- Parameter: dataset, view, yearMin, yearMax, person, subject, place, langs
 - Ermoeglicht Bookmarking und Teilen
+
+### about.html - Projektinformation
+
+Statische Seite mit:
+- Projekthintergrund
+- CMIF-Format Erklaerung
+- Nutzungshinweise
+- Kontaktinformationen
 
 ## Module
 

@@ -286,30 +286,27 @@ Akzeptanzkriterien:
 
 ## Zusammenfassung: Implementierungs-Status
 
-| Kategorie | Implementiert | Teilweise | Offen |
-|-----------|---------------|-----------|-------|
-| Daten-Import | 3 | 0 | 0 |
-| Ueberblick | 2 | 0 | 0 |
-| Raeumlich | 2 | 1 | 0 |
-| Personen | 2 | 0 | 1 |
-| Briefe | 3 | 0 | 0 |
-| Filter | 5 | 0 | 1 |
-| Teilen/Export | 3 | 0 | 0 |
-| Vergleich | 0 | 0 | 2 |
-| Themen | 3 | 0 | 0 |
-| **Gesamt** | **23** | **1** | **4** |
+| Kategorie | Implementiert | Offen |
+|-----------|---------------|-------|
+| Daten-Import | 3 | 0 |
+| Ueberblick | 2 | 0 |
+| Raeumlich | 3 | 0 |
+| Personen | 3 | 0 |
+| Briefe | 3 | 0 |
+| Filter | 5 | 1 |
+| Teilen/Export | 3 | 0 |
+| Vergleich | 1 | 1 |
+| Themen | 3 | 0 |
+| **Gesamt** | **25** | **2** |
+
+Stand: 2025-11-26
 
 ---
 
-## Priorisierung der offenen Features
+## Offene Features
 
-### Hohe Prioritaet (neue Analyse-Moeglichkeiten)
-1. US-11: Netzwerk-Visualisierung - Wer schreibt wem
-2. US-07: Orts-Details erweitern - Absender im Popup
-
-### Niedrige Prioritaet (Erweiterungen)
-3. US-24: correspSearch-Integration
-4. US-23: Datensatz-Vergleich
-5. US-08: Liste der Orte ohne Koordinaten
-6. US-17: Themen-Filter (Sidebar) - Schnellfilter fuer Top-Themen (optional, Topics View existiert)
+| US | Feature | Prioritaet |
+|----|---------|-----------|
+| US-17 | Themen-Schnellfilter | Niedrig (Topics View existiert) |
+| US-23 | Datensatz-Vergleich | Niedrig |
 

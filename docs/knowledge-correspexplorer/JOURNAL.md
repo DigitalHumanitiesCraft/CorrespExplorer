@@ -4,6 +4,69 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Phase 8: Integration und Netzwerk)
+
+### Repository-Bereinigung
+
+Entfernung aller HerData-bezogenen Dateien:
+- 100+ Dateien geloescht (HTML, JS, CSS, Daten)
+- Fokus nun ausschliesslich auf CorrespExplorer
+- README.md und CLAUDE.md aktualisiert
+
+### Implementiert: correspSearch Integration (US-24)
+
+1. Helper-Funktion buildCorrespSearchUrl()
+   - Unterstuetzt GND und VIAF Authority-IDs
+   - Generiert korrekte correspSearch-Such-URLs
+
+2. UI-Integration
+   - Lupe-Button in Personen-Karten
+   - correspSearch-Links im Brief-Detail-Modal
+   - Oeffnet externe Suche in neuem Tab
+
+### Implementiert: Orte ohne Koordinaten (US-08)
+
+1. Klickbarer Link in Geodaten-Info
+2. Modal mit sortierter Liste
+   - Orte nach Briefanzahl sortiert
+   - GeoNames-Links fuer manuelle Recherche
+
+### Implementiert: Netzwerk-Visualisierung (US-11)
+
+1. D3.js Force-Directed Graph
+   - Knoten = Personen (Groesse nach Briefanzahl)
+   - Kanten = Korrespondenzbeziehungen
+   - Farbcodierung: Absender (blau), Empfaenger (gruen), beides (lila)
+
+2. Ego-Netzwerk-Erkennung
+   - Automatische Erkennung bei >80% Verbindungen zu einem Knoten
+   - Radiales Layout fuer bessere Darstellung
+   - "Ego-Netzwerk" Badge in Stats
+
+3. Controls
+   - Min. Briefe Schwellenwert
+   - Max. Personen (Performance-Limit)
+   - Layout-Auswahl (Force/Radial)
+   - Zoom zuruecksetzen
+
+4. Interaktion
+   - Drag-and-Drop fuer Knoten
+   - Zoom und Pan
+   - Klick auf Knoten filtert Briefe
+   - Tooltips mit Details
+
+5. Bug-Fix
+   - Feldname recipient statt receiver
+   - Beide Varianten werden unterstuetzt
+
+### Tests erweitert
+
+Neue Tests in explore-tests.js:
+- buildNetworkData: Netzwerk-Daten aufbauen
+- buildNetworkData: MinLetters Filter anwenden
+
+---
+
 ## 2025-11-26 (Phase 7: Themen-Explorer Implementation)
 
 ### Implementiert: Topics View (US-25, US-26, US-27)
