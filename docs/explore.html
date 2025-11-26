@@ -56,6 +56,9 @@
             <button class="view-btn" data-view="places" aria-pressed="false" id="places-view-btn">
                 <i class="fas fa-map-marker-alt"></i> <span class="view-btn-text">Orte</span>
             </button>
+            <button class="view-btn" data-view="network" aria-pressed="false" id="network-view-btn">
+                <i class="fas fa-project-diagram"></i> <span class="view-btn-text">Netzwerk</span>
+            </button>
         </div>
         <div class="nav-links">
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
@@ -315,6 +318,48 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Network View -->
+                <div id="network-view" class="tab-content">
+                    <div class="network-container">
+                        <div class="network-header">
+                            <h3>Korrespondenznetzwerk</h3>
+                            <p class="network-info">Visualisierung der Kommunikationsbeziehungen zwischen Korrespondenten</p>
+                        </div>
+                        <div class="network-controls">
+                            <div class="network-control-group">
+                                <label for="network-min-letters">Min. Briefe:</label>
+                                <input type="number" id="network-min-letters" value="5" min="1" max="100">
+                            </div>
+                            <div class="network-control-group">
+                                <label for="network-layout">Layout:</label>
+                                <select id="network-layout">
+                                    <option value="force">Force-Directed</option>
+                                    <option value="radial">Radial</option>
+                                </select>
+                            </div>
+                            <button id="network-reset-zoom" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-compress-arrows-alt"></i> Zoom zuruecksetzen
+                            </button>
+                        </div>
+                        <div class="network-stats">
+                            <span><i class="fas fa-circle"></i> <span id="network-node-count">0</span> Personen</span>
+                            <span><i class="fas fa-arrows-alt-h"></i> <span id="network-edge-count">0</span> Verbindungen</span>
+                        </div>
+                        <div id="network-graph" class="network-graph"></div>
+                        <div class="network-legend">
+                            <div class="legend-item">
+                                <span class="legend-circle legend-sender"></span> Nur Absender
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-circle legend-receiver"></span> Nur Empfaenger
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-circle legend-both"></span> Beides
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -374,6 +419,7 @@
     <!-- Scripts -->
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="js/explore.js" type="module"></script>
 </body>
 </html>

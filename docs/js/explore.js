@@ -91,6 +91,7 @@ async function init() {
         initTimeline();
         initTopicsView();
         initPlacesView();
+        initNetworkView();
         initExport();
         initMissingPlacesModal();
 
@@ -1009,6 +1010,8 @@ function switchView(view) {
         renderTopicsList();
     } else if (view === 'places') {
         renderPlacesList();
+    } else if (view === 'network') {
+        renderNetwork();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -2429,6 +2432,271 @@ function downloadFile(content, filename, mimeType) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+}
+
+// ===================
+// NETWORK VIEW
+// ===================
+
+let networkMinLetters = 5;
+let networkLayout = 'force';
+let networkSimulation = null;
+let networkSvg = null;
+let networkZoom = null;
+
+function initNetworkView() {
+    const minLettersInput = document.getElementById('network-min-letters');
+    const layoutSelect = document.getElementById('network-layout');
+    const resetZoomBtn = document.getElementById('network-reset-zoom');
+
+    if (minLettersInput) {
+        minLettersInput.addEventListener('change', (e) => {
+            networkMinLetters = parseInt(e.target.value) || 5;
+            renderNetwork();
+        });
+    }
+
+    if (layoutSelect) {
+        layoutSelect.addEventListener('change', (e) => {
+            networkLayout = e.target.value;
+            renderNetwork();
+        });
+    }
+
+    if (resetZoomBtn) {
+        resetZoomBtn.addEventListener('click', resetNetworkZoom);
+    }
+
+    log.init('Network view initialized');
+}
+
+function buildNetworkData(letters, minLetters = 5) {
+    const edges = new Map();
+    const nodeStats = new Map();
+
+    letters.forEach(letter => {
+        const senderId = letter.sender?.id || letter.sender?.name;
+        const receiverId = letter.receiver?.id || letter.receiver?.name;
+        const senderName = letter.sender?.name;
+        const receiverName = letter.receiver?.name;
+
+        if (!senderId || !receiverId || !senderName || !receiverName) return;
+        if (senderId === receiverId) return;
+
+        // Track node stats
+        if (!nodeStats.has(senderId)) {
+            nodeStats.set(senderId, { id: senderId, name: senderName, sent: 0, received: 0 });
+        }
+        if (!nodeStats.has(receiverId)) {
+            nodeStats.set(receiverId, { id: receiverId, name: receiverName, sent: 0, received: 0 });
+        }
+        nodeStats.get(senderId).sent++;
+        nodeStats.get(receiverId).received++;
+
+        // Track edges (bidirectional key)
+        const edgeKey = [senderId, receiverId].sort().join('|');
+        if (!edges.has(edgeKey)) {
+            edges.set(edgeKey, {
+                source: senderId,
+                target: receiverId,
+                sourceName: senderName,
+                targetName: receiverName,
+                count: 0
+            });
+        }
+        edges.get(edgeKey).count++;
+    });
+
+    // Filter edges by minimum letters
+    const filteredEdges = Array.from(edges.values()).filter(e => e.count >= minLetters);
+
+    // Get nodes that appear in filtered edges
+    const activeNodeIds = new Set();
+    filteredEdges.forEach(e => {
+        activeNodeIds.add(e.source);
+        activeNodeIds.add(e.target);
+    });
+
+    const nodes = Array.from(nodeStats.values())
+        .filter(n => activeNodeIds.has(n.id))
+        .map(n => ({
+            ...n,
+            total: n.sent + n.received,
+            type: n.sent > 0 && n.received > 0 ? 'both' : (n.sent > 0 ? 'sender' : 'receiver')
+        }));
+
+    return { nodes, links: filteredEdges };
+}
+
+function renderNetwork() {
+    const container = document.getElementById('network-graph');
+    if (!container) return;
+
+    // Build network data from filtered letters
+    const data = buildNetworkData(filteredLetters, networkMinLetters);
+
+    // Update stats
+    const nodeCount = document.getElementById('network-node-count');
+    const edgeCount = document.getElementById('network-edge-count');
+    if (nodeCount) nodeCount.textContent = data.nodes.length;
+    if (edgeCount) edgeCount.textContent = data.links.length;
+
+    // Clear previous
+    container.innerHTML = '';
+
+    if (data.nodes.length === 0) {
+        container.innerHTML = `
+            <div class="network-empty">
+                <i class="fas fa-project-diagram"></i>
+                <p>Keine Verbindungen mit mindestens ${networkMinLetters} Briefen gefunden.</p>
+                <p>Versuchen Sie, den Mindestbriefe-Wert zu reduzieren.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 600;
+
+    // Create SVG
+    networkSvg = d3.select(container)
+        .append('svg')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .attr('viewBox', [0, 0, width, height]);
+
+    // Create container for zoom
+    const g = networkSvg.append('g');
+
+    // Setup zoom
+    networkZoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on('zoom', (event) => {
+            g.attr('transform', event.transform);
+        });
+
+    networkSvg.call(networkZoom);
+
+    // Calculate node sizes based on total letters
+    const maxTotal = Math.max(...data.nodes.map(n => n.total));
+    const nodeScale = d3.scaleSqrt()
+        .domain([1, maxTotal])
+        .range([5, 30]);
+
+    // Calculate edge widths
+    const maxCount = Math.max(...data.links.map(l => l.count));
+    const edgeScale = d3.scaleLinear()
+        .domain([networkMinLetters, maxCount])
+        .range([1, 8]);
+
+    // Color scale for node types
+    const colorScale = {
+        'sender': '#3b82f6',
+        'receiver': '#10b981',
+        'both': '#8b5cf6'
+    };
+
+    // Create simulation
+    networkSimulation = d3.forceSimulation(data.nodes)
+        .force('link', d3.forceLink(data.links)
+            .id(d => d.id)
+            .distance(100))
+        .force('charge', d3.forceManyBody().strength(-300))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(d => nodeScale(d.total) + 5));
+
+    if (networkLayout === 'radial') {
+        // Radial layout: central node is the one with most connections
+        const centralNode = data.nodes.reduce((a, b) => a.total > b.total ? a : b);
+        networkSimulation.force('radial', d3.forceRadial(150, width / 2, height / 2)
+            .strength(d => d.id === centralNode.id ? 0 : 0.5));
+    }
+
+    // Draw edges
+    const link = g.append('g')
+        .attr('class', 'links')
+        .selectAll('line')
+        .data(data.links)
+        .join('line')
+        .attr('stroke', '#999')
+        .attr('stroke-opacity', 0.6)
+        .attr('stroke-width', d => edgeScale(d.count));
+
+    // Draw nodes
+    const node = g.append('g')
+        .attr('class', 'nodes')
+        .selectAll('g')
+        .data(data.nodes)
+        .join('g')
+        .attr('class', 'node')
+        .call(d3.drag()
+            .on('start', dragstarted)
+            .on('drag', dragged)
+            .on('end', dragended));
+
+    // Node circles
+    node.append('circle')
+        .attr('r', d => nodeScale(d.total))
+        .attr('fill', d => colorScale[d.type])
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 2);
+
+    // Node labels (only for larger nodes)
+    node.filter(d => d.total > maxTotal * 0.1)
+        .append('text')
+        .text(d => d.name.length > 15 ? d.name.substring(0, 15) + '...' : d.name)
+        .attr('x', d => nodeScale(d.total) + 5)
+        .attr('y', 4)
+        .attr('font-size', '10px')
+        .attr('fill', '#333');
+
+    // Tooltips
+    node.append('title')
+        .text(d => `${d.name}\nGesendet: ${d.sent}\nEmpfangen: ${d.received}`);
+
+    link.append('title')
+        .text(d => `${d.sourceName} ↔ ${d.targetName}: ${d.count} Briefe`);
+
+    // Click handler for filtering
+    node.on('click', (event, d) => {
+        event.stopPropagation();
+        applyPersonFilter(d.id);
+        switchView('letters');
+    });
+
+    // Update positions on simulation tick
+    networkSimulation.on('tick', () => {
+        link
+            .attr('x1', d => d.source.x)
+            .attr('y1', d => d.source.y)
+            .attr('x2', d => d.target.x)
+            .attr('y2', d => d.target.y);
+
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+
+    function dragstarted(event, d) {
+        if (!event.active) networkSimulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+        d.fx = event.x;
+        d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+        if (!event.active) networkSimulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+    }
+}
+
+function resetNetworkZoom() {
+    if (networkSvg && networkZoom) {
+        networkSvg.transition().duration(500).call(networkZoom.transform, d3.zoomIdentity);
+    }
 }
 
 // ===================

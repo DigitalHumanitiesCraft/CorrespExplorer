@@ -6,7 +6,7 @@ Stand: 2025-11-26
 
 ## Aktueller Implementierungsstand
 
-### Vollstaendig implementiert (24 User Stories)
+### Vollstaendig implementiert (25 User Stories)
 
 | US | Feature | Beschreibung |
 |----|---------|--------------|
@@ -30,16 +30,16 @@ Stand: 2025-11-26
 | US-20 | URL-Sharing | Filter in URL codiert |
 | US-21 | CSV-Export | Gefilterte Briefe |
 | US-22 | JSON-Export | Strukturierte Daten |
+| US-11 | Netzwerk-Graph | D3.js Force-Directed Graph mit Zoom und Drag |
 | US-24 | correspSearch-Integration | Button in Personen-Liste und Brief-Modal |
 | US-25 | Themen-Liste | Topics View mit Suche |
 | US-26 | Themen-Details | Korrespondenten, Timeline, verwandte Themen |
 | US-27 | Themen-Filter | Integration ins Filter-System |
 
-### Offen (3 User Stories)
+### Offen (2 User Stories)
 
 | US | Feature | Prioritaet | Beschreibung |
 |----|---------|-----------|--------------|
-| US-11 | Netzwerk-Graph | Hoch | Force-Directed Graph: Wer schreibt wem |
 | US-17 | Themen-Schnellfilter | Niedrig | Top-Themen in Sidebar (Topics View existiert) |
 | US-23 | Datensatz-Vergleich | Niedrig | Zwei CMIF-Dateien vergleichen |
 
@@ -158,8 +158,8 @@ Status: Bereits vorhanden, wird automatisch von Claude Code genutzt.
 
 ### Phase 3: Erweiterte Features
 
-6. Wissenskorb
-7. US-11: Netzwerk-Visualisierung
+6. ~~US-11: Netzwerk-Visualisierung~~ - erledigt
+7. Wissenskorb
 
 ### Phase 4: Polish
 

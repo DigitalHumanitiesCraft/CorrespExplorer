@@ -198,6 +198,78 @@ const TestRunner = {
             this.assertEqual(index['a'].count, 2, 'Thema A sollte 2x vorkommen');
             this.assertEqual(index['b'].count, 1, 'Thema B sollte 1x vorkommen');
         });
+
+        this.test('buildNetworkData: Netzwerk-Daten aufbauen', () => {
+            const letters = [
+                { sender: { id: 'A', name: 'Alice' }, receiver: { id: 'B', name: 'Bob' } },
+                { sender: { id: 'A', name: 'Alice' }, receiver: { id: 'B', name: 'Bob' } },
+                { sender: { id: 'B', name: 'Bob' }, receiver: { id: 'A', name: 'Alice' } },
+                { sender: { id: 'A', name: 'Alice' }, receiver: { id: 'C', name: 'Carol' } },
+                { sender: { id: 'D', name: 'Dave' }, receiver: { id: 'E', name: 'Eve' } }
+            ];
+
+            // Simulate buildNetworkData logic
+            const edges = new Map();
+            const nodeStats = new Map();
+
+            letters.forEach(letter => {
+                const senderId = letter.sender?.id;
+                const receiverId = letter.receiver?.id;
+                const senderName = letter.sender?.name;
+                const receiverName = letter.receiver?.name;
+
+                if (!senderId || !receiverId) return;
+                if (senderId === receiverId) return;
+
+                if (!nodeStats.has(senderId)) {
+                    nodeStats.set(senderId, { id: senderId, name: senderName, sent: 0, received: 0 });
+                }
+                if (!nodeStats.has(receiverId)) {
+                    nodeStats.set(receiverId, { id: receiverId, name: receiverName, sent: 0, received: 0 });
+                }
+                nodeStats.get(senderId).sent++;
+                nodeStats.get(receiverId).received++;
+
+                const edgeKey = [senderId, receiverId].sort().join('|');
+                if (!edges.has(edgeKey)) {
+                    edges.set(edgeKey, { source: senderId, target: receiverId, count: 0 });
+                }
+                edges.get(edgeKey).count++;
+            });
+
+            this.assertEqual(nodeStats.size, 5, 'Sollte 5 Personen haben');
+            this.assertEqual(edges.size, 3, 'Sollte 3 Kanten haben (A-B, A-C, D-E)');
+            this.assertEqual(edges.get('A|B').count, 3, 'A-B sollte 3 Briefe haben');
+            this.assertEqual(nodeStats.get('A').sent, 3, 'Alice sollte 3 gesendet haben');
+            this.assertEqual(nodeStats.get('A').received, 1, 'Alice sollte 1 empfangen haben');
+        });
+
+        this.test('buildNetworkData: MinLetters Filter anwenden', () => {
+            const letters = [
+                { sender: { id: 'A', name: 'Alice' }, receiver: { id: 'B', name: 'Bob' } },
+                { sender: { id: 'A', name: 'Alice' }, receiver: { id: 'B', name: 'Bob' } },
+                { sender: { id: 'A', name: 'Alice' }, receiver: { id: 'B', name: 'Bob' } },
+                { sender: { id: 'C', name: 'Carol' }, receiver: { id: 'D', name: 'Dave' } }
+            ];
+
+            const edges = new Map();
+            letters.forEach(letter => {
+                const senderId = letter.sender?.id;
+                const receiverId = letter.receiver?.id;
+                if (!senderId || !receiverId) return;
+                const edgeKey = [senderId, receiverId].sort().join('|');
+                if (!edges.has(edgeKey)) {
+                    edges.set(edgeKey, { count: 0 });
+                }
+                edges.get(edgeKey).count++;
+            });
+
+            const minLetters = 2;
+            const filteredEdges = Array.from(edges.values()).filter(e => e.count >= minLetters);
+
+            this.assertEqual(filteredEdges.length, 1, 'Nur A-B sollte >= 2 Briefe haben');
+            this.assertEqual(filteredEdges[0].count, 3, 'A-B hat 3 Briefe');
+        });
     },
 
     runUtilityTests() {

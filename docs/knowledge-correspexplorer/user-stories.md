@@ -117,11 +117,14 @@ Akzeptanzkriterien:
 Als Forschende moechte ich sehen, wer mit wem korrespondiert hat, um Netzwerke und Cluster zu erkennen.
 
 Akzeptanzkriterien:
-- Force-Directed Graph
-- Knoten = Personen
+- Force-Directed Graph (D3.js)
+- Knoten = Personen (Groesse nach Briefanzahl)
 - Kanten = Briefwechsel
 - Kantenstaerke = Anzahl Briefe
-- Status: OFFEN
+- Zoom und Drag
+- Min. Briefe Filter
+- Klick auf Person filtert Briefe
+- Status: IMPLEMENTIERT
 
 ---
 
