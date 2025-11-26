@@ -1542,6 +1542,20 @@
     background: #8b5cf6;
 }
 
+.network-coverage {
+    margin-bottom: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.coverage-info {
+    display: inline-block;
+}
+
 .btn-sm {
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-sm);

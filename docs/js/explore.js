@@ -2518,8 +2518,13 @@ function buildNetworkData(letters, minLetters = 5, maxNodes = 50) {
         edges.get(edgeKey).count++;
     });
 
+    // Store totals before filtering
+    const totalNodes = nodeStats.size;
+    const totalEdges = edges.size;
+
     // Filter edges by minimum letters
     let filteredEdges = Array.from(edges.values()).filter(e => e.count >= minLetters);
+    const edgesAfterMinFilter = filteredEdges.length;
 
     // Sort edges by count and limit to prevent overcrowding
     filteredEdges.sort((a, b) => b.count - a.count);
@@ -2539,6 +2544,8 @@ function buildNetworkData(letters, minLetters = 5, maxNodes = 50) {
             type: n.sent > 0 && n.received > 0 ? 'both' : (n.sent > 0 ? 'sender' : 'receiver')
         }));
 
+    const nodesAfterMinFilter = nodes.length;
+
     // Limit nodes for performance (keep top by total letters)
     if (nodes.length > maxNodes) {
         nodes.sort((a, b) => b.total - a.total);
@@ -2554,7 +2561,21 @@ function buildNetworkData(letters, minLetters = 5, maxNodes = 50) {
         return nodeEdges.length / filteredEdges.length > 0.8;
     });
 
-    return { nodes, links: filteredEdges, isEgoNetwork };
+    // Calculate total letters in displayed network
+    const totalLettersInNetwork = filteredEdges.reduce((sum, e) => sum + e.count, 0);
+
+    return {
+        nodes,
+        links: filteredEdges,
+        isEgoNetwork,
+        stats: {
+            totalNodes,
+            totalEdges,
+            nodesAfterMinFilter,
+            edgesAfterMinFilter,
+            totalLettersInNetwork
+        }
+    };
 }
 
 function renderNetwork() {
@@ -2567,11 +2588,32 @@ function renderNetwork() {
     // Update stats
     const nodeCount = document.getElementById('network-node-count');
     const edgeCount = document.getElementById('network-edge-count');
+    const letterCount = document.getElementById('network-letter-count');
     const egoIndicator = document.getElementById('network-ego-indicator');
+    const coverageDiv = document.getElementById('network-coverage');
+
     if (nodeCount) nodeCount.textContent = data.nodes.length;
     if (edgeCount) edgeCount.textContent = data.links.length;
+    if (letterCount) letterCount.textContent = data.stats.totalLettersInNetwork.toLocaleString('de-DE');
     if (egoIndicator) {
         egoIndicator.style.display = data.isEgoNetwork ? 'inline' : 'none';
+    }
+
+    // Update coverage info
+    if (coverageDiv) {
+        const nodePercent = data.stats.totalNodes > 0
+            ? Math.round((data.nodes.length / data.stats.totalNodes) * 100)
+            : 0;
+        const letterPercent = filteredLetters.length > 0
+            ? Math.round((data.stats.totalLettersInNetwork / filteredLetters.length) * 100)
+            : 0;
+
+        coverageDiv.innerHTML = `
+            <span class="coverage-info">
+                Anzeige: ${data.nodes.length} von ${data.stats.totalNodes} Personen (${nodePercent}%)
+                | ${data.stats.totalLettersInNetwork.toLocaleString('de-DE')} von ${filteredLetters.length.toLocaleString('de-DE')} Briefen (${letterPercent}%)
+            </span>
+        `;
     }
 
     // Clear previous
