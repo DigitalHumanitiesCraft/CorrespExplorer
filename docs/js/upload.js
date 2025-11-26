@@ -4,12 +4,20 @@
 
 import { parseCMIF, enrichWithCoordinates } from './cmif-parser.js';
 import { isCorrespSearchUrl, searchCorrespSearch, getResultCount } from './correspsearch-api.js';
+import { enrichPersonsBatch, countEnrichable } from './wikidata-enrichment.js';
 
 // DOM Elements
 let uploadZone, fileInput, urlInput, urlSubmit;
 let errorMessage, loadingState, loadingText;
 let datasetCards;
 let csSearchForm, csSearchBtn, csResultInfo;
+
+// Config modal elements
+let configModal;
+
+// Pending data for configuration
+let pendingData = null;
+let pendingSourceInfo = null;
 
 // Initialize on DOM ready
 if (document.readyState === 'loading') {
@@ -33,6 +41,9 @@ async function init() {
     csSearchForm = document.getElementById('cs-search-form');
     csSearchBtn = document.getElementById('cs-search-btn');
     csResultInfo = document.getElementById('cs-result-info');
+
+    // Config modal
+    configModal = document.getElementById('config-modal');
 
     setupEventListeners();
 }
@@ -76,6 +87,21 @@ function setupEventListeners() {
                 e.preventDefault();
                 handleCorrespSearchSubmit();
             }
+        });
+    }
+
+    // Config modal buttons
+    if (configModal) {
+        const closeBtn = configModal.querySelector('.modal-close');
+        const skipBtn = document.getElementById('config-skip-btn');
+        const startBtn = document.getElementById('config-start-btn');
+
+        if (closeBtn) closeBtn.addEventListener('click', hideConfigModal);
+        if (skipBtn) skipBtn.addEventListener('click', handleConfigSkip);
+        if (startBtn) startBtn.addEventListener('click', handleConfigStart);
+
+        configModal.addEventListener('click', (e) => {
+            if (e.target === configModal) hideConfigModal();
         });
     }
 }
@@ -139,7 +165,7 @@ async function handleUrlSubmit() {
                     updateLoadingText(`Lade Briefe... ${loaded}+`);
                 }
             });
-            await processData(data, { type: 'correspsearch', source: url });
+            await showConfigDialog(data, { type: 'correspsearch', source: url });
         } catch (error) {
             showError(`Fehler beim Laden: ${error.message}`);
             hideLoading();
@@ -151,7 +177,7 @@ async function handleUrlSubmit() {
 
     try {
         const data = await parseCMIF(url);
-        await processData(data, { type: 'url', source: url });
+        await showConfigDialog(data, { type: 'url', source: url });
     } catch (error) {
         showError(`Fehler beim Laden: ${error.message}`);
         hideLoading();
@@ -219,7 +245,7 @@ async function handleCorrespSearchSubmit() {
             updateLoadingText(`Lade Briefe... ${loaded}${total && total > loaded ? '+' : ''}`);
         });
 
-        await processData(data, {
+        await showConfigDialog(data, {
             type: 'correspsearch',
             source: 'correspSearch API',
             params
@@ -241,14 +267,14 @@ async function handleDatasetSelect(card) {
     hideError();
 
     if (dataset === 'hsa') {
-        // HSA uses preprocessed local data - redirect directly
+        // HSA uses preprocessed local data - redirect directly (already enriched)
         window.location.href = 'explore.html?dataset=hsa';
     } else if (url) {
-        // External CMIF URL - load directly
+        // External CMIF URL - load and show config
         showLoading('Lade CMIF von URL...');
         try {
             const data = await parseCMIF(url);
-            await processData(data, { type: 'url', source: url });
+            await showConfigDialog(data, { type: 'url', source: url });
         } catch (error) {
             showError(`Fehler beim Laden: ${error.message}`);
             hideLoading();
@@ -288,30 +314,142 @@ async function processFile(file) {
 
     try {
         const data = await parseCMIF(file);
-        await processData(data, { type: 'file', source: file.name });
+        await showConfigDialog(data, { type: 'file', source: file.name });
     } catch (error) {
         showError(`Fehler beim Parsen: ${error.message}`);
         hideLoading();
     }
 }
 
-// Process parsed CMIF data
-async function processData(data, sourceInfo) {
-    updateLoadingText('Pruefe Koordinaten...');
+// Show configuration dialog
+async function showConfigDialog(data, sourceInfo) {
+    hideLoading();
 
-    // Try to enrich with cached coordinates
+    // Store pending data
+    pendingData = data;
+    pendingSourceInfo = sourceInfo;
+
+    // Try to enrich with cached coordinates first
     try {
         const coordsResponse = await fetch('data/geonames_coordinates.json');
         if (coordsResponse.ok) {
             const coordsCache = await coordsResponse.json();
-            enrichWithCoordinates(data, coordsCache);
+            enrichWithCoordinates(pendingData, coordsCache);
         }
     } catch {
-        // Coordinates cache not available, continue without
         console.log('Koordinaten-Cache nicht verfuegbar');
     }
 
-    // Store data in sessionStorage for use by visualization
+    // Count entities
+    const letterCount = data.letters?.length || 0;
+    const personCount = countUniquePersons(data.letters || []);
+    const placeCount = countUniquePlaces(data.letters || []);
+    const enrichableCount = countEnrichablePersons(data.letters || []);
+
+    // Update modal content
+    document.getElementById('config-letters-count').textContent = letterCount.toLocaleString('de-DE');
+    document.getElementById('config-persons-count').textContent = personCount.toLocaleString('de-DE');
+    document.getElementById('config-places-count').textContent = placeCount.toLocaleString('de-DE');
+    document.getElementById('enrich-persons-info').textContent = `${enrichableCount} Personen mit Authority-ID`;
+
+    // Show warning for large datasets
+    const warningEl = document.getElementById('config-warning');
+    const warningTextEl = document.getElementById('config-warning-text');
+    if (enrichableCount > 50) {
+        warningEl.style.display = 'block';
+        const estimatedTime = Math.ceil(enrichableCount * 0.15); // ~150ms per request
+        warningTextEl.textContent = `Die Anreicherung von ${enrichableCount} Personen kann ca. ${estimatedTime} Sekunden dauern.`;
+    } else if (enrichableCount === 0) {
+        warningEl.style.display = 'block';
+        warningTextEl.textContent = 'Keine Personen mit GND- oder VIAF-ID gefunden. Anreicherung nicht moeglich.';
+        document.getElementById('enrich-persons').checked = false;
+        document.getElementById('enrich-persons').disabled = true;
+    } else {
+        warningEl.style.display = 'none';
+        document.getElementById('enrich-persons').disabled = false;
+    }
+
+    // Reset progress
+    document.getElementById('config-progress').style.display = 'none';
+    document.getElementById('config-progress-fill').style.width = '0%';
+
+    // Show buttons
+    document.querySelector('.config-actions').style.display = 'flex';
+
+    // Show modal
+    configModal.style.display = 'flex';
+}
+
+function hideConfigModal() {
+    configModal.style.display = 'none';
+    pendingData = null;
+    pendingSourceInfo = null;
+}
+
+// Skip enrichment and go directly to visualization
+function handleConfigSkip() {
+    if (!pendingData) return;
+    finalizeAndRedirect(pendingData, pendingSourceInfo);
+}
+
+// Start enrichment process
+async function handleConfigStart() {
+    if (!pendingData) return;
+
+    const shouldEnrich = document.getElementById('enrich-persons')?.checked;
+
+    if (!shouldEnrich) {
+        finalizeAndRedirect(pendingData, pendingSourceInfo);
+        return;
+    }
+
+    // Hide buttons, show progress
+    document.querySelector('.config-actions').style.display = 'none';
+    document.getElementById('config-progress').style.display = 'block';
+
+    // Extract unique persons with authority IDs
+    const persons = extractEnrichablePersons(pendingData.letters || []);
+
+    if (persons.length === 0) {
+        finalizeAndRedirect(pendingData, pendingSourceInfo);
+        return;
+    }
+
+    // Enrich with progress updates
+    const progressFill = document.getElementById('config-progress-fill');
+    const progressText = document.getElementById('config-progress-text');
+
+    try {
+        const enrichedMap = await enrichPersonsBatch(persons, (current, total, person) => {
+            const percent = Math.round((current / total) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = `Lade ${current}/${total}: ${person.name}`;
+        });
+
+        // Store enrichment data in session storage for use by explore.js
+        if (enrichedMap.size > 0) {
+            const enrichmentData = {};
+            enrichedMap.forEach((data, authorityId) => {
+                enrichmentData[authorityId] = data;
+            });
+            sessionStorage.setItem('person-enrichment', JSON.stringify(enrichmentData));
+        }
+
+        progressText.textContent = `${enrichedMap.size} Personen angereichert`;
+
+    } catch (error) {
+        console.warn('Enrichment failed:', error);
+        progressText.textContent = 'Anreicherung fehlgeschlagen, fahre fort...';
+    }
+
+    // Short delay to show completion
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    finalizeAndRedirect(pendingData, pendingSourceInfo);
+}
+
+// Store data and redirect to visualization
+function finalizeAndRedirect(data, sourceInfo) {
     const storedData = {
         ...data,
         sourceInfo,
@@ -321,18 +459,64 @@ async function processData(data, sourceInfo) {
     try {
         sessionStorage.setItem('cmif-data', JSON.stringify(storedData));
     } catch (e) {
-        // Storage quota exceeded - dataset too large
         showError(`Datensatz zu gross fuer Browser-Speicher (${data.letters?.length || 0} Briefe). Bitte verwenden Sie einen kleineren Datensatz oder das vorprozessierte HSA.`);
-        hideLoading();
+        hideConfigModal();
         return;
     }
 
-    updateLoadingText('Weiterleitung zur Visualisierung...');
-
     // Redirect to visualization
-    setTimeout(() => {
-        window.location.href = 'explore.html';
-    }, 500);
+    window.location.href = 'explore.html';
+}
+
+// Helper: Count unique persons
+function countUniquePersons(letters) {
+    const persons = new Set();
+    letters.forEach(letter => {
+        if (letter.sender?.name) persons.add(letter.sender.name);
+        if (letter.recipient?.name) persons.add(letter.recipient.name);
+    });
+    return persons.size;
+}
+
+// Helper: Count unique places
+function countUniquePlaces(letters) {
+    const places = new Set();
+    letters.forEach(letter => {
+        if (letter.place_sent?.name) places.add(letter.place_sent.name);
+    });
+    return places.size;
+}
+
+// Helper: Count enrichable persons (with GND or VIAF)
+function countEnrichablePersons(letters) {
+    const persons = new Map();
+    letters.forEach(letter => {
+        [letter.sender, letter.recipient].forEach(person => {
+            if (person?.id && person?.authority && ['gnd', 'viaf'].includes(person.authority)) {
+                persons.set(person.id, person);
+            }
+        });
+    });
+    return persons.size;
+}
+
+// Helper: Extract enrichable persons for batch processing
+function extractEnrichablePersons(letters) {
+    const persons = new Map();
+    letters.forEach(letter => {
+        [letter.sender, letter.recipient].forEach(person => {
+            if (person?.id && person?.authority && ['gnd', 'viaf'].includes(person.authority)) {
+                if (!persons.has(person.id)) {
+                    persons.set(person.id, {
+                        name: person.name,
+                        authority: person.authority,
+                        authorityId: person.id
+                    });
+                }
+            }
+        });
+    });
+    return Array.from(persons.values());
 }
 
 // UI helpers

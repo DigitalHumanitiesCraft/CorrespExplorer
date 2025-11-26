@@ -177,6 +177,73 @@
         </section>
     </div>
 
+    <!-- Dataset Configuration Modal -->
+    <div id="config-modal" class="modal" style="display: none;">
+        <div class="modal-content config-modal-content">
+            <div class="modal-header">
+                <h3 id="config-modal-title">Datensatz konfigurieren</h3>
+                <button class="modal-close" aria-label="Schliessen">&times;</button>
+            </div>
+            <div class="modal-body" id="config-modal-body">
+                <!-- Dataset Summary -->
+                <div class="config-summary" id="config-summary">
+                    <div class="config-stat">
+                        <i class="fas fa-envelope"></i>
+                        <span id="config-letters-count">0</span> Briefe
+                    </div>
+                    <div class="config-stat">
+                        <i class="fas fa-users"></i>
+                        <span id="config-persons-count">0</span> Personen
+                    </div>
+                    <div class="config-stat">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span id="config-places-count">0</span> Orte
+                    </div>
+                </div>
+
+                <!-- Enrichment Options -->
+                <div class="config-section">
+                    <h4><i class="fas fa-magic"></i> Semantische Anreicherung</h4>
+                    <p class="config-hint">Zusaetzliche Daten von Wikidata laden (Lebensdaten, Berufe, Bilder, etc.)</p>
+
+                    <div class="config-option">
+                        <label class="config-checkbox">
+                            <input type="checkbox" id="enrich-persons" checked>
+                            <span class="checkmark"></span>
+                            <span class="config-label">
+                                <strong>Personen anreichern</strong>
+                                <span class="config-sublabel" id="enrich-persons-info">0 Personen mit Authority-ID</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="config-warning" id="config-warning" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="config-warning-text">Die Anreicherung kann bei vielen Personen einige Zeit dauern.</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="config-actions">
+                    <button id="config-skip-btn" class="btn btn-secondary">
+                        <i class="fas fa-forward"></i> Ueberspringen
+                    </button>
+                    <button id="config-start-btn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Starten
+                    </button>
+                </div>
+
+                <!-- Progress (hidden initially) -->
+                <div class="config-progress" id="config-progress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="config-progress-fill"></div>
+                    </div>
+                    <p class="progress-text" id="config-progress-text">Lade Daten von Wikidata...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="js/upload.js" type="module"></script>
 </body>

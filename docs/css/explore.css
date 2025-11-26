@@ -238,6 +238,107 @@
     gap: var(--space-xs);
 }
 
+/* Letter Card Expansion */
+.letter-card.has-details {
+    cursor: pointer;
+}
+
+.letter-card.has-details .letter-participants {
+    display: flex;
+    align-items: center;
+}
+
+.letter-card .expand-icon {
+    margin-right: var(--space-sm);
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    transition: transform var(--transition-fast);
+}
+
+.letter-card.expanded {
+    border-color: var(--color-primary);
+    background: var(--color-bg-light);
+}
+
+.letter-card.expanded .expand-icon {
+    color: var(--color-primary);
+}
+
+/* Inline Letter Details */
+.letter-details {
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+}
+
+.letter-detail-content {
+    font-size: var(--font-size-sm);
+}
+
+.letter-detail-persons {
+    display: flex;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-md);
+}
+
+.detail-person {
+    color: var(--color-text);
+}
+
+.detail-person a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.detail-person a:hover {
+    text-decoration: underline;
+}
+
+.letter-detail-mentions {
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+}
+
+.mention-tag {
+    display: inline-block;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 2px 8px;
+    margin: 2px;
+    font-size: var(--font-size-xs);
+}
+
+.letter-detail-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--font-size-xs);
+    transition: all var(--transition-fast);
+}
+
+.detail-link:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.detail-link i {
+    color: var(--color-accent);
+}
+
 /* Modal */
 .modal {
     position: fixed;
@@ -792,6 +893,13 @@
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-lg);
     color: var(--color-text);
+}
+
+.person-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    font-style: italic;
+    margin-bottom: var(--space-sm);
 }
 
 .person-life-dates,

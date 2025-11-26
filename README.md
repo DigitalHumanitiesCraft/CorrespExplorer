@@ -10,6 +10,8 @@ CorrespExplorer enables researchers to explore letter correspondence through an 
 
 Key Features:
 - CMIF-XML file upload (drag-and-drop or URL)
+- correspSearch API integration for direct queries
+- Wikidata enrichment for biographical data (images, life dates, professions)
 - Interactive map with location clustering
 - Correspondent and letter lists with search and sorting
 - Timeline visualization with language breakdown
@@ -56,12 +58,14 @@ docs/
   about.html          - Project information
 
   js/
-    cmif-parser.js    - Browser-based CMIF XML parser
-    upload.js         - File upload and URL handling
-    explore.js        - Visualization logic
-    constants.js      - Shared constants (colors, labels)
+    cmif-parser.js           - Browser-based CMIF XML parser
+    upload.js                - File upload, URL handling, config dialog
+    explore.js               - Visualization logic
+    wikidata-enrichment.js   - Wikidata SPARQL enrichment module
+    correspsearch-api.js     - correspSearch API client
+    constants.js             - Shared constants (colors, labels)
     tests/
-      explore-tests.js - Test suite
+      explore-tests.js       - Test suite
 
   css/
     tokens.css        - Design system tokens
@@ -122,6 +126,18 @@ CorrespExplorer parses standard CMIF-XML with support for:
   - `mentionsPerson` - Mentioned persons
   - `mentionsPlace` - Mentioned places
 
+## Semantic Enrichment
+
+When loading a dataset, CorrespExplorer offers optional Wikidata enrichment:
+
+- Resolves GND and VIAF identifiers to Wikidata entities
+- Fetches biographical data: birth/death dates and places
+- Retrieves portrait images from Wikimedia Commons
+- Adds profession/occupation information
+- Provides external links to Wikipedia, Wikidata, GND, VIAF
+
+Enrichment runs at load time with a progress indicator. Data is cached in the browser session for fast access during exploration.
+
 ## Technology Stack
 
 - MapLibre GL JS 4.x - WebGL map rendering
@@ -129,14 +145,6 @@ CorrespExplorer parses standard CMIF-XML with support for:
 - Vanilla JavaScript ES6 modules
 - CSS custom properties (design tokens)
 - No build process required
-
-## Browser Requirements
-
-Modern browsers with ES6 module support:
-- Chrome 61+
-- Firefox 60+
-- Safari 11+
-- Edge 79+
 
 ## Data Processing
 
@@ -179,4 +187,4 @@ CC BY 4.0
 ## Contact
 
 Christopher Pollin
-Center for Information Modeling, University of Graz
+Digital Humanities Craft OG

@@ -484,3 +484,250 @@
         text-align: center;
     }
 }
+
+/* Configuration Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.config-modal-content {
+    max-width: 480px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--color-text-light);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--color-text);
+}
+
+.modal-body {
+    padding: var(--space-xl);
+}
+
+/* Config Summary */
+.config-summary {
+    display: flex;
+    justify-content: space-around;
+    padding: var(--space-lg);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-xl);
+}
+
+.config-stat {
+    text-align: center;
+    color: var(--color-text);
+}
+
+.config-stat i {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.config-stat span {
+    font-weight: 600;
+}
+
+/* Config Section */
+.config-section {
+    margin-bottom: var(--space-xl);
+}
+
+.config-section h4 {
+    font-size: var(--font-size-md);
+    color: var(--color-text);
+    margin-bottom: var(--space-sm);
+}
+
+.config-section h4 i {
+    color: var(--color-accent);
+    margin-right: var(--space-xs);
+}
+
+.config-hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    margin-bottom: var(--space-lg);
+}
+
+/* Config Checkbox */
+.config-option {
+    margin-bottom: var(--space-md);
+}
+
+.config-checkbox {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    user-select: none;
+}
+
+.config-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.config-checkbox .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    margin-right: var(--space-md);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.config-checkbox input:checked ~ .checkmark {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.config-checkbox input:checked ~ .checkmark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: white;
+    font-size: 12px;
+}
+
+.config-label {
+    display: flex;
+    flex-direction: column;
+}
+
+.config-label strong {
+    color: var(--color-text);
+}
+
+.config-sublabel {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    margin-top: var(--space-xs);
+}
+
+/* Config Warning */
+.config-warning {
+    background: rgba(230, 126, 34, 0.1);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-top: var(--space-md);
+    color: var(--color-accent);
+    font-size: var(--font-size-sm);
+}
+
+.config-warning i {
+    margin-right: var(--space-sm);
+}
+
+/* Config Actions */
+.config-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: flex-end;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-primary {
+    background: var(--color-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--color-primary-dark);
+}
+
+.btn-secondary {
+    background: var(--color-bg-light);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+    background: var(--color-border);
+}
+
+/* Config Progress */
+.config-progress {
+    margin-top: var(--space-xl);
+}
+
+.progress-bar {
+    height: 8px;
+    background: var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    text-align: center;
+    margin-top: var(--space-md);
+}

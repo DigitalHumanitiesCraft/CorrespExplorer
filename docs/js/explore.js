@@ -3,7 +3,7 @@
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS } from './constants.js';
 import { initBasketUI, createBasketToggle, setupBasketToggles } from './basket-ui.js';
-import { enrichFromGND, formatLifeDates, formatPlaces, buildExternalLinks, hasGndId, getGndUri } from './enrichment.js';
+import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
 
 // Utility: Debounce function
 function debounce(fn, delay) {
@@ -1305,7 +1305,7 @@ function renderPersonsList() {
                 </div>
                 <div class="person-actions">
                     ${createBasketToggle('persons', personKey)}
-                    ${person.authority === 'gnd' ? `
+                    ${person.id ? `
                         <button class="btn-person-info" data-person-id="${escapeHtml(personKey)}"
                                 title="Person-Details anzeigen" onclick="event.stopPropagation()">
                             <i class="fas fa-info-circle"></i>
@@ -1424,10 +1424,18 @@ function renderLettersList() {
         const place = letter.place_sent?.name || '';
         const language = letter.language?.label || '';
 
+        // Check if letter has additional details worth showing
+        const hasDetails = letter.mentions?.subjects?.length > 0 ||
+                          letter.mentions?.persons?.length > 0 ||
+                          letter.mentions?.places?.length > 0 ||
+                          letter.sender?.id ||
+                          letter.recipient?.id;
+
         return `
-            <div class="letter-card" data-id="${letter.id || ''}">
+            <div class="letter-card ${hasDetails ? 'has-details' : ''}" data-id="${letter.id || ''}">
                 <div class="letter-header">
                     <div class="letter-participants">
+                        ${hasDetails ? '<i class="fas fa-chevron-right expand-icon"></i>' : ''}
                         ${escapeHtml(sender)}
                         <span class="letter-arrow"><i class="fas fa-arrow-right"></i></span>
                         ${escapeHtml(recipient)}
@@ -1441,6 +1449,9 @@ function renderLettersList() {
                     ${place ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
                     ${language ? `<span><i class="fas fa-language"></i> ${escapeHtml(language)}</span>` : ''}
                     ${letter.url ? `<span><a href="${letter.url}" target="_blank"><i class="fas fa-external-link-alt"></i> Quelle</a></span>` : ''}
+                </div>
+                <div class="letter-details" style="display: none;">
+                    ${buildLetterDetails(letter)}
                 </div>
             </div>
         `;
@@ -1458,22 +1469,96 @@ function renderLettersList() {
         `);
     }
 
-    // Add click handlers for letter details
-    container.querySelectorAll('.letter-card').forEach(card => {
+    // Add click handlers for letter expansion (inline details)
+    container.querySelectorAll('.letter-card.has-details').forEach(card => {
         card.addEventListener('click', (e) => {
-            // Don't open modal if clicking on external link or basket toggle
-            if (e.target.closest('a') || e.target.closest('.basket-toggle')) return;
+            // Don't expand if clicking on external link, basket toggle, or action buttons
+            if (e.target.closest('a') || e.target.closest('.basket-toggle') || e.target.closest('button')) return;
 
-            const letterId = card.dataset.id;
-            if (letterId) {
-                showLetterDetail(letterId);
-            }
+            toggleLetterExpand(card);
         });
     });
 }
 
+// Toggle letter card expansion
+function toggleLetterExpand(card) {
+    const details = card.querySelector('.letter-details');
+    const icon = card.querySelector('.expand-icon');
+    const isExpanded = card.classList.contains('expanded');
+
+    if (isExpanded) {
+        card.classList.remove('expanded');
+        details.style.display = 'none';
+        if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-right');
+    } else {
+        card.classList.add('expanded');
+        details.style.display = 'block';
+        if (icon) icon.classList.replace('fa-chevron-right', 'fa-chevron-down');
+    }
+}
+
+// Build inline letter details content
+function buildLetterDetails(letter) {
+    let html = '<div class="letter-detail-content">';
+
+    // Links to sender/recipient at correspSearch
+    const senderLink = buildPersonLink(letter.sender);
+    const recipientLink = buildPersonLink(letter.recipient);
+
+    html += '<div class="letter-detail-persons">';
+    html += `<span class="detail-person"><strong>Von:</strong> ${senderLink}</span>`;
+    html += `<span class="detail-person"><strong>An:</strong> ${recipientLink}</span>`;
+    html += '</div>';
+
+    // Mentioned subjects
+    if (letter.mentions?.subjects?.length > 0) {
+        html += '<div class="letter-detail-mentions">';
+        html += '<strong>Themen:</strong> ';
+        html += letter.mentions.subjects.map(s => `<span class="mention-tag">${escapeHtml(s.label)}</span>`).join(' ');
+        html += '</div>';
+    }
+
+    // Mentioned persons
+    if (letter.mentions?.persons?.length > 0) {
+        html += '<div class="letter-detail-mentions">';
+        html += '<strong>Personen:</strong> ';
+        html += letter.mentions.persons.map(p => `<span class="mention-tag">${escapeHtml(p.name)}</span>`).join(' ');
+        html += '</div>';
+    }
+
+    // Mentioned places
+    if (letter.mentions?.places?.length > 0) {
+        html += '<div class="letter-detail-mentions">';
+        html += '<strong>Orte:</strong> ';
+        html += letter.mentions.places.map(p => `<span class="mention-tag">${escapeHtml(p.name)}</span>`).join(' ');
+        html += '</div>';
+    }
+
+    // Action links
+    html += '<div class="letter-detail-links">';
+
+    const senderCorrespUrl = buildCorrespSearchUrl(letter.sender);
+    const recipientCorrespUrl = buildCorrespSearchUrl(letter.recipient);
+
+    if (senderCorrespUrl) {
+        html += `<a href="${senderCorrespUrl}" target="_blank" class="detail-link" title="Alle Briefe von ${escapeHtml(letter.sender?.name)} bei correspSearch">
+            <i class="fas fa-search"></i> ${escapeHtml(letter.sender?.name)} bei correspSearch
+        </a>`;
+    }
+    if (recipientCorrespUrl && letter.recipient?.name !== letter.sender?.name) {
+        html += `<a href="${recipientCorrespUrl}" target="_blank" class="detail-link" title="Alle Briefe von ${escapeHtml(letter.recipient?.name)} bei correspSearch">
+            <i class="fas fa-search"></i> ${escapeHtml(letter.recipient?.name)} bei correspSearch
+        </a>`;
+    }
+
+    html += '</div>';
+    html += '</div>';
+
+    return html;
+}
+
 // ===================
-// LETTER DETAIL MODAL
+// LETTER DETAIL MODAL (kept for backwards compatibility)
 // ===================
 
 function showLetterDetail(letterId) {
@@ -1610,13 +1695,25 @@ function showLetterDetail(letterId) {
     };
 }
 
-// Show person detail modal with GND enrichment
+// Show person detail modal with Wikidata enrichment (supports GND and VIAF)
 async function showPersonDetail(personId) {
-    // Find person in index
-    const person = dataIndices.persons?.find(p =>
-        (p.id === personId) || (p.name === personId)
-    );
+    // Find person in index (dataIndices.persons is keyed by authority ID like VIAF)
+    let person = dataIndices.persons?.[personId];
+    if (!person) {
+        // Try to find by iterating values (match by viaf, id, or name)
+        person = Object.values(dataIndices.persons || {}).find(p =>
+            p.viaf === personId || p.id === personId || p.name === personId
+        );
+    }
     if (!person) return;
+
+    // Normalize property names (HSA uses letters_sent/letters_received, dynamic uses sent/received)
+    const sentCount = person.letters_sent ?? person.sent ?? 0;
+    const receivedCount = person.letters_received ?? person.received ?? 0;
+
+    // Normalize authority and id (HSA uses 'viaf' property, others use 'id' + 'authority')
+    const authorityId = person.viaf || person.id;
+    const authority = person.authority || (person.viaf ? 'viaf' : null);
 
     const modal = document.getElementById('person-modal');
     const title = document.getElementById('person-modal-title');
@@ -1627,12 +1724,17 @@ async function showPersonDetail(personId) {
     // Set title
     title.textContent = person.name;
 
-    // Show loading state
-    body.innerHTML = `
-        <div class="person-detail-loading">
-            <i class="fas fa-spinner fa-spin"></i> Lade Daten von GND...
-        </div>
-    `;
+    // Check if we can enrich from Wikidata (supports GND and VIAF)
+    const canEnrich = authority && authorityId && ['gnd', 'viaf'].includes(authority);
+
+    // Show loading state if we're fetching Wikidata
+    if (canEnrich) {
+        body.innerHTML = `
+            <div class="person-detail-loading">
+                <i class="fas fa-spinner fa-spin"></i> Lade Daten von Wikidata...
+            </div>
+        `;
+    }
 
     modal.style.display = 'flex';
 
@@ -1643,9 +1745,24 @@ async function showPersonDetail(personId) {
         if (e.target === modal) modal.style.display = 'none';
     };
 
-    // Fetch enrichment data
-    const gndUri = getGndUri(person);
-    const enriched = gndUri ? await enrichFromGND(gndUri) : null;
+    // First check if we have pre-cached enrichment from upload process
+    let enriched = null;
+    if (canEnrich) {
+        try {
+            const cachedEnrichment = sessionStorage.getItem('person-enrichment');
+            if (cachedEnrichment) {
+                const enrichmentData = JSON.parse(cachedEnrichment);
+                enriched = enrichmentData[authorityId];
+            }
+        } catch {
+            // Cache read failed, will fetch live
+        }
+
+        // If not in pre-cache, fetch live from Wikidata
+        if (!enriched) {
+            enriched = await enrichPerson(authority, authorityId);
+        }
+    }
 
     // Build content
     let html = '<div class="person-detail">';
@@ -1660,7 +1777,12 @@ async function showPersonDetail(personId) {
     }
     html += '<div class="person-detail-info">';
     html += `<h3>${escapeHtml(enriched?.name || person.name)}</h3>`;
+
+    // Show enriched biographical data
     if (enriched) {
+        if (enriched.description) {
+            html += `<div class="person-description">${escapeHtml(enriched.description)}</div>`;
+        }
         const lifeDates = formatLifeDates(enriched);
         const places = formatPlaces(enriched);
         if (lifeDates) {
@@ -1675,54 +1797,8 @@ async function showPersonDetail(personId) {
     }
     html += '</div></div>';
 
-    // Statistics from our data
-    html += '<div class="person-detail-section">';
-    html += '<h4>Korrespondenz</h4>';
-    html += `<div class="person-detail-row">
-        <span class="person-detail-label">Gesendet</span>
-        <span class="person-detail-value">${person.sent} Briefe</span>
-    </div>`;
-    html += `<div class="person-detail-row">
-        <span class="person-detail-label">Empfangen</span>
-        <span class="person-detail-value">${person.received} Briefe</span>
-    </div>`;
-    html += '</div>';
-
-    // Enriched data section
-    if (enriched && !enriched.notFound) {
-        html += '<div class="person-detail-section">';
-        html += '<h4>Biografische Daten (GND)</h4>';
-
-        if (enriched.biographicalNote) {
-            html += `<div class="person-detail-row">
-                <span class="person-detail-note">${escapeHtml(enriched.biographicalNote)}</span>
-            </div>`;
-        }
-
-        if (enriched.academicDegree) {
-            html += `<div class="person-detail-row">
-                <span class="person-detail-label">Akademischer Grad</span>
-                <span class="person-detail-value">${escapeHtml(enriched.academicDegree)}</span>
-            </div>`;
-        }
-
-        if (enriched.affiliations?.length > 0) {
-            html += `<div class="person-detail-row">
-                <span class="person-detail-label">Institutionen</span>
-                <span class="person-detail-value">${enriched.affiliations.slice(0, 3).map(a => escapeHtml(a)).join(', ')}</span>
-            </div>`;
-        }
-
-        if (enriched.placeOfActivity?.length > 0) {
-            html += `<div class="person-detail-row">
-                <span class="person-detail-label">Wirkungsorte</span>
-                <span class="person-detail-value">${enriched.placeOfActivity.slice(0, 3).map(p => escapeHtml(p)).join(', ')}</span>
-            </div>`;
-        }
-
-        html += '</div>';
-
-        // External links
+    // External links (from Wikidata enrichment or fallback)
+    if (enriched) {
         const externalLinks = buildExternalLinks(enriched);
         if (externalLinks) {
             html += '<div class="person-detail-section">';
@@ -1730,10 +1806,17 @@ async function showPersonDetail(personId) {
             html += `<div class="person-detail-links">${externalLinks}</div>`;
             html += '</div>';
         }
-    } else if (enriched?.notFound) {
-        html += `<div class="person-detail-note">
-            <i class="fas fa-info-circle"></i> Keine GND-Daten gefunden.
-        </div>`;
+    } else if (authority && authorityId) {
+        // Fallback: show direct authority link if no Wikidata data
+        html += '<div class="person-detail-section">';
+        html += '<h4>Externe Links</h4>';
+        html += '<div class="person-detail-links">';
+        if (authority === 'viaf') {
+            html += `<a href="https://viaf.org/viaf/${authorityId}" target="_blank" rel="noopener" title="VIAF">VIAF</a>`;
+        } else if (authority === 'gnd') {
+            html += `<a href="https://d-nb.info/gnd/${authorityId}" target="_blank" rel="noopener" title="GND">GND</a>`;
+        }
+        html += '</div></div>';
     }
 
     // Action buttons
@@ -1757,16 +1840,22 @@ async function showPersonDetail(personId) {
 
 // Helper to build correspSearch URL for a person
 function buildCorrespSearchUrl(person) {
-    if (!person || !person.id || !person.authority) return null;
+    if (!person) return null;
+
+    // Normalize authority and id (HSA uses 'viaf' property, others use 'id' + 'authority')
+    const authorityId = person.viaf || person.id;
+    const authority = person.authority || (person.viaf ? 'viaf' : null);
+
+    if (!authorityId || !authority) return null;
 
     // correspSearch API accepts GND and VIAF IDs
     let authorityUrl = null;
-    switch (person.authority) {
+    switch (authority) {
         case 'gnd':
-            authorityUrl = `http://d-nb.info/gnd/${person.id}`;
+            authorityUrl = `http://d-nb.info/gnd/${authorityId}`;
             break;
         case 'viaf':
-            authorityUrl = `http://viaf.org/viaf/${person.id}`;
+            authorityUrl = `http://viaf.org/viaf/${authorityId}`;
             break;
     }
 
