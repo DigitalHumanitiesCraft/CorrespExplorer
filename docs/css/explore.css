@@ -333,9 +333,11 @@
 /* Timeline View */
 .timeline-container {
     padding: var(--space-lg);
+    padding-bottom: var(--space-xl);
     height: calc(100vh - var(--navbar-height));
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .timeline-header {
@@ -362,9 +364,11 @@
     align-items: flex-end;
     gap: 2px;
     padding: var(--space-md) 0;
+    padding-top: 60px; /* Space for tooltips above bars */
     padding-bottom: 40px; /* Space for X-axis labels */
     border-bottom: 2px solid var(--color-border);
     margin-bottom: var(--space-md);
+    overflow: visible;
 }
 
 .timeline-bar-wrapper {
@@ -457,10 +461,12 @@
 
 .timeline-footer {
     padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--space-sm);
+    flex-shrink: 0;
 }
 
 .timeline-stack-legend {

@@ -201,10 +201,16 @@ function buildLanguageFilter() {
 
     topLanguages.forEach(code => {
         const lang = languages[code];
+        // Use LANGUAGE_LABELS for display, fallback to data label or code
+        let displayLabel = LANGUAGE_LABELS[code] || lang.label || code;
+        // Handle special cases
+        if (displayLabel === 'None' || code === 'None') {
+            displayLabel = 'Unbekannt';
+        }
         const label = document.createElement('label');
         label.innerHTML = `
             <input type="checkbox" name="language" value="${code}" checked>
-            <span>${lang.label || code}</span>
+            <span>${displayLabel}</span>
             <span class="filter-count" id="count-lang-${code}">(${lang.letter_count})</span>
         `;
         container.appendChild(label);
@@ -1349,6 +1355,23 @@ const LANGUAGE_COLORS = {
     'other': '#64748b' // Other - slate
 };
 
+// Language labels for display
+const LANGUAGE_LABELS = {
+    'de': 'Deutsch',
+    'fr': 'Franzoesisch',
+    'it': 'Italienisch',
+    'en': 'Englisch',
+    'es': 'Spanisch',
+    'pt': 'Portugiesisch',
+    'la': 'Latein',
+    'hu': 'Ungarisch',
+    'nl': 'Niederlaendisch',
+    'cy': 'Walisisch',
+    'oc': 'Okzitanisch',
+    'None': 'Unbekannt',
+    'other': 'Andere'
+};
+
 function initTimeline() {
     // Setup stack mode toggle
     const stackToggle = document.getElementById('timeline-stack-toggle');
@@ -1398,7 +1421,7 @@ function renderTimeline() {
     lettersToUse.forEach(letter => {
         if (!letter.year) return;
         const year = letter.year;
-        const lang = letter.language || 'other';
+        const lang = letter.language?.code || 'other';
         const langKey = LANGUAGE_COLORS[lang] ? lang : 'other';
 
         yearData[year].total++;
@@ -1442,7 +1465,8 @@ function renderTimeline() {
                     const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
                     segments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${lang}" data-count="${count}"></div>`;
                     currentBottom += segmentHeight;
-                    tooltipParts.push(`${lang.toUpperCase()}: ${count}`);
+                    const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
+                    tooltipParts.push(`${langLabel}: ${count}`);
                 }
             });
         }
@@ -1477,7 +1501,7 @@ function renderTimeline() {
             .map(lang => {
                 const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
                 const count = languageTotals[lang];
-                const label = lang === 'other' ? 'Andere' : lang.toUpperCase();
+                const label = LANGUAGE_LABELS[lang] || lang.toUpperCase();
                 return `<span class="timeline-legend-item"><span class="timeline-legend-color" style="background: ${color}"></span>${label} (${count})</span>`;
             });
         legendEl.innerHTML = legendItems.join('');
