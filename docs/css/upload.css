@@ -274,6 +274,26 @@
     display: block;
 }
 
+/* About Link */
+.about-link-container {
+    margin-top: var(--space-xl);
+    text-align: center;
+}
+
+.about-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition: color var(--transition-fast);
+}
+
+.about-link:hover {
+    color: var(--color-primary);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .landing-container {

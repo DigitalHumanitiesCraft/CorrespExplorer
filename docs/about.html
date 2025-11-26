@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CorrespExplorer - Informationen zum Projekt und CMIF-Format">
+    <title>CorrespExplorer - Ueber das Projekt</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/about.css">
+</head>
+<body>
+    <div class="about-container">
+        <header class="about-header">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Zurueck zur Startseite
+            </a>
+            <h1>Ueber CorrespExplorer</h1>
+        </header>
+
+        <main class="about-content">
+            <section class="about-section">
+                <h2>Was ist CorrespExplorer?</h2>
+                <p>
+                    CorrespExplorer ist ein webbasiertes Werkzeug zur Visualisierung und Exploration von
+                    Korrespondenz-Metadaten. Es wurde entwickelt, um Briefeditionen und Korrespondenzprojekte
+                    interaktiv erfahrbar zu machen.
+                </p>
+                <p>
+                    Die Anwendung verarbeitet Daten im CMIF-Format (Correspondence Metadata Interchange Format)
+                    und bietet verschiedene Ansichten: Kartenvisualisierung, Zeitliche Verteilung,
+                    Korrespondentenlisten, Themenexploration und Ortsverzeichnis.
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h2>Das CMIF-Format</h2>
+                <p>
+                    CMIF (Correspondence Metadata Interchange Format) ist ein auf TEI-XML basierendes Format
+                    zum Austausch von Korrespondenz-Metadaten. Es wurde von der TEI Correspondence SIG
+                    entwickelt und ermoeglicht die Vernetzung verschiedener Briefeditionen.
+                </p>
+                <div class="info-box">
+                    <h4>CMIF enthaelt typischerweise:</h4>
+                    <ul>
+                        <li>Absender und Empfaenger (mit Normdaten-Verknuepfung)</li>
+                        <li>Datum und Zeitraum</li>
+                        <li>Absendeort (mit Geokoordinaten)</li>
+                        <li>Sprache des Briefs</li>
+                        <li>Themen und Schlagworte</li>
+                        <li>Verweise auf die Quelledition</li>
+                    </ul>
+                </div>
+                <p>
+                    <a href="https://correspsearch.net/index.xql?id=participate_cmi-format" target="_blank" rel="noopener">
+                        <i class="fas fa-external-link-alt"></i> CMIF-Spezifikation auf correspSearch
+                    </a>
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h2>correspSearch</h2>
+                <p>
+                    correspSearch ist ein Webservice der Berlin-Brandenburgischen Akademie der Wissenschaften,
+                    der Briefmetadaten aus verschiedenen Editionen aggregiert und durchsuchbar macht.
+                </p>
+                <p>
+                    CorrespExplorer kann CMIF-Daten direkt von correspSearch laden.
+                    Die API ermoeglicht Abfragen nach Korrespondenten, Zeitraeumen und anderen Kriterien.
+                </p>
+                <div class="link-list">
+                    <a href="https://correspsearch.net" target="_blank" rel="noopener">
+                        <i class="fas fa-globe"></i> correspSearch.net
+                    </a>
+                    <a href="https://correspsearch.net/index.xql?id=api" target="_blank" rel="noopener">
+                        <i class="fas fa-code"></i> API-Dokumentation
+                    </a>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <h2>Funktionen</h2>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-map"></i>
+                        <h4>Kartenansicht</h4>
+                        <p>Interaktive Karte mit Clustering der Absendeorte</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-bar"></i>
+                        <h4>Timeline</h4>
+                        <p>Zeitliche Verteilung mit Sprachvisualisierung</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-users"></i>
+                        <h4>Korrespondenten</h4>
+                        <p>Durchsuchbare Liste aller Briefpartner</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-envelope"></i>
+                        <h4>Briefliste</h4>
+                        <p>Detailansicht aller Briefe mit Filterung</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-tags"></i>
+                        <h4>Themen</h4>
+                        <p>Exploration nach Schlagworten und Themen</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h4>Orte</h4>
+                        <p>Verzeichnis aller Absendeorte</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <h2>Technologie</h2>
+                <p>CorrespExplorer ist eine clientseitige Webanwendung ohne Backend-Abhaengigkeiten:</p>
+                <ul class="tech-list">
+                    <li><strong>Frontend:</strong> Vanilla JavaScript (ES6+), HTML5, CSS3</li>
+                    <li><strong>Karten:</strong> MapLibre GL JS mit OpenStreetMap-Tiles</li>
+                    <li><strong>Datenverarbeitung:</strong> XML-Parsing im Browser</li>
+                    <li><strong>Export:</strong> CSV und JSON</li>
+                </ul>
+                <p>
+                    Der Quellcode ist auf GitHub verfuegbar und kann frei verwendet werden.
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h2>Datenschutz</h2>
+                <p>
+                    CorrespExplorer verarbeitet alle Daten lokal im Browser.
+                    Hochgeladene Dateien werden nicht auf einem Server gespeichert.
+                    Bei URL-Importen werden die Daten direkt von der angegebenen Quelle geladen.
+                </p>
+            </section>
+
+            <section class="about-section">
+                <h2>Lizenz und Kontakt</h2>
+                <p>
+                    CorrespExplorer ist Open Source Software.
+                    Die Nutzung ist frei fuer akademische und nicht-kommerzielle Zwecke.
+                </p>
+                <p>
+                    Entwickelt im Rahmen des DHCraft-Projekts.
+                </p>
+            </section>
+        </main>
+
+        <footer class="about-footer">
+            <p>CorrespExplorer - Ein Werkzeug zur Exploration digitaler Briefeditionen</p>
+        </footer>
+    </div>
+</body>
+</html>

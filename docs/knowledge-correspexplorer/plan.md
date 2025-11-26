@@ -154,7 +154,7 @@ Status: Bereits vorhanden, wird automatisch von Claude Code genutzt.
 
 1. ~~US-07: Orts-Details erweitern (Top-5 Absender im Popup)~~ - erledigt
 2. ~~Orte-Index View (Places View)~~ - erledigt
-3. About-Seite
+3. ~~About-Seite~~ - erledigt
 
 ### Phase 2: Integration
 
