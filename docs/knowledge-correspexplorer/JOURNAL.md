@@ -4,6 +4,44 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Phase 12: GND-Enrichment)
+
+### Implementiert: On-Demand Personen-Anreicherung via lobid.org
+
+Neue Funktion: Bei Klick auf den Info-Button einer Person werden biografische Daten von der GND via lobid.org API geladen.
+
+1. Neue Datei: js/enrichment.js
+   - `enrichFromGND(gndUri)`: Laedt Daten von lobid.org
+   - `formatLifeDates()`: Formatiert Lebensdaten als String
+   - `formatPlaces()`: Formatiert Geburts-/Sterbeort
+   - `buildExternalLinks()`: Erstellt Links zu GND, Wikidata, Wikipedia
+   - Session-Cache mit 7-Tage-Gültigkeit
+
+2. Angereicherte Daten
+   - Name (preferredName)
+   - Lebensdaten (Geburt/Tod)
+   - Geburts-/Sterbeort
+   - Berufe/Taetigkeiten
+   - Akademischer Grad
+   - Institutionen (Affiliationen)
+   - Wirkungsorte
+   - Biografische Notiz
+   - Portrait-Bild (Thumbnail)
+   - Externe Links (GND, Wikidata, Wikipedia)
+
+3. UI-Aenderungen
+   - Neuer Info-Button bei Personen mit GND-ID
+   - Person-Detail-Modal mit Bild, Lebensdaten, Berufen
+   - Loading-State waehrend des Ladens
+   - Buttons: "Bei correspSearch suchen", "Briefe filtern"
+
+4. Technische Details
+   - Nur bei Personen mit `authority === 'gnd'` aktiv
+   - Cache reduziert API-Aufrufe bei wiederholtem Aufruf
+   - Graceful Degradation bei fehlenden Daten
+
+---
+
 ## 2025-11-26 (Phase 11: Demo-Datensaetze und Dokumentation)
 
 ### Demo-Datensaetze als Presets

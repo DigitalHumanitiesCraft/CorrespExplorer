@@ -3,6 +3,7 @@
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS } from './constants.js';
 import { initBasketUI, createBasketToggle, setupBasketToggles } from './basket-ui.js';
+import { enrichFromGND, formatLifeDates, formatPlaces, buildExternalLinks, hasGndId, getGndUri } from './enrichment.js';
 
 // Utility: Debounce function
 function debounce(fn, delay) {
@@ -1304,6 +1305,12 @@ function renderPersonsList() {
                 </div>
                 <div class="person-actions">
                     ${createBasketToggle('persons', personKey)}
+                    ${person.authority === 'gnd' ? `
+                        <button class="btn-person-info" data-person-id="${escapeHtml(personKey)}"
+                                title="Person-Details anzeigen" onclick="event.stopPropagation()">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    ` : ''}
                     ${correspSearchUrl ? `
                         <a href="${correspSearchUrl}" target="_blank" class="btn-correspsearch"
                            title="Weitere Briefe bei correspSearch suchen" onclick="event.stopPropagation()">
@@ -1327,6 +1334,17 @@ function renderPersonsList() {
                 applyPersonFilter(personId);
                 switchView('letters');
                 updateUrlState();
+            }
+        });
+    });
+
+    // Add click handlers for person info buttons
+    container.querySelectorAll('.btn-person-info').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const personId = btn.dataset.personId;
+            if (personId) {
+                showPersonDetail(personId);
             }
         });
     });
@@ -1590,6 +1608,151 @@ function showLetterDetail(letterId) {
     modal.onclick = (e) => {
         if (e.target === modal) modal.style.display = 'none';
     };
+}
+
+// Show person detail modal with GND enrichment
+async function showPersonDetail(personId) {
+    // Find person in index
+    const person = dataIndices.persons?.find(p =>
+        (p.id === personId) || (p.name === personId)
+    );
+    if (!person) return;
+
+    const modal = document.getElementById('person-modal');
+    const title = document.getElementById('person-modal-title');
+    const body = document.getElementById('person-modal-body');
+
+    if (!modal || !body) return;
+
+    // Set title
+    title.textContent = person.name;
+
+    // Show loading state
+    body.innerHTML = `
+        <div class="person-detail-loading">
+            <i class="fas fa-spinner fa-spin"></i> Lade Daten von GND...
+        </div>
+    `;
+
+    modal.style.display = 'flex';
+
+    // Setup close handlers
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.onclick = () => modal.style.display = 'none';
+    modal.onclick = (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    };
+
+    // Fetch enrichment data
+    const gndUri = getGndUri(person);
+    const enriched = gndUri ? await enrichFromGND(gndUri) : null;
+
+    // Build content
+    let html = '<div class="person-detail">';
+
+    // Header with avatar/image and basic info
+    html += '<div class="person-detail-header">';
+    if (enriched?.thumbnail) {
+        html += `<img class="person-detail-image" src="${enriched.thumbnail}" alt="${escapeHtml(person.name)}">`;
+    } else {
+        const initials = person.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        html += `<div class="person-detail-avatar">${initials}</div>`;
+    }
+    html += '<div class="person-detail-info">';
+    html += `<h3>${escapeHtml(enriched?.name || person.name)}</h3>`;
+    if (enriched) {
+        const lifeDates = formatLifeDates(enriched);
+        const places = formatPlaces(enriched);
+        if (lifeDates) {
+            html += `<div class="person-life-dates"><i class="fas fa-calendar"></i> ${lifeDates}</div>`;
+        }
+        if (places) {
+            html += `<div class="person-places"><i class="fas fa-map-marker-alt"></i> ${places}</div>`;
+        }
+        if (enriched.professions?.length > 0) {
+            html += `<div class="person-professions"><i class="fas fa-briefcase"></i> ${enriched.professions.slice(0, 3).join(', ')}</div>`;
+        }
+    }
+    html += '</div></div>';
+
+    // Statistics from our data
+    html += '<div class="person-detail-section">';
+    html += '<h4>Korrespondenz</h4>';
+    html += `<div class="person-detail-row">
+        <span class="person-detail-label">Gesendet</span>
+        <span class="person-detail-value">${person.sent} Briefe</span>
+    </div>`;
+    html += `<div class="person-detail-row">
+        <span class="person-detail-label">Empfangen</span>
+        <span class="person-detail-value">${person.received} Briefe</span>
+    </div>`;
+    html += '</div>';
+
+    // Enriched data section
+    if (enriched && !enriched.notFound) {
+        html += '<div class="person-detail-section">';
+        html += '<h4>Biografische Daten (GND)</h4>';
+
+        if (enriched.biographicalNote) {
+            html += `<div class="person-detail-row">
+                <span class="person-detail-note">${escapeHtml(enriched.biographicalNote)}</span>
+            </div>`;
+        }
+
+        if (enriched.academicDegree) {
+            html += `<div class="person-detail-row">
+                <span class="person-detail-label">Akademischer Grad</span>
+                <span class="person-detail-value">${escapeHtml(enriched.academicDegree)}</span>
+            </div>`;
+        }
+
+        if (enriched.affiliations?.length > 0) {
+            html += `<div class="person-detail-row">
+                <span class="person-detail-label">Institutionen</span>
+                <span class="person-detail-value">${enriched.affiliations.slice(0, 3).map(a => escapeHtml(a)).join(', ')}</span>
+            </div>`;
+        }
+
+        if (enriched.placeOfActivity?.length > 0) {
+            html += `<div class="person-detail-row">
+                <span class="person-detail-label">Wirkungsorte</span>
+                <span class="person-detail-value">${enriched.placeOfActivity.slice(0, 3).map(p => escapeHtml(p)).join(', ')}</span>
+            </div>`;
+        }
+
+        html += '</div>';
+
+        // External links
+        const externalLinks = buildExternalLinks(enriched);
+        if (externalLinks) {
+            html += '<div class="person-detail-section">';
+            html += '<h4>Externe Links</h4>';
+            html += `<div class="person-detail-links">${externalLinks}</div>`;
+            html += '</div>';
+        }
+    } else if (enriched?.notFound) {
+        html += `<div class="person-detail-note">
+            <i class="fas fa-info-circle"></i> Keine GND-Daten gefunden.
+        </div>`;
+    }
+
+    // Action buttons
+    html += '<div class="person-detail-actions">';
+
+    const correspSearchUrl = buildCorrespSearchUrl(person);
+    if (correspSearchUrl) {
+        html += `<a href="${correspSearchUrl}" target="_blank" class="btn btn-primary">
+            <i class="fas fa-search"></i> Bei correspSearch suchen
+        </a>`;
+    }
+
+    html += `<button class="btn btn-secondary" onclick="filterByPerson('${escapeHtml(personId)}'); document.getElementById('person-modal').style.display='none';">
+        <i class="fas fa-filter"></i> Briefe filtern
+    </button>`;
+
+    html += '</div></div>';
+
+    body.innerHTML = html;
 }
 
 // Helper to build correspSearch URL for a person
