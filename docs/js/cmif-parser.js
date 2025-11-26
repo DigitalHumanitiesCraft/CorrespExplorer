@@ -1,19 +1,28 @@
 // CMIF Parser - Browser-based XML parsing for Correspondence Metadata Interchange Format
 // Parses CMIF-XML files and converts them to the internal JSON structure
+// Also handles correspSearch API responses (TEI-JSON format)
+
+import { isCorrespSearchUrl, fetchFromCorrespSearchUrl } from './correspsearch-api.js';
 
 const TEI_NS = 'http://www.tei-c.org/ns/1.0';
 
 /**
  * Parse a CMIF source (File, URL, or XML string)
  * @param {File|string} source - File object, URL string, or XML string
+ * @param {Function} [onProgress] - Progress callback for correspSearch API
  * @returns {Promise<Object>} Parsed data with letters, indices, and meta
  */
-export async function parseCMIF(source) {
+export async function parseCMIF(source, onProgress = null) {
     let xmlString;
 
     if (source instanceof File) {
         xmlString = await source.text();
     } else if (source.startsWith('http://') || source.startsWith('https://')) {
+        // Check if this is a correspSearch API URL
+        if (isCorrespSearchUrl(source)) {
+            return await fetchFromCorrespSearchUrl(source, onProgress);
+        }
+
         try {
             const response = await fetch(source);
             if (!response.ok) {

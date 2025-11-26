@@ -59,6 +59,61 @@
             <p id="loading-text">Verarbeite CMIF-Datei...</p>
         </div>
 
+        <!-- correspSearch Search Section -->
+        <section class="correspsearch-section" id="correspsearch-section">
+            <div class="divider">
+                <span>oder direkt bei correspSearch suchen</span>
+            </div>
+            <div class="cs-search-form" id="cs-search-form">
+                <div class="cs-form-row">
+                    <div class="cs-form-group">
+                        <label for="cs-correspondent">
+                            <i class="fas fa-user"></i> Person (GND-URI)
+                        </label>
+                        <input type="text"
+                               id="cs-correspondent"
+                               placeholder="http://d-nb.info/gnd/118540238"
+                               aria-label="GND-URI der Person">
+                        <span class="cs-hint">z.B. Goethe: http://d-nb.info/gnd/118540238</span>
+                    </div>
+                    <div class="cs-form-group">
+                        <label for="cs-place">
+                            <i class="fas fa-map-marker-alt"></i> Absende-Ort (GeoNames)
+                        </label>
+                        <input type="text"
+                               id="cs-place"
+                               placeholder="http://sws.geonames.org/2761369"
+                               aria-label="GeoNames-URI des Ortes">
+                        <span class="cs-hint">z.B. Wien: http://sws.geonames.org/2761369</span>
+                    </div>
+                </div>
+                <div class="cs-form-row">
+                    <div class="cs-form-group cs-form-group-date">
+                        <label for="cs-startdate">
+                            <i class="fas fa-calendar"></i> Zeitraum
+                        </label>
+                        <div class="cs-date-inputs">
+                            <input type="text"
+                                   id="cs-startdate"
+                                   placeholder="1800-01-01"
+                                   aria-label="Startdatum">
+                            <span>bis</span>
+                            <input type="text"
+                                   id="cs-enddate"
+                                   placeholder="1850-12-31"
+                                   aria-label="Enddatum">
+                        </div>
+                    </div>
+                </div>
+                <div class="cs-form-actions">
+                    <button type="button" id="cs-search-btn" class="cs-search-btn">
+                        <i class="fas fa-search"></i> Bei correspSearch suchen
+                    </button>
+                    <span class="cs-result-info" id="cs-result-info"></span>
+                </div>
+            </div>
+        </section>
+
         <!-- About Link -->
         <div class="about-link-container">
             <a href="about.html" class="about-link">

@@ -274,6 +274,143 @@
     display: block;
 }
 
+/* correspSearch Section */
+.correspsearch-section {
+    width: 100%;
+    max-width: 600px;
+    margin-top: var(--space-xl);
+}
+
+.cs-search-form {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+}
+
+.cs-form-row {
+    display: flex;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.cs-form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.cs-form-group label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.cs-form-group label i {
+    color: var(--color-primary);
+    width: 16px;
+}
+
+.cs-form-group input {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    transition: border-color var(--transition-fast);
+}
+
+.cs-form-group input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+.cs-form-group input::placeholder {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-xs);
+}
+
+.cs-hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+}
+
+.cs-form-group-date {
+    flex: 1;
+}
+
+.cs-date-inputs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.cs-date-inputs input {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+}
+
+.cs-date-inputs input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+.cs-date-inputs span {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+}
+
+.cs-form-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+}
+
+.cs-search-btn {
+    background: var(--color-accent);
+    color: white;
+    padding: var(--space-md) var(--space-xl);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.cs-search-btn:hover {
+    background: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.cs-search-btn:disabled {
+    background: var(--color-border);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cs-result-info {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    display: none;
+}
+
+.cs-result-info.active {
+    display: inline;
+}
+
 /* About Link */
 .about-link-container {
     margin-top: var(--space-xl);
@@ -318,5 +455,32 @@
 
     .dataset-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* correspSearch responsive */
+    .cs-form-row {
+        flex-direction: column;
+    }
+
+    .cs-date-inputs {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cs-date-inputs span {
+        text-align: center;
+    }
+
+    .cs-form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cs-search-btn {
+        justify-content: center;
+    }
+
+    .cs-result-info {
+        text-align: center;
     }
 }
