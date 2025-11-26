@@ -50,6 +50,138 @@ const log = {
 // Default color
 const PRIMARY_COLOR = '#1e40af';
 
+// Available views tracking
+let availableViews = {};
+
+// Detect which views are available based on data
+function detectAvailableViews() {
+    const hasCoordinates = Object.keys(placeAggregation).length > 0;
+    const hasPersons = Object.keys(dataIndices.persons || {}).length > 0;
+    const hasLetters = allLetters.length > 0;
+    const hasYears = allLetters.some(l => l.year !== null && l.year !== undefined);
+    const hasSubjects = allLetters.some(l => l.mentions?.subjects?.length > 0);
+    const hasPlaces = Object.keys(dataIndices.places || {}).length > 0;
+    const hasLanguages = allLetters.some(l => l.language?.code);
+
+    availableViews = {
+        map: {
+            available: hasCoordinates,
+            reason: hasCoordinates ? null : 'Keine Orte mit Koordinaten vorhanden'
+        },
+        persons: {
+            available: hasPersons,
+            reason: hasPersons ? null : 'Keine Personen-Daten vorhanden'
+        },
+        letters: {
+            available: hasLetters,
+            reason: hasLetters ? null : 'Keine Briefe vorhanden'
+        },
+        timeline: {
+            available: hasYears,
+            reason: hasYears ? null : 'Keine Datums-Angaben vorhanden'
+        },
+        topics: {
+            available: hasSubjects,
+            reason: hasSubjects ? null : 'Keine Themen (subjects) im Datensatz'
+        },
+        places: {
+            available: hasPlaces,
+            reason: hasPlaces ? null : 'Keine Orts-Daten vorhanden'
+        },
+        network: {
+            available: hasPersons && hasLetters,
+            reason: (hasPersons && hasLetters) ? null : 'Keine Netzwerk-Daten vorhanden'
+        }
+    };
+
+    log.init(`Available views: ${Object.entries(availableViews).filter(([k, v]) => v.available).map(([k]) => k).join(', ')}`);
+    return availableViews;
+}
+
+// Update view buttons based on availability
+function updateViewButtons() {
+    const viewButtons = document.querySelectorAll('.view-btn');
+
+    viewButtons.forEach(btn => {
+        const view = btn.dataset.view;
+        const viewInfo = availableViews[view];
+
+        if (viewInfo) {
+            if (viewInfo.available) {
+                btn.style.display = '';
+                btn.disabled = false;
+                btn.title = '';
+            } else {
+                btn.style.display = 'none';
+                btn.disabled = true;
+                btn.title = viewInfo.reason;
+            }
+        }
+    });
+
+    // Show info banner if some views are unavailable
+    showDataInfoBanner();
+}
+
+// Show banner explaining data limitations
+function showDataInfoBanner() {
+    const unavailableViews = Object.entries(availableViews)
+        .filter(([key, info]) => !info.available)
+        .map(([key, info]) => ({ key, reason: info.reason }));
+
+    // Remove existing banner if present
+    const existingBanner = document.getElementById('data-info-banner');
+    if (existingBanner) {
+        existingBanner.remove();
+    }
+
+    // Only show banner if there are unavailable views
+    if (unavailableViews.length === 0) return;
+
+    const viewLabels = {
+        map: 'Karte',
+        persons: 'Korrespondenten',
+        letters: 'Briefe',
+        timeline: 'Timeline',
+        topics: 'Themen',
+        places: 'Orte',
+        network: 'Netzwerk'
+    };
+
+    const banner = document.createElement('div');
+    banner.id = 'data-info-banner';
+    banner.className = 'data-info-banner';
+
+    const unavailableList = unavailableViews
+        .map(v => `${viewLabels[v.key]}: ${v.reason}`)
+        .join(' | ');
+
+    banner.innerHTML = `
+        <i class="fas fa-info-circle"></i>
+        <span>Einige Ansichten sind fuer diesen Datensatz nicht verfuegbar: ${unavailableList}</span>
+        <button class="banner-close" onclick="this.parentElement.remove()" aria-label="Schliessen">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+
+    // Insert after nav
+    const nav = document.querySelector('.nav-bar');
+    if (nav && nav.parentNode) {
+        nav.parentNode.insertBefore(banner, nav.nextSibling);
+    }
+}
+
+// Get first available view
+function getFirstAvailableView() {
+    const viewOrder = ['letters', 'persons', 'timeline', 'places', 'network', 'map', 'topics'];
+    for (const view of viewOrder) {
+        if (availableViews[view]?.available) {
+            return view;
+        }
+    }
+    return 'letters'; // Fallback
+}
+
 // Initialize application
 async function init() {
     log.init('Starting CorrespExplorer');
@@ -77,11 +209,22 @@ async function init() {
 
         placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
 
+        // Detect available views based on data
+        detectAvailableViews();
+
         // Read URL state before UI init
         initUrlState();
 
+        // Check if URL-requested view is available, otherwise use first available
+        if (!availableViews[currentView]?.available) {
+            currentView = getFirstAvailableView();
+        }
+
         updateUI(data);
         log.init(`Loaded ${allLetters.length} letters, ${Object.keys(placeAggregation).length} places with coordinates`);
+
+        // Update view buttons based on data availability
+        updateViewButtons();
 
         initMap();
         initFilters();
@@ -95,10 +238,8 @@ async function init() {
         initExport();
         initMissingPlacesModal();
 
-        // Apply initial view from URL
-        if (currentView !== 'map') {
-            switchView(currentView);
-        }
+        // Apply initial view (use detected first available if map not available)
+        switchView(currentView);
 
         // Apply person filter from URL
         if (selectedPersonId) {
@@ -1664,12 +1805,7 @@ function initTopicsView() {
     // Build subject index from letters
     buildSubjectIndex();
 
-    // Show topics button if subjects exist
-    const topicsBtn = document.getElementById('topics-view-btn');
-    if (topicsBtn && Object.keys(subjectIndex).length > 0) {
-        topicsBtn.style.display = '';
-        log.init(`Topics view enabled: ${Object.keys(subjectIndex).length} subjects`);
-    }
+    // Note: Topics button visibility is now handled by updateViewButtons()
 
     // Setup search and sort
     const searchInput = document.getElementById('topic-search');

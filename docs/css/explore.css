@@ -1,5 +1,46 @@
 /* Explore View Specific Styles */
 
+/* Data Info Banner - shows when some views are unavailable */
+.data-info-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-bottom: 1px solid #bae6fd;
+    color: #0369a1;
+    font-size: var(--font-size-sm);
+}
+
+.data-info-banner i {
+    color: #0284c7;
+    flex-shrink: 0;
+}
+
+.data-info-banner span {
+    flex: 1;
+}
+
+.data-info-banner .banner-close {
+    background: none;
+    border: none;
+    color: #0369a1;
+    cursor: pointer;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast);
+}
+
+.data-info-banner .banner-close:hover {
+    background: rgba(3, 105, 161, 0.1);
+}
+
+/* View button disabled state */
+.view-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 /* List View Header */
 .list-header {
     display: flex;
