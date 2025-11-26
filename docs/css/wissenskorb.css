@@ -156,7 +156,7 @@
 .summary-stats .stat-value {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--primary-color, #1e40af);
+    color: var(--primary-color, #A64B3F);
 }
 
 .summary-stats .stat-label {
@@ -197,7 +197,7 @@
 }
 
 .viz-tab.active {
-    background: var(--primary-color, #1e40af);
+    background: var(--primary-color, #A64B3F);
     color: white;
 }
 
@@ -381,7 +381,7 @@
 }
 
 .details-link {
-    color: var(--primary-color, #1e40af);
+    color: var(--primary-color, #A64B3F);
     text-decoration: none;
     padding: 5px;
 }

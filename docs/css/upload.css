@@ -416,10 +416,14 @@
     display: inline;
 }
 
-/* About Link */
+/* Navigation Links */
 .about-link-container {
     margin-top: var(--space-xl);
     text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: var(--space-xl);
+    flex-wrap: wrap;
 }
 
 .about-link {

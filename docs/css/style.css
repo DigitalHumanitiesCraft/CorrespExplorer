@@ -399,6 +399,65 @@ button, .btn {
 
 /* Reset button uses unified .btn-reset from components.css */
 
+/* Topics Quick Filter */
+#topics-quick-filter {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.topic-quick-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+}
+
+.topic-quick-item:hover {
+    border-color: var(--color-primary);
+    background: rgba(166, 75, 63, 0.05);
+}
+
+.topic-quick-item.active {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: white;
+}
+
+.topic-quick-item .topic-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.topic-quick-item .topic-count {
+    color: var(--color-text-light);
+    font-size: var(--font-size-xs);
+}
+
+.topic-quick-item.active .topic-count {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.show-all-link {
+    display: block;
+    margin-top: var(--space-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.show-all-link:hover {
+    text-decoration: underline;
+}
+
 /* Main Content */
 .main-content {
     flex: 1;

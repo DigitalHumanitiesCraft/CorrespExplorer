@@ -27,8 +27,6 @@ const elements = {};
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-    console.log('[Wissenskorb] Initializing...');
-
     // Cache DOM elements
     cacheElements();
 
@@ -50,8 +48,6 @@ async function init() {
 
     // Initial render
     render();
-
-    console.log('[Wissenskorb] Initialized.');
 }
 
 function cacheElements() {
@@ -82,10 +78,9 @@ function loadData() {
             const parsed = JSON.parse(storedData);
             allLetters = parsed.letters || [];
             dataIndices = parsed.indices || {};
-            console.log('[Wissenskorb] Loaded', allLetters.length, 'letters');
         }
     } catch (e) {
-        console.warn('[Wissenskorb] Could not load data:', e);
+        // Data not available - wissenskorb page opened directly
     }
 }
 
@@ -114,7 +109,6 @@ function setupStorageSync() {
     // Listen for storage changes from other tabs
     window.addEventListener('storage', (e) => {
         if (e.key === 'correspexplorer-basket') {
-            console.log('[Wissenskorb] Basket updated from another tab');
             render();
         }
     });

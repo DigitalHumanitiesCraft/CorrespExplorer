@@ -6,7 +6,7 @@ Stand: 2025-11-26
 
 ## Aktueller Implementierungsstand
 
-### Vollstaendig implementiert (31 User Stories)
+### Vollstaendig implementiert (36 User Stories)
 
 | US | Feature | Beschreibung |
 |----|---------|--------------|
@@ -41,13 +41,15 @@ Stand: 2025-11-26
 | US-31 | Wissenskorb | Dedizierte Seite mit Timeline, Netzwerk, Karte, Multi-Tab-Sync |
 | US-32 | Wikidata-Enrichment | Biografische Daten via SPARQL (GND/VIAF) |
 | US-33 | Konfigurations-Dialog | Enrichment-Optionen beim Datensatz-Laden |
+| US-34 | Landing-Page Design | Logo, Cream-Hintergrund, Border-Design |
+| US-35 | Explore-Page Design | Konsistente Farben, Map-Marker Rust-Red |
+| US-36 | Typografie und UX | Tooltips, Link-Farben, Active-States |
+| US-17 | Themen-Schnellfilter | Top-5 Themen in Sidebar |
+| US-23 | Datensatz-Vergleich | Vergleichsseite compare.html |
 
-### Offen (2 User Stories)
+### Offen (0 User Stories)
 
-| US | Feature | Prioritaet | Beschreibung |
-|----|---------|-----------|--------------|
-| US-17 | Themen-Schnellfilter | Niedrig | Top-Themen in Sidebar (Topics View existiert) |
-| US-23 | Datensatz-Vergleich | Niedrig | Zwei CMIF-Dateien vergleichen |
+Alle User Stories sind implementiert.
 
 ---
 
@@ -174,27 +176,36 @@ Status: Bereits vorhanden, wird automatisch von Claude Code genutzt.
 6. ~~US-11: Netzwerk-Visualisierung~~ - erledigt
 7. ~~Wissenskorb (US-31)~~ - erledigt
 
-### Phase 4: Design-Ueberarbeitung
+### Phase 4: Design-Ueberarbeitung - ABGESCHLOSSEN
 
-8. US-34: Landing-Page Design
-   - Logo/Branding hinzufuegen (Header)
-   - Farbpalette aus design.md umsetzen (Cream-Hintergrund statt Grau)
-   - Cards mit staerkeren Borders (2-3px) und besserer Abhebung
-   - Upload-Zone visuell aufwerten
+8. ~~US-34: Landing-Page Design~~ - erledigt
+   - Logo/Branding hinzugefuegt (Header)
+   - Farbpalette aus design.md umgesetzt (Cream-Hintergrund, Rust-Red Akzent)
+   - Cards mit 2px Borders und besserer Abhebung
+   - Upload-Zone visuell aufgewertet
 
-9. US-35: Explore-Page Design
-   - Sidebar/Main-Content Kontrast verbessern
-   - Konsistente Border-Widths
-   - Monospace fuer Daten-Werte
+9. ~~US-35: Explore-Page Design~~ - erledigt
+   - Sidebar/Main-Content Kontrast verbessert (Manila vs Cream)
+   - Konsistente Border-Widths (border-light fuer Cards, border fuer Modals)
+   - Map-Marker auf Rust-Red (#C65D3B) geaendert
 
-10. US-36: Typografie-Update
-    - Headlines: Staerkeres Gewicht, weniger Letter-Spacing
-    - Daten: Monospace-Font fuer Zahlen und IDs
+10. ~~US-36: Typografie und UX~~ - erledigt
+    - Tooltips fuer abgeschnittene Namen (person, topic, place)
+    - Links in letter-meta mit Primary-Color
+    - Active-States mit Rust-Red Tint
 
-### Phase 5: Optionale Features
+### Phase 5: Optionale Features - ABGESCHLOSSEN
 
-11. US-23: Datensatz-Vergleich (niedrig)
-12. Design-System Konsolidierung (tokens.css refactoring)
+11. ~~US-17: Themen-Schnellfilter~~ - erledigt
+    - Top-5 Themen in Sidebar
+    - Klick filtert nach Thema
+    - Link zu Topics View
+
+12. ~~US-23: Datensatz-Vergleich~~ - erledigt
+    - Dedizierte Vergleichsseite (compare.html)
+    - Zwei Datensaetze laden und vergleichen
+    - Gemeinsame Personen/Orte identifizieren
+    - CSV-Export der Vergleichsergebnisse
 
 ---
 

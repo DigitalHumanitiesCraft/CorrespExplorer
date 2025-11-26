@@ -337,7 +337,7 @@ async function showConfigDialog(data, sourceInfo) {
             enrichWithCoordinates(pendingData, coordsCache);
         }
     } catch {
-        console.log('Koordinaten-Cache nicht verfuegbar');
+        // Coordinates cache not available - proceed without
     }
 
     // Count entities

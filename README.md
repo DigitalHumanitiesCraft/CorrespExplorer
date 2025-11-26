@@ -184,7 +184,16 @@ CC BY 4.0
 - correspSearch: https://correspsearch.net
 - TEI Guidelines: https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-correspDesc.html
 
+## Development Methodology
+
+CorrespExplorer was developed by Christopher Pollin using Claude (Opus 4.5) in Claude Code with the Promptotyping methodology.
+
+Promptotyping: LLM-assisted prototyping of research tools based on research data and scholar-centered design.
+
+More information: [Promptotyping: Von der Idee zur Anwendung](https://dhcraft.org/excellence/blog/Promptotyping/)
+
 ## Contact
 
 Christopher Pollin
 Digital Humanities Craft OG
+https://dhcraft.org

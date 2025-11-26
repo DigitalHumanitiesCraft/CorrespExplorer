@@ -13,7 +13,7 @@ export const LANGUAGE_COLORS = {
     'nl': '#f59e0b', // Niederlaendisch - amber
     'cy': '#6366f1', // Walisisch - indigo
     'oc': '#14b8a6', // Okzitanisch - teal
-    'other': '#64748b' // Andere - slate
+    'other': '#C65D3B' // Andere/Unbekannt - Rust-Red
 };
 
 // Sprachnamen fuer Anzeige

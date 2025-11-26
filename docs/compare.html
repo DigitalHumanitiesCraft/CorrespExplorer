@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CorrespExplorer - Vergleiche zwei CMIF-Datensaetze">
+    <title>CorrespExplorer - Datensatz-Vergleich</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/compare.css">
+</head>
+<body>
+    <div class="compare-container">
+        <header class="compare-header">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Zurueck zur Startseite
+            </a>
+            <h1><i class="fas fa-code-compare"></i> Datensatz-Vergleich</h1>
+            <p>Vergleichen Sie zwei CMIF-Datensaetze, um gemeinsame Personen und Orte zu finden.</p>
+        </header>
+
+        <main class="compare-content">
+            <!-- Dataset Upload Section -->
+            <section class="datasets-section">
+                <div class="dataset-slot" id="dataset-a">
+                    <div class="dataset-header">
+                        <span class="dataset-label">Datensatz A</span>
+                        <button class="clear-btn" id="clear-a" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="dataset-upload" id="upload-a">
+                        <i class="fas fa-upload"></i>
+                        <p>CMIF-Datei hochladen oder URL eingeben</p>
+                        <input type="file" id="file-input-a" accept=".xml,application/xml,text/xml">
+                        <label for="file-input-a" class="upload-btn-small">Datei waehlen</label>
+                        <div class="url-input-small">
+                            <input type="url" id="url-input-a" placeholder="https://example.org/cmif.xml">
+                            <button id="url-submit-a"><i class="fas fa-download"></i></button>
+                        </div>
+                    </div>
+                    <div class="dataset-info" id="info-a" style="display: none;">
+                        <h4 id="title-a">Datensatz A</h4>
+                        <div class="stats-row">
+                            <span><i class="fas fa-envelope"></i> <span id="letters-a">0</span> Briefe</span>
+                            <span><i class="fas fa-users"></i> <span id="persons-a">0</span> Personen</span>
+                            <span><i class="fas fa-map-marker-alt"></i> <span id="places-a">0</span> Orte</span>
+                        </div>
+                    </div>
+                    <div class="dataset-loading" id="loading-a" style="display: none;">
+                        <div class="loading-spinner-small"></div>
+                        <span>Lade...</span>
+                    </div>
+                </div>
+
+                <div class="dataset-slot" id="dataset-b">
+                    <div class="dataset-header">
+                        <span class="dataset-label">Datensatz B</span>
+                        <button class="clear-btn" id="clear-b" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="dataset-upload" id="upload-b">
+                        <i class="fas fa-upload"></i>
+                        <p>CMIF-Datei hochladen oder URL eingeben</p>
+                        <input type="file" id="file-input-b" accept=".xml,application/xml,text/xml">
+                        <label for="file-input-b" class="upload-btn-small">Datei waehlen</label>
+                        <div class="url-input-small">
+                            <input type="url" id="url-input-b" placeholder="https://example.org/cmif.xml">
+                            <button id="url-submit-b"><i class="fas fa-download"></i></button>
+                        </div>
+                    </div>
+                    <div class="dataset-info" id="info-b" style="display: none;">
+                        <h4 id="title-b">Datensatz B</h4>
+                        <div class="stats-row">
+                            <span><i class="fas fa-envelope"></i> <span id="letters-b">0</span> Briefe</span>
+                            <span><i class="fas fa-users"></i> <span id="persons-b">0</span> Personen</span>
+                            <span><i class="fas fa-map-marker-alt"></i> <span id="places-b">0</span> Orte</span>
+                        </div>
+                    </div>
+                    <div class="dataset-loading" id="loading-b" style="display: none;">
+                        <div class="loading-spinner-small"></div>
+                        <span>Lade...</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Message -->
+            <div class="error-message" id="error-message"></div>
+
+            <!-- Compare Button -->
+            <div class="compare-action">
+                <button id="compare-btn" class="btn btn-primary btn-lg" disabled>
+                    <i class="fas fa-code-compare"></i> Datensaetze vergleichen
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <section class="results-section" id="results-section" style="display: none;">
+                <h2>Vergleichsergebnis</h2>
+
+                <!-- Summary -->
+                <div class="results-summary" id="results-summary">
+                    <div class="summary-card">
+                        <i class="fas fa-users"></i>
+                        <div class="summary-value" id="common-persons-count">0</div>
+                        <div class="summary-label">Gemeinsame Personen</div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="summary-value" id="common-places-count">0</div>
+                        <div class="summary-label">Gemeinsame Orte</div>
+                    </div>
+                    <div class="summary-card">
+                        <i class="fas fa-percentage"></i>
+                        <div class="summary-value" id="overlap-percent">0%</div>
+                        <div class="summary-label">Ueberschneidung</div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="results-tabs">
+                    <button class="results-tab active" data-tab="persons">
+                        <i class="fas fa-users"></i> Gemeinsame Personen
+                        <span class="tab-count" id="tab-persons-count">0</span>
+                    </button>
+                    <button class="results-tab" data-tab="places">
+                        <i class="fas fa-map-marker-alt"></i> Gemeinsame Orte
+                        <span class="tab-count" id="tab-places-count">0</span>
+                    </button>
+                    <button class="results-tab" data-tab="unique-a">
+                        <i class="fas fa-user-minus"></i> Nur in A
+                        <span class="tab-count" id="tab-unique-a-count">0</span>
+                    </button>
+                    <button class="results-tab" data-tab="unique-b">
+                        <i class="fas fa-user-plus"></i> Nur in B
+                        <span class="tab-count" id="tab-unique-b-count">0</span>
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="results-content">
+                    <div class="results-panel active" id="panel-persons">
+                        <div class="results-list" id="list-persons"></div>
+                    </div>
+                    <div class="results-panel" id="panel-places">
+                        <div class="results-list" id="list-places"></div>
+                    </div>
+                    <div class="results-panel" id="panel-unique-a">
+                        <div class="results-list" id="list-unique-a"></div>
+                    </div>
+                    <div class="results-panel" id="panel-unique-b">
+                        <div class="results-list" id="list-unique-b"></div>
+                    </div>
+                </div>
+
+                <!-- Export -->
+                <div class="results-export">
+                    <button id="export-comparison" class="btn btn-secondary">
+                        <i class="fas fa-download"></i> Ergebnis exportieren (CSV)
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="compare-footer">
+            <p>CorrespExplorer - Datensatz-Vergleich</p>
+        </footer>
+    </div>
+
+    <script src="js/compare.js" type="module"></script>
+</body>
+</html>

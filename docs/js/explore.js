@@ -260,6 +260,7 @@ async function init() {
 
         initMap();
         initFilters();
+        initTopicsQuickFilter();
         initViewSwitcher();
         initPersonsView();
         initLettersView();
@@ -406,6 +407,82 @@ function buildLanguageFilter() {
     // Add event listeners
     container.querySelectorAll('input[name="language"]').forEach(cb => {
         cb.addEventListener('change', debounce(applyFilters, 300));
+    });
+}
+
+// Initialize Topics Quick Filter in sidebar
+function initTopicsQuickFilter() {
+    if (!dataIndices?.subjects) return;
+
+    const subjects = dataIndices.subjects;
+    const subjectKeys = Object.keys(subjects);
+
+    if (subjectKeys.length === 0) return;
+
+    const container = document.getElementById('topics-quick-filter');
+    const filterGroup = document.getElementById('topics-filter-group');
+    const showAllLink = document.getElementById('show-all-topics');
+
+    if (!container || !filterGroup) return;
+
+    // Sort by letter count and take top 5
+    subjectKeys.sort((a, b) => subjects[b].letter_count - subjects[a].letter_count);
+    const topTopics = subjectKeys.slice(0, 5);
+
+    container.innerHTML = topTopics.map(id => {
+        const topic = subjects[id];
+        return `
+            <div class="topic-quick-item" data-topic-id="${escapeHtml(id)}" title="${escapeHtml(topic.label)}">
+                <span class="topic-label">${escapeHtml(topic.label)}</span>
+                <span class="topic-count">${topic.letter_count}</span>
+            </div>
+        `;
+    }).join('');
+
+    filterGroup.style.display = 'block';
+
+    // Add click handlers
+    container.querySelectorAll('.topic-quick-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const topicId = item.dataset.topicId;
+            const isActive = item.classList.contains('active');
+
+            // Remove active from all
+            container.querySelectorAll('.topic-quick-item').forEach(i => i.classList.remove('active'));
+
+            if (isActive) {
+                // Clear filter
+                clearSubjectFilter();
+            } else {
+                // Apply filter
+                item.classList.add('active');
+                applySubjectFilter(topicId);
+            }
+            updateUrlState();
+        });
+    });
+
+    // Show all topics link
+    if (showAllLink) {
+        showAllLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchView('topics');
+        });
+    }
+}
+
+// Update topics quick filter state when subject filter changes
+function updateTopicsQuickFilterState() {
+    const container = document.getElementById('topics-quick-filter');
+    if (!container) return;
+
+    container.querySelectorAll('.topic-quick-item').forEach(item => {
+        const topicId = item.dataset.topicId;
+        if (activeSubjectFilter === topicId) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
     });
 }
 
@@ -2448,6 +2525,7 @@ function applySubjectFilter(subjectId) {
     selectedSubjectId = subjectId;
     applyFilters();
     updateSubjectFilterDisplay();
+    updateTopicsQuickFilterState();
     switchView('letters');
     updateUrlState();
 }
@@ -2457,6 +2535,7 @@ function clearSubjectFilter() {
     selectedSubjectId = null;
     applyFilters();
     updateSubjectFilterDisplay();
+    updateTopicsQuickFilterState();
 }
 
 // Update subject filter display in sidebar

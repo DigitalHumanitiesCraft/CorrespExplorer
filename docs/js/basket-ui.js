@@ -28,8 +28,6 @@ let allLettersRef = null;
  * @param {Array} allLetters - Reference to all letters
  */
 export function initBasketUI(dataIndices, allLetters) {
-    console.log('[Basket] Initializing basket UI...');
-
     dataIndicesRef = dataIndices;
     allLettersRef = allLetters;
 
@@ -48,8 +46,6 @@ export function initBasketUI(dataIndices, allLetters) {
 
     // Initial badge update
     updateBasketBadge(getBasketCounts());
-
-    console.log('[Basket] Basket UI initialized. Items:', getBasketCounts());
 }
 
 /**

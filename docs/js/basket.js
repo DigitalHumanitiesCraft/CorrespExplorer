@@ -54,7 +54,6 @@ export function initBasket() {
  */
 function handleStorageEvent(e) {
     if (e.key === STORAGE_KEY) {
-        console.log('[Basket] Storage updated from another tab');
         try {
             const parsed = JSON.parse(e.newValue || '{}');
             basket = {
@@ -64,7 +63,7 @@ function handleStorageEvent(e) {
             };
             notifyListeners();
         } catch (err) {
-            console.warn('[Basket] Error parsing storage event:', err);
+            // Ignore parsing errors
         }
     }
 }

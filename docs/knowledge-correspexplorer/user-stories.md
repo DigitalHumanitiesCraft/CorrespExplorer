@@ -184,7 +184,8 @@ Als Forschende moechte ich nach Themen filtern, um thematisch verwandte Briefe z
 Akzeptanzkriterien:
 - Subject-Tags auswaehlbar
 - Nur bei Datensaetzen mit mentionsSubject
-- Status: OFFEN
+- Schnellfilter in Sidebar mit Top-5 Themen
+- Status: IMPLEMENTIERT
 
 ### US-18: Filter kombinieren
 Als Forschende moechte ich mehrere Filter kombinieren, um komplexe Anfragen zu stellen.
@@ -241,7 +242,9 @@ Als Forschende moechte ich zwei CMIF-Datensaetze vergleichen, um Ueberschneidung
 Akzeptanzkriterien:
 - Zwei Datensaetze laden
 - Gemeinsame Personen/Orte markieren
-- Status: OFFEN (Erweiterung)
+- Eigene Vergleichsseite (compare.html)
+- Export der Vergleichsergebnisse als CSV
+- Status: IMPLEMENTIERT
 
 ### US-24: Mit correspSearch verknuepfen
 Als Forschende moechte ich von einer Person zu deren Profil bei correspSearch navigieren, um weitere Korrespondenzen zu finden.
@@ -293,20 +296,13 @@ Akzeptanzkriterien:
 | Raeumlich | 3 | 0 |
 | Personen | 3 | 0 |
 | Briefe | 3 | 0 |
-| Filter | 5 | 1 |
+| Filter | 6 | 0 |
 | Teilen/Export | 3 | 0 |
-| Vergleich | 1 | 1 |
+| Vergleich | 2 | 0 |
 | Themen | 3 | 0 |
-| **Gesamt** | **25** | **2** |
+| **Gesamt** | **27** | **0** |
 
 Stand: 2025-11-26
 
----
-
-## Offene Features
-
-| US | Feature | Prioritaet |
-|----|---------|-----------|
-| US-17 | Themen-Schnellfilter | Niedrig (Topics View existiert) |
-| US-23 | Datensatz-Vergleich | Niedrig |
+Alle User Stories sind implementiert.
 
