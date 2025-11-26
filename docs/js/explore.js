@@ -56,6 +56,9 @@ async function init() {
 
         placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
 
+        // Read URL state before UI init
+        initUrlState();
+
         updateUI(data);
         log.init(`Loaded ${allLetters.length} letters, ${Object.keys(placeAggregation).length} places with coordinates`);
 
@@ -64,7 +67,18 @@ async function init() {
         initViewSwitcher();
         initPersonsView();
         initLettersView();
+        initTimeline();
         initExport();
+
+        // Apply initial view from URL
+        if (currentView !== 'map') {
+            switchView(currentView);
+        }
+
+        // Apply person filter from URL
+        if (selectedPersonId) {
+            applyPersonFilter(selectedPersonId);
+        }
 
         hideLoading();
         log.init('Application ready');
@@ -583,6 +597,7 @@ function initFilters() {
                 yearRangeSlider.noUiSlider.set([dateRange.min, dateRange.max]);
             }
             temporalFilter = null;
+            selectedPersonId = null;
             applyFilters();
         });
     }
@@ -605,7 +620,15 @@ function applyFilters() {
             languageMatch = languageFilters.includes(letter.language.code);
         }
 
-        return temporalMatch && languageMatch;
+        // Person filter
+        let personMatch = true;
+        if (selectedPersonId) {
+            const senderId = letter.sender?.id || letter.sender?.name;
+            const recipientId = letter.recipient?.id || letter.recipient?.name;
+            personMatch = senderId === selectedPersonId || recipientId === selectedPersonId;
+        }
+
+        return temporalMatch && languageMatch && personMatch;
     });
 
     // Re-aggregate places based on filtered letters
@@ -616,6 +639,65 @@ function applyFilters() {
     }
 
     updateFilterCounts();
+    updateUrlState();
+    updatePersonFilterDisplay();
+}
+
+// Apply person filter
+function applyPersonFilter(personId) {
+    selectedPersonId = personId;
+    applyFilters();
+
+    // Update UI to show active filter
+    updatePersonFilterDisplay();
+}
+
+// Clear person filter
+function clearPersonFilter() {
+    selectedPersonId = null;
+    applyFilters();
+}
+
+// Update person filter display in sidebar
+function updatePersonFilterDisplay() {
+    let filterDisplay = document.getElementById('person-filter-display');
+
+    if (selectedPersonId && filteredLetters.length > 0) {
+        // Find person name
+        const letter = allLetters.find(l =>
+            (l.sender?.id || l.sender?.name) === selectedPersonId ||
+            (l.recipient?.id || l.recipient?.name) === selectedPersonId
+        );
+        const personName = letter?.sender?.id === selectedPersonId || letter?.sender?.name === selectedPersonId
+            ? letter.sender.name
+            : letter?.recipient?.name || selectedPersonId;
+
+        if (!filterDisplay) {
+            // Create filter display element
+            const sidebar = document.querySelector('.sidebar');
+            const statsCards = document.querySelector('.stats-cards');
+            filterDisplay = document.createElement('div');
+            filterDisplay.id = 'person-filter-display';
+            filterDisplay.className = 'person-filter-active';
+            sidebar.insertBefore(filterDisplay, statsCards.nextSibling);
+        }
+
+        filterDisplay.innerHTML = `
+            <div class="filter-badge">
+                <i class="fas fa-user"></i>
+                <span>${escapeHtml(personName)}</span>
+                <button class="filter-clear" title="Filter entfernen">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        filterDisplay.style.display = 'block';
+
+        // Add click handler
+        filterDisplay.querySelector('.filter-clear').addEventListener('click', clearPersonFilter);
+    } else if (filterDisplay) {
+        filterDisplay.style.display = 'none';
+    }
 }
 
 // Update filter counts
@@ -659,6 +741,86 @@ function showError(message) {
 }
 
 // ===================
+// URL STATE MANAGEMENT
+// ===================
+
+function initUrlState() {
+    // Read initial state from URL
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // View
+    const view = urlParams.get('view');
+    if (view && ['map', 'persons', 'letters', 'timeline'].includes(view)) {
+        currentView = view;
+    }
+
+    // Year range
+    const yearMin = urlParams.get('yearMin');
+    const yearMax = urlParams.get('yearMax');
+    if (yearMin && yearMax) {
+        temporalFilter = {
+            start: parseInt(yearMin),
+            end: parseInt(yearMax)
+        };
+    }
+
+    // Person filter
+    const person = urlParams.get('person');
+    if (person) {
+        selectedPersonId = person;
+    }
+
+    // Languages
+    const langs = urlParams.get('langs');
+    if (langs) {
+        initialLanguageFilter = langs.split(',');
+    }
+}
+
+function updateUrlState() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Preserve dataset parameter
+    const dataset = urlParams.get('dataset');
+    const newParams = new URLSearchParams();
+    if (dataset) newParams.set('dataset', dataset);
+
+    // View
+    if (currentView !== 'map') {
+        newParams.set('view', currentView);
+    }
+
+    // Year range (only if not default)
+    if (temporalFilter) {
+        newParams.set('yearMin', temporalFilter.start);
+        newParams.set('yearMax', temporalFilter.end);
+    }
+
+    // Person filter
+    if (selectedPersonId) {
+        newParams.set('person', selectedPersonId);
+    }
+
+    // Languages (only if not all selected)
+    const checkedLangs = getCheckedValues('language');
+    const allLangs = Object.keys(dataIndices.languages || {});
+    if (checkedLangs.length > 0 && checkedLangs.length < allLangs.length) {
+        newParams.set('langs', checkedLangs.join(','));
+    }
+
+    // Update URL without reload
+    const newUrl = newParams.toString()
+        ? `${window.location.pathname}?${newParams.toString()}`
+        : window.location.pathname;
+
+    window.history.replaceState({}, '', newUrl);
+}
+
+// Variables for URL state
+let selectedPersonId = null;
+let initialLanguageFilter = null;
+
+// ===================
 // VIEW SWITCHING
 // ===================
 
@@ -671,6 +833,7 @@ function initViewSwitcher() {
         btn.addEventListener('click', () => {
             const view = btn.dataset.view;
             switchView(view);
+            updateUrlState();
         });
     });
 }
@@ -700,6 +863,10 @@ function switchView(view) {
         renderPersonsList();
     } else if (view === 'letters') {
         renderLettersList();
+    } else if (view === 'timeline') {
+        if (!timelineRendered) {
+            renderTimeline();
+        }
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -809,9 +976,10 @@ function renderPersonsList() {
             .join('')
             .toUpperCase();
         const total = person.sent + person.received;
+        const personKey = person.id || person.name;
 
         return `
-            <div class="person-card" data-id="${person.id || ''}">
+            <div class="person-card" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
                 <div class="person-avatar">${initials}</div>
                 <div class="person-info">
                     <div class="person-name">${escapeHtml(person.name)}</div>
@@ -824,6 +992,18 @@ function renderPersonsList() {
             </div>
         `;
     }).join('');
+
+    // Add click handlers for person filtering
+    container.querySelectorAll('.person-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const personId = card.dataset.id;
+            if (personId) {
+                applyPersonFilter(personId);
+                switchView('letters');
+                updateUrlState();
+            }
+        });
+    });
 }
 
 // ===================
@@ -927,6 +1107,121 @@ function renderLettersList() {
             </div>
         `);
     }
+}
+
+// ===================
+// TIMELINE
+// ===================
+
+let timelineRendered = false;
+
+function initTimeline() {
+    // Timeline is rendered on demand when view is switched
+}
+
+function renderTimeline() {
+    const container = document.getElementById('timeline-chart');
+    const totalEl = document.getElementById('timeline-total');
+    if (!container) return;
+
+    // Count letters per year
+    const yearCounts = {};
+    allLetters.forEach(letter => {
+        if (letter.year) {
+            yearCounts[letter.year] = (yearCounts[letter.year] || 0) + 1;
+        }
+    });
+
+    const years = Object.keys(yearCounts).map(Number).sort((a, b) => a - b);
+    if (years.length === 0) {
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfügbar</p></div>';
+        return;
+    }
+
+    // Fill gaps in years
+    const minYear = years[0];
+    const maxYear = years[years.length - 1];
+    const allYears = [];
+    for (let y = minYear; y <= maxYear; y++) {
+        allYears.push({
+            year: y,
+            count: yearCounts[y] || 0
+        });
+    }
+
+    // Find max count for scaling
+    const maxCount = Math.max(...allYears.map(y => y.count));
+
+    // Determine if we should group by decade (for large spans)
+    const yearSpan = maxYear - minYear;
+    const groupByDecade = yearSpan > 50;
+
+    let displayData;
+    if (groupByDecade) {
+        // Group by decade
+        const decadeCounts = {};
+        allYears.forEach(({ year, count }) => {
+            const decade = Math.floor(year / 10) * 10;
+            decadeCounts[decade] = (decadeCounts[decade] || 0) + count;
+        });
+        displayData = Object.entries(decadeCounts).map(([decade, count]) => ({
+            label: `${decade}er`,
+            year: parseInt(decade),
+            yearEnd: parseInt(decade) + 9,
+            count
+        }));
+    } else {
+        displayData = allYears.map(({ year, count }) => ({
+            label: year.toString(),
+            year,
+            yearEnd: year,
+            count
+        }));
+    }
+
+    const displayMaxCount = Math.max(...displayData.map(d => d.count));
+
+    // Render bars
+    container.innerHTML = displayData.map((data, index) => {
+        const height = data.count > 0 ? Math.max(4, (data.count / displayMaxCount) * 100) : 0;
+        const showLabel = displayData.length <= 20 || index % Math.ceil(displayData.length / 20) === 0;
+
+        return `
+            <div class="timeline-bar"
+                 style="height: ${height}%"
+                 data-year="${data.year}"
+                 data-year-end="${data.yearEnd}"
+                 data-count="${data.count}">
+                <div class="timeline-bar-tooltip">${data.label}: ${data.count} Briefe</div>
+                ${showLabel ? `<span class="timeline-bar-label">${data.label}</span>` : ''}
+            </div>
+        `;
+    }).join('');
+
+    // Update total
+    if (totalEl) {
+        totalEl.textContent = `${allLetters.length.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}`;
+    }
+
+    // Add click handlers
+    container.querySelectorAll('.timeline-bar').forEach(bar => {
+        bar.addEventListener('click', () => {
+            const yearStart = parseInt(bar.dataset.year);
+            const yearEnd = parseInt(bar.dataset.yearEnd);
+
+            // Update year slider
+            const slider = document.getElementById('year-range-slider');
+            if (slider && slider.noUiSlider) {
+                slider.noUiSlider.set([yearStart, yearEnd]);
+            }
+
+            // Visual feedback
+            container.querySelectorAll('.timeline-bar').forEach(b => b.classList.remove('selected'));
+            bar.classList.add('selected');
+        });
+    });
+
+    timelineRendered = true;
 }
 
 // ===================

@@ -47,6 +47,9 @@
             <button class="view-btn" data-view="letters" aria-pressed="false">
                 <i class="fas fa-envelope"></i> <span class="view-btn-text">Briefe</span>
             </button>
+            <button class="view-btn" data-view="timeline" aria-pressed="false">
+                <i class="fas fa-chart-line"></i> <span class="view-btn-text">Timeline</span>
+            </button>
         </div>
         <div class="nav-links">
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
@@ -169,6 +172,20 @@
                         </div>
                     </div>
                     <div id="letters-list" class="entity-list"></div>
+                </div>
+
+                <!-- Timeline View -->
+                <div id="timeline-view" class="tab-content">
+                    <div class="timeline-container">
+                        <div class="timeline-header">
+                            <h3>Zeitliche Verteilung der Korrespondenz</h3>
+                            <p class="timeline-info">Klicken Sie auf einen Balken, um den Zeitraum zu filtern</p>
+                        </div>
+                        <div id="timeline-chart" class="timeline-chart"></div>
+                        <div class="timeline-legend">
+                            <span class="timeline-total" id="timeline-total"></span>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>

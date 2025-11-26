@@ -59,21 +59,28 @@ Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
 
 ### explore.html - Visualisierung
 
-Hauptansicht mit drei Views:
+Hauptansicht mit vier Views:
 1. Karte (MapLibre GL JS mit Clustering)
 2. Korrespondenten (sortierbare/suchbare Liste)
 3. Briefe (sortierbare/suchbare Liste)
+4. Timeline (Balkendiagramm nach Jahr/Dekade)
 
 Sidebar mit:
 - Statistik-Cards
+- Person-Filter-Badge (wenn aktiv)
 - Zeitraum-Filter (noUiSlider)
 - Sprach-Filter (Checkboxen)
 - Legende
 
 Navigation mit:
-- View-Switcher
+- View-Switcher (4 Buttons)
 - Export-Button
 - "Neuer Datensatz"-Link
+
+URL-State:
+- Filter werden in URL gespeichert
+- Parameter: dataset, view, yearMin, yearMax, person, langs
+- Ermoeglicht Bookmarking und Teilen
 
 ## Module
 

@@ -4,6 +4,42 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Phase 5: Erweiterte Features)
+
+### Neu implementierte Features
+
+1. URL-Sharing (Entscheidung E11)
+   - Filter-Zustand wird in URL gespeichert
+   - Parameter: view, yearMin, yearMax, person, langs
+   - Direktlinks zu gefilterten Ansichten moeglich
+   - Browser-History wird nicht ueberladen (replaceState)
+
+2. Person-Detail-Ansicht
+   - Klick auf Korrespondent filtert alle Briefe
+   - Filter-Badge in Sidebar zeigt aktiven Person-Filter
+   - Automatischer Wechsel zur Brief-Liste
+   - Filter kann ueber X-Button entfernt werden
+
+3. Timeline-Visualisierung
+   - Balkendiagramm der Briefe pro Jahr/Dekade
+   - Automatische Gruppierung bei Zeitspannen > 50 Jahre
+   - Klick auf Balken setzt Zeitraum-Filter
+   - Tooltips mit Briefanzahl
+
+### Entscheidung E11: URL-State-Management
+
+Filter-Zustand in URL speichern fuer:
+- Bookmarking von gefilterten Ansichten
+- Teilen von Links mit Kollegen
+- Browser-Zurueck-Funktion
+
+Technische Umsetzung:
+- URLSearchParams API
+- history.replaceState (kein pushState um History nicht zu ueberladen)
+- Initialisierung liest URL-Parameter beim Laden
+
+---
+
 ## 2025-11-26 (Feature-Komplett)
 
 ### Implementierte Features
@@ -26,8 +62,9 @@ Phase 1-4 vollstaendig umgesetzt:
    - Kartenansicht mit MapLibre GL JS Clustering
    - Korrespondenten-Liste mit Suche und Sortierung
    - Brief-Liste mit Suche und Sortierung
-   - Dynamische Filter (Zeitraum, Sprache)
-   - View-Switching zwischen Karte/Personen/Briefe
+   - Timeline-Ansicht mit Balkendiagramm
+   - Dynamische Filter (Zeitraum, Sprache, Person)
+   - View-Switching zwischen Karte/Personen/Briefe/Timeline
 
 4. Export
    - CSV-Export der gefilterten Briefe
@@ -213,10 +250,6 @@ Top-Themen: Baskisch (698), Publikationsversand (627), Dankschreiben (515)
 
 ## Moegliche Erweiterungen
 
-### Timeline-Ansicht
-- Zeitliche Verteilung der Korrespondenz
-- Brush-Selection fuer Zeitraum-Filter
-
 ### Netzwerk-Visualisierung
 - Wer schreibt wem (Force-Directed Graph)
 - Clustern nach Korrespondenten-Gruppen
@@ -225,6 +258,10 @@ Top-Themen: Baskisch (698), Publikationsversand (627), Dankschreiben (515)
 - Wikidata SPARQL-Abfrage im Browser
 - Progressives Enrichment
 
-### URL-Sharing
-- Aktuelle Filter als URL-Parameter
-- Direktlinks zu gefilterten Ansichten
+### Themen-Filter (HSA-spezifisch)
+- Subjects als zusaetzliche Filteroption
+- Top-Themen in Sidebar
+
+### Brief-Detail-Modal
+- Vollstaendige Metadaten anzeigen
+- Erwahnte Personen, Orte, Themen
