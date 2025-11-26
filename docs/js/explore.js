@@ -1333,135 +1333,165 @@ window.filterByPerson = function(personId) {
 // ===================
 
 let timelineRendered = false;
+let timelineStackMode = 'language'; // 'language' or 'correspondent'
+
+// Color palette for stacked bars
+const LANGUAGE_COLORS = {
+    'de': '#1e40af', // German - primary blue
+    'fr': '#dc2626', // French - red
+    'it': '#16a34a', // Italian - green
+    'en': '#9333ea', // English - purple
+    'es': '#ea580c', // Spanish - orange
+    'pt': '#0891b2', // Portuguese - cyan
+    'la': '#78716c', // Latin - gray
+    'hu': '#be185d', // Hungarian - pink
+    'nl': '#f59e0b', // Dutch - amber
+    'other': '#64748b' // Other - slate
+};
 
 function initTimeline() {
-    // Timeline is rendered on demand when view is switched
+    // Setup stack mode toggle
+    const stackToggle = document.getElementById('timeline-stack-toggle');
+    if (stackToggle) {
+        stackToggle.addEventListener('change', (e) => {
+            timelineStackMode = e.target.value;
+            renderTimeline();
+        });
+    }
 }
 
 function renderTimeline() {
     const container = document.getElementById('timeline-chart');
     const totalEl = document.getElementById('timeline-total');
+    const legendEl = document.getElementById('timeline-stack-legend');
     if (!container) return;
 
-    // Use filtered letters if filter is active, otherwise all letters
-    const lettersToCount = filteredLetters.length < allLetters.length ? filteredLetters : allLetters;
+    // Use filtered letters
+    const lettersToUse = filteredLetters;
     const isFiltered = filteredLetters.length < allLetters.length;
 
-    // Count letters per year
-    const yearCounts = {};
-    lettersToCount.forEach(letter => {
-        if (letter.year) {
-            yearCounts[letter.year] = (yearCounts[letter.year] || 0) + 1;
-        }
-    });
-
-    // Use full date range from all letters for consistent display
-    const allYearCounts = {};
+    // Get all years from all letters for consistent x-axis
+    const allYearsSet = new Set();
     allLetters.forEach(letter => {
-        if (letter.year) {
-            allYearCounts[letter.year] = (allYearCounts[letter.year] || 0) + 1;
-        }
+        if (letter.year) allYearsSet.add(letter.year);
     });
+    const allYearsSorted = Array.from(allYearsSet).sort((a, b) => a - b);
 
-    const years = Object.keys(allYearCounts).map(Number).sort((a, b) => a - b);
-    if (years.length === 0) {
+    if (allYearsSorted.length === 0) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfuegbar</p></div>';
         return;
     }
 
-    // Fill gaps in years
-    const minYear = years[0];
-    const maxYear = years[years.length - 1];
-    const allYearsData = [];
+    const minYear = allYearsSorted[0];
+    const maxYear = allYearsSorted[allYearsSorted.length - 1];
+
+    // Build stacked data by year and language
+    const yearData = {};
+    const languageTotals = {};
+
+    // Initialize all years
     for (let y = minYear; y <= maxYear; y++) {
-        allYearsData.push({
-            year: y,
-            count: yearCounts[y] || 0,
-            totalCount: allYearCounts[y] || 0
-        });
+        yearData[y] = { total: 0, languages: {} };
     }
 
-    // Find max count for scaling (use total for consistent scaling)
-    const maxCount = Math.max(...allYearsData.map(y => y.totalCount));
+    // Count letters per year per language
+    lettersToUse.forEach(letter => {
+        if (!letter.year) return;
+        const year = letter.year;
+        const lang = letter.language || 'other';
+        const langKey = LANGUAGE_COLORS[lang] ? lang : 'other';
 
-    // Determine if we should group by decade (for large spans)
-    const yearSpan = maxYear - minYear;
-    const groupByDecade = yearSpan > 50;
+        yearData[year].total++;
+        yearData[year].languages[langKey] = (yearData[year].languages[langKey] || 0) + 1;
+        languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
+    });
 
-    let displayData;
-    if (groupByDecade) {
-        // Group by decade
-        const decadeCounts = {};
-        const decadeTotalCounts = {};
-        allYearsData.forEach(({ year, count, totalCount }) => {
-            const decade = Math.floor(year / 10) * 10;
-            decadeCounts[decade] = (decadeCounts[decade] || 0) + count;
-            decadeTotalCounts[decade] = (decadeTotalCounts[decade] || 0) + totalCount;
-        });
-        displayData = Object.entries(decadeCounts).map(([decade, count]) => ({
-            label: `${decade}s`,
-            year: parseInt(decade),
-            yearEnd: parseInt(decade) + 9,
-            count,
-            totalCount: decadeTotalCounts[decade]
-        }));
-    } else {
-        displayData = allYearsData.map(({ year, count, totalCount }) => ({
-            label: year.toString(),
-            year,
-            yearEnd: year,
-            count,
-            totalCount
-        }));
+    // Find max for scaling
+    let maxCount = 0;
+    for (let y = minYear; y <= maxYear; y++) {
+        if (yearData[y].total > maxCount) maxCount = yearData[y].total;
     }
+    if (maxCount === 0) maxCount = 1;
 
-    const displayMaxCount = Math.max(...displayData.map(d => d.totalCount));
+    // Sort languages by total count for consistent stacking order
+    const sortedLanguages = Object.entries(languageTotals)
+        .sort((a, b) => b[1] - a[1])
+        .map(([lang]) => lang);
 
-    // Calculate label interval - show roughly 10-15 labels
-    const labelInterval = Math.max(1, Math.ceil(displayData.length / 15));
+    // Calculate label interval - show roughly 15 labels
+    const yearSpan = maxYear - minYear + 1;
+    const labelInterval = Math.max(1, Math.ceil(yearSpan / 15));
 
-    // Render bars
-    container.innerHTML = displayData.map((data, index) => {
-        // Use higher minimum height (8%) for bars with data so small values are visible
-        const height = data.count > 0 ? Math.max(8, (data.count / displayMaxCount) * 100) : 0;
-        const bgHeight = data.totalCount > 0 ? Math.max(8, (data.totalCount / displayMaxCount) * 100) : 0;
-        const showLabel = index % labelInterval === 0 || index === displayData.length - 1;
-        const tooltipText = isFiltered
-            ? `${data.label}: ${data.count} von ${data.totalCount} Briefen`
-            : `${data.label}: ${data.count} Briefe`;
+    // Render stacked bars
+    const bars = [];
+    for (let y = minYear; y <= maxYear; y++) {
+        const data = yearData[y];
+        const totalHeight = data.total > 0 ? Math.max(4, (data.total / maxCount) * 100) : 0;
+        const showLabel = (y - minYear) % labelInterval === 0 || y === maxYear;
 
-        return `
-            <div class="timeline-bar-wrapper" data-year="${data.year}" data-year-end="${data.yearEnd}">
-                ${isFiltered ? `<div class="timeline-bar-bg" style="height: ${bgHeight}%"></div>` : ''}
-                <div class="timeline-bar ${isFiltered ? 'timeline-bar-filtered' : ''}"
-                     style="height: ${height}%"
-                     data-count="${data.count}">
+        // Build stacked segments
+        let segments = '';
+        let tooltipParts = [`${y}: ${data.total} Briefe`];
+
+        if (data.total > 0) {
+            let currentBottom = 0;
+            sortedLanguages.forEach(lang => {
+                const count = data.languages[lang] || 0;
+                if (count > 0) {
+                    const segmentHeight = (count / data.total) * totalHeight;
+                    const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
+                    segments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${lang}" data-count="${count}"></div>`;
+                    currentBottom += segmentHeight;
+                    tooltipParts.push(`${lang.toUpperCase()}: ${count}`);
+                }
+            });
+        }
+
+        bars.push(`
+            <div class="timeline-bar-wrapper" data-year="${y}" data-year-end="${y}">
+                <div class="timeline-stacked-bar" style="height: ${totalHeight}%">
+                    ${segments}
                 </div>
-                <div class="timeline-bar-tooltip">${tooltipText}</div>
-                ${showLabel ? `<span class="timeline-bar-label">${data.label}</span>` : ''}
+                <div class="timeline-bar-tooltip">${tooltipParts.join('<br>')}</div>
+                ${showLabel ? `<span class="timeline-bar-label">${y}</span>` : ''}
             </div>
-        `;
-    }).join('');
+        `);
+    }
+
+    container.innerHTML = bars.join('');
 
     // Update total
     if (totalEl) {
+        const totalCount = lettersToUse.length;
         if (isFiltered) {
-            totalEl.textContent = `${lettersToCount.length.toLocaleString('de-DE')} von ${allLetters.length.toLocaleString('de-DE')} Briefen (${minYear}-${maxYear})`;
+            totalEl.textContent = `${totalCount.toLocaleString('de-DE')} von ${allLetters.length.toLocaleString('de-DE')} Briefen (${minYear}-${maxYear})`;
         } else {
-            totalEl.textContent = `${allLetters.length.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}`;
+            totalEl.textContent = `${totalCount.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}`;
         }
     }
 
-    // Add click handlers to wrapper elements
+    // Render legend
+    if (legendEl) {
+        const legendItems = sortedLanguages
+            .filter(lang => languageTotals[lang] > 0)
+            .map(lang => {
+                const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
+                const count = languageTotals[lang];
+                const label = lang === 'other' ? 'Andere' : lang.toUpperCase();
+                return `<span class="timeline-legend-item"><span class="timeline-legend-color" style="background: ${color}"></span>${label} (${count})</span>`;
+            });
+        legendEl.innerHTML = legendItems.join('');
+    }
+
+    // Add click handlers
     container.querySelectorAll('.timeline-bar-wrapper').forEach(wrapper => {
         wrapper.addEventListener('click', () => {
-            const yearStart = parseInt(wrapper.dataset.year);
-            const yearEnd = parseInt(wrapper.dataset.yearEnd);
+            const year = parseInt(wrapper.dataset.year);
 
-            // Update year slider
+            // Update year slider to single year
             const slider = document.getElementById('year-range-slider');
             if (slider && slider.noUiSlider) {
-                slider.noUiSlider.set([yearStart, yearEnd]);
+                slider.noUiSlider.set([year, year]);
             }
 
             // Visual feedback
