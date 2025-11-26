@@ -26,19 +26,17 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--color-primary);
 }
 
-/* Global Card Style - Modernized */
+/* Global Card Style - Border-based design */
 .card {
     background: var(--bg-card);
-    border: none;
-    border-radius: var(--radius-lg); /* Softer corners */
-    box-shadow: var(--shadow-sm); /* Soft elevation */
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
     padding: var(--space-xl);
-    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    transition: border-color var(--transition-fast);
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary);
 }
 
 /* stat-card styles moved to components.css for consistency */
@@ -48,23 +46,20 @@ button, .btn {
     font-family: var(--font-base);
 }
 
-/* Navbar - Glassmorphism Style */
+/* Navbar - Border-based design */
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     height: var(--navbar-height);
-    background: rgba(255, 255, 255, 0.9); /* High opacity white */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    color: var(--color-primary); /* Dark text for light navbar */
+    background: var(--color-bg);
+    border-bottom: 2px solid var(--color-border);
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     padding: 0 var(--space-xl);
     z-index: 1000;
-    transition: all 0.3s ease;
 }
 
 /* Scrolled state logic can be added later via JS for even more transparency at top */
@@ -263,10 +258,9 @@ button, .btn {
     position: absolute;
     top: 100%;
     left: 0;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
     min-width: 160px;
     margin-top: 8px;
     opacity: 0;
@@ -320,18 +314,14 @@ button, .btn {
 /* Sidebar */
 .sidebar {
     width: var(--sidebar-width);
-    background: var(--color-bg);
-    padding: var(--space-xl) var(--space-lg); /* Slightly reduced vertical padding for tighter look */
-    border-right: none; /* Remove hard border */
-    box-shadow: var(--shadow-sm); /* Add soft shadow to separate from main content */
-    border-radius: var(--radius-md); /* Apply rounded corners */
+    background: var(--color-bg-light);
+    padding: var(--space-xl) var(--space-lg);
+    border-right: 2px solid var(--color-border);
     overflow-y: auto;
     overflow-x: hidden;
-    margin-top: var(--space-md); /* Add some space from navbar */
-    margin-left: var(--space-md); /* Add some space from left edge */
-    height: calc(100vh - var(--navbar-height) - 2 * var(--space-md)); /* Adjust height to fit */
-    position: sticky; /* Keep it in place */
-    top: var(--navbar-height); /* Align with navbar */
+    height: calc(100vh - var(--navbar-height));
+    position: sticky;
+    top: var(--navbar-height);
 }
 
 .sidebar h3 {
@@ -414,8 +404,7 @@ button, .btn {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: var(--color-bg);
-    margin-top: var(--space-md); /* Align with sidebar */
+    background: var(--color-bg);  /* Cream - contrasts with Manila sidebar */
 }
 
 /* Tabs */

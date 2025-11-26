@@ -72,6 +72,71 @@ URL: https://weber-gesamtausgabe.de
 
 - CMIF-Export verfuegbar
 - Korrespondenz von Carl Maria von Weber
+- Ca. 9.000+ Briefe
+
+CMIF-URLs:
+```
+https://weber-gesamtausgabe.de/cmif_v1.xml    (aktuell/empfohlen)
+https://weber-gesamtausgabe.de/cmif_v2.xml    (experimentell, CMIF v2 Draft)
+```
+
+Eigenschaften:
+- GND-IDs fuer Personen vorhanden
+- Eines der ersten und umfangreichsten CMIF-Projekte
+- CC BY 4.0 Lizenz
+
+---
+
+## Grosse Test-Datensaetze
+
+Diese Datensaetze eignen sich zum Testen mit grossen Datenmengen.
+
+### Edvard Munch Korrespondenz (NorKorr)
+
+Beschreibung: 8.527 Briefe zu und von dem norwegischen Maler Edvard Munch (1863-1944)
+
+CMIF-URL:
+```
+https://dataverse.no/api/access/datafile/191809
+```
+
+Quelle: [Dataverse.no](https://dataverse.no/dataset.xhtml?persistentId=doi:10.18710/TAFUSV)
+
+Eigenschaften:
+- Umfangreiche Datumsangaben
+- GeoNames-IDs fuer Orte
+- Aus dem NorKorr-Projekt (Norwegian Correspondences)
+- Basiert auf der digitalen Edition eMunch.no
+
+### correspSearch Storage Repository
+
+Repository: https://github.com/correspSearch/csStorage
+
+Enthält 85+ CMIF-Dateien, die nicht anderswo gehostet werden koennen.
+
+Sammlungen nach Personen:
+- avhumboldt (Alexander von Humboldt)
+- wvhumboldt (Wilhelm von Humboldt)
+- forster (Georg Forster)
+- hofmannsthal (Hugo von Hofmannsthal)
+- droste-huelshoff (Annette von Droste-Huelshoff)
+- lasker-schueler (Else Lasker-Schueler)
+- rilke (Rainer Maria Rilke)
+- wieland (Christoph Martin Wieland)
+- feuerbach (Ludwig Feuerbach)
+- helmholtz (Hermann von Helmholtz)
+
+Raw-URL Format:
+```
+https://raw.githubusercontent.com/correspSearch/csStorage/dev/{ordner}/{datei}.xml
+https://raw.githubusercontent.com/correspSearch/csStorage/dev/{datei}.xml
+```
+
+Beispiele:
+```
+https://raw.githubusercontent.com/correspSearch/csStorage/dev/avhumboldt/Spiker.xml
+https://raw.githubusercontent.com/correspSearch/csStorage/dev/rilke-kappus.xml
+```
 
 ---
 

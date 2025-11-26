@@ -1,26 +1,29 @@
 /* CorrespExplorer Design Tokens
  * Canonical design system values
  * All CSS files must import and use these tokens
+ *
+ * Design derived from logo.jpg - Retro style with rust red accent
  */
 
 :root {
     /* ========================================
-     * COLORS
+     * COLORS - Logo-derived palette
      * ======================================== */
 
-    /* Primary Colors - Academic Professional Palette */
-    --color-primary: #2C3E50;        /* Deep Prussian Blue - Navigation, Header */
-    --color-primary-dark: #1a252f;   /* Darker Blue - Hover states */
-    --color-secondary: #2c5f8d;      /* Steel Blue - Links, Highlights */
-    --color-accent: #2d6a4f;         /* Forest Green - Success, Both roles */
-    --color-text: #2d3748;           /* Dark Gray - Primary text */
-    --color-text-light: #6c757d;     /* Medium Gray - Secondary text */
-    --color-text-secondary: #6c757d; /* Alias for text-light */
-    --color-text-muted: #6c757d;     /* Alias for text-light */
-    --color-bg: #ffffff;             /* White - Main background */
-    --color-bg-light: #f8f9fa;       /* Light Gray - Secondary background */
-    --color-bg-secondary: #f8f9fa;   /* Alias for bg-light */
-    --color-border: #dee2e6;         /* Border color */
+    /* Primary Colors - From Logo */
+    --color-primary: #A64B3F;        /* Rust Red - Primary action, logo gear */
+    --color-primary-dark: #8B3D33;   /* Dark Rust - Hover states */
+    --color-secondary: #2C5282;      /* Steel Blue - Links, Network sender */
+    --color-accent: #A64B3F;         /* Rust Red - Same as primary (logo-consistent) */
+    --color-text: #222222;           /* Ink Black - Primary text, borders */
+    --color-text-light: #555555;     /* Medium Gray - Secondary text */
+    --color-text-secondary: #555555; /* Alias for text-light */
+    --color-text-muted: #555555;     /* Alias for text-light */
+    --color-bg: #F5F3E8;             /* Cream/Paper - Main background */
+    --color-bg-light: #E8E4D4;       /* Manila - Cards, containers */
+    --color-bg-secondary: #E8E4D4;   /* Alias for bg-light */
+    --color-border: #222222;         /* Ink Black - Thick borders (2-3px) */
+    --color-border-light: #D4D0C0;   /* Subtle borders, dividers */
 
     /* Functional Colors */
     --color-success: #2d6a4f;        /* Forest Green */
@@ -67,9 +70,9 @@
 
     /* Legacy aliases from variables.css */
     --primary-color: var(--color-primary);
-    --accent-color: #D35400;           /* Terracotta accent */
-    --bg-body: var(--color-bg-light);
-    --bg-card: var(--color-bg);
+    --accent-color: var(--color-primary);  /* Rust Red - consistent with primary */
+    --bg-body: var(--color-bg);
+    --bg-card: var(--color-bg-light);
     --text-main: var(--color-text);
 
     /* Font Sizes - design.md Section 6.1 (12/14/16/20/24/32) */
@@ -132,15 +135,15 @@
     --radius-lg: 16px;
     --radius-xl: 24px;
 
-    /* Shadows - Softer, more diffuse "Elevation" */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
-    
-    /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
-    --glass-blur: blur(12px);
+    /* Shadows - Minimal, prefer borders for depth */
+    --shadow-sm: none;  /* Use borders instead */
+    --shadow-md: none;  /* Use borders instead */
+    --shadow-lg: none;  /* Use borders instead */
+
+    /* Border-based depth (replacing shadows) */
+    --border-card: 2px solid var(--color-border);
+    --border-modal: 3px solid var(--color-border);
+    --border-focus: 2px solid var(--color-primary);
 
     /* Transitions */
     --transition-fast: 0.15s ease-out;

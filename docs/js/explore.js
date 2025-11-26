@@ -49,8 +49,8 @@ const log = {
     error: (msg) => console.error(`[ERROR] ${msg}`)
 };
 
-// Default color
-const PRIMARY_COLOR = '#1e40af';
+// Map marker color - Rust Red from logo (design.md Section 6.2)
+const PRIMARY_COLOR = '#C65D3B';
 
 // Available views tracking
 let availableViews = {};
@@ -1297,7 +1297,7 @@ function renderPersonsList() {
             <div class="person-card" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
                 <div class="person-avatar">${initials}</div>
                 <div class="person-info">
-                    <div class="person-name">${escapeHtml(person.name)}</div>
+                    <div class="person-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}</div>
                     <div class="person-stats">
                         <span><i class="fas fa-paper-plane"></i> ${person.sent} gesendet</span>
                         <span><i class="fas fa-inbox"></i> ${person.received} empfangen</span>
@@ -2243,7 +2243,7 @@ function renderTopicsList() {
         return `
             <div class="topic-card ${isActive ? 'active' : ''}" data-id="${escapeHtml(topic.id)}">
                 <div class="topic-info">
-                    <div class="topic-name">${escapeHtml(topic.label)}</div>
+                    <div class="topic-name" title="${escapeHtml(topic.label)}">${escapeHtml(topic.label)}</div>
                     <div class="topic-bar-container">
                         <div class="topic-bar" style="width: ${barWidth}%"></div>
                     </div>
@@ -2646,7 +2646,7 @@ function renderPlacesList() {
         return `
             <div class="place-card ${isActive ? 'active' : ''}" data-place-id="${place.id}">
                 <div class="place-info">
-                    <div class="place-name">${escapeHtml(place.name)}</div>
+                    <div class="place-name" title="${escapeHtml(place.name)}">${escapeHtml(place.name)}</div>
                     <div class="place-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
                 </div>
                 ${createBasketToggle('places', place.id)}

@@ -46,15 +46,15 @@
     flex: 1;
     min-width: 200px;
     padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     font-size: var(--font-size-base);
+    background: var(--color-bg);
 }
 
 .list-search:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
 }
 
 .list-sort {
@@ -70,7 +70,7 @@
 
 .list-sort select {
     padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     font-size: var(--font-size-sm);
     background: var(--color-bg);
@@ -89,8 +89,8 @@
     align-items: center;
     gap: var(--space-md);
     padding: var(--space-md);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
+    background: var(--color-bg-light);
+    border: 2px solid var(--color-border-light);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-sm);
     cursor: pointer;
@@ -99,7 +99,6 @@
 
 .person-card:hover {
     border-color: var(--color-primary);
-    box-shadow: var(--shadow-sm);
 }
 
 .person-avatar {
@@ -183,8 +182,8 @@
     display: flex;
     flex-direction: column;
     padding: var(--space-md);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
+    background: var(--color-bg-light);
+    border: 2px solid var(--color-border-light);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-sm);
     cursor: pointer;
@@ -193,7 +192,6 @@
 
 .letter-card:hover {
     border-color: var(--color-primary);
-    box-shadow: var(--shadow-sm);
 }
 
 .letter-header {
@@ -236,6 +234,15 @@
     display: flex;
     align-items: center;
     gap: var(--space-xs);
+}
+
+.letter-meta a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.letter-meta a:hover {
+    text-decoration: underline;
 }
 
 /* Letter Card Expansion */
@@ -355,10 +362,10 @@
 
 .modal-content {
     background: var(--color-bg);
+    border: 3px solid var(--color-border);
     border-radius: var(--radius-lg);
     max-width: 400px;
     width: 90%;
-    box-shadow: var(--shadow-lg);
 }
 
 .modal-content.modal-lg {
@@ -425,7 +432,7 @@
 
 .export-option:hover {
     border-color: var(--color-primary);
-    background: rgba(30, 64, 175, 0.05);
+    background: rgba(166, 75, 63, 0.05);
 }
 
 .export-option i {
@@ -794,7 +801,7 @@
 }
 
 .letter-detail-actions .btn-primary:hover {
-    background: #2563eb;
+    background: var(--color-primary-dark);
 }
 
 .letter-detail-actions .btn-secondary {
@@ -1038,7 +1045,7 @@
 .btn-person-info:hover {
     border-color: var(--color-primary);
     color: var(--color-primary);
-    background: rgba(37, 99, 235, 0.05);
+    background: rgba(166, 75, 63, 0.05);
 }
 
 /* Topics View */
@@ -1126,7 +1133,7 @@
     font-size: var(--font-size-sm);
     color: var(--color-primary);
     font-weight: 600;
-    background: rgba(30, 64, 175, 0.1);
+    background: rgba(166, 75, 63, 0.1);
     padding: var(--space-xs) var(--space-sm);
     border-radius: var(--radius-sm);
 }
@@ -1165,7 +1172,7 @@
 }
 
 .topic-detail-actions .btn-primary:hover {
-    background: #2563eb;
+    background: var(--color-primary-dark);
 }
 
 /* Topic Card */
@@ -1174,8 +1181,8 @@
     align-items: center;
     gap: var(--space-md);
     padding: var(--space-md);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
+    background: var(--color-bg-light);
+    border: 2px solid var(--color-border-light);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-sm);
     cursor: pointer;
@@ -1184,12 +1191,11 @@
 
 .topic-card:hover {
     border-color: var(--color-primary);
-    box-shadow: var(--shadow-sm);
 }
 
 .topic-card.active {
     border-color: var(--color-primary);
-    background: rgba(30, 64, 175, 0.05);
+    background: rgba(166, 75, 63, 0.05);
 }
 
 .topic-info {
@@ -1438,8 +1444,8 @@
     align-items: center;
     gap: var(--space-md);
     padding: var(--space-md);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
+    background: var(--color-bg-light);
+    border: 2px solid var(--color-border-light);
     border-radius: var(--radius-md);
     margin-bottom: var(--space-sm);
     cursor: pointer;
@@ -1448,12 +1454,11 @@
 
 .place-card:hover {
     border-color: var(--color-primary);
-    box-shadow: var(--shadow-sm);
 }
 
 .place-card.active {
     border-color: var(--color-primary);
-    background: rgba(30, 64, 175, 0.05);
+    background: rgba(166, 75, 63, 0.05);
 }
 
 .place-info {
@@ -2140,7 +2145,7 @@
 }
 
 .btn-primary:hover {
-    background: #2563eb;
+    background: var(--color-primary-dark);
 }
 
 .btn-secondary {

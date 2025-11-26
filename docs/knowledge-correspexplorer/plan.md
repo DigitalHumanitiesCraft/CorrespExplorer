@@ -6,7 +6,7 @@ Stand: 2025-11-26
 
 ## Aktueller Implementierungsstand
 
-### Vollstaendig implementiert (29 User Stories)
+### Vollstaendig implementiert (31 User Stories)
 
 | US | Feature | Beschreibung |
 |----|---------|--------------|
@@ -21,7 +21,7 @@ Stand: 2025-11-26
 | US-09 | Korrespondenten-Liste | Suche, Sortierung |
 | US-10 | Person-Filter | Klick filtert Briefe |
 | US-12 | Brief-Liste | Suche, Sortierung |
-| US-13 | Brief-Details | Modal mit allen Metadaten |
+| US-13 | Brief-Details | Inline-Expansion mit allen Metadaten |
 | US-14 | Quell-Navigation | Link zur Original-Edition |
 | US-15 | Zeitraum-Filter | Slider fuer Start/Ende |
 | US-16 | Sprach-Filter | Checkboxen mit Anzahl |
@@ -39,6 +39,8 @@ Stand: 2025-11-26
 | US-27 | Themen-Filter | Integration ins Filter-System |
 | US-30 | Adaptive Views | Views basierend auf Datenverfuegbarkeit |
 | US-31 | Wissenskorb | Dedizierte Seite mit Timeline, Netzwerk, Karte, Multi-Tab-Sync |
+| US-32 | Wikidata-Enrichment | Biografische Daten via SPARQL (GND/VIAF) |
+| US-33 | Konfigurations-Dialog | Enrichment-Optionen beim Datensatz-Laden |
 
 ### Offen (2 User Stories)
 
@@ -172,11 +174,27 @@ Status: Bereits vorhanden, wird automatisch von Claude Code genutzt.
 6. ~~US-11: Netzwerk-Visualisierung~~ - erledigt
 7. ~~Wissenskorb (US-31)~~ - erledigt
 
-### Phase 4: Polish
+### Phase 4: Design-Ueberarbeitung
 
-8. Design-System Konsolidierung
-9. US-23: Datensatz-Vergleich (optional)
-10. ~~US-30: Adaptive Views~~ - erledigt
+8. US-34: Landing-Page Design
+   - Logo/Branding hinzufuegen (Header)
+   - Farbpalette aus design.md umsetzen (Cream-Hintergrund statt Grau)
+   - Cards mit staerkeren Borders (2-3px) und besserer Abhebung
+   - Upload-Zone visuell aufwerten
+
+9. US-35: Explore-Page Design
+   - Sidebar/Main-Content Kontrast verbessern
+   - Konsistente Border-Widths
+   - Monospace fuer Daten-Werte
+
+10. US-36: Typografie-Update
+    - Headlines: Staerkeres Gewicht, weniger Letter-Spacing
+    - Daten: Monospace-Font fuer Zahlen und IDs
+
+### Phase 5: Optionale Features
+
+11. US-23: Datensatz-Vergleich (niedrig)
+12. Design-System Konsolidierung (tokens.css refactoring)
 
 ---
 

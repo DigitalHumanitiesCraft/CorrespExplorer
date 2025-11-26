@@ -4,41 +4,97 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
-## 2025-11-26 (Phase 12: GND-Enrichment)
+## 2025-11-26 (Phase 14: Design-Ueberarbeitung)
 
-### Implementiert: On-Demand Personen-Anreicherung via lobid.org
+### Implementiert: Logo-basiertes Design-System
 
-Neue Funktion: Bei Klick auf den Info-Button einer Person werden biografische Daten von der GND via lobid.org API geladen.
+Komplette Ueberarbeitung des visuellen Designs basierend auf dem Logo (logo-no-background.png).
 
-1. Neue Datei: js/enrichment.js
-   - `enrichFromGND(gndUri)`: Laedt Daten von lobid.org
-   - `formatLifeDates()`: Formatiert Lebensdaten als String
-   - `formatPlaces()`: Formatiert Geburts-/Sterbeort
-   - `buildExternalLinks()`: Erstellt Links zu GND, Wikidata, Wikipedia
+1. Farbpalette aus Logo abgeleitet (tokens.css)
+   - Primary: Rust-Red #A64B3F (Zahnrad aus Logo)
+   - Background: Cream #F5F3E8 (Papier-Ton)
+   - Cards: Manila #E8E4D4 (hellerer Beige)
+   - Border: Ink Black #222222 (2-3px fuer Tiefe)
+   - Border-Light: #D4D0C0 (fuer Listen-Cards)
+
+2. Border-basiertes Design (keine Shadows)
+   - Cards: 2px solid border-light (weicher fuer Listen)
+   - Modals: 3px solid border (staerker fuer Tiefe)
+   - Upload-Zone: 2px dashed border (sichtbar)
+   - Hover-States: border-color wechselt zu primary
+
+3. Karten-Hierarchie
+   - person-card, letter-card, topic-card, place-card: border-light
+   - Active-State: rgba(166, 75, 63, 0.05) statt altem Blau
+   - Modal-Content: border (3px Ink Black)
+
+4. Map-Marker und Legende
+   - PRIMARY_COLOR in explore.js: #C65D3B (Rust-Red)
+   - Legende-Punkt: #C65D3B (konsistent mit Map)
+
+5. Logo-Integration
+   - Landing-Page Header: logo-no-background.png
+   - Favicon: favicon.svg (Auge-Element)
+
+6. Link-Farben
+   - letter-meta Links: color-primary (Rust-Red)
+   - Konsistent mit Gesamt-Design
+
+7. Tooltips fuer abgeschnittene Namen
+   - person-name, topic-name, place-name: title-Attribut
+   - Zeigt vollen Namen beim Hover
+
+8. Dokumentation bereinigt
+   - Geloescht: refactoring-plan.md (veraltet, nie umgesetzt)
+   - Geloescht: enrichment-concept.md (redundant mit Journal Phase 13)
+
+---
+
+## 2025-11-26 (Phase 13: Wikidata-Enrichment mit Konfigurationsdialog)
+
+### Implementiert: Wikidata SPARQL-Enrichment fuer Personen
+
+Komplette Neuimplementierung der Personen-Anreicherung mit Wikidata statt lobid.org. Unterstuetzt sowohl GND als auch VIAF Authority-IDs.
+
+1. Neue Datei: js/wikidata-enrichment.js
+   - `findWikidataQid(authority, authorityId)`: Findet QID via GND (P227) oder VIAF (P214)
+   - `fetchPersonData(qid)`: Laedt biografische Daten via SPARQL
+   - `enrichPerson(authority, authorityId)`: Hauptfunktion fuer einzelne Person
+   - `enrichPersonsBatch(persons, onProgress)`: Batch-Verarbeitung mit Fortschritt
    - Session-Cache mit 7-Tage-Gültigkeit
 
-2. Angereicherte Daten
-   - Name (preferredName)
-   - Lebensdaten (Geburt/Tod)
-   - Geburts-/Sterbeort
-   - Berufe/Taetigkeiten
-   - Akademischer Grad
-   - Institutionen (Affiliationen)
-   - Wirkungsorte
-   - Biografische Notiz
-   - Portrait-Bild (Thumbnail)
-   - Externe Links (GND, Wikidata, Wikipedia)
+2. Angereicherte Daten von Wikidata
+   - Name und Beschreibung (itemLabel, itemDescription)
+   - Lebensdaten (P569, P570)
+   - Geburts-/Sterbeort (P19, P20)
+   - Portrait-Bild (P18) mit Wikimedia Commons Thumbnail
+   - Berufe (P106)
+   - Externe Links zu Wikipedia, Wikidata, GND, VIAF
 
-3. UI-Aenderungen
-   - Neuer Info-Button bei Personen mit GND-ID
-   - Person-Detail-Modal mit Bild, Lebensdaten, Berufen
-   - Loading-State waehrend des Ladens
-   - Buttons: "Bei correspSearch suchen", "Briefe filtern"
+3. Konfigurationsdialog beim Datensatz-Laden
+   - Modal zeigt Statistiken: Briefe, Personen, Orte
+   - Checkbox "Personen anreichern" mit Anzahl enrichable Personen
+   - Warnung bei grossen Datensaetzen (> 50 Personen)
+   - Fortschrittsbalken waehrend Batch-Enrichment
+   - "Ueberspringen" oder "Starten" Buttons
 
-4. Technische Details
-   - Nur bei Personen mit `authority === 'gnd'` aktiv
-   - Cache reduziert API-Aufrufe bei wiederholtem Aufruf
-   - Graceful Degradation bei fehlenden Daten
+4. Technische Aenderungen
+   - upload.js: showConfigDialog(), handleConfigStart(), handleConfigSkip()
+   - Enriched Data wird in sessionStorage gespeichert ('person-enrichment')
+   - explore.js: Prueft zuerst sessionStorage vor Live-Wikidata-Anfrage
+   - Letter-Details jetzt inline expandierbar (kein Modal mehr)
+
+5. Vorteile gegenueber lobid.org
+   - Unterstuetzt GND und VIAF (nicht nur GND)
+   - Einheitliche Datenquelle fuer alle Personen
+   - Bilder direkt von Wikimedia Commons
+   - Batch-Verarbeitung vor Visualisierung
+
+---
+
+## 2025-11-26 (Phase 12: GND-Enrichment - deprecated)
+
+Hinweis: Diese Phase wurde durch Phase 13 (Wikidata-Enrichment) ersetzt.
 
 ---
 
