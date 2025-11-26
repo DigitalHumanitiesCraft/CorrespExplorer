@@ -120,55 +120,82 @@ function updateViewButtons() {
         }
     });
 
-    // Show info banner if some views are unavailable
-    showDataInfoBanner();
 }
 
-// Show banner explaining data limitations
-function showDataInfoBanner() {
-    const unavailableViews = Object.entries(availableViews)
-        .filter(([key, info]) => !info.available)
-        .map(([key, info]) => ({ key, reason: info.reason }));
+// Update sidebar data coverage details
+function updateDataCoverageDetails() {
+    const container = document.getElementById('data-coverage-details');
+    if (!container) return;
 
-    // Remove existing banner if present
-    const existingBanner = document.getElementById('data-info-banner');
-    if (existingBanner) {
-        existingBanner.remove();
+    // Calculate data coverage
+    const coordCount = Object.keys(placeAggregation).length;
+    const totalPlaces = Object.keys(dataIndices.places || {}).length;
+    const missingCount = totalPlaces - coordCount;
+    const hasLanguages = allLetters.some(l => l.language?.code);
+    const hasSubjects = allLetters.some(l => l.mentions?.subjects?.length > 0);
+    const hasAuthorityIds = allLetters.some(l =>
+        l.sender?.authority || l.recipient?.authority
+    );
+
+    // Count languages
+    const languageSet = new Set();
+    allLetters.forEach(l => {
+        if (l.language?.code) languageSet.add(l.language.code);
+    });
+
+    // Count subjects
+    const subjectSet = new Set();
+    allLetters.forEach(l => {
+        l.mentions?.subjects?.forEach(s => subjectSet.add(s.name || s));
+    });
+
+    // Build compact info lines
+    const lines = [];
+
+    // Geo data - always show with link to missing places
+    if (totalPlaces > 0) {
+        let geoLine = `<span class="coverage-line"><i class="fas fa-map-marker-alt"></i> ${coordCount}/${totalPlaces} Orte verortet`;
+        if (missingCount > 0) {
+            geoLine += ` <a href="#" id="show-missing-places" class="missing-places-link" title="Liste der Orte ohne Koordinaten">(${missingCount} ohne Geodaten)</a>`;
+        }
+        geoLine += '</span>';
+        lines.push(geoLine);
     }
 
-    // Only show banner if there are unavailable views
-    if (unavailableViews.length === 0) return;
+    // Languages - only if present
+    if (hasLanguages) {
+        lines.push(`<span class="coverage-line"><i class="fas fa-language"></i> ${languageSet.size} Sprache(n)</span>`);
+    }
 
-    const viewLabels = {
-        map: 'Karte',
-        persons: 'Korrespondenten',
-        letters: 'Briefe',
-        timeline: 'Timeline',
-        topics: 'Themen',
-        places: 'Orte',
-        network: 'Netzwerk'
-    };
+    // Subjects - only if present
+    if (hasSubjects) {
+        lines.push(`<span class="coverage-line"><i class="fas fa-tags"></i> ${subjectSet.size} Themen</span>`);
+    }
 
-    const banner = document.createElement('div');
-    banner.id = 'data-info-banner';
-    banner.className = 'data-info-banner';
+    // Authority IDs - only if present
+    if (hasAuthorityIds) {
+        lines.push(`<span class="coverage-line"><i class="fas fa-fingerprint"></i> Authority-IDs</span>`);
+    }
 
-    const unavailableList = unavailableViews
-        .map(v => `${viewLabels[v.key]}: ${v.reason}`)
-        .join(' | ');
+    // Show what's NOT in the data (compact)
+    const missing = [];
+    if (!hasLanguages) missing.push('Sprachen');
+    if (!hasSubjects) missing.push('Themen');
+    if (!hasAuthorityIds) missing.push('Authority-IDs');
 
-    banner.innerHTML = `
-        <i class="fas fa-info-circle"></i>
-        <span>Einige Ansichten sind fuer diesen Datensatz nicht verfuegbar: ${unavailableList}</span>
-        <button class="banner-close" onclick="this.parentElement.remove()" aria-label="Schliessen">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
+    if (missing.length > 0) {
+        lines.push(`<span class="coverage-line muted"><i class="fas fa-minus"></i> Ohne: ${missing.join(', ')}</span>`);
+    }
 
-    // Insert after nav
-    const nav = document.querySelector('.nav-bar');
-    if (nav && nav.parentNode) {
-        nav.parentNode.insertBefore(banner, nav.nextSibling);
+    container.innerHTML = lines.join('');
+
+    // Re-attach missing places link handler
+    const missingLink = container.querySelector('#show-missing-places');
+    if (missingLink) {
+        missingLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showMissingPlacesModal();
+        });
     }
 }
 
@@ -226,6 +253,9 @@ async function init() {
 
         // Update view buttons based on data availability
         updateViewButtons();
+
+        // Update data coverage details in sidebar
+        updateDataCoverageDetails();
 
         initMap();
         initFilters();
@@ -311,18 +341,11 @@ function updateUI(data) {
     // Update stats
     const totalLetters = document.getElementById('total-letters-count');
     const totalSenders = document.getElementById('total-senders-count');
-    const totalPlaces = document.getElementById('total-places-count');
-    const visiblePlaces = document.getElementById('map-visible-count');
-    const missingPlaces = document.getElementById('map-missing-count');
+    const totalPlacesEl = document.getElementById('total-places-count');
 
     if (totalLetters) totalLetters.textContent = (data.meta?.total_letters || allLetters.length).toLocaleString('de-DE');
     if (totalSenders) totalSenders.textContent = (data.meta?.unique_senders || Object.keys(dataIndices.persons || {}).length).toLocaleString('de-DE');
-    if (totalPlaces) totalPlaces.textContent = (data.meta?.unique_places || Object.keys(dataIndices.places || {}).length).toLocaleString('de-DE');
-
-    const placesWithCoords = Object.keys(placeAggregation).length;
-    const totalPlacesCount = data.meta?.unique_places || Object.keys(dataIndices.places || {}).length;
-    if (visiblePlaces) visiblePlaces.textContent = placesWithCoords;
-    if (missingPlaces) missingPlaces.textContent = Math.max(0, totalPlacesCount - placesWithCoords);
+    if (totalPlacesEl) totalPlacesEl.textContent = (data.meta?.unique_places || Object.keys(dataIndices.places || {}).length).toLocaleString('de-DE');
 
     // Update source info
     const sourceInfo = document.getElementById('source-info');
@@ -3100,16 +3123,10 @@ function escapeHtml(text) {
 // ===================
 
 function initMissingPlacesModal() {
-    const showLink = document.getElementById('show-missing-places');
     const modal = document.getElementById('missing-places-modal');
     const closeBtn = modal?.querySelector('.modal-close');
 
-    if (!showLink || !modal) return;
-
-    showLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        showMissingPlacesModal();
-    });
+    if (!modal) return;
 
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {

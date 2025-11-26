@@ -98,17 +98,6 @@
                     </div>
                 </div>
 
-                <!-- Data Coverage Info Box -->
-                <div class="data-coverage-info" style="background: var(--bg-light); border-left: 3px solid #1e40af; padding: 10px; margin: 0 0 15px 0; font-size: 0.85rem; color: var(--text-main); border-radius: 0 4px 4px 0;">
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <span title="Orte auf der Karte"><i class="fas fa-map-marker-alt" style="color: #1e40af;"></i> <strong id="map-visible-count">-</strong> Orte verortet</span>
-                        <span class="text-muted">|</span>
-                        <a href="#" id="show-missing-places" class="missing-places-link" title="Klicken fuer Liste der Orte ohne Koordinaten">
-                            <i class="fas fa-ban" style="color: #e74c3c;"></i> <strong id="map-missing-count">-</strong> ohne Geodaten
-                        </a>
-                    </div>
-                </div>
-
                 <!-- Time Period Filter -->
                 <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
                     <h4 id="filter-time-heading">Zeitraum</h4>
@@ -144,6 +133,10 @@
                     <p class="info-text" id="source-info">
                         Daten werden geladen...
                     </p>
+                    <h4>Datensatz-Abdeckung</h4>
+                    <div class="data-coverage-details" id="data-coverage-details">
+                        <!-- Filled by JavaScript -->
+                    </div>
                 </div>
             </aside>
 

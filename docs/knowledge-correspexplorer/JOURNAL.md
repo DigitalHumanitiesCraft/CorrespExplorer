@@ -4,6 +4,72 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Phase 11: Demo-Datensaetze und Dokumentation)
+
+### Demo-Datensaetze als Presets
+
+Implementierung von 5 externen CMIF-Datensaetzen als klickbare Presets auf der Landing-Page:
+
+1. Aenderungen in index.html
+   - 5 neue Dataset-Cards mit `data-url` Attributen
+   - Rollett-Korrespondenz (328 Briefe, Uni Graz)
+   - Humboldt-Spiker (156 Briefe, correspSearch)
+   - Hebel-Briefe (25 Briefe, TU Darmstadt)
+   - Humboldt-Duvinage (67 Briefe, correspSearch)
+   - Schoenbach-Briefe (5 Briefe, ACDH-OEAW)
+
+2. Aenderungen in upload.js
+   - `handleDatasetSelect()` erweitert um `data-url` Handling
+   - Klick auf Card laedt CMIF direkt via parseCMIF()
+
+3. Neue Dokumentation
+   - demo-datasets.md: Detaillierte Analyse aller Datensaetze
+   - enrichment-concept.md: GND-Anreicherung via lobid.org API
+
+### Analyse externer CMIF-Datensaetze
+
+Untersuchung von 5 externen CMIF-Dateien zur Verbesserung der Datenabdeckung:
+
+| Datensatz | URL | Briefe | Zeitraum | Sprache | Themen | GND | GeoNames |
+|-----------|-----|--------|----------|---------|--------|-----|----------|
+| Hebel 1939 | tueditions.ulb.tu-darmstadt.de | 25 | 1791-1826 | ja | nein | ja | ja |
+| Rollett | gams.uni-graz.at | 328 | 1877-1897 | nein | nein | ja | ja |
+| Humboldt-Spiker | correspsearch.net | 156 | 1827-1846 | nein | nein | ja | ja |
+| Humboldt-Duvinage | correspsearch.net | 67 | 1835-1857 | nein | nein | ja | ja |
+| Schoenbach | github.com/acdh-oeaw | 5 | 1888-1911 | nein | nein | ja | ja |
+
+### Erkenntnisse
+
+1. Datierungsunsicherheit
+   - Viele CMIF-Dateien nutzen `cert="low"` oder `evidence="conjecture"`
+   - Zeitbereiche statt exakter Daten (`notBefore`/`notAfter`)
+   - Aktuell nicht visuell dargestellt
+
+2. Unbekannte Absender/Orte
+   - `[NN]` (nomen nominandum) fuer unbekannte Personen
+   - `unknown` fuer unbekannte Orte
+   - 60% der Hebel-Briefe ohne Absende-Ort
+
+3. Sprachangaben selten
+   - Nur 1 von 5 Datensaetzen hat `<language>` Tags
+   - Sprachfilter wird korrekt ausgeblendet
+
+4. Themen-Daten fehlen
+   - Keiner der analysierten Datensaetze hat `<term>` oder subjects
+   - Topics View wird korrekt ausgeblendet
+
+5. Authority-URIs sind Standard
+   - Alle Datensaetze haben GND und GeoNames
+   - correspSearch-Integration funktioniert
+
+### Verbesserungsvorschlaege
+
+- Datierungsunsicherheit visuell markieren (z.B. "ca.", Fragezeichen)
+- Bessere Behandlung von `[NN]` und `unknown`
+- Demo-Datensaetze als Presets hinzufuegen
+
+---
+
 ## 2025-11-26 (Phase 10: Code-Refactoring)
 
 ### Refactoring: Shared Utils und CSS Cleanup

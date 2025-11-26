@@ -236,12 +236,23 @@ async function handleCorrespSearchSubmit() {
 async function handleDatasetSelect(card) {
     const dataset = card.dataset.dataset;
     const info = card.dataset.info;
+    const url = card.dataset.url;
 
     hideError();
 
     if (dataset === 'hsa') {
         // HSA uses preprocessed local data - redirect directly
         window.location.href = 'explore.html?dataset=hsa';
+    } else if (url) {
+        // External CMIF URL - load directly
+        showLoading('Lade CMIF von URL...');
+        try {
+            const data = await parseCMIF(url);
+            await processData(data, { type: 'url', source: url });
+        } catch (error) {
+            showError(`Fehler beim Laden: ${error.message}`);
+            hideLoading();
+        }
     } else if (info === 'cmif') {
         // Trigger file input click
         fileInput.click();
