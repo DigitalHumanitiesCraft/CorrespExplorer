@@ -108,12 +108,43 @@
     margin-right: var(--space-md);
 }
 
+.person-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
 .person-count {
     font-size: var(--font-size-lg);
     font-weight: 600;
     color: var(--color-primary);
     min-width: 50px;
     text-align: right;
+}
+
+/* correspSearch Button */
+.btn-correspsearch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-bg-light);
+    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.btn-correspsearch:hover {
+    background: #5b9bd5;
+    color: white;
+    border-color: #5b9bd5;
+}
+
+.btn-correspsearch i {
+    font-size: 12px;
 }
 
 /* Letter Card */
@@ -636,6 +667,38 @@
 
 .letter-detail-actions .btn-secondary:hover {
     border-color: var(--color-primary);
+}
+
+/* correspSearch Links in Letter Detail */
+.corresp-search-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    width: 100%;
+}
+
+.btn-corresp {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: #f0f7ff;
+    color: #5b9bd5;
+    border: 1px solid #5b9bd5;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.btn-corresp:hover {
+    background: #5b9bd5;
+    color: white;
+}
+
+.btn-corresp i {
+    font-size: 10px;
 }
 
 /* Topics View */
@@ -1257,4 +1320,70 @@
     .topic-detail-panel {
         min-height: 300px;
     }
+}
+
+/* Missing Places Link and Modal */
+.missing-places-link {
+    color: var(--color-text-light);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.missing-places-link:hover {
+    color: #e74c3c;
+}
+
+.missing-places-intro {
+    margin: 0 0 var(--space-md) 0;
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+}
+
+.missing-places-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.missing-place-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.missing-place-item:last-child {
+    border-bottom: none;
+}
+
+.missing-place-item:hover {
+    background: var(--color-bg-light);
+}
+
+.missing-place-name {
+    flex: 1;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.missing-place-count {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    white-space: nowrap;
+}
+
+.missing-place-link {
+    color: var(--color-text-light);
+    text-decoration: none;
+    padding: var(--space-xs);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.missing-place-link:hover {
+    color: var(--color-primary);
+    background: var(--color-bg-light);
 }

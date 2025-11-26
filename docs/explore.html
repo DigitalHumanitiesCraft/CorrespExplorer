@@ -96,9 +96,9 @@
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                         <span title="Orte auf der Karte"><i class="fas fa-map-marker-alt" style="color: #1e40af;"></i> <strong id="map-visible-count">-</strong> Orte verortet</span>
                         <span class="text-muted">|</span>
-                        <span title="Orte ohne Koordinaten">
+                        <a href="#" id="show-missing-places" class="missing-places-link" title="Klicken fuer Liste der Orte ohne Koordinaten">
                             <i class="fas fa-ban" style="color: #e74c3c;"></i> <strong id="map-missing-count">-</strong> ohne Geodaten
-                        </span>
+                        </a>
                     </div>
                 </div>
 
@@ -353,6 +353,19 @@
                 <button class="modal-close" aria-label="Schliessen">&times;</button>
             </div>
             <div class="modal-body" id="letter-modal-body">
+                <!-- Content filled by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Missing Places Modal -->
+    <div id="missing-places-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Orte ohne Koordinaten</h3>
+                <button class="modal-close" aria-label="Schliessen">&times;</button>
+            </div>
+            <div class="modal-body" id="missing-places-body">
                 <!-- Content filled by JavaScript -->
             </div>
         </div>

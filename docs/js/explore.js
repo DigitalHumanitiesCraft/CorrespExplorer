@@ -92,6 +92,7 @@ async function init() {
         initTopicsView();
         initPlacesView();
         initExport();
+        initMissingPlacesModal();
 
         // Apply initial view from URL
         if (currentView !== 'map') {
@@ -1054,6 +1055,7 @@ function renderPersonsList() {
                 personsMap[key] = {
                     name: letter.sender.name,
                     id: letter.sender.id,
+                    authority: letter.sender.authority,
                     sent: 0,
                     received: 0
                 };
@@ -1068,6 +1070,7 @@ function renderPersonsList() {
                 personsMap[key] = {
                     name: letter.recipient.name,
                     id: letter.recipient.id,
+                    authority: letter.recipient.authority,
                     sent: 0,
                     received: 0
                 };
@@ -1118,6 +1121,7 @@ function renderPersonsList() {
             .toUpperCase();
         const total = person.sent + person.received;
         const personKey = person.id || person.name;
+        const correspSearchUrl = buildCorrespSearchUrl(person);
 
         return `
             <div class="person-card" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
@@ -1129,7 +1133,15 @@ function renderPersonsList() {
                         <span><i class="fas fa-inbox"></i> ${person.received} empfangen</span>
                     </div>
                 </div>
-                <div class="person-count">${total}</div>
+                <div class="person-actions">
+                    ${correspSearchUrl ? `
+                        <a href="${correspSearchUrl}" target="_blank" class="btn-correspsearch"
+                           title="Weitere Briefe bei correspSearch suchen" onclick="event.stopPropagation()">
+                            <i class="fas fa-search"></i>
+                        </a>
+                    ` : ''}
+                    <div class="person-count">${total}</div>
+                </div>
             </div>
         `;
     }).join('');
@@ -1366,6 +1378,24 @@ function showLetterDetail(letterId) {
     html += `<button class="btn btn-secondary" onclick="filterByPerson('${letter.sender?.id || letter.sender?.name}')">
         <i class="fas fa-filter"></i> Briefe von ${escapeHtml(letter.sender?.name || 'Absender')}
     </button>`;
+
+    // correspSearch links for sender and recipient
+    const senderCorrespUrl = buildCorrespSearchUrl(letter.sender);
+    const recipientCorrespUrl = buildCorrespSearchUrl(letter.recipient);
+    if (senderCorrespUrl || recipientCorrespUrl) {
+        html += '<div class="corresp-search-links">';
+        if (senderCorrespUrl) {
+            html += `<a href="${senderCorrespUrl}" target="_blank" class="btn btn-corresp" title="Briefe von ${escapeHtml(letter.sender?.name)} bei correspSearch">
+                <i class="fas fa-search"></i> ${escapeHtml(letter.sender?.name)} bei correspSearch
+            </a>`;
+        }
+        if (recipientCorrespUrl) {
+            html += `<a href="${recipientCorrespUrl}" target="_blank" class="btn btn-corresp" title="Briefe von ${escapeHtml(letter.recipient?.name)} bei correspSearch">
+                <i class="fas fa-search"></i> ${escapeHtml(letter.recipient?.name)} bei correspSearch
+            </a>`;
+        }
+        html += '</div>';
+    }
     html += '</div>';
 
     html += '</div>';
@@ -1381,6 +1411,27 @@ function showLetterDetail(letterId) {
     modal.onclick = (e) => {
         if (e.target === modal) modal.style.display = 'none';
     };
+}
+
+// Helper to build correspSearch URL for a person
+function buildCorrespSearchUrl(person) {
+    if (!person || !person.id || !person.authority) return null;
+
+    // correspSearch API accepts GND and VIAF IDs
+    let authorityUrl = null;
+    switch (person.authority) {
+        case 'gnd':
+            authorityUrl = `http://d-nb.info/gnd/${person.id}`;
+            break;
+        case 'viaf':
+            authorityUrl = `http://viaf.org/viaf/${person.id}`;
+            break;
+    }
+
+    if (authorityUrl) {
+        return `https://correspsearch.net/search.xql?correspondent=${encodeURIComponent(authorityUrl)}`;
+    }
+    return null;
 }
 
 // Helper to build person link with authority URL
@@ -2388,6 +2439,110 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// ===================
+// MISSING PLACES MODAL
+// ===================
+
+function initMissingPlacesModal() {
+    const showLink = document.getElementById('show-missing-places');
+    const modal = document.getElementById('missing-places-modal');
+    const closeBtn = modal?.querySelector('.modal-close');
+
+    if (!showLink || !modal) return;
+
+    showLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showMissingPlacesModal();
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+}
+
+function showMissingPlacesModal() {
+    const modal = document.getElementById('missing-places-modal');
+    const body = document.getElementById('missing-places-body');
+
+    if (!modal || !body) return;
+
+    // Collect all places from letters
+    const allPlacesFromLetters = new Map();
+    const placesIndex = dataIndices.places || {};
+
+    allLetters.forEach(letter => {
+        if (!letter.place_sent) return;
+
+        const placeId = letter.place_sent.geonames_id;
+        const placeName = letter.place_sent.name;
+
+        if (!placeId || !placeName) return;
+
+        // Check if this place has coordinates
+        let hasCoords = false;
+
+        // Check in letter data
+        if (letter.place_sent.lat && letter.place_sent.lon) {
+            hasCoords = true;
+        }
+
+        // Check in places index
+        if (!hasCoords && placesIndex[placeId]) {
+            const indexed = placesIndex[placeId];
+            if (indexed.lat && indexed.lon) {
+                hasCoords = true;
+            }
+        }
+
+        // Check in placeAggregation (already filtered for coords)
+        if (!hasCoords && placeAggregation[placeId]) {
+            hasCoords = true;
+        }
+
+        if (!hasCoords) {
+            if (!allPlacesFromLetters.has(placeId)) {
+                allPlacesFromLetters.set(placeId, {
+                    id: placeId,
+                    name: placeName,
+                    letterCount: 0
+                });
+            }
+            allPlacesFromLetters.get(placeId).letterCount++;
+        }
+    });
+
+    // Sort by letter count
+    const missingPlaces = Array.from(allPlacesFromLetters.values())
+        .sort((a, b) => b.letterCount - a.letterCount);
+
+    // Render list
+    if (missingPlaces.length === 0) {
+        body.innerHTML = '<p class="empty-state">Alle Orte haben Koordinaten.</p>';
+    } else {
+        const geonamesBase = 'https://www.geonames.org/';
+        body.innerHTML = `
+            <p class="missing-places-intro">${missingPlaces.length} Orte ohne Koordinaten gefunden:</p>
+            <div class="missing-places-list">
+                ${missingPlaces.map(place => `
+                    <div class="missing-place-item">
+                        <span class="missing-place-name">${escapeHtml(place.name)}</span>
+                        <span class="missing-place-count">${place.letterCount} ${place.letterCount === 1 ? 'Brief' : 'Briefe'}</span>
+                        ${place.id ? `<a href="${geonamesBase}${place.id}" target="_blank" class="missing-place-link" title="GeoNames"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    modal.style.display = 'flex';
 }
 
 // Start application

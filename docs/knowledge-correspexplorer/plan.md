@@ -6,7 +6,7 @@ Stand: 2025-11-26
 
 ## Aktueller Implementierungsstand
 
-### Vollstaendig implementiert (22 User Stories)
+### Vollstaendig implementiert (24 User Stories)
 
 | US | Feature | Beschreibung |
 |----|---------|--------------|
@@ -16,6 +16,8 @@ Stand: 2025-11-26
 | US-04 | Statistik-Cards | Briefe, Personen, Orte |
 | US-05 | Timeline | Zeitliche Verteilung |
 | US-06 | Kartenansicht | Clustering, Zoom, Pan |
+| US-07 | Orts-Details | Top-5 Absender im Map-Popup mit Briefanzahl |
+| US-08 | Fehlende Koordinaten | Modal mit Liste der Orte ohne Geodaten |
 | US-09 | Korrespondenten-Liste | Suche, Sortierung |
 | US-10 | Person-Filter | Klick filtert Briefe |
 | US-12 | Brief-Liste | Suche, Sortierung |
@@ -28,25 +30,18 @@ Stand: 2025-11-26
 | US-20 | URL-Sharing | Filter in URL codiert |
 | US-21 | CSV-Export | Gefilterte Briefe |
 | US-22 | JSON-Export | Strukturierte Daten |
+| US-24 | correspSearch-Integration | Button in Personen-Liste und Brief-Modal |
 | US-25 | Themen-Liste | Topics View mit Suche |
 | US-26 | Themen-Details | Korrespondenten, Timeline, verwandte Themen |
 | US-27 | Themen-Filter | Integration ins Filter-System |
-| US-07 | Orts-Details | Top-5 Absender im Map-Popup mit Briefanzahl |
 
-### Teilweise implementiert (1 User Story)
-
-| US | Feature | Status | Offene Aufgaben |
-|----|---------|--------|-----------------|
-| US-08 | Fehlende Koordinaten | Anzahl wird gezeigt | Liste der Orte ohne Koordinaten
-
-### Offen (4 User Stories)
+### Offen (3 User Stories)
 
 | US | Feature | Prioritaet | Beschreibung |
 |----|---------|-----------|--------------|
 | US-11 | Netzwerk-Graph | Hoch | Force-Directed Graph: Wer schreibt wem |
 | US-17 | Themen-Schnellfilter | Niedrig | Top-Themen in Sidebar (Topics View existiert) |
 | US-23 | Datensatz-Vergleich | Niedrig | Zwei CMIF-Dateien vergleichen |
-| US-24 | correspSearch-Integration | Mittel | Verknuepfung mit correspSearch API |
 
 ---
 
@@ -158,8 +153,8 @@ Status: Bereits vorhanden, wird automatisch von Claude Code genutzt.
 
 ### Phase 2: Integration
 
-4. correspSearch API Integration (US-24)
-5. US-08: Liste der Orte ohne Koordinaten
+4. ~~correspSearch API Integration (US-24)~~ - erledigt
+5. ~~US-08: Liste der Orte ohne Koordinaten~~ - erledigt
 
 ### Phase 3: Erweiterte Features
 

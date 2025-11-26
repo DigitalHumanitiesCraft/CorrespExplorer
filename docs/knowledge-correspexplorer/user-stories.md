@@ -89,7 +89,7 @@ Als Forschende moechte ich wissen, welche Orte keine Koordinaten haben, um die D
 Akzeptanzkriterien:
 - Anzeige "X Orte ohne Geodaten"
 - Liste der Orte ohne Koordinaten abrufbar
-- Status: TEILWEISE (Anzahl wird gezeigt, keine Liste)
+- Status: IMPLEMENTIERT
 
 ---
 
@@ -246,7 +246,7 @@ Als Forschende moechte ich von einer Person zu deren Profil bei correspSearch na
 Akzeptanzkriterien:
 - Link zu correspSearch-Personensuche
 - Nutzt Authority-ID (GND, VIAF)
-- Status: OFFEN
+- Status: IMPLEMENTIERT
 
 ---
 
