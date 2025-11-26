@@ -276,10 +276,10 @@ function extractPlaces(letters) {
     letters.forEach(letter => {
         const place = letter.place_sent;
         if (place?.name) {
-            const key = place.id || place.name;
+            const key = place.geonames_id || place.name;
             if (!places[key]) {
                 places[key] = {
-                    id: place.id,
+                    id: place.geonames_id,
                     name: place.name,
                     letterCount: 0
                 };

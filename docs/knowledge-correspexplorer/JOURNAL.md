@@ -4,6 +4,53 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-26 (Phase 15: Datensatz-Vergleich und Bug-Fixes)
+
+### Implementiert: Datensatz-Vergleich (US-23)
+
+Neue dedizierte Seite zum Vergleichen zweier CMIF-Datensaetze:
+
+1. Neue Dateien
+   - compare.html: Vergleichsseite mit zwei Upload-Slots
+   - js/compare.js: Vergleichslogik und UI
+   - css/compare.css: Styling konsistent mit Design-System
+
+2. Features
+   - Zwei Datensaetze per Datei oder URL laden
+   - Gemeinsame Personen finden (basierend auf Authority-ID)
+   - Gemeinsame Orte finden (basierend auf GeoNames-ID)
+   - Unique-Listen: Nur in A, Nur in B
+   - Ueberschneidungs-Prozentsatz berechnen
+   - CSV-Export der Vergleichsergebnisse
+
+3. Bug-Fix: geonames_id statt id
+   - extractPlaces() verwendete falsches Feld
+   - Korrigiert: place.geonames_id statt place.id
+
+### Bug-Fixes
+
+1. cmifData is not defined
+   - Fehler in initTopicsQuickFilter()
+   - Fix: cmifData?.indices?.subjects zu dataIndices?.subjects
+
+2. Timeline Fallback-Farbe
+   - Balken ohne Sprachdaten waren blau statt Rust-Red
+   - Fix: LANGUAGE_COLORS.other auf #C65D3B geaendert
+
+3. 404 fuer geonames_coordinates.json
+   - Leere JSON-Datei erstellt um Fehler zu vermeiden
+
+### Dokumentation
+
+1. Promptotyping in about.html und README.md
+   - Christopher Pollin und Entwicklungsmethodik dokumentiert
+   - Links zu DHCraft und Promptotyping-Blog
+
+2. Demo-Datensaetze in demo-datasets.md
+   - 5 Test-URLs fuer verschiedene Szenarien dokumentiert
+
+---
+
 ## 2025-11-26 (Phase 14: Design-Ueberarbeitung)
 
 ### Implementiert: Logo-basiertes Design-System

@@ -93,7 +93,16 @@ Statische Seite mit:
 - Projekthintergrund
 - CMIF-Format Erklaerung
 - Nutzungshinweise
+- Promptotyping-Methodik
 - Kontaktinformationen
+
+### compare.html - Datensatz-Vergleich
+
+Vergleichsseite fuer zwei CMIF-Datensaetze:
+- Zwei Upload-Slots (Datei oder URL)
+- Gemeinsame Personen/Orte finden
+- Unique-Listen (nur in A, nur in B)
+- CSV-Export der Ergebnisse
 
 ## Module
 
@@ -409,6 +418,9 @@ css/
   style.css       - Haupt-Styles (Navbar, Sidebar, Map)
   upload.css      - Upload-Zone, Dataset-Cards
   explore.css     - Listen, Modal, View-Switching
+  compare.css     - Datensatz-Vergleich
+  wissenskorb.css - Wissenskorb-Seite
+  about.css       - About-Seite
 ```
 
 ## Performance-Strategien
