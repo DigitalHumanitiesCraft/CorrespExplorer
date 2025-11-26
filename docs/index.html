@@ -3,131 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Hugo Schuchardt Archiv - Interaktive Visualisierung der Korrespondenz des Sprachwissenschaftlers Hugo Schuchardt (1859-1927)">
-    <title>HSA CorrespExplorer - Hugo Schuchardt Archiv</title>
+    <meta name="description" content="CorrespExplorer - Interaktive Visualisierung von Korrespondenz-Metadaten im CMIF-Format">
+    <title>CorrespExplorer - CMIF Visualisierung</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
-    <!-- MapLibre GL JS CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
-
-    <!-- noUiSlider CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.css" />
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <link rel="stylesheet" href="css/tokens.css">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/upload.css">
 </head>
 <body>
-    <!-- Fullscreen Loading Overlay -->
-    <div id="loading-overlay">
-        <div class="spinner">
-            <i class="fas fa-envelope fa-spin"></i>
+    <!-- Landing Container -->
+    <div class="landing-container">
+        <header class="landing-header">
+            <h1>CorrespExplorer</h1>
+            <p>Visualisieren Sie Korrespondenz-Metadaten im CMIF-Format. Laden Sie eine XML-Datei hoch oder geben Sie eine URL ein.</p>
+        </header>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="upload-zone">
+            <div class="upload-icon">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h2>CMIF-Datei hochladen</h2>
+            <p>Ziehen Sie eine XML-Datei hierher oder klicken Sie zum Auswaehlen</p>
+            <input type="file" id="file-input" class="upload-input" accept=".xml,application/xml,text/xml">
+            <label for="file-input" class="upload-btn">Datei auswaehlen</label>
         </div>
-        <div class="loading-text">Lade HSA Korrespondenz...</div>
-    </div>
 
-    <!-- Global Navigation Placeholder -->
-    <div id="navbar-placeholder"></div>
-
-    <!-- Main Container -->
-    <div class="container">
-        <div class="content-wrapper">
-            <!-- Sidebar Filters -->
-            <aside class="sidebar" role="complementary" aria-label="Filteroptionen">
-                <!-- Stats Cards -->
-                <div class="stats-cards">
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-letters-count">11.576</div>
-                        <div class="stat-label">Briefe</div>
-                    </div>
-                    <a href="persons.html" class="stat-card stat-card-clickable" title="Zur Korrespondentenliste">
-                        <div class="stat-value">846</div>
-                        <div class="stat-label">Korrespondenten</div>
-                    </a>
-                    <a href="places.html" class="stat-card stat-card-clickable" title="Zur Ortsliste">
-                        <div class="stat-value">774</div>
-                        <div class="stat-label">Orte</div>
-                    </a>
-                </div>
-
-                <!-- Data Coverage Info Box -->
-                <div class="data-coverage-info" style="background: var(--bg-light); border-left: 3px solid #1e40af; padding: 10px; margin: 0 0 15px 0; font-size: 0.85rem; color: var(--text-main); border-radius: 0 4px 4px 0;">
-                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <span title="Orte auf der Karte"><i class="fas fa-map-marker-alt" style="color: #1e40af;"></i> <strong id="map-visible-count">616</strong> Orte verortet</span>
-                        <span class="text-muted">|</span>
-                        <span title="Orte ohne Koordinaten">
-                            <i class="fas fa-ban" style="color: #e74c3c;"></i> <strong id="map-missing-count">158</strong> ohne Geodaten
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Time Period Filter -->
-                <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
-                    <h4 id="filter-time-heading">Zeitraum</h4>
-                    <div id="year-range-slider" aria-label="Jahr-Bereich waehlen" role="slider"></div>
-                    <div class="year-range-display">
-                        <span id="year-range-text" aria-live="polite">1859 - 1927</span>
-                    </div>
-                </div>
-
-                <!-- Language Filter -->
-                <div class="filter-group" role="group" aria-labelledby="filter-language-heading">
-                    <h4 id="filter-language-heading">Briefsprache</h4>
-                    <label><input type="checkbox" name="language" value="de" checked> <span>Deutsch</span> <span class="filter-count" id="count-lang-de"></span></label>
-                    <label><input type="checkbox" name="language" value="fr" checked> <span>Franzoesisch</span> <span class="filter-count" id="count-lang-fr"></span></label>
-                    <label><input type="checkbox" name="language" value="it" checked> <span>Italienisch</span> <span class="filter-count" id="count-lang-it"></span></label>
-                    <label><input type="checkbox" name="language" value="es" checked> <span>Spanisch</span> <span class="filter-count" id="count-lang-es"></span></label>
-                    <label><input type="checkbox" name="language" value="en" checked> <span>Englisch</span> <span class="filter-count" id="count-lang-en"></span></label>
-                    <label><input type="checkbox" name="language" value="pt" checked> <span>Portugiesisch</span> <span class="filter-count" id="count-lang-pt"></span></label>
-                    <label><input type="checkbox" name="language" value="nl" checked> <span>Niederlaendisch</span> <span class="filter-count" id="count-lang-nl"></span></label>
-                    <label><input type="checkbox" name="language" value="eu" checked> <span>Baskisch</span> <span class="filter-count" id="count-lang-eu"></span></label>
-                </div>
-
-                <!-- Map Legend -->
-                <div class="filter-group" role="region" aria-labelledby="legend-heading">
-                    <h4 id="legend-heading">Legende</h4>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #1e40af;" aria-hidden="true"></span>
-                        <span>Absendeort (Groesse = Briefanzahl)</span>
-                    </div>
-                    <p class="legend-hint">Klick auf Marker zeigt Details zum Ort</p>
-                </div>
-
-                <div class="filter-buttons">
-                    <button id="reset-filters" class="btn-reset" aria-label="Alle Filter zuruecksetzen">Filter zuruecksetzen</button>
-                </div>
-
-                <!-- Context Info -->
-                <div class="sidebar-info">
-                    <h4>Ueber diese Daten</h4>
-                    <p class="info-text">
-                        11.576 Briefe aus der Korrespondenz von Hugo Schuchardt (1842-1927), Sprachwissenschaftler an der Universitaet Graz.
-                    </p>
-                    <p class="info-text">
-                        <a href="https://gams.uni-graz.at/context:hsa" target="_blank">HSA Website</a> |
-                        <a href="https://correspsearch.net" target="_blank">correspSearch</a>
-                    </p>
-                </div>
-            </aside>
-
-            <!-- Main Content -->
-            <main class="main-content" role="main">
-                <div id="map-view" class="tab-content active">
-                    <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
-                    <!-- Map Layer Switcher Button -->
-                    <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln">
-                        <i class="fas fa-sun"></i>
-                    </button>
-                </div>
-            </main>
+        <!-- URL Input -->
+        <div class="url-input-section">
+            <div class="divider">
+                <span>oder</span>
+            </div>
+            <div class="url-input-wrapper">
+                <input type="url"
+                       id="url-input"
+                       class="url-input"
+                       placeholder="https://example.org/correspondence.xml"
+                       aria-label="CMIF-URL eingeben">
+                <button id="url-submit" class="url-submit-btn">
+                    <i class="fas fa-download"></i> Laden
+                </button>
+            </div>
         </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="error-message"></div>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loading-state">
+            <div class="loading-spinner"></div>
+            <p id="loading-text">Verarbeite CMIF-Datei...</p>
+        </div>
+
+        <!-- Example Datasets -->
+        <section class="example-datasets">
+            <h3>Beispiel-Datensaetze</h3>
+            <div class="dataset-grid">
+                <div class="dataset-card" data-dataset="hsa">
+                    <h4>Hugo Schuchardt Archiv</h4>
+                    <p>Korrespondenz des Sprachwissenschaftlers Hugo Schuchardt (1842-1927)</p>
+                    <div class="dataset-stats">
+                        <span><i class="fas fa-envelope"></i> 11.576 Briefe</span>
+                        <span><i class="fas fa-users"></i> 846 Korrespondenten</span>
+                    </div>
+                </div>
+                <div class="dataset-card" data-info="cmif">
+                    <h4>Eigene CMIF-Datei</h4>
+                    <p>Laden Sie Ihre eigene CMIF-XML hoch oder nutzen Sie die URL-Eingabe oben</p>
+                    <div class="dataset-stats">
+                        <span><i class="fas fa-file-upload"></i> Datei-Upload</span>
+                        <span><i class="fas fa-link"></i> URL-Import</span>
+                    </div>
+                </div>
+                <div class="dataset-card" data-info="correspsearch">
+                    <h4>correspSearch API</h4>
+                    <p>Nutzen Sie die correspSearch API mit der URL-Eingabe oben</p>
+                    <div class="dataset-stats">
+                        <span><i class="fas fa-globe"></i> correspsearch.net</span>
+                        <span><i class="fas fa-database"></i> 180.000+ Briefe</span>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <!-- Scripts -->
-    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-    <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
-    <script src="js/app.js" type="module"></script>
+    <script src="js/upload.js" type="module"></script>
 </body>
 </html>

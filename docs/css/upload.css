@@ -1,0 +1,302 @@
+/* Upload Component Styles */
+@import url('tokens.css');
+
+/* Landing Page Layout */
+.landing-container {
+    min-height: calc(100vh - var(--navbar-height));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-light) 100%);
+}
+
+.landing-header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+    max-width: 600px;
+}
+
+.landing-header h1 {
+    font-family: var(--font-headings);
+    font-size: var(--font-size-3xl);
+    color: var(--color-primary);
+    margin-bottom: var(--space-lg);
+    font-weight: 700;
+}
+
+.landing-header p {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-light);
+    line-height: var(--line-height-base);
+}
+
+/* Upload Zone */
+.upload-zone {
+    width: 100%;
+    max-width: 600px;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-3xl);
+    text-align: center;
+    background: var(--color-bg);
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.upload-zone:hover,
+.upload-zone.drag-over {
+    border-color: var(--color-primary);
+    background: rgba(44, 62, 80, 0.02);
+}
+
+.upload-zone.drag-over {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+}
+
+.upload-icon {
+    font-size: 4rem;
+    color: var(--color-primary);
+    margin-bottom: var(--space-lg);
+    opacity: 0.7;
+}
+
+.upload-zone h2 {
+    font-size: var(--font-size-xl);
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+}
+
+.upload-zone p {
+    color: var(--color-text-light);
+    margin-bottom: var(--space-lg);
+}
+
+.upload-input {
+    display: none;
+}
+
+.upload-btn {
+    display: inline-block;
+    background: var(--color-primary);
+    color: white;
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: none;
+    font-size: var(--font-size-base);
+}
+
+.upload-btn:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* URL Input */
+.url-input-section {
+    width: 100%;
+    max-width: 600px;
+    margin-top: var(--space-xl);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+    color: var(--color-text-light);
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+}
+
+.divider span {
+    padding: 0 var(--space-lg);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.url-input-wrapper {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.url-input {
+    flex: 1;
+    padding: var(--space-md) var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-fast);
+}
+
+.url-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+}
+
+.url-submit-btn {
+    background: var(--color-secondary);
+    color: white;
+    padding: var(--space-md) var(--space-xl);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+}
+
+.url-submit-btn:hover {
+    background: var(--color-primary);
+}
+
+.url-submit-btn:disabled {
+    background: var(--color-border);
+    cursor: not-allowed;
+}
+
+/* Example Datasets */
+.example-datasets {
+    width: 100%;
+    max-width: 800px;
+    margin-top: var(--space-3xl);
+}
+
+.example-datasets h3 {
+    text-align: center;
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    margin-bottom: var(--space-xl);
+}
+
+.dataset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--space-lg);
+}
+
+.dataset-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-xl);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.dataset-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+}
+
+.dataset-card h4 {
+    font-size: var(--font-size-md);
+    color: var(--color-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.dataset-card p {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    margin-bottom: var(--space-md);
+}
+
+.dataset-stats {
+    display: flex;
+    gap: var(--space-lg);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.dataset-stats span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* Loading State */
+.loading-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-3xl);
+}
+
+.loading-state.active {
+    display: flex;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--space-lg);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+    color: var(--color-text-light);
+}
+
+/* Error State */
+.error-message {
+    display: none;
+    background: rgba(155, 34, 38, 0.1);
+    border: 1px solid var(--color-error);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin-top: var(--space-lg);
+    color: var(--color-error);
+    width: 100%;
+    max-width: 600px;
+}
+
+.error-message.active {
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .landing-container {
+        padding: var(--space-lg);
+    }
+
+    .landing-header h1 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .upload-zone {
+        padding: var(--space-xl);
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+    }
+
+    .url-input-wrapper {
+        flex-direction: column;
+    }
+
+    .dataset-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CorrespExplorer - Interaktive Visualisierung von Korrespondenz-Metadaten">
+    <title>CorrespExplorer - Visualisierung</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- MapLibre GL JS CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+
+    <!-- noUiSlider CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.css" />
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Fullscreen Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="spinner">
+            <i class="fas fa-envelope fa-spin"></i>
+        </div>
+        <div class="loading-text">Lade Korrespondenzdaten...</div>
+    </div>
+
+    <!-- Simple Navigation for Explore -->
+    <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
+        <div class="nav-brand">
+            <a href="index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-arrow-left" style="font-size: 0.9em;"></i>
+                <span class="brand-text" id="dataset-title">CorrespExplorer</span>
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link" aria-label="Anderen Datensatz laden">
+                <span class="nav-link-text">Neuer Datensatz</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="content-wrapper">
+            <!-- Sidebar Filters -->
+            <aside class="sidebar" role="complementary" aria-label="Filteroptionen">
+                <!-- Stats Cards -->
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-letters-count">-</div>
+                        <div class="stat-label">Briefe</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-senders-count">-</div>
+                        <div class="stat-label">Absender</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-places-count">-</div>
+                        <div class="stat-label">Orte</div>
+                    </div>
+                </div>
+
+                <!-- Data Coverage Info Box -->
+                <div class="data-coverage-info" style="background: var(--bg-light); border-left: 3px solid #1e40af; padding: 10px; margin: 0 0 15px 0; font-size: 0.85rem; color: var(--text-main); border-radius: 0 4px 4px 0;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span title="Orte auf der Karte"><i class="fas fa-map-marker-alt" style="color: #1e40af;"></i> <strong id="map-visible-count">-</strong> Orte verortet</span>
+                        <span class="text-muted">|</span>
+                        <span title="Orte ohne Koordinaten">
+                            <i class="fas fa-ban" style="color: #e74c3c;"></i> <strong id="map-missing-count">-</strong> ohne Geodaten
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Time Period Filter -->
+                <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
+                    <h4 id="filter-time-heading">Zeitraum</h4>
+                    <div id="year-range-slider" aria-label="Jahr-Bereich waehlen" role="slider"></div>
+                    <div class="year-range-display">
+                        <span id="year-range-text">-</span>
+                    </div>
+                </div>
+
+                <!-- Language Filter (dynamically populated) -->
+                <div class="filter-group" role="group" aria-labelledby="filter-language-heading" id="language-filter-group" style="display: none;">
+                    <h4 id="filter-language-heading">Briefsprache</h4>
+                    <div id="language-checkboxes"></div>
+                </div>
+
+                <!-- Map Legend -->
+                <div class="filter-group" role="region" aria-labelledby="legend-heading">
+                    <h4 id="legend-heading">Legende</h4>
+                    <div class="legend-item">
+                        <span class="legend-color" style="background: #1e40af;" aria-hidden="true"></span>
+                        <span>Absendeort (Groesse = Briefanzahl)</span>
+                    </div>
+                    <p class="legend-hint">Klick auf Marker zeigt Details zum Ort</p>
+                </div>
+
+                <div class="filter-buttons">
+                    <button id="reset-filters" class="btn-reset" aria-label="Alle Filter zuruecksetzen">Filter zuruecksetzen</button>
+                </div>
+
+                <!-- Data Source Info -->
+                <div class="sidebar-info">
+                    <h4>Datenquelle</h4>
+                    <p class="info-text" id="source-info">
+                        Daten werden geladen...
+                    </p>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content" role="main">
+                <div id="map-view" class="tab-content active">
+                    <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
+                    <!-- Map Layer Switcher Button -->
+                    <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <script src="js/explore.js" type="module"></script>
+</body>
+</html>
