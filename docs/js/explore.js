@@ -299,7 +299,7 @@ async function init() {
             }));
         } catch (e) {
             // sessionStorage may be full or unavailable
-            log.warn('Could not store data in sessionStorage for Wissenskorb');
+            console.warn('Could not store data in sessionStorage for Wissenskorb');
         }
 
         // Apply initial view (use detected first available if map not available)
