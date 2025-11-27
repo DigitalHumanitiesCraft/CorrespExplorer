@@ -926,23 +926,21 @@ function getMapCircleColorExpression() {
         return PRIMARY_COLOR;
     }
 
-    // Color by dominant language using match expression
-    return [
-        'match',
-        ['get', 'dominant_language'],
-        'de', LANGUAGE_COLORS['de'],
-        'fr', LANGUAGE_COLORS['fr'],
-        'it', LANGUAGE_COLORS['it'],
-        'en', LANGUAGE_COLORS['en'],
-        'es', LANGUAGE_COLORS['es'],
-        'pt', LANGUAGE_COLORS['pt'],
-        'la', LANGUAGE_COLORS['la'],
-        'hu', LANGUAGE_COLORS['hu'],
-        'nl', LANGUAGE_COLORS['nl'],
-        'cy', LANGUAGE_COLORS['cy'],
-        'oc', LANGUAGE_COLORS['oc'],
-        LANGUAGE_COLORS['other'] // default
-    ];
+    // Build dynamic match expression based on available languages
+    const defaultColor = LANGUAGE_COLORS['other'] || LANGUAGE_COLORS['None'] || '#78716c';
+    const matchExpr = ['match', ['get', 'dominant_language']];
+
+    // Add only defined language colors (skip undefined values)
+    Object.entries(LANGUAGE_COLORS).forEach(([lang, color]) => {
+        if (lang !== 'other' && color) {
+            matchExpr.push(lang, color);
+        }
+    });
+
+    // Default fallback (required by MapLibre match expression)
+    matchExpr.push(defaultColor);
+
+    return matchExpr;
 }
 
 // Update map marker colors when color mode changes
