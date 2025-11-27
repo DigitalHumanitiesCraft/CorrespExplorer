@@ -1,18 +1,10 @@
 // Explore View - Generic CMIF visualization
 // Displays data from sessionStorage (uploaded/loaded via upload.js)
 
-import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS } from './constants.js';
+import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS } from './constants.js';
 import { initBasketUI, createBasketToggle, setupBasketToggles, isInBasket, toggleBasketItem } from './basket-ui.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-
-// Utility: Debounce function
-function debounce(fn, delay) {
-    let timeout;
-    return (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => fn(...args), delay);
-    };
-}
+import { debounce } from './utils.js';
 
 const IS_PRODUCTION = true;
 
@@ -810,8 +802,8 @@ function renderPlaceMarkers(places) {
             type: 'geojson',
             data: geojson,
             cluster: true,
-            clusterMaxZoom: 10,
-            clusterRadius: 40,
+            clusterMaxZoom: MAP_DEFAULTS.clusterMaxZoom,
+            clusterRadius: MAP_DEFAULTS.clusterRadius,
             clusterProperties: {
                 'total_letters': ['+', ['get', 'letter_count']]
             }
@@ -3381,9 +3373,9 @@ function downloadFile(content, filename, mimeType) {
 // ===================
 
 let networkType = 'contemporaries'; // 'contemporaries', 'topics', 'correspondence'
-let networkMinYears = 3; // Min shared years for contemporaries
-let networkMinCooccurrence = 5; // Min co-occurrence for topics
-let networkMaxNodes = 50;
+let networkMinYears = NETWORK_DEFAULTS.minYears;
+let networkMinCooccurrence = NETWORK_DEFAULTS.minCooccurrence;
+let networkMaxNodes = NETWORK_DEFAULTS.maxNodes;
 let networkSimulation = null;
 let networkSvg = null;
 let networkZoom = null;
@@ -3419,7 +3411,7 @@ function initNetworkView() {
 
     if (maxNodesInput) {
         maxNodesInput.addEventListener('change', (e) => {
-            networkMaxNodes = parseInt(e.target.value) || 50;
+            networkMaxNodes = parseInt(e.target.value) || NETWORK_DEFAULTS.maxNodes;
             renderNetwork();
         });
     }
@@ -3458,17 +3450,17 @@ function updateNetworkThresholdLabel() {
         label.textContent = 'Min. gemeinsame Jahre:';
         input.value = networkMinYears;
         input.min = 1;
-        input.max = 50;
+        input.max = NETWORK_DEFAULTS.maxYearsSlider;
     } else if (networkType === 'topics') {
         label.textContent = 'Min. Co-Occurrence:';
         input.value = networkMinCooccurrence;
         input.min = 1;
-        input.max = 100;
+        input.max = NETWORK_DEFAULTS.maxNodesSlider;
     }
 }
 
 // Build contemporaries network: persons who correspond in the same years
-function buildContemporariesNetwork(letters, minYears = 3, maxNodes = 50) {
+function buildContemporariesNetwork(letters, minYears = NETWORK_DEFAULTS.minYears, maxNodes = NETWORK_DEFAULTS.maxNodes) {
     // Group letters by year and person
     const yearPersons = new Map();
     const personInfo = new Map();
@@ -3569,7 +3561,7 @@ function buildContemporariesNetwork(letters, minYears = 3, maxNodes = 50) {
 }
 
 // Build topic co-occurrence network
-function buildTopicsNetwork(letters, minCooccurrence = 5, maxNodes = 50) {
+function buildTopicsNetwork(letters, minCooccurrence = NETWORK_DEFAULTS.minCooccurrence, maxNodes = NETWORK_DEFAULTS.maxNodes) {
     const topicInfo = new Map();
     const cooccurrence = new Map();
 

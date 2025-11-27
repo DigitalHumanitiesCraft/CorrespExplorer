@@ -3,6 +3,7 @@
 // Also handles correspSearch API responses (TEI-JSON format)
 
 import { isCorrespSearchUrl, fetchFromCorrespSearchUrl } from './correspsearch-api.js';
+import { parseAuthorityRef, parseGeoNamesRef } from './utils.js';
 
 const TEI_NS = 'http://www.tei-c.org/ns/1.0';
 
@@ -367,43 +368,6 @@ function extractMentions(note) {
     }
 
     return mentions;
-}
-
-/**
- * Parse authority reference URL
- */
-function parseAuthorityRef(url) {
-    if (!url) return null;
-
-    // VIAF
-    const viafMatch = url.match(/viaf\.org\/viaf\/(\d+)/);
-    if (viafMatch) return { type: 'viaf', id: viafMatch[1] };
-
-    // GND
-    const gndMatch = url.match(/d-nb\.info\/gnd\/([^\s/]+)/);
-    if (gndMatch) return { type: 'gnd', id: gndMatch[1] };
-
-    // Library of Congress
-    const lcMatch = url.match(/id\.loc\.gov\/authorities\/names\/([^\s/]+)/);
-    if (lcMatch) return { type: 'lc', id: lcMatch[1] };
-
-    // BNF
-    const bnfMatch = url.match(/data\.bnf\.fr\/ark:\/12148\/([^\s/]+)/);
-    if (bnfMatch) return { type: 'bnf', id: bnfMatch[1] };
-
-    return { type: 'unknown', id: url };
-}
-
-/**
- * Parse GeoNames reference URL
- */
-function parseGeoNamesRef(url) {
-    if (!url) return null;
-
-    const match = url.match(/geonames\.org\/(\d+)/);
-    if (match) return { id: match[1] };
-
-    return null;
 }
 
 /**

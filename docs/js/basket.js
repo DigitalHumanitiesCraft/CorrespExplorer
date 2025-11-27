@@ -1,12 +1,14 @@
 // Wissenskorb (Knowledge Basket) Module
 // Allows users to collect letters, persons, and places for later analysis
 
+import { BASKET_LIMITS } from './constants.js';
+
 const STORAGE_KEY = 'correspexplorer-basket';
 
 // Capacity limits
-const MAX_PERSONS = 50;
-const MAX_LETTERS = 100;
-const MAX_PLACES = 50;
+const MAX_PERSONS = BASKET_LIMITS.maxPersons;
+const MAX_LETTERS = BASKET_LIMITS.maxLetters;
+const MAX_PLACES = BASKET_LIMITS.maxPlaces;
 
 // Basket data structure
 let basket = {

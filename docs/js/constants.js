@@ -78,3 +78,30 @@ export const VIEWS = {
     PLACES: 'places',
     NETWORK: 'network'
 };
+
+// Map-Konfiguration
+export const MAP_DEFAULTS = {
+    clusterRadius: 40,
+    clusterMaxZoom: 12
+};
+
+// Netzwerk-Konfiguration
+export const NETWORK_DEFAULTS = {
+    minYears: 3,          // Minimum gemeinsame Jahre fuer Zeitgenossen
+    maxNodes: 50,         // Maximale Knotenanzahl
+    minCooccurrence: 5,   // Minimum Kookkurrenz fuer Themen
+    maxYearsSlider: 50,   // Max-Wert fuer Jahre-Slider
+    maxNodesSlider: 100   // Max-Wert fuer Knoten-Slider
+};
+
+// Warenkorb-Limits
+export const BASKET_LIMITS = {
+    maxPersons: 50,
+    maxLetters: 100,
+    maxPlaces: 50
+};
+
+// API-Konfiguration
+export const API_DEFAULTS = {
+    correspSearchPageSize: 10  // correspSearch API Ergebnisse pro Seite
+};

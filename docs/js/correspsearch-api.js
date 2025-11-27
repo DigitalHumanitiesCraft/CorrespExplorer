@@ -1,8 +1,11 @@
 // correspSearch API Integration
 // Handles fetching and transforming data from the correspSearch API v2.0
 
+import { parseAuthorityRef, parseGeoNamesRef } from './utils.js';
+import { API_DEFAULTS } from './constants.js';
+
 const CORRESPSEARCH_API_BASE = 'https://correspsearch.net/api/v2.0/tei-json.xql';
-const MAX_RESULTS_PER_PAGE = 10; // API returns 10 per page by default
+const MAX_RESULTS_PER_PAGE = API_DEFAULTS.correspSearchPageSize;
 
 /**
  * Check if a URL is a correspSearch API URL
@@ -388,39 +391,6 @@ function extractDateFromAction(action, letter) {
         date: dateStr,
         year: isNaN(year) ? null : year
     };
-}
-
-/**
- * Parse authority reference URL
- */
-function parseAuthorityRef(url) {
-    if (!url) return null;
-
-    // VIAF
-    const viafMatch = url.match(/viaf\.org\/viaf\/(\d+)/);
-    if (viafMatch) return { type: 'viaf', id: viafMatch[1] };
-
-    // GND
-    const gndMatch = url.match(/d-nb\.info\/gnd\/([^\s/]+)/);
-    if (gndMatch) return { type: 'gnd', id: gndMatch[1] };
-
-    // Library of Congress
-    const lcMatch = url.match(/id\.loc\.gov\/authorities\/names\/([^\s/]+)/);
-    if (lcMatch) return { type: 'lc', id: lcMatch[1] };
-
-    return { type: 'unknown', id: url };
-}
-
-/**
- * Parse GeoNames reference URL
- */
-function parseGeoNamesRef(url) {
-    if (!url) return null;
-
-    const match = url.match(/geonames\.org\/(\d+)/);
-    if (match) return { id: match[1] };
-
-    return null;
 }
 
 /**

@@ -4,6 +4,70 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-27 (Phase 18: Quick Wins Refactoring)
+
+### Entfernte Code-Duplikate
+
+1. `debounce()` in explore.js
+   - Vorher: Lokale Funktion (Zeilen 9-15)
+   - Nachher: Import von utils.js
+   - Betroffene Datei: explore.js
+
+2. `parseAuthorityRef()` und `parseGeoNamesRef()`
+   - Vorher: Identische Funktionen in cmif-parser.js und correspsearch-api.js
+   - Nachher: Zentral in utils.js, Import in beiden Dateien
+   - parseAuthorityRef unterstuetzt: VIAF, GND, LC, BNF
+   - parseGeoNamesRef extrahiert GeoNames-ID
+
+### Magic Numbers zentralisiert (constants.js)
+
+Neue Konstanten-Gruppen:
+
+```javascript
+MAP_DEFAULTS = {
+    clusterRadius: 40,
+    clusterMaxZoom: 12
+}
+
+NETWORK_DEFAULTS = {
+    minYears: 3,
+    maxNodes: 50,
+    minCooccurrence: 5,
+    maxYearsSlider: 50,
+    maxNodesSlider: 100
+}
+
+BASKET_LIMITS = {
+    maxPersons: 50,
+    maxLetters: 100,
+    maxPlaces: 50
+}
+
+API_DEFAULTS = {
+    correspSearchPageSize: 10
+}
+```
+
+### Betroffene Dateien
+
+- utils.js: +parseAuthorityRef, +parseGeoNamesRef
+- constants.js: +MAP_DEFAULTS, +NETWORK_DEFAULTS, +BASKET_LIMITS, +API_DEFAULTS
+- explore.js: Import debounce/Konstanten, entferne lokale debounce
+- cmif-parser.js: Import utils, entferne lokale Funktionen
+- correspsearch-api.js: Import utils/constants, entferne lokale Funktionen
+- basket.js: Import BASKET_LIMITS
+
+### Debouncing
+
+Alle Suchfelder hatten bereits Debouncing (200-300ms):
+- topics-quick-search (200ms)
+- person-search (300ms)
+- letter-search (300ms)
+- topic-search (300ms)
+- place-search (300ms)
+
+---
+
 ## 2025-11-27 (Phase 17: Themen-Filter Bugfix und Verbesserung)
 
 ### Bugfix: Subject-Filter funktionierte nicht
