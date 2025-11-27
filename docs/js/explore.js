@@ -25,6 +25,13 @@ let dataMeta = {};
 let temporalFilter = null;
 let dateRange = { min: 1800, max: 2000 };
 
+// Quality filter state
+let qualityFilter = {
+    preciseDates: false,
+    knownPersons: false,
+    locatedPlaces: false
+};
+
 // Track state
 let handlersSetup = false;
 let mapInitialized = false;
@@ -49,8 +56,8 @@ const log = {
     error: (msg) => console.error(`[ERROR] ${msg}`)
 };
 
-// Map marker color - Rust Red from logo (design.md Section 6.2)
-const PRIMARY_COLOR = '#C65D3B';
+// Map marker color - Rust Red from logo (tokens.css --color-primary)
+const PRIMARY_COLOR = '#A64B3F';
 
 // Available views tracking
 let availableViews = {};
@@ -349,6 +356,9 @@ function updateUI(data) {
     if (totalSenders) totalSenders.textContent = (data.meta?.unique_senders || Object.keys(dataIndices.persons || {}).length).toLocaleString('de-DE');
     if (totalPlacesEl) totalPlacesEl.textContent = (data.meta?.unique_places || Object.keys(dataIndices.places || {}).length).toLocaleString('de-DE');
 
+    // Update uncertainty statistics if available
+    updateUncertaintyStats(data.meta?.uncertainty);
+
     // Update source info
     const sourceInfo = document.getElementById('source-info');
     if (sourceInfo && data.sourceInfo) {
@@ -363,6 +373,55 @@ function updateUI(data) {
 
     // Build language filter
     buildLanguageFilter();
+}
+
+// Update uncertainty statistics in sidebar
+function updateUncertaintyStats(uncertainty) {
+    if (!uncertainty) return;
+
+    const { dates, senders, places } = uncertainty;
+
+    // Calculate imprecise dates (month + year + range + unknown)
+    const impreciseDates = (dates.month || 0) + (dates.year || 0) + (dates.range || 0) + (dates.unknown || 0);
+    const totalDates = (dates.day || 0) + impreciseDates;
+
+    // Calculate unknown persons
+    const unknownSenders = (senders.unknown || 0) + (senders.partial || 0) + (senders.missing || 0);
+    const totalSenders = (senders.identified || 0) + (senders.named || 0) + unknownSenders;
+
+    // Calculate places without coordinates
+    const imprecisePlaces = (places.region || 0) + (places.unknown || 0) + (places.missing || 0);
+    const totalPlaces = (places.exact || 0) + imprecisePlaces;
+
+    // Update or create sub-info elements
+    addStatsSubinfo('total-letters-count', impreciseDates, totalDates, 'mit ungenauem Datum');
+    addStatsSubinfo('total-senders-count', unknownSenders, totalSenders, 'unbekannt/unvollstaendig');
+    addStatsSubinfo('total-places-count', imprecisePlaces, totalPlaces, 'ohne Koordinaten');
+}
+
+// Add sub-info text below a stats element
+function addStatsSubinfo(parentId, count, total, label) {
+    if (count === 0) return;
+
+    const parentEl = document.getElementById(parentId);
+    if (!parentEl) return;
+
+    const parentContainer = parentEl.closest('.stat-item') || parentEl.parentElement;
+    if (!parentContainer) return;
+
+    // Remove existing sub-info if present
+    const existingSubinfo = parentContainer.querySelector('.stats-subinfo');
+    if (existingSubinfo) existingSubinfo.remove();
+
+    // Calculate percentage
+    const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+
+    // Create sub-info element
+    const subinfo = document.createElement('div');
+    subinfo.className = 'stats-subinfo';
+    subinfo.textContent = `davon ${count.toLocaleString('de-DE')} ${label} (${percentage}%)`;
+
+    parentContainer.appendChild(subinfo);
 }
 
 // Build language filter checkboxes dynamically
@@ -898,6 +957,33 @@ function initFilters() {
         yearRangeText.textContent = `${dateRange.min} - ${dateRange.max}`;
     }
 
+    // Quality filter checkboxes
+    const preciseDatesCheckbox = document.getElementById('filter-precise-dates');
+    const knownPersonsCheckbox = document.getElementById('filter-known-persons');
+    const locatedPlacesCheckbox = document.getElementById('filter-located-places');
+
+    if (preciseDatesCheckbox) {
+        preciseDatesCheckbox.checked = qualityFilter.preciseDates;
+        preciseDatesCheckbox.addEventListener('change', () => {
+            qualityFilter.preciseDates = preciseDatesCheckbox.checked;
+            applyFilters();
+        });
+    }
+    if (knownPersonsCheckbox) {
+        knownPersonsCheckbox.checked = qualityFilter.knownPersons;
+        knownPersonsCheckbox.addEventListener('change', () => {
+            qualityFilter.knownPersons = knownPersonsCheckbox.checked;
+            applyFilters();
+        });
+    }
+    if (locatedPlacesCheckbox) {
+        locatedPlacesCheckbox.checked = qualityFilter.locatedPlaces;
+        locatedPlacesCheckbox.addEventListener('change', () => {
+            qualityFilter.locatedPlaces = locatedPlacesCheckbox.checked;
+            applyFilters();
+        });
+    }
+
     // Reset button
     if (resetButton) {
         resetButton.addEventListener('click', () => {
@@ -909,6 +995,13 @@ function initFilters() {
             temporalFilter = null;
             selectedPersonId = null;
             selectedSubjectId = null;
+
+            // Reset quality filters
+            qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
+            if (preciseDatesCheckbox) preciseDatesCheckbox.checked = false;
+            if (knownPersonsCheckbox) knownPersonsCheckbox.checked = false;
+            if (locatedPlacesCheckbox) locatedPlacesCheckbox.checked = false;
+
             updateSubjectFilterDisplay();
             applyFilters();
         });
@@ -947,7 +1040,21 @@ function applyFilters() {
             subjectMatch = letterSubjects.some(s => s.id === selectedSubjectId || s.label === selectedSubjectId);
         }
 
-        return temporalMatch && languageMatch && personMatch && subjectMatch;
+        // Quality filters
+        let qualityMatch = true;
+        if (qualityFilter.preciseDates) {
+            qualityMatch = qualityMatch && letter.datePrecision === 'day';
+        }
+        if (qualityFilter.knownPersons) {
+            const senderOk = letter.sender?.precision === 'identified';
+            const recipientOk = !letter.recipient || letter.recipient.precision === 'identified';
+            qualityMatch = qualityMatch && senderOk && recipientOk;
+        }
+        if (qualityFilter.locatedPlaces) {
+            qualityMatch = qualityMatch && letter.place_sent?.precision === 'exact';
+        }
+
+        return temporalMatch && languageMatch && personMatch && subjectMatch && qualityMatch;
     });
 
     // Re-aggregate places based on filtered letters
@@ -1154,6 +1261,17 @@ function initUrlState() {
     if (langs) {
         initialLanguageFilter = langs.split(',');
     }
+
+    // Quality filters
+    if (urlParams.get('precise') === '1') {
+        qualityFilter.preciseDates = true;
+    }
+    if (urlParams.get('known') === '1') {
+        qualityFilter.knownPersons = true;
+    }
+    if (urlParams.get('located') === '1') {
+        qualityFilter.locatedPlaces = true;
+    }
 }
 
 function updateUrlState() {
@@ -1191,6 +1309,11 @@ function updateUrlState() {
     if (checkedLangs.length > 0 && checkedLangs.length < allLangs.length) {
         newParams.set('langs', checkedLangs.join(','));
     }
+
+    // Quality filters
+    if (qualityFilter.preciseDates) newParams.set('precise', '1');
+    if (qualityFilter.knownPersons) newParams.set('known', '1');
+    if (qualityFilter.locatedPlaces) newParams.set('located', '1');
 
     // Update URL without reload
     const newUrl = newParams.toString()
@@ -1303,6 +1426,7 @@ function renderPersonsList() {
                     name: letter.sender.name,
                     id: letter.sender.id,
                     authority: letter.sender.authority,
+                    precision: letter.sender.precision,
                     sent: 0,
                     received: 0
                 };
@@ -1318,6 +1442,7 @@ function renderPersonsList() {
                     name: letter.recipient.name,
                     id: letter.recipient.id,
                     authority: letter.recipient.authority,
+                    precision: letter.recipient.precision,
                     sent: 0,
                     received: 0
                 };
@@ -1361,17 +1486,14 @@ function renderPersonsList() {
     }
 
     container.innerHTML = persons.map(person => {
-        const initials = person.name.split(' ')
-            .map(n => n[0])
-            .slice(0, 2)
-            .join('')
-            .toUpperCase();
+        const initials = getPersonInitials(person.name, person.precision);
         const total = person.sent + person.received;
         const personKey = person.id || person.name;
         const correspSearchUrl = buildCorrespSearchUrl(person);
+        const precisionClass = getPersonPrecisionClass(person.precision);
 
         return `
-            <div class="person-card" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
+            <div class="person-card ${precisionClass}" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
                 <div class="person-avatar">${initials}</div>
                 <div class="person-info">
                     <div class="person-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}</div>
@@ -1497,9 +1619,15 @@ function renderLettersList() {
     container.innerHTML = displayLetters.map(letter => {
         const sender = letter.sender?.name || 'Unbekannt';
         const recipient = letter.recipient?.name || 'Unbekannt';
-        const date = letter.date || 'Datum unbekannt';
+        const date = formatDateWithPrecision(letter);
         const place = letter.place_sent?.name || '';
         const language = letter.language?.label || '';
+
+        // Get uncertainty CSS classes
+        const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
+        const senderClass = getPersonPrecisionClass(letter.sender?.precision);
+        const recipientClass = getPersonPrecisionClass(letter.recipient?.precision);
+        const placeClass = getPlacePrecisionClass(letter.place_sent?.precision);
 
         // Check if letter has additional details worth showing
         const hasDetails = letter.mentions?.subjects?.length > 0 ||
@@ -1513,17 +1641,17 @@ function renderLettersList() {
                 <div class="letter-header">
                     <div class="letter-participants">
                         ${hasDetails ? '<i class="fas fa-chevron-right expand-icon"></i>' : ''}
-                        ${escapeHtml(sender)}
+                        <span class="${senderClass}">${escapeHtml(sender)}</span>
                         <span class="letter-arrow"><i class="fas fa-arrow-right"></i></span>
-                        ${escapeHtml(recipient)}
+                        <span class="${recipientClass}">${escapeHtml(recipient)}</span>
                     </div>
                     <div class="letter-header-actions">
                         ${letter.id ? createBasketToggle('letters', letter.id) : ''}
-                        <div class="letter-date">${date}</div>
+                        <div class="letter-date ${dateClass}">${date}</div>
                     </div>
                 </div>
                 <div class="letter-meta">
-                    ${place ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
+                    ${place ? `<span class="${placeClass}"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
                     ${language ? `<span><i class="fas fa-language"></i> ${escapeHtml(language)}</span>` : ''}
                     ${letter.url ? `<span><a href="${letter.url}" target="_blank"><i class="fas fa-external-link-alt"></i> Quelle</a></span>` : ''}
                 </div>
@@ -2620,9 +2748,12 @@ function buildPlacesIndex() {
     placesIndex = {};
 
     allLetters.forEach(letter => {
-        if (!letter.place_sent?.geonames_id) return;
+        if (!letter.place_sent?.name) return;
 
-        const placeId = letter.place_sent.geonames_id;
+        // Use geonames_id if available, otherwise create ID from name
+        const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
+        const hasCoordinates = letter.place_sent.lat != null && letter.place_sent.lon != null;
+        const precision = letter.place_sent.precision || (hasCoordinates ? 'exact' : 'region');
 
         if (!placesIndex[placeId]) {
             placesIndex[placeId] = {
@@ -2630,6 +2761,8 @@ function buildPlacesIndex() {
                 name: letter.place_sent.name,
                 lat: letter.place_sent.lat,
                 lon: letter.place_sent.lon,
+                precision: precision,
+                hasCoordinates: hasCoordinates,
                 letterCount: 0,
                 letters: [],
                 senders: {},
@@ -2672,16 +2805,17 @@ function renderPlacesList() {
     // Get places filtered by current filters
     const filteredPlaceIds = new Set();
     filteredLetters.forEach(letter => {
-        if (letter.place_sent?.geonames_id) {
-            filteredPlaceIds.add(letter.place_sent.geonames_id);
+        if (letter.place_sent?.name) {
+            const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
+            filteredPlaceIds.add(placeId);
         }
     });
 
     // Count letters per place in filtered set
     const filteredPlaceCounts = {};
     filteredLetters.forEach(letter => {
-        if (letter.place_sent?.geonames_id) {
-            const placeId = letter.place_sent.geonames_id;
+        if (letter.place_sent?.name) {
+            const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
             filteredPlaceCounts[placeId] = (filteredPlaceCounts[placeId] || 0) + 1;
         }
     });
@@ -2716,16 +2850,18 @@ function renderPlacesList() {
             break;
     }
 
-    // Render list
+    // Render list with precision indicators
     container.innerHTML = places.map(place => {
         const isActive = selectedPlaceId === place.id;
         const yearRange = place.yearMin && place.yearMax
             ? `${place.yearMin}-${place.yearMax}`
             : '';
+        const precisionClass = getPlacePrecisionClass(place.precision);
+        const noCoordIcon = !place.hasCoordinates ? '<i class="fas fa-question-circle" title="Ohne Koordinaten"></i> ' : '';
         return `
-            <div class="place-card ${isActive ? 'active' : ''}" data-place-id="${place.id}">
+            <div class="place-card ${isActive ? 'active' : ''} ${precisionClass}" data-place-id="${place.id}">
                 <div class="place-info">
-                    <div class="place-name" title="${escapeHtml(place.name)}">${escapeHtml(place.name)}</div>
+                    <div class="place-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
                     <div class="place-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
                 </div>
                 ${createBasketToggle('places', place.id)}
@@ -2767,9 +2903,11 @@ function selectPlace(placeId) {
     if (content) content.style.display = 'block';
 
     // Calculate filtered count for this place
-    const filteredCount = filteredLetters.filter(l =>
-        l.place_sent?.geonames_id === placeId
-    ).length;
+    const filteredCount = filteredLetters.filter(l => {
+        if (!l.place_sent?.name) return false;
+        const letterPlaceId = l.place_sent.geonames_id || `name:${l.place_sent.name}`;
+        return letterPlaceId === placeId;
+    }).length;
 
     // Update title and count
     document.getElementById('place-detail-title').textContent = place.name;
@@ -3447,6 +3585,87 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// ===================
+// UNCERTAINTY DISPLAY HELPERS
+// ===================
+
+// Get CSS class for date precision
+function getDatePrecisionClass(precision, certainty) {
+    const classes = [];
+    if (precision === 'month' || precision === 'year') {
+        classes.push('date-imprecise');
+    } else if (precision === 'range') {
+        classes.push('date-range');
+    } else if (precision === 'unknown') {
+        classes.push('date-unknown');
+    }
+    if (certainty === 'low') {
+        classes.push('date-uncertain');
+    }
+    return classes.join(' ');
+}
+
+// Get CSS class for person precision
+function getPersonPrecisionClass(precision) {
+    if (precision === 'unknown') return 'person-unknown';
+    if (precision === 'partial') return 'person-partial';
+    if (precision === 'named') return 'person-named';
+    return '';
+}
+
+// Get CSS class for place precision
+function getPlacePrecisionClass(precision) {
+    if (precision === 'unknown') return 'place-unknown';
+    if (precision === 'region') return 'place-region';
+    return '';
+}
+
+// Format date with precision indicator
+function formatDateWithPrecision(letter) {
+    if (!letter.date) return 'Datum unbekannt';
+
+    const date = letter.date;
+    const precision = letter.datePrecision;
+
+    // Format based on precision
+    if (precision === 'year') {
+        return `ca. ${date}`;
+    } else if (precision === 'month') {
+        // YYYY-MM -> "Mon YYYY"
+        const [year, month] = date.split('-');
+        const monthNames = ['Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+        return `${monthNames[parseInt(month) - 1]} ${year}`;
+    } else if (precision === 'range' && letter.dateTo) {
+        return `${date} - ${letter.dateTo}`;
+    }
+
+    return date;
+}
+
+// Get initials for person, handling unknown persons
+function getPersonInitials(name, precision) {
+    if (precision === 'unknown' || !name) return '?';
+
+    // Handle partial names like "Rozario, [NN] de"
+    const cleanName = name.replace(/\[NN\]|\[N\.N\.\]|\[\?\]/gi, '').trim();
+    const parts = cleanName.split(/[\s,]+/).filter(p => p.length > 0);
+
+    if (parts.length === 0) return '?';
+
+    const initials = parts
+        .map(n => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+
+    // Add ? for partial names
+    if (precision === 'partial') {
+        return initials.length === 1 ? initials + '?' : initials[0] + '?';
+    }
+
+    return initials || '?';
 }
 
 // ===================

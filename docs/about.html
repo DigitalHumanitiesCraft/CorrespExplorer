@@ -120,6 +120,42 @@
             </section>
 
             <section class="about-section">
+                <h2>Umgang mit Datenqualitaet</h2>
+                <p>
+                    Historische Korrespondenzdaten enthalten oft Unsicherheiten und Luecken.
+                    CorrespExplorer erkennt diese automatisch und zeigt sie transparent an.
+                </p>
+                <div class="info-box">
+                    <h4>Erkannte Unsicherheiten:</h4>
+                    <ul>
+                        <li><strong>Unvollstaendige Datierung:</strong> Nur Jahr (1900) oder Jahr-Monat (1900-06) statt vollem Datum</li>
+                        <li><strong>Unscharfe Orte:</strong> Regionen wie "Steiermark" ohne exakte Koordinaten</li>
+                        <li><strong>Unbekannte Personen:</strong> Absender oder Empfaenger als [NN] oder "Unbekannt" markiert</li>
+                        <li><strong>Fehlende Normdaten:</strong> Personen ohne VIAF/GND-Verknuepfung</li>
+                    </ul>
+                </div>
+                <p>
+                    Die Statistiken in der Seitenleiste zeigen, wie viele Datensaetze
+                    von Unsicherheiten betroffen sind. Beispiel: "davon 281 mit ungenauem Datum (2.4%)".
+                </p>
+                <div class="info-box">
+                    <h4>CMIF-Annotationen:</h4>
+                    <p>
+                        CorrespExplorer unterstuetzt explizite Unsicherheitsannotationen aus dem CMIF-Standard:
+                    </p>
+                    <ul>
+                        <li><code>@cert="low"</code> - Unsichere Datierung, wird mit (?) markiert</li>
+                        <li><code>@notBefore/@notAfter</code> - Terminus post/ante quem</li>
+                        <li><code>@from/@to</code> - Datumsbereich</li>
+                    </ul>
+                </div>
+                <p>
+                    Prinzip: Unsicherheit wird transparent dargestellt, niemals versteckt oder
+                    durch falsche Praezision ueberdeckt.
+                </p>
+            </section>
+
+            <section class="about-section">
                 <h2>Technologie</h2>
                 <p>CorrespExplorer ist eine clientseitige Webanwendung ohne Backend-Abhaengigkeiten:</p>
                 <ul class="tech-list">

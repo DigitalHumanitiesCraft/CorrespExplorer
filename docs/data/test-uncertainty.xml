@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test CMIF covering all uncertainty cases for CorrespExplorer -->
+<!-- Use: parseCMIF('data/test-uncertainty.xml') -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Test Dataset: Uncertainty Cases</title>
+        <editor>CorrespExplorer Test</editor>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>CorrespExplorer</publisher>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</licence>
+        </availability>
+        <date when="2025-11-27"/>
+        <idno type="URL">https://example.org/test-uncertainty.xml</idno>
+      </publicationStmt>
+      <sourceDesc>
+        <bibl xml:id="test-source" type="online">Test Source for Uncertainty Cases</bibl>
+      </sourceDesc>
+    </fileDesc>
+    <profileDesc>
+
+      <!-- CASE 1: Complete data (baseline) -->
+      <correspDesc ref="test-001" source="#test-source" key="001">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+        </note>
+      </correspDesc>
+
+      <!-- CASE 2: Year-month only date -->
+      <correspDesc ref="test-002" source="#test-source" key="002">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-06"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 3: Year only date -->
+      <correspDesc ref="test-003" source="#test-source" key="003">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 4: Date range with from/to -->
+      <correspDesc ref="test-004" source="#test-source" key="004">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date from="1900-06-01" to="1900-06-30"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 5: Date with notBefore/notAfter (terminus post/ante quem) -->
+      <correspDesc ref="test-005" source="#test-source" key="005">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date notBefore="1900-01-01" notAfter="1900-12-31"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 6: Date with cert="low" -->
+      <correspDesc ref="test-006" source="#test-source" key="006">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-06-15" cert="low"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 7: No date at all -->
+      <correspDesc ref="test-007" source="#test-source" key="007">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 8: Unknown sender [NN] -->
+      <correspDesc ref="test-008" source="#test-source" key="008">
+        <correspAction type="sent">
+          <persName>[NN]</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 9: Unknown sender "Unbekannt" -->
+      <correspDesc ref="test-009" source="#test-source" key="009">
+        <correspAction type="sent">
+          <persName>Unbekannt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 10: Partial name "Rozario, [NN] de" -->
+      <correspDesc ref="test-010" source="#test-source" key="010">
+        <correspAction type="sent">
+          <persName>Rozario, [NN] de</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 11: Unknown recipient -->
+      <correspDesc ref="test-011" source="#test-source" key="011">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName>Unknown</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 12: Unknown place "Unbekannt" -->
+      <correspDesc ref="test-012" source="#test-source" key="012">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName>Unbekannt</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 13: Region without GeoNames (no coordinates) -->
+      <correspDesc ref="test-013" source="#test-source" key="013">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName>Steiermark</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 14: Country only -->
+      <correspDesc ref="test-014" source="#test-source" key="014">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName>Deutschland</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 15: No place at all -->
+      <correspDesc ref="test-015" source="#test-source" key="015">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 16: Person without authority reference -->
+      <correspDesc ref="test-016" source="#test-source" key="016">
+        <correspAction type="sent">
+          <persName>Max Mustermann</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 17: Multiple uncertainties combined -->
+      <correspDesc ref="test-017" source="#test-source" key="017">
+        <correspAction type="sent">
+          <persName>[NN]</persName>
+          <placeName>Unbekannt</placeName>
+          <date when="1900"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName>Unbekannt</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 18: Organization as sender -->
+      <correspDesc ref="test-018" source="#test-source" key="018">
+        <correspAction type="sent">
+          <orgName>Kaiserliche Akademie der Wissenschaften</orgName>
+          <placeName ref="http://sws.geonames.org/2761369">Wien</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+      </correspDesc>
+
+    </profileDesc>
+  </teiHeader>
+</TEI>

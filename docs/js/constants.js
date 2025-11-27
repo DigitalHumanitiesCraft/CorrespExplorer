@@ -13,7 +13,7 @@ export const LANGUAGE_COLORS = {
     'nl': '#f59e0b', // Niederlaendisch - amber
     'cy': '#6366f1', // Walisisch - indigo
     'oc': '#14b8a6', // Okzitanisch - teal
-    'other': '#C65D3B' // Andere/Unbekannt - Rust-Red
+    'other': '#A64B3F' // Andere/Unbekannt - Rust-Red (tokens.css --color-primary)
 };
 
 // Sprachnamen fuer Anzeige
@@ -75,5 +75,6 @@ export const VIEWS = {
     LETTERS: 'letters',
     TIMELINE: 'timeline',
     TOPICS: 'topics',
-    PLACES: 'places'
+    PLACES: 'places',
+    NETWORK: 'network'
 };
