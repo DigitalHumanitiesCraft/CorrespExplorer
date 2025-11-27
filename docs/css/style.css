@@ -734,7 +734,7 @@ button, .btn {
 
     .nav-brand {
         font-size: var(--font-size-base);
-        margin-right: var(--space-md);
+        margin-right: var(--space-sm);
     }
 
     .view-switcher {
@@ -743,27 +743,39 @@ button, .btn {
         background: var(--bg-subtle, #f5f5f5);
         border: 1px solid var(--border-color, #e0e0e0);
         border-radius: var(--radius-md);
-        padding: 4px;
-        gap: 4px;
+        padding: 3px;
+        gap: 2px;
         margin-right: var(--space-sm);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .view-btn {
-        flex: 1;
-        min-height: 44px;
-        padding: 8px 6px;
-        font-size: 12px;
+        flex: 0 0 auto;
+        min-height: 40px;
+        min-width: 40px;
+        padding: 6px 8px;
+        font-size: 11px;
         text-align: center;
         border: none;
         border-radius: 4px;
-        white-space: normal;
+        white-space: nowrap;
         overflow: visible;
         line-height: 1.2;
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 4px;
         color: var(--text-muted, #666);
         background: transparent;
+    }
+
+    .view-btn .view-btn-text {
+        display: none;
+    }
+
+    .view-btn i {
+        font-size: 16px;
     }
 
     .view-btn.active,
@@ -780,6 +792,7 @@ button, .btn {
     .nav-links {
         display: flex;
         gap: var(--space-xs);
+        flex-shrink: 0;
     }
 
     .nav-links .nav-link-text {
@@ -828,73 +841,71 @@ button, .btn {
 /* Mobile (≤480px) */
 @media (max-width: 480px) {
     .navbar {
-        padding: 0 var(--space-sm);
-        background: rgba(255, 255, 255, 0.98); /* Stronger background on mobile */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add subtle shadow for separation */
+        padding: 0 var(--space-xs);
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .nav-brand {
         font-size: var(--font-size-sm);
         margin-right: var(--space-xs);
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .nav-burger {
         margin-right: var(--space-xs);
+        min-width: 32px;
+        min-height: 32px;
     }
 
     .view-switcher {
         margin-right: var(--space-xs);
         padding: 2px;
-        gap: 2px;
+        gap: 1px;
+        flex: 1;
+        max-width: none;
     }
 
     .view-btn {
-        min-height: 44px;
-        padding: 4px 2px;
-        font-size: var(--font-size-xs);
+        min-height: 36px;
+        min-width: 36px;
+        padding: 4px;
+        font-size: 0; /* Hide text */
     }
 
-    /* Use icons only on very small screens */
-    .view-btn::before {
-        font-family: 'Font Awesome 6 Free';
-        font-weight: 900;
-        font-size: 16px;
+    /* Show only icons on small screens */
+    .view-btn .view-btn-text {
+        display: none;
     }
 
-    .view-btn[data-view="map"]::before {
-        content: '\f279';  /* fa-map */
+    .view-btn i {
+        font-size: 14px;
     }
 
-    .view-btn[data-view="synthesis"]::before {
-        content: '\f0c0';  /* fa-users */
+    /* Nav links - only essential buttons */
+    .nav-links {
+        gap: 2px;
     }
 
-    .view-btn[data-view="stats"]::before {
-        content: '\f1ea';  /* fa-envelope */
+    .nav-links .nav-link {
+        min-width: 32px;
+        min-height: 32px;
+        padding: 4px;
     }
 
-    .view-btn[data-view="narrative"]::before {
-        content: '\f02d';  /* fa-book */
-    }
-
-    .view-btn[data-view="places"]::before {
-        content: '\f3c5';  /* fa-map-marker-alt */
-    }
-
-    .view-btn-text {
-        font-size: 0;  /* Hide text */
-    }
-
-    .view-btn::before {
-        font-size: 16px;  /* Show icon */
+    .nav-links .nav-link i {
+        font-size: 14px;
     }
 
     .tabs {
-        padding: 0 var(--space-lg);
+        padding: 0 var(--space-md);
     }
 
     .tab {
-        padding: var(--space-md) var(--space-lg);
+        padding: var(--space-sm) var(--space-md);
         font-size: var(--font-size-sm);
     }
 }
