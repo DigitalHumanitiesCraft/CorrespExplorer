@@ -6,6 +6,8 @@ Stand: 2025-11-27
 
 Related: [architecture.md](architecture.md), [CMIF-Data.md](CMIF-Data.md)
 
+User documentation: [about.html](../about.html) (Section "Umgang mit Datenqualitaet")
+
 Test file: [data/test-uncertainty.xml](../data/test-uncertainty.xml) (18 test cases)
 
 ---
