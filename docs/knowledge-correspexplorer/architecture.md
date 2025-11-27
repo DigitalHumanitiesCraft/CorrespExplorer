@@ -63,7 +63,7 @@ Hauptansicht mit sieben Views:
 1. Karte (MapLibre GL JS mit Clustering)
 2. Korrespondenten (sortierbare/suchbare Liste)
 3. Briefe (sortierbare/suchbare Liste)
-4. Timeline (Balkendiagramm nach Jahr mit Sprachverteilung)
+4. Timeline (Stacked Bar Chart nach Jahr mit Sprachverteilung, Detached Bin fuer undatierte Briefe)
 5. Themen (Topics View mit Detail-Panel)
 6. Orte (Places View mit Detail-Panel)
 7. Netzwerk (D3.js Force-Directed Graph)

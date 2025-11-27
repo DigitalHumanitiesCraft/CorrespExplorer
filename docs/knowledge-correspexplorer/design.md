@@ -89,22 +89,79 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 | Timeline Bar | `#2C5282` | Balken |
 | Timeline Inactive | `#D4D0C0` | Hintergrund-Balken |
 
+### Unsicherheits-Indikatoren
+
+Konsistente visuelle Sprache fuer Datenqualitaet ueber alle Views hinweg.
+
+| Typ | Farbe | Icon | CSS-Klasse | Verwendung |
+|-----|-------|------|------------|------------|
+| Exaktes Datum | -- | -- | -- | Keine Markierung noetig |
+| Nur Jahr/Monat | `#f59e0b` (Amber) | `fa-calendar-alt` | `.date-precision-icon` | Briefliste, Tooltip |
+| Zeitraum | `#2C5282` (Blau) | `fa-arrows-alt-h` | `.date-range-icon` | Briefliste: "1.1. – 31.12.1900" |
+| Unsichere Datierung | `#ef4444` (Rot) | `fa-question-circle` | `.date-uncertain-icon` | cert="low" Attribut |
+| Datum unbekannt | `#555555` (Grau) | `fa-question` | `.date-unknown` | Kein Datum vorhanden |
+| Timeline-Schraffur | Diagonale Streifen | -- | `.timeline-uncertainty-overlay` | Anteil unscharfer Daten im Jahr |
+
+#### Icon-Bedeutung
+
+| Symbol | Bedeutung | Tooltip-Text |
+|--------|-----------|--------------|
+| Kalender (orange) | Datum unvollstaendig | "Nur Jahr/Monat bekannt" |
+| Doppelpfeil (blau) | Zeitraum | "Zeitraum: Brief wurde zwischen diesen Daten verfasst" |
+| Fragezeichen (rot) | Unsichere Angabe | "Unsichere Datierung (cert=low)" |
+| Schraffierte Balken | Anteil unscharf | "[n] Briefe mit unscharfem Datum" |
+
+#### Prinzipien
+
+- Exakte Daten erhalten keine Markierung (kein visuelles Rauschen)
+- Icons stehen immer vor dem Datumswert
+- Farben sind konsistent: Orange = unvollstaendig, Blau = Zeitraum, Rot = unsicher
+- Tooltips erklaeren die Bedeutung bei Hover
+- Timeline-Legende zeigt Anzahl der betroffenen Briefe
+
 ### Sprachfarben (Karte und Timeline)
 
-Definiert in js/constants.js - verwendet fuer Kartenmarker nach dominanter Sprache und Timeline-Balken:
+Definiert in js/constants.js - dynamisch berechnet basierend auf Sprachverteilung im Korpus.
+
+#### Dynamische Farbzuweisung
+
+Die dominante Sprache (meiste Briefe) bekommt eine kraeftige Farbe, alle anderen Sprachen erhalten Pastelltoene. Dies verbessert die Lesbarkeit bei vielen Sprachen.
+
+| Palette | Verwendung |
+|---------|------------|
+| `LANGUAGE_COLORS_STRONG` | Kraeftige Farben fuer dominante Sprache |
+| `LANGUAGE_COLORS_PASTEL` | Dezente Farben fuer sekundaere Sprachen |
+
+Die Funktion `computeLanguageColors(letters)` berechnet die Farben beim Laden des Datensatzes.
+
+#### Farbpalette (Kraeftig)
 
 | Sprache | Variable | Hex-Code |
 |---------|----------|----------|
 | Deutsch | `de` | `#1e40af` (Blau) |
 | Franzoesisch | `fr` | `#dc2626` (Rot) |
 | Italienisch | `it` | `#16a34a` (Gruen) |
-| Englisch | `en` | `#9333ea` (Lila) |
+| Englisch | `en` | `#7c3aed` (Lila) |
 | Spanisch | `es` | `#ea580c` (Orange) |
 | Portugiesisch | `pt` | `#0891b2` (Cyan) |
-| Latein | `la` | `#78716c` (Grau) |
+| Latein | `la` | `#57534e` (Grau) |
 | Ungarisch | `hu` | `#be185d` (Pink) |
-| Niederlaendisch | `nl` | `#f59e0b` (Amber) |
-| Andere/Unbekannt | `other` | `#A64B3F` (Rust-Red) |
+| Niederlaendisch | `nl` | `#d97706` (Amber) |
+| Ohne Angabe | `None` | `#78716c` (Grau) |
+
+#### Farbpalette (Pastell)
+
+| Sprache | Hex-Code |
+|---------|----------|
+| Deutsch | `#93c5fd` |
+| Franzoesisch | `#fca5a5` |
+| Italienisch | `#86efac` |
+| Englisch | `#c4b5fd` |
+| Spanisch | `#fdba74` |
+
+#### Korpus ohne Sprachdaten
+
+Wenn keine Sprachmetadaten vorhanden sind, werden einfarbige Balken (--color-primary) angezeigt und die Legende zeigt "Keine Sprachdaten im Korpus".
 
 Kartenmarker werden nach dominanter Briefsprache des Ortes eingefaerbt. Toggle-Button wechselt zwischen Sprachfarben und einheitlicher Farbe.
 

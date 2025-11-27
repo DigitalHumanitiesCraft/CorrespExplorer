@@ -1,7 +1,7 @@
 // Explore View - Generic CMIF visualization
 // Displays data from sessionStorage (uploaded/loaded via upload.js)
 
-import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS } from './constants.js';
+import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS, computeLanguageColors } from './constants.js';
 import { initBasketUI, createBasketToggle, setupBasketToggles, isInBasket, toggleBasketItem } from './basket-ui.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
 import { debounce } from './utils.js';
@@ -157,27 +157,27 @@ function updateDataCoverageDetails() {
 
     // Geo data - always show with link to missing places
     if (totalPlaces > 0) {
-        let geoLine = `<span class="coverage-line"><i class="fas fa-map-marker-alt"></i> ${coordCount}/${totalPlaces} Orte verortet`;
+        let geoLine = `<div class="dataset-coverage-item"><i class="fas fa-map-marker-alt"></i> ${coordCount}/${totalPlaces} Orte verortet`;
         if (missingCount > 0) {
             geoLine += ` <a href="#" id="show-missing-places" class="missing-places-link" title="Liste der Orte ohne Koordinaten">(${missingCount} ohne Geodaten)</a>`;
         }
-        geoLine += '</span>';
+        geoLine += '</div>';
         lines.push(geoLine);
     }
 
     // Languages - only if present
     if (hasLanguages) {
-        lines.push(`<span class="coverage-line"><i class="fas fa-language"></i> ${languageSet.size} Sprache(n)</span>`);
+        lines.push(`<div class="dataset-coverage-item"><i class="fas fa-language"></i> ${languageSet.size} Sprache(n)</div>`);
     }
 
     // Subjects - only if present
     if (hasSubjects) {
-        lines.push(`<span class="coverage-line"><i class="fas fa-tags"></i> ${subjectSet.size} Themen</span>`);
+        lines.push(`<div class="dataset-coverage-item"><i class="fas fa-tags"></i> ${subjectSet.size} Themen</div>`);
     }
 
     // Authority IDs - only if present
     if (hasAuthorityIds) {
-        lines.push(`<span class="coverage-line"><i class="fas fa-fingerprint"></i> Authority-IDs</span>`);
+        lines.push(`<div class="dataset-coverage-item"><i class="fas fa-fingerprint"></i> Authority-IDs</div>`);
     }
 
     // Show what's NOT in the data (compact)
@@ -187,7 +187,7 @@ function updateDataCoverageDetails() {
     if (!hasAuthorityIds) missing.push('Authority-IDs');
 
     if (missing.length > 0) {
-        lines.push(`<span class="coverage-line muted"><i class="fas fa-minus"></i> Ohne: ${missing.join(', ')}</span>`);
+        lines.push(`<div class="dataset-coverage-item muted"><i class="fas fa-minus"></i> Ohne: ${missing.join(', ')}</div>`);
     }
 
     container.innerHTML = lines.join('');
@@ -230,6 +230,9 @@ async function init() {
         filteredLetters = allLetters;
         dataIndices = data.indices || {};
         dataMeta = data.meta || {};
+
+        // Compute dynamic language colors based on data distribution
+        computeLanguageColors(allLetters);
 
         // Calculate date range from data
         const years = allLetters.map(l => l.year).filter(y => y !== null && y !== undefined);
@@ -374,7 +377,23 @@ function updateUI(data) {
 function updateUncertaintyStats(uncertainty) {
     if (!uncertainty) return;
 
-    const { dates, senders, places } = uncertainty;
+    // Support both old format (dates/senders/places) and new format (date_precision/date_certainty)
+    let dates, senders, places;
+
+    if (uncertainty.date_precision) {
+        // New format from preprocessor
+        dates = uncertainty.date_precision;
+        senders = uncertainty.senders || { identified: 0, named: 0, unknown: 0 };
+        places = uncertainty.places || { exact: 0, region: 0, unknown: 0 };
+    } else if (uncertainty.dates) {
+        // Old format
+        dates = uncertainty.dates;
+        senders = uncertainty.senders || { identified: 0, named: 0, unknown: 0 };
+        places = uncertainty.places || { exact: 0, region: 0, unknown: 0 };
+    } else {
+        // No valid format
+        return;
+    }
 
     // Calculate imprecise dates (month + year + range + unknown)
     const impreciseDates = (dates.month || 0) + (dates.year || 0) + (dates.range || 0) + (dates.unknown || 0);
@@ -433,11 +452,16 @@ function buildLanguageFilter() {
         const lang = languages[code];
         // Use LANGUAGE_LABELS for display, fallback to data label or code
         let displayLabel = LANGUAGE_LABELS[code] || lang.label || code;
-        // Handle special cases
-        if (displayLabel === 'None' || code === 'None') {
-            displayLabel = 'Unbekannt';
+        // Handle special cases - None means no language specified in source data
+        const isNoLanguage = (displayLabel === 'None' || code === 'None');
+        if (isNoLanguage) {
+            displayLabel = 'Ohne Angabe';
         }
+        const tooltip = isNoLanguage ? 'Keine Sprachzuordnung in den Quelldaten' : '';
         const label = document.createElement('label');
+        if (tooltip) {
+            label.title = tooltip;
+        }
         label.innerHTML = `
             <input type="checkbox" name="language" value="${code}" checked>
             <span>${displayLabel}</span>
@@ -1650,6 +1674,9 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
+    // Update sidebar legend for current view
+    updateSidebarLegend(view);
+
     // Render view-specific content
     if (view === 'persons') {
         renderPersonsList();
@@ -1666,6 +1693,34 @@ function switchView(view) {
         renderNetwork();
     } else if (view === 'map' && map) {
         map.resize();
+    }
+}
+
+// Update sidebar legend based on current view
+function updateSidebarLegend(view) {
+    // All legend content elements
+    const legendElements = {
+        map: document.getElementById('legend-map'),
+        letters: document.getElementById('legend-letters'),
+        timeline: document.getElementById('legend-timeline'),
+        persons: document.getElementById('legend-persons'),
+        topics: document.getElementById('legend-topics'),
+        places: document.getElementById('legend-places'),
+        network: document.getElementById('legend-network')
+    };
+
+    // Hide all legends
+    Object.values(legendElements).forEach(el => {
+        if (el) el.style.display = 'none';
+    });
+
+    // Show view-specific legend
+    const targetLegend = legendElements[view];
+    if (targetLegend) {
+        targetLegend.style.display = 'block';
+    } else {
+        // Fallback to map legend if no specific legend exists
+        if (legendElements.map) legendElements.map.style.display = 'block';
     }
 }
 
@@ -2422,11 +2477,16 @@ function renderTimeline() {
     const container = document.getElementById('timeline-chart');
     const totalEl = document.getElementById('timeline-total');
     const legendEl = document.getElementById('timeline-stack-legend');
+    const undatedBin = document.getElementById('timeline-undated-bin');
     if (!container) return;
 
     // Use filtered letters
     const lettersToUse = filteredLetters;
     const isFiltered = filteredLetters.length < allLetters.length;
+
+    // Separate dated and undated letters
+    const datedLetters = lettersToUse.filter(l => l.year);
+    const undatedLetters = lettersToUse.filter(l => !l.year);
 
     // Get all years from all letters for consistent x-axis
     const allYearsSet = new Set();
@@ -2435,37 +2495,60 @@ function renderTimeline() {
     });
     const allYearsSorted = Array.from(allYearsSet).sort((a, b) => a - b);
 
-    if (allYearsSorted.length === 0) {
+    if (allYearsSorted.length === 0 && undatedLetters.length === 0) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfuegbar</p></div>';
+        if (undatedBin) undatedBin.style.display = 'none';
         return;
     }
 
-    const minYear = allYearsSorted[0];
-    const maxYear = allYearsSorted[allYearsSorted.length - 1];
+    const minYear = allYearsSorted[0] || 0;
+    const maxYear = allYearsSorted[allYearsSorted.length - 1] || 0;
 
-    // Build stacked data by year and language
+    // Build stacked data by year and language, tracking uncertainty
     const yearData = {};
     const languageTotals = {};
+    let totalImprecise = 0;
 
     // Initialize all years
     for (let y = minYear; y <= maxYear; y++) {
-        yearData[y] = { total: 0, languages: {} };
+        yearData[y] = { total: 0, imprecise: 0, languages: {} };
     }
 
-    // Count letters per year per language
-    lettersToUse.forEach(letter => {
-        if (!letter.year) return;
+    // Check if we have actual language data (not just None/other)
+    const hasLanguageData = lettersToUse.some(l => l.language?.code && l.language.code !== 'None');
+
+    // Count letters per year per language, tracking date precision
+    datedLetters.forEach(letter => {
         const year = letter.year;
-        const lang = letter.language?.code || 'other';
-        const langKey = LANGUAGE_COLORS[lang] ? lang : 'other';
+        // If no language data in corpus, use a single category
+        const lang = hasLanguageData ? (letter.language?.code || 'None') : '_total';
+        const langKey = hasLanguageData ? (LANGUAGE_COLORS[lang] ? lang : 'other') : '_total';
+        const isImprecise = letter.datePrecision === 'range' ||
+                           letter.datePrecision === 'year' ||
+                           letter.datePrecision === 'month' ||
+                           letter.dateCertainty === 'low';
 
         yearData[year].total++;
         yearData[year].languages[langKey] = (yearData[year].languages[langKey] || 0) + 1;
         languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
+
+        if (isImprecise) {
+            yearData[year].imprecise++;
+            totalImprecise++;
+        }
     });
 
-    // Find max for scaling
-    let maxCount = 0;
+    // Count undated letters by language
+    const undatedByLang = {};
+    undatedLetters.forEach(letter => {
+        const lang = hasLanguageData ? (letter.language?.code || 'None') : '_total';
+        const langKey = hasLanguageData ? (LANGUAGE_COLORS[lang] ? lang : 'other') : '_total';
+        undatedByLang[langKey] = (undatedByLang[langKey] || 0) + 1;
+        languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
+    });
+
+    // Find max for scaling (include undated count)
+    let maxCount = undatedLetters.length;
     for (let y = minYear; y <= maxYear; y++) {
         if (yearData[y].total > maxCount) maxCount = yearData[y].total;
     }
@@ -2486,28 +2569,39 @@ function renderTimeline() {
         const data = yearData[y];
         const totalHeight = data.total > 0 ? Math.max(4, (data.total / maxCount) * 100) : 0;
         const showLabel = (y - minYear) % labelInterval === 0 || y === maxYear;
+        const hasImprecise = data.imprecise > 0;
 
         // Build stacked segments
         let segments = '';
         let tooltipParts = [`${y}: ${data.total} Briefe`];
+
+        // Add imprecise info to tooltip
+        if (hasImprecise) {
+            tooltipParts.push(`<span class="tooltip-imprecise">${data.imprecise} mit unscharfem Datum</span>`);
+        }
 
         if (data.total > 0) {
             let currentBottom = 0;
             sortedLanguages.forEach(lang => {
                 const count = data.languages[lang] || 0;
                 if (count > 0) {
-                    const segmentHeight = (count / data.total) * totalHeight;
-                    const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
-                    segments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${lang}" data-count="${count}"></div>`;
-                    currentBottom += segmentHeight;
-                    const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
-                    tooltipParts.push(`${langLabel}: ${count}`);
+                    // Segment height as percentage of the stacked bar (not the container)
+                    const segmentPct = (count / data.total) * 100;
+                    // Use primary color for _total (no language data), otherwise language color
+                    const color = lang === '_total' ? 'var(--color-primary)' : (LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other);
+                    segments += `<div class="timeline-stack-segment" style="height: ${segmentPct}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${lang}" data-count="${count}"></div>`;
+                    currentBottom += segmentPct;
+                    // Only add language breakdown to tooltip if we have language data
+                    if (lang !== '_total') {
+                        const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
+                        tooltipParts.push(`${langLabel}: ${count}`);
+                    }
                 }
             });
         }
 
         bars.push(`
-            <div class="timeline-bar-wrapper" data-year="${y}" data-year-end="${y}">
+            <div class="timeline-bar-wrapper ${hasImprecise ? 'has-imprecise' : ''}" data-year="${y}" data-year-end="${y}" data-imprecise="${data.imprecise}">
                 <div class="timeline-stacked-bar" style="height: ${totalHeight}%">
                     ${segments}
                 </div>
@@ -2519,32 +2613,181 @@ function renderTimeline() {
 
     container.innerHTML = bars.join('');
 
+    // Responsive bar width based on year span
+    const barWrappers = container.querySelectorAll('.timeline-bar-wrapper');
+    if (yearSpan > 0 && yearSpan <= 20) {
+        // Wider bars for narrow time ranges
+        const maxWidth = Math.min(60, Math.max(20, Math.floor(800 / yearSpan)));
+        barWrappers.forEach(w => {
+            w.style.maxWidth = `${maxWidth}px`;
+            w.style.minWidth = `${Math.max(12, maxWidth - 10)}px`;
+        });
+    } else {
+        // Reset to default for large ranges
+        barWrappers.forEach(w => {
+            w.style.maxWidth = '';
+            w.style.minWidth = '';
+        });
+    }
+
+    // Render undated letters bin
+    if (undatedBin) {
+        if (undatedLetters.length > 0) {
+            undatedBin.style.display = 'flex';
+            undatedBin.classList.remove('all-dated');
+            undatedBin.style.cursor = 'pointer';
+            const undatedHeight = Math.max(4, (undatedLetters.length / maxCount) * 100);
+            const binBar = undatedBin.querySelector('.undated-bin-bar');
+            const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
+
+            // Build stacked segments for undated bin
+            let undatedSegments = '';
+            let currentBottom = 0;
+            let tooltipParts = [`Ohne Datum: ${undatedLetters.length} Briefe`];
+
+            sortedLanguages.forEach(lang => {
+                const count = undatedByLang[lang] || 0;
+                if (count > 0) {
+                    const segmentHeight = (count / undatedLetters.length) * 100;
+                    const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
+                    undatedSegments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${lang}" data-count="${count}"></div>`;
+                    currentBottom += segmentHeight;
+                    const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
+                    tooltipParts.push(`${langLabel}: ${count}`);
+                }
+            });
+
+            binBar.style.height = `${undatedHeight}%`;
+            binBar.innerHTML = undatedSegments;
+            binTooltip.innerHTML = tooltipParts.join('<br>');
+
+            // Set count above bar and label below (on axis level)
+            const binCount = undatedBin.querySelector('.undated-bin-count');
+            const binLabel = undatedBin.querySelector('.undated-bin-label');
+            if (binCount) {
+                binCount.textContent = undatedLetters.length;
+            }
+            if (binLabel) {
+                binLabel.textContent = 'k.A.';
+            }
+
+            // Tooltip positioning
+            undatedBin.addEventListener('mousemove', (e) => {
+                binTooltip.style.left = `${e.clientX}px`;
+                binTooltip.style.top = `${e.clientY - binTooltip.offsetHeight - 10}px`;
+            });
+
+            // Click handler for undated bin
+            undatedBin.onclick = () => {
+                // Filter to show only undated letters
+                // Set year filter to impossible range to exclude all dated
+                const slider = document.getElementById('year-range-slider');
+                if (slider && slider.noUiSlider) {
+                    // Set to min-1 to exclude all dated letters
+                    slider.noUiSlider.set([minYear - 1, minYear - 1]);
+                }
+                applyFilters();
+                switchView('letters');
+            };
+        } else {
+            // Show schematic placeholder when all letters are dated
+            undatedBin.style.display = 'flex';
+            undatedBin.classList.add('all-dated');
+            const binBar = undatedBin.querySelector('.undated-bin-bar');
+            const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
+            const binLabel = undatedBin.querySelector('.undated-bin-label');
+            const binCount = undatedBin.querySelector('.undated-bin-count');
+
+            if (binBar) {
+                binBar.innerHTML = '';
+                binBar.style.height = '0';
+            }
+            if (binCount) {
+                binCount.innerHTML = '<i class="fas fa-check"></i>';
+            }
+            if (binLabel) {
+                binLabel.textContent = 'k.A.';
+            }
+            if (binTooltip) {
+                binTooltip.textContent = 'Alle Briefe datiert';
+            }
+            undatedBin.onclick = null;
+            undatedBin.style.cursor = 'default';
+        }
+    }
+
     // Update total
     if (totalEl) {
         const totalCount = lettersToUse.length;
+        const undatedInfo = undatedLetters.length > 0 ? ` + ${undatedLetters.length} ohne Datum` : '';
         if (isFiltered) {
-            totalEl.textContent = `${totalCount.toLocaleString('de-DE')} von ${allLetters.length.toLocaleString('de-DE')} Briefen (${minYear}-${maxYear})`;
+            totalEl.textContent = `${datedLetters.length.toLocaleString('de-DE')} von ${allLetters.filter(l => l.year).length.toLocaleString('de-DE')} Briefen (${minYear}-${maxYear})${undatedInfo}`;
         } else {
-            totalEl.textContent = `${totalCount.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}`;
+            totalEl.textContent = `${datedLetters.length.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}${undatedInfo}`;
         }
     }
 
     // Render legend
     if (legendEl) {
-        const legendItems = sortedLanguages
-            .filter(lang => languageTotals[lang] > 0)
-            .map(lang => {
-                const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
-                const count = languageTotals[lang];
-                const label = LANGUAGE_LABELS[lang] || lang.toUpperCase();
-                return `<span class="timeline-legend-item"><span class="timeline-legend-color" style="background: ${color}"></span>${label} (${count})</span>`;
-            });
+        let legendItems = [];
+
+        if (hasLanguageData) {
+            // Show language breakdown
+            legendItems = sortedLanguages
+                .filter(lang => languageTotals[lang] > 0 && lang !== '_total')
+                .map(lang => {
+                    const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
+                    const count = languageTotals[lang];
+                    const label = LANGUAGE_LABELS[lang] || lang.toUpperCase();
+                    const tooltip = (lang === 'None') ? 'Keine Sprachzuordnung in den Quelldaten' : '';
+                    return `<span class="timeline-legend-item"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${label} (${count})</span>`;
+                });
+        } else {
+            // No language data - show info message
+            legendItems.push(`<span class="timeline-legend-item timeline-legend-info" title="Dieses Korpus enthaelt keine Sprachmetadaten"><i class="fas fa-info-circle"></i> Keine Sprachdaten im Korpus</span>`);
+        }
+
+        // Add uncertainty indicator to legend if there are imprecise dates
+        if (totalImprecise > 0) {
+            legendItems.push(`<span class="timeline-legend-item timeline-legend-uncertainty" title="Briefe mit unvollstaendigem oder unsicherem Datum"><span class="timeline-legend-hatched"></span>Unscharfes Datum (${totalImprecise})</span>`);
+        }
+
         legendEl.innerHTML = legendItems.join('');
     }
 
-    // Add click handlers
+    // Add click handlers for segments (language + year filter)
+    container.querySelectorAll('.timeline-stack-segment').forEach(segment => {
+        segment.style.cursor = 'pointer';
+        segment.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent wrapper click
+
+            const wrapper = segment.closest('.timeline-bar-wrapper');
+            const year = parseInt(wrapper.dataset.year);
+            const lang = segment.dataset.lang;
+
+            // Set year filter
+            const slider = document.getElementById('year-range-slider');
+            if (slider && slider.noUiSlider) {
+                slider.noUiSlider.set([year, year]);
+            }
+
+            // Set language filter - uncheck all, then check only this language
+            document.querySelectorAll('input[name="language"]').forEach(cb => {
+                cb.checked = (cb.value === lang);
+            });
+
+            // Apply filters and switch to letters view
+            applyFilters();
+            switchView('letters');
+        });
+    });
+
+    // Click on bar wrapper (not segment) filters by year only
     container.querySelectorAll('.timeline-bar-wrapper').forEach(wrapper => {
-        wrapper.addEventListener('click', () => {
+        wrapper.addEventListener('click', (e) => {
+            // Only handle if click was not on a segment
+            if (e.target.classList.contains('timeline-stack-segment')) return;
+
             const year = parseInt(wrapper.dataset.year);
 
             // Update year slider to single year
@@ -2553,9 +2796,9 @@ function renderTimeline() {
                 slider.noUiSlider.set([year, year]);
             }
 
-            // Visual feedback
-            container.querySelectorAll('.timeline-bar-wrapper').forEach(w => w.classList.remove('selected'));
-            wrapper.classList.add('selected');
+            // Apply filters and switch to letters view
+            applyFilters();
+            switchView('letters');
         });
 
         // Tooltip positioning on mouse move
@@ -3942,34 +4185,71 @@ function formatPlaceName(name, precision) {
 
 // Format date with precision indicator
 function formatDateWithPrecision(letter) {
-    if (!letter.date) return 'Datum unbekannt';
+    if (!letter.date) return '<span class="date-unknown"><i class="fas fa-question" title="Datum unbekannt"></i> unbekannt</span>';
 
     const date = letter.date;
     const precision = letter.datePrecision;
     const certainty = letter.dateCertainty;
 
     let formattedDate;
+    let icon = '';
+    let tooltip = '';
 
     // Format based on precision
     if (precision === 'year') {
-        formattedDate = `ca. ${date}`;
+        formattedDate = date;
+        icon = '<i class="fas fa-calendar-alt date-precision-icon" title="Nur Jahr bekannt"></i>';
+        tooltip = 'Nur Jahr bekannt';
     } else if (precision === 'month') {
         // YYYY-MM -> "Mon YYYY"
         const [year, month] = date.split('-');
         const monthNames = ['Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
         formattedDate = `${monthNames[parseInt(month) - 1]} ${year}`;
+        icon = '<i class="fas fa-calendar-alt date-precision-icon" title="Nur Monat bekannt"></i>';
+        tooltip = 'Nur Monat bekannt';
     } else if (precision === 'range' && letter.dateTo) {
-        formattedDate = `${date} - ${letter.dateTo}`;
+        // Format range dates nicely
+        const fromFormatted = formatSingleDate(date);
+        const toFormatted = formatSingleDate(letter.dateTo);
+        formattedDate = `${fromFormatted} – ${toFormatted}`;
+        icon = '<i class="fas fa-arrows-alt-h date-range-icon" title="Zeitraum (notBefore/notAfter)"></i>';
+        tooltip = 'Zeitraum: Brief wurde zwischen diesen Daten verfasst';
     } else {
-        formattedDate = date;
+        formattedDate = formatSingleDate(date);
     }
 
     // Add uncertainty marker with tooltip for cert="low"
     if (certainty === 'low') {
-        formattedDate += ` <i class="fas fa-question-circle uncertainty-marker" title="Unsichere Datierung: Die Quelle markiert dieses Datum als unsicher (cert=low)"></i>`;
+        icon = '<i class="fas fa-question-circle date-uncertain-icon" title="Unsichere Datierung (cert=low)"></i>';
+        tooltip = 'Unsichere Datierung: Die Quelle markiert dieses Datum als unsicher';
     }
 
+    // Build final output with icon prefix for imprecise dates
+    if (icon) {
+        return `<span class="date-with-precision" title="${tooltip}">${icon} ${formattedDate}</span>`;
+    }
     return formattedDate;
+}
+
+// Format a single date string (YYYY-MM-DD) to readable format
+function formatSingleDate(dateStr) {
+    if (!dateStr) return '';
+
+    // Handle different date formats
+    if (dateStr.length === 4) {
+        // Just year: YYYY
+        return dateStr;
+    } else if (dateStr.length === 7) {
+        // Year and month: YYYY-MM
+        const [year, month] = dateStr.split('-');
+        const monthNames = ['Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+        return `${monthNames[parseInt(month) - 1]} ${year}`;
+    } else if (dateStr.length === 10) {
+        // Full date: YYYY-MM-DD
+        const [year, month, day] = dateStr.split('-');
+        return `${parseInt(day)}.${parseInt(month)}.${year}`;
+    }
+    return dateStr;
 }
 
 // Get initials for person, handling unknown persons

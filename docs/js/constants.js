@@ -1,20 +1,78 @@
 // Zentrale Konstanten fuer CorrespExplorer
 
-// Sprachfarben fuer Visualisierungen
-export const LANGUAGE_COLORS = {
+// Basis-Sprachfarben (kraeftig) - fuer dominante Sprache
+export const LANGUAGE_COLORS_STRONG = {
     'de': '#1e40af', // Deutsch - primaer blau
     'fr': '#dc2626', // Franzoesisch - rot
     'it': '#16a34a', // Italienisch - gruen
-    'en': '#9333ea', // Englisch - lila
+    'en': '#7c3aed', // Englisch - lila
     'es': '#ea580c', // Spanisch - orange
     'pt': '#0891b2', // Portugiesisch - cyan
-    'la': '#78716c', // Latein - grau
+    'la': '#57534e', // Latein - grau
     'hu': '#be185d', // Ungarisch - pink
-    'nl': '#f59e0b', // Niederlaendisch - amber
-    'cy': '#6366f1', // Walisisch - indigo
-    'oc': '#14b8a6', // Okzitanisch - teal
-    'other': '#A64B3F' // Andere/Unbekannt - Rust-Red (tokens.css --color-primary)
+    'nl': '#d97706', // Niederlaendisch - amber
+    'cy': '#4f46e5', // Walisisch - indigo
+    'oc': '#0d9488', // Okzitanisch - teal
+    'None': '#78716c', // Ohne Angabe - grau
+    'other': '#78716c' // Andere - grau
 };
+
+// Pastell-Sprachfarben (dezent) - fuer sekundaere Sprachen
+export const LANGUAGE_COLORS_PASTEL = {
+    'de': '#93c5fd', // Deutsch - helles blau
+    'fr': '#fca5a5', // Franzoesisch - helles rot
+    'it': '#86efac', // Italienisch - helles gruen
+    'en': '#c4b5fd', // Englisch - helles lila
+    'es': '#fdba74', // Spanisch - helles orange
+    'pt': '#a5f3fc', // Portugiesisch - helles cyan
+    'la': '#d6d3d1', // Latein - helles grau
+    'hu': '#f9a8d4', // Ungarisch - helles pink
+    'nl': '#fcd34d', // Niederlaendisch - helles amber
+    'cy': '#a5b4fc', // Walisisch - helles indigo
+    'oc': '#99f6e4', // Okzitanisch - helles teal
+    'None': '#d6d3d1', // Ohne Angabe - helles grau
+    'other': '#d6d3d1' // Andere - helles grau
+};
+
+// Dynamische Farbzuweisung basierend auf Sprachverteilung
+// Wird beim Laden des Datensatzes berechnet
+export const LANGUAGE_COLORS = { ...LANGUAGE_COLORS_STRONG };
+
+// Berechnet dynamische Farben basierend auf Briefverteilung
+export function computeLanguageColors(letters) {
+    // Zaehle Briefe pro Sprache
+    const langCounts = {};
+    letters.forEach(letter => {
+        const lang = letter.language?.code || 'None';
+        langCounts[lang] = (langCounts[lang] || 0) + 1;
+    });
+
+    // Sortiere nach Haeufigkeit
+    const sorted = Object.entries(langCounts).sort((a, b) => b[1] - a[1]);
+
+    // Loesche alte Eintraege
+    Object.keys(LANGUAGE_COLORS).forEach(key => delete LANGUAGE_COLORS[key]);
+
+    // Dominante Sprache (Top 1) bekommt kraeftige Farbe
+    // Alle anderen bekommen Pastelltoene
+    sorted.forEach(([lang, count], index) => {
+        if (index === 0) {
+            // Dominante Sprache - kraeftig
+            LANGUAGE_COLORS[lang] = LANGUAGE_COLORS_STRONG[lang] || LANGUAGE_COLORS_STRONG.other;
+        } else {
+            // Sekundaere Sprachen - pastell
+            LANGUAGE_COLORS[lang] = LANGUAGE_COLORS_PASTEL[lang] || LANGUAGE_COLORS_PASTEL.other;
+        }
+    });
+
+    // Fallbacks fuer nicht vorhandene Sprachen
+    LANGUAGE_COLORS.other = LANGUAGE_COLORS_PASTEL.other;
+    if (!LANGUAGE_COLORS.None) {
+        LANGUAGE_COLORS.None = LANGUAGE_COLORS_PASTEL.None;
+    }
+
+    return LANGUAGE_COLORS;
+}
 
 // Sprachnamen fuer Anzeige
 export const LANGUAGE_LABELS = {
@@ -29,7 +87,7 @@ export const LANGUAGE_LABELS = {
     'nl': 'Niederlaendisch',
     'cy': 'Walisisch',
     'oc': 'Okzitanisch',
-    'None': 'Unbekannt',
+    'None': 'Ohne Angabe',
     'other': 'Andere'
 };
 

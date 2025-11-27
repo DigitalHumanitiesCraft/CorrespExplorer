@@ -4,6 +4,40 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-27 (Phase 19: Timeline Improvements)
+
+### Detached Bin fuer undatierte Briefe
+
+Implementierung eines separaten Balkens rechts neben der Timeline fuer Briefe ohne Datum:
+- Stacked Segments wie Hauptbalken (Sprachverteilung)
+- Label "k.A." auf X-Achsen-Hoehe
+- Zaehler ueber dem Balken
+- Klick filtert auf undatierte Briefe
+- Schematischer Platzhalter (gestrichelte Umrandung + Checkmark) wenn alle Briefe datiert
+
+### Dynamische Sprachfarben
+
+Verbesserung der Farbpalette fuer Korpora mit vielen Sprachen:
+- `computeLanguageColors(letters)` berechnet Farben beim Laden
+- Dominante Sprache (meiste Briefe) bekommt kraeftige Farbe
+- Alle anderen Sprachen erhalten Pastelltoene
+- Neue Konstanten: `LANGUAGE_COLORS_STRONG`, `LANGUAGE_COLORS_PASTEL`
+
+### Adaptive Visualisierung ohne Sprachdaten
+
+Wenn ein Korpus keine Sprachmetadaten enthaelt:
+- Einfarbige Balken (--color-primary) statt Stacking
+- Legende zeigt "Keine Sprachdaten im Korpus"
+- Keine "Andere"-Kategorie mehr bei fehlenden Daten
+
+### Responsive Bar Width
+
+Balkenbreite passt sich dem Zeitraum an:
+- Bei <= 20 Jahren: Breitere Balken (bis 60px)
+- Bei groesseren Zeitraeumen: Standard-Breite
+
+---
+
 ## 2025-11-27 (Phase 18: Quick Wins Refactoring)
 
 ### Entfernte Code-Duplikate

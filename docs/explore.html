@@ -82,100 +82,213 @@
     <!-- Main Container -->
     <div class="container">
         <div class="content-wrapper">
-            <!-- Sidebar Filters -->
-            <aside class="sidebar" role="complementary" aria-label="Filteroptionen">
-                <!-- Stats Cards -->
-                <div class="stats-cards">
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-letters-count">-</div>
-                        <div class="stat-label">Briefe</div>
-                        <span class="stat-quality-icon" id="letters-quality-icon" title="" style="display: none;">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </span>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-senders-count">-</div>
-                        <div class="stat-label">Absender</div>
-                        <span class="stat-quality-icon" id="senders-quality-icon" title="" style="display: none;">
-                            <i class="fas fa-question-circle"></i>
-                        </span>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-places-count">-</div>
-                        <div class="stat-label">Orte</div>
-                        <span class="stat-quality-icon" id="places-quality-icon" title="" style="display: none;">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </span>
-                    </div>
-                </div>
+            <!-- Sidebar -->
+            <aside class="sidebar" role="complementary" aria-label="Datensatz und Filter">
 
-                <!-- Time Period Filter -->
-                <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
-                    <h4 id="filter-time-heading">Zeitraum</h4>
-                    <div id="year-range-slider" aria-label="Jahr-Bereich waehlen" role="slider"></div>
-                    <div class="year-range-display">
-                        <span id="year-range-text">-</span>
+                <!-- ========================================
+                     SECTION 1: DATENSATZ (Kontext zuerst)
+                     ======================================== -->
+                <div class="sidebar-section" id="sidebar-dataset">
+                    <div class="sidebar-section-header">
+                        <h4>Datensatz</h4>
                     </div>
-                </div>
 
-                <!-- Language Filter (dynamically populated) -->
-                <div class="filter-group" role="group" aria-labelledby="filter-language-heading" id="language-filter-group" style="display: none;">
-                    <h4 id="filter-language-heading">Briefsprache</h4>
-                    <div id="language-checkboxes"></div>
-                </div>
+                    <!-- Stats Cards -->
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-letters-count">-</div>
+                            <div class="stat-label">Briefe</div>
+                            <span class="stat-quality-icon" id="letters-quality-icon" title="" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </span>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-senders-count">-</div>
+                            <div class="stat-label">Absender</div>
+                            <span class="stat-quality-icon" id="senders-quality-icon" title="" style="display: none;">
+                                <i class="fas fa-question-circle"></i>
+                            </span>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="total-places-count">-</div>
+                            <div class="stat-label">Orte</div>
+                            <span class="stat-quality-icon" id="places-quality-icon" title="" style="display: none;">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                        </div>
+                    </div>
 
-                <!-- Topics Quick Filter (dynamically populated) -->
-                <div class="filter-group" role="group" aria-labelledby="filter-topics-heading" id="topics-filter-group" style="display: none;">
-                    <h4 id="filter-topics-heading">Themen</h4>
-                    <input type="search" id="topics-quick-search" class="topics-quick-search" placeholder="Thema suchen..." aria-label="Thema suchen">
-                    <div id="topics-quick-filter" class="topics-quick-list"></div>
-                    <a href="#" id="show-all-topics" class="show-all-link">Alle Themen anzeigen</a>
-                </div>
-
-                <!-- Data Quality Filter -->
-                <div class="filter-group" role="group" aria-labelledby="filter-quality-heading" id="quality-filter-group">
-                    <h4 id="filter-quality-heading">Datenqualitaet</h4>
-                    <div class="quality-checkboxes">
-                        <label class="filter-checkbox">
-                            <input type="checkbox" id="filter-precise-dates">
-                            <span>Nur exakte Datierungen</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" id="filter-known-persons">
-                            <span>Nur identifizierte Personen</span>
-                        </label>
-                        <label class="filter-checkbox">
-                            <input type="checkbox" id="filter-located-places">
-                            <span>Nur lokalisierte Orte</span>
-                        </label>
+                    <!-- Data Source & Coverage -->
+                    <div class="dataset-meta">
+                        <div class="dataset-source">
+                            <i class="fas fa-database"></i>
+                            <span id="source-info">Daten werden geladen...</span>
+                        </div>
+                        <div class="dataset-coverage" id="data-coverage-details">
+                            <!-- Filled by JavaScript -->
+                        </div>
                     </div>
                 </div>
 
-                <!-- Map Legend -->
-                <div class="filter-group" role="region" aria-labelledby="legend-heading">
-                    <h4 id="legend-heading">Legende</h4>
-                    <div class="legend-item">
-                        <span class="legend-color" style="background: #C65D3B;" aria-hidden="true"></span>
-                        <span>Absendeort (Groesse = Briefanzahl)</span>
+                <!-- ========================================
+                     SECTION 2: FILTER (Interaktive Elemente)
+                     ======================================== -->
+                <div class="sidebar-section" id="sidebar-filters">
+                    <div class="sidebar-section-header">
+                        <h4>Filter</h4>
+                        <button id="reset-filters" class="btn-reset-small" aria-label="Filter zuruecksetzen" title="Filter zuruecksetzen">
+                            <i class="fas fa-undo"></i>
+                        </button>
                     </div>
-                    <p class="legend-hint">Klick auf Marker zeigt Details zum Ort</p>
+
+                    <!-- Active Filters Display -->
+                    <div id="active-filters" class="active-filters" style="display: none;">
+                        <!-- Filled by JavaScript when filters are active -->
+                    </div>
+
+                    <!-- Time Period Filter -->
+                    <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
+                        <h5 id="filter-time-heading">Zeitraum</h5>
+                        <div id="year-range-slider" aria-label="Jahr-Bereich waehlen" role="slider"></div>
+                        <div class="year-range-display">
+                            <span id="year-range-text">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Data Quality Filter -->
+                    <div class="filter-group" role="group" aria-labelledby="filter-quality-heading" id="quality-filter-group">
+                        <h5 id="filter-quality-heading">Datenqualitaet</h5>
+                        <div class="quality-checkboxes">
+                            <label class="filter-checkbox">
+                                <input type="checkbox" id="filter-precise-dates">
+                                <span>Nur exakte Datierungen</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" id="filter-known-persons">
+                                <span>Nur identifizierte Personen</span>
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox" id="filter-located-places">
+                                <span>Nur lokalisierte Orte</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Language Filter (dynamically populated) -->
+                    <div class="filter-group" role="group" aria-labelledby="filter-language-heading" id="language-filter-group" style="display: none;">
+                        <h5 id="filter-language-heading">Briefsprache</h5>
+                        <div id="language-checkboxes"></div>
+                    </div>
+
+                    <!-- Topics Quick Filter (dynamically populated) -->
+                    <div class="filter-group" role="group" aria-labelledby="filter-topics-heading" id="topics-filter-group" style="display: none;">
+                        <h5 id="filter-topics-heading">Themen</h5>
+                        <input type="search" id="topics-quick-search" class="topics-quick-search" placeholder="Thema suchen..." aria-label="Thema suchen">
+                        <div id="topics-quick-filter" class="topics-quick-list"></div>
+                        <a href="#" id="show-all-topics" class="show-all-link">Alle Themen anzeigen</a>
+                    </div>
                 </div>
 
-                <div class="filter-buttons">
-                    <button id="reset-filters" class="btn-reset" aria-label="Alle Filter zuruecksetzen">Filter zuruecksetzen</button>
-                </div>
+                <!-- ========================================
+                     SECTION 3: LEGENDE (View-spezifisch)
+                     ======================================== -->
+                <div class="sidebar-section" id="sidebar-legend">
+                    <div class="sidebar-section-header">
+                        <h4>Legende</h4>
+                    </div>
 
-                <!-- Data Source Info -->
-                <div class="sidebar-info">
-                    <h4>Datenquelle</h4>
-                    <p class="info-text" id="source-info">
-                        Daten werden geladen...
-                    </p>
-                    <h4>Datensatz-Abdeckung</h4>
-                    <div class="data-coverage-details" id="data-coverage-details">
-                        <!-- Filled by JavaScript -->
+                    <!-- Map legend -->
+                    <div id="legend-map" class="legend-content">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: var(--color-primary);" aria-hidden="true"></span>
+                            <span>Absendeort (Groesse = Briefanzahl)</span>
+                        </div>
+                        <p class="legend-hint">Klick auf Marker zeigt Details</p>
+                    </div>
+
+                    <!-- Letters legend (date precision) -->
+                    <div id="legend-letters" class="legend-content" style="display: none;">
+                        <div class="legend-item">
+                            <i class="fas fa-arrows-alt-h" style="color: #2C5282;"></i>
+                            <span>Zeitraum (notBefore/notAfter)</span>
+                        </div>
+                        <div class="legend-item">
+                            <i class="fas fa-calendar-alt" style="color: #f59e0b;"></i>
+                            <span>Nur Jahr/Monat bekannt</span>
+                        </div>
+                        <div class="legend-item">
+                            <i class="fas fa-question-circle" style="color: #ef4444;"></i>
+                            <span>Unsichere Datierung</span>
+                        </div>
+                        <p class="legend-hint"><a href="about.html#data-quality">Mehr zur Datenqualitaet</a></p>
+                    </div>
+
+                    <!-- Timeline legend -->
+                    <div id="legend-timeline" class="legend-content" style="display: none;">
+                        <div class="legend-item">
+                            <span class="legend-hatched-small"></span>
+                            <span>Anteil mit unscharfem Datum</span>
+                        </div>
+                        <p class="legend-hint">Hover zeigt Details pro Jahr</p>
+                    </div>
+
+                    <!-- Persons legend -->
+                    <div id="legend-persons" class="legend-content" style="display: none;">
+                        <div class="legend-item">
+                            <span class="legend-color legend-role-sender"></span>
+                            <span>Nur Absender</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color legend-role-receiver"></span>
+                            <span>Nur Empfaenger</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color legend-role-both"></span>
+                            <span>Beides</span>
+                        </div>
+                        <p class="legend-hint">Klick filtert nach Person</p>
+                    </div>
+
+                    <!-- Topics legend -->
+                    <div id="legend-topics" class="legend-content" style="display: none;">
+                        <div class="legend-item">
+                            <i class="fas fa-circle" style="color: var(--color-primary); font-size: 8px;"></i>
+                            <span>Anzahl = Briefhaeufigkeit</span>
+                        </div>
+                        <p class="legend-hint">Klick zeigt Kookkurrenzen</p>
+                    </div>
+
+                    <!-- Places legend -->
+                    <div id="legend-places" class="legend-content" style="display: none;">
+                        <div class="legend-item">
+                            <i class="fas fa-map-marker-alt" style="color: var(--color-primary);"></i>
+                            <span>Mit Koordinaten</span>
+                        </div>
+                        <div class="legend-item">
+                            <i class="fas fa-map-marker-alt" style="color: var(--color-text-light);"></i>
+                            <span>Ohne Koordinaten</span>
+                        </div>
+                        <p class="legend-hint">Klick filtert nach Ort</p>
+                    </div>
+
+                    <!-- Network legend -->
+                    <div id="legend-network" class="legend-content" style="display: none;">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #2C5282;"></span>
+                            <span>Absender</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #2d6a4f;"></span>
+                            <span>Empfaenger</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-line"></span>
+                            <span>Korrespondenz (Staerke = Anzahl)</span>
+                        </div>
+                        <p class="legend-hint">Drag zum Verschieben, Scroll zum Zoomen</p>
                     </div>
                 </div>
+
             </aside>
 
             <!-- Main Content -->
@@ -235,9 +348,17 @@
                     <div class="timeline-container">
                         <div class="timeline-header">
                             <h3>Zeitliche Verteilung der Korrespondenz</h3>
-                            <p class="timeline-info">Klicken Sie auf einen Balken, um das Jahr zu filtern. Farben zeigen die Briefsprache.</p>
+                            <p class="timeline-info">Klicken Sie auf ein Sprach-Segment, um nach Jahr und Sprache zu filtern.</p>
                         </div>
-                        <div id="timeline-chart" class="timeline-chart"></div>
+                        <div class="timeline-main">
+                            <div id="timeline-chart" class="timeline-chart"></div>
+                            <div id="timeline-undated-bin" class="timeline-undated-bin" style="display: none;">
+                                <span class="undated-bin-count"></span>
+                                <div class="undated-bin-bar"></div>
+                                <span class="undated-bin-label">k.A.</span>
+                                <div class="undated-bin-tooltip"></div>
+                            </div>
+                        </div>
                         <div class="timeline-footer">
                             <div id="timeline-stack-legend" class="timeline-stack-legend"></div>
                             <span class="timeline-total" id="timeline-total"></span>
