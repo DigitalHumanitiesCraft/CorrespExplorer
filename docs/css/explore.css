@@ -1,5 +1,97 @@
 /* Explore View Specific Styles */
 
+/* Map Controls */
+.map-controls {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    z-index: 10;
+}
+
+.map-control-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-text);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-base);
+    transition: all var(--transition-fast);
+}
+
+.map-control-btn:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+/* Map Legend */
+.map-legend {
+    position: absolute;
+    bottom: var(--space-lg);
+    left: var(--space-md);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    max-width: 200px;
+    font-size: var(--font-size-sm);
+}
+
+.map-legend.hidden {
+    display: none;
+}
+
+.map-legend-title {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.map-legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.map-legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.map-legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.map-legend-label {
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.map-legend-count {
+    color: var(--color-text-light);
+    font-size: var(--font-size-xs);
+    margin-left: auto;
+}
+
 /* View button disabled state */
 .view-btn:disabled {
     opacity: 0.4;
@@ -1345,10 +1437,45 @@
 }
 
 /* Map Popup Styles */
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.popup-header h3 {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    flex: 1;
+}
+
 .popup h3 {
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-base);
     font-weight: 600;
+}
+
+.popup-basket-toggle {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    padding: 0;
+    font-size: var(--font-size-base);
+    line-height: 1;
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.popup-basket-toggle:hover {
+    color: var(--color-primary);
+}
+
+.popup-basket-toggle.in-basket {
+    color: var(--color-warning);
 }
 
 .popup-stats p {
@@ -1393,6 +1520,41 @@
 .popup-languages {
     margin-top: var(--space-sm);
     color: var(--color-text-light);
+}
+
+.popup-person-link {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.popup-person-link:hover {
+    text-decoration: underline;
+}
+
+.popup-actions {
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+}
+
+.popup-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    width: 100%;
+    justify-content: center;
+}
+
+.popup-action-btn:hover {
+    background: var(--color-primary-dark);
 }
 
 /* Places View */

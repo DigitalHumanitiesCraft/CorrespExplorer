@@ -4,6 +4,76 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-27 (Phase 17: Themen-Filter Bugfix und Verbesserung)
+
+### Bugfix: Subject-Filter funktionierte nicht
+
+Problem: Der Themen-Filter grenzte die Briefe nicht ein.
+
+Ursache: CMIF-Subjects haben `uri` statt `id` als Identifier. Der Code verwendete `subject.id`, aber die Daten haben `subject.uri`.
+
+Betroffene Stellen (alle auf `s.uri || s.id || s.label` geaendert):
+- `applyFilters()`: Subject-Match Pruefung
+- `buildSubjectIndex()`: Subject-ID Ermittlung
+- `renderTopicsList()`: Filtered Topic Counts
+- `selectTopic()`: Filtered Topic Letters und Co-Occurrence
+
+### Verbesserung: Themen-Suche in Sidebar
+
+Der Quick-Filter in der Sidebar zeigt jetzt:
+- Suchfeld zum Filtern aller Themen
+- Top 15 Themen (statt nur Top 5)
+- Scrollbare Liste bei mehr als 15 Treffern
+- Info-Zeile bei weiteren Themen
+- Live-Suche mit Debounce (200ms)
+
+Neue CSS-Klassen in style.css:
+- `.topics-quick-search`: Suchfeld-Styling
+- `.topics-quick-list`: Scrollbare Liste (max-height: 280px)
+- `.topics-no-results`: Keine Treffer Anzeige
+- `.topics-more-info`: Hinweis auf weitere Themen
+
+---
+
+## 2025-11-27 (Phase 16: Sprachfarben fuer Kartenmarker)
+
+### Implementiert: Farbcodierung nach dominanter Briefsprache
+
+Kartenmarker werden jetzt nach der dominanten Sprache der Briefe eines Ortes eingefaerbt.
+
+1. Datenberechnung (explore.js)
+   - `aggregateLettersByPlace()` berechnet neu:
+     - `languageCounts`: Anzahl Briefe pro Sprache am Ort
+     - `dominantLanguage`: Sprache mit meisten Briefen
+     - `dominantLanguageRatio`: Anteil der dominanten Sprache
+   - `placesToGeoJSON()` fuegt `dominant_language` und `language_color` zu Properties hinzu
+
+2. MapLibre Styling
+   - `getMapCircleColorExpression()`: Erstellt MapLibre match-Expression fuer Sprachfarben
+   - `updateMapColors()`: Aktualisiert Marker-Farben dynamisch
+   - Einzelmarker nutzen Sprachfarben, Cluster bleiben einheitlich (Rust-Red)
+
+3. UI-Elemente (explore.html, explore.css)
+   - Neuer Toggle-Button (Palette-Icon): Wechselt zwischen Sprachfarben und einheitlicher Farbe
+   - Legende zeigt verwendete Sprachen mit Farbcodes und Anzahl Orte
+   - Legende aktualisiert sich bei Filteraenderungen
+   - Legende wird bei einheitlichem Modus ausgeblendet
+
+4. Farbschema (aus constants.js)
+   - Deutsch: Blau (#1e40af)
+   - Franzoesisch: Rot (#dc2626)
+   - Italienisch: Gruen (#16a34a)
+   - Englisch: Lila (#9333ea)
+   - Spanisch: Orange (#ea580c)
+   - Andere: Rust-Red (#A64B3F)
+
+HSA-Beispiel zeigt geografische Sprachverteilung:
+- Graz, Wien, Berlin: Blau (deutsch-dominant)
+- Paris: Rot (franzoesisch-dominant)
+- Mailand: Gruen (italienisch-dominant)
+
+---
+
 ## 2025-11-26 (Phase 15: Datensatz-Vergleich und Bug-Fixes)
 
 ### Implementiert: Datensatz-Vergleich (US-23)

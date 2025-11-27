@@ -89,6 +89,25 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 | Timeline Bar | `#2C5282` | Balken |
 | Timeline Inactive | `#D4D0C0` | Hintergrund-Balken |
 
+### Sprachfarben (Karte und Timeline)
+
+Definiert in js/constants.js - verwendet fuer Kartenmarker nach dominanter Sprache und Timeline-Balken:
+
+| Sprache | Variable | Hex-Code |
+|---------|----------|----------|
+| Deutsch | `de` | `#1e40af` (Blau) |
+| Franzoesisch | `fr` | `#dc2626` (Rot) |
+| Italienisch | `it` | `#16a34a` (Gruen) |
+| Englisch | `en` | `#9333ea` (Lila) |
+| Spanisch | `es` | `#ea580c` (Orange) |
+| Portugiesisch | `pt` | `#0891b2` (Cyan) |
+| Latein | `la` | `#78716c` (Grau) |
+| Ungarisch | `hu` | `#be185d` (Pink) |
+| Niederlaendisch | `nl` | `#f59e0b` (Amber) |
+| Andere/Unbekannt | `other` | `#A64B3F` (Rust-Red) |
+
+Kartenmarker werden nach dominanter Briefsprache des Ortes eingefaerbt. Toggle-Button wechselt zwischen Sprachfarben und einheitlicher Farbe.
+
 ---
 
 ## 3. Typografie

@@ -2,7 +2,7 @@
 // Displays data from sessionStorage (uploaded/loaded via upload.js)
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS } from './constants.js';
-import { initBasketUI, createBasketToggle, setupBasketToggles } from './basket-ui.js';
+import { initBasketUI, createBasketToggle, setupBasketToggles, isInBasket, toggleBasketItem } from './basket-ui.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
 
 // Utility: Debounce function
@@ -58,6 +58,9 @@ const log = {
 
 // Map marker color - Rust Red from logo (tokens.css --color-primary)
 const PRIMARY_COLOR = '#A64B3F';
+
+// Map color mode: 'uniform' (single color) or 'language' (by dominant language)
+let mapColorMode = 'language';
 
 // Available views tracking
 let availableViews = {};
@@ -375,7 +378,7 @@ function updateUI(data) {
     buildLanguageFilter();
 }
 
-// Update uncertainty statistics in sidebar
+// Update uncertainty statistics in sidebar using icons with tooltips
 function updateUncertaintyStats(uncertainty) {
     if (!uncertainty) return;
 
@@ -393,35 +396,25 @@ function updateUncertaintyStats(uncertainty) {
     const imprecisePlaces = (places.region || 0) + (places.unknown || 0) + (places.missing || 0);
     const totalPlaces = (places.exact || 0) + imprecisePlaces;
 
-    // Update or create sub-info elements
-    addStatsSubinfo('total-letters-count', impreciseDates, totalDates, 'mit ungenauem Datum');
-    addStatsSubinfo('total-senders-count', unknownSenders, totalSenders, 'unbekannt/unvollstaendig');
-    addStatsSubinfo('total-places-count', imprecisePlaces, totalPlaces, 'ohne Koordinaten');
+    // Update quality icons with tooltips
+    updateQualityIcon('letters-quality-icon', impreciseDates, totalDates, 'mit ungenauem Datum');
+    updateQualityIcon('senders-quality-icon', unknownSenders, totalSenders, 'unbekannt/unvollstaendig');
+    updateQualityIcon('places-quality-icon', imprecisePlaces, totalPlaces, 'ohne Koordinaten');
 }
 
-// Add sub-info text below a stats element
-function addStatsSubinfo(parentId, count, total, label) {
-    if (count === 0) return;
+// Update quality icon visibility and tooltip
+function updateQualityIcon(iconId, count, total, label) {
+    const iconEl = document.getElementById(iconId);
+    if (!iconEl) return;
 
-    const parentEl = document.getElementById(parentId);
-    if (!parentEl) return;
+    if (count === 0) {
+        iconEl.style.display = 'none';
+        return;
+    }
 
-    const parentContainer = parentEl.closest('.stat-item') || parentEl.parentElement;
-    if (!parentContainer) return;
-
-    // Remove existing sub-info if present
-    const existingSubinfo = parentContainer.querySelector('.stats-subinfo');
-    if (existingSubinfo) existingSubinfo.remove();
-
-    // Calculate percentage
     const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
-
-    // Create sub-info element
-    const subinfo = document.createElement('div');
-    subinfo.className = 'stats-subinfo';
-    subinfo.textContent = `davon ${count.toLocaleString('de-DE')} ${label} (${percentage}%)`;
-
-    parentContainer.appendChild(subinfo);
+    iconEl.title = `${count} ${label} (${percentage}%)`;
+    iconEl.style.display = 'inline';
 }
 
 // Build language filter checkboxes dynamically
@@ -470,6 +463,9 @@ function buildLanguageFilter() {
 }
 
 // Initialize Topics Quick Filter in sidebar
+// All subjects sorted by count (for quick filter)
+let sortedSubjects = [];
+
 function initTopicsQuickFilter() {
     if (!dataIndices?.subjects) return;
 
@@ -478,27 +474,72 @@ function initTopicsQuickFilter() {
 
     if (subjectKeys.length === 0) return;
 
-    const container = document.getElementById('topics-quick-filter');
     const filterGroup = document.getElementById('topics-filter-group');
     const showAllLink = document.getElementById('show-all-topics');
 
-    if (!container || !filterGroup) return;
+    if (!filterGroup) return;
 
-    // Sort by letter count and take top 5
-    subjectKeys.sort((a, b) => subjects[b].letter_count - subjects[a].letter_count);
-    const topTopics = subjectKeys.slice(0, 5);
+    // Sort all subjects by letter count
+    sortedSubjects = subjectKeys.map(id => ({
+        id,
+        label: subjects[id].label || subjects[id].name || id,
+        count: subjects[id].letter_count || subjects[id].count || 0
+    })).sort((a, b) => b.count - a.count);
 
-    container.innerHTML = topTopics.map(id => {
-        const topic = subjects[id];
+    filterGroup.style.display = 'block';
+
+    // Render initial list (top 15)
+    renderTopicsQuickFilter('');
+
+    // Setup search input
+    const searchInput = document.getElementById('topics-quick-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce((e) => {
+            renderTopicsQuickFilter(e.target.value.toLowerCase());
+        }, 200));
+    }
+
+    // Show all topics link
+    if (showAllLink) {
+        showAllLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchView('topics');
+        });
+    }
+}
+
+function renderTopicsQuickFilter(searchTerm) {
+    const container = document.getElementById('topics-quick-filter');
+    if (!container) return;
+
+    // Filter by search term
+    let filtered = sortedSubjects;
+    if (searchTerm) {
+        filtered = sortedSubjects.filter(t => t.label.toLowerCase().includes(searchTerm));
+    }
+
+    // Show top 15 (or all matches if searching)
+    const toShow = searchTerm ? filtered.slice(0, 30) : filtered.slice(0, 15);
+
+    if (toShow.length === 0) {
+        container.innerHTML = '<div class="topics-no-results">Keine Themen gefunden</div>';
+        return;
+    }
+
+    container.innerHTML = toShow.map(topic => {
+        const isActive = selectedSubjectId === topic.id;
         return `
-            <div class="topic-quick-item" data-topic-id="${escapeHtml(id)}" title="${escapeHtml(topic.label)}">
+            <div class="topic-quick-item ${isActive ? 'active' : ''}" data-topic-id="${escapeHtml(topic.id)}" title="${escapeHtml(topic.label)}">
                 <span class="topic-label">${escapeHtml(topic.label)}</span>
-                <span class="topic-count">${topic.letter_count}</span>
+                <span class="topic-count">${topic.count}</span>
             </div>
         `;
     }).join('');
 
-    filterGroup.style.display = 'block';
+    // Show count info
+    if (filtered.length > toShow.length) {
+        container.innerHTML += `<div class="topics-more-info">${filtered.length - toShow.length} weitere Themen...</div>`;
+    }
 
     // Add click handlers
     container.querySelectorAll('.topic-quick-item').forEach(item => {
@@ -520,14 +561,6 @@ function initTopicsQuickFilter() {
             updateUrlState();
         });
     });
-
-    // Show all topics link
-    if (showAllLink) {
-        showAllLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchView('topics');
-        });
-    }
 }
 
 // Update topics quick filter state when subject filter changes
@@ -537,7 +570,7 @@ function updateTopicsQuickFilterState() {
 
     container.querySelectorAll('.topic-quick-item').forEach(item => {
         const topicId = item.dataset.topicId;
-        if (activeSubjectFilter === topicId) {
+        if (selectedSubjectId === topicId) {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
@@ -578,6 +611,7 @@ function aggregateLettersByPlace(letters, placesIndex) {
                 years: new Set(),
                 senderCounts: {},
                 languages: new Set(),
+                languageCounts: {},
                 letterIds: []
             };
         }
@@ -587,21 +621,42 @@ function aggregateLettersByPlace(letters, placesIndex) {
         if (letter.year) places[placeId].years.add(letter.year);
         if (letter.sender?.name) {
             const senderName = letter.sender.name;
-            places[placeId].senderCounts[senderName] = (places[placeId].senderCounts[senderName] || 0) + 1;
+            const senderId = letter.sender.authority || letter.sender.name;
+            if (!places[placeId].senderCounts[senderName]) {
+                places[placeId].senderCounts[senderName] = { count: 0, id: senderId };
+            }
+            places[placeId].senderCounts[senderName].count++;
         }
-        if (letter.language?.code) places[placeId].languages.add(letter.language.code);
+        if (letter.language?.code) {
+            const langCode = letter.language.code;
+            places[placeId].languages.add(langCode);
+            places[placeId].languageCounts[langCode] = (places[placeId].languageCounts[langCode] || 0) + 1;
+        }
     });
 
-    // Convert Sets to arrays and calculate top senders
+    // Convert Sets to arrays and calculate top senders + dominant language
     Object.values(places).forEach(place => {
         place.years = Array.from(place.years).sort();
         place.languages = Array.from(place.languages);
-        // Sort senders by letter count (descending)
+        // Sort senders by letter count (descending), include ID for linking
         place.topSenders = Object.entries(place.senderCounts)
-            .sort((a, b) => b[1] - a[1])
+            .sort((a, b) => b[1].count - a[1].count)
             .slice(0, 5)
-            .map(([name, count]) => ({ name, count }));
+            .map(([name, data]) => ({ name, count: data.count, id: data.id }));
         place.senderCount = Object.keys(place.senderCounts).length;
+
+        // Calculate dominant language
+        const langEntries = Object.entries(place.languageCounts);
+        if (langEntries.length > 0) {
+            langEntries.sort((a, b) => b[1] - a[1]);
+            place.dominantLanguage = langEntries[0][0];
+            place.dominantLanguageCount = langEntries[0][1];
+            place.dominantLanguageRatio = langEntries[0][1] / place.letter_count;
+        } else {
+            place.dominantLanguage = null;
+            place.dominantLanguageCount = 0;
+            place.dominantLanguageRatio = 0;
+        }
     });
 
     return places;
@@ -651,6 +706,7 @@ function initMap() {
         renderPlaceMarkers(placeAggregation);
         setMapStyle(currentMapStyle);
         mapInitialized = true;
+        updateMapLegend();
     });
 
     // Layer switcher button
@@ -660,6 +716,12 @@ function initMap() {
             currentMapStyle = (currentMapStyle === 'light') ? 'dark' : 'light';
             setMapStyle(currentMapStyle);
         });
+    }
+
+    // Color mode toggle button
+    const colorToggleBtn = document.getElementById('map-color-toggle');
+    if (colorToggleBtn) {
+        colorToggleBtn.addEventListener('click', toggleMapColorMode);
     }
 }
 
@@ -701,6 +763,11 @@ function placesToGeoJSON(places) {
     const features = [];
 
     Object.values(places).forEach(place => {
+        // Get color for dominant language
+        const langColor = place.dominantLanguage
+            ? (LANGUAGE_COLORS[place.dominantLanguage] || LANGUAGE_COLORS['other'])
+            : LANGUAGE_COLORS['other'];
+
         features.push({
             type: 'Feature',
             geometry: {
@@ -716,7 +783,10 @@ function placesToGeoJSON(places) {
                 year_min: place.years.length > 0 ? Math.min(...place.years) : null,
                 year_max: place.years.length > 0 ? Math.max(...place.years) : null,
                 top_senders: JSON.stringify(place.topSenders),
-                languages: place.languages.join(', ')
+                languages: place.languages.join(', '),
+                dominant_language: place.dominantLanguage || 'other',
+                dominant_language_ratio: place.dominantLanguageRatio || 0,
+                language_color: langColor
             }
         });
     });
@@ -760,7 +830,7 @@ function renderPlaceMarkers(places) {
 
 // Add map layers
 function addMapLayers() {
-    // Cluster layer
+    // Cluster layer - always uniform color (clusters mix languages)
     map.addLayer({
         id: 'places-clusters',
         type: 'circle',
@@ -799,14 +869,14 @@ function addMapLayers() {
         }
     });
 
-    // Individual place markers
+    // Individual place markers - color by language or uniform
     map.addLayer({
         id: 'places-layer',
         type: 'circle',
         source: 'places',
         filter: ['!', ['has', 'point_count']],
         paint: {
-            'circle-color': PRIMARY_COLOR,
+            'circle-color': getMapCircleColorExpression(),
             'circle-radius': [
                 'interpolate',
                 ['linear'],
@@ -819,9 +889,107 @@ function addMapLayers() {
             ],
             'circle-stroke-width': 2,
             'circle-stroke-color': '#ffffff',
-            'circle-opacity': 0.8
+            'circle-opacity': 0.85
         }
     });
+}
+
+// Get the circle color expression based on current color mode
+function getMapCircleColorExpression() {
+    if (mapColorMode === 'uniform') {
+        return PRIMARY_COLOR;
+    }
+
+    // Color by dominant language using match expression
+    return [
+        'match',
+        ['get', 'dominant_language'],
+        'de', LANGUAGE_COLORS['de'],
+        'fr', LANGUAGE_COLORS['fr'],
+        'it', LANGUAGE_COLORS['it'],
+        'en', LANGUAGE_COLORS['en'],
+        'es', LANGUAGE_COLORS['es'],
+        'pt', LANGUAGE_COLORS['pt'],
+        'la', LANGUAGE_COLORS['la'],
+        'hu', LANGUAGE_COLORS['hu'],
+        'nl', LANGUAGE_COLORS['nl'],
+        'cy', LANGUAGE_COLORS['cy'],
+        'oc', LANGUAGE_COLORS['oc'],
+        LANGUAGE_COLORS['other'] // default
+    ];
+}
+
+// Update map marker colors when color mode changes
+function updateMapColors() {
+    if (!map || !map.getLayer('places-layer')) return;
+
+    map.setPaintProperty('places-layer', 'circle-color', getMapCircleColorExpression());
+    updateMapLegend();
+}
+
+// Toggle map color mode
+function toggleMapColorMode() {
+    mapColorMode = (mapColorMode === 'language') ? 'uniform' : 'language';
+    updateMapColors();
+
+    // Update button state
+    const btn = document.getElementById('map-color-toggle');
+    if (btn) {
+        if (mapColorMode === 'language') {
+            btn.innerHTML = '<i class="fas fa-palette"></i>';
+            btn.title = 'Einheitliche Farbe verwenden';
+        } else {
+            btn.innerHTML = '<i class="fas fa-circle"></i>';
+            btn.title = 'Nach Sprache einfaerben';
+        }
+    }
+}
+
+// Update the map legend based on current data and color mode
+function updateMapLegend() {
+    const legend = document.getElementById('map-legend');
+    const legendItems = legend?.querySelector('.map-legend-items');
+    if (!legend || !legendItems) return;
+
+    // Hide legend in uniform mode
+    if (mapColorMode === 'uniform') {
+        legend.classList.add('hidden');
+        return;
+    }
+
+    legend.classList.remove('hidden');
+
+    // Count places per dominant language
+    const langCounts = {};
+    Object.values(placeAggregation).forEach(place => {
+        const lang = place.dominantLanguage || 'other';
+        if (!langCounts[lang]) {
+            langCounts[lang] = { places: 0, letters: 0 };
+        }
+        langCounts[lang].places++;
+        langCounts[lang].letters += place.letter_count;
+    });
+
+    // Sort by letter count
+    const sortedLangs = Object.entries(langCounts)
+        .sort((a, b) => b[1].letters - a[1].letters)
+        .slice(0, 8); // Show top 8 languages
+
+    // Build legend HTML
+    let html = '';
+    for (const [lang, counts] of sortedLangs) {
+        const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS['other'];
+        const label = LANGUAGE_LABELS[lang] || lang;
+        html += `
+            <div class="map-legend-item">
+                <span class="map-legend-color" style="background-color: ${color}"></span>
+                <span class="map-legend-label">${label}</span>
+                <span class="map-legend-count">${counts.places}</span>
+            </div>
+        `;
+    }
+
+    legendItems.innerHTML = html;
 }
 
 // Setup event handlers
@@ -873,15 +1041,23 @@ function showPlacePopup(lngLat, props) {
         ? `${props.year_min}–${props.year_max}`
         : 'unbekannt';
 
-    // Parse top senders from JSON
+    // Basket toggle state
+    const placeId = props.id;
+    const inBasket = isInBasket('places', placeId);
+
+    // Parse top senders from JSON - make them clickable
     let topSendersHtml = '';
     if (props.top_senders) {
         try {
             const topSenders = JSON.parse(props.top_senders);
             if (topSenders.length > 0) {
-                const senderItems = topSenders.map(s =>
-                    `<li>${escapeHtml(s.name)} <span class="popup-sender-count">(${s.count})</span></li>`
-                ).join('');
+                const senderItems = topSenders.map(s => {
+                    const personId = s.id || '';
+                    if (personId) {
+                        return `<li><a href="#" class="popup-person-link" data-person-id="${escapeHtml(personId)}">${escapeHtml(s.name)}</a> <span class="popup-sender-count">(${s.count})</span></li>`;
+                    }
+                    return `<li>${escapeHtml(s.name)} <span class="popup-sender-count">(${s.count})</span></li>`;
+                }).join('');
                 const moreText = props.sender_count > 5 ? `<li class="popup-more">... und ${props.sender_count - 5} weitere</li>` : '';
                 topSendersHtml = `
                     <div class="popup-top-senders">
@@ -896,21 +1072,80 @@ function showPlacePopup(lngLat, props) {
     }
 
     const html = `
-        <div class="popup">
-            <h3>${props.name}</h3>
+        <div class="popup popup-place" data-place-id="${escapeHtml(placeId)}">
+            <div class="popup-header">
+                <h3>${escapeHtml(props.name)}</h3>
+                <button class="popup-basket-toggle ${inBasket ? 'in-basket' : ''}"
+                        data-type="places" data-id="${escapeHtml(placeId)}"
+                        title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
             <div class="popup-stats">
                 <p><strong>${props.letter_count}</strong> Briefe von ${props.sender_count} Absendern</p>
                 <p class="popup-year-range">${yearRange}</p>
                 ${topSendersHtml}
                 ${props.languages ? `<p class="popup-languages"><small>Sprachen: ${props.languages}</small></p>` : ''}
             </div>
+            <div class="popup-actions">
+                <button class="popup-action-btn popup-show-letters" data-place-id="${escapeHtml(placeId)}">
+                    <i class="fas fa-envelope"></i> Briefe anzeigen
+                </button>
+            </div>
         </div>
     `;
 
-    new maplibregl.Popup()
+    const popup = new maplibregl.Popup()
         .setLngLat(lngLat)
         .setHTML(html)
         .addTo(map);
+
+    // Setup event handlers after popup is added to DOM
+    setupPopupEventHandlers(popup);
+}
+
+// Setup event handlers for place popup
+function setupPopupEventHandlers(popup) {
+    const popupEl = popup.getElement();
+    if (!popupEl) return;
+
+    // Basket toggle
+    const basketBtn = popupEl.querySelector('.popup-basket-toggle');
+    if (basketBtn) {
+        basketBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const type = basketBtn.dataset.type;
+            const id = basketBtn.dataset.id;
+            const nowInBasket = toggleBasketItem(type, id);
+            basketBtn.classList.toggle('in-basket', nowInBasket);
+            basketBtn.title = nowInBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen';
+        });
+    }
+
+    // Show letters button
+    const showLettersBtn = popupEl.querySelector('.popup-show-letters');
+    if (showLettersBtn) {
+        showLettersBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const placeId = showLettersBtn.dataset.placeId;
+            popup.remove();
+            applyPlaceFilter(placeId);
+            switchView('letters');
+        });
+    }
+
+    // Clickable person links
+    const personLinks = popupEl.querySelectorAll('.popup-person-link');
+    personLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const personId = link.dataset.personId;
+            popup.remove();
+            applyPersonFilter(personId);
+            switchView('letters');
+        });
+    });
 }
 
 // Initialize filters
@@ -1037,7 +1272,9 @@ function applyFilters() {
         let subjectMatch = true;
         if (selectedSubjectId) {
             const letterSubjects = letter.mentions?.subjects || [];
-            subjectMatch = letterSubjects.some(s => s.id === selectedSubjectId || s.label === selectedSubjectId);
+            subjectMatch = letterSubjects.some(s =>
+                (s.uri || s.id || s.label) === selectedSubjectId || s.label === selectedSubjectId
+            );
         }
 
         // Quality filters
@@ -1062,6 +1299,7 @@ function applyFilters() {
 
     if (map && map.loaded() && mapInitialized) {
         renderPlaceMarkers(placeAggregation);
+        updateMapLegend();
     }
 
     updateFilterCounts();
@@ -1073,6 +1311,12 @@ function applyFilters() {
         renderTopicsList();
     } else if (currentView === 'timeline') {
         renderTimeline();
+    } else if (currentView === 'persons') {
+        renderPersonsList();
+    } else if (currentView === 'letters') {
+        renderLettersList();
+    } else if (currentView === 'places') {
+        renderPlacesList();
     }
 }
 
@@ -2341,7 +2585,8 @@ function buildSubjectIndex() {
         const year = letter.year;
 
         letterSubjects.forEach(subject => {
-            const subjectId = subject.id || subject.label;
+            // Use uri as primary identifier, fallback to id, then label
+            const subjectId = subject.uri || subject.id || subject.label;
             const subjectLabel = subject.label;
 
             if (!subjectIndex[subjectId]) {
@@ -2374,7 +2619,7 @@ function buildSubjectIndex() {
 
             // Track co-occurrence with other subjects in same letter
             letterSubjects.forEach(otherSubject => {
-                const otherId = otherSubject.id || otherSubject.label;
+                const otherId = otherSubject.uri || otherSubject.id || otherSubject.label;
                 if (otherId !== subjectId) {
                     subjectIndex[subjectId].cooccurrence[otherId] =
                         (subjectIndex[subjectId].cooccurrence[otherId] || 0) + 1;
@@ -2395,7 +2640,7 @@ function renderTopicsList() {
     filteredLetters.forEach(letter => {
         if (!letter.mentions?.subjects) return;
         letter.mentions.subjects.forEach(subject => {
-            const subjectId = subject.id || subject.label;
+            const subjectId = subject.uri || subject.id || subject.label;
             if (!filteredTopicCounts[subjectId]) {
                 filteredTopicCounts[subjectId] = 0;
             }
@@ -2479,7 +2724,7 @@ function selectTopic(topicId) {
     // Calculate filtered data for this topic
     const filteredTopicLetters = filteredLetters.filter(letter => {
         const subjects = letter.mentions?.subjects || [];
-        return subjects.some(s => (s.id || s.label) === topicId);
+        return subjects.some(s => (s.uri || s.id || s.label) === topicId);
     });
 
     const filteredCount = filteredTopicLetters.length;
@@ -2510,7 +2755,7 @@ function selectTopic(topicId) {
     filteredTopicLetters.forEach(letter => {
         const subjects = letter.mentions?.subjects || [];
         subjects.forEach(s => {
-            const otherId = s.id || s.label;
+            const otherId = s.uri || s.id || s.label;
             if (otherId !== topicId) {
                 filteredCooccurrence[otherId] = (filteredCooccurrence[otherId] || 0) + 1;
             }
@@ -2987,6 +3232,7 @@ function applyPlaceFilter(placeId) {
 
     if (map && map.loaded() && mapInitialized) {
         renderPlaceMarkers(placeAggregation);
+        updateMapLegend();
     }
 
     updateFilterCounts();
@@ -3628,20 +3874,30 @@ function formatDateWithPrecision(letter) {
 
     const date = letter.date;
     const precision = letter.datePrecision;
+    const certainty = letter.dateCertainty;
+
+    let formattedDate;
 
     // Format based on precision
     if (precision === 'year') {
-        return `ca. ${date}`;
+        formattedDate = `ca. ${date}`;
     } else if (precision === 'month') {
         // YYYY-MM -> "Mon YYYY"
         const [year, month] = date.split('-');
         const monthNames = ['Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
-        return `${monthNames[parseInt(month) - 1]} ${year}`;
+        formattedDate = `${monthNames[parseInt(month) - 1]} ${year}`;
     } else if (precision === 'range' && letter.dateTo) {
-        return `${date} - ${letter.dateTo}`;
+        formattedDate = `${date} - ${letter.dateTo}`;
+    } else {
+        formattedDate = date;
     }
 
-    return date;
+    // Add uncertainty marker with tooltip for cert="low"
+    if (certainty === 'low') {
+        formattedDate += ` <i class="fas fa-question-circle uncertainty-marker" title="Unsichere Datierung: Die Quelle markiert dieses Datum als unsicher (cert=low)"></i>`;
+    }
+
+    return formattedDate;
 }
 
 // Get initials for person, handling unknown persons

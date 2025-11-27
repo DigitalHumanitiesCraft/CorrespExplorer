@@ -87,14 +87,23 @@
                     <div class="stat-card">
                         <div class="stat-value" id="total-letters-count">-</div>
                         <div class="stat-label">Briefe</div>
+                        <span class="stat-quality-icon" id="letters-quality-icon" title="" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </span>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="total-senders-count">-</div>
                         <div class="stat-label">Absender</div>
+                        <span class="stat-quality-icon" id="senders-quality-icon" title="" style="display: none;">
+                            <i class="fas fa-question-circle"></i>
+                        </span>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="total-places-count">-</div>
                         <div class="stat-label">Orte</div>
+                        <span class="stat-quality-icon" id="places-quality-icon" title="" style="display: none;">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </span>
                     </div>
                 </div>
 
@@ -115,8 +124,9 @@
 
                 <!-- Topics Quick Filter (dynamically populated) -->
                 <div class="filter-group" role="group" aria-labelledby="filter-topics-heading" id="topics-filter-group" style="display: none;">
-                    <h4 id="filter-topics-heading">Top-Themen</h4>
-                    <div id="topics-quick-filter"></div>
+                    <h4 id="filter-topics-heading">Themen</h4>
+                    <input type="search" id="topics-quick-search" class="topics-quick-search" placeholder="Thema suchen..." aria-label="Thema suchen">
+                    <div id="topics-quick-filter" class="topics-quick-list"></div>
                     <a href="#" id="show-all-topics" class="show-all-link">Alle Themen anzeigen</a>
                 </div>
 
@@ -171,9 +181,18 @@
                 <!-- Map View -->
                 <div id="map-view" class="tab-content active">
                     <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
-                    <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln">
-                        <i class="fas fa-sun"></i>
-                    </button>
+                    <div class="map-controls">
+                        <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln">
+                            <i class="fas fa-sun"></i>
+                        </button>
+                        <button id="map-color-toggle" class="map-control-btn" title="Einheitliche Farbe verwenden">
+                            <i class="fas fa-palette"></i>
+                        </button>
+                    </div>
+                    <div id="map-legend" class="map-legend">
+                        <div class="map-legend-title">Dominante Sprache</div>
+                        <div class="map-legend-items"></div>
+                    </div>
                 </div>
 
                 <!-- Persons View -->
