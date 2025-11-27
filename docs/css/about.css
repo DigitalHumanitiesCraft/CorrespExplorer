@@ -4,6 +4,7 @@
     max-width: 800px;
     margin: 0 auto;
     padding: var(--space-xl);
+    padding-top: calc(var(--navbar-height) + var(--space-xl));
     min-height: 100vh;
 }
 

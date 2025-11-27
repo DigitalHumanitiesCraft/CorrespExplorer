@@ -46,6 +46,32 @@ button, .btn {
     font-family: var(--font-base);
 }
 
+/* Global Secondary Navigation (Top Right) */
+.landing-nav {
+    position: fixed;
+    top: var(--space-lg);
+    right: var(--space-xl);
+    display: flex;
+    gap: var(--space-md);
+    z-index: 100;
+}
+
+.landing-nav a {
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+}
+
+.landing-nav a:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
 /* Navbar - Border-based design */
 .navbar {
     position: fixed;
@@ -257,17 +283,18 @@ button, .btn {
 .nav-dropdown-menu {
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     background: var(--color-bg);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
-    min-width: 160px;
+    min-width: 200px;
     margin-top: 8px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
     transition: all 0.2s ease;
     z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .nav-dropdown.active .nav-dropdown-menu {
@@ -295,6 +322,22 @@ button, .btn {
 
 .nav-dropdown-item:hover {
     background: var(--color-bg-secondary);
+}
+
+.nav-dropdown-item i {
+    width: 20px;
+    margin-right: var(--space-sm);
+    color: var(--color-text-light);
+}
+
+.nav-dropdown-item:hover i {
+    color: var(--color-primary);
+}
+
+.nav-dropdown-divider {
+    height: 1px;
+    background: var(--color-border-light);
+    margin: var(--space-xs) 0;
 }
 
 /* Container */
@@ -735,7 +778,19 @@ button, .btn {
     }
 
     .nav-links {
+        display: flex;
+        gap: var(--space-xs);
+    }
+
+    .nav-links .nav-link-text {
         display: none;
+    }
+
+    .nav-links .nav-link {
+        padding: var(--space-xs);
+        min-width: 36px;
+        min-height: 36px;
+        justify-content: center;
     }
 
     .data-source-switcher {

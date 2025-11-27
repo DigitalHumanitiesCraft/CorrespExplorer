@@ -1,0 +1,321 @@
+/* Promptotyping Vault Styles */
+
+/* Container */
+.vault-container {
+    min-height: calc(100vh - var(--navbar-height));
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    padding-top: var(--navbar-height);
+}
+
+/* Main Layout */
+.vault-main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 0;
+    padding: var(--space-lg);
+}
+
+/* Sidebar */
+.vault-sidebar {
+    background: var(--color-bg-light);
+    border: var(--border-card);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    height: fit-content;
+    position: sticky;
+    top: calc(var(--navbar-height) + var(--space-lg));
+}
+
+.vault-sidebar h3 {
+    font-family: var(--font-headings);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    margin: 0 0 var(--space-md) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.vault-sidebar h3 i {
+    color: var(--color-primary);
+}
+
+/* Document List */
+.doc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.doc-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    color: var(--color-text);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+}
+
+.doc-item:hover {
+    background: var(--color-bg);
+}
+
+.doc-item.active {
+    background: var(--color-primary);
+    color: white;
+}
+
+.doc-item i {
+    width: 14px;
+    text-align: center;
+    opacity: 0.6;
+    font-size: 12px;
+}
+
+.doc-item.active i {
+    opacity: 1;
+}
+
+.doc-category {
+    margin-top: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.doc-category.first {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.doc-category-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-xs);
+    padding: 0 var(--space-sm);
+}
+
+/* Content Area */
+.vault-content {
+    background: white;
+    border: var(--border-card);
+    border-radius: var(--radius-md);
+    padding: var(--space-xl);
+    margin-left: var(--space-lg);
+    overflow-x: auto;
+}
+
+.content-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--color-text-light);
+}
+
+.content-placeholder i {
+    font-size: 36px;
+    margin-bottom: var(--space-md);
+    opacity: 0.2;
+}
+
+/* Document Header */
+.doc-header {
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.doc-header h1 {
+    font-family: var(--font-headings);
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.doc-meta {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.doc-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.doc-meta-item i {
+    color: var(--color-primary);
+    font-size: 10px;
+}
+
+/* Markdown Content */
+.markdown-body {
+    font-family: var(--font-base);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-base);
+    color: var(--color-text);
+}
+
+.markdown-body h1 {
+    font-family: var(--font-headings);
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+    margin: var(--space-xl) 0 var(--space-md) 0;
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.markdown-body h1:first-child {
+    margin-top: 0;
+}
+
+.markdown-body h2 {
+    font-family: var(--font-headings);
+    font-size: var(--font-size-md);
+    color: var(--color-text);
+    margin: var(--space-lg) 0 var(--space-sm) 0;
+}
+
+.markdown-body h3 {
+    font-family: var(--font-headings);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    margin: var(--space-md) 0 var(--space-xs) 0;
+}
+
+.markdown-body p {
+    margin: 0 0 var(--space-sm) 0;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    margin: 0 0 var(--space-sm) 0;
+    padding-left: var(--space-lg);
+}
+
+.markdown-body li {
+    margin-bottom: 2px;
+}
+
+.markdown-body a {
+    color: var(--color-secondary);
+    text-decoration: none;
+}
+
+.markdown-body a:hover {
+    text-decoration: underline;
+}
+
+.markdown-body code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--color-bg-light);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.markdown-body pre {
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    overflow-x: auto;
+    margin: 0 0 var(--space-sm) 0;
+}
+
+.markdown-body pre code {
+    background: none;
+    padding: 0;
+}
+
+.markdown-body blockquote {
+    border-left: 3px solid var(--color-primary);
+    padding-left: var(--space-md);
+    margin: var(--space-sm) 0;
+    color: var(--color-text-light);
+}
+
+.markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-sm) 0;
+    font-size: var(--font-size-xs);
+}
+
+.markdown-body th,
+.markdown-body td {
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border-light);
+    text-align: left;
+}
+
+.markdown-body th {
+    background: var(--color-bg-light);
+    font-weight: 600;
+}
+
+.markdown-body hr {
+    border: none;
+    border-top: 1px solid var(--color-border-light);
+    margin: var(--space-lg) 0;
+}
+
+/* Loading */
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl);
+    color: var(--color-text-light);
+}
+
+.loading-indicator i {
+    margin-right: var(--space-sm);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .vault-main {
+        grid-template-columns: 1fr;
+    }
+
+    .vault-sidebar {
+        position: static;
+        margin-bottom: var(--space-md);
+    }
+
+    .vault-content {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .vault-main {
+        padding: var(--space-sm);
+    }
+
+    .vault-content {
+        padding: var(--space-md);
+    }
+}
