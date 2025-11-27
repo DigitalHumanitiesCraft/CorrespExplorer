@@ -2,7 +2,7 @@
 // Displays data from sessionStorage (uploaded/loaded via upload.js)
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS, computeLanguageColors } from './constants.js';
-import { initBasketUI, createBasketToggle, setupBasketToggles, isInBasket, toggleBasketItem } from './basket-ui.js';
+import { initBasketUI } from './basket-ui.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
 import { debounce, escapeHtml } from './utils.js';
 import {
@@ -1884,7 +1884,6 @@ function renderPersonsList() {
                     </div>
                 </div>
                 <div class="person-actions">
-                    ${createBasketToggle('persons', personKey)}
                     ${person.id ? `
                         <button class="btn-person-info" data-person-id="${escapeHtml(personKey)}"
                                 title="Person-Details anzeigen" onclick="event.stopPropagation()">
@@ -1902,9 +1901,6 @@ function renderPersonsList() {
             </div>
         `;
     }).join('');
-
-    // Setup basket toggle buttons
-    setupBasketToggles(container);
 
     // Add click handlers for person filtering
     container.querySelectorAll('.person-card').forEach(card => {
@@ -2024,7 +2020,6 @@ function renderLettersList() {
                         ${recipientName}
                     </div>
                     <div class="letter-header-actions">
-                        ${letter.id ? createBasketToggle('letters', letter.id) : ''}
                         <div class="letter-date ${dateClass}">${date}</div>
                     </div>
                 </div>
@@ -2039,9 +2034,6 @@ function renderLettersList() {
             </div>
         `;
     }).join('');
-
-    // Setup basket toggle buttons
-    setupBasketToggles(container);
 
     // Show count info if limited
     if (letters.length > 500) {
@@ -3498,20 +3490,14 @@ function renderPlacesList() {
                     <div class="place-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
                     <div class="place-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
                 </div>
-                ${createBasketToggle('places', place.id)}
                 <div class="place-count">${place.filteredCount}</div>
             </div>
         `;
     }).join('');
 
-    // Setup basket toggle buttons
-    setupBasketToggles(container);
-
     // Add click handlers
     container.querySelectorAll('.place-card').forEach(card => {
         card.addEventListener('click', (e) => {
-            // Don't select place if clicking basket toggle
-            if (e.target.closest('.basket-toggle')) return;
             const placeId = card.dataset.placeId;
             selectPlace(placeId);
         });
