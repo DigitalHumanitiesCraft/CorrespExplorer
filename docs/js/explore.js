@@ -1305,6 +1305,7 @@ function applyFilters() {
     updateFilterCounts();
     updateUrlState();
     updatePersonFilterDisplay();
+    updateFilterIndicators();
 
     // Re-render active view
     if (currentView === 'topics') {
@@ -1329,12 +1330,60 @@ function applyPersonFilter(personId) {
 
     // Update UI to show active filter
     updatePersonFilterDisplay();
+    updateFilterIndicators();
 }
 
 // Clear person filter
 function clearPersonFilter() {
     selectedPersonId = null;
     applyFilters();
+    updateFilterIndicators();
+}
+
+// Update filter indicators on view buttons
+function updateFilterIndicators() {
+    const hasActiveFilter = selectedPersonId || selectedSubjectId ||
+        qualityFilter.preciseDates || qualityFilter.knownPersons || qualityFilter.locatedPlaces;
+
+    // Update letters button with filter indicator
+    const lettersBtn = document.querySelector('[data-view="letters"]');
+    if (lettersBtn) {
+        let indicator = lettersBtn.querySelector('.filter-indicator');
+        if (hasActiveFilter) {
+            if (!indicator) {
+                indicator = document.createElement('span');
+                indicator.className = 'filter-indicator';
+                indicator.title = 'Filter aktiv';
+                lettersBtn.appendChild(indicator);
+            }
+        } else if (indicator) {
+            indicator.remove();
+        }
+    }
+
+    // Update map button
+    const mapBtn = document.querySelector('[data-view="map"]');
+    if (mapBtn) {
+        let indicator = mapBtn.querySelector('.filter-indicator');
+        if (hasActiveFilter) {
+            if (!indicator) {
+                indicator = document.createElement('span');
+                indicator.className = 'filter-indicator';
+                indicator.title = 'Filter aktiv';
+                mapBtn.appendChild(indicator);
+            }
+        } else if (indicator) {
+            indicator.remove();
+        }
+    }
+
+    // Update stats card to show filtered count
+    const letterCountEl = document.getElementById('letter-count');
+    if (letterCountEl && hasActiveFilter) {
+        letterCountEl.innerHTML = `${filteredLetters.length} <span class="filtered-indicator">/ ${allLetters.length}</span>`;
+    } else if (letterCountEl) {
+        letterCountEl.textContent = allLetters.length;
+    }
 }
 
 // Update person filter display in sidebar
@@ -2893,13 +2942,13 @@ function selectTopic(topicId) {
     }
 }
 
-// Apply subject filter
+// Apply subject filter (stays on current view, updates map/data)
 function applySubjectFilter(subjectId) {
     selectedSubjectId = subjectId;
     applyFilters();
     updateSubjectFilterDisplay();
     updateTopicsQuickFilterState();
-    switchView('letters');
+    updateFilterIndicators();
     updateUrlState();
 }
 
@@ -2909,6 +2958,7 @@ function clearSubjectFilter() {
     applyFilters();
     updateSubjectFilterDisplay();
     updateTopicsQuickFilterState();
+    updateFilterIndicators();
 }
 
 // Update subject filter display in sidebar

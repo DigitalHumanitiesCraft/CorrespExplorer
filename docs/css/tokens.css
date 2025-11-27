@@ -175,10 +175,11 @@
     color: var(--color-text-muted);
 }
 
-.date-uncertain::after {
-    content: " (?)";
+/* Uncertainty marker with tooltip (used in HTML, not ::after) */
+.uncertainty-marker {
     color: var(--color-warning);
     font-size: 0.9em;
+    cursor: help;
 }
 
 .date-unknown {
@@ -204,6 +205,7 @@
 .person-partial .person-avatar {
     background: var(--color-bg-light);
     border: 2px dashed var(--color-border-light);
+    color: var(--color-text-muted);
 }
 
 /* Place Precision */
@@ -235,12 +237,27 @@
     border-color: var(--color-warning);
 }
 
-/* Stats Sub-info (for sidebar statistics) */
+/* Stats Sub-info (for sidebar statistics) - deprecated, use icons */
 .stats-subinfo {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
-    margin-top: var(--space-xs);
-    padding-left: var(--space-md);
+    display: none;
+}
+
+/* Stats Quality Icon (shows uncertainty with tooltip) */
+.stat-quality-icon {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-warning);
+    cursor: help;
+}
+
+.stat-quality-icon:hover {
+    color: var(--color-primary);
+}
+
+.stat-card {
+    position: relative;
 }
 
 /* ========================================

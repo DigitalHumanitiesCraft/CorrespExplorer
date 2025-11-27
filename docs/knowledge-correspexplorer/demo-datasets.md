@@ -8,6 +8,7 @@ Dokumentation der analysierten CMIF-Datensaetze zur Verwendung als Beispiele und
 
 | ID | Name | Briefe | Zeitraum | Quelle |
 |----|------|--------|----------|--------|
+| uncertainty | Uncertainty Test | 18 | 1900 | CorrespExplorer |
 | hebel | Hebel-Briefe | 25 | 1791-1826 | TU Darmstadt |
 | rollett | Rollett-Korrespondenz | 328 | 1877-1897 | Uni Graz |
 | humboldt-spiker | Humboldt-Spiker | 156 | 1827-1846 | correspSearch |
@@ -17,6 +18,51 @@ Dokumentation der analysierten CMIF-Datensaetze zur Verwendung als Beispiele und
 ---
 
 ## Detailanalyse
+
+### 0. Uncertainty Test (CorrespExplorer)
+
+URL: `data/test-uncertainty.xml` (lokal)
+
+Datenfelder:
+- persName: ja (teils mit VIAF, teils ohne)
+- placeName: ja (teils mit GeoNames, teils ohne)
+- date: ja (alle Varianten)
+- language: teils (1 Brief mit de)
+- subjects: nein
+
+Besonderheiten:
+- Synthetischer Testdatensatz fuer alle Unsicherheitsfaelle
+- 18 Testfaelle fuer systematische Validierung
+- Alle Datums-Varianten: exakt, Monat, Jahr, Bereich, notBefore/notAfter, cert="low", fehlend
+- Alle Personen-Varianten: identifiziert, [NN], Unbekannt, partial name, ohne Authority
+- Alle Orts-Varianten: mit GeoNames, ohne GeoNames, Region, Land, Unbekannt, fehlend
+- Organisation als Absender (orgName)
+- Kombinierte Unsicherheiten (Case 17)
+
+Testfaelle im Detail:
+1. Vollstaendige Daten (Baseline)
+2. Datum nur Jahr-Monat (1900-06)
+3. Datum nur Jahr (1900)
+4. Datumsbereich from/to
+5. Datumsbereich notBefore/notAfter
+6. Datum mit cert="low"
+7. Kein Datum
+8. Unbekannter Absender [NN]
+9. Unbekannter Absender "Unbekannt"
+10. Teilname "Rozario, [NN] de"
+11. Unbekannter Empfaenger
+12. Unbekannter Ort "Unbekannt"
+13. Region ohne GeoNames (Steiermark)
+14. Nur Land (Deutschland)
+15. Kein Ort
+16. Person ohne Authority-Referenz
+17. Mehrfache Unsicherheiten kombiniert
+18. Organisation als Absender
+
+Verwendung:
+- Validierung der Unsicherheits-Erkennung im Parser
+- UI-Tests fuer visuelle Indikatoren
+- Dokumentation siehe: uncertainty-concept.md
 
 ### 1. Hebel-Briefe (TU Darmstadt)
 
@@ -134,25 +180,26 @@ Testfaelle:
 
 ## Datenabdeckung Matrix
 
-| Feature | Hebel | Rollett | H-Spiker | H-Duvinage | Schoenbach |
-|---------|-------|---------|----------|------------|------------|
-| GND-IDs | ja | ja | ja | ja | ja |
-| GeoNames | ja | ja | ja | ja | ja |
-| Sprache | ja | nein | nein | nein | nein |
-| Themen | nein | nein | nein | nein | nein |
-| Exakte Daten | teils | ja | teils | teils | ja |
-| Alle Orte bekannt | nein | ja | ja | ja | ja |
-| Alle Personen bekannt | ja | nein | ja | ja | ja |
+| Feature | Uncertainty | Hebel | Rollett | H-Spiker | H-Duvinage | Schoenbach |
+|---------|-------------|-------|---------|----------|------------|------------|
+| GND-IDs | teils | ja | ja | ja | ja | ja |
+| GeoNames | teils | ja | ja | ja | ja | ja |
+| Sprache | teils | ja | nein | nein | nein | nein |
+| Themen | nein | nein | nein | nein | nein | nein |
+| Exakte Daten | teils | teils | ja | teils | teils | ja |
+| Alle Orte bekannt | nein | nein | ja | ja | ja | ja |
+| Alle Personen bekannt | nein | ja | nein | ja | ja | ja |
 
 ---
 
 ## Empfohlene Test-Reihenfolge
 
-1. Schoenbach - Minimal, schnell, alle Features pruefbar
-2. Hebel - Einziger mit Sprache, viele fehlende Orte
-3. Humboldt-Spiker - Mittlere Groesse, Datierungsunsicherheit
-4. Humboldt-Duvinage - Wenige Orte, fehlende Daten
-5. Rollett - Gross, Performance-Test, [NN]-Behandlung
+1. Uncertainty - Alle Unsicherheitsfaelle, systematische Validierung
+2. Schoenbach - Minimal, schnell, alle Features pruefbar
+3. Hebel - Einziger mit Sprache, viele fehlende Orte
+4. Humboldt-Spiker - Mittlere Groesse, Datierungsunsicherheit
+5. Humboldt-Duvinage - Wenige Orte, fehlende Daten
+6. Rollett - Gross, Performance-Test, [NN]-Behandlung
 
 ---
 
@@ -162,6 +209,12 @@ Vorgeschlagene Presets fuer index.html:
 
 ```javascript
 const DEMO_DATASETS = [
+    {
+        id: 'uncertainty',
+        name: 'Uncertainty Test (1900)',
+        url: 'data/test-uncertainty.xml',
+        description: '18 Testfaelle fuer Unsicherheits-Visualisierung'
+    },
     {
         id: 'hebel',
         name: 'Hebel-Briefe (1791-1826)',

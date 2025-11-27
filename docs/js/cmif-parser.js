@@ -35,6 +35,17 @@ export async function parseCMIF(source, onProgress = null) {
             }
             throw fetchError;
         }
+    } else if (source.endsWith('.xml') || source.includes('/')) {
+        // Relative URL (local file path like 'data/test.xml')
+        try {
+            const response = await fetch(source);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            xmlString = await response.text();
+        } catch (fetchError) {
+            throw new Error(`Fehler beim Laden der lokalen Datei: ${fetchError.message}`);
+        }
     } else {
         xmlString = source;
     }
