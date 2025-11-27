@@ -2232,6 +2232,116 @@
     .topic-detail-panel {
         min-height: 300px;
     }
+
+    /* Timeline mobile */
+    .timeline-container {
+        padding: var(--space-md);
+    }
+
+    .timeline-chart {
+        height: 200px;
+        padding-top: 40px;
+        padding-bottom: 50px;
+        padding-left: 30px;
+    }
+
+    .timeline-bar-label {
+        font-size: 9px;
+    }
+
+    .timeline-controls {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .timeline-control-group {
+        width: 100%;
+    }
+
+    .timeline-stack-legend {
+        flex-wrap: wrap;
+        font-size: var(--font-size-xs);
+    }
+
+    /* Network mobile */
+    .network-container {
+        padding: var(--space-md);
+    }
+
+    .network-controls {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .network-control-group {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    #network-canvas {
+        height: 300px;
+    }
+
+    /* Places mobile */
+    .places-layout {
+        flex-direction: column;
+    }
+
+    .places-list-panel {
+        max-height: 40vh;
+    }
+
+    .place-card {
+        padding: var(--space-sm);
+    }
+
+    /* Map mobile */
+    #map {
+        height: calc(100vh - var(--navbar-height) - 60px);
+    }
+
+    .map-legend {
+        max-width: 200px;
+        font-size: var(--font-size-xs);
+    }
+}
+
+/* Small mobile (≤480px) */
+@media (max-width: 480px) {
+    .timeline-chart {
+        height: 150px;
+        padding-left: 25px;
+    }
+
+    .timeline-bar-label {
+        font-size: 8px;
+    }
+
+    .timeline-y-tick-label {
+        font-size: 9px;
+    }
+
+    .person-card {
+        padding: var(--space-sm);
+    }
+
+    .person-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: var(--font-size-xs);
+    }
+
+    .person-name {
+        font-size: var(--font-size-sm);
+    }
+
+    .letter-card {
+        padding: var(--space-sm);
+    }
+
+    .letter-correspondents {
+        font-size: var(--font-size-sm);
+    }
 }
 
 /* Missing Places Link and Modal */
