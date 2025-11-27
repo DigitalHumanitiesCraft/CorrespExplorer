@@ -191,7 +191,56 @@ explore.html?dataset=hsa&yearMin=1900&yearMax=1920&person=123&langs=de,fr
 
 ---
 
-## 6. Roadmap / Offene Punkte
+## 6. Code-Architektur und Refactoring
+
+### Modulstruktur (Stand 2025-11)
+
+```
+docs/js/
+├── Entry Points
+│   ├── explore.js (4200+ Zeilen, Haupt-Visualisierung)
+│   ├── upload.js (Upload/API-Anbindung)
+│   ├── compare.js (Vergleichsansicht)
+│   └── wissenskorb.js (Basket-Standalone)
+├── Core
+│   ├── cmif-parser.js (XML/JSON Parsing)
+│   └── correspsearch-api.js (API-Integration)
+└── Shared
+    ├── utils.js (Hilfsfunktionen)
+    ├── constants.js (Farben, Defaults)
+    ├── basket.js (Basket State)
+    ├── basket-ui.js (Basket UI)
+    ├── formatters.js (Datum/Person/Ort-Formatierung)
+    └── wikidata-enrichment.js (Personen-Anreicherung)
+```
+
+### Erkenntnisse aus Refactoring-Analyse
+
+**explore.js Monolith:**
+- 4200+ Zeilen, 85+ Funktionen, 7 Views
+- Starke Kopplung zwischen Views und State
+- Globale Variablen: `allLetters`, `filteredLetters`, `currentView`, etc.
+- UI-Events direkt mit Filterlogik verwoben
+
+**Erfolgreich extrahierte Module:**
+- `formatters.js`: Reine Funktionen ohne Side Effects
+- `basket.js/basket-ui.js`: Eigener State mit klarer API
+- `wikidata-enrichment.js`: Isolierte API-Aufrufe mit Caching
+- `constants.js`: Konfigurationswerte
+
+**Herausforderungen bei weiterer Modularisierung:**
+- Views teilen viel State (`filteredLetters`, `temporalFilter`)
+- Event-Handler rufen direkt andere Funktionen auf (`applyFilters`, `switchView`)
+- URL-State-Synchronisation greift auf viele globale Variablen zu
+
+**Empfohlene Strategie fuer weitere Modularisierung:**
+1. State-Management einfuehren (Store-Pattern)
+2. Views als Module mit definierten Inputs/Outputs
+3. Event-Bus fuer View-uebergreifende Kommunikation
+
+---
+
+## 7. Roadmap / Offene Punkte
 
 ### Y-Achsen-Gridlines (Timeline)
 
