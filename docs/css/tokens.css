@@ -199,6 +199,7 @@
 
 .person-named {
     /* No special styling - name present but no authority */
+    opacity: 0.85;
 }
 
 .person-unknown .person-avatar,
@@ -211,11 +212,22 @@
 /* Place Precision */
 .place-region {
     color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.place-region .region-hint {
+    font-size: 0.8em;
+    opacity: 0.7;
 }
 
 .place-unknown {
     color: var(--color-text-muted);
     font-style: italic;
+}
+
+.place-unknown i {
+    color: var(--color-warning);
+    margin-left: 4px;
 }
 
 /* Uncertainty Indicator Badge */

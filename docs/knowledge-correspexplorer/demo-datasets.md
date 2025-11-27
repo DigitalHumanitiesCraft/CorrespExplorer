@@ -8,7 +8,7 @@ Dokumentation der analysierten CMIF-Datensaetze zur Verwendung als Beispiele und
 
 | ID | Name | Briefe | Zeitraum | Quelle |
 |----|------|--------|----------|--------|
-| uncertainty | Uncertainty Test | 18 | 1900 | CorrespExplorer |
+| uncertainty | Uncertainty Test | 22 | 1900 | CorrespExplorer |
 | hebel | Hebel-Briefe | 25 | 1791-1826 | TU Darmstadt |
 | rollett | Rollett-Korrespondenz | 328 | 1877-1897 | Uni Graz |
 | humboldt-spiker | Humboldt-Spiker | 156 | 1827-1846 | correspSearch |
@@ -27,19 +27,22 @@ Datenfelder:
 - persName: ja (teils mit VIAF, teils ohne)
 - placeName: ja (teils mit GeoNames, teils ohne)
 - date: ja (alle Varianten)
-- language: teils (1 Brief mit de)
-- subjects: nein
+- language: teils (2 Briefe mit de, 1 mit fr)
+- subjects: ja (1 Brief mit Themen)
 
 Besonderheiten:
 - Synthetischer Testdatensatz fuer alle Unsicherheitsfaelle
-- 18 Testfaelle fuer systematische Validierung
+- 22 Testfaelle fuer systematische Validierung in 4 Sektionen
 - Alle Datums-Varianten: exakt, Monat, Jahr, Bereich, notBefore/notAfter, cert="low", fehlend
-- Alle Personen-Varianten: identifiziert, [NN], Unbekannt, partial name, ohne Authority
+- Alle Personen-Varianten: identifiziert, [NN], Unbekannt, partial name, ohne Authority, GND statt VIAF
 - Alle Orts-Varianten: mit GeoNames, ohne GeoNames, Region, Land, Unbekannt, fehlend
 - Organisation als Absender (orgName)
-- Kombinierte Unsicherheiten (Case 17)
+- Kombinierte Unsicherheiten (Case 020)
+- Sprach- und Themenfelder (Cases 021-022)
 
-Testfaelle im Detail:
+Testfaelle im Detail (4 Sektionen):
+
+Section A - Date Uncertainty (001-007):
 1. Vollstaendige Daten (Baseline)
 2. Datum nur Jahr-Monat (1900-06)
 3. Datum nur Jahr (1900)
@@ -47,17 +50,27 @@ Testfaelle im Detail:
 5. Datumsbereich notBefore/notAfter
 6. Datum mit cert="low"
 7. Kein Datum
+
+Section B - Person Uncertainty (008-013):
 8. Unbekannter Absender [NN]
 9. Unbekannter Absender "Unbekannt"
 10. Teilname "Rozario, [NN] de"
-11. Unbekannter Empfaenger
-12. Unbekannter Ort "Unbekannt"
-13. Region ohne GeoNames (Steiermark)
-14. Nur Land (Deutschland)
-15. Kein Ort
-16. Person ohne Authority-Referenz
-17. Mehrfache Unsicherheiten kombiniert
-18. Organisation als Absender
+11. Unbekannter Empfaenger "Unknown"
+12. Person ohne Authority-Referenz
+13. Person mit GND (statt VIAF)
+
+Section C - Place Uncertainty (014-018):
+14. Unbekannter Ort "Unbekannt"
+15. Region ohne GeoNames (Steiermark)
+16. Nur Land (Deutschland)
+17. Kein Ort
+18. Ort mit GeoNames (Wien)
+
+Section D - Special Cases (019-022):
+19. Organisation als Absender
+20. Mehrfache Unsicherheiten kombiniert
+21. Brief mit Sprachfeld (fr)
+22. Brief mit Themenfeldern
 
 Verwendung:
 - Validierung der Unsicherheits-Erkennung im Parser

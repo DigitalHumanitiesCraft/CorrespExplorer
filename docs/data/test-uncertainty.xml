@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Test CMIF covering all uncertainty cases for CorrespExplorer -->
-<!-- Use: parseCMIF('data/test-uncertainty.xml') -->
+<!-- Use: Load via "Uncertainty Test" on index.html -->
+<!-- 22 test cases covering all uncertainty types -->
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
     <fileDesc>
@@ -22,8 +23,12 @@
     </fileDesc>
     <profileDesc>
 
-      <!-- CASE 1: Complete data (baseline) -->
-      <correspDesc ref="test-001" source="#test-source" key="001">
+      <!-- ============================================== -->
+      <!-- SECTION A: DATE UNCERTAINTY (Cases 001-007)   -->
+      <!-- ============================================== -->
+
+      <!-- CASE 001: Complete data (baseline) - exact date YYYY-MM-DD -->
+      <correspDesc ref="https://example.org/letter/001" source="#test-source" key="001">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
@@ -37,8 +42,9 @@
         </note>
       </correspDesc>
 
-      <!-- CASE 2: Year-month only date -->
-      <correspDesc ref="test-002" source="#test-source" key="002">
+      <!-- CASE 002: Year-month only date (YYYY-MM) -->
+      <!-- Expected: "Jun 1900" with .date-imprecise class -->
+      <correspDesc ref="https://example.org/letter/002" source="#test-source" key="002">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
@@ -49,8 +55,9 @@
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 3: Year only date -->
-      <correspDesc ref="test-003" source="#test-source" key="003">
+      <!-- CASE 003: Year only date (YYYY) -->
+      <!-- Expected: "ca. 1900" with .date-imprecise class -->
+      <correspDesc ref="https://example.org/letter/003" source="#test-source" key="003">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
@@ -61,8 +68,9 @@
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 4: Date range with from/to -->
-      <correspDesc ref="test-004" source="#test-source" key="004">
+      <!-- CASE 004: Date range with from/to -->
+      <!-- Expected: "1. Jun 1900 - 30. Jun 1900" with .date-range class -->
+      <correspDesc ref="https://example.org/letter/004" source="#test-source" key="004">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
@@ -73,8 +81,9 @@
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 5: Date with notBefore/notAfter (terminus post/ante quem) -->
-      <correspDesc ref="test-005" source="#test-source" key="005">
+      <!-- CASE 005: Date with notBefore/notAfter (terminus post/ante quem) -->
+      <!-- Expected: "1. Jan 1900 - 31. Dez 1900" with .date-range class -->
+      <correspDesc ref="https://example.org/letter/005" source="#test-source" key="005">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
@@ -85,8 +94,9 @@
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 6: Date with cert="low" -->
-      <correspDesc ref="test-006" source="#test-source" key="006">
+      <!-- CASE 006: Date with cert="low" (uncertain dating) -->
+      <!-- Expected: "15. Jun 1900" + question mark icon with tooltip -->
+      <correspDesc ref="https://example.org/letter/006" source="#test-source" key="006">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
@@ -97,8 +107,9 @@
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 7: No date at all -->
-      <correspDesc ref="test-007" source="#test-source" key="007">
+      <!-- CASE 007: No date at all -->
+      <!-- Expected: "Datum unbekannt" with .date-unknown class -->
+      <correspDesc ref="https://example.org/letter/007" source="#test-source" key="007">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
@@ -108,135 +119,218 @@
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 8: Unknown sender [NN] -->
-      <correspDesc ref="test-008" source="#test-source" key="008">
+      <!-- ============================================== -->
+      <!-- SECTION B: PERSON UNCERTAINTY (Cases 008-013) -->
+      <!-- ============================================== -->
+
+      <!-- CASE 008: Unknown sender [NN] -->
+      <!-- Expected: Avatar "?", .person-unknown class -->
+      <correspDesc ref="https://example.org/letter/008" source="#test-source" key="008">
         <correspAction type="sent">
           <persName>[NN]</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
-          <date when="1900-06-15"/>
+          <date when="1900-07-01"/>
         </correspAction>
         <correspAction type="received">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 9: Unknown sender "Unbekannt" -->
-      <correspDesc ref="test-009" source="#test-source" key="009">
+      <!-- CASE 009: Unknown sender "Unbekannt" -->
+      <!-- Expected: Avatar "?", .person-unknown class -->
+      <correspDesc ref="https://example.org/letter/009" source="#test-source" key="009">
         <correspAction type="sent">
           <persName>Unbekannt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
-          <date when="1900-06-15"/>
+          <date when="1900-07-02"/>
         </correspAction>
         <correspAction type="received">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 10: Partial name "Rozario, [NN] de" -->
-      <correspDesc ref="test-010" source="#test-source" key="010">
+      <!-- CASE 010: Partial name "Rozario, [NN] de" -->
+      <!-- Expected: Avatar "R?", .person-partial class -->
+      <correspDesc ref="https://example.org/letter/010" source="#test-source" key="010">
         <correspAction type="sent">
           <persName>Rozario, [NN] de</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
-          <date when="1900-06-15"/>
+          <date when="1900-07-03"/>
         </correspAction>
         <correspAction type="received">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 11: Unknown recipient -->
-      <correspDesc ref="test-011" source="#test-source" key="011">
+      <!-- CASE 011: Unknown recipient -->
+      <!-- Expected: Recipient shows Avatar "?", .person-unknown class -->
+      <correspDesc ref="https://example.org/letter/011" source="#test-source" key="011">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
-          <date when="1900-06-15"/>
+          <date when="1900-07-04"/>
         </correspAction>
         <correspAction type="received">
           <persName>Unknown</persName>
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 12: Unknown place "Unbekannt" -->
-      <correspDesc ref="test-012" source="#test-source" key="012">
-        <correspAction type="sent">
-          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
-          <placeName>Unbekannt</placeName>
-          <date when="1900-06-15"/>
-        </correspAction>
-        <correspAction type="received">
-          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
-        </correspAction>
-      </correspDesc>
-
-      <!-- CASE 13: Region without GeoNames (no coordinates) -->
-      <correspDesc ref="test-013" source="#test-source" key="013">
-        <correspAction type="sent">
-          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
-          <placeName>Steiermark</placeName>
-          <date when="1900-06-15"/>
-        </correspAction>
-        <correspAction type="received">
-          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
-        </correspAction>
-      </correspDesc>
-
-      <!-- CASE 14: Country only -->
-      <correspDesc ref="test-014" source="#test-source" key="014">
-        <correspAction type="sent">
-          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
-          <placeName>Deutschland</placeName>
-          <date when="1900-06-15"/>
-        </correspAction>
-        <correspAction type="received">
-          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
-        </correspAction>
-      </correspDesc>
-
-      <!-- CASE 15: No place at all -->
-      <correspDesc ref="test-015" source="#test-source" key="015">
-        <correspAction type="sent">
-          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
-          <date when="1900-06-15"/>
-        </correspAction>
-        <correspAction type="received">
-          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
-        </correspAction>
-      </correspDesc>
-
-      <!-- CASE 16: Person without authority reference -->
-      <correspDesc ref="test-016" source="#test-source" key="016">
+      <!-- CASE 012: Person without authority reference (named but not identified) -->
+      <!-- Expected: Name shown, .person-named class, no VIAF/GND badge -->
+      <correspDesc ref="https://example.org/letter/012" source="#test-source" key="012">
         <correspAction type="sent">
           <persName>Max Mustermann</persName>
           <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
-          <date when="1900-06-15"/>
+          <date when="1900-07-05"/>
         </correspAction>
         <correspAction type="received">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 17: Multiple uncertainties combined -->
-      <correspDesc ref="test-017" source="#test-source" key="017">
+      <!-- CASE 013: Person with GND instead of VIAF -->
+      <!-- Expected: Normal display with GND badge -->
+      <correspDesc ref="https://example.org/letter/013" source="#test-source" key="013">
+        <correspAction type="sent">
+          <persName ref="https://d-nb.info/gnd/118540238">Johann Wolfgang von Goethe</persName>
+          <placeName ref="http://sws.geonames.org/2812482">Weimar</placeName>
+          <date when="1900-07-06"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- ============================================== -->
+      <!-- SECTION C: PLACE UNCERTAINTY (Cases 014-018)  -->
+      <!-- ============================================== -->
+
+      <!-- CASE 014: Unknown place "Unbekannt" -->
+      <!-- Expected: .place-unknown class, no map marker -->
+      <correspDesc ref="https://example.org/letter/014" source="#test-source" key="014">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName>Unbekannt</placeName>
+          <date when="1900-08-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 015: Region without GeoNames (no coordinates) -->
+      <!-- Expected: .place-region class, in "ohne Koordinaten" list -->
+      <correspDesc ref="https://example.org/letter/015" source="#test-source" key="015">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName>Steiermark</placeName>
+          <date when="1900-08-02"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 016: Country only (no coordinates) -->
+      <!-- Expected: .place-region class, in "ohne Koordinaten" list -->
+      <correspDesc ref="https://example.org/letter/016" source="#test-source" key="016">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName>Deutschland</placeName>
+          <date when="1900-08-03"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 017: No place at all -->
+      <!-- Expected: Place field empty or "-" -->
+      <correspDesc ref="https://example.org/letter/017" source="#test-source" key="017">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <date when="1900-08-04"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 018: Place with GeoNames but different city -->
+      <!-- Expected: Normal display, map marker at Wien -->
+      <correspDesc ref="https://example.org/letter/018" source="#test-source" key="018">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2761369">Wien</placeName>
+          <date when="1900-08-05"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- ============================================== -->
+      <!-- SECTION D: SPECIAL CASES (Cases 019-022)      -->
+      <!-- ============================================== -->
+
+      <!-- CASE 019: Organization as sender (orgName) -->
+      <!-- Expected: Name shown, isOrganization=true -->
+      <correspDesc ref="https://example.org/letter/019" source="#test-source" key="019">
+        <correspAction type="sent">
+          <orgName>Kaiserliche Akademie der Wissenschaften</orgName>
+          <placeName ref="http://sws.geonames.org/2761369">Wien</placeName>
+          <date when="1900-09-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- CASE 020: Multiple uncertainties combined -->
+      <!-- Expected: All uncertainty indicators visible -->
+      <correspDesc ref="https://example.org/letter/020" source="#test-source" key="020">
         <correspAction type="sent">
           <persName>[NN]</persName>
           <placeName>Unbekannt</placeName>
-          <date when="1900"/>
+          <date when="1900" cert="low"/>
         </correspAction>
         <correspAction type="received">
           <persName>Unbekannt</persName>
         </correspAction>
       </correspDesc>
 
-      <!-- CASE 18: Organization as sender -->
-      <correspDesc ref="test-018" source="#test-source" key="018">
+      <!-- CASE 021: Letter with language tag -->
+      <!-- Expected: Language filter shows "Franzoesisch" -->
+      <correspDesc ref="https://example.org/letter/021" source="#test-source" key="021">
         <correspAction type="sent">
-          <orgName>Kaiserliche Akademie der Wissenschaften</orgName>
-          <placeName ref="http://sws.geonames.org/2761369">Wien</placeName>
-          <date when="1900-06-15"/>
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2988507">Paris</placeName>
+          <date when="1900-09-15"/>
         </correspAction>
         <correspAction type="received">
-          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
         </correspAction>
+        <note>
+          <ref type="hasLanguage" target="fr"/>
+        </note>
+      </correspDesc>
+
+      <!-- CASE 022: Letter with subject/topic -->
+      <!-- Expected: Topic visible in Topics view -->
+      <correspDesc ref="https://example.org/letter/022" source="#test-source" key="022">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-10-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+        </note>
       </correspDesc>
 
     </profileDesc>

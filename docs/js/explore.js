@@ -1902,17 +1902,14 @@ function renderLettersList() {
     }
 
     container.innerHTML = displayLetters.map(letter => {
-        const sender = letter.sender?.name || 'Unbekannt';
-        const recipient = letter.recipient?.name || 'Unbekannt';
+        const senderName = formatPersonName(letter.sender?.name, letter.sender?.precision);
+        const recipientName = formatPersonName(letter.recipient?.name, letter.recipient?.precision);
         const date = formatDateWithPrecision(letter);
-        const place = letter.place_sent?.name || '';
+        const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision);
         const language = letter.language?.label || '';
 
         // Get uncertainty CSS classes
         const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
-        const senderClass = getPersonPrecisionClass(letter.sender?.precision);
-        const recipientClass = getPersonPrecisionClass(letter.recipient?.precision);
-        const placeClass = getPlacePrecisionClass(letter.place_sent?.precision);
 
         // Check if letter has additional details worth showing
         const hasDetails = letter.mentions?.subjects?.length > 0 ||
@@ -1926,9 +1923,9 @@ function renderLettersList() {
                 <div class="letter-header">
                     <div class="letter-participants">
                         ${hasDetails ? '<i class="fas fa-chevron-right expand-icon"></i>' : ''}
-                        <span class="${senderClass}">${escapeHtml(sender)}</span>
+                        ${senderName}
                         <span class="letter-arrow"><i class="fas fa-arrow-right"></i></span>
-                        <span class="${recipientClass}">${escapeHtml(recipient)}</span>
+                        ${recipientName}
                     </div>
                     <div class="letter-header-actions">
                         ${letter.id ? createBasketToggle('letters', letter.id) : ''}
@@ -1936,7 +1933,7 @@ function renderLettersList() {
                     </div>
                 </div>
                 <div class="letter-meta">
-                    ${place ? `<span class="${placeClass}"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
+                    ${placeName ? `<span><i class="fas fa-map-marker-alt"></i> ${placeName}</span>` : ''}
                     ${language ? `<span><i class="fas fa-language"></i> ${escapeHtml(language)}</span>` : ''}
                     ${letter.url ? `<span><a href="${letter.url}" target="_blank"><i class="fas fa-external-link-alt"></i> Quelle</a></span>` : ''}
                 </div>
@@ -3326,13 +3323,19 @@ function exportData(format) {
     const data = filteredLetters.map(letter => ({
         id: letter.id,
         date: letter.date,
+        date_to: letter.dateTo || '',
         year: letter.year,
+        date_precision: letter.datePrecision || '',
+        date_certainty: letter.dateCertainty || 'high',
         sender_name: letter.sender?.name || '',
         sender_id: letter.sender?.id || '',
+        sender_precision: letter.sender?.precision || '',
         recipient_name: letter.recipient?.name || '',
         recipient_id: letter.recipient?.id || '',
+        recipient_precision: letter.recipient?.precision || '',
         place_name: letter.place_sent?.name || '',
         place_geonames: letter.place_sent?.geonames_id || '',
+        place_precision: letter.place_sent?.precision || '',
         language: letter.language?.code || '',
         url: letter.url || ''
     }));
@@ -3908,6 +3911,33 @@ function getPlacePrecisionClass(precision) {
     if (precision === 'unknown') return 'place-unknown';
     if (precision === 'region') return 'place-region';
     return '';
+}
+
+// Format person name with uncertainty indicator
+function formatPersonName(name, precision) {
+    if (!name) return '<span class="person-unknown">[Unbekannt]</span>';
+    if (precision === 'unknown') {
+        return `<span class="person-unknown">[${escapeHtml(name)}]</span>`;
+    }
+    if (precision === 'partial') {
+        return `<span class="person-partial">${escapeHtml(name)}</span>`;
+    }
+    if (precision === 'named') {
+        return `<span class="person-named">${escapeHtml(name)}</span>`;
+    }
+    return escapeHtml(name);
+}
+
+// Format place name with uncertainty indicator
+function formatPlaceName(name, precision) {
+    if (!name) return '';
+    if (precision === 'unknown') {
+        return `<span class="place-unknown">${escapeHtml(name)} <i class="fas fa-question-circle" title="Unbekannter Ort"></i></span>`;
+    }
+    if (precision === 'region') {
+        return `<span class="place-region">${escapeHtml(name)} <span class="region-hint">(Region)</span></span>`;
+    }
+    return escapeHtml(name);
 }
 
 // Format date with precision indicator

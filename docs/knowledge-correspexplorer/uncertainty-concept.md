@@ -8,7 +8,7 @@ Related: [architecture.md](architecture.md), [CMIF-Data.md](CMIF-Data.md)
 
 User documentation: [about.html](../about.html) (Section "Umgang mit Datenqualitaet")
 
-Test file: [data/test-uncertainty.xml](../data/test-uncertainty.xml) (18 test cases)
+Test file: [data/test-uncertainty.xml](../data/test-uncertainty.xml) (22 test cases)
 
 ---
 
@@ -274,28 +274,49 @@ JSON example:
 
 ## Test Cases
 
-The file `data/test-uncertainty.xml` contains 18 cases covering:
+The file `data/test-uncertainty.xml` contains 22 cases organized in 4 sections:
 
-| Case | Description |
-|------|-------------|
-| 001 | Complete data (baseline) |
-| 002 | Year-month only date |
-| 003 | Year only date |
-| 004 | Date range with from/to |
-| 005 | Date with notBefore/notAfter |
-| 006 | Date with cert="low" |
-| 007 | No date at all |
-| 008 | Unknown sender [NN] |
-| 009 | Unknown sender "Unbekannt" |
-| 010 | Partial name "Rozario, [NN] de" |
-| 011 | Unknown recipient |
-| 012 | Unknown place "Unbekannt" |
-| 013 | Region without GeoNames |
-| 014 | Country only |
-| 015 | No place at all |
-| 016 | Person without authority |
-| 017 | Multiple uncertainties combined |
-| 018 | Organization as sender |
+### Section A: Date Uncertainty (Cases 001-007)
+
+| Case | Description | Expected Display |
+|------|-------------|------------------|
+| 001 | Complete data (baseline) | "15. Jun 1900" |
+| 002 | Year-month only (YYYY-MM) | "Jun 1900" with .date-imprecise |
+| 003 | Year only (YYYY) | "ca. 1900" with .date-imprecise |
+| 004 | Date range with from/to | "1. Jun - 30. Jun 1900" with .date-range |
+| 005 | Date with notBefore/notAfter | "1. Jan - 31. Dez 1900" with .date-range |
+| 006 | Date with cert="low" | "15. Jun 1900" + question mark icon |
+| 007 | No date at all | "Datum unbekannt" with .date-unknown |
+
+### Section B: Person Uncertainty (Cases 008-013)
+
+| Case | Description | Expected Display |
+|------|-------------|------------------|
+| 008 | Unknown sender [NN] | Avatar "?", .person-unknown |
+| 009 | Unknown sender "Unbekannt" | Avatar "?", .person-unknown |
+| 010 | Partial name "Rozario, [NN] de" | Avatar "R?", .person-partial |
+| 011 | Unknown recipient | Recipient Avatar "?", .person-unknown |
+| 012 | Person without authority | Name shown, .person-named, no badge |
+| 013 | Person with GND (not VIAF) | Normal display with GND badge |
+
+### Section C: Place Uncertainty (Cases 014-018)
+
+| Case | Description | Expected Display |
+|------|-------------|------------------|
+| 014 | Unknown place "Unbekannt" | .place-unknown, no map marker |
+| 015 | Region without GeoNames | "Steiermark" with .place-region |
+| 016 | Country only | "Deutschland" with .place-region |
+| 017 | No place at all | Empty or "-" |
+| 018 | Place with GeoNames | Normal display, map marker |
+
+### Section D: Special Cases (Cases 019-022)
+
+| Case | Description | Expected Display |
+|------|-------------|------------------|
+| 019 | Organization as sender | Name shown, isOrganization=true |
+| 020 | Multiple uncertainties | All indicators visible |
+| 021 | Letter with language (fr) | Language filter shows "Franzoesisch" |
+| 022 | Letter with subjects | Topics visible in Topics view |
 
 ---
 

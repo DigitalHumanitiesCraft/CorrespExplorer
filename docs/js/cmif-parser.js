@@ -626,8 +626,9 @@ function extractMeta(doc, letters) {
     const maxYear = years.length > 0 ? Math.max(...years) : null;
 
     const uniquePlaces = new Set(letters.map(l => l.place_sent?.geonames_id).filter(Boolean));
-    const uniqueSenders = new Set(letters.map(l => l.sender?.id).filter(Boolean));
-    const uniqueRecipients = new Set(letters.map(l => l.recipient?.id).filter(Boolean));
+    // Count unique senders/recipients by name to include unidentified persons
+    const uniqueSenders = new Set(letters.map(l => l.sender?.name).filter(Boolean));
+    const uniqueRecipients = new Set(letters.map(l => l.recipient?.name).filter(Boolean));
 
     // Calculate uncertainty statistics
     const uncertainty = calculateUncertaintyStats(letters);
