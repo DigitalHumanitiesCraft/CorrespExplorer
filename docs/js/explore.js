@@ -290,6 +290,18 @@ async function init() {
         initMissingPlacesModal();
         initBasketUI(dataIndices, allLetters);
 
+        // Store data in sessionStorage for wissenskorb.js
+        try {
+            sessionStorage.setItem('correspData', JSON.stringify({
+                letters: allLetters,
+                indices: dataIndices,
+                meta: dataMeta
+            }));
+        } catch (e) {
+            // sessionStorage may be full or unavailable
+            log.warn('Could not store data in sessionStorage for Wissenskorb');
+        }
+
         // Apply initial view (use detected first available if map not available)
         switchView(currentView);
 

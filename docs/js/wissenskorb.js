@@ -154,18 +154,27 @@ function resolvePersons(personIds) {
     const personIndex = dataIndices.persons || {};
 
     for (const id of personIds) {
-        const person = personIndex[id];
-        if (person) {
-            // Get letters for this person
-            const letters = allLetters.filter(l =>
-                l.sender?.authority === id || l.recipient?.authority === id
-            );
+        // Try to find person in index
+        let person = personIndex[id];
 
+        // Fallback: search by name if not found by id
+        if (!person) {
+            person = Object.values(personIndex).find(p => p.name === id);
+        }
+
+        // Get letters for this person (check both id and authority)
+        const letters = allLetters.filter(l =>
+            l.sender?.id === id || l.recipient?.id === id ||
+            l.sender?.authority === id || l.recipient?.authority === id
+        );
+
+        // Always add person if found in index OR has letters
+        if (person || letters.length > 0) {
             persons.push({
                 id,
-                name: person.name || id,
-                authority: person.authority,
-                letter_count: person.letter_count || letters.length,
+                name: person?.name || id,
+                authority: person?.authority,
+                letter_count: person?.letter_count || letters.length,
                 letters,
                 years: [...new Set(letters.map(l => l.year).filter(y => y))],
                 places: [...new Set(letters.map(l => l.place_sent?.name).filter(p => p))]

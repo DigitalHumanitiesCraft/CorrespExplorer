@@ -1,6 +1,5 @@
 // Upload Component - Handles CMIF file upload and URL loading
 // Parses CMIF-XML and stores data for visualization
-// Also handles correspSearch API queries
 
 import { parseCMIF, enrichWithCoordinates } from './cmif-parser.js';
 import { isCorrespSearchUrl, searchCorrespSearch, getResultCount } from './correspsearch-api.js';
@@ -10,7 +9,6 @@ import { enrichPersonsBatch, countEnrichable } from './wikidata-enrichment.js';
 let uploadZone, fileInput, urlInput, urlSubmit;
 let errorMessage, loadingState, loadingText;
 let datasetCards;
-let csSearchForm, csSearchBtn, csResultInfo;
 
 // Config modal elements
 let configModal;
@@ -36,11 +34,6 @@ async function init() {
     loadingState = document.getElementById('loading-state');
     loadingText = document.getElementById('loading-text');
     datasetCards = document.querySelectorAll('.dataset-card');
-
-    // correspSearch form elements
-    csSearchForm = document.getElementById('cs-search-form');
-    csSearchBtn = document.getElementById('cs-search-btn');
-    csResultInfo = document.getElementById('cs-result-info');
 
     // Config modal
     configModal = document.getElementById('config-modal');
@@ -76,19 +69,6 @@ function setupEventListeners() {
     datasetCards.forEach(card => {
         card.addEventListener('click', () => handleDatasetSelect(card));
     });
-
-    // correspSearch form
-    if (csSearchBtn) {
-        csSearchBtn.addEventListener('click', handleCorrespSearchSubmit);
-    }
-    if (csSearchForm) {
-        csSearchForm.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                handleCorrespSearchSubmit();
-            }
-        });
-    }
 
     // Config modal buttons
     if (configModal) {
@@ -184,80 +164,6 @@ async function handleUrlSubmit() {
     }
 }
 
-// correspSearch form submit handler
-async function handleCorrespSearchSubmit() {
-    const correspondent = document.getElementById('cs-correspondent')?.value.trim();
-    const place = document.getElementById('cs-place')?.value.trim();
-    const startdate = document.getElementById('cs-startdate')?.value.trim();
-    const enddate = document.getElementById('cs-enddate')?.value.trim();
-
-    // Build search params
-    const params = {};
-    if (correspondent) params.correspondent = correspondent;
-    if (place) params.placeSender = place;
-    if (startdate) params.startdate = startdate;
-    if (enddate) params.enddate = enddate;
-
-    // Validate at least one parameter
-    if (Object.keys(params).length === 0) {
-        showError('Bitte geben Sie mindestens einen Suchparameter ein.');
-        return;
-    }
-
-    hideError();
-
-    // First check result count
-    if (csResultInfo) {
-        csResultInfo.textContent = 'Pruefe Ergebnisanzahl...';
-        csResultInfo.classList.add('active');
-    }
-
-    try {
-        const countResult = await getResultCount(params);
-
-        if (countResult.count === 0) {
-            showError('Keine Ergebnisse gefunden. Bitte aendern Sie die Suchkriterien.');
-            if (csResultInfo) csResultInfo.classList.remove('active');
-            return;
-        }
-
-        // Use totalHits if available, otherwise estimate
-        const totalDisplay = countResult.totalHits
-            ? countResult.totalHits.toLocaleString('de-DE')
-            : (countResult.hasMore ? `${countResult.count}+` : countResult.count);
-
-        // Warn if very large result set
-        if (countResult.totalHits && countResult.totalHits > 5000) {
-            showError(`Zu viele Ergebnisse (${totalDisplay} Briefe). Bitte schraenken Sie die Suche ein (z.B. mit Zeitraum).`);
-            if (csResultInfo) csResultInfo.classList.remove('active');
-            return;
-        }
-
-        if (countResult.totalHits && countResult.totalHits > 500) {
-            if (csResultInfo) {
-                csResultInfo.textContent = `${totalDisplay} Briefe gefunden. Lade alle Seiten...`;
-            }
-        }
-
-        showLoading(`Lade ${totalDisplay} Briefe von correspSearch...`);
-
-        const data = await searchCorrespSearch(params, (loaded, total) => {
-            updateLoadingText(`Lade Briefe... ${loaded}${total && total > loaded ? '+' : ''}`);
-        });
-
-        await showConfigDialog(data, {
-            type: 'correspsearch',
-            source: 'correspSearch API',
-            params
-        });
-
-    } catch (error) {
-        showError(`Fehler bei der Suche: ${error.message}`);
-        hideLoading();
-        if (csResultInfo) csResultInfo.classList.remove('active');
-    }
-}
-
 // Dataset card handler
 async function handleDatasetSelect(card) {
     const dataset = card.dataset.dataset;
@@ -283,22 +189,6 @@ async function handleDatasetSelect(card) {
     } else if (info === 'cmif') {
         // Trigger file input click
         fileInput.click();
-    } else if (info === 'correspsearch') {
-        // Scroll to correspSearch form or show it
-        const csSection = document.getElementById('correspsearch-section');
-        if (csSection) {
-            csSection.scrollIntoView({ behavior: 'smooth' });
-            // Focus the first input
-            const firstInput = csSection.querySelector('input');
-            if (firstInput) {
-                setTimeout(() => firstInput.focus(), 300);
-            }
-        } else {
-            // Fallback: use URL input with example
-            urlInput.value = 'https://correspsearch.net/api/v2.0/?correspondent=http://d-nb.info/gnd/118540238&format=json';
-            urlInput.focus();
-            urlInput.select();
-        }
     }
 }
 
