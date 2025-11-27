@@ -162,6 +162,88 @@
 }
 
 /* ========================================
+ * UNCERTAINTY DISPLAY CLASSES
+ * For visualizing data quality/precision
+ * ======================================== */
+
+/* Date Precision */
+.date-imprecise {
+    color: var(--color-text-muted);
+}
+
+.date-range {
+    color: var(--color-text-muted);
+}
+
+.date-uncertain::after {
+    content: " (?)";
+    color: var(--color-warning);
+    font-size: 0.9em;
+}
+
+.date-unknown {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* Person Precision */
+.person-unknown {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.person-partial {
+    color: var(--color-text-muted);
+}
+
+.person-named {
+    /* No special styling - name present but no authority */
+}
+
+.person-unknown .person-avatar,
+.person-partial .person-avatar {
+    background: var(--color-bg-light);
+    border: 2px dashed var(--color-border-light);
+}
+
+/* Place Precision */
+.place-region {
+    color: var(--color-text-muted);
+}
+
+.place-unknown {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+/* Uncertainty Indicator Badge */
+.uncertainty-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 2px 6px;
+    font-size: var(--font-size-xs);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-light);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border-light);
+}
+
+.uncertainty-badge--warning {
+    background: #fff3cd;
+    color: var(--color-warning);
+    border-color: var(--color-warning);
+}
+
+/* Stats Sub-info (for sidebar statistics) */
+.stats-subinfo {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-xs);
+    padding-left: var(--space-md);
+}
+
+/* ========================================
  * USAGE NOTES
  * ======================================== */
 

@@ -94,7 +94,10 @@ function extractLetter(desc) {
         id: cleanId(id),
         url,
         date: dateInfo.date,
+        dateTo: dateInfo.dateTo,
         year: dateInfo.year,
+        datePrecision: dateInfo.precision,
+        dateCertainty: dateInfo.certainty,
         sender,
         recipient,
         place_sent: placeSent,
@@ -116,8 +119,46 @@ function getCorrespAction(desc, type) {
     return null;
 }
 
+// Patterns indicating unknown persons
+const UNKNOWN_PERSON_PATTERNS = [
+    /^\[NN\]$/i,
+    /^N\.?N\.?$/i,
+    /^Unbekannt$/i,
+    /^Unknown$/i,
+    /^\?\?\?$/
+];
+
 /**
- * Extract person information from correspAction
+ * Determine person precision level
+ * Levels: identified (has authority), named (name only), partial ([NN] in name), unknown
+ */
+function getPersonPrecision(name, authority) {
+    if (!name) return 'unknown';
+
+    const trimmedName = name.trim();
+
+    // Check if completely unknown
+    if (UNKNOWN_PERSON_PATTERNS.some(p => p.test(trimmedName))) {
+        return 'unknown';
+    }
+
+    // Check if partially known (contains [NN] or similar)
+    if (/\[NN\]|\[N\.N\.\]|\[\?\]/.test(trimmedName)) {
+        return 'partial';
+    }
+
+    // Has authority reference = identified
+    if (authority) {
+        return 'identified';
+    }
+
+    // Has name but no authority = named
+    return 'named';
+}
+
+/**
+ * Extract person information from correspAction with precision detection
+ * Precision levels: identified, named, partial, unknown
  */
 function extractPerson(action) {
     if (!action) return null;
@@ -130,7 +171,8 @@ function extractPerson(action) {
                 name: orgName.textContent.trim(),
                 id: null,
                 authority: null,
-                isOrganization: true
+                isOrganization: true,
+                precision: 'named'
             };
         }
         return null;
@@ -138,16 +180,50 @@ function extractPerson(action) {
 
     const ref = persName.getAttribute('ref');
     const authority = parseAuthorityRef(ref);
+    const name = persName.textContent.trim();
+    const precision = getPersonPrecision(name, authority);
 
     return {
-        name: persName.textContent.trim(),
+        name,
         id: authority?.id || null,
-        authority: authority?.type || null
+        authority: authority?.type || null,
+        precision
     };
 }
 
+// Patterns indicating unknown places
+const UNKNOWN_PLACE_PATTERNS = [
+    /^Unbekannt$/i,
+    /^Unknown$/i,
+    /^\[?\?\]?$/
+];
+
 /**
- * Extract place information from correspAction
+ * Determine place precision level
+ * Levels: exact (has GeoNames), region (name only, no GeoNames), unknown
+ */
+function getPlacePrecision(name, geonamesId) {
+    if (!name) return 'unknown';
+
+    const trimmedName = name.trim();
+
+    // Check if unknown
+    if (UNKNOWN_PLACE_PATTERNS.some(p => p.test(trimmedName))) {
+        return 'unknown';
+    }
+
+    // Has GeoNames reference = can be geolocated (exact after coordinate enrichment)
+    if (geonamesId) {
+        return 'exact';
+    }
+
+    // Has name but no GeoNames = region (cannot be precisely located)
+    return 'region';
+}
+
+/**
+ * Extract place information from correspAction with precision detection
+ * Precision levels: exact, region, unknown
  */
 function extractPlace(action) {
     if (!action) return null;
@@ -157,38 +233,64 @@ function extractPlace(action) {
 
     const ref = placeName.getAttribute('ref');
     const geonames = parseGeoNamesRef(ref);
+    const name = placeName.textContent.trim();
+    const precision = getPlacePrecision(name, geonames?.id);
 
     return {
-        name: placeName.textContent.trim(),
+        name,
         geonames_id: geonames?.id || null,
         lat: null,
-        lon: null
+        lon: null,
+        precision
     };
 }
 
 /**
- * Extract date information from correspAction
+ * Extract date information from correspAction with precision detection
+ * Precision levels: day, month, year, range, unknown
+ * Certainty levels: high, medium, low (from @cert attribute)
  */
 function extractDate(action) {
-    if (!action) return { date: null, year: null };
+    if (!action) return { date: null, dateTo: null, year: null, precision: 'unknown', certainty: 'high' };
 
     const dateEl = action.getElementsByTagNameNS(TEI_NS, 'date')[0];
-    if (!dateEl) return { date: null, year: null };
+    if (!dateEl) return { date: null, dateTo: null, year: null, precision: 'unknown', certainty: 'high' };
 
     const when = dateEl.getAttribute('when');
     const from = dateEl.getAttribute('from');
+    const to = dateEl.getAttribute('to');
     const notBefore = dateEl.getAttribute('notBefore');
     const notAfter = dateEl.getAttribute('notAfter');
+    const cert = dateEl.getAttribute('cert') || 'high';
 
-    const dateStr = when || from || notBefore || notAfter;
+    // Determine primary date string
+    const dateStr = when || from || notBefore;
+    const dateToStr = to || notAfter || null;
 
-    if (!dateStr) return { date: null, year: null };
+    if (!dateStr && !dateToStr) {
+        return { date: null, dateTo: null, year: null, precision: 'unknown', certainty: cert };
+    }
 
-    const year = parseInt(dateStr.substring(0, 4), 10);
+    const year = dateStr ? parseInt(dateStr.substring(0, 4), 10) : null;
+
+    // Determine precision based on attributes and format
+    let precision = 'unknown';
+    if (from && to) {
+        precision = 'range';
+    } else if (notBefore || notAfter) {
+        precision = 'range';
+    } else if (when) {
+        if (when.length === 10) precision = 'day';       // YYYY-MM-DD
+        else if (when.length === 7) precision = 'month'; // YYYY-MM
+        else if (when.length === 4) precision = 'year';  // YYYY
+    }
 
     return {
-        date: dateStr,
-        year: isNaN(year) ? null : year
+        date: dateStr || dateToStr,
+        dateTo: dateToStr,
+        year: isNaN(year) ? null : year,
+        precision,
+        certainty: cert
     };
 }
 
@@ -463,6 +565,81 @@ function buildIndices(letters) {
 }
 
 /**
+ * Calculate uncertainty statistics from letters
+ */
+function calculateUncertaintyStats(letters) {
+    const dateStats = {
+        day: 0,
+        month: 0,
+        year: 0,
+        range: 0,
+        unknown: 0,
+        lowCertainty: 0
+    };
+
+    const senderStats = {
+        identified: 0,
+        named: 0,
+        partial: 0,
+        unknown: 0,
+        missing: 0
+    };
+
+    const recipientStats = {
+        identified: 0,
+        named: 0,
+        partial: 0,
+        unknown: 0,
+        missing: 0
+    };
+
+    const placeStats = {
+        exact: 0,
+        region: 0,
+        unknown: 0,
+        missing: 0
+    };
+
+    for (const letter of letters) {
+        // Date statistics
+        if (letter.datePrecision) {
+            dateStats[letter.datePrecision] = (dateStats[letter.datePrecision] || 0) + 1;
+        }
+        if (letter.dateCertainty === 'low') {
+            dateStats.lowCertainty++;
+        }
+
+        // Sender statistics
+        if (letter.sender) {
+            senderStats[letter.sender.precision] = (senderStats[letter.sender.precision] || 0) + 1;
+        } else {
+            senderStats.missing++;
+        }
+
+        // Recipient statistics
+        if (letter.recipient) {
+            recipientStats[letter.recipient.precision] = (recipientStats[letter.recipient.precision] || 0) + 1;
+        } else {
+            recipientStats.missing++;
+        }
+
+        // Place statistics
+        if (letter.place_sent) {
+            placeStats[letter.place_sent.precision] = (placeStats[letter.place_sent.precision] || 0) + 1;
+        } else {
+            placeStats.missing++;
+        }
+    }
+
+    return {
+        dates: dateStats,
+        senders: senderStats,
+        recipients: recipientStats,
+        places: placeStats
+    };
+}
+
+/**
  * Extract metadata from document
  */
 function extractMeta(doc, letters) {
@@ -477,6 +654,9 @@ function extractMeta(doc, letters) {
     const uniqueSenders = new Set(letters.map(l => l.sender?.id).filter(Boolean));
     const uniqueRecipients = new Set(letters.map(l => l.recipient?.id).filter(Boolean));
 
+    // Calculate uncertainty statistics
+    const uncertainty = calculateUncertaintyStats(letters);
+
     return {
         title,
         publisher,
@@ -488,6 +668,7 @@ function extractMeta(doc, letters) {
             min: minYear,
             max: maxYear
         },
+        uncertainty,
         generated: new Date().toISOString()
     };
 }

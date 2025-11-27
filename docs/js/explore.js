@@ -349,6 +349,9 @@ function updateUI(data) {
     if (totalSenders) totalSenders.textContent = (data.meta?.unique_senders || Object.keys(dataIndices.persons || {}).length).toLocaleString('de-DE');
     if (totalPlacesEl) totalPlacesEl.textContent = (data.meta?.unique_places || Object.keys(dataIndices.places || {}).length).toLocaleString('de-DE');
 
+    // Update uncertainty statistics if available
+    updateUncertaintyStats(data.meta?.uncertainty);
+
     // Update source info
     const sourceInfo = document.getElementById('source-info');
     if (sourceInfo && data.sourceInfo) {
@@ -363,6 +366,55 @@ function updateUI(data) {
 
     // Build language filter
     buildLanguageFilter();
+}
+
+// Update uncertainty statistics in sidebar
+function updateUncertaintyStats(uncertainty) {
+    if (!uncertainty) return;
+
+    const { dates, senders, places } = uncertainty;
+
+    // Calculate imprecise dates (month + year + range + unknown)
+    const impreciseDates = (dates.month || 0) + (dates.year || 0) + (dates.range || 0) + (dates.unknown || 0);
+    const totalDates = (dates.day || 0) + impreciseDates;
+
+    // Calculate unknown persons
+    const unknownSenders = (senders.unknown || 0) + (senders.partial || 0) + (senders.missing || 0);
+    const totalSenders = (senders.identified || 0) + (senders.named || 0) + unknownSenders;
+
+    // Calculate places without coordinates
+    const imprecisePlaces = (places.region || 0) + (places.unknown || 0) + (places.missing || 0);
+    const totalPlaces = (places.exact || 0) + imprecisePlaces;
+
+    // Update or create sub-info elements
+    addStatsSubinfo('total-letters-count', impreciseDates, totalDates, 'mit ungenauem Datum');
+    addStatsSubinfo('total-senders-count', unknownSenders, totalSenders, 'unbekannt/unvollstaendig');
+    addStatsSubinfo('total-places-count', imprecisePlaces, totalPlaces, 'ohne Koordinaten');
+}
+
+// Add sub-info text below a stats element
+function addStatsSubinfo(parentId, count, total, label) {
+    if (count === 0) return;
+
+    const parentEl = document.getElementById(parentId);
+    if (!parentEl) return;
+
+    const parentContainer = parentEl.closest('.stat-item') || parentEl.parentElement;
+    if (!parentContainer) return;
+
+    // Remove existing sub-info if present
+    const existingSubinfo = parentContainer.querySelector('.stats-subinfo');
+    if (existingSubinfo) existingSubinfo.remove();
+
+    // Calculate percentage
+    const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+
+    // Create sub-info element
+    const subinfo = document.createElement('div');
+    subinfo.className = 'stats-subinfo';
+    subinfo.textContent = `davon ${count.toLocaleString('de-DE')} ${label} (${percentage}%)`;
+
+    parentContainer.appendChild(subinfo);
 }
 
 // Build language filter checkboxes dynamically
