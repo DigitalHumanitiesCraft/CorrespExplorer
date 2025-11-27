@@ -73,6 +73,66 @@ def get_metadata_type(type_attr: str) -> str:
     return None
 
 
+def extract_date_info(date_elem) -> dict:
+    """Extrahiert Datumsinformationen mit Praezision und Sicherheit.
+
+    Unterstuetzte CMIF-Attribute:
+    - when: Exaktes oder unvollstaendiges Datum (YYYY, YYYY-MM, YYYY-MM-DD)
+    - from/to: Zeitraum
+    - notBefore/notAfter: Terminus post/ante quem
+    - cert: Sicherheitsgrad (high/medium/low)
+    """
+    if date_elem is None:
+        return {
+            'date': None,
+            'dateTo': None,
+            'year': None,
+            'datePrecision': 'unknown',
+            'dateCertainty': 'high'
+        }
+
+    when = date_elem.get('when', '')
+    from_date = date_elem.get('from', '')
+    to_date = date_elem.get('to', '')
+    not_before = date_elem.get('notBefore', '')
+    not_after = date_elem.get('notAfter', '')
+    cert = date_elem.get('cert', 'high')
+
+    # Primaeres Datum bestimmen
+    date_str = when or from_date or not_before
+    date_to = to_date or not_after or None
+
+    # Jahr extrahieren
+    year = None
+    if date_str:
+        try:
+            year = int(date_str[:4])
+        except (ValueError, IndexError):
+            pass
+
+    # Praezision bestimmen
+    precision = 'unknown'
+    if from_date and to_date:
+        precision = 'range'
+    elif not_before or not_after:
+        precision = 'range'
+    elif when:
+        if len(when) == 10:  # YYYY-MM-DD
+            precision = 'day'
+        elif len(when) == 7:  # YYYY-MM
+            precision = 'month'
+        elif len(when) == 4:  # YYYY
+            precision = 'year'
+
+    return {
+        'date': date_str if date_str else None,
+        'dateTo': date_to,
+        'year': year,
+        'datePrecision': precision,
+        'dateCertainty': cert
+    }
+
+
 def parse_cmif(file_path: Path) -> dict:
     """Parst die CMIF-Datei und erzeugt Frontend-taugliche Datenstruktur."""
 
@@ -98,7 +158,10 @@ def parse_cmif(file_path: Path) -> dict:
             'sender': None,
             'recipient': None,
             'date': None,
+            'dateTo': None,
             'year': None,
+            'datePrecision': 'unknown',
+            'dateCertainty': 'high',
             'place_sent': None,
             'language': None,
             'mentions': {
@@ -156,16 +219,14 @@ def parse_cmif(file_path: Path) -> dict:
                         }
                     places_index[geo_id]['letter_count'] += 1
 
-            # Datum
+            # Datum mit Praezision
             date_elem = sent_action.find('tei:date', NS)
-            if date_elem is not None:
-                date_str = date_elem.get('when', '')
-                letter['date'] = date_str
-                if date_str:
-                    try:
-                        letter['year'] = int(date_str[:4])
-                    except ValueError:
-                        pass
+            date_info = extract_date_info(date_elem)
+            letter['date'] = date_info['date']
+            letter['dateTo'] = date_info['dateTo']
+            letter['year'] = date_info['year']
+            letter['datePrecision'] = date_info['datePrecision']
+            letter['dateCertainty'] = date_info['dateCertainty']
 
         # Empfänger
         recv_action = corresp.find('.//tei:correspAction[@type="received"]', NS)
@@ -257,6 +318,20 @@ def parse_cmif(file_path: Path) -> dict:
         if letter['language']:
             lang_counts[letter['language']['code']] += 1
 
+    # Unsicherheits-Statistiken
+    precision_counts = defaultdict(int)
+    certainty_counts = defaultdict(int)
+    for letter in letters:
+        precision_counts[letter['datePrecision']] += 1
+        certainty_counts[letter['dateCertainty']] += 1
+
+    imprecise_dates = (
+        precision_counts['year'] +
+        precision_counts['month'] +
+        precision_counts['range'] +
+        precision_counts['unknown']
+    )
+
     # Output-Struktur
     output = {
         'meta': {
@@ -273,7 +348,23 @@ def parse_cmif(file_path: Path) -> dict:
                 'min': min((l['year'] for l in letters if l['year']), default=None),
                 'max': max((l['year'] for l in letters if l['year']), default=None)
             },
-            'timeline': timeline
+            'timeline': timeline,
+            'uncertainty': {
+                'date_precision': {
+                    'day': precision_counts['day'],
+                    'month': precision_counts['month'],
+                    'year': precision_counts['year'],
+                    'range': precision_counts['range'],
+                    'unknown': precision_counts['unknown']
+                },
+                'date_certainty': {
+                    'high': certainty_counts['high'],
+                    'medium': certainty_counts['medium'],
+                    'low': certainty_counts['low']
+                },
+                'imprecise_dates_total': imprecise_dates,
+                'imprecise_dates_pct': round(imprecise_dates / len(letters) * 100, 1) if letters else 0
+            }
         },
         'letters': letters,
         'indices': {
@@ -371,13 +462,24 @@ def main():
     print("="*50)
     print(f"Briefe: {data['meta']['total_letters']}")
     print(f"Sender: {data['meta']['unique_senders']}")
-    print(f"Empfänger: {data['meta']['unique_recipients']}")
+    print(f"Empfaenger: {data['meta']['unique_recipients']}")
     print(f"Orte: {data['meta']['unique_places']}")
     print(f"Subjects: {data['meta']['unique_subjects']}")
     print(f"Sprachen: {data['meta']['languages']}")
     print(f"Zeitraum: {data['meta']['date_range']['min']}-{data['meta']['date_range']['max']}")
+
+    # Unsicherheits-Statistiken
+    unc = data['meta']['uncertainty']
+    print("\nDatumspraezision:")
+    print(f"  - Exakt (Tag): {unc['date_precision']['day']}")
+    print(f"  - Monat: {unc['date_precision']['month']}")
+    print(f"  - Jahr: {unc['date_precision']['year']}")
+    print(f"  - Zeitraum: {unc['date_precision']['range']}")
+    print(f"  - Unbekannt: {unc['date_precision']['unknown']}")
+    print(f"  => Unscharf gesamt: {unc['imprecise_dates_total']} ({unc['imprecise_dates_pct']}%)")
+
     print(f"\nOutput: {output_file}")
-    print(f"Dateigröße: {output_file.stat().st_size / 1024 / 1024:.2f} MB")
+    print(f"Dateigroesse: {output_file.stat().st_size / 1024 / 1024:.2f} MB")
 
 
 if __name__ == '__main__':

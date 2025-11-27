@@ -138,10 +138,45 @@
                     Historische Korrespondenzdaten enthalten oft Unsicherheiten und Luecken.
                     CorrespExplorer erkennt diese automatisch und zeigt sie transparent an.
                 </p>
+
                 <div class="info-box">
-                    <h4>Erkannte Unsicherheiten:</h4>
+                    <h4>Visuelle Symbole fuer Datumsangaben</h4>
+                    <table class="legend-table">
+                        <tr>
+                            <td><i class="fas fa-calendar-alt" style="color: #f59e0b;"></i></td>
+                            <td>Unvollstaendiges Datum</td>
+                            <td>Nur Jahr oder Jahr-Monat bekannt (z.B. "Jun 1900")</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-arrows-alt-h" style="color: #2C5282;"></i></td>
+                            <td>Zeitraum</td>
+                            <td>Brief wurde zwischen zwei Daten verfasst (notBefore/notAfter)</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-question-circle" style="color: #ef4444;"></i></td>
+                            <td>Unsichere Datierung</td>
+                            <td>Die Quelle markiert das Datum als unsicher (cert="low")</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-question" style="color: #555;"></i></td>
+                            <td>Datum unbekannt</td>
+                            <td>Kein Datum in den Metadaten vorhanden</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="info-box">
+                    <h4>Timeline-Visualisierung</h4>
+                    <p>
+                        In der Timeline-Ansicht werden Balken mit unscharfen Datierungen durch
+                        <strong>diagonale Schraffur</strong> markiert. Die Schraffurhoehe zeigt den
+                        Anteil der Briefe mit ungenauem Datum im jeweiligen Jahr. Details erscheinen im Tooltip.
+                    </p>
+                </div>
+
+                <div class="info-box">
+                    <h4>Weitere erkannte Unsicherheiten:</h4>
                     <ul>
-                        <li><strong>Unvollstaendige Datierung:</strong> Nur Jahr (1900) oder Jahr-Monat (1900-06) statt vollem Datum</li>
                         <li><strong>Unscharfe Orte:</strong> Regionen wie "Steiermark" ohne exakte Koordinaten</li>
                         <li><strong>Unbekannte Personen:</strong> Absender oder Empfaenger als [NN] oder "Unbekannt" markiert</li>
                         <li><strong>Fehlende Normdaten:</strong> Personen ohne VIAF/GND-Verknuepfung</li>
@@ -149,19 +184,8 @@
                 </div>
                 <p>
                     Die Statistiken in der Seitenleiste zeigen, wie viele Datensaetze
-                    von Unsicherheiten betroffen sind. Beispiel: "davon 281 mit ungenauem Datum (2.4%)".
+                    von Unsicherheiten betroffen sind.
                 </p>
-                <div class="info-box">
-                    <h4>CMIF-Annotationen:</h4>
-                    <p>
-                        CorrespExplorer unterstuetzt explizite Unsicherheitsannotationen aus dem CMIF-Standard:
-                    </p>
-                    <ul>
-                        <li><code>@cert="low"</code> - Unsichere Datierung, wird mit (?) markiert</li>
-                        <li><code>@notBefore/@notAfter</code> - Terminus post/ante quem</li>
-                        <li><code>@from/@to</code> - Datumsbereich</li>
-                    </ul>
-                </div>
                 <p>
                     Prinzip: Unsicherheit wird transparent dargestellt, niemals versteckt oder
                     durch falsche Praezision ueberdeckt.

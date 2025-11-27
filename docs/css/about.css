@@ -175,6 +175,43 @@
     color: var(--color-text-light);
 }
 
+/* Legend Table for Data Quality */
+.legend-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--space-sm);
+}
+
+.legend-table tr {
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.legend-table tr:last-child {
+    border-bottom: none;
+}
+
+.legend-table td {
+    padding: var(--space-sm) var(--space-md);
+    vertical-align: middle;
+}
+
+.legend-table td:first-child {
+    width: 40px;
+    text-align: center;
+    font-size: var(--font-size-lg);
+}
+
+.legend-table td:nth-child(2) {
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+.legend-table td:nth-child(3) {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+}
+
 /* Responsive */
 @media (max-width: 600px) {
     .about-container {
