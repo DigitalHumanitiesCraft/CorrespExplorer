@@ -1839,18 +1839,33 @@ function renderPersonsList() {
         return;
     }
 
+    // Get enrichment data from sessionStorage
+    const enrichmentData = JSON.parse(sessionStorage.getItem('person-enrichment') || '{}');
+
     container.innerHTML = persons.map(person => {
         const initials = getPersonInitials(person.name, person.precision);
         const total = person.sent + person.received;
         const personKey = person.id || person.name;
         const correspSearchUrl = buildCorrespSearchUrl(person);
         const precisionClass = getPersonPrecisionClass(person.precision);
+        const hasWikidataEnrichment = enrichmentData[personKey]?.source === 'wikidata';
+
+        // Small Wikidata indicator SVG
+        const wikidataIndicator = hasWikidataEnrichment ? `
+            <span class="wikidata-indicator" title="Wikidata-Anreicherung">
+                <svg viewBox="0 0 30 20" width="14" height="10">
+                    <rect fill="#990000" width="6" height="20"/>
+                    <rect fill="#339966" x="8" width="6" height="20"/>
+                    <rect fill="#006699" x="16" width="6" height="20"/>
+                </svg>
+            </span>
+        ` : '';
 
         return `
             <div class="person-card ${precisionClass}" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
                 <div class="person-avatar">${initials}</div>
                 <div class="person-info">
-                    <div class="person-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}</div>
+                    <div class="person-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}${wikidataIndicator}</div>
                     <div class="person-stats">
                         <span><i class="fas fa-paper-plane"></i> ${person.sent} gesendet</span>
                         <span><i class="fas fa-inbox"></i> ${person.received} empfangen</span>
@@ -2334,8 +2349,16 @@ async function showPersonDetail(personId) {
     html += '<div class="person-detail-info">';
     html += `<h3>${escapeHtml(enriched?.name || person.name)}</h3>`;
 
-    // Show enriched biographical data
+    // Show enriched biographical data with Wikidata indicator
     if (enriched) {
+        html += `<div class="wikidata-badge" title="Daten angereichert via Wikidata">
+            <svg class="wikidata-logo" viewBox="0 0 30 20" width="16" height="11">
+                <rect fill="#990000" width="6" height="20"/>
+                <rect fill="#339966" x="8" width="6" height="20"/>
+                <rect fill="#006699" x="16" width="6" height="20"/>
+            </svg>
+            <span>Wikidata</span>
+        </div>`;
         if (enriched.description) {
             html += `<div class="person-description">${escapeHtml(enriched.description)}</div>`;
         }
