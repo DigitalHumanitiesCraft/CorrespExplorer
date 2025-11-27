@@ -236,6 +236,34 @@
     border-color: var(--color-primary);
 }
 
+/* Featured Dataset Card (Demo) */
+.dataset-card-featured {
+    grid-column: 1 / -1;
+    border-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(139, 69, 19, 0.05) 100%);
+    position: relative;
+}
+
+.dataset-card-featured:hover {
+    border-color: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.dataset-badge {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    background: var(--color-primary);
+    color: white;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .dataset-card h4 {
     font-size: var(--font-size-md);
     color: var(--color-primary);

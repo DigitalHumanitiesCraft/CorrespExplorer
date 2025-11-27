@@ -15,6 +15,7 @@ import {
     getPlacePrecisionClass,
     getPersonInitials
 } from './formatters.js';
+import { checkAndStartDemoTour } from './demo-tour.js';
 
 const IS_PRODUCTION = true;
 
@@ -304,6 +305,9 @@ async function init() {
 
         hideLoading();
         log.init('Application ready');
+
+        // Check if demo dataset and show tour
+        checkAndStartDemoTour();
     } catch (error) {
         showError('Initialisierung fehlgeschlagen: ' + error.message);
         log.error('Init failed: ' + error.message);

@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Demo Dataset: Showcases ALL CorrespExplorer features -->
+<!-- A fictional correspondence network of European scholars 1880-1920 -->
+<!-- Demonstrates: Timeline, Map, Network, Topics, Languages, Uncertainty -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Demo: Europaeisches Gelehrtennetzwerk 1880-1920</title>
+        <editor>CorrespExplorer Demo</editor>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>CorrespExplorer</publisher>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</licence>
+        </availability>
+        <date when="2025-11-27"/>
+        <idno type="URL">https://example.org/demo-showcase.xml</idno>
+      </publicationStmt>
+      <sourceDesc>
+        <bibl xml:id="demo-source" type="online">Fiktives Demonstrationsdataset</bibl>
+      </sourceDesc>
+    </fileDesc>
+    <profileDesc>
+
+      <!-- ============================================== -->
+      <!-- PROTAGONIST: Hugo Schuchardt (Graz) - Ego     -->
+      <!-- ============================================== -->
+
+      <!-- 1880s: Early career, German correspondence -->
+      <correspDesc ref="https://example.org/demo/001" source="#demo-source" key="001">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1880-03-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://d-nb.info/gnd/118540238">Johann Wolfgang von Goethe</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/002" source="#demo-source" key="002">
+        <correspAction type="sent">
+          <persName ref="https://d-nb.info/gnd/118540238">Johann Wolfgang von Goethe</persName>
+          <placeName ref="http://sws.geonames.org/2812482">Weimar</placeName>
+          <date when="1880-04-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/literature">Literatur</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/003" source="#demo-source" key="003">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1882-06"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/71477273">Wilhelm von Humboldt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
+          <ref type="mentionsSubject" target="https://example.org/subject/philosophy">Philosophie</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/004" source="#demo-source" key="004">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/71477273">Wilhelm von Humboldt</persName>
+          <placeName ref="http://sws.geonames.org/2950159">Berlin</placeName>
+          <date when="1882-07-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/education">Bildung</ref>
+        </note>
+      </correspDesc>
+
+      <!-- 1885: International expansion - French correspondence -->
+      <correspDesc ref="https://example.org/demo/005" source="#demo-source" key="005">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1885-01-10"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/66470875">Ferdinand de Saussure</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="fr"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
+          <ref type="mentionsSubject" target="https://example.org/subject/structuralism">Strukturalismus</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/006" source="#demo-source" key="006">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/66470875">Ferdinand de Saussure</persName>
+          <placeName ref="http://sws.geonames.org/2660646">Genf</placeName>
+          <date when="1885-02-28"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="fr"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/semiotics">Semiotik</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/007" source="#demo-source" key="007">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2988507">Paris</placeName>
+          <date when="1886-05-20"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/66470875">Ferdinand de Saussure</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="fr"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/phonetics">Phonetik</ref>
+        </note>
+      </correspDesc>
+
+      <!-- 1890s: Basque studies - Spanish correspondence -->
+      <correspDesc ref="https://example.org/demo/008" source="#demo-source" key="008">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1890-03-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="es"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/009" source="#demo-source" key="009">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+          <placeName ref="http://sws.geonames.org/3110044">San Sebastian</placeName>
+          <date when="1890-04-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="es"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+          <ref type="mentionsSubject" target="https://example.org/subject/etymology">Etymologie</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/010" source="#demo-source" key="010">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1892-08-10"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="es"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+          <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
+        </note>
+      </correspDesc>
+
+      <!-- 1895: Italian connections -->
+      <correspDesc ref="https://example.org/demo/011" source="#demo-source" key="011">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1895-02-14"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/64013892">Graziadio Isaia Ascoli</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="it"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/romance">Romanistik</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/012" source="#demo-source" key="012">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/64013892">Graziadio Isaia Ascoli</persName>
+          <placeName ref="http://sws.geonames.org/3173435">Mailand</placeName>
+          <date when="1895-03-20"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="it"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/dialectology">Dialektologie</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/013" source="#demo-source" key="013">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/3169070">Rom</placeName>
+          <date when="1896-09-05"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/64013892">Graziadio Isaia Ascoli</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="it"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/romance">Romanistik</ref>
+          <ref type="mentionsSubject" target="https://example.org/subject/phonetics">Phonetik</ref>
+        </note>
+      </correspDesc>
+
+      <!-- 1900s: Peak activity, multiple languages -->
+      <correspDesc ref="https://example.org/demo/014" source="#demo-source" key="014">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1900-01-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/66470875">Ferdinand de Saussure</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/newyear">Neujahrsgruesse</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/015" source="#demo-source" key="015">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1901-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/016" source="#demo-source" key="016">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+          <placeName ref="http://sws.geonames.org/3128026">Bilbao</placeName>
+          <date when="1902-03-10"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="es"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+          <ref type="mentionsSubject" target="https://example.org/subject/publication">Publikation</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/017" source="#demo-source" key="017">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2761369">Wien</placeName>
+          <date when="1903-11-20"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/71477273">Wilhelm von Humboldt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/academy">Akademie</ref>
+        </note>
+      </correspDesc>
+
+      <!-- English correspondence added -->
+      <correspDesc ref="https://example.org/demo/018" source="#demo-source" key="018">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1905-04-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/9889965">Max Mueller</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="en"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/comparative">Vergleichende Sprachwissenschaft</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/019" source="#demo-source" key="019">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/9889965">Max Mueller</persName>
+          <placeName ref="http://sws.geonames.org/2640729">Oxford</placeName>
+          <date when="1905-05-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="en"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/sanskrit">Sanskrit</ref>
+        </note>
+      </correspDesc>
+
+      <!-- 1910s: Late career -->
+      <correspDesc ref="https://example.org/demo/020" source="#demo-source" key="020">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1910-07-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+          <ref type="mentionsSubject" target="https://example.org/subject/retirement">Ruhestand</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/021" source="#demo-source" key="021">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/66470875">Ferdinand de Saussure</persName>
+          <placeName ref="http://sws.geonames.org/2660646">Genf</placeName>
+          <date when="1911-02-10"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="fr"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/022" source="#demo-source" key="022">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1915-12-24"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/war">Erster Weltkrieg</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/023" source="#demo-source" key="023">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1920-01-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/64013892">Graziadio Isaia Ascoli</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="it"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/postwar">Nachkriegszeit</ref>
+        </note>
+      </correspDesc>
+
+      <!-- ============================================== -->
+      <!-- UNCERTAINTY SHOWCASE CASES                    -->
+      <!-- ============================================== -->
+
+      <!-- Uncertain date (year only) -->
+      <correspDesc ref="https://example.org/demo/024" source="#demo-source" key="024">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1888"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/71477273">Wilhelm von Humboldt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+        </note>
+      </correspDesc>
+
+      <!-- Date range -->
+      <correspDesc ref="https://example.org/demo/025" source="#demo-source" key="025">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date notBefore="1893-01-01" notAfter="1893-12-31"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/66470875">Ferdinand de Saussure</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="fr"/>
+        </note>
+      </correspDesc>
+
+      <!-- Uncertain date (cert=low) -->
+      <correspDesc ref="https://example.org/demo/026" source="#demo-source" key="026">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date when="1897-06-15" cert="low"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="es"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+        </note>
+      </correspDesc>
+
+      <!-- No date -->
+      <correspDesc ref="https://example.org/demo/027" source="#demo-source" key="027">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/9889965">Max Mueller</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="en"/>
+        </note>
+      </correspDesc>
+
+      <!-- Unknown sender -->
+      <correspDesc ref="https://example.org/demo/028" source="#demo-source" key="028">
+        <correspAction type="sent">
+          <persName>[NN]</persName>
+          <placeName ref="http://sws.geonames.org/2950159">Berlin</placeName>
+          <date when="1904-08-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+        </note>
+      </correspDesc>
+
+      <!-- Unknown place -->
+      <correspDesc ref="https://example.org/demo/029" source="#demo-source" key="029">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName>Unbekannt</placeName>
+          <date when="1907-05-20"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+        </note>
+      </correspDesc>
+
+      <!-- Organization as sender -->
+      <correspDesc ref="https://example.org/demo/030" source="#demo-source" key="030">
+        <correspAction type="sent">
+          <orgName>Kaiserliche Akademie der Wissenschaften</orgName>
+          <placeName ref="http://sws.geonames.org/2761369">Wien</placeName>
+          <date when="1908-11-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/academy">Akademie</ref>
+        </note>
+      </correspDesc>
+
+      <!-- ============================================== -->
+      <!-- ADDITIONAL NETWORK NODES (more correspondents)-->
+      <!-- ============================================== -->
+
+      <!-- Cross-connections between other scholars -->
+      <correspDesc ref="https://example.org/demo/031" source="#demo-source" key="031">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/66470875">Ferdinand de Saussure</persName>
+          <placeName ref="http://sws.geonames.org/2660646">Genf</placeName>
+          <date when="1898-04-10"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/71477273">Wilhelm von Humboldt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/032" source="#demo-source" key="032">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/64013892">Graziadio Isaia Ascoli</persName>
+          <placeName ref="http://sws.geonames.org/3173435">Mailand</placeName>
+          <date when="1899-09-05"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/66470875">Ferdinand de Saussure</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="fr"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/romance">Romanistik</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/033" source="#demo-source" key="033">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/9889965">Max Mueller</persName>
+          <placeName ref="http://sws.geonames.org/2640729">Oxford</placeName>
+          <date when="1894-02-28"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/71477273">Wilhelm von Humboldt</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="en"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/comparative">Vergleichende Sprachwissenschaft</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/034" source="#demo-source" key="034">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+          <placeName ref="http://sws.geonames.org/3110044">San Sebastian</placeName>
+          <date when="1912-06-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/64013892">Graziadio Isaia Ascoli</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="it"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+        </note>
+      </correspDesc>
+
+      <correspDesc ref="https://example.org/demo/035" source="#demo-source" key="035">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/71477273">Wilhelm von Humboldt</persName>
+          <placeName ref="http://sws.geonames.org/2950159">Berlin</placeName>
+          <date when="1887-10-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/64013892">Graziadio Isaia Ascoli</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+          <ref type="mentionsSubject" target="https://example.org/subject/education">Bildung</ref>
+        </note>
+      </correspDesc>
+
+    </profileDesc>
+  </teiHeader>
+</TEI>

@@ -2917,3 +2917,183 @@
 .date-quality-filters input[type="checkbox"] {
     accent-color: var(--color-primary);
 }
+
+/* ===================
+   DEMO TOUR STYLES
+   =================== */
+
+.demo-tour {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+}
+
+.tour-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.tour-step {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+}
+
+.tour-step.active {
+    display: block;
+}
+
+.tour-content {
+    background: var(--color-bg);
+    border: 3px solid var(--color-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    max-width: 450px;
+    box-shadow: var(--shadow-lg);
+}
+
+.tour-content h3 {
+    margin: 0 0 var(--space-md) 0;
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+}
+
+.tour-content p {
+    margin: 0 0 var(--space-md) 0;
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+.tour-content ul {
+    margin: 0 0 var(--space-md) 0;
+    padding-left: var(--space-lg);
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    line-height: 1.8;
+}
+
+.tour-content li {
+    margin-bottom: var(--space-xs);
+}
+
+.tour-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+}
+
+.tour-nav button {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.tour-skip {
+    background: transparent;
+    color: var(--color-text-light);
+    border: 1px solid var(--color-border);
+}
+
+.tour-skip:hover {
+    color: var(--color-text);
+    border-color: var(--color-text-light);
+}
+
+.tour-prev {
+    background: var(--color-bg-light);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+.tour-prev:hover {
+    background: var(--color-bg);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.tour-next,
+.tour-finish {
+    background: var(--color-primary);
+    color: white;
+    border: 2px solid var(--color-primary-dark);
+}
+
+.tour-next:hover,
+.tour-finish:hover {
+    background: var(--color-primary-dark);
+}
+
+/* Tour step positioning for targeted elements */
+.tour-step[data-position="top"] .tour-content {
+    margin-bottom: var(--space-lg);
+}
+
+.tour-step[data-position="bottom"] .tour-content {
+    margin-top: var(--space-lg);
+}
+
+.tour-step[data-position="left"] .tour-content {
+    margin-right: var(--space-lg);
+}
+
+.tour-step[data-position="right"] .tour-content {
+    margin-left: var(--space-lg);
+}
+
+/* Progress indicator */
+.tour-progress {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+}
+
+.tour-progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-border);
+    transition: all var(--transition-fast);
+}
+
+.tour-progress-dot.active {
+    background: var(--color-primary);
+    transform: scale(1.2);
+}
+
+.tour-progress-dot.completed {
+    background: var(--color-success, #10b981);
+}
+
+/* Highlight effect for target elements */
+.tour-highlight {
+    position: relative;
+    z-index: 10001;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+    border-radius: var(--radius-md);
+}
+
+/* Tour step counter */
+.tour-step-counter {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    text-align: right;
+    margin-bottom: var(--space-sm);
+}

@@ -263,6 +263,7 @@ async function handleDatasetSelect(card) {
     const dataset = card.dataset.dataset;
     const info = card.dataset.info;
     const url = card.dataset.url;
+    const isDemo = card.dataset.demo === 'true';
 
     hideError();
 
@@ -274,7 +275,7 @@ async function handleDatasetSelect(card) {
         showLoading('Lade CMIF von URL...');
         try {
             const data = await parseCMIF(url);
-            await showConfigDialog(data, { type: 'url', source: url });
+            await showConfigDialog(data, { type: 'url', source: url, isDemo: isDemo });
         } catch (error) {
             showError(`Fehler beim Laden: ${error.message}`);
             hideLoading();
@@ -464,8 +465,9 @@ function finalizeAndRedirect(data, sourceInfo) {
         return;
     }
 
-    // Redirect to visualization
-    window.location.href = 'explore.html';
+    // Redirect to visualization - append demo flag if needed
+    const redirectUrl = sourceInfo?.isDemo ? 'explore.html?demo=true' : 'explore.html';
+    window.location.href = redirectUrl;
 }
 
 // Helper: Count unique persons

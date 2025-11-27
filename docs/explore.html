@@ -658,6 +658,107 @@
         </div>
     </div>
 
+    <!-- Demo Tour Overlay -->
+    <div id="demo-tour" class="demo-tour" style="display: none;">
+        <div class="tour-backdrop"></div>
+        <div class="tour-step" data-step="1">
+            <div class="tour-content">
+                <h3>Willkommen zur CorrespExplorer Demo</h3>
+                <p>Dieser Datensatz zeigt ein fiktives europaeisches Gelehrtennetzwerk (1880-1920) mit 35 Briefen zwischen 7 Wissenschaftlern.</p>
+                <p>Die Demo demonstriert alle Funktionen von CorrespExplorer.</p>
+                <div class="tour-nav">
+                    <button class="tour-skip">Ueberspringen</button>
+                    <button class="tour-next">Tour starten</button>
+                </div>
+            </div>
+        </div>
+        <div class="tour-step" data-step="2">
+            <div class="tour-content" data-target=".view-switcher">
+                <h3>Ansichten wechseln</h3>
+                <p>Mit diesen Buttons wechseln Sie zwischen verschiedenen Visualisierungen: Karte, Korrespondenten, Briefe, Timeline, Themen, Orte und Netzwerk.</p>
+                <div class="tour-nav">
+                    <button class="tour-prev">Zurueck</button>
+                    <button class="tour-next">Weiter</button>
+                </div>
+            </div>
+        </div>
+        <div class="tour-step" data-step="3">
+            <div class="tour-content" data-target=".sidebar-section:first-child">
+                <h3>Datensatz-Uebersicht</h3>
+                <p>Hier sehen Sie Statistiken zum Datensatz: Anzahl der Briefe, Korrespondenten, Orte und den Zeitraum.</p>
+                <div class="tour-nav">
+                    <button class="tour-prev">Zurueck</button>
+                    <button class="tour-next">Weiter</button>
+                </div>
+            </div>
+        </div>
+        <div class="tour-step" data-step="4">
+            <div class="tour-content" data-target="#timeline-range-wrapper">
+                <h3>Zeitraum filtern</h3>
+                <p>Mit dem Timeline-Slider koennen Sie den Zeitraum einschraenken. Alle Ansichten werden automatisch aktualisiert.</p>
+                <div class="tour-nav">
+                    <button class="tour-prev">Zurueck</button>
+                    <button class="tour-next">Weiter</button>
+                </div>
+            </div>
+        </div>
+        <div class="tour-step" data-step="5">
+            <div class="tour-content" data-target=".filter-section">
+                <h3>Filter anwenden</h3>
+                <p>Suchen Sie nach Personen, Orten oder Themen. Die Filter lassen sich kombinieren und werden in der Sidebar angezeigt.</p>
+                <div class="tour-nav">
+                    <button class="tour-prev">Zurueck</button>
+                    <button class="tour-next">Weiter</button>
+                </div>
+            </div>
+        </div>
+        <div class="tour-step" data-step="6">
+            <div class="tour-content" data-target="#map-container">
+                <h3>Interaktive Karte</h3>
+                <p>Die Karte zeigt Briefe nach Absendeort. Klicken Sie auf Marker fuer Details. Die Legende erklaert die Farben (nach Sprache).</p>
+                <div class="tour-nav">
+                    <button class="tour-prev">Zurueck</button>
+                    <button class="tour-next">Weiter</button>
+                </div>
+            </div>
+        </div>
+        <div class="tour-step" data-step="7">
+            <div class="tour-content">
+                <h3>Unsicherheiten visualisieren</h3>
+                <p>CorrespExplorer zeigt unsichere Daten transparent an:</p>
+                <ul>
+                    <li>Eckige Klammern [Name] = unsichere Person</li>
+                    <li>Kalender-Icon = nur Jahr/Monat bekannt</li>
+                    <li>Fragezeichen = unsichere Datierung</li>
+                    <li>Zeitraum-Pfeile = notBefore/notAfter</li>
+                </ul>
+                <div class="tour-nav">
+                    <button class="tour-prev">Zurueck</button>
+                    <button class="tour-next">Weiter</button>
+                </div>
+            </div>
+        </div>
+        <div class="tour-step" data-step="8">
+            <div class="tour-content" data-target="#basket-btn">
+                <h3>Wissenskorb</h3>
+                <p>Merken Sie sich interessante Briefe, Personen oder Orte mit dem Stern-Symbol. Der Wissenskorb kann als CSV oder JSON exportiert werden.</p>
+                <div class="tour-nav">
+                    <button class="tour-prev">Zurueck</button>
+                    <button class="tour-next">Weiter</button>
+                </div>
+            </div>
+        </div>
+        <div class="tour-step" data-step="9">
+            <div class="tour-content">
+                <h3>Viel Spass beim Erkunden</h3>
+                <p>Probieren Sie die verschiedenen Ansichten aus: Das Netzwerk zeigt Verbindungen zwischen Personen, die Timeline die zeitliche Verteilung, und die Themen-Ansicht verschlagwortete Inhalte.</p>
+                <div class="tour-nav">
+                    <button class="tour-finish">Tour beenden</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>

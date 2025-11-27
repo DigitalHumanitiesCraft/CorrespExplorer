@@ -4,6 +4,82 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-27 (Phase 21: Demo Dataset und Onboarding Tour)
+
+### Synthetisches Demo-Dataset
+
+Erstellung eines umfassenden Demo-Datensatzes zur Demonstration aller CorrespExplorer-Features:
+
+**Datei:** `docs/data/demo-showcase.xml`
+
+**Inhalt:**
+- 35 fiktive Briefe zwischen 7 europaeischen Gelehrten (1880-1920)
+- Generiert mit Claude Opus 4.5 zur Funktionsdemonstration
+- Personen: Schuchardt, Goethe, Humboldt, Saussure, Urquijo, Ascoli, Mueller
+- 5 Sprachen: Deutsch, Franzoesisch, Spanisch, Italienisch, Englisch
+- ~15 Themen (Sprachwissenschaft, Baskisch, Romanistik, etc.)
+- 10+ Staedte mit GeoNames-Koordinaten
+- Unsicherheitsfaelle: Jahr-only-Daten, Zeitraeume, cert="low", [NN], unbekannte Orte
+
+**Landing Page:**
+- Neue CSS-Klassen: `.dataset-card-featured`, `.dataset-badge`
+- Demo-Karte prominent oben positioniert
+- Badge "Demo" zeigt speziellen Status
+- Beschreibung weist auf AI-Generierung hin
+
+### Interaktive Onboarding-Tour
+
+9-stufige Tour fuer Demo-Datensatz-Nutzer:
+
+1. Willkommen - Uebersicht und Kontext
+2. Ansichten wechseln - View-Switcher Erklaerung
+3. Datensatz-Uebersicht - Statistiken in Sidebar
+4. Zeitraum filtern - Timeline-Slider
+5. Filter anwenden - Such- und Filterfunktionen
+6. Interaktive Karte - Map-Features und Legende
+7. Unsicherheiten visualisieren - Uncertainty-Indikatoren
+8. Wissenskorb - Bookmark-Funktion
+9. Abschluss - Hinweis auf weitere Ansichten
+
+**Technische Implementierung:**
+- Neues Modul: `docs/js/demo-tour.js`
+- URL-Parameter `?demo=true` aktiviert Tour
+- SessionStorage speichert Tour-Completion
+- CSS in `explore.css`: Tour-Backdrop, Steps, Navigation
+- Integration in `explore.js` via `checkAndStartDemoTour()`
+
+**Styling:**
+- Semi-transparenter Backdrop
+- Zentrierte Content-Karten mit Primary-Border
+- Progress-Dots zeigen Fortschritt
+- Skip/Prev/Next/Finish Buttons
+
+### Aenderungen
+
+upload.js:
+- `handleDatasetSelect()`: Liest `data-demo` Attribut
+- `sourceInfo` erweitert um `isDemo` Flag
+- Redirect zu `explore.html?demo=true` bei Demo-Dataset
+
+explore.js:
+- Import: `checkAndStartDemoTour` aus demo-tour.js
+- Aufruf in `init()` nach hideLoading()
+
+explore.html:
+- Demo-Tour HTML-Struktur eingefuegt (9 Steps)
+
+explore.css:
+- Demo-Tour Styles (~100 Zeilen)
+
+upload.css:
+- `.dataset-card-featured`: Volle Breite, hervorgehobener Rahmen
+- `.dataset-badge`: Positioniertes Label oben rechts
+
+index.html:
+- Demo-Karte mit `data-demo="true"` Attribut
+
+---
+
 ## 2025-11-27 (Phase 20: Network View Improvements)
 
 ### Netzwerk-Analyse und Verbesserungen
