@@ -60,12 +60,17 @@ docs/
   js/
     cmif-parser.js           - Browser-based CMIF XML parser
     upload.js                - File upload, URL handling, config dialog
-    explore.js               - Visualization logic
+    explore.js               - Main visualization logic
     wikidata-enrichment.js   - Wikidata SPARQL enrichment module
     correspsearch-api.js     - correspSearch API client
-    constants.js             - Shared constants (colors, labels)
-    tests/
-      explore-tests.js       - Test suite
+    constants.js             - Shared constants (colors, labels, views)
+    utils.js                 - Shared utility functions
+    basket.js                - Knowledge basket storage logic
+    basket-ui.js             - Knowledge basket UI components
+    compare.js               - Dataset comparison logic
+    wissenskorb.js           - Knowledge basket page logic
+    enrichment.js            - Additional enrichment functions
+    explore-tests.js         - Browser-based test suite
 
   css/
     tokens.css        - Design system tokens
@@ -87,10 +92,12 @@ preprocessing/
 docs/knowledge-correspexplorer/
   JOURNAL.md          - Development log
   user-stories.md     - Requirements documentation
-  plan.md             - Development roadmap
   architecture.md     - Technical architecture
+  design.md           - Design system documentation
   CMIF-Data.md        - CMIF standard documentation
-  refactoring-plan.md - Code improvement plan
+  demo-datasets.md    - Demo dataset documentation
+  cmif-sources.md     - CMIF sources reference
+  project-analysis.md - Project analysis report
 ```
 
 ## Views
@@ -101,6 +108,7 @@ docs/knowledge-correspexplorer/
 4. **Timeline View** - Temporal distribution with stacked language bars
 5. **Topics View** - Subject exploration with co-occurrence analysis
 6. **Places View** - Geographic index with filtering capabilities
+7. **Network View** - Force-directed graph of correspondence relationships
 
 ## Filtering
 

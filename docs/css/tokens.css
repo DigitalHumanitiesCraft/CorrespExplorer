@@ -67,6 +67,7 @@
     /* Font Families */
     --font-headings: 'Merriweather', Georgia, serif;
     --font-base: 'Lato', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
     /* Legacy aliases from variables.css */
     --primary-color: var(--color-primary);

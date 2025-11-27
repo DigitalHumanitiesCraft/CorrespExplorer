@@ -67,7 +67,7 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 | Primary | `--color-primary` | `#A64B3F` | Rust Red - Buttons, Highlights, Zahnrad |
 | Primary Dark | `--color-primary-dark` | `#8B3D33` | Hover-States |
 | Accent | `--color-accent` | `#A64B3F` | Gleich wie Primary (Logo-Farbe) |
-| Success | `--color-success` | `#38A169` | Erfolg-Meldungen |
+| Success | `--color-success` | `#2d6a4f` | Forest Green - Erfolg-Meldungen |
 
 ### Logo-Assets
 
@@ -82,10 +82,10 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 |-------|----------|------------|
 | Map Land | `#E8E4D4` | Landmassen |
 | Map Water | `#B8D4E8` | Wasser/Ozeane |
-| Map Points | `#C65D3B` | Brieforte (Cluster) |
+| Map Points | `#A64B3F` | Brieforte (Cluster) - --color-primary |
 | Network Sender | `#2C5282` | Absender-Knoten |
-| Network Receiver | `#38A169` | Empfaenger-Knoten |
-| Network Both | `#805AD5` | Beides |
+| Network Receiver | `#2d6a4f` | Empfaenger-Knoten - Forest Green |
+| Network Both | `#2d6a4f` | Beides - --color-role-both |
 | Timeline Bar | `#2C5282` | Balken |
 | Timeline Inactive | `#D4D0C0` | Hintergrund-Balken |
 
@@ -97,10 +97,13 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 
 ```css
 :root {
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-headings: 'Merriweather', Georgia, serif;
+    --font-base: 'Lato', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 ```
+
+Hinweis: --font-mono ist in tokens.css noch nicht definiert, wird aber fuer Datenwerte benoetigt.
 
 ### Anwendung
 
@@ -120,12 +123,14 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 
 ```css
 :root {
-    --space-xs: 0.25rem;   /* 4px */
-    --space-sm: 0.5rem;    /* 8px */
-    --space-md: 1rem;      /* 16px */
-    --space-lg: 1.5rem;    /* 24px */
-    --space-xl: 2rem;      /* 32px */
-    --space-2xl: 3rem;     /* 48px */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --space-2xl: 32px;
+    --space-3xl: 48px;
+    --space-4xl: 64px;
 }
 ```
 
@@ -135,7 +140,8 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 :root {
     --radius-sm: 4px;      /* Kleine Elemente, Tags */
     --radius-md: 8px;      /* Cards, Buttons */
-    --radius-lg: 12px;     /* Modals, grosse Container */
+    --radius-lg: 16px;     /* Modals, grosse Container */
+    --radius-xl: 24px;     /* Sehr grosse Elemente */
 }
 ```
 
@@ -264,11 +270,15 @@ Dicke Border (3px) statt box-shadow fuer Tiefe.
 ## 7. Responsive Breakpoints
 
 ```css
-/* Mobile first */
-@media (min-width: 640px) { /* sm */ }
-@media (min-width: 768px) { /* md */ }
-@media (min-width: 1024px) { /* lg */ }
-@media (min-width: 1280px) { /* xl */ }
+/* Mobile first - tokens.css */
+:root {
+    --breakpoint-sm: 480px;   /* Small phones */
+    --breakpoint-md: 768px;   /* Tablets */
+    --breakpoint-lg: 1024px;  /* Small laptops */
+    --breakpoint-xl: 1200px;  /* Desktops */
+    --breakpoint-2xl: 1400px; /* Large screens */
+    --sidebar-width: 380px;
+}
 ```
 
 ### Layout-Verhalten
@@ -276,8 +286,7 @@ Dicke Border (3px) statt box-shadow fuer Tiefe.
 | Breakpoint | Sidebar | Main Content |
 |------------|---------|--------------|
 | < 768px | Collapsed (Hamburger) | Full Width |
-| >= 768px | 280px Fixed | Flex Fill |
-| >= 1280px | 320px Fixed | Flex Fill |
+| >= 768px | var(--sidebar-width) 380px | Flex Fill |
 
 ---
 

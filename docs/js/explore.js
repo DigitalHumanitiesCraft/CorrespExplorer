@@ -49,8 +49,8 @@ const log = {
     error: (msg) => console.error(`[ERROR] ${msg}`)
 };
 
-// Map marker color - Rust Red from logo (design.md Section 6.2)
-const PRIMARY_COLOR = '#C65D3B';
+// Map marker color - Rust Red from logo (tokens.css --color-primary)
+const PRIMARY_COLOR = '#A64B3F';
 
 // Available views tracking
 let availableViews = {};
