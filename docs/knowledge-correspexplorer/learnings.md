@@ -242,10 +242,6 @@ docs/js/
 
 ## 7. Roadmap / Offene Punkte
 
-### Y-Achsen-Gridlines (Timeline)
-
-Horizontale Hilfslinien fuer bessere Ablesbarkeit der Briefanzahl.
-
 ### Themen-Cluster (Netzwerk)
 
 Visualisierung von Themen-Kookkurrenz als Force-Directed Graph.
