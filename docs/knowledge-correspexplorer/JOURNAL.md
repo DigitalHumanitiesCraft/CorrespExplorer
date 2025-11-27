@@ -4,6 +4,63 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-11-27 (Phase 20: Network View Improvements)
+
+### Netzwerk-Analyse und Verbesserungen
+
+Nach Screenshot-Analyse verschiedener Datensaetze wurden mehrere Probleme identifiziert und behoben:
+
+1. Jahr-Validierung (9999-Problem)
+   - Problem: Unrealistische Jahre (z.B. 9999) verzerrten die Zeitachse
+   - Loesung: Filter fuer Jahre zwischen 1400 und 2100
+   - Betroffene Datensaetze: Einige mit Platzhalter-Daten
+
+2. Dynamische Netzwerk-Legende
+   - Vorher: Legende zeigte immer "Zeitgenossen-Netzwerk"
+   - Nachher: Legende aktualisiert sich je nach Auswahl (Zeitgenossen/Themen)
+   - Inkl. Farbanpassung: Blau fuer Zeitgenossen, Amber fuer Themen
+
+3. Dynamischer minYears-Default
+   - Problem: Fester Default von 3 Jahren funktioniert nicht bei kleinen Korpora
+   - Loesung: Automatische Anpassung basierend auf Zeitspanne
+   - <= 5 Jahre: minYears = 1
+   - <= 20 Jahre: minYears = 2
+   - Sonst: minYears = 3 (Standard)
+
+4. Slider statt Input fuer Threshold
+   - Range-Slider mit Live-Update (debounced 150ms)
+   - Aktuelle Wertanzeige neben Slider
+   - Separate Events: 'input' fuer Preview, 'change' fuer Final
+
+5. Farbe nach Eintrittsjahr (neues Feature)
+   - Neues Dropdown "Farbe" mit Optionen:
+     - "Nach Typ": Standard-Farbe (blau/amber)
+     - "Nach Eintrittsjahr": Sequentielle Farbskala (YlGnBu)
+   - Legende zeigt Gradient mit Jahresbereich
+   - Tooltip erweitert um "Erster Brief: [Jahr]"
+   - Nur bei Zeitgenossen-Netzwerk verfuegbar
+   - Hilft bei Analyse der Netzwerk-Evolution
+
+### Technische Aenderungen
+
+explore.js:
+- Neue Variable: `networkColorMode` ('type' | 'entry')
+- Neue Funktion: `getNodeColor(d)` fuer dynamische Knotenfarbe
+- `yearColorScale`: d3.scaleSequential(d3.interpolateYlGnBu)
+- `buildContemporariesNetwork()`: Trackt `firstYear`/`lastYear` pro Person
+- `updateNetworkThresholdLabel()`: Steuert Sichtbarkeit des Farb-Selects
+
+explore.html:
+- Threshold: `<input type="range">` statt `<input type="number">`
+- Neues Element: `<select id="network-color-mode">`
+- Map-Legende: "Sprache" statt "Dominante Sprache"
+
+explore.css:
+- `.network-slider-group`, `.network-slider`, `.slider-value`
+- `.legend-gradient`, `.legend-years`
+
+---
+
 ## 2025-11-27 (Phase 19: Timeline Improvements)
 
 ### Detached Bin fuer undatierte Briefe

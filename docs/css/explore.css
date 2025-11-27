@@ -2321,6 +2321,26 @@
     background: var(--color-bg);
 }
 
+/* Network slider styles */
+.network-slider-group {
+    min-width: 200px;
+}
+
+.network-slider {
+    width: 100px;
+    height: 6px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.slider-value {
+    min-width: 24px;
+    text-align: center;
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+}
+
 .network-stats {
     display: flex;
     gap: var(--space-lg);
@@ -2398,6 +2418,20 @@
     border-radius: 50%;
     border: 2px solid white;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.legend-gradient {
+    display: inline-block;
+    width: 80px;
+    height: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+}
+
+.legend-years {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    margin-left: var(--space-xs);
 }
 
 .legend-sender {

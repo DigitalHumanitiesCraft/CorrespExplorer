@@ -240,11 +240,74 @@ docs/js/
 
 ---
 
-## 7. Roadmap / Offene Punkte
+## 7. Netzwerk-Visualisierung
 
-### Themen-Cluster (Netzwerk)
+### Adaptive Defaults
 
-Visualisierung von Themen-Kookkurrenz als Force-Directed Graph.
+Das Netzwerk passt sich automatisch an die Groesse des Datensatzes an:
+
+```javascript
+// Dynamischer minYears-Default basierend auf Zeitspanne
+const timespan = dateRange.max - dateRange.min;
+if (timespan <= 5) {
+    networkMinYears = 1;
+} else if (timespan <= 20) {
+    networkMinYears = 2;
+} else {
+    networkMinYears = 3; // Standard
+}
+```
+
+### Jahr-Validierung
+
+Unrealistische Jahre werden gefiltert, um die Zeitachse nicht zu verzerren:
+
+```javascript
+const years = allLetters.map(l => l.year).filter(y =>
+    y !== null && y !== undefined && y >= 1400 && y <= 2100
+);
+```
+
+### Farbe nach Eintrittsjahr
+
+Alternative Farbgebung fuer Zeitgenossen-Netzwerk zur Analyse der Netzwerk-Evolution:
+
+```javascript
+// Sequentielle Farbskala (YlGnBu)
+const yearColorScale = d3.scaleSequential(d3.interpolateYlGnBu)
+    .domain([minYear, maxYear]);
+
+// Knotenfarbe basierend auf erstem Brief
+const getNodeColor = (d) => {
+    if (yearColorScale && d.firstYear != null) {
+        return yearColorScale(d.firstYear);
+    }
+    return typeColor; // Fallback auf Typ-Farbe
+};
+```
+
+**Vorteile:**
+- Visualisiert wann Korrespondenten ins Netzwerk eintraten
+- Identifiziert fruehe vs. spaete Teilnehmer
+- Gradient-Legende zeigt Jahresbereich
+
+### Live-Update Slider
+
+Threshold-Eingabe mit Debouncing fuer responsives Feedback:
+
+```javascript
+const debouncedRender = debounce(() => renderNetwork(), 150);
+thresholdInput.addEventListener('input', (e) => {
+    // Update display immediately
+    thresholdValue.textContent = val;
+    // Debounced network render
+    debouncedRender();
+});
+```
+
+---
+
+## 8. Roadmap / Offene Punkte
 
 ### Koordinaten-Aufloesung fuer Uploads
 

@@ -244,8 +244,10 @@ async function init() {
         // Compute dynamic language colors based on data distribution
         computeLanguageColors(allLetters);
 
-        // Calculate date range from data
-        const years = allLetters.map(l => l.year).filter(y => y !== null && y !== undefined);
+        // Calculate date range from data (filter unrealistic years)
+        const years = allLetters.map(l => l.year).filter(y =>
+            y !== null && y !== undefined && y >= 1400 && y <= 2100
+        );
         if (years.length > 0) {
             dateRange.min = Math.min(...years);
             dateRange.max = Math.max(...years);
@@ -3688,6 +3690,7 @@ let networkType = 'contemporaries'; // 'contemporaries', 'topics', 'corresponden
 let networkMinYears = NETWORK_DEFAULTS.minYears;
 let networkMinCooccurrence = NETWORK_DEFAULTS.minCooccurrence;
 let networkMaxNodes = NETWORK_DEFAULTS.maxNodes;
+let networkColorMode = 'type'; // 'type' or 'entry' (entry year)
 let networkSimulation = null;
 let networkSvg = null;
 let networkZoom = null;
@@ -3697,6 +3700,16 @@ function initNetworkView() {
     const thresholdInput = document.getElementById('network-threshold');
     const maxNodesInput = document.getElementById('network-max-nodes');
     const resetZoomBtn = document.getElementById('network-reset-zoom');
+
+    // Calculate dynamic default for minYears based on dataset timespan
+    const timespan = dateRange.max - dateRange.min;
+    if (timespan <= 5) {
+        networkMinYears = 1;
+    } else if (timespan <= 20) {
+        networkMinYears = 2;
+    } else {
+        networkMinYears = NETWORK_DEFAULTS.minYears;
+    }
 
     // Check if topics are available and update UI
     updateNetworkTypeOptions();
@@ -3710,13 +3723,25 @@ function initNetworkView() {
     }
 
     if (thresholdInput) {
-        thresholdInput.addEventListener('change', (e) => {
+        const thresholdValue = document.getElementById('network-threshold-value');
+        // Debounced render for slider
+        const debouncedRender = debounce(() => renderNetwork(), 150);
+
+        thresholdInput.addEventListener('input', (e) => {
             const val = parseInt(e.target.value) || 1;
+            // Update display value immediately
+            if (thresholdValue) thresholdValue.textContent = val;
             if (networkType === 'contemporaries') {
                 networkMinYears = val;
             } else if (networkType === 'topics') {
                 networkMinCooccurrence = val;
             }
+            // Debounced render while sliding
+            debouncedRender();
+        });
+
+        // Also handle change for final value
+        thresholdInput.addEventListener('change', (e) => {
             renderNetwork();
         });
     }
@@ -3730,6 +3755,15 @@ function initNetworkView() {
 
     if (resetZoomBtn) {
         resetZoomBtn.addEventListener('click', resetNetworkZoom);
+    }
+
+    // Color mode select
+    const colorModeSelect = document.getElementById('network-color-mode');
+    if (colorModeSelect) {
+        colorModeSelect.addEventListener('change', (e) => {
+            networkColorMode = e.target.value;
+            renderNetwork();
+        });
     }
 
     log.init('Network view initialized');
@@ -3756,6 +3790,9 @@ function updateNetworkTypeOptions() {
 function updateNetworkThresholdLabel() {
     const label = document.getElementById('network-threshold-label');
     const input = document.getElementById('network-threshold');
+    const valueDisplay = document.getElementById('network-threshold-value');
+    const colorGroup = document.getElementById('network-color-group');
+
     if (!label || !input) return;
 
     if (networkType === 'contemporaries') {
@@ -3763,11 +3800,21 @@ function updateNetworkThresholdLabel() {
         input.value = networkMinYears;
         input.min = 1;
         input.max = NETWORK_DEFAULTS.maxYearsSlider;
+        if (valueDisplay) valueDisplay.textContent = networkMinYears;
+        // Show color mode selector for contemporaries
+        if (colorGroup) colorGroup.style.display = '';
     } else if (networkType === 'topics') {
         label.textContent = 'Min. Co-Occurrence:';
         input.value = networkMinCooccurrence;
         input.min = 1;
         input.max = NETWORK_DEFAULTS.maxNodesSlider;
+        if (valueDisplay) valueDisplay.textContent = networkMinCooccurrence;
+        // Hide color mode selector for topics (entry year not applicable)
+        if (colorGroup) colorGroup.style.display = 'none';
+        // Reset to type color mode when switching to topics
+        networkColorMode = 'type';
+        const colorSelect = document.getElementById('network-color-mode');
+        if (colorSelect) colorSelect.value = 'type';
     }
 }
 
@@ -3790,11 +3837,16 @@ function buildContemporariesNetwork(letters, minYears = NETWORK_DEFAULTS.minYear
                 id: senderId,
                 name: senderName,
                 years: new Set(),
-                letterCount: 0
+                letterCount: 0,
+                firstYear: year,
+                lastYear: year
             });
         }
-        personInfo.get(senderId).years.add(year);
-        personInfo.get(senderId).letterCount++;
+        const info = personInfo.get(senderId);
+        info.years.add(year);
+        info.letterCount++;
+        info.firstYear = Math.min(info.firstYear, year);
+        info.lastYear = Math.max(info.lastYear, year);
 
         // Track year -> persons
         if (!yearPersons.has(year)) {
@@ -3846,7 +3898,9 @@ function buildContemporariesNetwork(letters, minYears = NETWORK_DEFAULTS.minYear
             id: p.id,
             name: p.name,
             total: p.letterCount,
-            yearsActive: p.years.size
+            yearsActive: p.years.size,
+            firstYear: p.firstYear,
+            lastYear: p.lastYear
         }));
 
     // Limit to top nodes by letter count
@@ -3972,6 +4026,21 @@ function renderNetwork() {
         data = buildContemporariesNetwork(filteredLetters, networkMinYears, networkMaxNodes);
     }
 
+    // Color scale for entry year mode (contemporaries only) - calculated early for legend
+    let yearColorScale = null;
+    let minYear = null;
+    let maxYear = null;
+    if (networkColorMode === 'entry' && networkType === 'contemporaries') {
+        const years = data.nodes.map(n => n.firstYear).filter(y => y != null);
+        if (years.length > 0) {
+            minYear = Math.min(...years);
+            maxYear = Math.max(...years);
+            // Use a sequential color scale from yellow (early) to dark blue (late)
+            yearColorScale = d3.scaleSequential(d3.interpolateYlGnBu)
+                .domain([minYear, maxYear]);
+        }
+    }
+
     // Update stats display
     const nodeCount = document.getElementById('network-node-count');
     const edgeCount = document.getElementById('network-edge-count');
@@ -3987,6 +4056,31 @@ function renderNetwork() {
             infoText.textContent = 'Themen die gemeinsam in Briefen erwaehnt werden';
         } else {
             infoText.textContent = 'Korrespondenten die in denselben Jahren aktiv sind';
+        }
+    }
+
+    // Update network legend based on type and color mode
+    const legendDiv = document.getElementById('network-legend');
+    if (legendDiv) {
+        const label = networkType === 'topics' ? 'Themen-Netzwerk' : 'Zeitgenossen-Netzwerk';
+
+        // Check if entry year coloring is active
+        if (networkColorMode === 'entry' && networkType === 'contemporaries' && minYear && maxYear) {
+            legendDiv.innerHTML = `
+                <div class="legend-item">
+                    <span class="legend-gradient" style="background: linear-gradient(to right, ${yearColorScale(minYear)}, ${yearColorScale((minYear + maxYear) / 2)}, ${yearColorScale(maxYear)});"></span>
+                    <span class="legend-years">${minYear} - ${maxYear}</span>
+                </div>
+                <div class="legend-hint">Farbe nach Eintrittsjahr | Klick auf Knoten filtert Briefe</div>
+            `;
+        } else {
+            const color = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
+            legendDiv.innerHTML = `
+                <div class="legend-item">
+                    <span class="legend-circle" style="background: ${color};"></span> ${label}
+                </div>
+                <div class="legend-hint">Klick auf Knoten filtert Briefe | Hover fuer Details</div>
+            `;
         }
     }
 
@@ -4069,7 +4163,15 @@ function renderNetwork() {
         .range([1, 8]);
 
     // Color for network types
-    const nodeColor = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
+    const typeColor = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
+
+    // Node color function (uses yearColorScale defined earlier if in entry mode)
+    const getNodeColor = (d) => {
+        if (yearColorScale && d.firstYear != null) {
+            return yearColorScale(d.firstYear);
+        }
+        return typeColor;
+    };
 
     // Create simulation
     networkSimulation = d3.forceSimulation(data.nodes)
@@ -4105,7 +4207,7 @@ function renderNetwork() {
     // Node circles
     node.append('circle')
         .attr('r', d => nodeScale(d.total))
-        .attr('fill', nodeColor)
+        .attr('fill', d => getNodeColor(d))
         .attr('stroke', '#fff')
         .attr('stroke-width', 2);
 
@@ -4126,7 +4228,11 @@ function renderNetwork() {
             .text(d => `${d.sourceName} + ${d.targetName}\n${d.count}x gemeinsam erwaehnt`);
     } else {
         node.append('title')
-            .text(d => `${d.name}\n${d.total} Briefe\n${d.yearsActive} Jahre aktiv`);
+            .text(d => {
+                let text = `${d.name}\n${d.total} Briefe\n${d.yearsActive} Jahre aktiv`;
+                if (d.firstYear) text += `\nErster Brief: ${d.firstYear}`;
+                return text;
+            });
         link.append('title')
             .text(d => `${d.sourceName} & ${d.targetName}\n${d.sharedYears} gemeinsame Jahre\n(${d.yearRange[0]}-${d.yearRange[1]})`);
     }

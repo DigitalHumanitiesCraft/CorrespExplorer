@@ -305,7 +305,7 @@
                         </button>
                     </div>
                     <div id="map-legend" class="map-legend">
-                        <div class="map-legend-title">Dominante Sprache</div>
+                        <div class="map-legend-title">Sprache</div>
                         <div class="map-legend-items"></div>
                     </div>
                 </div>
@@ -498,13 +498,21 @@
                                     <option value="contemporaries">Zeitgenossen</option>
                                 </select>
                             </div>
-                            <div class="network-control-group">
+                            <div class="network-control-group network-slider-group">
                                 <label for="network-threshold" id="network-threshold-label">Min. gemeinsame Jahre:</label>
-                                <input type="number" id="network-threshold" value="3" min="1" max="50">
+                                <input type="range" id="network-threshold" value="3" min="1" max="50" class="network-slider">
+                                <span id="network-threshold-value" class="slider-value">3</span>
                             </div>
                             <div class="network-control-group">
                                 <label for="network-max-nodes">Max. Knoten:</label>
                                 <input type="number" id="network-max-nodes" value="50" min="10" max="200">
+                            </div>
+                            <div class="network-control-group" id="network-color-group">
+                                <label for="network-color-mode">Farbe:</label>
+                                <select id="network-color-mode">
+                                    <option value="type">Nach Typ</option>
+                                    <option value="entry">Nach Eintrittsjahr</option>
+                                </select>
                             </div>
                             <button id="network-reset-zoom" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-compress-arrows-alt"></i> Zoom zuruecksetzen
