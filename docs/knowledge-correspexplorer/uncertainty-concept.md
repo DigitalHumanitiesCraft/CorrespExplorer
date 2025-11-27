@@ -6,69 +6,164 @@ Stand: 2025-11-27
 
 ---
 
-## 1. Typen von Unsicherheiten in CMIF
+## 1. Taxonomie der Unsicherheiten
 
-### 1.1 Datierungsunsicherheit
+Unsicherheiten in Korrespondenz-Metadaten lassen sich in mehrere Kategorien einteilen:
 
-CMIF unterstuetzt verschiedene Attribute zur Kennzeichnung unsicherer Datierungen:
+### 1.1 Temporale Unsicherheit (Datierung)
 
+| Typ | Beschreibung | CMIF-Attribut | Haeufigkeit |
+|-----|--------------|---------------|-------------|
+| Exakt | Datum bekannt | `when="1913-06-13"` | Hoch |
+| Zeitspanne | Nur Zeitraum bekannt | `notBefore/notAfter` | Mittel |
+| Unsicher | Datum vermutet | `cert="low"` | Niedrig |
+| Konjektur | Aus Kontext erschlossen | `evidence="conjecture"` | Niedrig |
+| Unbekannt | Kein Datum | Fehlendes Element | Selten |
+
+Beispiele aus CMIF:
 ```xml
-<!-- Exaktes Datum -->
+<!-- Exakt -->
 <date when="1913-06-13"/>
 
 <!-- Zeitspanne -->
 <date notBefore="1913-06" notAfter="1913-08"/>
 
-<!-- Unsicheres Datum -->
+<!-- Unsicher -->
 <date when="1913-06-13" cert="low"/>
 
-<!-- Vermutetes Datum -->
+<!-- Konjektur -->
 <date when="1913" evidence="conjecture"/>
+
+<!-- Nur Jahr -->
+<date when="1913"/>
 ```
 
-Aktueller Status: Parser liest `notBefore/notAfter`, ignoriert aber `cert` und `evidence`.
+### 1.2 Personale Unsicherheit
 
-### 1.2 Unbekannte Personen
+| Typ | Beschreibung | Beispiel |
+|-----|--------------|----------|
+| Unbekannt | Person nicht identifiziert | `[NN]`, `Unbekannt` |
+| Teilweise bekannt | Nur Nachname | `Rozario, [NN] de` |
+| Unsichere Identifikation | Person vermutet | `cert="low"` auf persName |
+| Verwechslungsgefahr | Mehrere Personen gleichen Namens | Ohne Authority-ID |
+| Sekretaer vs. Autor | Schreiber ungleich Absender | Nicht in CMIF |
 
-```xml
-<persName>[NN]</persName>
-<persName>Unbekannt</persName>
-<persName>Rozario, [NN] de</persName>
-```
+### 1.3 Raeumliche Unsicherheit
 
-Im HSA-Datensatz: 50+ Briefe mit "Unbekannt" als Absender/Empfaenger.
+| Typ | Beschreibung | Beispiel |
+|-----|--------------|----------|
+| Unbekannt | Ort nicht angegeben | `unknown`, leer |
+| Ohne Koordinaten | Ort bekannt, nicht lokalisiert | Ohne GeoNames-ID |
+| Schreibort vs. Absendeort | Unterschiedliche Orte | Semantisch unklar |
+| Unsichere Lokalisierung | Ort vermutet | `cert="low"` |
+| Historischer Ortsname | Name geaendert | Erfordert Mapping |
 
-### 1.3 Unbekannte Orte
+### 1.4 Referenzielle Unsicherheit (Authority)
 
-```xml
-<placeName>unknown</placeName>
-<!-- Oder Orte ohne GeoNames-ID -->
-```
+| Typ | Beschreibung | Auswirkung |
+|-----|--------------|------------|
+| Keine Authority-ID | Person/Ort ohne GND/VIAF | Keine Vernetzung moeglich |
+| Falsche Authority-ID | Fehlerhafte Zuordnung | Falsche Anreicherung |
+| Mehrdeutige Referenz | Mehrere moegliche Entitaeten | Unsichere Zuordnung |
+| Veraltete ID | Authority-System geaendert | Link funktioniert nicht |
 
-Im Hebel-Datensatz: 60% der Briefe ohne Absende-Ort.
+### 1.5 Ueberlieferungsunsicherheit
 
-### 1.4 Unbekannte Authority-IDs
+| Typ | Beschreibung | CMIF-Attribut |
+|-----|--------------|---------------|
+| Original | Originalbrief vorhanden | Standard |
+| Kopie | Nur Abschrift erhalten | `type="copy"` |
+| Entwurf | Konzept, nicht abgesandt | `type="draft"` |
+| Verloren | Brief nur erwaehnt | `type="lost"` |
+| Fragment | Unvollstaendig | `type="fragment"` |
 
-Personen/Orte ohne VIAF, GND oder GeoNames-Referenz.
+### 1.6 Inhaltliche Unsicherheit
+
+| Typ | Beschreibung | Relevanz |
+|-----|--------------|----------|
+| Sprachangabe | Sprache nicht sicher | Selten |
+| Thematische Zuordnung | Subjektive Kategorisierung | Bei subjects |
+| Erwaehnte Entitaeten | Interpretation erforderlich | Bei mentions |
+
+### 1.7 Strukturelle Unsicherheit
+
+| Typ | Beschreibung | Beispiel |
+|-----|--------------|----------|
+| Brieffolge | Reihenfolge unklar | Bei Briefwechseln |
+| Zugehoerigkeit | Brief zu Korrespondenz? | Bei Sammlungen |
+| Vollstaendigkeit | Fehlende Briefe | Luecken in Serie |
 
 ---
 
-## 2. Vorgeschlagene Visualisierung
+## 2. Relevanz fuer CorrespExplorer
 
-### 2.1 Datierungsunsicherheit
+Nicht alle Unsicherheiten sind fuer die Visualisierung gleich relevant:
 
-| Szenario | Anzeige | Visuelle Kennzeichnung |
-|----------|---------|------------------------|
-| Exaktes Datum | "13.06.1913" | Normal |
-| Zeitspanne | "Juni-August 1913" | Kursiv |
-| Unsicher (cert=low) | "13.06.1913?" | Fragezeichen |
-| Vermutet | "ca. 1913" | "ca." Praefix |
+### 2.1 Hohe Relevanz (sollte visualisiert werden)
 
-CSS-Klassen:
+| Unsicherheit | Begruendung | Visualisierung |
+|--------------|-------------|----------------|
+| Datierungsunsicherheit | Beeinflusst Timeline direkt | ?, ca., kursiv |
+| Unbekannte Personen | Beeinflusst Netzwerk-Analyse | Spezielles Styling |
+| Unbekannte Orte | Beeinflusst Karten-Ansicht | Separate Liste |
+| Fehlende Authority-IDs | Keine Wikidata-Anreicherung | Info-Badge |
+
+### 2.2 Mittlere Relevanz (optional)
+
+| Unsicherheit | Begruendung | Umsetzung |
+|--------------|-------------|-----------|
+| Ueberlieferungstyp | Forschungsrelevant | Tooltip/Export |
+| Zeitspannen | Praezision der Timeline | Fehlerbalken |
+| Teilweise bekannte Namen | Kontextuell wichtig | Anzeige beibehalten |
+
+### 2.3 Niedrige Relevanz (nicht umsetzen)
+
+| Unsicherheit | Begruendung |
+|--------------|-------------|
+| Sekretaer vs. Autor | Nicht in CMIF-Standard |
+| Brieffolge | Komplexe Logik erforderlich |
+| Vollstaendigkeit | Metadaten nicht verfuegbar |
+
+---
+
+## 3. Aktueller Status im Code
+
+### 3.1 Was bereits funktioniert
+
+| Feature | Datei | Status |
+|---------|-------|--------|
+| notBefore/notAfter lesen | cmif-parser.js:180-181 | Implementiert |
+| Unbekannte Personen anzeigen | explore.js | "Unbekannt" wird gezeigt |
+| Orte ohne Koordinaten | explore.js | Separate Liste |
+| Fallback bei fehlenden Daten | diverse | "Unbekannt" Strings |
+
+### 3.2 Was fehlt
+
+| Feature | Datei | Aufwand |
+|---------|-------|---------|
+| cert/evidence auswerten | cmif-parser.js | Gering |
+| Unsicherheits-Styling | explore.css | Gering |
+| Statistik-Erweiterung | explore.js | Mittel |
+| Filter fuer Datenqualitaet | explore.js | Mittel |
+| Export mit Unsicherheiten | explore.js | Gering |
+
+---
+
+## 4. Vorgeschlagene Visualisierung
+
+### 4.1 Datierungsunsicherheit
+
+| Szenario | Anzeige | CSS-Klasse |
+|----------|---------|------------|
+| Exaktes Datum | "13.06.1913" | - |
+| Zeitspanne | "Juni-August 1913" | `.date-range` |
+| Unsicher (cert=low) | "13.06.1913?" | `.date-uncertain` |
+| Vermutet | "ca. 1913" | `.date-conjecture` |
+| Nur Jahr | "1913" | `.date-year-only` |
+
 ```css
-.date-uncertain {
+.date-range {
     font-style: italic;
-    color: var(--color-text-muted);
 }
 
 .date-uncertain::after {
@@ -77,35 +172,25 @@ CSS-Klassen:
     margin-left: 2px;
 }
 
-.date-range {
-    font-style: italic;
+.date-conjecture::before {
+    content: "ca. ";
+    color: var(--color-text-muted);
+}
+
+.date-year-only {
+    color: var(--color-text-muted);
 }
 ```
 
-### 2.2 Timeline mit Unsicherheiten
+### 4.2 Unbekannte Personen
 
-Option A: Transparente Balken
-- Unsichere Datierungen werden mit reduzierter Opacity (0.5) dargestellt
-- Tooltip zeigt "Unsichere Datierung" an
+| Fall | Erkennung | Anzeige |
+|------|-----------|---------|
+| `[NN]` | Pattern-Match | "[Unbekannt]" |
+| `Unbekannt` | Exakter Match | "[Unbekannt]" |
+| `N.N.` | Pattern-Match | "[Unbekannt]" |
+| `Rozario, [NN] de` | Teilmatch | "Rozario, [?] de" |
 
-Option B: Separate Farbe
-- Unsichere Datierungen in einer separaten Farbe (z.B. gestrichelt)
-- Legende erklaert die Unterscheidung
-
-Option C: Fehlerbalken
-- Bei Zeitspannen (notBefore/notAfter): Horizontaler Balken zeigt den moeglichen Zeitraum
-
-Empfehlung: Option A (einfach, nicht stoerend)
-
-### 2.3 Unbekannte Personen
-
-| Person | Anzeige | Sortierung |
-|--------|---------|------------|
-| "Hugo Schuchardt" | Normal | Alphabetisch |
-| "[NN]" | "[Unbekannt]" mit Icon | Am Ende |
-| "Rozario, [NN] de" | "Rozario, [?] de" | Alphabetisch unter R |
-
-Visuelle Kennzeichnung:
 ```css
 .person-unknown {
     color: var(--color-text-muted);
@@ -114,86 +199,109 @@ Visuelle Kennzeichnung:
 
 .person-unknown .person-avatar {
     background: var(--color-border-light);
-}
-
-.person-unknown .person-avatar::before {
-    content: "?";
+    color: var(--color-text-muted);
 }
 ```
 
-### 2.4 Unbekannte Orte
+### 4.3 Timeline mit Unsicherheiten
 
-Kartenansicht:
-- Orte ohne Koordinaten werden in einer separaten Liste angezeigt (bereits implementiert)
-- Optionale Anzeige: "Ort nicht lokalisierbar" Badge
+Option A - Transparenz (empfohlen):
+- Unsichere Datierungen: opacity 0.5
+- Tooltip erklaert "Unsichere Datierung"
 
-Orte-Liste:
-- Unbekannte Orte am Ende der Liste
-- Eigene Kategorie "Nicht lokalisiert"
+Option B - Muster:
+- Unsichere Datierungen: gestrichelter Balken
+- Legende erforderlich
 
-### 2.5 Sidebar-Statistik
+Option C - Fehlerbalken:
+- Bei Zeitspannen: horizontale Linie zeigt Bereich
+- Komplexer zu implementieren
 
-Erweiterung der Stats-Cards um Unsicherheits-Indikatoren:
+### 4.4 Sidebar-Statistik
 
 ```
 Briefe: 11.576
-  davon unsicher datiert: 234 (2%)
-
-Orte: 774
-  davon ohne Koordinaten: 45 (6%)
+  └ davon unsicher datiert: 234 (2%)
 
 Personen: 846
-  davon unbekannt: 12 (1%)
+  └ davon unbekannt: 12 (1%)
+
+Orte: 774
+  └ davon ohne Koordinaten: 45 (6%)
 ```
 
 ---
 
-## 3. Datenmodell-Erweiterung
+## 5. Datenmodell-Erweiterung
 
-### 3.1 Brief-Objekt
+### 5.1 Brief-Objekt
 
 ```javascript
 {
   "id": "o:hsa.letter.654",
   "date": "1913-06-13",
   "year": 1913,
-  "dateUncertainty": {
-    "type": "exact" | "range" | "uncertain" | "conjecture",
-    "cert": "high" | "medium" | "low",
-    "notBefore": "1913-06",
-    "notAfter": "1913-08"
-  },
-  "sender": {
-    "name": "Urquijo Ybarra, Julio de",
-    "isUnknown": false
+  "uncertainty": {
+    "date": {
+      "type": "exact" | "range" | "uncertain" | "conjecture" | "year-only",
+      "cert": "high" | "medium" | "low",
+      "notBefore": "1913-06",
+      "notAfter": "1913-08"
+    },
+    "sender": {
+      "isUnknown": false,
+      "isPartial": false
+    },
+    "recipient": {
+      "isUnknown": true,
+      "isPartial": false
+    },
+    "place": {
+      "isUnknown": false,
+      "hasCoordinates": true
+    }
   }
 }
 ```
 
-### 3.2 Parser-Erweiterung
+### 5.2 Parser-Erweiterung
 
 ```javascript
-function extractDate(action) {
-    // ... existing code ...
+function extractDateWithUncertainty(action) {
+    const dateEl = action.getElementsByTagNameNS(TEI_NS, 'date')[0];
+    if (!dateEl) return { date: null, year: null, uncertainty: { type: 'unknown' } };
 
+    const when = dateEl.getAttribute('when');
+    const from = dateEl.getAttribute('from');
+    const to = dateEl.getAttribute('to');
+    const notBefore = dateEl.getAttribute('notBefore');
+    const notAfter = dateEl.getAttribute('notAfter');
     const cert = dateEl.getAttribute('cert');
     const evidence = dateEl.getAttribute('evidence');
 
-    let uncertaintyType = 'exact';
-    if (notBefore && notAfter && !when) {
-        uncertaintyType = 'range';
-    } else if (cert === 'low') {
-        uncertaintyType = 'uncertain';
+    const dateStr = when || from || notBefore || notAfter;
+    const year = dateStr ? parseInt(dateStr.substring(0, 4), 10) : null;
+
+    let type = 'exact';
+    if (!dateStr) {
+        type = 'unknown';
+    } else if (notBefore && notAfter && !when) {
+        type = 'range';
+    } else if (cert === 'low' || cert === 'medium') {
+        type = 'uncertain';
     } else if (evidence === 'conjecture') {
-        uncertaintyType = 'conjecture';
+        type = 'conjecture';
+    } else if (dateStr.length === 4) {
+        type = 'year-only';
     }
 
     return {
         date: dateStr,
         year: isNaN(year) ? null : year,
-        dateUncertainty: {
-            type: uncertaintyType,
+        uncertainty: {
+            type,
             cert: cert || 'high',
+            evidence,
             notBefore,
             notAfter
         }
@@ -201,105 +309,164 @@ function extractDate(action) {
 }
 ```
 
-### 3.3 Personen-Erkennung
+### 5.3 Personen-Erkennung
 
 ```javascript
-function isUnknownPerson(name) {
-    if (!name) return true;
-    const patterns = ['[NN]', 'Unbekannt', 'Unknown', 'N.N.', '???'];
-    return patterns.some(p => name.includes(p));
+const UNKNOWN_PATTERNS = [
+    /^\[NN\]$/i,
+    /^\[N\.N\.\]$/i,
+    /^Unbekannt$/i,
+    /^Unknown$/i,
+    /^N\.N\.$/i,
+    /^\?\?\?$/,
+    /^ohne Angabe$/i
+];
+
+const PARTIAL_PATTERN = /\[NN\]|\[N\.N\.\]|\[\?\]/;
+
+function analyzePersonUncertainty(name) {
+    if (!name) return { isUnknown: true, isPartial: false };
+
+    const isUnknown = UNKNOWN_PATTERNS.some(p => p.test(name.trim()));
+    const isPartial = !isUnknown && PARTIAL_PATTERN.test(name);
+
+    return { isUnknown, isPartial };
 }
 ```
 
 ---
 
-## 4. UI-Elemente
+## 6. UI-Erweiterungen
 
-### 4.1 Filter fuer Unsicherheiten
+### 6.1 Filter fuer Datenqualitaet
 
-Neuer Filter-Abschnitt in der Sidebar:
+Neuer Abschnitt in der Sidebar:
 
+```html
+<div class="filter-group">
+    <h4>Datenqualitaet</h4>
+    <label class="checkbox-label">
+        <input type="checkbox" id="filter-certain-dates" />
+        Nur sichere Datierungen
+    </label>
+    <label class="checkbox-label">
+        <input type="checkbox" id="filter-known-persons" />
+        Nur bekannte Personen
+    </label>
+    <label class="checkbox-label">
+        <input type="checkbox" id="filter-located-places" />
+        Nur lokalisierte Orte
+    </label>
+</div>
 ```
-Datenqualitaet
-[x] Alle anzeigen
-[ ] Nur sichere Datierungen
-[ ] Nur bekannte Personen
-[ ] Nur lokalisierte Orte
+
+### 6.2 Legende fuer Unsicherheiten
+
+```html
+<div class="uncertainty-legend">
+    <div class="legend-item">
+        <span class="date-uncertain">Datum?</span>
+        <span>Unsichere Datierung</span>
+    </div>
+    <div class="legend-item">
+        <span class="date-range">Juni-Aug</span>
+        <span>Zeitspanne</span>
+    </div>
+    <div class="legend-item">
+        <span class="person-unknown">[Unbekannt]</span>
+        <span>Person nicht identifiziert</span>
+    </div>
+</div>
 ```
 
-### 4.2 Tooltip-Erweiterung
+### 6.3 Export mit Unsicherheiten
 
-Brief-Karten zeigen Unsicherheiten im Tooltip:
-
+CSV-Spalten:
 ```
-Brief von Hugo Schuchardt an [Unbekannt]
-Datum: ca. 1913 (unsichere Datierung)
-Ort: Graz
+ID,Datum,Datum_Typ,Datum_Cert,Sender,Sender_Unbekannt,Empfaenger,Empfaenger_Unbekannt,Ort,Ort_Koordinaten
+654,1913-06-13,exact,high,Urquijo,false,Schuchardt,false,Graz,true
+655,1913,year-only,low,[NN],true,Schuchardt,false,unknown,false
 ```
-
-### 4.3 Export mit Unsicherheiten
-
-CSV-Export enthaelt zusaetzliche Spalten:
-
-| ID | Datum | Datum_Unsicher | Sender | Sender_Unbekannt |
-|----|-------|----------------|--------|------------------|
-| 654 | 1913-06-13 | false | Urquijo | false |
-| 655 | 1913 | true | [NN] | true |
 
 ---
 
-## 5. Implementierungsplan
+## 7. Forschungsperspektive
 
-### Phase 1: Datenerfassung (gering)
-1. Parser erweitern um `cert`, `evidence` Attribute
-2. `isUnknown` Flag fuer Personen berechnen
-3. Datenmodell um `dateUncertainty` erweitern
+### 7.1 Warum Unsicherheiten zeigen?
 
-### Phase 2: Visuelle Kennzeichnung (mittel)
-1. CSS-Klassen fuer unsichere Elemente
+1. Quellenkritik: Forschende muessen Datenqualitaet einschaetzen koennen
+2. Reproduzierbarkeit: Analyse-Ergebnisse haengen von Datenqualitaet ab
+3. Ehrlichkeit: Visualisierung darf nicht praeziser wirken als die Daten
+4. Filterbarkeit: Manche Analysen erfordern nur sichere Daten
+
+### 7.2 Grundsaetze
+
+- Unsicherheiten nicht verstecken, aber auch nicht aufdringlich
+- Dezente visuelle Marker (Kursiv, Fragezeichen, Opacity)
+- Tooltips fuer Details
+- Export muss Unsicherheiten enthalten
+- Filter ermoeglichen gezielte Analyse
+
+---
+
+## 8. Implementierungsplan
+
+### Phase 1: Parser-Erweiterung (1-2 Stunden)
+1. `extractDateWithUncertainty()` implementieren
+2. `analyzePersonUncertainty()` implementieren
+3. Datenmodell um uncertainty-Objekt erweitern
+4. Rueckwaertskompatibilitaet sicherstellen
+
+### Phase 2: Visuelle Kennzeichnung (2-3 Stunden)
+1. CSS-Klassen fuer Unsicherheiten
 2. Brief-Liste mit Unsicherheits-Markern
 3. Personen-Liste mit [NN]-Kennzeichnung
+4. Tooltip-Erweiterung
 
-### Phase 3: Statistik-Integration (gering)
-1. Unsicherheits-Zaehler in Stats-Cards
-2. Tooltip-Erweiterung
+### Phase 3: Statistik und Legende (1 Stunde)
+1. Unsicherheits-Zaehler berechnen
+2. Stats-Cards erweitern
+3. Legende hinzufuegen
 
-### Phase 4: Filter-Optionen (mittel)
-1. Datenqualitaets-Filter in Sidebar
-2. URL-State fuer Filter
+### Phase 4: Filter (2 Stunden)
+1. Filter-UI in Sidebar
+2. Filter-Logik implementieren
+3. URL-State fuer Filter
 
-### Phase 5: Export-Erweiterung (gering)
-1. Zusaetzliche Spalten in CSV
-2. Unsicherheits-Felder in JSON
-
----
-
-## 6. Forschungsperspektive
-
-Fuer Forschende ist die Transparenz ueber Unsicherheiten essentiell:
-
-1. Quellenkritik: Unsichere Datierungen muessen erkennbar sein
-2. Reproduzierbarkeit: Export muss Unsicherheiten enthalten
-3. Interpretation: Visualisierungen duerfen nicht ueber-praezise wirken
-
-Grundsatz: Unsicherheiten nicht verstecken, aber auch nicht aufdringlich darstellen.
+### Phase 5: Export (1 Stunde)
+1. CSV-Spalten erweitern
+2. JSON-Export mit uncertainty-Objekt
 
 ---
 
-## 7. Abhaengigkeiten
-
-- cmif-parser.js: Erweiterung der Extraktion
-- explore.js: Rendering mit Unsicherheits-Klassen
-- explore.css: Neue Styles
-- constants.js: Unsicherheits-Typen
-- utils.js: Helper-Funktionen
-
----
-
-## 8. Nicht-Ziele
+## 9. Nicht-Ziele
 
 - Automatische Korrektur von Unsicherheiten
 - KI-basierte Datumsschaetzung
 - Validierung gegen externe Quellen
+- Bewertung der Datenqualitaet
+- Warnung vor "schlechten" Daten
 
 Das Tool zeigt Unsicherheiten an, bewertet oder korrigiert sie aber nicht.
+
+---
+
+## 10. Offene Fragen
+
+1. Sollen Unsicherheiten in der Timeline aggregiert werden?
+   - Option A: Unsichere Briefe zaehlen normal
+   - Option B: Unsichere Briefe werden separat gezaehlt
+
+2. Wie mit Zeitspannen in der Timeline umgehen?
+   - Option A: Zum fruehesten Jahr zaehlen
+   - Option B: Zum spaetesten Jahr zaehlen
+   - Option C: Anteilig auf alle Jahre verteilen
+
+3. Sollen unbekannte Personen im Netzwerk erscheinen?
+   - Option A: Ja, als einzelner "[Unbekannt]" Knoten
+   - Option B: Nein, ausschliessen
+   - Option C: Ja, aber ausgegraut
+
+4. Filter-Defaults?
+   - Option A: Alle Daten (inkl. unsichere)
+   - Option B: Nur sichere Daten
