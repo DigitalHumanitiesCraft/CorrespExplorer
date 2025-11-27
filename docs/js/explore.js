@@ -2623,6 +2623,9 @@ function renderTimeline() {
 
     container.innerHTML = bars.join('');
 
+    // Add Y-axis gridlines
+    renderTimelineGridlines(container, maxCount);
+
     // Responsive bar width based on year span
     const barWrappers = container.querySelectorAll('.timeline-bar-wrapper');
     if (yearSpan > 0 && yearSpan <= 20) {
@@ -2822,6 +2825,61 @@ function renderTimeline() {
     });
 
     timelineRendered = true;
+}
+
+/**
+ * Render Y-axis gridlines for timeline
+ * @param {HTMLElement} container - Timeline chart container
+ * @param {number} maxCount - Maximum letter count (for scaling)
+ */
+function renderTimelineGridlines(container, maxCount) {
+    // Remove existing gridlines
+    container.querySelectorAll('.timeline-gridline, .timeline-y-axis').forEach(el => el.remove());
+
+    if (maxCount <= 1) return;
+
+    // Calculate nice round numbers for gridlines (aim for 3-5 lines)
+    const gridlineCount = 4;
+    const rawStep = maxCount / gridlineCount;
+
+    // Round to nice numbers (1, 2, 5, 10, 20, 50, 100, etc.)
+    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+    const normalized = rawStep / magnitude;
+    let niceStep;
+    if (normalized <= 1) niceStep = magnitude;
+    else if (normalized <= 2) niceStep = 2 * magnitude;
+    else if (normalized <= 5) niceStep = 5 * magnitude;
+    else niceStep = 10 * magnitude;
+
+    // Ensure at least step of 1
+    niceStep = Math.max(1, niceStep);
+
+    // Create Y-axis container
+    const yAxis = document.createElement('div');
+    yAxis.className = 'timeline-y-axis';
+
+    // Generate gridlines at nice intervals
+    // Position uses percentage matching the bar height calculation
+    for (let value = niceStep; value < maxCount; value += niceStep) {
+        // Same calculation as bar height: (value / maxCount) * 100
+        const percentage = (value / maxCount) * 100;
+
+        // Gridline - positioned inside yAxis container
+        const gridline = document.createElement('div');
+        gridline.className = 'timeline-gridline';
+        gridline.style.bottom = `${percentage}%`;
+
+        // Label
+        const label = document.createElement('span');
+        label.className = 'timeline-gridline-label';
+        label.textContent = value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value;
+        label.style.bottom = `${percentage}%`;
+
+        yAxis.appendChild(gridline);
+        yAxis.appendChild(label);
+    }
+
+    container.insertBefore(yAxis, container.firstChild);
 }
 
 // ===================
