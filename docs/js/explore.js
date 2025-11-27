@@ -3691,6 +3691,7 @@ let networkMinYears = NETWORK_DEFAULTS.minYears;
 let networkMinCooccurrence = NETWORK_DEFAULTS.minCooccurrence;
 let networkMaxNodes = NETWORK_DEFAULTS.maxNodes;
 let networkColorMode = 'type'; // 'type' or 'entry' (entry year)
+let networkHideEgo = false; // Hide the ego node (most connected person)
 let networkSimulation = null;
 let networkSvg = null;
 let networkZoom = null;
@@ -3762,6 +3763,15 @@ function initNetworkView() {
     if (colorModeSelect) {
         colorModeSelect.addEventListener('change', (e) => {
             networkColorMode = e.target.value;
+            renderNetwork();
+        });
+    }
+
+    // Hide ego checkbox
+    const hideEgoCheckbox = document.getElementById('network-hide-ego');
+    if (hideEgoCheckbox) {
+        hideEgoCheckbox.addEventListener('change', (e) => {
+            networkHideEgo = e.target.checked;
             renderNetwork();
         });
     }
@@ -4026,6 +4036,35 @@ function renderNetwork() {
         data = buildContemporariesNetwork(filteredLetters, networkMinYears, networkMaxNodes);
     }
 
+    // Filter out ego node if requested (node with most connections)
+    let egoNodeId = null;
+    if (networkHideEgo && data.nodes.length > 0) {
+        // Count connections per node
+        const connectionCount = new Map();
+        data.nodes.forEach(n => connectionCount.set(n.id, 0));
+        data.links.forEach(l => {
+            connectionCount.set(l.source, (connectionCount.get(l.source) || 0) + 1);
+            connectionCount.set(l.target, (connectionCount.get(l.target) || 0) + 1);
+        });
+
+        // Find ego (most connected node)
+        let maxConnections = 0;
+        connectionCount.forEach((count, id) => {
+            if (count > maxConnections) {
+                maxConnections = count;
+                egoNodeId = id;
+            }
+        });
+
+        // Remove ego node and its edges
+        if (egoNodeId) {
+            data.nodes = data.nodes.filter(n => n.id !== egoNodeId);
+            data.links = data.links.filter(l =>
+                l.source !== egoNodeId && l.target !== egoNodeId
+            );
+        }
+    }
+
     // Color scale for entry year mode (contemporaries only) - calculated early for legend
     let yearColorScale = null;
     let minYear = null;
@@ -4063,6 +4102,9 @@ function renderNetwork() {
     const legendDiv = document.getElementById('network-legend');
     if (legendDiv) {
         const label = networkType === 'topics' ? 'Themen-Netzwerk' : 'Zeitgenossen-Netzwerk';
+        const sizeHint = networkType === 'topics'
+            ? 'Groesse = Anzahl Briefe'
+            : 'Groesse = Briefmenge';
 
         // Check if entry year coloring is active
         if (networkColorMode === 'entry' && networkType === 'contemporaries' && minYear && maxYear) {
@@ -4071,7 +4113,8 @@ function renderNetwork() {
                     <span class="legend-gradient" style="background: linear-gradient(to right, ${yearColorScale(minYear)}, ${yearColorScale((minYear + maxYear) / 2)}, ${yearColorScale(maxYear)});"></span>
                     <span class="legend-years">${minYear} - ${maxYear}</span>
                 </div>
-                <div class="legend-hint">Farbe nach Eintrittsjahr | Klick auf Knoten filtert Briefe</div>
+                <div class="legend-size-hint"><i class="fas fa-circle"></i> ${sizeHint}</div>
+                <div class="legend-hint">Farbe = Eintrittsjahr | Hover zeigt Verbindungen</div>
             `;
         } else {
             const color = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
@@ -4079,7 +4122,8 @@ function renderNetwork() {
                 <div class="legend-item">
                     <span class="legend-circle" style="background: ${color};"></span> ${label}
                 </div>
-                <div class="legend-hint">Klick auf Knoten filtert Briefe | Hover fuer Details</div>
+                <div class="legend-size-hint"><i class="fas fa-circle"></i> ${sizeHint}</div>
+                <div class="legend-hint">Klick filtert Briefe | Hover zeigt Verbindungen</div>
             `;
         }
     }
@@ -4182,6 +4226,11 @@ function renderNetwork() {
         .force('center', d3.forceCenter(width / 2, height / 2))
         .force('collision', d3.forceCollide().radius(d => nodeScale(d.total) + 5));
 
+    // Dynamic edge opacity based on number of links (more links = more transparent)
+    const baseOpacity = data.links.length > 300 ? 0.15 :
+                        data.links.length > 100 ? 0.3 :
+                        data.links.length > 50 ? 0.4 : 0.5;
+
     // Draw edges
     const link = g.append('g')
         .attr('class', 'links')
@@ -4189,7 +4238,7 @@ function renderNetwork() {
         .data(data.links)
         .join('line')
         .attr('stroke', '#999')
-        .attr('stroke-opacity', 0.5)
+        .attr('stroke-opacity', baseOpacity)
         .attr('stroke-width', d => edgeScale(edgeValueFn(d)));
 
     // Draw nodes
@@ -4246,6 +4295,41 @@ function renderNetwork() {
             applyPersonFilter(d.id);
         }
         switchView('letters');
+    });
+
+    // Hover highlight - show only connected edges and dim others
+    node.on('mouseenter', (event, d) => {
+        // Find connected node IDs
+        const connectedIds = new Set();
+        connectedIds.add(d.id);
+        data.links.forEach(l => {
+            if (l.source.id === d.id) connectedIds.add(l.target.id);
+            if (l.target.id === d.id) connectedIds.add(l.source.id);
+        });
+
+        // Highlight connected edges, dim others
+        link.attr('stroke-opacity', l =>
+            (l.source.id === d.id || l.target.id === d.id) ? 0.8 : baseOpacity * 0.2
+        ).attr('stroke', l =>
+            (l.source.id === d.id || l.target.id === d.id) ? '#666' : '#999'
+        );
+
+        // Dim unconnected nodes
+        node.select('circle').attr('opacity', n =>
+            connectedIds.has(n.id) ? 1 : 0.3
+        );
+        node.select('text').attr('opacity', n =>
+            connectedIds.has(n.id) ? 1 : 0.3
+        );
+    });
+
+    node.on('mouseleave', () => {
+        // Reset all edges
+        link.attr('stroke-opacity', baseOpacity)
+            .attr('stroke', '#999');
+        // Reset all nodes
+        node.select('circle').attr('opacity', 1);
+        node.select('text').attr('opacity', 1);
     });
 
     // Update positions on simulation tick

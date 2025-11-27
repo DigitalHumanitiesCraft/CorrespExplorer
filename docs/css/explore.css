@@ -2341,6 +2341,22 @@
     color: var(--color-text);
 }
 
+.checkbox-inline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.checkbox-inline input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
 .network-stats {
     display: flex;
     gap: var(--space-lg);
@@ -2432,6 +2448,18 @@
     font-size: var(--font-size-xs);
     color: var(--color-text-light);
     margin-left: var(--space-xs);
+}
+
+.legend-size-hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    margin-top: var(--space-xs);
+}
+
+.legend-size-hint i {
+    font-size: 8px;
+    margin-right: var(--space-xs);
+    vertical-align: middle;
 }
 
 .legend-sender {
