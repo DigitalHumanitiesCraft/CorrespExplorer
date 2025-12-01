@@ -1,12 +1,14 @@
-# CorrespExplorer - Entwicklungsplan
+# CorrespExplorer - Abgeschlossene Features
 
-Stand: 2025-11-26
+Dokumentation aller implementierten Features und User Stories.
+
+Stand: 2025-12-01
+
+HINWEIS: Alle geplanten Features sind vollstaendig implementiert. Dieses Dokument dient als historische Referenz der Entwicklungs-Roadmap.
 
 ---
 
-## Aktueller Implementierungsstand
-
-### Vollstaendig implementiert (36 User Stories)
+## Implementierungsstand: Vollstaendig (27 User Stories)
 
 | US | Feature | Beschreibung |
 |----|---------|--------------|
@@ -47,13 +49,17 @@ Stand: 2025-11-26
 | US-17 | Themen-Schnellfilter | Top-5 Themen in Sidebar |
 | US-23 | Datensatz-Vergleich | Vergleichsseite compare.html |
 
-### Offen (0 User Stories)
+### Status: ABGESCHLOSSEN
 
-Alle User Stories sind implementiert.
+Alle 27 User Stories aus user-stories.md sind vollstaendig implementiert.
+
+Aktuelle bekannte Einschraenkungen:
+- Wissenskorb (Knowledge Basket): Grundfunktionen vorhanden, Visualisierungen noch nicht vollstaendig (siehe Phase 23 in JOURNAL.md)
+- Mobile Responsiveness: Kuerzlich verbessert, weitere Optimierungen moeglich (siehe Phase 22 in JOURNAL.md)
 
 ---
 
-## Neue Features
+## Implementierte Features (Historisch)
 
 ### 1. Orte-Index (Places View)
 

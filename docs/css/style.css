@@ -655,7 +655,7 @@ button, .btn {
     position: fixed;
     top: var(--navbar-height);
     right: -100%;
-    width: 280px;
+    width: var(--sidebar-width);
     max-width: 80vw;
     height: calc(100vh - var(--navbar-height));
     background: var(--color-bg);

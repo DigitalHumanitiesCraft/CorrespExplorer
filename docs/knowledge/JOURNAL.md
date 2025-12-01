@@ -4,6 +4,193 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-12-01 (Phase 26: Uncertainty Documentation und HSA Update)
+
+### Verbesserte Unsicherheits-Dokumentation
+
+Umfassende Ueberarbeitung der uncertainty-concept.md:
+
+**Dokumentation:**
+- Erweiterte CMIF Uncertainty Annotations
+- Strukturierung in 4 Test-Sektionen (Date, Person, Place, Special Cases)
+- 22 detaillierte Testfaelle im test-uncertainty.xml
+- UI Display Patterns fuer alle Unsicherheitstypen
+- HSA Dataset Analyse mit konkreten Zahlen
+
+**Test-Dataset:**
+- data/test-uncertainty.xml mit systematischen Testfaellen
+- Section A: Date Uncertainty (001-007)
+- Section B: Person Uncertainty (008-013)
+- Section C: Place Uncertainty (014-018)
+- Section D: Special Cases (019-022)
+
+### HSA-Daten Update
+
+Aktualisierung der vorprozessierten HSA-Daten:
+- Koordinaten-Cache optimiert
+- Statistiken aktualisiert
+- Datenqualitaet verbessert
+
+---
+
+## 2025-12-01 (Phase 25: Wikidata Enrichment Visual Indicators)
+
+### Visuelle Anreicherungs-Indikatoren
+
+Wikidata-Anreicherung wird nun visuell gekennzeichnet:
+
+**Features:**
+- Badge-System fuer angereicherte Personen
+- Tooltip zeigt Datenquelle (Wikidata)
+- Loading-Spinner waehrend Enrichment
+- Fehlerbehandlung mit Retry-Option
+
+**UI-Verbesserungen:**
+- Konsistente Icon-Verwendung (Font Awesome)
+- Farbcodierung: Gruen fuer erfolgreich, Grau fuer fehlend
+- Progress-Bar im Config-Dialog
+- Session-Cache-Status sichtbar
+
+### Aenderungen
+
+wikidata-enrichment.js:
+- `enrichPersonsBatch()`: Progress-Callback erweitert
+- Fehler-Logging verbessert
+
+explore.js:
+- Person-Cards zeigen Enrichment-Badge
+- Tooltip mit Datenquelle
+
+explore.css:
+- `.enrichment-badge`: Visueller Indikator
+- `.enrichment-loading`: Loading-State
+
+---
+
+## 2025-12-01 (Phase 24: correspSearch Form Cleanup)
+
+### Entfernung broken correspSearch Form
+
+Das correspSearch-Suchformular auf der Landing Page wurde entfernt:
+
+**Grund:**
+- Formular war nicht vollstaendig funktional
+- CORS-Probleme bei direkten API-Anfragen
+- Nutzer koennen weiterhin correspSearch-URLs direkt eingeben
+- correspSearch-Integration ueber Person-Detail bleibt erhalten
+
+**Aenderungen:**
+- index.html: correspSearch-Suchformular entfernt
+- upload.css: Formular-Styles entfernt
+- correspsearch-api.js: API-Modul bleibt fuer URL-Handling
+
+### Wissenskorb Bugfixes
+
+Diverse Korrekturen am Wissenskorb:
+
+**Fixes:**
+- Multi-Tab-Synchronisation repariert
+- LocalStorage-Quota-Handling verbessert
+- Empty-State korrekt angezeigt
+- Navigation-Links korrigiert
+
+---
+
+## 2025-12-01 (Phase 23: Wissenskorb WIP-Status)
+
+### Work-in-Progress Notice
+
+Der Wissenskorb wird als "in Arbeit" gekennzeichnet:
+
+**UI-Aenderungen:**
+- Prominenter WIP-Hinweis auf wissenskorb.html
+- Basket-Buttons in explore.html vorlaeufig entfernt
+- About-Seite: Feature als experimentell markiert
+
+**Begründung:**
+- Grundfunktionalitaet vorhanden (Person-Liste, localStorage)
+- Visualisierungen (Timeline, Netzwerk, Karte) noch nicht vollstaendig
+- Nutzer-Erwartungen klar kommunizieren
+
+### Aenderungen
+
+wissenskorb.html:
+- WIP-Notice mit Icon und Erklaerungstext
+- Styling: Gelbe Warning-Box (#fff3cd)
+
+explore.html:
+- Basket-Toggle-Buttons auskommentiert
+- Link zu wissenskorb.html bleibt im Navbar
+
+about.html:
+- Wissenskorb als "experimentell" gekennzeichnet
+
+---
+
+## 2025-12-01 (Phase 22: Mobile Responsiveness)
+
+### Navbar-Optimierung fuer Mobile
+
+Vollstaendige Ueberarbeitung der Navigation fuer kleine Bildschirme:
+
+**Features:**
+- Hamburger-Menue fuer mobile Geraete (< 768px)
+- Touch-optimierte Button-Groessen (44px Mindesthoehe)
+- Slide-in Animation fuer mobile Navigation
+- Overlay-Backdrop beim Oeffnen
+
+**Breakpoints:**
+- < 768px: Burger-Menue, Stack-Navigation
+- >= 768px: Horizontale Navigation wie bisher
+
+### Responsive View-Verbesserungen
+
+Alle Views wurden fuer mobile Geraete optimiert:
+
+**Map View:**
+- Touch-Gesten fuer Zoom/Pan
+- Groessere Marker (20px statt 15px)
+- Vereinfachte Legende
+
+**Timeline View:**
+- Horizontales Scrollen bei vielen Jahren
+- Groessere Touch-Targets fuer Balken
+- Detached Bin rechts positioniert
+
+**Network View:**
+- Zoom-Controls rechts unten
+- Touch-Drag fuer Knoten
+- Vereinfachte Controls-Sidebar
+
+**Lists (Persons, Letters, Topics, Places):**
+- Stack-Layout statt Grid
+- Groessere Click-Areas
+- Vereinfachte Suche (Icon statt voller Text)
+
+**Sidebar:**
+- Collapsible auf Mobile (Toggle-Button)
+- Full-Width bei < 768px wenn offen
+- Slide-Animation
+
+### Aenderungen
+
+style.css:
+- Media Queries fuer alle Breakpoints
+- `.navbar-mobile`, `.burger-menu`
+- Touch-Target Sizes (min 44px)
+
+explore.css:
+- `.view-container-mobile`
+- Responsive Grid-Layouts
+- Stack-Navigation fuer Filter
+
+explore.js:
+- Mobile-Detection
+- Touch-Event-Handler
+- Sidebar-Toggle-Logik
+
+---
+
 ## 2025-11-27 (Phase 21: Demo Dataset und Onboarding Tour)
 
 ### Synthetisches Demo-Dataset

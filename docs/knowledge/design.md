@@ -67,6 +67,7 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 | Primary | `--color-primary` | `#A64B3F` | Rust Red - Buttons, Highlights, Zahnrad |
 | Primary Dark | `--color-primary-dark` | `#8B3D33` | Hover-States |
 | Accent | `--color-accent` | `#A64B3F` | Gleich wie Primary (Logo-Farbe) |
+| Secondary | `--color-secondary` | `#2C5282` | Steel Blue - Links, Network Sender |
 | Success | `--color-success` | `#2d6a4f` | Forest Green - Erfolg-Meldungen |
 
 ### Logo-Assets
@@ -83,10 +84,9 @@ body { background: var(--color-bg); } /* #F5F3E8 */
 | Map Land | `#E8E4D4` | Landmassen |
 | Map Water | `#B8D4E8` | Wasser/Ozeane |
 | Map Points | `#A64B3F` | Brieforte (Cluster) - --color-primary |
-| Network Sender | `#2C5282` | Absender-Knoten |
-| Network Receiver | `#2d6a4f` | Empfaenger-Knoten - Forest Green |
-| Network Both | `#2d6a4f` | Beides - --color-role-both |
-| Timeline Bar | `#2C5282` | Balken |
+| Network Sender | `#2c5f8d` | Absender-Knoten - --color-role-sender |
+| Network Both | `#2d6a4f` | Beides - --color-role-both (Forest Green) |
+| Timeline Bar | `#A64B3F` | Balken - --color-primary |
 | Timeline Inactive | `#D4D0C0` | Hintergrund-Balken |
 
 ### Unsicherheits-Indikatoren
@@ -178,8 +178,6 @@ Kartenmarker werden nach dominanter Briefsprache des Ortes eingefaerbt. Toggle-B
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 ```
-
-Hinweis: --font-mono ist in tokens.css noch nicht definiert, wird aber fuer Datenwerte benoetigt.
 
 ### Anwendung
 
@@ -362,7 +360,7 @@ Dicke Border (3px) statt box-shadow fuer Tiefe.
 | Breakpoint | Sidebar | Main Content |
 |------------|---------|--------------|
 | < 768px | Collapsed (Hamburger) | Full Width |
-| >= 768px | var(--sidebar-width) 380px | Flex Fill |
+| >= 768px | 380px (var(--sidebar-width)) | Flex Fill |
 
 ---
 

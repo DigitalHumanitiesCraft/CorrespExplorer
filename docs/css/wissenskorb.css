@@ -46,7 +46,7 @@
 
 /* Person List Panel */
 .person-list-panel {
-    width: 280px;
+    width: var(--sidebar-width);
     flex-shrink: 0;
     background: white;
     border-radius: 8px;
