@@ -4677,6 +4677,24 @@ function initMentionsFlowView() {
     // View wird on-demand gerendert in switchView
 }
 
+function createTooltip() {
+    const tooltip = document.createElement('div');
+    tooltip.id = 'mentions-tooltip';
+    tooltip.style.position = 'absolute';
+    tooltip.style.display = 'none';
+    tooltip.style.background = 'var(--color-background-elevated)';
+    tooltip.style.border = '1px solid var(--color-border)';
+    tooltip.style.borderRadius = '4px';
+    tooltip.style.padding = '8px 12px';
+    tooltip.style.fontSize = '13px';
+    tooltip.style.lineHeight = '1.5';
+    tooltip.style.pointerEvents = 'none';
+    tooltip.style.zIndex = '10000';
+    tooltip.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+    document.body.appendChild(tooltip);
+    return tooltip;
+}
+
 function renderMentionsFlow() {
     if (!availableViews['mentions-flow']?.available) {
         document.getElementById('mentions-flow-placeholder').innerHTML = `
@@ -4742,6 +4760,29 @@ function renderMentionsFlow() {
             links: sankeyData.links.map(d => Object.assign({}, d))
         });
 
+        // Detect hybrid nodes (appear as both correspondent and mentioned)
+        const correspondentIds = new Set(nodes.filter(n => n.column === 0).map(n => n.id));
+        const mentionedIds = new Set(nodes.filter(n => n.column === 1).map(n => n.id));
+        const hybridIds = new Set([...correspondentIds].filter(id => mentionedIds.has(id)));
+
+        // Define gradients for links
+        const defs = svg.append('defs');
+        links.forEach((link, i) => {
+            const gradient = defs.append('linearGradient')
+                .attr('id', `link-gradient-${i}`)
+                .attr('gradientUnits', 'userSpaceOnUse')
+                .attr('x1', link.source.x1)
+                .attr('x2', link.target.x0);
+
+            gradient.append('stop')
+                .attr('offset', '0%')
+                .attr('stop-color', '#2c5f8d'); // Steel blue (correspondent)
+
+            gradient.append('stop')
+                .attr('offset', '100%')
+                .attr('stop-color', hybridIds.has(link.target.id) ? '#059669' : '#f59e0b'); // Green for hybrid, amber for mentioned-only
+        });
+
         // Render links
         const link = g.append('g')
             .attr('class', 'links')
@@ -4749,15 +4790,40 @@ function renderMentionsFlow() {
             .data(links)
             .join('path')
             .attr('d', d3.sankeyLinkHorizontal())
-            .attr('stroke', '#f59e0b')
+            .attr('stroke', (d, i) => `url(#link-gradient-${i})`)
             .attr('stroke-width', d => Math.max(1, d.width))
             .attr('fill', 'none')
             .attr('opacity', 0.5)
-            .on('mouseover', function() {
+            .style('cursor', 'pointer')
+            .on('mouseover', function(event, d) {
                 d3.select(this).attr('opacity', 1.0);
+
+                // Dim other links
+                link.attr('opacity', function(otherD) {
+                    return otherD === d ? 1.0 : 0.2;
+                });
+
+                // Highlight connected nodes
+                node.selectAll('rect').attr('opacity', function(nodeD) {
+                    return nodeD === d.source || nodeD === d.target ? 1.0 : 0.3;
+                });
+
+                // Show tooltip
+                const tooltip = document.getElementById('mentions-tooltip') || createTooltip();
+                tooltip.style.display = 'block';
+                tooltip.style.left = (event.pageX + 10) + 'px';
+                tooltip.style.top = (event.pageY - 10) + 'px';
+                tooltip.innerHTML = `
+                    <strong>${d.source.name}</strong> → <strong>${d.target.name}</strong><br>
+                    ${d.value} Erwähnung${d.value !== 1 ? 'en' : ''}
+                `;
             })
             .on('mouseout', function() {
-                d3.select(this).attr('opacity', 0.5);
+                link.attr('opacity', 0.5);
+                node.selectAll('rect').attr('opacity', 1.0);
+
+                const tooltip = document.getElementById('mentions-tooltip');
+                if (tooltip) tooltip.style.display = 'none';
             });
 
         // Render nodes
@@ -4765,15 +4831,33 @@ function renderMentionsFlow() {
             .attr('class', 'nodes')
             .selectAll('g')
             .data(nodes)
-            .join('g');
+            .join('g')
+            .style('cursor', 'pointer');
 
         node.append('rect')
             .attr('x', d => d.x0)
             .attr('y', d => d.y0)
             .attr('height', d => d.y1 - d.y0)
             .attr('width', sankeyGenerator.nodeWidth())
-            .attr('fill', d => d.column === 0 ? '#2c5f8d' : '#f59e0b')
-            .attr('rx', 3);
+            .attr('fill', d => {
+                if (d.column === 0) return '#2c5f8d'; // Steel blue for correspondents
+                return hybridIds.has(d.id) ? '#059669' : '#f59e0b'; // Green for hybrid, amber for mentioned-only
+            })
+            .attr('rx', 3)
+            .attr('stroke', d => hybridIds.has(d.id) ? '#047857' : 'none')
+            .attr('stroke-width', d => hybridIds.has(d.id) ? 2 : 0);
+
+        // Add hybrid indicator icon
+        node.filter(d => d.column === 1 && hybridIds.has(d.id))
+            .append('text')
+            .attr('x', d => d.x0 + sankeyGenerator.nodeWidth() / 2)
+            .attr('y', d => d.y0 - 5)
+            .attr('text-anchor', 'middle')
+            .attr('font-family', 'Font Awesome 6 Free')
+            .attr('font-weight', '900')
+            .attr('font-size', '10px')
+            .attr('fill', '#047857')
+            .text('\uf0c1'); // Link icon
 
         // Add labels
         node.append('text')
@@ -4783,7 +4867,47 @@ function renderMentionsFlow() {
             .attr('text-anchor', d => d.column === 0 ? 'start' : 'end')
             .text(d => d.name)
             .style('font-size', '11px')
-            .style('fill', 'var(--color-text-primary)');
+            .style('fill', 'var(--color-text-primary)')
+            .style('font-weight', d => hybridIds.has(d.id) ? '600' : 'normal');
+
+        // Node hover behavior
+        node.on('mouseover', function(event, d) {
+            // Highlight node
+            d3.select(this).select('rect').attr('opacity', 1.0);
+
+            // Dim unconnected links
+            link.attr('opacity', function(linkD) {
+                return linkD.source === d || linkD.target === d ? 0.8 : 0.1;
+            });
+
+            // Show tooltip
+            const tooltip = document.getElementById('mentions-tooltip') || createTooltip();
+            tooltip.style.display = 'block';
+            tooltip.style.left = (event.pageX + 10) + 'px';
+            tooltip.style.top = (event.pageY - 10) + 'px';
+
+            const incoming = links.filter(l => l.target === d).reduce((sum, l) => sum + l.value, 0);
+            const outgoing = links.filter(l => l.source === d).reduce((sum, l) => sum + l.value, 0);
+
+            let tooltipContent = `<strong>${d.name}</strong><br>`;
+            if (d.column === 0) {
+                tooltipContent += `Erwähnt: ${outgoing} Person${outgoing !== 1 ? 'en' : ''}`;
+            } else {
+                tooltipContent += `Erwähnt von: ${incoming} Korrespondent${incoming !== 1 ? 'en' : ''}`;
+            }
+            if (hybridIds.has(d.id)) {
+                tooltipContent += '<br><em>(Korrespondent + Erwähnt)</em>';
+            }
+
+            tooltip.innerHTML = tooltipContent;
+        })
+        .on('mouseout', function() {
+            d3.select(this).select('rect').attr('opacity', 1.0);
+            link.attr('opacity', 0.5);
+
+            const tooltip = document.getElementById('mentions-tooltip');
+            if (tooltip) tooltip.style.display = 'none';
+        });
 
         // Hide placeholder
         placeholder.style.display = 'none';

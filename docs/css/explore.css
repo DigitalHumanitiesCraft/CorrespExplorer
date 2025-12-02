@@ -3300,15 +3300,38 @@
 }
 
 .mentions-flow-graph .nodes rect {
-    transition: opacity 0.2s;
+    transition: all 0.2s ease;
     cursor: pointer;
 }
 
 .mentions-flow-graph .nodes rect:hover {
-    opacity: 0.8;
+    filter: brightness(1.1);
 }
 
 .mentions-flow-graph .nodes text {
     pointer-events: none;
     user-select: none;
+    transition: font-weight 0.2s ease;
+}
+
+.mentions-flow-graph .links path {
+    transition: all 0.2s ease;
+}
+
+.mentions-flow-graph .links path:hover {
+    filter: brightness(1.2);
+}
+
+#mentions-tooltip {
+    color: var(--color-text-primary);
+    max-width: 300px;
+}
+
+#mentions-tooltip strong {
+    color: var(--color-primary);
+}
+
+#mentions-tooltip em {
+    color: var(--color-text-tertiary);
+    font-size: 0.9em;
 }
