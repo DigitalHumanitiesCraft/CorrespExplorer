@@ -54,8 +54,9 @@ let placesSortOrder = 'count-desc';
 // Mentions Flow view state
 let mentionedPersonsIndex = new Map();
 let mentionsFlowMode = 'sankey'; // 'sankey' or 'network'
-let mentionsTopN = 50;
+let mentionsTopN = 20;  // Reduced from 50 to reduce cognitive load
 let mentionsMinCount = 2;
+let mentionsMinSenderMentions = 5;  // Minimum mentions for sender to be shown
 
 // Logging utility
 const log = {
@@ -684,7 +685,7 @@ function classifyPerson(personId, correspondents, mentioned) {
 }
 
 // Build Sankey data structure from mentions
-function buildSankeyData(letters, topN = 50) {
+function buildSankeyData(letters, topN = 20, minSenderMentions = 5, minFlowValue = 2) {
     // 1. Aggregiere Mention-Flows
     const flows = new Map(); // key: "senderId→mentionedId", value: count
 
@@ -714,7 +715,26 @@ function buildSankeyData(letters, topN = 50) {
         return { nodes: [], links: [] };
     }
 
-    // 3. Baue Nodes (eindeutige Namen)
+    // 3. Berechne Sender-Statistiken (wie viele top-mentioned persons erwähnt jeder Sender?)
+    const senderStats = new Map();
+    for (const [flow, count] of flows) {
+        const [sourceId, targetId] = flow.split('→');
+
+        if (!topMentioned.includes(targetId)) continue;
+
+        if (!senderStats.has(sourceId)) {
+            senderStats.set(sourceId, {
+                totalMentions: 0,
+                uniqueTargets: new Set()
+            });
+        }
+
+        const stats = senderStats.get(sourceId);
+        stats.totalMentions += count;
+        stats.uniqueTargets.add(targetId);
+    }
+
+    // 4. Baue Nodes - nur Sender mit genug Mentions
     const nodeSet = new Set();
     const nodes = [];
 
@@ -722,6 +742,13 @@ function buildSankeyData(letters, topN = 50) {
         const [sourceId, targetId] = flow.split('→');
 
         if (!topMentioned.includes(targetId)) continue;
+        if (count < minFlowValue) continue;  // Zu schwache Verbindung ignorieren
+
+        // Prüfe ob Sender genug mentions hat
+        const senderStat = senderStats.get(sourceId);
+        if (!senderStat || senderStat.totalMentions < minSenderMentions) {
+            continue;
+        }
 
         // Source node (correspondent)
         if (!nodeSet.has(sourceId)) {
@@ -747,12 +774,13 @@ function buildSankeyData(letters, topN = 50) {
         }
     }
 
-    // 4. Baue Links
+    // 5. Baue Links - nur für verbleibende Nodes
     const links = [];
     for (const [flow, count] of flows) {
         const [sourceId, targetId] = flow.split('→');
 
         if (!topMentioned.includes(targetId)) continue;
+        if (count < minFlowValue) continue;
 
         const sourceIndex = nodes.findIndex(n => n.id === sourceId);
         const targetIndex = nodes.findIndex(n => n.id === targetId);
@@ -766,7 +794,7 @@ function buildSankeyData(letters, topN = 50) {
         }
     }
 
-    log.render(`Built Sankey data: ${nodes.length} nodes, ${links.length} links`);
+    log.render(`Built Sankey data: ${nodes.length} nodes, ${links.length} links (filtered: topN=${topN}, minSenderMentions=${minSenderMentions}, minFlowValue=${minFlowValue})`);
     return { nodes, links };
 }
 
@@ -4667,11 +4695,16 @@ function renderMentionsFlow() {
     placeholder.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>Berechne Sankey-Diagramm...</p>';
 
     try {
-        // Build Sankey data
-        const sankeyData = buildSankeyData(filteredLetters, mentionsTopN);
+        // Build Sankey data with filtering parameters
+        const sankeyData = buildSankeyData(
+            filteredLetters,
+            mentionsTopN,
+            mentionsMinSenderMentions,
+            mentionsMinCount
+        );
 
         if (sankeyData.nodes.length === 0) {
-            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Mentions-Daten in den gefilterten Briefen</p>';
+            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Mentions-Daten in den gefilterten Briefen (nach Filtern)</p>';
             return;
         }
 
