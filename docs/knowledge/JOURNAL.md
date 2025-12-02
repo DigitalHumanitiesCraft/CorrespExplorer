@@ -4,6 +4,81 @@ Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
 
 ---
 
+## 2025-12-02 (Phase 27: Mentions Flow View)
+
+### Neue Visualisierung: Sankey-Diagramm fuer Erwaehnung-Fluesse
+
+8. View implementiert: Zeigt welche Personen in wessen Briefen erwahnt werden.
+
+**Implementierung (Phase 1-4):**
+
+Phase 1: Datenanalyse und Vorbereitung
+- Analyse des `mentionsPerson` Feldes im HSA-Datensatz
+- 17.413 Person-Mentions identifiziert
+- Datenstruktur: Sender → Erwahnte Person (mit Haufigkeit)
+- Hybrid-Nodes erkannt: Personen die sowohl Korrespondenten als auch Erwahnte sind
+
+Phase 2: Sankey-Grundfunktion
+- D3-Sankey Plugin 0.12.3 integriert
+- Bipartite Layout: Linke Spalte (Korrespondenten) → Rechte Spalte (Erwahnte)
+- buildSankeyData() Funktion mit Flow-Aggregation
+- Zoom und Pan Support
+
+Phase 3: Styling und Interaktivitat
+- Link-Gradients: Steel Blue → Amber/Green (je nach Hybrid-Status)
+- Node-Farben: Steel Blue (Korrespondenten), Amber (nur Erwahnte), Green (Hybrid)
+- Hybrid-Indicator: Link-Icon uber Hybrid-Nodes
+- Tooltip-System mit detaillierten Mention-Counts
+- Hover-Highlighting: Dimming unverbundener Elemente
+
+Phase 4: Filter-Controls
+- Drei Sidebar-Sliders fur Echtzeit-Parameter-Kontrolle
+  - Top N: 5-50 meist-erwahnte Personen (Standard: 20)
+  - Min Sender Mentions: 1-20 Erwahnung-Schwelle (Standard: 5)
+  - Min Flow Strength: 1-10 Verbindungs-Starke (Standard: 2)
+- View-spezifische Filter-Sichtbarkeit
+- URL-Parameter-Persistenz fur Sharing
+- Dynamischer Filter-Info-Text im View-Header
+
+**Cognitive Overload Mitigation:**
+- Filter-basierter Ansatz statt Hardcoding
+- Drei-Stufen-Filterung reduziert Node-Count dramatisch
+- Nutzer kontrollieren Detail-vs-Klarheit Tradeoff
+- Standard-Werte balancieren Komplexitat und Information
+
+**Technische Details:**
+
+Dateien:
+- explore.js: buildSankeyData(), renderMentionsFlow(), initMentionsFilterControls()
+- explore.html: Sidebar-Filter-Controls (3 Range-Sliders)
+- explore.css: Filter-Slider-Styles, Sankey-Interaktivitat
+- mentions-network-plan.md: Umfassende Implementierungs-Dokumentation
+
+State-Variablen:
+- mentionsTopN: 20 (Anzahl meist-erwahnter Personen)
+- mentionsMinSenderMentions: 5 (Minimum Erwahnung pro Korrespondent)
+- mentionsMinCount: 2 (Minimum Verbindungs-Starke)
+
+**Statistiken (HSA-Dataset):**
+- 17.413 Person-Mentions uber 11.576 Briefe
+- 846 potentielle Sender
+- Nach Filterung (20/5/2): ca. 50-60 Sender-Nodes, 20 Erwahnte-Nodes
+- Hybrid-Nodes: Personen die in beiden Spalten erscheinen
+
+**Phase 5 (Optional, nicht implementiert):**
+- Bipartite Network als Alternative zum Sankey
+- Toggle zwischen Sankey und Force-Directed Graph
+- Geplant fur zukunftige Erweiterung
+
+**Commits:**
+- 9a03db5: Phase 1-2 Grundfunktion
+- 1d8a48c: Cognitive Overload Reduktion
+- 809fdd3: Phase 3 Styling und Tooltips
+- 94590f8: Phase 4 Filter-Controls
+- 1bfa0b1: Dynamischer Filter-Info-Text
+
+---
+
 ## 2025-12-01 (Phase 26: Uncertainty Documentation und HSA Update)
 
 ### Verbesserte Unsicherheits-Dokumentation
