@@ -4712,6 +4712,13 @@ function initMentionsFlowView() {
     initMentionsFilterControls();
 }
 
+function updateMentionsFilterInfo() {
+    const filterInfo = document.getElementById('mentions-flow-filter-info');
+    if (filterInfo) {
+        filterInfo.textContent = `Zeigt: Top ${mentionsTopN} meist-erwähnte Personen | Nur Korrespondenten mit ≥${mentionsMinSenderMentions} Mentions | Nur Verbindungen ≥${mentionsMinCount}`;
+    }
+}
+
 function initMentionsFilterControls() {
     const filterGroup = document.getElementById('mentions-filter-group');
     if (!filterGroup) return;
@@ -4719,6 +4726,9 @@ function initMentionsFilterControls() {
     // Show filter controls when mentions flow view is available
     if (availableViews['mentions-flow']?.available) {
         // Controls will be shown/hidden by switchView
+
+        // Update filter info text on init
+        updateMentionsFilterInfo();
 
         // Top N slider
         const topNSlider = document.getElementById('mentions-topn-slider');
@@ -4735,6 +4745,7 @@ function initMentionsFilterControls() {
                 mentionsTopN = value;
 
                 if (currentView === 'mentions-flow') {
+                    updateMentionsFilterInfo();
                     renderMentionsFlow();
                 }
                 updateUrlState();
@@ -4755,6 +4766,7 @@ function initMentionsFilterControls() {
                 mentionsMinSenderMentions = value;
 
                 if (currentView === 'mentions-flow') {
+                    updateMentionsFilterInfo();
                     renderMentionsFlow();
                 }
                 updateUrlState();
@@ -4775,6 +4787,7 @@ function initMentionsFilterControls() {
                 mentionsMinCount = value;
 
                 if (currentView === 'mentions-flow') {
+                    updateMentionsFilterInfo();
                     renderMentionsFlow();
                 }
                 updateUrlState();
