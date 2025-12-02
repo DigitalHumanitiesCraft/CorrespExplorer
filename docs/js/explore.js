@@ -4847,7 +4847,15 @@ function renderMentionsFlow() {
 
         // Setup dimensions
         const width = container.clientWidth || 1200;
-        const height = container.clientHeight || 800;
+
+        // Calculate required height based on node count for scrolling
+        const minHeightPerNode = 25; // Minimum pixels per node for readability
+        const calculatedHeight = sankeyData.nodes.length * minHeightPerNode;
+        const containerHeight = container.clientHeight || 800;
+        const height = Math.max(calculatedHeight, containerHeight);
+
+        // Make container scrollable if content is taller than viewport
+        container.style.overflowY = height > containerHeight ? 'auto' : 'visible';
 
         // Create SVG
         const svg = d3.select(container)
