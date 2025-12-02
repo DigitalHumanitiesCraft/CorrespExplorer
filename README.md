@@ -112,6 +112,7 @@ docs/knowledge/
 5. **Topics View** - Subject exploration with co-occurrence analysis
 6. **Places View** - Geographic index with filtering capabilities
 7. **Network View** - Force-directed graph of correspondence relationships
+8. **Mentions Flow View** - Sankey diagram showing mention flows between correspondents and mentioned persons
 
 ## Filtering
 
@@ -152,6 +153,7 @@ Enrichment runs at load time with a progress indicator. Data is cached in the br
 ## Technology Stack
 
 - MapLibre GL JS 4.x - WebGL map rendering
+- D3-Sankey 0.12.3 - Flow diagram visualization
 - noUiSlider - Time range filtering
 - Vanilla JavaScript ES6 modules
 - CSS custom properties (design tokens)
