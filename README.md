@@ -2,7 +2,7 @@
 
 Interactive visualization tool for correspondence metadata in CMIF (Correspondence Metadata Interchange Format).
 
-Live Demo: https://chpollin.github.io/CorrespExplorer/
+Live Demo: https://dhcraft.org/CorrespExplorer
 
 ## Overview
 
