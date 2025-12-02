@@ -4869,9 +4869,9 @@ function renderMentionsFlow() {
 
         // Create Sankey generator
         const sankeyGenerator = d3.sankey()
-            .nodeWidth(15)
-            .nodePadding(10)
-            .extent([[100, 50], [width - 100, height - 50]]);
+            .nodeWidth(20)
+            .nodePadding(3)  // Minimal padding - Sankey optimiert automatisch
+            .extent([[50, 20], [width - 50, height - 20]]);
 
         // Generate layout
         const {nodes, links} = sankeyGenerator({
@@ -4914,7 +4914,7 @@ function renderMentionsFlow() {
             .attr('fill', 'none')
             .attr('opacity', 0.5)
             .style('cursor', 'pointer')
-            .on('mouseover', function(event, d) {
+            .on('mouseenter', function(event, d) {
                 d3.select(this).attr('opacity', 1.0);
 
                 // Dim other links
@@ -4937,7 +4937,14 @@ function renderMentionsFlow() {
                     ${d.value} Erwähnung${d.value !== 1 ? 'en' : ''}
                 `;
             })
-            .on('mouseout', function() {
+            .on('mousemove', function(event) {
+                const tooltip = document.getElementById('mentions-tooltip');
+                if (tooltip && tooltip.style.display === 'block') {
+                    tooltip.style.left = (event.pageX + 10) + 'px';
+                    tooltip.style.top = (event.pageY - 10) + 'px';
+                }
+            })
+            .on('mouseleave', function() {
                 link.attr('opacity', 0.5);
                 node.selectAll('rect').attr('opacity', 1.0);
 
@@ -4978,23 +4985,38 @@ function renderMentionsFlow() {
             .attr('fill', '#047857')
             .text('\uf0c1'); // Link icon
 
-        // Add labels
+        // Add labels with better spacing
         node.append('text')
-            .attr('x', d => d.column === 0 ? d.x1 + 6 : d.x0 - 6)
+            .attr('x', d => d.column === 0 ? d.x1 + 8 : d.x0 - 8)
             .attr('y', d => (d.y1 + d.y0) / 2)
             .attr('dy', '0.35em')
             .attr('text-anchor', d => d.column === 0 ? 'start' : 'end')
-            .text(d => d.name)
-            .style('font-size', '11px')
+            .text(d => {
+                // Kürze sehr lange Namen
+                const maxLength = 30;
+                return d.name.length > maxLength ? d.name.substring(0, maxLength) + '...' : d.name;
+            })
+            .style('font-size', '12px')
             .style('fill', 'var(--color-text-primary)')
-            .style('font-weight', d => hybridIds.has(d.id) ? '600' : 'normal');
+            .style('font-weight', d => hybridIds.has(d.id) ? '600' : 'normal')
+            .style('pointer-events', 'none')  // Labels sollten keine Maus-Events blockieren
+            .each(function(d) {
+                // Füge Schatten für bessere Lesbarkeit hinzu
+                const text = d3.select(this);
+                text.clone(true).lower()
+                    .style('fill', 'var(--color-background)')
+                    .style('stroke', 'var(--color-background)')
+                    .style('stroke-width', '3px')
+                    .style('stroke-linejoin', 'round')
+                    .style('opacity', '0.8');
+            });
 
         // Node hover behavior
-        node.on('mouseover', function(event, d) {
-            // Highlight node
-            d3.select(this).select('rect').attr('opacity', 1.0);
+        let hoverTimeout;
+        node.on('mouseenter', function(event, d) {
+            clearTimeout(hoverTimeout);
 
-            // Dim unconnected links
+            // Dim unconnected links immediately
             link.attr('opacity', function(linkD) {
                 return linkD.source === d || linkD.target === d ? 0.8 : 0.1;
             });
@@ -5020,12 +5042,20 @@ function renderMentionsFlow() {
 
             tooltip.innerHTML = tooltipContent;
         })
-        .on('mouseout', function() {
-            d3.select(this).select('rect').attr('opacity', 1.0);
-            link.attr('opacity', 0.5);
-
+        .on('mousemove', function(event) {
+            // Update tooltip position on move (throttled by browser)
             const tooltip = document.getElementById('mentions-tooltip');
-            if (tooltip) tooltip.style.display = 'none';
+            if (tooltip && tooltip.style.display === 'block') {
+                tooltip.style.left = (event.pageX + 10) + 'px';
+                tooltip.style.top = (event.pageY - 10) + 'px';
+            }
+        })
+        .on('mouseleave', function() {
+            hoverTimeout = setTimeout(() => {
+                link.attr('opacity', 0.5);
+                const tooltip = document.getElementById('mentions-tooltip');
+                if (tooltip) tooltip.style.display = 'none';
+            }, 50);  // Small delay to prevent flicker when moving between nodes
         });
 
         // Hide placeholder
