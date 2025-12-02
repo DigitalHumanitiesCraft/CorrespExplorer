@@ -3249,3 +3249,66 @@
     text-align: right;
     margin-bottom: var(--space-sm);
 }
+
+/* ===================
+   MENTIONS FLOW VIEW
+   =================== */
+
+.mentions-flow-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+.mentions-flow-header {
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.mentions-flow-header h3 {
+    margin: 0 0 var(--space-xs) 0;
+    color: var(--color-text-primary);
+}
+
+.mentions-flow-info {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.mentions-flow-graph {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: var(--color-bg-primary);
+}
+
+.mentions-flow-graph svg {
+    display: block;
+}
+
+/* Sankey nodes and links */
+.mentions-flow-graph .links path {
+    stroke-opacity: 0.5;
+    transition: stroke-opacity 0.2s;
+}
+
+.mentions-flow-graph .links path:hover {
+    stroke-opacity: 1;
+    cursor: pointer;
+}
+
+.mentions-flow-graph .nodes rect {
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.mentions-flow-graph .nodes rect:hover {
+    opacity: 0.8;
+}
+
+.mentions-flow-graph .nodes text {
+    pointer-events: none;
+    user-select: none;
+}

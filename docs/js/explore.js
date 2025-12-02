@@ -51,6 +51,12 @@ let selectedPlaceId = null;
 let placesSearchTerm = '';
 let placesSortOrder = 'count-desc';
 
+// Mentions Flow view state
+let mentionedPersonsIndex = new Map();
+let mentionsFlowMode = 'sankey'; // 'sankey' or 'network'
+let mentionsTopN = 50;
+let mentionsMinCount = 2;
+
 // Logging utility
 const log = {
     init: (msg) => !IS_PRODUCTION && console.log(`[INIT] ${msg}`),
@@ -106,6 +112,10 @@ function detectAvailableViews() {
         network: {
             available: hasPersons && hasLetters,
             reason: (hasPersons && hasLetters) ? null : 'Keine Netzwerk-Daten vorhanden'
+        },
+        'mentions-flow': {
+            available: mentionedPersonsIndex.size > 0,
+            reason: mentionedPersonsIndex.size > 0 ? null : 'Keine Mentions-Daten im Datensatz'
         }
     };
 
@@ -256,6 +266,10 @@ async function init() {
 
         placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
 
+        // Build mentions index
+        mentionedPersonsIndex = buildMentionedPersonsIndex(allLetters);
+        log.init(`Built mentions index: ${mentionedPersonsIndex.size} persons mentioned`);
+
         // Detect available views based on data
         detectAvailableViews();
 
@@ -286,6 +300,7 @@ async function init() {
         initTopicsView();
         initPlacesView();
         initNetworkView();
+        initMentionsFlowView();
         initExport();
         initMissingPlacesModal();
         initBasketUI(dataIndices, allLetters);
@@ -620,6 +635,139 @@ function updateTopicsQuickFilterState() {
             item.classList.remove('active');
         }
     });
+}
+
+// ============================================
+// Mentions Flow View - Helper Functions
+// ============================================
+
+// Build index of mentioned persons
+function buildMentionedPersonsIndex(letters) {
+    const mentioned = new Map();
+
+    for (const letter of letters) {
+        if (!letter.mentions?.persons) continue;
+
+        for (const person of letter.mentions.persons) {
+            const key = person.id || person.name;
+
+            if (!mentioned.has(key)) {
+                mentioned.set(key, {
+                    id: key,
+                    name: person.name,
+                    authority: person.authority,
+                    mentionCount: 0,
+                    mentionedBy: new Set(),
+                    mentionedInLetters: []
+                });
+            }
+
+            const entry = mentioned.get(key);
+            entry.mentionCount++;
+            entry.mentionedBy.add(letter.sender.id);
+            entry.mentionedInLetters.push(letter.id);
+        }
+    }
+
+    return mentioned;
+}
+
+// Classify person as correspondent, mentioned, or both
+function classifyPerson(personId, correspondents, mentioned) {
+    const isCorrespondent = correspondents.has(personId);
+    const isMentioned = mentioned.has(personId);
+
+    if (isCorrespondent && isMentioned) return 'both';
+    if (isCorrespondent) return 'correspondent';
+    if (isMentioned) return 'mentioned';
+    return null;
+}
+
+// Build Sankey data structure from mentions
+function buildSankeyData(letters, topN = 50) {
+    // 1. Aggregiere Mention-Flows
+    const flows = new Map(); // key: "senderId→mentionedId", value: count
+
+    for (const letter of letters) {
+        if (!letter.mentions?.persons) continue;
+
+        for (const person of letter.mentions.persons) {
+            const targetId = person.id || person.name;
+            const key = `${letter.sender.id}→${targetId}`;
+            flows.set(key, (flows.get(key) || 0) + 1);
+        }
+    }
+
+    // 2. Finde Top N meist-erwähnte Personen
+    const mentionCounts = new Map();
+    for (const [flow, count] of flows) {
+        const [_, targetId] = flow.split('→');
+        mentionCounts.set(targetId, (mentionCounts.get(targetId) || 0) + count);
+    }
+
+    const topMentioned = Array.from(mentionCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, topN)
+        .map(([id]) => id);
+
+    if (topMentioned.length === 0) {
+        return { nodes: [], links: [] };
+    }
+
+    // 3. Baue Nodes (eindeutige Namen)
+    const nodeSet = new Set();
+    const nodes = [];
+
+    for (const [flow, count] of flows) {
+        const [sourceId, targetId] = flow.split('→');
+
+        if (!topMentioned.includes(targetId)) continue;
+
+        // Source node (correspondent)
+        if (!nodeSet.has(sourceId)) {
+            nodeSet.add(sourceId);
+            const sourcePerson = dataIndices.persons?.[sourceId];
+            nodes.push({
+                id: sourceId,
+                name: sourcePerson?.name || sourceId,
+                column: 0  // Linke Spalte
+            });
+        }
+
+        // Target node (mentioned)
+        if (!nodeSet.has(targetId)) {
+            nodeSet.add(targetId);
+            const targetPerson = mentionedPersonsIndex.get(targetId);
+            const displayName = targetPerson?.name || dataIndices.persons?.[targetId]?.name || targetId;
+            nodes.push({
+                id: targetId,
+                name: displayName,
+                column: 1  // Rechte Spalte
+            });
+        }
+    }
+
+    // 4. Baue Links
+    const links = [];
+    for (const [flow, count] of flows) {
+        const [sourceId, targetId] = flow.split('→');
+
+        if (!topMentioned.includes(targetId)) continue;
+
+        const sourceIndex = nodes.findIndex(n => n.id === sourceId);
+        const targetIndex = nodes.findIndex(n => n.id === targetId);
+
+        if (sourceIndex !== -1 && targetIndex !== -1) {
+            links.push({
+                source: sourceIndex,
+                target: targetIndex,
+                value: count
+            });
+        }
+    }
+
+    log.render(`Built Sankey data: ${nodes.length} nodes, ${links.length} links`);
+    return { nodes, links };
 }
 
 // Aggregate letters by place_sent for map visualization
@@ -1717,6 +1865,8 @@ function switchView(view) {
         renderPlacesList();
     } else if (view === 'network') {
         renderNetwork();
+    } else if (view === 'mentions-flow') {
+        renderMentionsFlow();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -4488,6 +4638,128 @@ function showMissingPlacesModal() {
     }
 
     modal.style.display = 'flex';
+}
+
+// ============================================
+// Mentions Flow View
+// ============================================
+
+function initMentionsFlowView() {
+    log.init('Initializing Mentions Flow View');
+    // View wird on-demand gerendert in switchView
+}
+
+function renderMentionsFlow() {
+    if (!availableViews['mentions-flow']?.available) {
+        document.getElementById('mentions-flow-placeholder').innerHTML = `
+            <i class="fas fa-info-circle"></i>
+            <p>${availableViews['mentions-flow']?.reason || 'Keine Mentions-Daten vorhanden'}</p>
+        `;
+        return;
+    }
+
+    const container = document.getElementById('mentions-flow-graph');
+    const placeholder = document.getElementById('mentions-flow-placeholder');
+
+    // Clear previous
+    container.innerHTML = '';
+    placeholder.style.display = 'flex';
+    placeholder.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>Berechne Sankey-Diagramm...</p>';
+
+    try {
+        // Build Sankey data
+        const sankeyData = buildSankeyData(filteredLetters, mentionsTopN);
+
+        if (sankeyData.nodes.length === 0) {
+            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Mentions-Daten in den gefilterten Briefen</p>';
+            return;
+        }
+
+        // Setup dimensions
+        const width = container.clientWidth || 1200;
+        const height = container.clientHeight || 800;
+
+        // Create SVG
+        const svg = d3.select(container)
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .attr('viewBox', `0 0 ${width} ${height}`);
+
+        const g = svg.append('g');
+
+        // Add zoom behavior
+        const zoom = d3.zoom()
+            .scaleExtent([0.5, 3])
+            .on('zoom', (event) => {
+                g.attr('transform', event.transform);
+            });
+
+        svg.call(zoom);
+
+        // Create Sankey generator
+        const sankeyGenerator = d3.sankey()
+            .nodeWidth(15)
+            .nodePadding(10)
+            .extent([[100, 50], [width - 100, height - 50]]);
+
+        // Generate layout
+        const {nodes, links} = sankeyGenerator({
+            nodes: sankeyData.nodes.map(d => Object.assign({}, d)),
+            links: sankeyData.links.map(d => Object.assign({}, d))
+        });
+
+        // Render links
+        const link = g.append('g')
+            .attr('class', 'links')
+            .selectAll('path')
+            .data(links)
+            .join('path')
+            .attr('d', d3.sankeyLinkHorizontal())
+            .attr('stroke', '#f59e0b')
+            .attr('stroke-width', d => Math.max(1, d.width))
+            .attr('fill', 'none')
+            .attr('opacity', 0.5)
+            .on('mouseover', function() {
+                d3.select(this).attr('opacity', 1.0);
+            })
+            .on('mouseout', function() {
+                d3.select(this).attr('opacity', 0.5);
+            });
+
+        // Render nodes
+        const node = g.append('g')
+            .attr('class', 'nodes')
+            .selectAll('g')
+            .data(nodes)
+            .join('g');
+
+        node.append('rect')
+            .attr('x', d => d.x0)
+            .attr('y', d => d.y0)
+            .attr('height', d => d.y1 - d.y0)
+            .attr('width', sankeyGenerator.nodeWidth())
+            .attr('fill', d => d.column === 0 ? '#2c5f8d' : '#f59e0b')
+            .attr('rx', 3);
+
+        // Add labels
+        node.append('text')
+            .attr('x', d => d.column === 0 ? d.x1 + 6 : d.x0 - 6)
+            .attr('y', d => (d.y1 + d.y0) / 2)
+            .attr('dy', '0.35em')
+            .attr('text-anchor', d => d.column === 0 ? 'start' : 'end')
+            .text(d => d.name)
+            .style('font-size', '11px')
+            .style('fill', 'var(--color-text-primary)');
+
+        // Hide placeholder
+        placeholder.style.display = 'none';
+
+        log.render(`Rendered Sankey: ${nodes.length} nodes, ${links.length} links`);
+    } catch (error) {
+        log.error('Error rendering Sankey: ' + error.message);
+        placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i><p>Fehler beim Rendern: ${error.message}</p>`;
+    }
 }
 
 // Start application

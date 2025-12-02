@@ -59,6 +59,9 @@
             <button class="view-btn" data-view="network" aria-pressed="false" id="network-view-btn">
                 <i class="fas fa-project-diagram"></i> <span class="view-btn-text">Netzwerk</span>
             </button>
+            <button class="view-btn" data-view="mentions-flow" aria-pressed="false" id="mentions-flow-view-btn">
+                <i class="fas fa-diagram-project"></i> <span class="view-btn-text">Mentions Flow</span>
+            </button>
         </div>
         <div class="nav-links">
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
@@ -541,6 +544,21 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Mentions Flow View -->
+                <div id="mentions-flow-view" class="tab-content">
+                    <div class="mentions-flow-container">
+                        <div class="mentions-flow-header">
+                            <h3>Erwähnungs-Flüsse</h3>
+                            <p class="mentions-flow-info">Visualisiert wer in wessen Briefen erwähnt wird</p>
+                        </div>
+                        <div id="mentions-flow-graph" class="mentions-flow-graph"></div>
+                        <div class="content-placeholder" id="mentions-flow-placeholder">
+                            <i class="fas fa-diagram-project"></i>
+                            <p>Lade Visualisierung...</p>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -706,6 +724,7 @@
     <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
     <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
     <script src="js/explore.js" type="module"></script>
 </body>
 </html>
