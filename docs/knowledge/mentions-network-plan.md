@@ -305,7 +305,54 @@ Identisch zu Sankey, aber:
 
 ### 5.2 Controls Sidebar
 
-**Visualisierungs-Modus**:
+**Integration in bestehende Sidebar-Struktur**:
+
+Die Mentions Flow Filter werden als neue Filter-Gruppe in SECTION 2: FILTER der Sidebar integriert. Die Filter-Gruppe ist nur sichtbar wenn `currentView === 'mentions-flow'`.
+
+Position: Nach Topics Filter, vor Legende
+
+**HTML-Struktur**:
+```html
+<!-- Mentions Flow Filter (view-specific, after topics-filter-group) -->
+<div class="filter-group" role="group" aria-labelledby="filter-mentions-heading"
+     id="mentions-filter-group" style="display: none;">
+    <h5 id="filter-mentions-heading">Mentions Flow</h5>
+
+    <!-- Top N Slider -->
+    <div class="filter-slider-group">
+        <label for="mentions-topn-slider">
+            Top N Personen: <span id="mentions-topn-value">20</span>
+        </label>
+        <input type="range" id="mentions-topn-slider"
+               min="5" max="50" value="20" step="5"
+               aria-label="Anzahl meist-erwähnter Personen">
+    </div>
+
+    <!-- Min Sender Mentions Slider -->
+    <div class="filter-slider-group">
+        <label for="mentions-minsender-slider">
+            Min. Sender-Mentions: <span id="mentions-minsender-value">5</span>
+        </label>
+        <input type="range" id="mentions-minsender-slider"
+               min="1" max="20" value="5" step="1"
+               aria-label="Minimum Erwähnungen pro Korrespondent">
+        <small class="filter-help">Nur Korrespondenten mit ≥N Mentions</small>
+    </div>
+
+    <!-- Min Flow Strength Slider -->
+    <div class="filter-slider-group">
+        <label for="mentions-minflow-slider">
+            Min. Flow-Stärke: <span id="mentions-minflow-value">2</span>
+        </label>
+        <input type="range" id="mentions-minflow-slider"
+               min="1" max="10" value="2" step="1"
+               aria-label="Minimum Erwähnungen pro Verbindung">
+        <small class="filter-help">Nur Verbindungen mit ≥N Erwähnungen</small>
+    </div>
+</div>
+```
+
+**Visualisierungs-Modus** (Optional für Phase 5):
 ```
 ┌─────────────────────────────────┐
 │ Ansicht                         │
@@ -315,7 +362,7 @@ Identisch zu Sankey, aber:
 └─────────────────────────────────┘
 ```
 
-**Filter-Optionen**:
+**Filter-Optionen Visualisierung**:
 ```
 ┌─────────────────────────────────┐
 │ Filter                          │
