@@ -1,6 +1,6 @@
-# Mentions Network View - Implementierungsplan
+# Mentions Flow View - Implementierungsplan
 
-Detaillierter Plan zur Implementierung des Mentions Network Views.
+Detaillierter Plan zur Implementierung des Mentions Flow Views mit Sankey-Diagramm und optionalem Netzwerk-Modus.
 
 Stand: 2025-12-02
 
@@ -8,24 +8,89 @@ Stand: 2025-12-02
 
 ## Executive Summary
 
-Der Mentions Network View nutzt die bisher ungenutzten `mentions.persons` Daten und visualisiert die Frage: "Wer wird in wessen Briefen erwähnt?" Dies schließt die größte Datenlücke in CorrespExplorer und bietet einen neuartigen Einblick in historische Netzwerke.
+Der Mentions Flow View nutzt die bisher ungenutzten `mentions.persons` Daten und visualisiert die Frage: "Wer wird in wessen Briefen erwähnt?" Dies schließt die größte Datenlücke in CorrespExplorer und bietet einen neuartigen Einblick in historische Netzwerke.
 
 ### Warum dieser View?
 
 **Problem**: mentions.persons werden extrahiert (11.576 Briefe enthalten Mentions-Daten), aber nur als statische Tags in Brief-Modals angezeigt.
 
-**Lösung**: 3-Ebenen-Netzwerk zeigt Korrespondenten, erwähnte Personen und ihre Beziehungen.
+**Lösung**: Sankey-Diagramm zeigt quantitative Erwähnungs-Flüsse zwischen Korrespondenten und erwähnten Personen. Optional: Netzwerk-Modus für explorative Analyse.
 
 **Impact**:
 - Identifikation von "Hidden Influencers" (zentral, aber nie selbst korrespondierend)
-- Erkennung von Gatekeepern (verbinden isolierte Gruppen)
-- Analyse indirekter Netzwerke (wer spricht über wen)
+- Quantitative Messung von Diskurs-Intensität
+- Klare, übersichtliche Darstellung ohne Cognitive Overload
+- Optional: Explorative Netzwerk-Ansicht für Detail-Analyse
 
 ---
 
-## 1. Datengrundlage
+## 1. Visualisierungs-Strategie
 
-### 1.1 Verfügbare Daten
+### 1.1 Warum Sankey als Primary View?
+
+Nach kritischer Evaluation verschiedener Visualisierungs-Ansätze ergab sich folgende Bewertung:
+
+**Sankey-Diagramm** (PRIMARY - EMPFOHLEN):
+- Quantitativ präzise: Fluss-Breiten zeigen Erwähnungs-Intensität
+- Kognitive Klarheit: Links-Rechts-Leserichtung, keine Überlappungen
+- Skalierbar: Funktioniert mit 10-500+ Knoten
+- Forschungswert: "Wer redet wie viel über wen?"
+- Thematische Gruppierung: Korrespondenten links, Erwähnte rechts
+- Implementierung: Mittlerer Aufwand mit d3-sankey
+
+**Probleme von reinen Netzwerk-Visualisierungen**:
+- Cognitive Overload bei 500+ Knoten (HSA: 846 Korrespondenten + ~200-400 Erwähnte)
+- Performance-Probleme bei Force-Simulation mit 1000+ Knoten
+- Visuelle Unordnung: Überlappende Kanten, schwer lesbare Labels
+- Redundanz: Bestehendes Network View zeigt bereits Korrespondenz-Netzwerk
+- Limitierte quantitative Präzision: Edge-Breiten schwer vergleichbar
+
+### 1.2 Hybrid-Ansatz
+
+**Primär-Modus: Sankey Diagram ("Mentions Flow")**
+- Standard-Ansicht beim Öffnen des Views
+- Fokus: Top 50-100 meist-erwähnte Personen
+- Klare Darstellung von Diskurs-Intensität
+
+**Sekundär-Modus: Bipartite Network ("Mentions Explorer")**
+- Optional aktivierbar via Toggle
+- Für explorative Analyse
+- Fixierte 2-Spalten-Layout (Korrespondenten links, Erwähnte rechts)
+- Keine Force-Simulation, sondern statisches Layout
+
+**Toggle-UI**:
+```
+┌─────────────────────────────────┐
+│ Ansicht:                        │
+│ ● Fluss-Diagramm (Sankey)      │
+│ ○ Netzwerk (Explorativ)         │
+└─────────────────────────────────┘
+```
+
+### 1.3 Vergleich alternativer Ansätze
+
+Andere evaluierte, aber nicht priorisierte Optionen:
+
+**Heatmap Matrix** (2. Platz):
+- Vorteil: Maximal kompakt, alle Beziehungen sichtbar
+- Nachteil: Skaliert schlecht bei 800x400 Matrix (320.000 Zellen)
+- Verwendung: Ggf. als 3. Modus für Spezialisten
+
+**Chord Diagram**:
+- Vorteil: Elegant, symmetrisch
+- Nachteil: Nur für symmetrische Beziehungen, Mentions sind gerichtet
+- Verwendung: Nicht geeignet für diesen Use Case
+
+**Force-Directed Network**:
+- Vorteil: Bekannt, zeigt Cluster
+- Nachteil: Skalierungsprobleme, visuelles Chaos, Redundanz
+- Verwendung: Nur als optionaler Sekundär-Modus
+
+---
+
+## 2. Datengrundlage
+
+### 2.1 Verfügbare Daten
 
 **Brief-Struktur (aus cmif-parser.js)**:
 ```javascript
@@ -64,7 +129,7 @@ Der Mentions Network View nutzt die bisher ungenutzten `mentions.persons` Daten 
 - 846 Korrespondenten
 - Geschätzt: 200-400 erwähnte Personen
 
-### 1.2 Datenanalyse erforderlich
+### 2.2 Datenanalyse erforderlich
 
 Vor Implementierung analysieren:
 ```python
@@ -73,170 +138,266 @@ Vor Implementierung analysieren:
 - Wie viele unique erwähnte Personen?
 - Überlappung: Wer ist Korrespondent UND erwähnt?
 - Durchschnittliche Mentions pro Brief
-- Top 20 meist-erwähnte Personen
+- Top 50 meist-erwähnte Personen (für Sankey)
 ```
 
 ---
 
-## 2. Netzwerk-Design
+## 3. Sankey-Diagramm Design (Primary View)
 
-### 2.1 Node-Typen
+### 3.1 Struktur
 
-**Typ 1: Correspondence-Only Nodes**
-- Personen die korrespondieren, aber nie erwähnt werden
-- Darstellung: Großer Kreis
+**Zwei-Spalten-Layout**:
+```
+Korrespondenten          Erwähnte Personen
+(Wer erwähnt)            (Wer wird erwähnt)
+     │                          │
+     │                          │
+[Hugo Schuchardt] ═════════════> [Wilhelm Meyer-Lübke]
+     │            ─────────────> [Gustav Gröber]
+     │                          │
+[Friedrich Schürr] ────────────> [Wilhelm Meyer-Lübke]
+     │                          │
+[Leo Spitzer]    ══════════════> [Karl Vossler]
+                                │
+```
+
+**Flow-Breiten**:
+- Breite = Anzahl Erwähnungen
+- Normalisierung: 1-50px Breite
+- Farbe: Gradient von Korrespondenten-Farbe zu Erwähnten-Farbe
+
+### 3.2 Node-Design
+
+**Linke Spalte (Korrespondenten)**:
+- Rechtecke mit abgerundeten Ecken
 - Farbe: Steel Blue (--color-role-sender)
-- Größe: Basierend auf Brief-Count
+- Höhe: Proportional zur Summe ausgehender Erwähnungen
+- Label: Name (rechts vom Rechteck)
 
-**Typ 2: Mentioned-Only Nodes**
-- Personen die nur erwähnt werden, nie korrespondieren
-- Darstellung: Quadrat (zur Unterscheidung)
-- Farbe: Amber (#f59e0b)
-- Größe: Basierend auf Mention-Count
+**Rechte Spalte (Erwähnte)**:
+- Rechtecke mit abgerundeten Ecken
+- Farbe: Amber (#f59e0b) für rein erwähnte
+- Farbe: Forest Green (--color-role-both) für Hybrid (Korrespondent + Erwähnt)
+- Höhe: Proportional zur Summe eingehender Erwähnungen
+- Label: Name (links vom Rechteck)
 
-**Typ 3: Both (Hybrid) Nodes**
-- Personen die korrespondieren UND erwähnt werden
-- Darstellung: Raute/Diamant
-- Farbe: Forest Green (--color-role-both)
-- Größe: Kombiniert Brief + Mention Count
+**Hybrid-Nodes** (erscheinen in BEIDEN Spalten):
+- Links: Als Korrespondent (Steel Blue)
+- Rechts: Als Erwähnter (Forest Green)
+- Spezielle Markierung: Icon oder Border
 
-### 2.2 Edge-Typen
+### 3.3 Link-Design
 
-**Direct Correspondence (durchgezogene Linie)**
-- Quelle: Sender
-- Ziel: Recipient
-- Farbe: --color-primary (#A64B3F)
-- Breite: Anzahl Briefe
-- Opacity: 0.8
+**Sankey-Links**:
+- Bezier-Kurven von links nach rechts
+- Farbe: Gradient von Sender-Farbe zu Ziel-Farbe
+- Opacity: 0.5 (Standard), 1.0 (Hover)
+- Breite: Linear skaliert nach Mention-Count
 
-**Mention (gestrichelte Linie)**
-- Quelle: Brief-Absender (wer erwähnt)
-- Ziel: Erwähnte Person
-- Farbe: Amber (#f59e0b)
-- Breite: Anzahl Erwähnungen
-- Opacity: 0.6
-- Stil: 5px dash, 3px gap
+**Hover-Verhalten**:
+- Highlight: Link + Source + Target
+- Tooltip: "Hugo Schuchardt → Wilhelm Meyer-Lübke: 23 Erwähnungen"
+- Dimming: Alle anderen Links auf 0.2 Opacity
 
-### 2.3 Layout-Algorithmus
+### 3.4 Layout-Algorithmus
 
-**D3 Force Simulation**:
+**D3-Sankey Plugin**:
 ```javascript
-const simulation = d3.forceSimulation(nodes)
-    .force("link", d3.forceLink(edges)
-        .id(d => d.id)
-        .distance(d => d.type === 'correspondence' ? 80 : 120)
-    )
-    .force("charge", d3.forceManyBody()
-        .strength(d => d.nodeType === 'both' ? -400 : -200)
-    )
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("collision", d3.forceCollide()
-        .radius(d => d.radius + 5)
-    );
+import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
+
+const sankeyGenerator = sankey()
+    .nodeWidth(15)
+    .nodePadding(10)
+    .extent([[1, 1], [width - 1, height - 5]]);
+
+const { nodes, links } = sankeyGenerator({
+    nodes: [
+        { name: "Hugo Schuchardt", column: 0 },  // Linke Spalte
+        { name: "Wilhelm Meyer-Lübke", column: 1 }  // Rechte Spalte
+    ],
+    links: [
+        { source: 0, target: 1, value: 23 }  // value = Mention-Count
+    ]
+});
 ```
 
-**Clustering-Strategie**:
-- Correspondence-Edges stärker gewichtet (kürzere Distanz)
-- Both-Nodes als "Brücken" mit höherer Abstoßung
-- Mentioned-Only Nodes an Peripherie
+**Sortierung**:
+- Linke Spalte: Nach Anzahl Erwähnungen (absteigend)
+- Rechte Spalte: Nach Anzahl eingehender Erwähnungen (absteigend)
+- Alternative: Alphabetisch (via Toggle)
 
 ---
 
-## 3. UI/UX Design
+## 4. Bipartite Network Design (Secondary View)
 
-### 3.1 View-Integration
+### 4.1 Aktivierung
+
+**Toggle in Controls**:
+- Umschalter: "Sankey" ↔ "Netzwerk"
+- Standard: Sankey
+- Persistent: Wahl wird in sessionStorage gespeichert
+
+### 4.2 Layout
+
+**Fixierte 2-Spalten-Anordnung**:
+- KEINE Force-Simulation
+- Linke Spalte: Korrespondenten (vertikal sortiert)
+- Rechte Spalte: Erwähnte (vertikal sortiert)
+- Statische Positionen berechnet via Grid
+
+```javascript
+// Berechnung statischer Positionen
+const leftColumn = correspondents.map((person, i) => ({
+    ...person,
+    x: 100,  // Fixiert
+    y: (i * height) / correspondents.length
+}));
+
+const rightColumn = mentioned.map((person, i) => ({
+    ...person,
+    x: width - 100,  // Fixiert
+    y: (i * height) / mentioned.length
+}));
+```
+
+### 4.3 Node-Design
+
+Identisch zu Sankey, aber:
+- Kreise statt Rechtecke
+- Größe: Proportional zu Mention/Letter-Count
+- Farben: Gleiche Farbcodierung
+
+### 4.4 Edge-Design
+
+**Gerade oder gebogene Linien**:
+- Farbe: Amber (#f59e0b) mit niedriger Opacity (0.3)
+- Breite: Proportional zu Mention-Count
+- Hover: Highlight + Opacity 1.0
+
+**Vorteil gegenüber Force-Simulation**:
+- Keine Performance-Probleme
+- Lesbare Labels (keine Überlappungen)
+- Vorhersagbare Positionen
+
+---
+
+## 5. UI/UX Design
+
+### 5.1 View-Integration
 
 **Navigation**:
-- Neuer View-Button: "Mentions Network"
-- Icon: `fa-diagram-project` (verbundene Knoten)
+- Neuer View-Button: "Mentions Flow"
+- Icon: `fa-diagram-project` (Fluss-Symbol)
 - Position: Nach Network View, vor Sidebar-Ende
 
 **Aktivierung**:
 - Nur wenn Mentions-Daten vorhanden
 - Fallback-Message: "Dieser Datensatz enthält keine Mentions-Daten"
 
-### 3.2 Controls Sidebar
+### 5.2 Controls Sidebar
+
+**Visualisierungs-Modus**:
+```
+┌─────────────────────────────────┐
+│ Ansicht                         │
+├─────────────────────────────────┤
+│ ● Fluss-Diagramm (Sankey)      │
+│ ○ Netzwerk (Bipartite)         │
+└─────────────────────────────────┘
+```
 
 **Filter-Optionen**:
 ```
 ┌─────────────────────────────────┐
-│ Netzwerk-Konfiguration          │
+│ Filter                          │
 ├─────────────────────────────────┤
-│ ☑ Zeige Korrespondenz          │
-│ ☑ Zeige Erwähnungen             │
-│                                 │
-│ Node-Typen:                     │
-│ ☑ Nur Korrespondenten          │
-│ ☑ Nur Erwähnte                  │
-│ ☑ Beide                         │
-│                                 │
 │ Min. Mentions: [2] ──────○      │
-│ Max. Nodes:    [100] ────○      │
+│ Top N Personen: [50] ────○      │
 │                                 │
-│ Layout:                         │
-│ ○ Force-Directed                │
-│ ○ Hierarchisch                  │
-│ ○ Radial (Ego-Netzwerk)         │
+│ Sortierung:                     │
+│ ● Nach Häufigkeit               │
+│ ○ Alphabetisch                  │
 │                                 │
-│ [Netzwerk zurücksetzen]         │
+│ Nur anzeigen:                   │
+│ ☐ Nur Hybrid-Nodes             │
+│ ☐ Nur direkte Mentions         │
 └─────────────────────────────────┘
 ```
 
-**Legende**:
+**Legende** (Sankey-Modus):
+```
+Flüsse:
+Links:  Korrespondenten (wer erwähnt)
+Rechts: Erwähnte Personen (wer wird erwähnt)
+Breite: Anzahl Erwähnungen
+
+Farben:
+■ Steel Blue = Korrespondent
+■ Amber      = Nur erwähnt
+■ Green      = Beides (Hybrid)
+```
+
+**Legende** (Netzwerk-Modus):
 ```
 Knoten:
-● Kreis     = Korrespondent
-■ Quadrat   = Erwähnt
-◆ Raute     = Beides
+● Links:  Korrespondenten
+● Rechts: Erwähnte Personen
 
 Verbindungen:
-─── Korrespondenz
-╌╌╌ Erwähnung
+─── Erwähnung (Breite = Häufigkeit)
 ```
 
-### 3.3 Interaktivität
+### 5.3 Interaktivität
 
 **Node Hover**:
 - Tooltip zeigt:
   - Name
   - Typ (Korrespondent/Erwähnt/Beides)
-  - Brief-Count (wenn zutreffend)
-  - Mention-Count (wenn zutreffend)
-  - Enrichment-Daten (Lebensdaten, Portrait)
+  - Mention-Count (Anzahl Erwähnungen)
+  - Enrichment-Daten (Lebensdaten, Portrait wenn vorhanden)
 
 **Node Click**:
 - Detail-Panel öffnet (rechts)
 - Zeigt:
   - Vollständige Metadaten
-  - "Erwähnt in Briefen von": Liste der Absender
+  - "Erwähnt in Briefen von": Liste der Absender mit Counts
   - "Erwähnt folgende Personen": Liste (wenn Korrespondent)
   - Mini-Timeline: Wann wurde Person erwähnt
   - Button: "Briefe anzeigen" (filtert Letters View)
 
-**Edge Hover**:
-- Highlight Source + Target Nodes
-- Tooltip: "5 Briefe" oder "8 Erwähnungen"
+**Link Hover** (Sankey):
+- Highlight: Link + Source + Target Nodes
+- Tooltip: "Hugo Schuchardt → Wilhelm Meyer-Lübke: 23 Erwähnungen"
+- Dimming: Alle anderen Links
 
-**Drag**:
-- Nodes dragbar zur Positionierung
-- Optional: Pin-Funktion (Node fixieren)
+**Link Click**:
+- Filter Letters View: Zeige nur Briefe wo Source Person Target Person erwähnt
+- Optional: Öffne Letter-Liste in Modal
 
-### 3.4 Ego-Network Mode
-
-**Aktivierung**: Click auf Node + "Ego-Modus"
-
-**Verhalten**:
-- Fokus-Node in Zentrum (fixiert)
-- Zeige nur direkte Nachbarn (1. Grad)
-- Radiales Layout
-- Distanz = Relationship-Strength
-- Highlight "Bridging Nodes" (verbinden sonst isolierte Cluster)
+**Zoom/Pan**:
+- Scroll: Zoom in/out
+- Drag (auf leerem Bereich): Pan
+- Doppelklick: Reset View
 
 ---
 
-## 4. Technische Implementierung
+## 6. Technische Implementierung
 
-### 4.1 Datenvorbereitung
+### 6.1 Abhängigkeiten
+
+**D3-Sankey Plugin**:
+```html
+<!-- In explore.html -->
+<script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+```
+
+Alternative: Als ES6 Module:
+```javascript
+import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
+```
+
+### 6.2 Datenvorbereitung
 
 **Neuer Index: mentionedPersons**
 
@@ -286,93 +447,87 @@ function classifyPerson(personId, correspondents, mentioned) {
 }
 ```
 
-### 4.2 Netzwerk-Konstruktion
+### 6.3 Sankey-Datenstruktur
 
-**Nodes Array**:
+**Sankey benötigt spezifisches Format**:
 ```javascript
-const nodes = [];
+function buildSankeyData(letters, mentionedPersons, topN = 50) {
+    // 1. Aggregiere Mention-Flows
+    const flows = new Map(); // key: "senderId→mentionedId", value: count
 
-// Korrespondenten
-for (const [id, person] of allPersons) {
-    const type = classifyPerson(id, allPersons, mentionedPersons);
-    nodes.push({
-        id: id,
-        name: person.name,
-        type: type,
-        letterCount: person.letter_count,
-        mentionCount: mentionedPersons.get(id)?.mentionCount || 0
-    });
-}
+    for (const letter of letters) {
+        if (!letter.mentions?.persons) continue;
 
-// Nur-erwähnte Personen
-for (const [id, person] of mentionedPersons) {
-    if (!allPersons.has(id)) {
-        nodes.push({
-            id: id,
-            name: person.name,
-            type: 'mentioned',
-            letterCount: 0,
-            mentionCount: person.mentionCount
-        });
+        for (const person of letter.mentions.persons) {
+            const key = `${letter.sender.id}→${person.id || person.name}`;
+            flows.set(key, (flows.get(key) || 0) + 1);
+        }
     }
-}
-```
 
-**Edges Array**:
-```javascript
-const edges = [];
-
-// Correspondence Edges
-for (const letter of letters) {
-    const existingEdge = edges.find(e =>
-        e.source === letter.sender.id &&
-        e.target === letter.recipient.id &&
-        e.type === 'correspondence'
-    );
-
-    if (existingEdge) {
-        existingEdge.weight++;
-    } else {
-        edges.push({
-            source: letter.sender.id,
-            target: letter.recipient.id,
-            type: 'correspondence',
-            weight: 1
-        });
+    // 2. Finde Top N meist-erwähnte Personen
+    const mentionCounts = new Map();
+    for (const [flow, count] of flows) {
+        const [_, targetId] = flow.split('→');
+        mentionCounts.set(targetId, (mentionCounts.get(targetId) || 0) + count);
     }
-}
 
-// Mention Edges
-for (const letter of letters) {
-    if (!letter.mentions?.persons) continue;
+    const topMentioned = Array.from(mentionCounts.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, topN)
+        .map(([id]) => id);
 
-    for (const person of letter.mentions.persons) {
-        const key = person.id || person.name;
-        const existingEdge = edges.find(e =>
-            e.source === letter.sender.id &&
-            e.target === key &&
-            e.type === 'mention'
-        );
+    // 3. Baue Nodes (eindeutige Namen)
+    const nodeSet = new Set();
+    const nodes = [];
 
-        if (existingEdge) {
-            existingEdge.weight++;
-        } else {
-            edges.push({
-                source: letter.sender.id,
-                target: key,
-                type: 'mention',
-                weight: 1
+    for (const [flow, count] of flows) {
+        const [sourceId, targetId] = flow.split('→');
+
+        if (!topMentioned.includes(targetId)) continue;
+
+        if (!nodeSet.has(sourceId)) {
+            nodeSet.add(sourceId);
+            nodes.push({
+                name: sourceId,
+                column: 0  // Linke Spalte
+            });
+        }
+
+        if (!nodeSet.has(targetId)) {
+            nodeSet.add(targetId);
+            nodes.push({
+                name: targetId,
+                column: 1  // Rechte Spalte
             });
         }
     }
+
+    // 4. Baue Links
+    const links = [];
+    for (const [flow, count] of flows) {
+        const [sourceId, targetId] = flow.split('→');
+
+        if (!topMentioned.includes(targetId)) continue;
+
+        const sourceIndex = nodes.findIndex(n => n.name === sourceId);
+        const targetIndex = nodes.findIndex(n => n.name === targetId);
+
+        links.push({
+            source: sourceIndex,
+            target: targetIndex,
+            value: count
+        });
+    }
+
+    return { nodes, links };
 }
 ```
 
-### 4.3 D3.js Rendering
+### 6.4 Sankey Rendering
 
-**SVG Setup**:
+**SVG Setup mit Zoom**:
 ```javascript
-const svg = d3.select('#mentions-network-container')
+const svg = d3.select('#mentions-flow-container')
     .append('svg')
     .attr('width', width)
     .attr('height', height);
@@ -381,7 +536,7 @@ const g = svg.append('g');
 
 // Zoom
 const zoom = d3.zoom()
-    .scaleExtent([0.1, 4])
+    .scaleExtent([0.5, 3])
     .on('zoom', (event) => {
         g.attr('transform', event.transform);
     });
@@ -389,151 +544,188 @@ const zoom = d3.zoom()
 svg.call(zoom);
 ```
 
-**Edge Rendering**:
+**Sankey Layout berechnen**:
 ```javascript
-const link = g.append('g')
-    .selectAll('line')
-    .data(edges)
-    .join('line')
-    .attr('class', d => `edge edge-${d.type}`)
-    .attr('stroke', d => d.type === 'correspondence' ?
-        'var(--color-primary)' : '#f59e0b')
-    .attr('stroke-width', d => Math.sqrt(d.weight) * 2)
-    .attr('stroke-opacity', d => d.type === 'correspondence' ? 0.8 : 0.6)
-    .attr('stroke-dasharray', d => d.type === 'mention' ? '5,3' : 'none');
+import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
+
+const sankeyGenerator = sankey()
+    .nodeWidth(15)
+    .nodePadding(10)
+    .extent([[100, 50], [width - 100, height - 50]]);
+
+const { nodes, links } = sankeyGenerator(buildSankeyData(letters, mentionedPersons, 50));
 ```
 
-**Node Rendering**:
+**Links Rendering**:
+```javascript
+const link = g.append('g')
+    .attr('class', 'links')
+    .selectAll('path')
+    .data(links)
+    .join('path')
+    .attr('d', sankeyLinkHorizontal())
+    .attr('stroke', d => {
+        // Gradient von Source zu Target
+        const gradient = svg.append('defs')
+            .append('linearGradient')
+            .attr('id', `gradient-${d.index}`)
+            .attr('gradientUnits', 'userSpaceOnUse')
+            .attr('x1', d.source.x1)
+            .attr('x2', d.target.x0);
+
+        gradient.append('stop')
+            .attr('offset', '0%')
+            .attr('stop-color', 'var(--color-role-sender)');
+
+        gradient.append('stop')
+            .attr('offset', '100%')
+            .attr('stop-color', '#f59e0b');
+
+        return `url(#gradient-${d.index})`;
+    })
+    .attr('stroke-width', d => Math.max(1, d.width))
+    .attr('fill', 'none')
+    .attr('opacity', 0.5)
+    .on('mouseover', function(event, d) {
+        d3.select(this).attr('opacity', 1.0);
+        // Tooltip anzeigen
+    })
+    .on('mouseout', function() {
+        d3.select(this).attr('opacity', 0.5);
+    });
+```
+
+**Nodes Rendering**:
 ```javascript
 const node = g.append('g')
+    .attr('class', 'nodes')
     .selectAll('g')
     .data(nodes)
-    .join('g')
-    .attr('class', 'node')
-    .call(drag(simulation));
+    .join('g');
 
-// Node Shape basierend auf Typ
-node.each(function(d) {
-    const g = d3.select(this);
-
-    if (d.type === 'correspondent') {
-        g.append('circle')
-            .attr('r', Math.sqrt(d.letterCount) * 3)
-            .attr('fill', 'var(--color-role-sender)');
-    } else if (d.type === 'mentioned') {
-        const size = Math.sqrt(d.mentionCount) * 3;
-        g.append('rect')
-            .attr('width', size * 2)
-            .attr('height', size * 2)
-            .attr('x', -size)
-            .attr('y', -size)
-            .attr('fill', '#f59e0b');
-    } else if (d.type === 'both') {
-        const size = Math.sqrt(d.letterCount + d.mentionCount) * 3;
-        g.append('path')
-            .attr('d', d3.symbol().type(d3.symbolDiamond).size(size * 40))
-            .attr('fill', 'var(--color-role-both)');
-    }
-});
+// Rechtecke
+node.append('rect')
+    .attr('x', d => d.x0)
+    .attr('y', d => d.y0)
+    .attr('height', d => d.y1 - d.y0)
+    .attr('width', sankeyGenerator.nodeWidth())
+    .attr('fill', d => {
+        // Farbe basierend auf Spalte und Typ
+        if (d.column === 0) return 'var(--color-role-sender)';
+        // Prüfe ob Hybrid
+        const isHybrid = correspondents.has(d.name);
+        return isHybrid ? 'var(--color-role-both)' : '#f59e0b';
+    })
+    .attr('rx', 3)
+    .on('click', (event, d) => {
+        // Detail-Panel öffnen
+        showPersonDetails(d);
+    });
 
 // Labels
 node.append('text')
-    .attr('dy', d => Math.sqrt(d.letterCount || d.mentionCount) * 3 + 12)
-    .attr('text-anchor', 'middle')
-    .style('font-size', '10px')
-    .text(d => d.name);
+    .attr('x', d => d.column === 0 ? d.x1 + 6 : d.x0 - 6)
+    .attr('y', d => (d.y1 + d.y0) / 2)
+    .attr('dy', '0.35em')
+    .attr('text-anchor', d => d.column === 0 ? 'start' : 'end')
+    .text(d => d.name)
+    .style('font-size', '11px')
+    .style('fill', 'var(--color-text-primary)');
 ```
 
-**Simulation Update**:
-```javascript
-simulation.on('tick', () => {
-    link
-        .attr('x1', d => d.source.x)
-        .attr('y1', d => d.source.y)
-        .attr('x2', d => d.target.x)
-        .attr('y2', d => d.target.y);
+### 6.5 Performance-Optimierung
 
-    node
-        .attr('transform', d => `translate(${d.x},${d.y})`);
-});
+**Sankey ist performanter als Force-Networks**:
+- Keine Animation (einmaliges Layout)
+- Statische Positionen (kein Tick-Update)
+- Top-N Filterung reduziert Komplexität
+
+**Optimierungen**:
+
+1. **Top-N Filterung**:
+```javascript
+// Standard: Top 50, Maximum: Top 200
+const topN = Math.min(config.maxNodes, 200);
+const sankeyData = buildSankeyData(letters, mentionedPersons, topN);
 ```
 
-### 4.4 Performance-Optimierung
-
-**Problem**: 800+ Nodes + 5000+ Edges = Lag
-
-**Lösungen**:
-
-1. **Intelligentes Filtern**:
+2. **Link-Aggregation**:
 ```javascript
-// Nur Top N meist-verbundene Nodes
-const topNodes = nodes
-    .sort((a, b) => (b.letterCount + b.mentionCount) -
-                     (a.letterCount + a.mentionCount))
-    .slice(0, maxNodes);
+// Bereits in buildSankeyData: Mehrfach-Erwähnungen aggregiert
+// key: "senderId→mentionedId", value: count
 ```
 
-2. **Edge-Bundling**:
+3. **Lazy Rendering bei Toggle**:
 ```javascript
-// Mehrfach-Erwähnungen zu einer Kante zusammenfassen
-// Bereits in Edge-Konstruktion implementiert (weight++)
+// Nur aktiver Modus wird gerendert
+if (viewMode === 'sankey') {
+    renderSankey();
+} else {
+    renderBipartiteNetwork();
+}
 ```
 
-3. **Canvas statt SVG** (für >500 Nodes):
+4. **Gradient-Caching**:
 ```javascript
-// Optional: Wechsel zu Canvas-Rendering
-const canvas = d3.select('#mentions-network-container')
-    .append('canvas');
-const context = canvas.node().getContext('2d');
-// D3 Force mit Canvas-Rendering kombinieren
-```
-
-4. **Virtualisierung**:
-```javascript
-// Nur sichtbare Nodes rendern
-const visibleNodes = nodes.filter(d =>
-    d.x > -margin && d.x < width + margin &&
-    d.y > -margin && d.y < height + margin
-);
+// Gradients nur einmal definieren, dann wiederverwenden
+const defs = svg.append('defs');
+// Vordefinierte Gradients statt dynamische Erstellung pro Link
 ```
 
 ---
 
-## 5. Filter-Integration
+## 7. Filter-Integration
 
-### 5.1 Bidirektionales Filtern
+### 7.1 Bidirektionales Filtern
 
-**Von anderem View → Mentions Network**:
+**Von anderem View → Mentions Flow**:
 ```javascript
 // Person in Persons View geklickt
 function handlePersonFilter(personId) {
     selectedPersonId = personId;
 
-    // Mentions Network: Ego-Modus aktivieren
-    if (currentView === 'mentions-network') {
-        activateEgoNetwork(personId);
+    // Mentions Flow: Highlight Person in Sankey
+    if (currentView === 'mentions-flow') {
+        highlightPersonInSankey(personId);
     }
 }
 ```
 
-**Von Mentions Network → andere Views**:
+**Von Mentions Flow → andere Views**:
 ```javascript
 // Node geklickt
 function onNodeClick(node) {
     // Filter Letters View
-    applyPersonFilter(node.id);
+    applyPersonFilter(node.name);
 
     // Update URL
-    updateUrlParams({ person: node.id });
+    updateUrlParams({ person: node.name });
 
     // Optional: Wechsel zu Letters View
     switchView('letters');
 }
 ```
 
-### 5.2 Zeitliche Filterung
+**Link geklickt** (Sankey-spezifisch):
+```javascript
+// Link zeigt "Wer erwähnt wen"
+function onLinkClick(link) {
+    // Filter: Zeige Briefe wo Source Person Target Person erwähnt
+    const filteredLetters = allLetters.filter(letter =>
+        letter.sender.id === link.source.name &&
+        letter.mentions?.persons?.some(p =>
+            (p.id || p.name) === link.target.name
+        )
+    );
 
-Mentions Network reagiert auf Timeline-Filter:
+    // Zeige gefilterte Briefe
+    displayFilteredLetters(filteredLetters);
+}
+```
+
+### 7.2 Zeitliche Filterung
+
+Mentions Flow reagiert auf Timeline-Filter:
 
 ```javascript
 function applyTemporalFilterToMentions(yearMin, yearMax) {
@@ -542,31 +734,33 @@ function applyTemporalFilterToMentions(yearMin, yearMax) {
         l.year >= yearMin && l.year <= yearMax
     );
 
-    // Netzwerk neu berechnen
-    rebuildMentionsNetwork(filteredLetters);
+    // Sankey neu berechnen und rendern
+    const sankeyData = buildSankeyData(filteredLetters, mentionedPersons, topN);
+    renderSankey(sankeyData);
 }
 ```
 
 ---
 
-## 6. Testing-Strategie
+## 8. Testing-Strategie
 
-### 6.1 Daten-Tests
+### 8.1 Daten-Tests
 
 ```javascript
-// test-mentions-network.js
+// test-mentions-flow.js
 
-function testMentionsIndexing() {
+function testSankeyDataBuilding() {
     const letters = [
         { id: 1, sender: {id: 'A'}, mentions: { persons: [{id: 'C'}] }},
         { id: 2, sender: {id: 'A'}, mentions: { persons: [{id: 'C'}] }},
         { id: 3, sender: {id: 'B'}, mentions: { persons: [{id: 'C'}] }}
     ];
 
-    const index = buildMentionedPersonsIndex(letters);
+    const sankeyData = buildSankeyData(letters, new Map(), 10);
 
-    assert(index.get('C').mentionCount === 3);
-    assert(index.get('C').mentionedBy.size === 2); // A und B
+    assert(sankeyData.nodes.length === 3); // A, B, C
+    assert(sankeyData.links.length === 2); // A→C, B→C
+    assert(sankeyData.links.find(l => l.source === 0 && l.target === 2).value === 2);
 }
 
 function testHybridDetection() {
@@ -575,22 +769,35 @@ function testHybridDetection() {
 
     assert(classifyPerson('X', correspondents, mentioned) === 'both');
 }
+
+function testTopNFiltering() {
+    // Test dass nur Top N erwähnte Personen im Sankey erscheinen
+    const sankeyData = buildSankeyData(allLetters, mentionedPersons, 10);
+    assert(sankeyData.nodes.filter(n => n.column === 1).length <= 10);
+}
 ```
 
-### 6.2 UI-Tests
+### 8.2 UI-Tests
 
-**Manuelle Checkliste**:
-- [ ] Nodes werden korrekt nach Typ gerendert (Kreis/Quadrat/Raute)
-- [ ] Edges haben korrekte Styles (durchgezogen/gestrichelt)
-- [ ] Hover zeigt Tooltips
+**Manuelle Checkliste (Sankey-Modus)**:
+- [ ] Nodes in zwei Spalten angeordnet
+- [ ] Links als Bezier-Kurven gerendert
+- [ ] Link-Breiten proportional zu Mention-Count
+- [ ] Hover zeigt Tooltips mit Count
 - [ ] Click öffnet Detail-Panel
-- [ ] Drag funktioniert
 - [ ] Zoom/Pan funktioniert
-- [ ] Filter ändern Netzwerk
-- [ ] Ego-Modus aktivierbar
-- [ ] Performance bei 500+ Nodes akzeptabel (<2s Render)
+- [ ] Filter ändern Sankey
+- [ ] Toggle zu Netzwerk funktioniert
+- [ ] Performance bei 200+ Nodes akzeptabel (<1s Render)
 
-### 6.3 Browser-Kompatibilität
+**Manuelle Checkliste (Netzwerk-Modus)**:
+- [ ] Nodes in zwei Spalten fixiert
+- [ ] Keine Force-Simulation (statisch)
+- [ ] Labels lesbar ohne Überlappungen
+- [ ] Hover/Click funktioniert identisch
+- [ ] Performance gut bei 500+ Nodes
+
+### 8.3 Browser-Kompatibilität
 
 Testen auf:
 - Chrome 120+
@@ -598,21 +805,22 @@ Testen auf:
 - Safari 17+
 - Edge 120+
 
-SVG-Features die überall funktionieren müssen:
-- stroke-dasharray
-- transform
-- d3.symbol (Diamond shape)
+D3-Sankey-Features die überall funktionieren müssen:
+- SVG path (Bezier-Kurven)
+- Linear Gradients
+- Transform/Zoom
 
 ---
 
-## 7. Implementierungs-Phasen
+## 9. Implementierungs-Phasen
 
 ### Phase 1: Datenanalyse & Vorbereitung (2-3h)
 
 **Aufgaben**:
 1. Python-Script: `preprocessing/analyze_mentions.py`
    - Statistiken über Mentions im HSA-Datensatz
-   - Identifikation Top-erwähnter Personen
+   - Identifikation Top-50 erwähnter Personen
+   - Hybrid-Analyse: Wer ist Korrespondent UND erwähnt?
 
 2. `explore.js`: `buildMentionedPersonsIndex()`
    - Index-Funktion implementieren
@@ -623,93 +831,100 @@ SVG-Features die überall funktionieren müssen:
 
 **Deliverable**: Funktionierende Index-Struktur, bestätigt via Console
 
-### Phase 2: Basic Network Rendering (4-5h)
+### Phase 2: Sankey Grundfunktion (4-5h)
 
 **Aufgaben**:
-1. HTML: View-Container in `explore.html`
+1. D3-Sankey Dependency hinzufügen
+   - CDN-Link in explore.html
+   - Oder als ES6 Module
+
+2. HTML: View-Container in `explore.html`
    ```html
-   <div id="mentions-network-view" class="view-content" style="display: none;">
-       <div id="mentions-network-container"></div>
+   <div id="mentions-flow-view" class="view-content" style="display: none;">
+       <div id="mentions-flow-container"></div>
    </div>
    ```
 
-2. `explore.js`: `renderMentionsNetwork()`
-   - D3 Force Simulation Setup
-   - Nodes als Kreise (erstmal alle gleich)
-   - Edges als Linien
-   - Basic Zoom/Pan
+3. `explore.js`: `buildSankeyData()`
+   - Flow-Aggregation
+   - Top-N Filterung
+   - Nodes/Links Format
 
-3. View-Button in Navbar
-   - Icon, Label, Click-Handler
+4. `explore.js`: `renderSankey()`
+   - Sankey Layout berechnen
+   - SVG Setup mit Zoom
+   - Basic Rendering (ohne Styles)
 
-**Deliverable**: Funktionierendes Force-Directed Network (ohne Styling)
+5. View-Button in Navbar
+   - Icon: fa-diagram-project
+   - Label: "Mentions Flow"
+   - Click-Handler
 
-### Phase 3: Visual Encoding (3-4h)
+**Deliverable**: Funktionierendes Sankey-Diagramm (ohne visuelle Polish)
+
+### Phase 3: Sankey Styling & Interaktivität (3-4h)
 
 **Aufgaben**:
-1. Node-Shapes implementieren
-   - Circle für Korrespondenten
-   - Rect für Erwähnte
-   - Diamond für Both
+1. Link-Gradients implementieren
+   - Farbe von Source zu Target
+   - Opacity-Handling
 
-2. Edge-Styles implementieren
-   - Durchgezogen vs. gestrichelt
-   - Farben nach Typ
-   - Breite nach Weight
+2. Node-Farben nach Typ
+   - Steel Blue für Korrespondenten
+   - Amber für Erwähnte
+   - Green für Hybrid
 
-3. `explore.css`: Styles für Netzwerk
+3. Hover/Click-Interaktivität
+   - Tooltips für Nodes und Links
+   - Highlight-Effekte
+   - Detail-Panel
+
+4. `explore.css`: Styles für Sankey
+   - Link-Hover-Effekte
    - Node-Hover-Effekte
-   - Edge-Hover-Effekte
    - Legende-Styles
 
-**Deliverable**: Visuell unterscheidbare Node/Edge-Typen
+**Deliverable**: Visuell ansprechender, interaktiver Sankey
 
-### Phase 4: Interaktivität (4-5h)
-
-**Aufgaben**:
-1. Hover-Tooltips
-   - Node-Info
-   - Edge-Info
-
-2. Click-Handler
-   - Node-Click: Detail-Panel
-   - Filter-Integration
-
-3. Drag-Funktionalität
-   - Node dragging
-   - Optional: Pinning
-
-**Deliverable**: Voll-interaktives Netzwerk
-
-### Phase 5: Controls & Filter (3-4h)
+### Phase 4: Controls & Filter (2-3h)
 
 **Aufgaben**:
 1. Controls Sidebar
    - Min Mentions Slider
-   - Max Nodes Slider
-   - Node-Type Checkboxes
-   - Layout-Toggles
+   - Top N Slider
+   - Sortierungs-Toggle
+   - Modus-Toggle (Sankey/Netzwerk)
 
 2. Filter-Logik
    - Dynamisches Neu-Rendering bei Filter-Änderung
    - Temporal Filter Integration
    - Person Filter Integration
 
-**Deliverable**: Konfigurierbares Netzwerk mit allen Controls
+**Deliverable**: Konfigurierbares Sankey mit allen Controls
 
-### Phase 6: Ego-Network Mode (2-3h)
+### Phase 5: Bipartite Network (Optional, 3-4h)
 
 **Aufgaben**:
-1. Ego-Modus-Toggle
-2. Radiales Layout für Ego
-3. 1st-Degree-Neighbors Filtering
+1. `renderBipartiteNetwork()`
+   - Statisches 2-Spalten-Layout
+   - Nodes als Kreise
+   - Edges als Linien
 
-**Deliverable**: Funktionierender Ego-Network-Modus
+2. Toggle-Logik
+   - Umschalten zwischen Sankey und Netzwerk
+   - sessionStorage für Persistenz
 
-### Phase 7: Polish & Testing (2-3h)
+3. Shared Interaktivität
+   - Hover/Click identisch zu Sankey
+
+**Deliverable**: Funktionierendes Bipartite Network als Alternative
+
+### Phase 6: Polish & Testing (2-3h)
 
 **Aufgaben**:
 1. Performance-Optimierungen
+   - Gradient-Caching
+   - Lazy Rendering
 2. Responsive Design (Mobile)
 3. Accessibility (Keyboard-Navigation)
 4. Browser-Tests
@@ -717,151 +932,189 @@ SVG-Features die überall funktionieren müssen:
 
 **Deliverable**: Production-Ready Feature
 
-**Geschätzte Gesamtzeit**: 20-27 Stunden
+**Geschätzte Gesamtzeit**: 16-22 Stunden (statt 20-27h)
+**Zeitersparnis**: 4-5h durch Sankey statt Force-Simulation
 
 ---
 
-## 8. Dokumentation
+## 10. Dokumentation
 
-### 8.1 User-Dokumentation
+### 10.1 User-Dokumentation
 
 **about.html erweitern**:
 
 ```markdown
-### Mentions Network View
+### Mentions Flow View
 
-Visualisiert, wer in wessen Briefen erwähnt wird.
+Visualisiert, wer in wessen Briefen erwähnt wird. Zeigt quantitative Erwähnungs-Flüsse zwischen Korrespondenten und erwähnten Personen.
 
-**Knoten-Typen**:
-- Kreis: Person korrespondiert
-- Quadrat: Person wird nur erwähnt
-- Raute: Beides
+**Ansichten**:
+- Fluss-Diagramm (Sankey): Quantitative Darstellung mit Fluss-Breiten
+- Netzwerk (Bipartite): Explorative Ansicht mit zwei Spalten
 
-**Verbindungen**:
-- Durchgezogene Linie: Direkte Korrespondenz
-- Gestrichelte Linie: Erwähnung
+**Farben**:
+- Steel Blue: Korrespondenten
+- Amber: Nur erwähnte Personen
+- Green: Hybrid (Korrespondent und erwähnt)
 
 **Verwendung**:
-- Hover: Details anzeigen
-- Click: Briefe filtern
-- Drag: Knoten verschieben
+- Hover: Details und Erwähnungs-Counts anzeigen
+- Click auf Node: Briefe filtern
+- Click auf Link: Briefe mit spezifischer Erwähnung anzeigen
 - Scroll: Zoom
+- Filter: Top N Personen, Min. Mentions
+
+**Forschungsfragen**:
+- Wer sind die "Hidden Influencers" (oft erwähnt, aber nie korrespondierend)?
+- Wie intensiv wird über bestimmte Personen gesprochen?
+- Welche Personen sind zentral im Diskurs?
 ```
 
-### 8.2 Technische Dokumentation
+### 10.2 Technische Dokumentation
 
 **architecture.md erweitern**:
 
 Neuer View-Abschnitt mit:
-- Datenfluss-Diagramm
-- Index-Struktur
-- D3-Implementierung
+- Datenfluss-Diagramm (buildSankeyData)
+- Mentions-Index-Struktur
+- D3-Sankey-Implementierung
+- Hybrid-Modus-Logik
 - Performance-Überlegungen
 
-### 8.3 JOURNAL.md Update
+### 10.3 JOURNAL.md Update
 
 Nach Fertigstellung:
 
 ```markdown
-## 2025-12-0X (Phase 27: Mentions Network View)
+## 2025-12-0X (Phase 27: Mentions Flow View)
 
-### Neue Visualisierung: Mentions Network
+### Neue Visualisierung: Mentions Flow mit Sankey-Diagramm
 
-Implementierung des Mentions Network Views zur Visualisierung von
+Implementierung des Mentions Flow Views zur Visualisierung von
 Erwähnungs-Netzwerken in Briefkorrespondenzen.
 
+**Visualisierungs-Ansatz**:
+- Primary: Sankey-Diagramm für quantitative Klarheit
+- Secondary: Bipartite Network für explorative Analyse
+- Entscheidung nach kritischer Evaluation: Sankey bietet bessere Skalierung, Lesbarkeit und quantitative Präzision als Force-Directed Networks
+
 **Features**:
-- 3-Ebenen-Netzwerk (Korrespondenten, Erwähnte, Hybrid)
-- Unterschiedliche Node-Shapes nach Typ
-- Durchgezogene vs. gestrichelte Edges
-- Ego-Network-Modus
+- Zwei-Spalten-Layout (Korrespondenten links, Erwähnte rechts)
+- Fluss-Breiten zeigen Erwähnungs-Intensität
+- Farbcodierung: Steel Blue, Amber, Green für Hybrid
+- Toggle zwischen Sankey und Bipartite Network
 - Bidirektionale Filter-Integration
+- Link-Click: Spezifische Erwähnungs-Briefe anzeigen
 
 **Technische Details**:
-- D3 Force Simulation
+- D3-Sankey Plugin
 - Mentions-Index mit O(1) Lookups
-- Performance-optimiert für 500+ Nodes
+- Top-N Filterung für Performance
+- Statisches Layout (kein Tick-Update)
+- 16-22h Implementierung (4-5h schneller als Force-Network)
 
 **Neue Dateien**:
-- docs/knowledge/mentions-network-plan.md
+- docs/knowledge/mentions-network-plan.md (aktualisiert mit Hybrid-Ansatz)
 - Erweiterungen in explore.js, explore.css
 
 **Datennutzung**:
 - mentions.persons nun vollständig visualisiert
 - Schließt größte Datenlücke im Tool
+- Ermöglicht quantitative Diskurs-Analyse
 ```
 
 ---
 
-## 9. Erfolgsmetriken
+## 11. Erfolgsmetriken
 
-### 9.1 Funktionale Metriken
+### 11.1 Funktionale Metriken
 
-- [ ] Alle Node-Typen korrekt visualisiert
-- [ ] Alle Edge-Typen korrekt visualisiert
+**Sankey-Modus**:
+- [ ] Nodes in zwei Spalten korrekt angeordnet
+- [ ] Link-Breiten proportional zu Mention-Count
+- [ ] Farben korrekt (Steel Blue, Amber, Green)
 - [ ] Filter funktionieren bidirektional
-- [ ] Ego-Modus funktioniert
-- [ ] Performance < 3s für 500 Nodes
+- [ ] Performance < 1s für 200 Nodes
 
-### 9.2 Forschungsmetriken
+**Netzwerk-Modus** (optional):
+- [ ] Statisches Layout funktioniert
+- [ ] Toggle zwischen Modi funktioniert
+- [ ] Performance gut bei 500+ Nodes
+
+**Allgemein**:
+- [ ] Hover-Tooltips zeigen korrekte Daten
+- [ ] Click öffnet Detail-Panel
+- [ ] Link-Click filtert spezifische Briefe
+- [ ] Zoom/Pan funktioniert
+
+### 11.2 Forschungsmetriken
 
 Nach Veröffentlichung messen:
 - Nutzung: Wie oft wird View aktiviert?
 - Verweildauer: Länger als andere Views?
 - Filter-Nutzung: Welche Filter werden verwendet?
+- Modus-Präferenz: Sankey vs. Netzwerk?
 - Feedback: Was sagen Forschende?
 
-### 9.3 Code-Qualität
+### 11.3 Code-Qualität
 
 - [ ] Keine Duplikation mit Network View
-- [ ] Shared Utilities ausgelagert
-- [ ] Tests vorhanden
+- [ ] Shared Utilities ausgelagert (buildMentionedPersonsIndex)
+- [ ] Tests vorhanden (buildSankeyData, filtering)
 - [ ] Dokumentation vollständig
 
 ---
 
-## 10. Risiken & Mitigation
+## 12. Risiken & Mitigation
 
-### 10.1 Datenqualität
+### 12.1 Datenqualität
 
 **Risiko**: Mentions-Daten sind spärlich oder inkonsistent
 
 **Mitigation**:
 - Datenanalyse in Phase 1 zeigt Qualität
 - Fallback: "Keine Mentions-Daten" Message
-- Optional: Parser erweitern für mehr Quellen
+- Top-N Filterung stellt sicher, dass nur qualitativ hochwertige Daten gezeigt werden
 
-### 10.2 Performance
+### 12.2 Performance
 
 **Risiko**: Zu viele Nodes = Lag
 
 **Mitigation**:
-- Max-Nodes-Limit (Default: 100)
-- Canvas-Rendering für >500 Nodes
-- Smart Filtering (Top N)
+- Sankey ist performanter als Force-Networks (statisch)
+- Top-N-Limit (Standard: 50, Max: 200)
+- Lazy Rendering bei Modus-Wechsel
+- Gradient-Caching
 
-### 10.3 UX Complexity
+**Vorteil Sankey**:
+- Keine Tick-Updates
+- Keine Force-Berechnung
+- Einmaliges Layout
 
-**Risiko**: Zu komplex für Nutzer
+### 12.3 UX Complexity
 
-**Mitigation**:
-- Interaktive Demo-Tour erweitern
-- Klare Legende
-- Hover-Tooltips erklären Symbolik
-- Video-Tutorial erstellen
-
-### 10.4 Browser-Kompatibilität
-
-**Risiko**: SVG-Features funktionieren nicht überall
+**Risiko**: Nutzer verstehen Sankey nicht
 
 **Mitigation**:
-- Polyfills für ältere Browser
-- Graceful Degradation
-- Ausführliche Browser-Tests
+- Klare Legende mit visuellen Beispielen
+- Hover-Tooltips erklären Fluss-Breiten
+- Link-zu-Rechts-Leserichtung ist intuitiv
+- Optional: Interaktive Demo-Tour erweitern
+- Fallback: Netzwerk-Modus für Nutzer die Sankey nicht mögen
+
+### 12.4 D3-Sankey-Kompatibilität
+
+**Risiko**: D3-Sankey Plugin funktioniert nicht überall
+
+**Mitigation**:
+- Weit verbreitetes, stabiles Plugin (v0.12.3)
+- Browser-Tests auf allen Major Browsers
+- Graceful Degradation bei Fehler
+- CDN-Fallback bei Import-Problemen
 
 ---
 
-## 11. Nächste Schritte
+## 13. Nächste Schritte
 
 ### Sofort
 
@@ -872,20 +1125,23 @@ Nach Veröffentlichung messen:
 ### Bei Go
 
 4. Phase 1 starten (Index-Implementierung)
-5. Prototyp in 2-3 Tagen
+5. Phase 2: Sankey-Prototyp (2-3 Tage)
 6. User-Testing mit Demo-Datensatz
+7. Feedback zu Sankey vs. Netzwerk einholen
 
 ### Nach MVP
 
-7. Feedback sammeln
-8. Iterieren basierend auf Nutzung
-9. Weitere Views prüfen (Geographic Discourse Map, Topic Evolution)
+8. Feedback sammeln
+9. Entscheidung: Bipartite Network implementieren?
+10. Iterieren basierend auf Nutzung
+11. Weitere Views evaluieren (Geographic Discourse Map, Topic Evolution Timeline)
 
 ---
 
-## Referenzen
+## 14. Referenzen
 
-- D3 Force Documentation: https://d3js.org/d3-force
-- Network Visualization Best Practices: https://www.visualcinnamon.com/resources/learning-data-visualization/
-- Existing Network View Code: docs/js/explore.js (renderNetwork function)
-- CMIF Mentions Spec: docs/knowledge/CMIF-Data.md
+- D3-Sankey Documentation: https://github.com/d3/d3-sankey
+- D3-Sankey Examples: https://observablehq.com/@d3/sankey
+- Sankey Best Practices: https://www.visualcinnamon.com/2019/04/sankey-diagram-best-practices
+- Existing Network View Code: [docs/js/explore.js](../js/explore.js) (renderNetwork function)
+- CMIF Mentions Spec: [CMIF-Data.md](CMIF-Data.md)
