@@ -46,6 +46,14 @@ const VAULT_DOCUMENTS = [
         category: 'technical'
     },
     {
+        id: 'learnings',
+        filename: 'learnings.md',
+        title: 'Learnings',
+        description: 'Design-Entscheidungen und Patterns',
+        icon: 'fa-lightbulb',
+        category: 'process'
+    },
+    {
         id: 'cmif-data',
         filename: 'CMIF-Data.md',
         title: 'CMIF Data Format',
@@ -212,7 +220,7 @@ async function loadDocument(doc) {
             content = docCache.get(doc.id);
         } else {
             // Fetch the markdown file
-            const response = await fetch(`knowledge-correspexplorer/${doc.filename}`);
+            const response = await fetch(`knowledge/${doc.filename}`);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
