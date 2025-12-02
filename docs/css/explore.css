@@ -3335,3 +3335,70 @@
     color: var(--color-text-tertiary);
     font-size: 0.9em;
 }
+
+/* Mentions Flow Filter Controls */
+.filter-slider-group {
+    margin-bottom: var(--space-md);
+}
+
+.filter-slider-group label {
+    display: block;
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.filter-slider-group label span {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.filter-slider-group input[type="range"] {
+    width: 100%;
+    height: 6px;
+    background: var(--color-bg-light);
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+    margin: var(--space-xs) 0;
+}
+
+.filter-slider-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+}
+
+.filter-slider-group input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--color-primary-dark);
+    transform: scale(1.1);
+}
+
+.filter-slider-group input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary);
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    transition: all var(--transition-fast);
+}
+
+.filter-slider-group input[type="range"]::-moz-range-thumb:hover {
+    background: var(--color-primary-dark);
+    transform: scale(1.1);
+}
+
+.filter-help {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--space-xs);
+    font-style: italic;
+}

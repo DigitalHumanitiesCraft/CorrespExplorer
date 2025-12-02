@@ -1741,7 +1741,7 @@ function initUrlState() {
 
     // View
     const view = urlParams.get('view');
-    if (view && ['map', 'persons', 'letters', 'timeline', 'topics'].includes(view)) {
+    if (view && ['map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'].includes(view)) {
         currentView = view;
     }
 
@@ -1782,6 +1782,20 @@ function initUrlState() {
     }
     if (urlParams.get('located') === '1') {
         qualityFilter.locatedPlaces = true;
+    }
+
+    // Mentions Flow parameters
+    const mentionsTopNParam = urlParams.get('mentionsTopN');
+    if (mentionsTopNParam) {
+        mentionsTopN = parseInt(mentionsTopNParam);
+    }
+    const mentionsMinSenderParam = urlParams.get('mentionsMinSender');
+    if (mentionsMinSenderParam) {
+        mentionsMinSenderMentions = parseInt(mentionsMinSenderParam);
+    }
+    const mentionsMinFlowParam = urlParams.get('mentionsMinFlow');
+    if (mentionsMinFlowParam) {
+        mentionsMinCount = parseInt(mentionsMinFlowParam);
     }
 }
 
@@ -1825,6 +1839,13 @@ function updateUrlState() {
     if (qualityFilter.preciseDates) newParams.set('precise', '1');
     if (qualityFilter.knownPersons) newParams.set('known', '1');
     if (qualityFilter.locatedPlaces) newParams.set('located', '1');
+
+    // Mentions Flow parameters (only if different from defaults)
+    if (currentView === 'mentions-flow') {
+        if (mentionsTopN !== 20) newParams.set('mentionsTopN', mentionsTopN);
+        if (mentionsMinSenderMentions !== 5) newParams.set('mentionsMinSender', mentionsMinSenderMentions);
+        if (mentionsMinCount !== 2) newParams.set('mentionsMinFlow', mentionsMinCount);
+    }
 
     // Update URL without reload
     const newUrl = newParams.toString()
@@ -1879,6 +1900,9 @@ function switchView(view) {
     // Update sidebar legend for current view
     updateSidebarLegend(view);
 
+    // Update view-specific filter controls visibility
+    updateViewSpecificFilters(view);
+
     // Render view-specific content
     if (view === 'persons') {
         renderPersonsList();
@@ -1925,6 +1949,15 @@ function updateSidebarLegend(view) {
     } else {
         // Fallback to map legend if no specific legend exists
         if (legendElements.map) legendElements.map.style.display = 'block';
+    }
+}
+
+// Update view-specific filter controls visibility
+function updateViewSpecificFilters(view) {
+    // Mentions Flow filters
+    const mentionsFilterGroup = document.getElementById('mentions-filter-group');
+    if (mentionsFilterGroup) {
+        mentionsFilterGroup.style.display = view === 'mentions-flow' ? 'block' : 'none';
     }
 }
 
@@ -4674,7 +4707,80 @@ function showMissingPlacesModal() {
 
 function initMentionsFlowView() {
     log.init('Initializing Mentions Flow View');
-    // View wird on-demand gerendert in switchView
+
+    // Initialize filter controls
+    initMentionsFilterControls();
+}
+
+function initMentionsFilterControls() {
+    const filterGroup = document.getElementById('mentions-filter-group');
+    if (!filterGroup) return;
+
+    // Show filter controls when mentions flow view is available
+    if (availableViews['mentions-flow']?.available) {
+        // Controls will be shown/hidden by switchView
+
+        // Top N slider
+        const topNSlider = document.getElementById('mentions-topn-slider');
+        const topNValue = document.getElementById('mentions-topn-value');
+
+        if (topNSlider && topNValue) {
+            // Sync with current state (may be from URL)
+            topNSlider.value = mentionsTopN;
+            topNValue.textContent = mentionsTopN;
+
+            topNSlider.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                topNValue.textContent = value;
+                mentionsTopN = value;
+
+                if (currentView === 'mentions-flow') {
+                    renderMentionsFlow();
+                }
+                updateUrlState();
+            });
+        }
+
+        // Min Sender Mentions slider
+        const minSenderSlider = document.getElementById('mentions-minsender-slider');
+        const minSenderValue = document.getElementById('mentions-minsender-value');
+
+        if (minSenderSlider && minSenderValue) {
+            minSenderSlider.value = mentionsMinSenderMentions;
+            minSenderValue.textContent = mentionsMinSenderMentions;
+
+            minSenderSlider.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                minSenderValue.textContent = value;
+                mentionsMinSenderMentions = value;
+
+                if (currentView === 'mentions-flow') {
+                    renderMentionsFlow();
+                }
+                updateUrlState();
+            });
+        }
+
+        // Min Flow Strength slider
+        const minFlowSlider = document.getElementById('mentions-minflow-slider');
+        const minFlowValue = document.getElementById('mentions-minflow-value');
+
+        if (minFlowSlider && minFlowValue) {
+            minFlowSlider.value = mentionsMinCount;
+            minFlowValue.textContent = mentionsMinCount;
+
+            minFlowSlider.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                minFlowValue.textContent = value;
+                mentionsMinCount = value;
+
+                if (currentView === 'mentions-flow') {
+                    renderMentionsFlow();
+                }
+                updateUrlState();
+            });
+        }
+    }
 }
 
 function createTooltip() {
