@@ -22,6 +22,14 @@ Der Mentions Flow View nutzt die bisher ungenutzten `mentions.persons` Daten und
 - Klare, übersichtliche Darstellung ohne Cognitive Overload
 - Optional: Explorative Netzwerk-Ansicht für Detail-Analyse
 
+**Cognitive Overload Mitigation**:
+- Drei-stufige Filterung reduziert visuelle Komplexität:
+  1. Top-N Filter (20 statt 50 meist-erwähnte Personen)
+  2. Sender-Threshold (nur Korrespondenten mit ≥5 Mentions)
+  3. Flow-Threshold (nur Verbindungen mit ≥2 Erwähnungen)
+- Alle Filter sind über Sidebar-Slider dynamisch anpassbar
+- User hat volle Kontrolle über Detailgrad vs. Übersichtlichkeit
+
 ---
 
 ## 1. Visualisierungs-Strategie
@@ -312,8 +320,18 @@ Identisch zu Sankey, aber:
 ┌─────────────────────────────────┐
 │ Filter                          │
 ├─────────────────────────────────┤
-│ Min. Mentions: [2] ──────○      │
-│ Top N Personen: [50] ────○      │
+│ Top N Personen: [20] ────○      │
+│   Range: 5-50                   │
+│                                 │
+│ Min. Sender-Mentions: [5] ──○   │
+│   Range: 1-20                   │
+│   Info: Nur Korrespondenten     │
+│   mit ≥N Mentions               │
+│                                 │
+│ Min. Flow-Stärke: [2] ─────○    │
+│   Range: 1-10                   │
+│   Info: Nur Verbindungen        │
+│   mit ≥N Erwähnungen            │
 │                                 │
 │ Sortierung:                     │
 │ ● Nach Häufigkeit               │
@@ -324,6 +342,32 @@ Identisch zu Sankey, aber:
 │ ☐ Nur direkte Mentions         │
 └─────────────────────────────────┘
 ```
+
+**Filter-Implementierung**:
+
+Alle drei Schwellwerte sind über die Sidebar dynamisch anpassbar:
+
+1. **Top N Personen** (`mentionsTopN`):
+   - Standard: 20 (reduziert von 50)
+   - Range: 5-50
+   - Kontrolliert Anzahl der meist-erwähnten Personen auf der rechten Seite
+
+2. **Min. Sender-Mentions** (`mentionsMinSenderMentions`):
+   - Standard: 5
+   - Range: 1-20
+   - Filtert "Gelegenheits-Erwähner" heraus
+   - Zeigt nur "aktive Diskurs-Teilnehmer"
+
+3. **Min. Flow-Stärke** (`mentionsMinCount`):
+   - Standard: 2
+   - Range: 1-10
+   - Entfernt schwache Verbindungen
+   - Fokus auf signifikante Erwähnungs-Beziehungen
+
+**Real-time Updates**:
+- Änderung eines Sliders triggert sofortiges Neu-Rendering
+- Alle drei Filter wirken kumulativ
+- Filter-Status wird in URL-Params gespeichert für Sharing
 
 **Legende** (Sankey-Modus):
 ```
@@ -889,18 +933,52 @@ D3-Sankey-Features die überall funktionieren müssen:
 ### Phase 4: Controls & Filter (2-3h)
 
 **Aufgaben**:
-1. Controls Sidebar
-   - Min Mentions Slider
-   - Top N Slider
-   - Sortierungs-Toggle
-   - Modus-Toggle (Sankey/Netzwerk)
+1. Controls Sidebar HTML/CSS
+   - Top N Personen Slider (Range: 5-50, Default: 20)
+   - Min. Sender-Mentions Slider (Range: 1-20, Default: 5)
+   - Min. Flow-Stärke Slider (Range: 1-10, Default: 2)
+   - Sortierungs-Toggle (Häufigkeit/Alphabetisch)
+   - Modus-Toggle (Sankey/Netzwerk) - Optional für Phase 5
 
-2. Filter-Logik
-   - Dynamisches Neu-Rendering bei Filter-Änderung
-   - Temporal Filter Integration
-   - Person Filter Integration
+2. Filter-State Management
+   ```javascript
+   // State-Variablen (bereits implementiert)
+   let mentionsTopN = 20;
+   let mentionsMinSenderMentions = 5;
+   let mentionsMinCount = 2;
+   ```
 
-**Deliverable**: Konfigurierbares Sankey mit allen Controls
+3. Filter-Event-Handler
+   ```javascript
+   // Slider onChange Handler
+   function onMentionsFilterChange(filterType, newValue) {
+       if (filterType === 'topN') mentionsTopN = newValue;
+       if (filterType === 'minSender') mentionsMinSenderMentions = newValue;
+       if (filterType === 'minFlow') mentionsMinCount = newValue;
+
+       // Re-render Sankey
+       renderMentionsFlow();
+
+       // Update URL params
+       updateUrlParams({
+           mentionsTopN,
+           mentionsMinSender: mentionsMinSenderMentions,
+           mentionsMinFlow: mentionsMinCount
+       });
+   }
+   ```
+
+4. Integration mit bestehenden Filtern
+   - Temporal Filter Integration (Timeline reagiert auf Sankey)
+   - Person Filter Integration (Persons View ↔ Mentions Flow)
+   - Language Filter Integration
+
+5. URL-Parameter-Persistenz
+   - Filter-Werte in URL speichern
+   - Filter-Werte aus URL beim Laden wiederherstellen
+   - Share-Button für gefilterte Ansicht
+
+**Deliverable**: Konfigurierbares Sankey mit dynamischen Filter-Controls
 
 ### Phase 5: Bipartite Network (Optional, 3-4h)
 
