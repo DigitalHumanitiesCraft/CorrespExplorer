@@ -92,6 +92,14 @@ const VAULT_DOCUMENTS = [
         description: 'Detaillierte Projektanalyse',
         icon: 'fa-magnifying-glass-chart',
         category: 'process'
+    },
+    {
+        id: 'mentions-network-plan',
+        filename: 'mentions-network-plan.md',
+        title: 'Mentions Network Plan',
+        description: 'Implementierungsplan fuer Mentions Network View',
+        icon: 'fa-diagram-project',
+        category: 'planning'
     }
 ];
 
@@ -100,7 +108,8 @@ const CATEGORIES = {
     process: { title: 'Prozess', icon: 'fa-arrows-spin' },
     technical: { title: 'Technik', icon: 'fa-gear' },
     requirements: { title: 'Anforderungen', icon: 'fa-clipboard-list' },
-    data: { title: 'Daten', icon: 'fa-database' }
+    data: { title: 'Daten', icon: 'fa-database' },
+    planning: { title: 'Planung', icon: 'fa-map' }
 };
 
 // State
