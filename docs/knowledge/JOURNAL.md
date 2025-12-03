@@ -6,6 +6,52 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
+## 2025-12-03 (Phase 29: HTML-Refactoring - Inline-Styles entfernt)
+
+### Alle inline-styles aus HTML-Dateien entfernt
+
+64 inline style-Attribute komplett eliminiert, vollstaendige Trennung von Content und Presentation erreicht.
+
+Neue CSS-Klassen erstellt:
+
+Navigation:
+- .nav-brand-link: Styling fuer Navigation Brand-Links (style.css)
+- Entfernt inline-styles: color, text-decoration, display, align-items, gap
+
+Utilities (base.css):
+- .hidden: Display none fuer JavaScript-Toggle
+- .color-warning, .color-info, .color-error, .color-muted: Semantische Farben
+- .color-primary, .color-text-light: Zusaetzliche Color-Utilities
+
+Komponenten:
+- .wip-notice: Work-in-Progress Notice (wissenskorb.css)
+- .legend-network-sender/receiver/contemporary: Network-Legend (explore.css)
+- .mentions-flow-filter-info: Mentions-Filter-Info (explore.css)
+
+Neue Datei: test.css
+- 76 Zeilen inline-CSS aus test.html extrahiert
+- Konsistent mit Design-Token-System
+- Vollstaendige CSS-Import-Hierarchie
+
+Dateien modifiziert:
+- test.html: 76 inline-styles extrahiert
+- explore.html: 37 inline-styles entfernt
+- compare.html: 9 inline-styles entfernt
+- wissenskorb.html: 8 inline-styles entfernt
+- about.html: 4 inline-styles entfernt (Legend-Icons)
+- index.html: 3 inline-styles entfernt
+- vault.html: 2 inline-styles entfernt
+- navbar.html: 1 inline-style entfernt
+
+Ergebnis:
+- 0 inline-styles verbleiben (100% clean)
+- Komplette Separation of Concerns
+- Wiederverwendbare CSS-Klassen
+- Bessere CSS-Caching-Performance
+- Konsistent mit CLAUDE.md Guidelines
+
+---
+
 ## 2025-12-03 (Phase 28: CSS-Refactoring Abschluss)
 
 ### CSS-Architektur vollstaendig refactored
