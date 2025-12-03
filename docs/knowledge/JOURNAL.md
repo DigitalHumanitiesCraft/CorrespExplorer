@@ -2,7 +2,7 @@
 
 Chronologisches Entwicklungsprotokoll mit detaillierten Implementierungsnotizen.
 
-HINWEIS: Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Format. Code-Snippets und technische Details sind als historische Dokumentation erlaubt. Für strukturierte technische Referenz siehe architecture.md.
+Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Format.
 
 ---
 
@@ -12,7 +12,7 @@ HINWEIS: Dieses Dokument ist ein chronologisches Journal und folgt einem narrati
 
 8. View implementiert: Zeigt welche Personen in wessen Briefen erwahnt werden.
 
-**Implementierung (Phase 1-4):**
+Implementierung (Phase 1-4):
 
 Phase 1: Datenanalyse und Vorbereitung
 - Analyse des `mentionsPerson` Feldes im HSA-Datensatz
@@ -42,13 +42,13 @@ Phase 4: Filter-Controls
 - URL-Parameter-Persistenz fur Sharing
 - Dynamischer Filter-Info-Text im View-Header
 
-**Cognitive Overload Mitigation:**
+Cognitive Overload Mitigation:
 - Filter-basierter Ansatz statt Hardcoding
 - Drei-Stufen-Filterung reduziert Node-Count dramatisch
 - Nutzer kontrollieren Detail-vs-Klarheit Tradeoff
 - Standard-Werte balancieren Komplexitat und Information
 
-**Technische Details:**
+Technische Details:
 
 Dateien:
 - explore.js: buildSankeyData(), renderMentionsFlow(), initMentionsFilterControls()
@@ -61,18 +61,18 @@ State-Variablen:
 - mentionsMinSenderMentions: 5 (Minimum Erwahnung pro Korrespondent)
 - mentionsMinCount: 2 (Minimum Verbindungs-Starke)
 
-**Statistiken (HSA-Dataset):**
+Statistiken (HSA-Dataset):
 - 17.413 Person-Mentions uber 11.576 Briefe
 - 846 potentielle Sender
 - Nach Filterung (20/5/2): ca. 50-60 Sender-Nodes, 20 Erwahnte-Nodes
 - Hybrid-Nodes: Personen die in beiden Spalten erscheinen
 
-**Phase 5 (Optional, nicht implementiert):**
+Phase 5 (Optional, nicht implementiert):
 - Bipartite Network als Alternative zum Sankey
 - Toggle zwischen Sankey und Force-Directed Graph
 - Geplant fur zukunftige Erweiterung
 
-**Commits:**
+Commits:
 - 9a03db5: Phase 1-2 Grundfunktion
 - 1d8a48c: Cognitive Overload Reduktion
 - 809fdd3: Phase 3 Styling und Tooltips
@@ -87,14 +87,14 @@ State-Variablen:
 
 Umfassende Ueberarbeitung der uncertainty-concept.md:
 
-**Dokumentation:**
+Dokumentation:
 - Erweiterte CMIF Uncertainty Annotations
 - Strukturierung in 4 Test-Sektionen (Date, Person, Place, Special Cases)
 - 22 detaillierte Testfaelle im test-uncertainty.xml
 - UI Display Patterns fuer alle Unsicherheitstypen
 - HSA Dataset Analyse mit konkreten Zahlen
 
-**Test-Dataset:**
+Test-Dataset:
 - data/test-uncertainty.xml mit systematischen Testfaellen
 - Section A: Date Uncertainty (001-007)
 - Section B: Person Uncertainty (008-013)
@@ -116,13 +116,13 @@ Aktualisierung der vorprozessierten HSA-Daten:
 
 Wikidata-Anreicherung wird nun visuell gekennzeichnet:
 
-**Features:**
+Features:
 - Badge-System fuer angereicherte Personen
 - Tooltip zeigt Datenquelle (Wikidata)
 - Loading-Spinner waehrend Enrichment
 - Fehlerbehandlung mit Retry-Option
 
-**UI-Verbesserungen:**
+UI-Verbesserungen:
 - Konsistente Icon-Verwendung (Font Awesome)
 - Farbcodierung: Gruen fuer erfolgreich, Grau fuer fehlend
 - Progress-Bar im Config-Dialog
@@ -150,13 +150,13 @@ explore.css:
 
 Das correspSearch-Suchformular auf der Landing Page wurde entfernt:
 
-**Grund:**
+Grund:
 - Formular war nicht vollstaendig funktional
 - CORS-Probleme bei direkten API-Anfragen
 - Nutzer koennen weiterhin correspSearch-URLs direkt eingeben
 - correspSearch-Integration ueber Person-Detail bleibt erhalten
 
-**Aenderungen:**
+Aenderungen:
 - index.html: correspSearch-Suchformular entfernt
 - upload.css: Formular-Styles entfernt
 - correspsearch-api.js: API-Modul bleibt fuer URL-Handling
@@ -165,7 +165,7 @@ Das correspSearch-Suchformular auf der Landing Page wurde entfernt:
 
 Diverse Korrekturen am Wissenskorb:
 
-**Fixes:**
+Fixes:
 - Multi-Tab-Synchronisation repariert
 - LocalStorage-Quota-Handling verbessert
 - Empty-State korrekt angezeigt
@@ -179,12 +179,12 @@ Diverse Korrekturen am Wissenskorb:
 
 Der Wissenskorb wird als "in Arbeit" gekennzeichnet:
 
-**UI-Aenderungen:**
+UI-Aenderungen:
 - Prominenter WIP-Hinweis auf wissenskorb.html
 - Basket-Buttons in explore.html vorlaeufig entfernt
 - About-Seite: Feature als experimentell markiert
 
-**Begründung:**
+Begründung:
 - Grundfunktionalitaet vorhanden (Person-Liste, localStorage)
 - Visualisierungen (Timeline, Netzwerk, Karte) noch nicht vollstaendig
 - Nutzer-Erwartungen klar kommunizieren
@@ -210,13 +210,13 @@ about.html:
 
 Vollstaendige Ueberarbeitung der Navigation fuer kleine Bildschirme:
 
-**Features:**
+Features:
 - Hamburger-Menue fuer mobile Geraete (< 768px)
 - Touch-optimierte Button-Groessen (44px Mindesthoehe)
 - Slide-in Animation fuer mobile Navigation
 - Overlay-Backdrop beim Oeffnen
 
-**Breakpoints:**
+Breakpoints:
 - < 768px: Burger-Menue, Stack-Navigation
 - >= 768px: Horizontale Navigation wie bisher
 
@@ -224,27 +224,27 @@ Vollstaendige Ueberarbeitung der Navigation fuer kleine Bildschirme:
 
 Alle Views wurden fuer mobile Geraete optimiert:
 
-**Map View:**
+Map View:
 - Touch-Gesten fuer Zoom/Pan
 - Groessere Marker (20px statt 15px)
 - Vereinfachte Legende
 
-**Timeline View:**
+Timeline View:
 - Horizontales Scrollen bei vielen Jahren
 - Groessere Touch-Targets fuer Balken
 - Detached Bin rechts positioniert
 
-**Network View:**
+Network View:
 - Zoom-Controls rechts unten
 - Touch-Drag fuer Knoten
 - Vereinfachte Controls-Sidebar
 
-**Lists (Persons, Letters, Topics, Places):**
+Lists (Persons, Letters, Topics, Places):
 - Stack-Layout statt Grid
 - Groessere Click-Areas
 - Vereinfachte Suche (Icon statt voller Text)
 
-**Sidebar:**
+Sidebar:
 - Collapsible auf Mobile (Toggle-Button)
 - Full-Width bei < 768px wenn offen
 - Slide-Animation
@@ -274,9 +274,9 @@ explore.js:
 
 Erstellung eines umfassenden Demo-Datensatzes zur Demonstration aller CorrespExplorer-Features:
 
-**Datei:** `docs/data/demo-showcase.xml`
+Datei: `docs/data/demo-showcase.xml`
 
-**Inhalt:**
+Inhalt:
 - 35 fiktive Briefe zwischen 7 europaeischen Gelehrten (1880-1920)
 - Generiert mit Claude Opus 4.5 zur Funktionsdemonstration
 - Personen: Schuchardt, Goethe, Humboldt, Saussure, Urquijo, Ascoli, Mueller
@@ -285,7 +285,7 @@ Erstellung eines umfassenden Demo-Datensatzes zur Demonstration aller CorrespExp
 - 10+ Staedte mit GeoNames-Koordinaten
 - Unsicherheitsfaelle: Jahr-only-Daten, Zeitraeume, cert="low", [NN], unbekannte Orte
 
-**Landing Page:**
+Landing Page:
 - Neue CSS-Klassen: `.dataset-card-featured`, `.dataset-badge`
 - Demo-Karte prominent oben positioniert
 - Badge "Demo" zeigt speziellen Status
@@ -305,14 +305,14 @@ Erstellung eines umfassenden Demo-Datensatzes zur Demonstration aller CorrespExp
 8. Wissenskorb - Bookmark-Funktion
 9. Abschluss - Hinweis auf weitere Ansichten
 
-**Technische Implementierung:**
+Technische Implementierung:
 - Neues Modul: `docs/js/demo-tour.js`
 - URL-Parameter `?demo=true` aktiviert Tour
 - SessionStorage speichert Tour-Completion
 - CSS in `explore.css`: Tour-Backdrop, Steps, Navigation
 - Integration in `explore.js` via `checkAndStartDemoTour()`
 
-**Styling:**
+Styling:
 - Semi-transparenter Backdrop
 - Zentrierte Content-Karten mit Primary-Border
 - Progress-Dots zeigen Fortschritt

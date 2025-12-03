@@ -1,157 +1,86 @@
-# Learnings und Design-Entscheidungen
+# Design Decisions and Learnings
 
-Konsolidierte Erkenntnisse aus der Entwicklung von CorrespExplorer.
+Dokumentation der wichtigsten Entscheidungen mit Rationale. Erklärt WARUM bestimmte Lösungen gewählt wurden.
 
-Stand: 2025-11-27
+Stand: 2025-12-03
 
 ---
 
 ## 1. CMIF-Parsing Strategie
 
-### Identitaeten vs. Strings
+### Authority-IDs als Golden Key
 
-CMIF-Daten enthalten sowohl maschinenlesbare Identifikatoren als auch menschenlesbare Strings:
+CMIF-Daten enthalten sowohl Authority-URIs (@ref Attribut) als auch Anzeigenamen (Textinhalt). Das ref-Attribut ist der primäre Identifikator für Matching und Vergleiche. Anzeigenamen können zwischen Editionen variieren und dienen nur der Darstellung.
 
-| Feld | Typ | Beispiel |
-|------|-----|----------|
-| `@ref` | Authority-URI | `https://d-nb.info/gnd/118540238` |
-| Textinhalt | Anzeigename | `Goethe, Johann Wolfgang von` |
+Rationale: Verschiedene Editionen schreiben denselben Namen unterschiedlich (Goethe vs. von Goethe vs. Goethe, Johann Wolfgang). Authority-URIs wie GND oder VIAF sind eindeutig und ermöglichen korrekte Aggregation.
 
-**Entscheidung:** Das `@ref`-Attribut ist der "Golden Key" fuer Identitaet. Der Textinhalt dient nur der Anzeige und kann zwischen Editionen variieren.
+Unterstützte Authority-Systeme: VIAF, GND, LC, BNF, GeoNames, Lexvo
 
-### Authority-Erkennung
-
-```javascript
-function parseAuthorityRef(url) {
-  if (url.includes('viaf.org')) return { type: 'viaf', id: '...' };
-  if (url.includes('d-nb.info/gnd')) return { type: 'gnd', id: '...' };
-  if (url.includes('geonames.org')) return { type: 'geonames', id: '...' };
-  if (url.includes('lexvo.org')) return { type: 'lexvo', id: '...' };
-  return { type: 'unknown', id: url };
-}
-```
-
-Unterstuetzte Authority-Systeme: VIAF, GND, LC, BNF, GeoNames, Lexvo.
+Implementation: parseAuthorityRef() in cmif-parser.js extrahiert Typ und ID aus URLs via Pattern-Matching
 
 ---
 
-## 2. Visualisierung von Zeit und Unsicherheit
+## 2. Visualisierung von Unsicherheit
 
-### Detached Bin Pattern
+### Detached Bin Pattern für Undatierte Briefe
 
-Briefe ohne Datum ("undatiert") werden in einem separaten Balken rechts der Timeline dargestellt:
+Briefe ohne Datum werden in einem separaten Balken rechts der Timeline dargestellt statt in die Zeitachse integriert.
 
-```
-[ 1900 | 1901 | 1902 | ... | 1920 ]   ||   [ k.A. ]
-         Haupttimeline                      Detached Bin
-```
+Rationale: Undatierte Briefe würden die Zeitachse verzerren wenn sie einem Platzhalter-Jahr zugeordnet werden. Separate Darstellung macht Datenqualität transparent und verhindert falsche Interpretationen.
 
-**Vorteile:**
-- Undatierte Briefe verzerren nicht die Zeitachse
-- Klare visuelle Trennung zwischen "datiert" und "undatiert"
-- Klick auf den Bin filtert auf undatierte Briefe
+Vorteile:
+- Klare visuelle Trennung zwischen datiert und undatiert
+- Click-Interaktion filtert auf undatierte Briefe
+- Schematischer Platzhalter (gestrichelte Box mit Checkmark) wenn alle Briefe datiert
 
-**Schematischer Platzhalter:** Wenn alle Briefe datiert sind, zeigt der Bin eine gestrichelte Umrandung mit Checkmark-Icon - signalisiert "alles vollstaendig".
+Implementation: Timeline-View prüft datePrecision und gruppiert unknown-Briefe separat
 
-### Unsicherheits-Indikatoren
+### Konsistente Unsicherheits-Indikatoren
 
-Konsistente visuelle Sprache fuer Datenqualitaet:
+Farb- und Icon-System für Datenqualität:
+- Exakt (Tag/Monat/Jahr): Keine Markierung (kein visuelles Rauschen bei guten Daten)
+- Unvollständig (nur Jahr): Amber mit Kalender-Icon
+- Zeitraum (notBefore/notAfter): Blau mit Doppelpfeil
+- Unsicher (cert=low): Rot mit Fragezeichen
+- Unbekannt: Grau mit Fragezeichen
 
-| Typ | Farbe | Icon | Bedeutung |
-|-----|-------|------|-----------|
-| Exaktes Datum | -- | -- | Keine Markierung |
-| Nur Jahr/Monat | Amber (#f59e0b) | Kalender | Unvollstaendig |
-| Zeitraum | Blau (#2C5282) | Doppelpfeil | notBefore/notAfter |
-| Unsicher | Rot (#ef4444) | Fragezeichen | cert="low" |
-| Unbekannt | Grau | Fragezeichen | Kein Datum |
+Prinzip: Gute Daten erhalten keine Markierung. Nur Unsicherheiten werden hervorgehoben.
 
-**Prinzip:** Exakte Daten erhalten keine Markierung - kein visuelles Rauschen bei guten Daten.
-
-### Timeline-Schraffur
-
-Balken mit unscharfen Datierungen werden durch diagonale Schraffur markiert. Die Schraffurhoehe zeigt den Anteil der Briefe mit ungenauem Datum im jeweiligen Jahr.
+Implementation: formatters.js gibt CSS-Klassen basierend auf datePrecision zurück
 
 ---
 
-## 3. Stacked Bar Charts fuer Multidimensionalitaet
+## 3. Stacked Bar Charts für Sprach-Breakdown
 
-### Dynamische Sprachfarben
+### Dynamische Farbzuweisung
 
-Problem: Bei Korpora mit vielen Sprachen werden Stacked Bars zu bunt und unleserlich.
+Problem: Bei Korpora mit vielen Sprachen werden Stacked Bars unleserlich durch zu viele kräftige Farben.
 
-**Loesung:** Dominante Sprache (meiste Briefe) erhaelt kraeftige Farbe, alle anderen Sprachen bekommen Pastelltoene.
+Lösung: Dominante Sprache (meiste Briefe) erhält kräftige Farbe, alle anderen Sprachen bekommen Pastelltöne. Dies fokussiert Aufmerksamkeit auf Hauptsprache ohne sekundäre Sprachen zu verstecken.
 
-```javascript
-export function computeLanguageColors(letters) {
-    const langCounts = {};
-    letters.forEach(letter => {
-        const lang = letter.language?.code || 'None';
-        langCounts[lang] = (langCounts[lang] || 0) + 1;
-    });
+Implementation: computeLanguageColors() in constants.js sortiert Sprachen nach Häufigkeit und weist Farben zu
 
-    const sorted = Object.entries(langCounts).sort((a, b) => b[1] - a[1]);
+### Einfarbige Balken bei fehlenden Sprachdaten
 
-    sorted.forEach(([lang, count], index) => {
-        if (index === 0) {
-            // Dominante Sprache - kraeftig
-            LANGUAGE_COLORS[lang] = LANGUAGE_COLORS_STRONG[lang];
-        } else {
-            // Sekundaere Sprachen - pastell
-            LANGUAGE_COLORS[lang] = LANGUAGE_COLORS_PASTEL[lang];
-        }
-    });
-}
-```
+Wenn Korpus keine language-Metadaten enthält: Einfarbige Balken (color-primary) statt Stacking, Legende zeigt "Keine Sprachdaten im Korpus".
 
-### Korpora ohne Sprachdaten
+Rationale: Gestackte Balken mit nur einer Kategorie wären irreführend. Einfarbige Darstellung kommuniziert ehrlich dass Sprachdaten nicht vorhanden sind.
 
-Wenn ein Korpus keine Sprachmetadaten enthaelt:
-- Einfarbige Balken (--color-primary) statt Stacking
-- Legende zeigt "Keine Sprachdaten im Korpus"
-- Keine "Andere"-Kategorie bei fehlenden Daten
-
-**Erkennung:**
-```javascript
-const hasLanguageData = letters.some(l =>
-    l.language?.code && l.language.code !== 'None'
-);
-```
-
-### Responsive Bar Width
-
-Balkenbreite passt sich dem Zeitraum an:
-- Bei <= 20 Jahren: Breitere Balken (bis 60px)
-- Bei groesseren Zeitraeumen: Schmalere Balken
+Detection: hasLanguageData prüft ob mindestens ein Brief language.code hat
 
 ---
 
-## 4. UX-Prinzipien
+## 4. Performance-Strategien
 
-### Redundanz-Vermeidung
+Entscheidungen für clientseitige Verarbeitung großer Datensätze:
 
-- Keine doppelten Informationen in verschiedenen Views
-- Filter-State wird zentral verwaltet und in URL gespeichert
-- Indizes werden einmal berechnet und wiederverwendet
+1. Lazy Rendering: Listen nur rendern wenn View aktiv (verhindert DOM-Overhead)
+2. Debouncing: Filter-Updates mit 300ms Verzögerung (reduziert Re-Renders)
+3. Clustering: MapLibre-Cluster ab 100+ Punkten (reduziert DOM-Elemente)
+4. Limits: Brief-Liste auf 500 Einträge begrenzt mit Warning (DOM-Performance)
+5. Index-Lookups: O(1) Zugriff auf Personen/Orte via Map-basierte Indices
 
-### Ehrliche Kommunikation
-
-- Unsicherheit wird transparent dargestellt, niemals versteckt
-- Fehlende Daten werden explizit als "unbekannt" markiert
-- Tooltips erklaeren die Bedeutung von Symbolen
-
-### Progressive Disclosure
-
-- Uebersicht zuerst, Details bei Bedarf
-- Klick auf Element zeigt mehr Information
-- Modal/Panel fuer vollstaendige Metadaten
-
-### Performance-Strategien
-
-1. **Lazy Rendering:** Listen nur rendern wenn View aktiv
-2. **Debouncing:** Filter-Updates mit 300ms Verzoegerung
-3. **Clustering:** MapLibre-Cluster fuer 1000+ Punkte
-4. **Limits:** Brief-Liste auf 500 Eintraege begrenzt
-5. **Index-Lookups:** O(1) Zugriff auf Personen/Orte
+Rationale: Bei 11.576 Briefen ist naives Rendering zu langsam. Diese Strategien halten App unter 200ms Render-Zeit auch bei großen Datasets.
 
 ---
 
@@ -159,169 +88,123 @@ Balkenbreite passt sich dem Zeitraum an:
 
 ### ES Module Live Bindings
 
-Problem: ES Module Exports sind "live bindings" - Reassignment funktioniert nicht.
+ES Module Exports sind live bindings - Reassignment funktioniert nicht, Object-Mutation schon.
 
-```javascript
-// FALSCH - funktioniert nicht
-export let COLORS = { de: 'blue' };
-COLORS = { de: 'red' }; // Error: Assignment to constant variable
+Problem: export let COLORS = {}; COLORS = {...} wirft Error
+Lösung: export const COLORS = {}; dann Object.keys(COLORS).forEach(k => delete COLORS[k]) und neu befüllen
 
-// RICHTIG - Object mutieren
-export const COLORS = { de: 'blue' };
-Object.keys(COLORS).forEach(key => delete COLORS[key]);
-COLORS.de = 'red'; // Funktioniert
-```
+Rationale: Dynamische Farben basierend auf Korpus erfordern Mutation nach Import. Const mit Mutation ist idiomatischer als let mit Reassignment.
+
+Implementation: computeLanguageColors() mutiert LANGUAGE_COLORS Object
 
 ### URL-State-Management
 
-Filter-Zustand wird in URL gespeichert:
-```
-explore.html?dataset=hsa&yearMin=1900&yearMax=1920&person=123&langs=de,fr
-```
+Filter-Zustand wird in URL gespeichert: explore.html?dataset=hsa&yearMin=1900&yearMax=1920&person=123&langs=de,fr
 
-- Ermoeglicht Bookmarking und Teilen
-- Browser-History wird nicht ueberladen (replaceState statt pushState)
-- Initialisierung liest URL-Parameter beim Laden
+Vorteile:
+- Bookmarking: Nutzer können gefilterte Ansicht speichern
+- Sharing: URLs können an Kollegen gesendet werden
+- Browser-History: Back-Button funktioniert erwartungsgemäß
+
+Implementation: state-manager.js mit toURLParams() und fromURLParams(), replaceState statt pushState um History nicht zu überladen
 
 ### Hybrides Speichermodell
 
-- **Grosse Datensaetze (HSA):** Via URL-Parameter laden (`?dataset=hsa`)
-- **Kleinere Datensaetze (Upload):** sessionStorage (bis ~5MB)
-- **Quota exceeded:** Fehlermeldung mit Hinweis auf Groesse
+Große Datasets (HSA): Via URL-Parameter laden (?dataset=hsa), fetch von JSON
+Kleinere Datasets (Upload): sessionStorage (bis ca. 5MB)
+Quota exceeded: Fehlermeldung mit Hinweis auf Größe
+
+Rationale: sessionStorage-Limit variiert nach Browser (5-10MB). HSA mit 11.576 Briefen ist zu groß. URL-Parameter umgehen dieses Limit komplett.
 
 ---
 
-## 6. Code-Architektur und Refactoring
+## 6. Netzwerk-Visualisierung
 
-### Modulstruktur (Stand 2025-11)
+### Adaptive Defaults basierend auf Datensatz
 
-```
-docs/js/
-├── Entry Points
-│   ├── explore.js (4200+ Zeilen, Haupt-Visualisierung)
-│   ├── upload.js (Upload/API-Anbindung)
-│   ├── compare.js (Vergleichsansicht)
-│   └── wissenskorb.js (Basket-Standalone)
-├── Core
-│   ├── cmif-parser.js (XML/JSON Parsing)
-│   └── correspsearch-api.js (API-Integration)
-└── Shared
-    ├── utils.js (Hilfsfunktionen)
-    ├── constants.js (Farben, Defaults)
-    ├── basket.js (Basket State)
-    ├── basket-ui.js (Basket UI)
-    ├── formatters.js (Datum/Person/Ort-Formatierung)
-    └── wikidata-enrichment.js (Personen-Anreicherung)
-```
+Network-View passt minYears-Threshold an Zeitspanne an:
+- Zeitspanne <= 5 Jahre: minYears = 1
+- Zeitspanne <= 20 Jahre: minYears = 2
+- Zeitspanne > 20 Jahre: minYears = 3
 
-### Erkenntnisse aus Refactoring-Analyse
-
-**explore.js Monolith:**
-- 4200+ Zeilen, 85+ Funktionen, 7 Views
-- Starke Kopplung zwischen Views und State
-- Globale Variablen: `allLetters`, `filteredLetters`, `currentView`, etc.
-- UI-Events direkt mit Filterlogik verwoben
-
-**Erfolgreich extrahierte Module:**
-- `formatters.js`: Reine Funktionen ohne Side Effects
-- `basket.js/basket-ui.js`: Eigener State mit klarer API
-- `wikidata-enrichment.js`: Isolierte API-Aufrufe mit Caching
-- `constants.js`: Konfigurationswerte
-
-**Herausforderungen bei weiterer Modularisierung:**
-- Views teilen viel State (`filteredLetters`, `temporalFilter`)
-- Event-Handler rufen direkt andere Funktionen auf (`applyFilters`, `switchView`)
-- URL-State-Synchronisation greift auf viele globale Variablen zu
-
-**Empfohlene Strategie fuer weitere Modularisierung:**
-1. State-Management einfuehren (Store-Pattern)
-2. Views als Module mit definierten Inputs/Outputs
-3. Event-Bus fuer View-uebergreifende Kommunikation
-
----
-
-## 7. Netzwerk-Visualisierung
-
-### Adaptive Defaults
-
-Das Netzwerk passt sich automatisch an die Groesse des Datensatzes an:
-
-```javascript
-// Dynamischer minYears-Default basierend auf Zeitspanne
-const timespan = dateRange.max - dateRange.min;
-if (timespan <= 5) {
-    networkMinYears = 1;
-} else if (timespan <= 20) {
-    networkMinYears = 2;
-} else {
-    networkMinYears = 3; // Standard
-}
-```
+Rationale: Kurze Zeiträume haben weniger Korrespondenz-Beziehungen. Niedriger Threshold zeigt mehr Verbindungen. Längere Zeiträume brauchen höheren Threshold um Netzwerk lesbar zu halten.
 
 ### Jahr-Validierung
 
-Unrealistische Jahre werden gefiltert, um die Zeitachse nicht zu verzerren:
+Unrealistische Jahre werden gefiltert (< 1400 oder > 2100) um Zeitachse nicht zu verzerren.
 
-```javascript
-const years = allLetters.map(l => l.year).filter(y =>
-    y !== null && y !== undefined && y >= 1400 && y <= 2100
-);
-```
+Rationale: OCR-Fehler oder Parsing-Issues können zu Jahren wie 0, 9999 oder 20250 führen. Diese würden Timeline-Skalierung zerstören.
 
 ### Farbe nach Eintrittsjahr
 
-Alternative Farbgebung fuer Zeitgenossen-Netzwerk zur Analyse der Netzwerk-Evolution:
+Alternative Farbgebung: Sequentielle Skala (YlGnBu) basierend auf erstem Brief-Jahr jedes Korrespondenten.
 
-```javascript
-// Sequentielle Farbskala (YlGnBu)
-const yearColorScale = d3.scaleSequential(d3.interpolateYlGnBu)
-    .domain([minYear, maxYear]);
+Nutzen: Visualisiert Netzwerk-Evolution, identifiziert frühe vs. späte Teilnehmer, zeigt zeitliche Entwicklung des Netzwerks.
 
-// Knotenfarbe basierend auf erstem Brief
-const getNodeColor = (d) => {
-    if (yearColorScale && d.firstYear != null) {
-        return yearColorScale(d.firstYear);
-    }
-    return typeColor; // Fallback auf Typ-Farbe
-};
-```
-
-**Vorteile:**
-- Visualisiert wann Korrespondenten ins Netzwerk eintraten
-- Identifiziert fruehe vs. spaete Teilnehmer
-- Gradient-Legende zeigt Jahresbereich
-
-### Live-Update Slider
-
-Threshold-Eingabe mit Debouncing fuer responsives Feedback:
-
-```javascript
-const debouncedRender = debounce(() => renderNetwork(), 150);
-thresholdInput.addEventListener('input', (e) => {
-    // Update display immediately
-    thresholdValue.textContent = val;
-    // Debounced network render
-    debouncedRender();
-});
-```
+Implementation: D3 scaleSequential mit interpolateYlGnBu, Gradient-Legende zeigt Jahresbereich
 
 ---
 
-## 8. Roadmap / Offene Punkte
+## 7. Architektur-Entscheidungen
 
-### Koordinaten-Aufloesung fuer Uploads
+### Zero-Build-Prozess
 
-Wikidata SPARQL-Abfrage im Browser fuer GeoNames-IDs ohne Koordinaten.
+Projekt läuft direkt im Browser ohne Webpack, Babel oder andere Build-Tools.
 
-### Personen-Enrichment Optimierung
+Vorteile:
+- Niedrige Einstiegshürde für Beitragende
+- Einfaches Deployment als statische GitHub Pages
+- Keine Build-Pipeline-Komplexität
+- Schnellere Iteration im Development
 
-Batch-Verarbeitung mit Fortschrittsanzeige statt einzelner API-Calls.
+Nachteile:
+- Kein Tree-Shaking
+- Kein Minification (aber HTTP/2 kompensiert teilweise)
+- ES6 Modul-Support erforderlich (IE11 nicht unterstützt)
+
+Entscheidung: Vorteile überwiegen für Academic-Open-Source-Projekt. Zielgruppe hat moderne Browser.
+
+### Monolithisches explore.js
+
+explore.js enthält alle 8 Views in einer 5000+ Zeilen Datei statt separater View-Module.
+
+Rationale (initial): Views teilen viel State (filteredLetters, indices, temporalFilter). Separate Dateien würden komplexes Import-Geflecht erzeugen.
+
+Status: Phase 1 Refactoring führte state-manager.js ein. Weitere Modularisierung geplant aber noch nicht umgesetzt.
+
+Lesson Learned: Frühes Refactoring wäre einfacher gewesen. Monolith ist nach 27 Phasen schwerer aufzubrechen.
+
+---
+
+## 8. UX-Prinzipien
+
+### Ehrliche Kommunikation
+
+Unsicherheit wird transparent dargestellt, nie versteckt. Fehlende Daten werden explizit als "unbekannt" markiert. Tooltips erklären Bedeutung von Symbolen.
+
+Rationale: Forschende brauchen Transparenz über Datenqualität um korrekte Schlüsse zu ziehen. Verschweigen von Unsicherheit führt zu Fehlinterpretationen.
+
+### Progressive Disclosure
+
+Übersicht zuerst, Details bei Bedarf. Click auf Element zeigt mehr Information. Modal/Panel für vollständige Metadaten.
+
+Rationale: Bei 11.576 Briefen würde Anzeige aller Details gleichzeitig zu Cognitive Overload führen. Schrittweise Vertiefung hält Interface übersichtlich.
+
+### Redundanz-Vermeidung
+
+Keine doppelten Informationen in verschiedenen Views. Filter-State wird zentral verwaltet. Indices werden einmal berechnet und wiederverwendet.
+
+Rationale: Redundanz führt zu Inkonsistenzen. Single Source of Truth Prinzip verhindert Synchronisations-Bugs.
 
 ---
 
 ## Referenzen
 
-- [architecture.md](architecture.md) - Systemarchitektur und Datenfluss
-- [design.md](design.md) - Visuelle Design-Richtlinien
-- [JOURNAL.md](JOURNAL.md) - Chronologisches Entwicklungsprotokoll
-- [user-stories.md](user-stories.md) - Anforderungen und Features
+Für technische Implementation siehe:
+- architecture.md - Systemarchitektur und Datenfluss
+- uncertainty-concept.md - Detaillierte Unsicherheits-Implementierung
+- TESTING-STRATEGY.md - Test-Philosophie mit Real Data
+
+Für historischen Kontext siehe:
+- JOURNAL.md - Chronologisches Entwicklungsprotokoll
+- user-stories.md - Anforderungen und Features

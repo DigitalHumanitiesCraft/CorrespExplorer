@@ -91,7 +91,7 @@ preprocessing/
 
 docs/knowledge/
   JOURNAL.md            - Development log (27 phases)
-  architecture.md       - Technical architecture
+  architecture.md       - Technical architecture and features
   cmif-standard.md      - CMIF standard documentation
   cmif-sources.md       - CMIF sources reference
   design.md             - Design system documentation
@@ -100,13 +100,9 @@ docs/knowledge/
   project-analysis.md   - Project analysis report
   TESTING-STRATEGY.md   - Test philosophy and approach
   uncertainty-concept.md - Uncertainty handling documentation
-  user-stories.md       - Requirements documentation (27 user stories)
+  user-stories.md       - Requirements (27 user stories, all completed)
   KNOWN-ISSUES.md       - Known inconsistencies and issues
   VAULT-RULES.md        - Documentation standards for knowledge/
-  COMPLETED-ROADMAP.md  - Completed features (archived)
-
-  completed/
-    mentions-network-plan.md - Mentions Flow implementation (archived)
 ```
 
 ## Views
