@@ -38,8 +38,8 @@
     <!-- Simple Navigation for Explore -->
     <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
         <div class="nav-brand">
-            <a href="index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-arrow-left" style="font-size: 0.9em;"></i>
+            <a href="index.html" class="nav-brand-link">
+                <i class="fas fa-arrow-left"></i>
                 <span class="brand-text" id="dataset-title">CorrespExplorer</span>
             </a>
         </div>
@@ -103,21 +103,21 @@
                         <div class="stat-card">
                             <div class="stat-value" id="total-letters-count">-</div>
                             <div class="stat-label">Briefe</div>
-                            <span class="stat-quality-icon" id="letters-quality-icon" title="" style="display: none;">
+                            <span class="stat-quality-icon hidden" id="letters-quality-icon" title="">
                                 <i class="fas fa-exclamation-circle"></i>
                             </span>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value" id="total-senders-count">-</div>
                             <div class="stat-label">Absender</div>
-                            <span class="stat-quality-icon" id="senders-quality-icon" title="" style="display: none;">
+                            <span class="stat-quality-icon hidden" id="senders-quality-icon" title="">
                                 <i class="fas fa-question-circle"></i>
                             </span>
                         </div>
                         <div class="stat-card">
                             <div class="stat-value" id="total-places-count">-</div>
                             <div class="stat-label">Orte</div>
-                            <span class="stat-quality-icon" id="places-quality-icon" title="" style="display: none;">
+                            <span class="stat-quality-icon hidden" id="places-quality-icon" title="">
                                 <i class="fas fa-map-marker-alt"></i>
                             </span>
                         </div>
@@ -147,7 +147,7 @@
                     </div>
 
                     <!-- Active Filters Display -->
-                    <div id="active-filters" class="active-filters" style="display: none;">
+                    <div id="active-filters" class="active-filters hidden">
                         <!-- Filled by JavaScript when filters are active -->
                     </div>
 
@@ -180,13 +180,13 @@
                     </div>
 
                     <!-- Language Filter (dynamically populated) -->
-                    <div class="filter-group" role="group" aria-labelledby="filter-language-heading" id="language-filter-group" style="display: none;">
+                    <div class="filter-group hidden" role="group" aria-labelledby="filter-language-heading" id="language-filter-group">
                         <h5 id="filter-language-heading">Briefsprache</h5>
                         <div id="language-checkboxes"></div>
                     </div>
 
                     <!-- Topics Quick Filter (dynamically populated) -->
-                    <div class="filter-group" role="group" aria-labelledby="filter-topics-heading" id="topics-filter-group" style="display: none;">
+                    <div class="filter-group hidden" role="group" aria-labelledby="filter-topics-heading" id="topics-filter-group">
                         <h5 id="filter-topics-heading">Themen</h5>
                         <input type="search" id="topics-quick-search" class="topics-quick-search" placeholder="Thema suchen..." aria-label="Thema suchen">
                         <div id="topics-quick-filter" class="topics-quick-list"></div>
@@ -194,7 +194,7 @@
                     </div>
 
                     <!-- Mentions Flow Filter (view-specific) -->
-                    <div class="filter-group" role="group" aria-labelledby="filter-mentions-heading" id="mentions-filter-group" style="display: none;">
+                    <div class="filter-group hidden" role="group" aria-labelledby="filter-mentions-heading" id="mentions-filter-group">
                         <h5 id="filter-mentions-heading">Mentions Flow</h5>
 
                         <!-- Top N Slider -->
@@ -243,31 +243,31 @@
                     <!-- Map legend -->
                     <div id="legend-map" class="legend-content">
                         <div class="legend-item">
-                            <span class="legend-color" style="background: var(--color-primary);" aria-hidden="true"></span>
+                            <span class="legend-color" aria-hidden="true"></span>
                             <span>Absendeort (Groesse = Briefanzahl)</span>
                         </div>
                         <p class="legend-hint">Klick auf Marker zeigt Details</p>
                     </div>
 
                     <!-- Letters legend (date precision) -->
-                    <div id="legend-letters" class="legend-content" style="display: none;">
+                    <div id="legend-letters" class="legend-content hidden">
                         <div class="legend-item">
-                            <i class="fas fa-arrows-alt-h" style="color: #2C5282;"></i>
+                            <i class="fas fa-arrows-alt-h color-info"></i>
                             <span>Zeitraum (notBefore/notAfter)</span>
                         </div>
                         <div class="legend-item">
-                            <i class="fas fa-calendar-alt" style="color: #f59e0b;"></i>
+                            <i class="fas fa-calendar-alt color-warning"></i>
                             <span>Nur Jahr/Monat bekannt</span>
                         </div>
                         <div class="legend-item">
-                            <i class="fas fa-question-circle" style="color: #ef4444;"></i>
+                            <i class="fas fa-question-circle color-error"></i>
                             <span>Unsichere Datierung</span>
                         </div>
                         <p class="legend-hint"><a href="about.html#data-quality">Mehr zur Datenqualitaet</a></p>
                     </div>
 
                     <!-- Timeline legend -->
-                    <div id="legend-timeline" class="legend-content" style="display: none;">
+                    <div id="legend-timeline" class="legend-content hidden">
                         <div class="legend-item">
                             <span class="legend-hatched-small"></span>
                             <span>Anteil mit unscharfem Datum</span>
@@ -276,7 +276,7 @@
                     </div>
 
                     <!-- Persons legend -->
-                    <div id="legend-persons" class="legend-content" style="display: none;">
+                    <div id="legend-persons" class="legend-content hidden">
                         <div class="legend-item">
                             <span class="legend-color legend-role-sender"></span>
                             <span>Nur Absender</span>
@@ -290,7 +290,7 @@
                             <span>Beides</span>
                         </div>
                         <div class="legend-item">
-                            <svg viewBox="0 0 30 20" width="14" height="10" style="margin-right: 4px;">
+                            <svg viewBox="0 0 30 20" width="14" height="10">
                                 <rect fill="#990000" width="6" height="20"/>
                                 <rect fill="#339966" x="8" width="6" height="20"/>
                                 <rect fill="#006699" x="16" width="6" height="20"/>
@@ -301,35 +301,35 @@
                     </div>
 
                     <!-- Topics legend -->
-                    <div id="legend-topics" class="legend-content" style="display: none;">
+                    <div id="legend-topics" class="legend-content hidden">
                         <div class="legend-item">
-                            <i class="fas fa-circle" style="color: var(--color-primary); font-size: 8px;"></i>
+                            <i class="fas fa-circle color-primary"></i>
                             <span>Anzahl = Briefhaeufigkeit</span>
                         </div>
                         <p class="legend-hint">Klick zeigt Kookkurrenzen</p>
                     </div>
 
                     <!-- Places legend -->
-                    <div id="legend-places" class="legend-content" style="display: none;">
+                    <div id="legend-places" class="legend-content hidden">
                         <div class="legend-item">
-                            <i class="fas fa-map-marker-alt" style="color: var(--color-primary);"></i>
+                            <i class="fas fa-map-marker-alt color-primary"></i>
                             <span>Mit Koordinaten</span>
                         </div>
                         <div class="legend-item">
-                            <i class="fas fa-map-marker-alt" style="color: var(--color-text-light);"></i>
+                            <i class="fas fa-map-marker-alt color-text-light"></i>
                             <span>Ohne Koordinaten</span>
                         </div>
                         <p class="legend-hint">Klick filtert nach Ort</p>
                     </div>
 
                     <!-- Network legend -->
-                    <div id="legend-network" class="legend-content" style="display: none;">
+                    <div id="legend-network" class="legend-content hidden">
                         <div class="legend-item">
-                            <span class="legend-color" style="background: #2C5282;"></span>
+                            <span class="legend-color legend-network-sender"></span>
                             <span>Absender</span>
                         </div>
                         <div class="legend-item">
-                            <span class="legend-color" style="background: #2d6a4f;"></span>
+                            <span class="legend-color legend-network-receiver"></span>
                             <span>Empfaenger</span>
                         </div>
                         <div class="legend-item">
@@ -403,7 +403,7 @@
                         </div>
                         <div class="timeline-main">
                             <div id="timeline-chart" class="timeline-chart"></div>
-                            <div id="timeline-undated-bin" class="timeline-undated-bin" style="display: none;">
+                            <div id="timeline-undated-bin" class="timeline-undated-bin hidden">
                                 <span class="undated-bin-count"></span>
                                 <div class="undated-bin-bar"></div>
                                 <span class="undated-bin-label">k.A.</span>
@@ -446,7 +446,7 @@
                                     <i class="fas fa-hand-pointer"></i>
                                     <p>Waehlen Sie ein Thema aus der Liste</p>
                                 </div>
-                                <div class="topic-detail-content" id="topic-detail-content" style="display: none;">
+                                <div class="topic-detail-content hidden" id="topic-detail-content">
                                     <div class="topic-detail-header">
                                         <h4 id="topic-detail-title">Thema</h4>
                                         <span class="topic-detail-count" id="topic-detail-count">0 Briefe</span>
@@ -504,7 +504,7 @@
                                     <i class="fas fa-map-marker-alt"></i>
                                     <p>Waehlen Sie einen Ort aus der Liste</p>
                                 </div>
-                                <div class="place-detail-content" id="place-detail-content" style="display: none;">
+                                <div class="place-detail-content hidden" id="place-detail-content">
                                     <div class="place-detail-header">
                                         <h4 id="place-detail-title">Ort</h4>
                                         <span class="place-detail-count" id="place-detail-count">0 Briefe</span>
@@ -582,7 +582,7 @@
                         <div id="network-graph" class="network-graph"></div>
                         <div class="network-legend" id="network-legend">
                             <div class="legend-item">
-                                <span class="legend-circle" style="background: #3b82f6;"></span> Zeitgenossen-Netzwerk
+                                <span class="legend-circle legend-network-contemporary"></span> Zeitgenossen-Netzwerk
                             </div>
                             <div class="legend-hint">Klick auf Knoten filtert Briefe | Hover fuer Details</div>
                         </div>
@@ -595,7 +595,7 @@
                         <div class="mentions-flow-header">
                             <h3>Erwähnungs-Flüsse</h3>
                             <p class="mentions-flow-info">Visualisiert wer in wessen Briefen erwähnt wird</p>
-                            <p class="mentions-flow-filter-info" id="mentions-flow-filter-info" style="font-size: 0.9em; color: var(--color-text-tertiary); margin-top: 5px;">
+                            <p class="mentions-flow-filter-info" id="mentions-flow-filter-info">
                                 Zeigt: Top 20 meist-erwähnte Personen | Nur Korrespondenten mit ≥5 Mentions | Nur Verbindungen ≥2
                             </p>
                         </div>
@@ -611,7 +611,7 @@
     </div>
 
     <!-- Export Modal -->
-    <div id="export-modal" class="modal" style="display: none;">
+    <div id="export-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Daten exportieren</h3>
@@ -637,7 +637,7 @@
     </div>
 
     <!-- Letter Detail Modal -->
-    <div id="letter-modal" class="modal" style="display: none;">
+    <div id="letter-modal" class="modal hidden">
         <div class="modal-content modal-lg">
             <div class="modal-header">
                 <h3 id="letter-modal-title">Brief-Details</h3>
@@ -650,7 +650,7 @@
     </div>
 
     <!-- Person Detail Modal -->
-    <div id="person-modal" class="modal" style="display: none;">
+    <div id="person-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="person-modal-title">Person</h3>
@@ -663,7 +663,7 @@
     </div>
 
     <!-- Missing Places Modal -->
-    <div id="missing-places-modal" class="modal" style="display: none;">
+    <div id="missing-places-modal" class="modal hidden">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Orte ohne Koordinaten</h3>
@@ -677,7 +677,7 @@
 
 
     <!-- Demo Tour Overlay -->
-    <div id="demo-tour" class="demo-tour" style="display: none;">
+    <div id="demo-tour" class="demo-tour hidden">
         <div class="tour-backdrop"></div>
         <div class="tour-step" data-step="1">
             <div class="tour-content">

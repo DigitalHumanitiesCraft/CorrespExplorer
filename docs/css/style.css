@@ -92,6 +92,19 @@ button, .btn {
 
 /* Scrolled state logic can be added later via JS for even more transparency at top */
 
+/* Navigation Brand Link */
+.nav-brand-link {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.nav-brand-link i {
+    font-size: 0.9em;
+}
+
 /* Burger Menu Button */
 .nav-burger {
     display: none;

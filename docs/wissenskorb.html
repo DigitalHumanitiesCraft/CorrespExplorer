@@ -27,8 +27,8 @@
     <!-- Simple Navigation -->
     <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
         <div class="nav-brand">
-            <a href="explore.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-arrow-left" style="font-size: 0.9em;"></i>
+            <a href="explore.html" class="nav-brand-link">
+                <i class="fas fa-arrow-left"></i>
                 <span class="brand-text">Wissenskorb</span>
             </a>
         </div>
@@ -56,16 +56,16 @@
     <!-- Main Container -->
     <div class="wissenskorb-container">
         <!-- Work in Progress Notice -->
-        <div class="wip-notice" style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 16px 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
-            <i class="fas fa-tools" style="color: #856404; font-size: 1.5em;"></i>
+        <div class="wip-notice">
+            <i class="fas fa-tools"></i>
             <div>
-                <strong style="color: #856404;">In Arbeit</strong>
-                <p style="margin: 4px 0 0 0; color: #856404; font-size: 0.9em;">Der Wissenskorb ist noch nicht vollstaendig implementiert. Einige Funktionen sind moeglicherweise noch nicht verfuegbar.</p>
+                <strong>In Arbeit</strong>
+                <p>Der Wissenskorb ist noch nicht vollstaendig implementiert. Einige Funktionen sind moeglicherweise noch nicht verfuegbar.</p>
             </div>
         </div>
 
         <!-- Empty State -->
-        <div class="empty-state" id="empty-state" style="display: none;">
+        <div class="empty-state hidden" id="empty-state">
             <i class="fas fa-shopping-basket"></i>
             <h2>Ihr Wissenskorb ist leer</h2>
             <p>Fuegen Sie Personen aus der Korrespondenten-Ansicht hinzu, um sie hier zu analysieren.</p>
@@ -190,7 +190,7 @@
     </div>
 
     <!-- Toast Notification -->
-    <div class="toast" id="toast" style="display: none;">
+    <div class="toast hidden" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toast-message">Aktion erfolgreich</span>
     </div>

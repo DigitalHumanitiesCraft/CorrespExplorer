@@ -5,85 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CorrespExplorer - Tests</title>
     <link rel="icon" type="image/png" href="assets/logo-no-background-no-text.png">
+
+    <!-- Core CSS -->
     <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/shadows.css">
+
+    <!-- Page-specific CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .test-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        .test-actions {
-            display: flex;
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .test-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .test-btn:hover {
-            background: var(--bg-hover);
-        }
-
-        .test-output {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1rem;
-            font-family: monospace;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            min-height: 400px;
-            max-height: 600px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-        }
-
-        .test-summary {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: var(--bg-primary);
-            border-radius: 4px;
-            display: none;
-        }
-
-        .test-summary.visible {
-            display: block;
-        }
-
-        .test-summary.pass {
-            border-left: 4px solid var(--success-color);
-        }
-
-        .test-summary.fail {
-            border-left: 4px solid var(--error-color);
-        }
-
-        .nav-top {
-            display: flex;
-            gap: 1.5rem;
-            padding: 1rem 2rem;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .nav-top a {
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-
-        .nav-top a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <link rel="stylesheet" href="css/test.css">
 </head>
 <body>
     <nav class="nav-top">

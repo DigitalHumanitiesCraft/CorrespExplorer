@@ -24,8 +24,8 @@
     <!-- Navigation -->
     <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
         <div class="nav-brand">
-            <a href="index.html" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-arrow-left" style="font-size: 0.9em;"></i>
+            <a href="index.html" class="nav-brand-link">
+                <i class="fas fa-arrow-left"></i>
                 <span class="brand-text">Datensatz-Vergleich</span>
             </a>
         </div>
@@ -53,7 +53,7 @@
                 <div class="dataset-slot" id="dataset-a">
                     <div class="dataset-header">
                         <span class="dataset-label">Datensatz A</span>
-                        <button class="clear-btn" id="clear-a" style="display: none;">
+                        <button class="clear-btn hidden" id="clear-a">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -67,7 +67,7 @@
                             <button id="url-submit-a"><i class="fas fa-download"></i></button>
                         </div>
                     </div>
-                    <div class="dataset-info" id="info-a" style="display: none;">
+                    <div class="dataset-info hidden" id="info-a">
                         <h4 id="title-a">Datensatz A</h4>
                         <div class="stats-row">
                             <span><i class="fas fa-envelope"></i> <span id="letters-a">0</span> Briefe</span>
@@ -75,7 +75,7 @@
                             <span><i class="fas fa-map-marker-alt"></i> <span id="places-a">0</span> Orte</span>
                         </div>
                     </div>
-                    <div class="dataset-loading" id="loading-a" style="display: none;">
+                    <div class="dataset-loading hidden" id="loading-a">
                         <div class="loading-spinner-small"></div>
                         <span>Lade...</span>
                     </div>
@@ -84,7 +84,7 @@
                 <div class="dataset-slot" id="dataset-b">
                     <div class="dataset-header">
                         <span class="dataset-label">Datensatz B</span>
-                        <button class="clear-btn" id="clear-b" style="display: none;">
+                        <button class="clear-btn hidden" id="clear-b">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -98,7 +98,7 @@
                             <button id="url-submit-b"><i class="fas fa-download"></i></button>
                         </div>
                     </div>
-                    <div class="dataset-info" id="info-b" style="display: none;">
+                    <div class="dataset-info hidden" id="info-b">
                         <h4 id="title-b">Datensatz B</h4>
                         <div class="stats-row">
                             <span><i class="fas fa-envelope"></i> <span id="letters-b">0</span> Briefe</span>
@@ -106,7 +106,7 @@
                             <span><i class="fas fa-map-marker-alt"></i> <span id="places-b">0</span> Orte</span>
                         </div>
                     </div>
-                    <div class="dataset-loading" id="loading-b" style="display: none;">
+                    <div class="dataset-loading hidden" id="loading-b">
                         <div class="loading-spinner-small"></div>
                         <span>Lade...</span>
                     </div>
@@ -124,7 +124,7 @@
             </div>
 
             <!-- Results Section -->
-            <section class="results-section" id="results-section" style="display: none;">
+            <section class="results-section hidden" id="results-section">
                 <h2>Vergleichsergebnis</h2>
 
                 <!-- Summary -->

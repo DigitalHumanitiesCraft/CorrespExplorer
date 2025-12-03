@@ -35,6 +35,40 @@ select:focus-visible {
 }
 
 /* ==========================================
+ * UTILITY CLASSES
+ * ========================================== */
+
+/* Hidden utility for JavaScript-toggled elements */
+.hidden {
+    display: none !important;
+}
+
+/* Semantic color utilities for icons and indicators */
+.color-warning {
+    color: #f59e0b !important;
+}
+
+.color-info {
+    color: #2C5282 !important;
+}
+
+.color-error {
+    color: #ef4444 !important;
+}
+
+.color-muted {
+    color: #555 !important;
+}
+
+.color-primary {
+    color: var(--color-primary) !important;
+}
+
+.color-text-light {
+    color: var(--color-text-light) !important;
+}
+
+/* ==========================================
  * RESET
  * ========================================== */
 

@@ -2588,6 +2588,18 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
+.legend-network-sender {
+    background: #2C5282;
+}
+
+.legend-network-receiver {
+    background: #2d6a4f;
+}
+
+.legend-network-contemporary {
+    background: #3b82f6;
+}
+
 .legend-gradient {
     display: inline-block;
     width: 80px;
@@ -3275,6 +3287,12 @@
     margin: 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
+}
+
+.mentions-flow-filter-info {
+    font-size: 0.9em;
+    color: var(--color-text-tertiary);
+    margin-top: 5px;
 }
 
 .mentions-flow-graph {
