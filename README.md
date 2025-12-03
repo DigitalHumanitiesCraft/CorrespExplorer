@@ -97,8 +97,7 @@ docs/knowledge/
   design.md             - Design system documentation
   demo-datasets.md      - Demo dataset documentation
   learnings.md          - Design decisions and patterns
-  project-analysis.md   - Project analysis report
-  TESTING-STRATEGY.md   - Test philosophy and approach
+  testing.md            - Test philosophy and approach
   uncertainty-concept.md - Uncertainty handling documentation
   user-stories.md       - Requirements (27 user stories, all completed)
   KNOWN-ISSUES.md       - Known inconsistencies and issues
