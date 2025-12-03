@@ -2,7 +2,7 @@
 
 ## Correspondence Metadata Interchange Format
 
-CMIF ist ein TEI-basierter Standard der TEI Correspondence SIG fuer den Austausch von Korrespondenz-Metadaten.
+CMIF ist ein TEI-basierter Standard der TEI Correspondence SIG für den Austausch von Korrespondenz-Metadaten.
 
 Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
 
@@ -37,6 +37,8 @@ Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
 </TEI>
 ```
 
+Der teiHeader enthält Metadaten über das Briefverzeichnis selbst. Das profileDesc-Element enthält alle correspDesc-Elemente, die die einzelnen Briefe beschreiben.
+
 ## Brief-Element (correspDesc)
 
 ```xml
@@ -58,6 +60,8 @@ Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
 </correspDesc>
 ```
 
+Jedes correspDesc-Element beschreibt einen Brief mit zwei correspAction-Elementen für Absender und Empfänger. Das optionale note-Element enthält erweiterte Metadaten.
+
 ## Attribute
 
 ### correspDesc
@@ -68,17 +72,23 @@ Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
 | @key | Brief-Nummer in der Edition | 654 |
 | @source | Verweis auf bibl/@xml:id | #uuid |
 
+Das ref-Attribut verlinkt zur Briefedition, key ist eine interne Kennung, source verweist auf die bibliographische Quelle im teiHeader.
+
 ### correspAction
 
 | Attribut | Werte | Beschreibung |
 |----------|-------|--------------|
 | @type | sent, received | Sende- oder Empfangsaktion |
 
+Jeder Brief benötigt mindestens zwei correspAction-Elemente: eines mit type="sent" für den Absender und eines mit type="received" für den Empfänger.
+
 ### persName / placeName
 
 | Attribut | Beschreibung | Beispiel |
 |----------|--------------|----------|
 | @ref | Authority-URL | https://viaf.org/viaf/12345 |
+
+Das ref-Attribut verlinkt zu normierten Identifikatoren in Authority-Systemen wie VIAF oder GND für Personen und GeoNames für Orte.
 
 ### date
 
@@ -87,8 +97,10 @@ Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
 | @when | Exaktes Datum | YYYY-MM-DD, YYYY-MM, YYYY |
 | @from | Beginn Zeitraum | YYYY-MM-DD |
 | @to | Ende Zeitraum | YYYY-MM-DD |
-| @notBefore | Fruehestens | YYYY-MM-DD |
-| @notAfter | Spaetestens | YYYY-MM-DD |
+| @notBefore | Frühestens | YYYY-MM-DD |
+| @notAfter | Spätestens | YYYY-MM-DD |
+
+Datumsangaben können präzise (when) oder unsicher sein (from/to für Zeiträume, notBefore/notAfter für ungefähre Datierungen). Die Formate erlauben Präzision auf Tag, Monat oder Jahr.
 
 ## Authority-Systeme
 
@@ -101,11 +113,15 @@ Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
 | LC | id.loc.gov/authorities/names/{id} | n79021164 |
 | BNF | data.bnf.fr/ark:/12148/{id} | cb11905726z |
 
+VIAF ist der internationale Personen-Identifier, GND wird von der Deutschen Nationalbibliothek gepflegt, LC von der Library of Congress, BNF von der Bibliothèque nationale de France.
+
 ### Orte
 
 | System | URL-Muster | Beispiel |
 |--------|------------|----------|
 | GeoNames | sws.geonames.org/{id} | http://sws.geonames.org/2988507 |
+
+GeoNames ist das primäre System für geografische Identifikation und liefert Koordinaten für die Kartendarstellung.
 
 ### Sprachen
 
@@ -114,45 +130,67 @@ Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
 | ISO 639-1 | de, fr, en | de |
 | Lexvo | lexvo.org/id/iso639-3/{code} | http://lexvo.org/id/iso639-3/eus |
 
+ISO 639-1 verwendet Zwei-Buchstaben-Codes, Lexvo bietet URIs für alle ISO-639-3-Sprachcodes inklusive historischer und kleiner Sprachen.
+
 ## Erweiterte Metadaten (note)
 
-Einige CMIF-Dateien enthalten erweiterte Metadaten im note-Element:
+Einige CMIF-Dateien enthalten erweiterte Metadaten im note-Element mit ref-Elementen verschiedener Typen.
 
 ### hasLanguage
 
-Briefsprache (in welcher Sprache der Brief geschrieben ist):
 ```xml
 <ref type="hasLanguage" target="de"/>
 ```
 
+Gibt die Sprache an, in der der Brief geschrieben ist. Kann ISO-Code oder Lexvo-URI sein.
+
 ### mentionsSubject
 
-Themen, die im Brief behandelt werden:
 ```xml
 <ref type="mentionsSubject" target="https://gams.uni-graz.at/o:hsa.subjects#S.4567">
   Cercle d'Etudes Euskariennes
 </ref>
 ```
 
+Themen, die im Brief behandelt werden. Der target verweist auf ein kontrolliertes Vokabular oder Thesaurus, der Textinhalt ist die menschenlesbare Bezeichnung.
+
 ### mentionsPerson
 
-Personen, die im Brief erwaehnt werden:
 ```xml
 <ref type="mentionsPerson" target="https://viaf.org/viaf/34446283">
   Lacombe, Georges
 </ref>
 ```
 
+Personen, die im Brief erwähnt werden, aber nicht Absender oder Empfänger sind. Nutzt dieselben Authority-Systeme wie persName.
+
 ### mentionsPlace
 
-Orte, die im Brief erwaehnt werden (nicht Absende-/Empfangsort):
 ```xml
 <ref type="mentionsPlace" target="http://sws.geonames.org/2988507">
   Paris
 </ref>
 ```
 
-## HSA-Beispiel (Hugo Schuchardt Archiv)
+Orte, die im Brief erwähnt werden, aber nicht Absende- oder Empfangsort sind. Nutzt GeoNames-URIs.
+
+## Parsing-Logik
+
+### TEI-Namespace
+
+TEI-XML nutzt den Namespace http://www.tei-c.org/ns/1.0. Beim Parsing müssen alle Elemente mit diesem Namespace abgefragt werden, sonst werden sie nicht gefunden. Die Funktion getElementsByTagNameNS akzeptiert Namespace und Element-Name.
+
+### Datums-Normalisierung
+
+CMIF erlaubt verschiedene Datumsformate. Die Parsing-Logik prüft in dieser Reihenfolge: when für exakte Daten, from für Zeitraum-Beginn, notBefore für frühestmögliches Datum. Aus dem gefundenen Attribut wird das Jahr extrahiert durch substring der ersten vier Zeichen. Falls kein Datum vorhanden, wird null zurückgegeben.
+
+### Authority-ID Extraktion
+
+URLs in ref-Attributen müssen geparst werden, um Typ und ID zu extrahieren. VIAF-URLs enthalten "viaf.org/viaf/" gefolgt von Ziffern. GND-URLs enthalten "d-nb.info/gnd/" gefolgt von Ziffern. GeoNames-URLs enthalten "geonames.org/" gefolgt von Ziffern. Die Extraktion nutzt reguläre Ausdrücke mit Capturing Groups. Falls kein bekanntes Muster gefunden wird, wird die komplette URL als ID mit Typ "unknown" zurückgegeben.
+
+## HSA-Referenz-Beispiel
+
+Das Hugo Schuchardt Archiv zeigt die praktische Anwendung des CMIF-Standards mit umfangreichen Metadaten.
 
 ### Statistik
 
@@ -160,18 +198,14 @@ Orte, die im Brief erwaehnt werden (nicht Absende-/Empfangsort):
 |--------|------|
 | Briefe | 11.576 |
 | Sender | 846 |
-| Empfaenger | 112 |
+| Empfänger | 112 |
 | Absende-Orte | 774 |
 | Subjects | 1.622 |
 | Zeitraum | 1859-1927 |
 
 ### Besonderheiten
 
-1. Ego-zentriertes Netzwerk um Hugo Schuchardt
-2. Bidirektionale Korrespondenz (Briefe an und von Schuchardt)
-3. LOD Academy CMIF Vocabulary fuer Metadaten-Typen
-4. VIAF als primaeres Authority-System (96%)
-5. 18 verschiedene Briefsprachen
+Das HSA ist ein ego-zentriertes Netzwerk um Hugo Schuchardt mit bidirektionaler Korrespondenz. Briefe wurden sowohl an Schuchardt geschickt als auch von ihm versendet. Das Archiv nutzt das LOD Academy CMIF Vocabulary für Metadaten-Typen. VIAF ist das primäre Authority-System für 96 Prozent der Personen. Die Briefe wurden in 18 verschiedenen Sprachen verfasst.
 
 ### Subject-Kategorien
 
@@ -180,6 +214,8 @@ Orte, die im Brief erwaehnt werden (nicht Absende-/Empfangsort):
 | HSA-Subjects | 1.272 | gams.uni-graz.at/o:hsa.subjects#S.{id} |
 | HSA-Languages | 200 | gams.uni-graz.at/o:hsa.languages#L.{id} |
 | Lexvo | 148 | lexvo.org/id/iso639-3/{code} |
+
+Das HSA nutzt ein eigenes kontrolliertes Vokabular für Themen und Sprachen. 1.272 Subjects verwenden HSA-eigene URIs. 200 Sprach-Referenzen nutzen HSA-eigene URIs, zusätzlich 148 Referenzen auf Lexvo für standardisierte ISO-Codes.
 
 ### Top-Korrespondenten
 
@@ -191,6 +227,8 @@ Orte, die im Brief erwaehnt werden (nicht Absende-/Empfangsort):
 | Theodor Gartner | 222 | 59114592 |
 | Edward Spencer Dodgson | 181 | 27433725 |
 
+Diese fünf Personen machen 1.328 Briefe aus, was 11,5 Prozent des gesamten Korpus entspricht.
+
 ### Top-Absende-Orte
 
 | Ort | Briefe | GeoNames |
@@ -201,52 +239,7 @@ Orte, die im Brief erwaehnt werden (nicht Absende-/Empfangsort):
 | Leipzig | 247 | 2879139 |
 | Berlin | 237 | 2950159 |
 
-## Parsing-Hinweise
-
-### Namespace
-
-TEI-Namespace beachten:
-```javascript
-const TEI_NS = 'http://www.tei-c.org/ns/1.0';
-doc.getElementsByTagNameNS(TEI_NS, 'correspDesc');
-```
-
-### Datums-Normalisierung
-
-Verschiedene Datumsformate zu Jahr extrahieren:
-```javascript
-function extractYear(dateElement) {
-  const when = dateElement.getAttribute('when');
-  const from = dateElement.getAttribute('from');
-  const notBefore = dateElement.getAttribute('notBefore');
-
-  const dateStr = when || from || notBefore;
-  if (dateStr) return parseInt(dateStr.substring(0, 4));
-  return null;
-}
-```
-
-### Authority-ID Extraktion
-
-```javascript
-function extractAuthorityId(url) {
-  if (!url) return null;
-
-  // VIAF: https://viaf.org/viaf/12345
-  const viafMatch = url.match(/viaf\.org\/viaf\/(\d+)/);
-  if (viafMatch) return { type: 'viaf', id: viafMatch[1] };
-
-  // GND: https://d-nb.info/gnd/118540238
-  const gndMatch = url.match(/d-nb\.info\/gnd\/(\d+)/);
-  if (gndMatch) return { type: 'gnd', id: gndMatch[1] };
-
-  // GeoNames: http://sws.geonames.org/2988507
-  const geoMatch = url.match(/geonames\.org\/(\d+)/);
-  if (geoMatch) return { type: 'geonames', id: geoMatch[1] };
-
-  return { type: 'unknown', id: url };
-}
-```
+Diese fünf Orte machen 4.491 Briefe aus, was 38,8 Prozent des gesamten Korpus entspricht. Graz als Schuchardts Wirkungsort ist mit 20,5 Prozent der mit Abstand häufigste Absende-Ort.
 
 ## Ressourcen
 

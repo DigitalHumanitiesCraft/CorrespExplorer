@@ -96,7 +96,7 @@ docs/knowledge/
   design.md             - Design system documentation
   learnings.md          - Design decisions and patterns
   plan.md               - Completed features (historical)
-  CMIF-Data.md          - CMIF standard documentation
+  cmif-standard.md      - CMIF standard documentation
   demo-datasets.md      - Demo dataset documentation
   cmif-sources.md       - CMIF sources reference
   project-analysis.md   - Project analysis report
@@ -178,14 +178,18 @@ python preprocessing/resolve_geonames_wikidata.py
 
 Run tests in browser:
 ```
-explore.html?test=true
+test.html
+# or auto-run with: test.html?test=true
 ```
 
-Tests cover:
-- Filter logic (temporal, language, person, place)
-- Aggregation functions (counting, indexing)
-- Utility functions (escaping, sorting)
-- UI element presence
+Test Suite (69 tests):
+- CMIF Parser: XML→JSON parsing with real TEI-XML data
+- Data Aggregation: Indices creation, state-manager integration
+- Formatters: Date/person/place formatting with uncertainty indicators
+- State Manager: Filter logic, caching, URL state
+- DOM Cache: Element caching, performance
+
+All tests use real CMIF-XML files from data/test-uncertainty.xml instead of mock data.
 
 ## License
 

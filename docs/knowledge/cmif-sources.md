@@ -163,30 +163,6 @@ https://raw.githubusercontent.com/correspSearch/csStorage/dev/rilke-kappus.xml
 
 ## CMIF-Format Referenz
 
+Details zum CMIF-Standard siehe cmif-standard.md.
+
 Spezifikation: https://correspsearch.net/index.xql?id=participate_cmi-format
-
-Minimale Struktur eines CMIF:
-```xml
-<TEI xmlns="http://www.tei-c.org/ns/1.0">
-  <teiHeader>
-    <profileDesc>
-      <correspDesc ref="https://example.org/letter/1">
-        <correspAction type="sent">
-          <persName ref="http://d-nb.info/gnd/123456789">Name</persName>
-          <placeName ref="http://sws.geonames.org/123456">Ort</placeName>
-          <date when="1850-01-15"/>
-        </correspAction>
-        <correspAction type="received">
-          <persName ref="http://d-nb.info/gnd/987654321">Name</persName>
-        </correspAction>
-      </correspDesc>
-    </profileDesc>
-  </teiHeader>
-</TEI>
-```
-
-Unterstuetzte Authority-URIs:
-- GND: `http://d-nb.info/gnd/{id}`
-- VIAF: `http://viaf.org/viaf/{id}`
-- GeoNames: `http://sws.geonames.org/{id}`
-- Lexvo: `http://lexvo.org/id/iso639-3/{code}`
