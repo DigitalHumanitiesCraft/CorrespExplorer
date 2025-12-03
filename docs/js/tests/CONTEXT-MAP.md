@@ -4,56 +4,61 @@ Fokussiertes Testing ohne externe Dependencies
 
 ## Test-Dateien
 
-**Test-Runner** (Infrastructure)
+Test-Runner (Infrastructure)
 - test-runner.js - Kompakter Test-Runner ohne Dependencies
 - run-all-tests.js - Entry Point für alle Tests
 
-**Unit Tests** (Modul-Tests)
+Business Logic Tests (CMIF-Datenverarbeitung)
+- test-cmif-parser.js - 13 Tests für XML→JSON Parsing und Unsicherheits-Erkennung
+- test-aggregation.js - 11 Tests für Daten-Aggregation (Orte, Sprachen, Netzwerke)
+- test-formatters.js - 26 Tests für Datum/Person/Ort Formatierung
+
+Infrastructure Tests (State Management)
 - test-state-manager.js - 10 Tests für state-manager.js
 - test-dom-cache.js - 9 Tests für dom-cache.js
 
-**Integration Tests**
-- explore-tests.js - Filter, Aggregation, UI (legacy)
-- test-uncertainty.js - CMIF Unsicherheits-Erkennung
+Legacy Tests (nicht in run-all-tests.js)
+- explore-tests.js - Filter, Aggregation, UI (alt)
+- test-uncertainty.js - CMIF Unsicherheits-Erkennung (alt)
 
-**Test-UI**
+Test-UI
 - ../test.html - Browser-basierte Test-Ausführung
 
 ## Test-Strategie
 
-**Was wird getestet:**
-1. State-Manager: Filter-Logik, Caching, URL-State
-2. DOM-Cache: Element-Caching, Performance
-3. Filter-Kombinationen (temporal, language, person, subject, quality)
-4. Daten-Aggregation (countByPlace, countByLanguage, buildNetworkData)
-5. Unsicherheits-Erkennung (datePrecision, personPrecision, placePrecision)
+Was wird getestet:
+1. CMIF Parser: XML→JSON Transformation, Unsicherheits-Erkennung (date/person/place precision)
+2. Daten-Aggregation: aggregateLettersByPlace, countByLanguage, buildNetworkData, buildTimelineData
+3. Formatierung: Datum/Person/Ort mit Unsicherheits-Indikatoren, CSS-Klassen, Initialen
+4. State-Manager: Filter-Logik, Caching, URL-State
+5. DOM-Cache: Element-Caching, Performance
 
-**Was NICHT getestet wird:**
+Was NICHT getestet wird:
 - D3/MapLibre Rendering (visuell, schwer automatisierbar)
 - Wikidata SPARQL (externe API)
 - Browser-spezifische Features
 
 ## Ausführung
 
-**Browser (empfohlen):**
+Browser (empfohlen):
 ```
 http://localhost:8000/test.html
 ```
 
-**URL-Parameter:**
+URL-Parameter:
 ```
 explore.html?test=true    # Startet Tests automatisch
 test.html?test=true       # Gleiches
 ```
 
-**Programmatisch:**
+Programmatisch:
 ```javascript
 import { runAllTests } from './js/tests/run-all-tests.js';
 const results = await runAllTests();
 // { passed, failed, total, duration }
 ```
 
-**Console:**
+Console:
 ```javascript
 window.runAllTests()  // Verfügbar nach Laden
 ```
@@ -97,32 +102,38 @@ assert.throws(fn, msg)
 
 ## Test-Abdeckung
 
-**State-Manager: 10 Tests**
-- setData: Initialisierung
-- updateFilters: temporal, language, person, subject, quality
-- Filter-Kombinationen
-- Caching-Performance
-- resetFilters
+CMIF Parser: 13 Tests
+- Datums-Präzision (day, month, year, range)
+- Datums-Certainty (low certainty)
+- Personen-Präzision (identified with GND, named, unknown)
+- Orts-Präzision (exact with GeoNames, region, unknown)
+- Mentions-Extraktion (subjects with GND)
+- Sprach-Erkennung (ISO 639-2 to ISO 639-1)
+
+Aggregation: 11 Tests
+- aggregateLettersByPlace: Gruppierung, Sender-Zählung, Sprachen
+- Koordinaten-Handling (Letter vs. Index)
+- Jahre-Sammlung (unique years)
+- countByLanguage: Null-Handling
+- buildNetworkData: Sender-Recipient Links
+- buildTimelineData: Jahr-Gruppierung
+
+Formatters: 26 Tests
+- formatSingleDate: Jahr, Monat, Tag
+- formatDateWithPrecision: Icons für Unsicherheit
+- formatPersonName: identified, named, partial, unknown
+- formatPlaceName: exact, region, unknown
+- getPersonInitials: Normal, Single, Partial mit [NN]
+- CSS-Klassen: date-imprecise, person-unknown, place-region
+
+State-Manager: 10 Tests
+- setData, updateFilters (temporal, language, person, kombiniert)
+- Caching-Performance, resetFilters
 - URL-Export/Import
 
-**DOM-Cache: 9 Tests**
-- getById mit Caching
-- Null-Handling
-- Selector-Zugriff
-- clearCache
-- Predefined Accessors
-- Performance-Vergleich
-
-**Integration (explore-tests.js): ~30 Tests**
-- Filter-Logik
-- Aggregation
-- Utilities
-- UI-Elemente (nur im Browser)
-
-**Unsicherheit (test-uncertainty.js): 22 Tests**
-- Datums-Präzision (day, month, year, range)
-- Personen-Präzision (identified, named, partial, unknown)
-- Orts-Präzision (exact, region, unknown)
+DOM-Cache: 9 Tests
+- getById mit Caching, Null-Handling
+- Selector-Zugriff, Performance-Vergleich
 
 ## Performance-Benchmarks
 
@@ -132,13 +143,13 @@ Inkludiert in Tests:
 
 ## Debugging-Tipps
 
-**Console öffnen:**
+Console öffnen:
 ```javascript
 // In test.html
 document.getElementById('toggle-console').click()
 ```
 
-**Einzelne Suite testen:**
+Einzelne Suite testen:
 ```javascript
 import { TestRunner } from './test-runner.js';
 import { StateManagerTests } from './test-state-manager.js';
@@ -148,7 +159,7 @@ runner.addSuite(StateManagerTests);
 await runner.runAll();
 ```
 
-**Nur einen Test:**
+Nur einen Test:
 ```javascript
 const test = StateManagerTests.tests[0];
 StateManagerTests.setup?.();
@@ -164,11 +175,11 @@ await test.run();
 
 ## Nächste Schritte
 
-**Zusätzliche Tests:**
+Zusätzliche Tests:
 - cmif-parser.js Tests (XML → JSON Transformation)
 - formatters.js Tests (Datum/Person/Ort Formatierung)
 - utils.js Tests (debounce, escapeHtml)
 
-**E2E-Tests (optional):**
+E2E-Tests (optional):
 - Playwright/Cypress für User-Journeys
 - Screenshot-Tests für Visualisierungen

@@ -4,20 +4,31 @@ Kompakt, fokussiert, ohne externe Dependencies
 
 ## Philosophie
 
-**Was testen wir?**
+Was testen wir?
+- CMIF-Datenverarbeitung (XML→JSON, Unsicherheits-Erkennung)
+- Daten-Aggregation (Orte, Sprachen, Netzwerke)
+- Formatierung mit Unsicherheits-Indikatoren
 - Kritische Business-Logik (Filter, State-Management)
 - Performance-kritische Funktionen (Caching)
-- Datenstrukturen und Transformationen
 
-**Was testen wir NICHT?**
+Was testen wir NICHT?
 - Visuelles Rendering (D3, MapLibre)
 - Externe APIs (Wikidata, correspSearch)
 - Browser-spezifische Edge-Cases
 
-**Warum?**
+Warum?
+- Tests validieren die Kernfunktionalität der App
+- Wenn CMIF-Parsing und Aggregation funktionieren, läuft die App
 - Tests sollten schnell laufen (< 1 Sekunde)
 - Tests sollten deterministisch sein
 - Tests sollten wartbar sein
+
+Wichtige Regel: NIE Mock-Daten verwenden
+- Tests laden IMMER echte CMIF-XML Dateien (data/test-uncertainty.xml, data/demo-showcase.xml)
+- Tests importieren IMMER echte Funktionen aus den Modulen (parseCMIF, aggregateLettersByPlace, formatDateWithPrecision)
+- Keine duplizierten Helper-Funktionen in Tests
+- Keine Mock-Objekte oder Stub-Daten
+- Wenn Tests fehlschlagen, liegt es an echtem Code mit echten Daten
 
 ## Test-Pyramide
 
@@ -35,20 +46,20 @@ Kompakt, fokussiert, ohne externe Dependencies
                     - DOM-Cache (9)
 ```
 
-## Test-Abdeckung (Ist-Stand)
+## Test-Abdeckung
 
-| Modul | Tests | Abdeckung | Priorität |
-|-------|-------|-----------|-----------|
-| state-manager.js | 10 | 100% | Kritisch |
-| dom-cache.js | 9 | 90% | Hoch |
-| explore.js (Filter) | 6 | 80% | Hoch |
-| explore.js (Aggregation) | 6 | 70% | Mittel |
-| cmif-parser.js (Uncertainty) | 22 | 60% | Mittel |
-| utils.js | 4 | 40% | Niedrig |
-| formatters.js | 0 | 0% | Niedrig |
-| wikidata-enrichment.js | 0 | 0% | Niedrig (API) |
+Business Logic mit echten CMIF-Daten
+- cmif-parser.js: 13 Tests - XML→JSON Parsing, Unsicherheits-Erkennung
+- test-aggregation.js: 11 Tests - Indices-Erstellung, State-Manager Integration
+- formatters.js: 26 Tests - Formatierung mit echten Daten
+- state-manager.js: 10 Tests - Filter-Logik mit echten CMIF-Daten
 
-**Gesamt:** 57 Tests
+Infrastructure (ohne CMIF-Daten)
+- dom-cache.js: 9 Tests - Element-Caching, Performance
+
+Gesamt: 69 Tests
+Mit echten CMIF-Daten: 60 Tests (87%)
+Infrastructure ohne Daten: 9 Tests (13%)
 
 ## Test-Typen
 

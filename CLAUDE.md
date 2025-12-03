@@ -98,6 +98,15 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 6. Test before committing
 7. Write clear commit messages
 
+## Testing Rules
+
+CRITICAL: Never use mock data or test data in tests
+- Always use real CMIF-XML files from data/ directory
+- Always import real functions from production modules
+- Never duplicate helper functions in test files
+- Never create stub objects or mock responses
+- Tests must validate real code with real data
+
 ## File Naming
 
 - Lowercase with underscores: `build_pipeline.py`

@@ -2,6 +2,9 @@
 // Führt alle Test-Suites aus
 
 import { runTests } from './test-runner.js';
+import { CMIFParserTests } from './test-cmif-parser.js';
+import { AggregationTests } from './test-aggregation.js';
+import { FormattersTests } from './test-formatters.js';
 import { StateManagerTests } from './test-state-manager.js';
 import { DOMCacheTests } from './test-dom-cache.js';
 
@@ -12,6 +15,12 @@ export async function runAllTests() {
     console.log('Starting CorrespExplorer Test Suite...\n');
 
     const suites = [
+        // Business Logic (CMIF-Datenverarbeitung)
+        CMIFParserTests,
+        AggregationTests,
+        FormattersTests,
+
+        // Infrastructure (State Management)
         StateManagerTests,
         DOMCacheTests
     ];
