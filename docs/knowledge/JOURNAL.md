@@ -6,6 +6,81 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
+## 2025-12-03 (Phase 30: Koordinaten-Anreicherung mit Wikidata SPARQL)
+
+### Adaptive Koordinaten-Aufloesung implementiert
+
+Vollstaendiges System zur Georeferenzierung von GeoNames-IDs via Wikidata SPARQL mit adaptivem Interface und benutzerkontrollierter Anreicherung.
+
+Problem:
+- CMIF-Daten enthalten oft nur GeoNames-IDs, keine Koordinaten
+- Statischer Cache (geonames_coordinates.json) unvollstaendig
+- Schoenbach-Dataset: 4 von 5 Orten ohne Koordinaten
+- Map View nicht nutzbar ohne Koordinaten
+
+Loesung: Adaptive Interface + dynamische Aufloesung
+
+Design-Entscheidung:
+- Map View versteckt sich automatisch wenn keine Koordinaten verfuegbar
+- Benutzer kann optional Koordinaten nachladen (wie Personen-Anreicherung)
+- Zwei-stufige Anreicherung: Koordinaten (0-50%) dann Personen (50-100%)
+
+Neue Datei: geonames-enrichment.js (255 Zeilen)
+- resolveGeoNamesCoordinates(): Batch-Aufloesung via Wikidata SPARQL
+- applyCoordinatesToData(): Wendet Koordinaten auf data.letters und data.indices.places an
+- analyzeCoordinateNeeds(): Analysiert welche Orte aufgeloest werden muessen
+- SPARQL Query: GeoNames-ID (P1566) zu Koordinaten (P625)
+- Batch-Verarbeitung: 50 IDs pro Request
+- Rate Limiting: 1.5s zwischen Requests
+- localStorage Cache mit 7-Tage TTL
+
+utils.js erweitert:
+- analyzeDataCapabilities(): Erkennt ob Daten Koordinaten, Personen, Datums, etc. enthalten
+- Basis fuer adaptive View-Sichtbarkeit
+
+index.html Anpassungen:
+- Koordinaten-Checkbox im Config-Modal (Zeile 177-186)
+- Progress-Header mit Spinner-Icon (Zeile 206-209)
+- Schoenbach-Dataset auf lokale Datei umgestellt (data/schoenbach.xml)
+
+upload.js Hauptaenderungen:
+- Import von geonames-enrichment.js und analyzeDataCapabilities()
+- showConfigDialog(): Zeigt Koordinaten-Stats an (Zeile 264-278)
+- handleConfigStart(): Zwei-stufige Anreicherung implementiert (Zeile 356-410)
+- Progress-Verwaltung verbessert mit classList-Management
+- Modal-Sichtbarkeit: hidden class + display style konsistent gesetzt
+
+explore.js Erweiterungen:
+- updateMissingCoordinatesBanner(): Info-Banner in Places View
+- handleResolveCoordinates(): Manueller Retry-Button fuer fehlende Koordinaten
+- Import von isInBasket() aus basket.js ergaenzt
+
+CSS-Anpassungen:
+- components.css: .info-banner Komponente (Zeile 314-356)
+- upload.css: .progress-header mit Spinner-Styling (Zeile 641-674)
+
+Bug-Fixes:
+- Modal nicht sichtbar: classList.remove('hidden') vor style.display ergaenzt
+- Progress nicht sichtbar: classList Management in showConfigDialog/hideConfigModal/handleConfigStart
+- CORS-Fehler besser erkannt: cmif-parser.js erkennt TypeError und 'Failed to fetch'
+- isInBasket import fehlte in explore.js
+
+Testing:
+- Schoenbach-Dataset lokal unter docs/data/schoenbach.xml
+- 4 GeoNames-IDs erfolgreich via Wikidata aufgeloest
+- Progress-Indicator (Spinner + Bar) sichtbar waehrend Anreicherung
+- Map View zeigt alle Orte mit Koordinaten
+
+Technische Details:
+- Wikidata SPARQL Endpoint: https://query.wikidata.org/sparql
+- User-Agent: CorrespExplorer/1.0
+- Batch Size: 50 (Wikidata Empfehlung)
+- Cache: localStorage mit Timestamp-basierter Expiration
+- Progress: 50% Koordinaten, 50% Personen
+- Adaptive UI: Views verstecken sich automatisch bei fehlenden Daten
+
+---
+
 ## 2025-12-03 (Phase 29: HTML-Refactoring - Inline-Styles entfernt)
 
 ### Alle inline-styles aus HTML-Dateien entfernt

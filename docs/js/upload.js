@@ -4,6 +4,8 @@
 import { parseCMIF, enrichWithCoordinates } from './cmif-parser.js';
 import { isCorrespSearchUrl, searchCorrespSearch, getResultCount } from './correspsearch-api.js';
 import { enrichPersonsBatch, countEnrichable } from './wikidata-enrichment.js';
+import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
+import { analyzeDataCapabilities } from './utils.js';
 
 // DOM Elements
 let uploadZone, fileInput, urlInput, urlSubmit;
@@ -66,8 +68,12 @@ function setupEventListeners() {
     });
 
     // Dataset cards
+    console.log('Found dataset cards:', datasetCards.length);
     datasetCards.forEach(card => {
-        card.addEventListener('click', () => handleDatasetSelect(card));
+        card.addEventListener('click', () => {
+            console.log('Card clicked:', card.dataset.url || card.dataset.dataset);
+            handleDatasetSelect(card);
+        });
     });
 
     // Config modal buttons
@@ -171,6 +177,8 @@ async function handleDatasetSelect(card) {
     const url = card.dataset.url;
     const isDemo = card.dataset.demo === 'true';
 
+    console.log('handleDatasetSelect:', { dataset, info, url, isDemo });
+
     hideError();
 
     if (dataset === 'hsa') {
@@ -178,11 +186,14 @@ async function handleDatasetSelect(card) {
         window.location.href = 'explore.html?dataset=hsa';
     } else if (url) {
         // External CMIF URL - load and show config
+        console.log('Loading CMIF from:', url);
         showLoading('Lade CMIF von URL...');
         try {
             const data = await parseCMIF(url);
+            console.log('CMIF parsed successfully:', data);
             await showConfigDialog(data, { type: 'url', source: url, isDemo: isDemo });
         } catch (error) {
+            console.error('Error loading CMIF:', error);
             showError(`Fehler beim Laden: ${error.message}`);
             hideLoading();
         }
@@ -214,6 +225,7 @@ async function processFile(file) {
 
 // Show configuration dialog
 async function showConfigDialog(data, sourceInfo) {
+    console.log('showConfigDialog called with:', { letterCount: data.letters?.length, sourceInfo });
     hideLoading();
 
     // Store pending data
@@ -226,10 +238,17 @@ async function showConfigDialog(data, sourceInfo) {
         if (coordsResponse.ok) {
             const coordsCache = await coordsResponse.json();
             enrichWithCoordinates(pendingData, coordsCache);
+            console.log('Static coordinates enriched');
         }
-    } catch {
-        // Coordinates cache not available - proceed without
+    } catch (error) {
+        console.log('Coordinates cache not available:', error);
     }
+
+    // Analyze data capabilities
+    console.log('Analyzing data capabilities...');
+    const capabilities = analyzeDataCapabilities(data);
+    const coordStats = analyzeCoordinateNeeds(data);
+    console.log('Coordinate stats:', coordStats);
 
     // Count entities
     const letterCount = data.letters?.length || 0;
@@ -241,38 +260,77 @@ async function showConfigDialog(data, sourceInfo) {
     document.getElementById('config-letters-count').textContent = letterCount.toLocaleString('de-DE');
     document.getElementById('config-persons-count').textContent = personCount.toLocaleString('de-DE');
     document.getElementById('config-places-count').textContent = placeCount.toLocaleString('de-DE');
+
+    // Coordinate enrichment option
+    const coordOption = document.getElementById('config-option-coordinates');
+    const coordInfo = document.getElementById('enrich-coordinates-info');
+    const coordCheckbox = document.getElementById('enrich-coordinates');
+
+    if (coordStats.needsResolution > 0) {
+        coordOption.style.display = 'block';
+        const cacheInfo = coordStats.withCoordinates > 0 ?
+            ` (${coordStats.withCoordinates} bereits im Cache)` : '';
+        coordInfo.textContent = `${coordStats.needsResolution} Orte mit GeoNames-ID${cacheInfo}`;
+        coordCheckbox.disabled = false;
+        coordCheckbox.checked = true;
+    } else {
+        coordOption.style.display = 'none';
+    }
+
+    // Person enrichment option
     document.getElementById('enrich-persons-info').textContent = `${enrichableCount} Personen mit Authority-ID`;
 
     // Show warning for large datasets
     const warningEl = document.getElementById('config-warning');
     const warningTextEl = document.getElementById('config-warning-text');
-    if (enrichableCount > 50) {
+
+    const totalTime = Math.ceil(coordStats.needsResolution * 0.2 + enrichableCount * 0.15);
+
+    if (enrichableCount > 50 || coordStats.needsResolution > 50) {
         warningEl.style.display = 'block';
-        const estimatedTime = Math.ceil(enrichableCount * 0.15); // ~150ms per request
-        warningTextEl.textContent = `Die Anreicherung von ${enrichableCount} Personen kann ca. ${estimatedTime} Sekunden dauern.`;
-    } else if (enrichableCount === 0) {
+        warningTextEl.textContent = `Die Anreicherung kann ca. ${totalTime} Sekunden dauern.`;
+    } else if (enrichableCount === 0 && coordStats.needsResolution === 0) {
         warningEl.style.display = 'block';
-        warningTextEl.textContent = 'Keine Personen mit GND- oder VIAF-ID gefunden. Anreicherung nicht moeglich.';
+        warningTextEl.textContent = 'Keine Anreicherungsoptionen verfuegbar.';
+    } else {
+        warningEl.style.display = 'none';
+    }
+
+    // Disable person enrichment if no enrichable persons
+    if (enrichableCount === 0) {
         document.getElementById('enrich-persons').checked = false;
         document.getElementById('enrich-persons').disabled = true;
     } else {
-        warningEl.style.display = 'none';
         document.getElementById('enrich-persons').disabled = false;
     }
 
+    console.log('Preparing to show modal...');
+
     // Reset progress
-    document.getElementById('config-progress').style.display = 'none';
+    const progressSection = document.getElementById('config-progress');
+    progressSection.classList.add('hidden');
+    progressSection.style.display = 'none';
     document.getElementById('config-progress-fill').style.width = '0%';
 
     // Show buttons
     document.querySelector('.config-actions').style.display = 'flex';
 
+    console.log('Opening modal...');
     // Show modal
+    configModal.classList.remove('hidden');
     configModal.style.display = 'flex';
+    console.log('Modal should be visible now. configModal:', configModal);
 }
 
 function hideConfigModal() {
+    configModal.classList.add('hidden');
     configModal.style.display = 'none';
+
+    // Reset progress section
+    const progressSection = document.getElementById('config-progress');
+    progressSection.classList.add('hidden');
+    progressSection.style.display = 'none';
+
     pendingData = null;
     pendingSourceInfo = null;
 }
@@ -287,54 +345,85 @@ function handleConfigSkip() {
 async function handleConfigStart() {
     if (!pendingData) return;
 
-    const shouldEnrich = document.getElementById('enrich-persons')?.checked;
+    const shouldEnrichCoords = document.getElementById('enrich-coordinates')?.checked;
+    const shouldEnrichPersons = document.getElementById('enrich-persons')?.checked;
 
-    if (!shouldEnrich) {
+    if (!shouldEnrichCoords && !shouldEnrichPersons) {
         finalizeAndRedirect(pendingData, pendingSourceInfo);
         return;
     }
 
     // Hide buttons, show progress
     document.querySelector('.config-actions').style.display = 'none';
-    document.getElementById('config-progress').style.display = 'block';
+    const progressSection = document.getElementById('config-progress');
+    progressSection.classList.remove('hidden');
+    progressSection.style.display = 'block';
 
-    // Extract unique persons with authority IDs
-    const persons = extractEnrichablePersons(pendingData.letters || []);
-
-    if (persons.length === 0) {
-        finalizeAndRedirect(pendingData, pendingSourceInfo);
-        return;
-    }
-
-    // Enrich with progress updates
     const progressFill = document.getElementById('config-progress-fill');
     const progressText = document.getElementById('config-progress-text');
 
-    try {
-        const enrichedMap = await enrichPersonsBatch(persons, (current, total, person) => {
-            const percent = Math.round((current / total) * 100);
-            progressFill.style.width = `${percent}%`;
-            progressText.textContent = `Lade ${current}/${total}: ${person.name}`;
-        });
+    // Step 1: Enrich coordinates (if requested)
+    if (shouldEnrichCoords) {
+        const coordStats = analyzeCoordinateNeeds(pendingData);
 
-        // Store enrichment data in session storage for use by explore.js
-        if (enrichedMap.size > 0) {
-            const enrichmentData = {};
-            enrichedMap.forEach((data, authorityId) => {
-                enrichmentData[authorityId] = data;
-            });
-            sessionStorage.setItem('person-enrichment', JSON.stringify(enrichmentData));
+        if (coordStats.needsResolution > 0) {
+            try {
+                progressText.textContent = 'Lade Koordinaten von Wikidata...';
+
+                const coordinates = await resolveGeoNamesCoordinates(
+                    coordStats.geonamesIdsToResolve,
+                    (loaded, total) => {
+                        const percent = Math.round((loaded / total) * 50); // First 50% of progress
+                        progressFill.style.width = `${percent}%`;
+                        progressText.textContent = `Lade Koordinaten... ${loaded}/${total}`;
+                    }
+                );
+
+                applyCoordinatesToData(pendingData, coordinates);
+                progressText.textContent = `${Object.keys(coordinates).length} Orte georeferenziert`;
+
+            } catch (error) {
+                console.warn('Coordinate enrichment failed:', error);
+                progressText.textContent = 'Koordinaten-Auflösung fehlgeschlagen, fahre fort...';
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
-
-        progressText.textContent = `${enrichedMap.size} Personen angereichert`;
-
-    } catch (error) {
-        console.warn('Enrichment failed:', error);
-        progressText.textContent = 'Anreicherung fehlgeschlagen, fahre fort...';
     }
 
-    // Short delay to show completion
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Step 2: Enrich persons (if requested)
+    if (shouldEnrichPersons) {
+        const persons = extractEnrichablePersons(pendingData.letters || []);
+
+        if (persons.length > 0) {
+            try {
+                const baseProgress = shouldEnrichCoords ? 50 : 0;
+
+                const enrichedMap = await enrichPersonsBatch(persons, (current, total, person) => {
+                    const percent = baseProgress + Math.round((current / total) * (100 - baseProgress));
+                    progressFill.style.width = `${percent}%`;
+                    progressText.textContent = `Lade Personen... ${current}/${total}: ${person.name}`;
+                });
+
+                // Store enrichment data in session storage for use by explore.js
+                if (enrichedMap.size > 0) {
+                    const enrichmentData = {};
+                    enrichedMap.forEach((data, authorityId) => {
+                        enrichmentData[authorityId] = data;
+                    });
+                    sessionStorage.setItem('person-enrichment', JSON.stringify(enrichmentData));
+                }
+
+                progressText.textContent = `${enrichedMap.size} Personen angereichert`;
+
+            } catch (error) {
+                console.warn('Person enrichment failed:', error);
+                progressText.textContent = 'Personen-Anreicherung fehlgeschlagen, fahre fort...';
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+    }
 
     finalizeAndRedirect(pendingData, pendingSourceInfo);
 }

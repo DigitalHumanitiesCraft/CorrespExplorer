@@ -638,6 +638,19 @@
     margin-top: var(--space-xl);
 }
 
+.progress-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+    justify-content: center;
+}
+
+.progress-header i {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+}
+
 .progress-bar {
     height: 8px;
     background: var(--color-bg-light);
@@ -655,7 +668,7 @@
 
 .progress-text {
     font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    text-align: center;
-    margin-top: var(--space-md);
+    color: var(--color-text);
+    margin: 0;
+    font-weight: 500;
 }

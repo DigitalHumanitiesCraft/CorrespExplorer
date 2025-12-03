@@ -481,6 +481,19 @@
                             <h3>Absendeorte der Korrespondenz</h3>
                             <p class="places-info">Klicken Sie auf einen Ort, um Details zu sehen und zu filtern</p>
                         </div>
+
+                        <!-- Missing Coordinates Banner -->
+                        <div id="places-missing-coords-banner" class="info-banner hidden" style="margin-bottom: 1rem;">
+                            <i class="fas fa-info-circle"></i>
+                            <div class="info-banner-content">
+                                <strong><span id="places-missing-count">0</span> Orte ohne Koordinaten</strong>
+                                <p>Diese Orte erscheinen nicht auf der Karte.</p>
+                            </div>
+                            <button id="resolve-coords-btn" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-globe"></i> Koordinaten nachladen
+                            </button>
+                        </div>
+
                         <div class="places-layout">
                             <!-- Places List -->
                             <div class="places-list-panel">

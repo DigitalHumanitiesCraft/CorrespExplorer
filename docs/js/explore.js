@@ -3,6 +3,7 @@
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS, computeLanguageColors } from './constants.js';
 import { initBasketUI } from './basket-ui.js';
+import { isInBasket } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
 import { debounce, escapeHtml } from './utils.js';
 import {
@@ -3554,6 +3555,15 @@ function initPlacesView() {
         });
     }
 
+    // Resolve coordinates button
+    const resolveBtn = elements.getById('resolve-coords-btn');
+    if (resolveBtn) {
+        resolveBtn.addEventListener('click', handleResolveCoordinates);
+    }
+
+    // Update missing coordinates banner
+    updateMissingCoordinatesBanner();
+
     log.init(`Places view initialized: ${Object.keys(placesIndex).length} places`);
 }
 
@@ -3801,6 +3811,105 @@ function applyPlaceFilter(placeId) {
     updateUrlState();
 
     log.event(`Filtered letters count: ${filteredLetters.length}`);
+}
+
+// Update missing coordinates banner in Places View
+function updateMissingCoordinatesBanner() {
+    const banner = elements.getById('places-missing-coords-banner');
+    const countSpan = elements.getById('places-missing-count');
+
+    if (!banner || !countSpan) return;
+
+    // Count places without coordinates that have GeoNames IDs
+    let missingCount = 0;
+    const missingIds = [];
+
+    Object.values(placesIndex).forEach(place => {
+        if (!place.lat && place.geonames_id) {
+            missingCount++;
+            missingIds.push(place.geonames_id);
+        }
+    });
+
+    if (missingCount > 0) {
+        countSpan.textContent = missingCount;
+        banner.classList.remove('hidden');
+        banner.dataset.missingIds = JSON.stringify(missingIds);
+    } else {
+        banner.classList.add('hidden');
+    }
+}
+
+// Handle coordinate resolution button click
+async function handleResolveCoordinates() {
+    const banner = elements.getById('places-missing-coords-banner');
+    const btn = elements.getById('resolve-coords-btn');
+
+    if (!banner || !btn) return;
+
+    const missingIds = JSON.parse(banner.dataset.missingIds || '[]');
+
+    if (missingIds.length === 0) {
+        showToast('Keine Orte zum Auflösen gefunden', 'info');
+        return;
+    }
+
+    // Disable button and show loading state
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Koordinaten...';
+
+    try {
+        // Dynamically import the geonames enrichment module
+        const { resolveGeoNamesCoordinates, applyCoordinatesToData } = await import('./geonames-enrichment.js');
+
+        // Resolve coordinates
+        const coordinates = await resolveGeoNamesCoordinates(missingIds, (loaded, total) => {
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loaded}/${total}`;
+        });
+
+        // Apply coordinates to current data
+        const currentData = {
+            letters: allLetters,
+            indices: dataIndices
+        };
+
+        applyCoordinatesToData(currentData, coordinates);
+
+        // Update sessionStorage with new coordinates
+        const storedData = JSON.parse(sessionStorage.getItem('cmif-data') || '{}');
+        storedData.letters = allLetters;
+        storedData.indices = dataIndices;
+        sessionStorage.setItem('cmif-data', JSON.stringify(storedData));
+
+        // Rebuild place aggregation
+        placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
+
+        // Rebuild places index
+        buildPlacesIndex();
+        renderPlacesList();
+
+        // Update views
+        detectAvailableViews();
+        updateViewButtons();
+
+        // Reinitialize map if it's now available
+        if (availableViews.map?.available && map) {
+            initMap();
+            updateMap();
+        }
+
+        const resolvedCount = Object.keys(coordinates).length;
+        showToast(`${resolvedCount} Orte erfolgreich georeferenziert`, 'success');
+
+        // Update banner
+        updateMissingCoordinatesBanner();
+
+    } catch (error) {
+        console.error('Failed to resolve coordinates:', error);
+        showToast(`Fehler beim Auflösen: ${error.message}`, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-globe"></i> Koordinaten nachladen';
+    }
 }
 
 // ===================

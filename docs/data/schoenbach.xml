@@ -1,0 +1,83 @@
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Fünf Briefe aus dem Nachlass von Anton Emanuel Schönbach</title>
+                <editor>Martin Anton Müller<email>martin.anton.mueller@oeaw.ac.at</email>
+                </editor>
+            </titleStmt>
+            <publicationStmt>
+                <publisher>
+                    <ref target="https://schoenbach.acdh.oeaw.ac.at/index.html">Martin Anton Müller</ref>
+                </publisher>
+                <availability>
+                    <licence target="https://creativecommons.org/publicdomain/zero/1.0/">CC0</licence>
+                </availability>
+                <date when="2022-11-09T17:13:60.88-01:00"/>
+                <idno type="url">https://raw.githubusercontent.com/acdh-oeaw/schoenbach/main/cmif_schoenbach.xml</idno>
+            </publicationStmt>
+            <sourceDesc>
+                <bibl type="online" xml:id="d010a412-a337-4bec-bc09-3a15537dc8ff">Fünf Briefe aus dem Nachlass von Anton E. Schönbach. Digitale Edition Austrian Centre for Digital Humanities and Cultural Heritage, November 2022<ref target="https://schoenbach.acdh.oeaw.ac.at/">https://schoenbach.acdh.oeaw.ac.at/</ref>
+                </bibl>
+            </sourceDesc>
+        </fileDesc>
+        <profileDesc>
+            <correspDesc ref="https://schoenbach.acdh.oeaw.ac.at/schoenbach001.html" source="#d010a412-a337-4bec-bc09-3a15537dc8ff" key="1">
+                <correspAction type="sent">
+                    <persName ref="https://d-nb.info/gnd/118604449">Saar, Ferdinand von</persName>
+                    <date when="1898-12-03"/>
+                    <placeName ref="http://www.geonames.org/3076059">Habrovany</placeName>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="https://d-nb.info/gnd/116859989">Schönbach, Anton Emanuel</persName>
+                </correspAction>
+            </correspDesc>
+            <correspDesc ref="https://schoenbach.acdh.oeaw.ac.at/schoenbach002.html" source="#d010a412-a337-4bec-bc09-3a15537dc8ff" key="2">
+                <correspAction type="sent">
+                    <persName ref="https://d-nb.info/gnd/118604449">Saar, Ferdinand von</persName>
+                    <date when="1888-10-30"/>
+                    <placeName ref="http://www.geonames.org/3079273">Blansko</placeName>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="https://d-nb.info/gnd/116859989">Schönbach, Anton Emanuel</persName>
+                </correspAction>
+            </correspDesc>
+            <correspDesc ref="https://schoenbach.acdh.oeaw.ac.at/schoenbach003.html" source="#d010a412-a337-4bec-bc09-3a15537dc8ff" key="3">
+                <correspAction type="sent">
+                    <persName ref="https://d-nb.info/gnd/118604449">Saar, Ferdinand von</persName>
+                    <date when="1905-10-20"/>
+                    <placeName ref="http://www.geonames.org/2600996">Döbling</placeName>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="https://d-nb.info/gnd/116859989">Schönbach, Anton Emanuel</persName>
+                </correspAction>
+            </correspDesc>
+            <correspDesc ref="https://schoenbach.acdh.oeaw.ac.at/schoenbach004.html" source="#d010a412-a337-4bec-bc09-3a15537dc8ff" key="4">
+                <correspAction type="sent">
+                    <persName ref="https://d-nb.info/gnd/118604449">Saar, Ferdinand von</persName>
+                    <date when="1888-01-03"/>
+                    <placeName ref="http://www.geonames.org/3079273">Blansko</placeName>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="https://d-nb.info/gnd/116859989">Schönbach, Anton Emanuel</persName>
+                </correspAction>
+            </correspDesc>
+            <correspDesc ref="https://schoenbach.acdh.oeaw.ac.at/schoenbach005.html" source="#d010a412-a337-4bec-bc09-3a15537dc8ff" key="5">
+                <correspAction type="sent">
+                    <persName ref="https://d-nb.info/gnd/118528661">Ebner-Eschenbach, Marie von</persName>
+                    <date when="1911-09-01"/>
+                    <placeName ref="http://www.geonames.org/3061643">Zdislavice</placeName>
+                </correspAction>
+                <correspAction type="received">
+                    <persName ref="https://d-nb.info/gnd/116859970">Schönbach, Anna</persName>
+                    <placeName ref="http://www.geonames.org/2778067">Graz</placeName>
+                </correspAction>
+            </correspDesc>
+        </profileDesc>
+    </teiHeader>
+    <text>
+        <body>
+            <p/>
+        </body>
+    </text>
+</TEI>

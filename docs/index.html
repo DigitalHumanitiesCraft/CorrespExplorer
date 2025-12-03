@@ -133,7 +133,7 @@
                         <span><i class="fas fa-map-marker-alt"></i> Berlin/Potsdam</span>
                     </div>
                 </div>
-                <div class="dataset-card" data-url="https://raw.githubusercontent.com/acdh-oeaw/schoenbach/main/cmif_schoenbach.xml">
+                <div class="dataset-card" data-url="data/schoenbach.xml">
                     <h4>Schoenbach-Briefe</h4>
                     <p>Korrespondenz von Anton Schoenbach (1888-1911)</p>
                     <div class="dataset-stats">
@@ -172,7 +172,18 @@
                 <!-- Enrichment Options -->
                 <div class="config-section">
                     <h4><i class="fas fa-magic"></i> Semantische Anreicherung</h4>
-                    <p class="config-hint">Zusaetzliche Daten von Wikidata laden (Lebensdaten, Berufe, Bilder, etc.)</p>
+                    <p class="config-hint">Zusaetzliche Daten von Wikidata laden</p>
+
+                    <div class="config-option" id="config-option-coordinates">
+                        <label class="config-checkbox">
+                            <input type="checkbox" id="enrich-coordinates" checked>
+                            <span class="checkmark"></span>
+                            <span class="config-label">
+                                <strong>Orte georeferenzieren</strong>
+                                <span class="config-sublabel" id="enrich-coordinates-info">0 Orte mit GeoNames-ID</span>
+                            </span>
+                        </label>
+                    </div>
 
                     <div class="config-option">
                         <label class="config-checkbox">
@@ -203,10 +214,13 @@
 
                 <!-- Progress (hidden initially) -->
                 <div class="config-progress hidden" id="config-progress">
+                    <div class="progress-header">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p class="progress-text" id="config-progress-text">Lade Daten von Wikidata...</p>
+                    </div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="config-progress-fill"></div>
                     </div>
-                    <p class="progress-text" id="config-progress-text">Lade Daten von Wikidata...</p>
                 </div>
             </div>
         </div>

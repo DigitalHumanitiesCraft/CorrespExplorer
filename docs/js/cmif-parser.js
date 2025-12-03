@@ -31,8 +31,11 @@ export async function parseCMIF(source, onProgress = null) {
             }
             xmlString = await response.text();
         } catch (fetchError) {
-            if (fetchError.name === 'TypeError' && fetchError.message.includes('Failed to fetch')) {
-                throw new Error('CORS-Fehler: Der Server erlaubt keine direkten Anfragen. Laden Sie die Datei manuell herunter und verwenden Sie den Datei-Upload.');
+            // CORS errors manifest as TypeError or NetworkError
+            if (fetchError.name === 'TypeError' || fetchError.message.includes('Failed to fetch') ||
+                fetchError.message.includes('NetworkError') || fetchError.message.includes('CORS')) {
+                const hostname = new URL(source).hostname;
+                throw new Error(`CORS-Fehler: ${hostname} erlaubt keine direkten Anfragen. Bitte laden Sie die Datei manuell herunter und verwenden Sie den Datei-Upload.`);
             }
             throw fetchError;
         }

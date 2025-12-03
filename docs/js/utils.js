@@ -222,3 +222,62 @@ export function parseGeoNamesRef(url) {
 
     return null;
 }
+
+/**
+ * Analyze dataset capabilities to determine which views are available
+ * @param {Object} data - Parsed CMIF data
+ * @returns {Object} Capabilities analysis
+ */
+export function analyzeDataCapabilities(data) {
+    const capabilities = {
+        hasPersons: false,
+        hasDates: false,
+        hasPlaces: false,
+        hasCoordinates: false,
+        hasSubjects: false,
+        hasMentions: false,
+        placeStats: {
+            total: 0,
+            withCoordinates: 0,
+            withGeoNamesId: 0,
+            needsResolution: 0
+        }
+    };
+
+    if (!data || !data.letters) {
+        return capabilities;
+    }
+
+    // Check persons
+    capabilities.hasPersons = data.indices?.persons && Object.keys(data.indices.persons).length > 0;
+
+    // Check dates
+    capabilities.hasDates = data.letters.some(l => l.year !== null && l.year !== undefined);
+
+    // Check places
+    if (data.indices?.places) {
+        const places = Object.values(data.indices.places);
+        capabilities.hasPlaces = places.length > 0;
+        capabilities.placeStats.total = places.length;
+
+        for (const place of places) {
+            if (place.lat && place.lon) {
+                capabilities.placeStats.withCoordinates++;
+                capabilities.hasCoordinates = true;
+            } else if (place.geonames_id) {
+                capabilities.placeStats.withGeoNamesId++;
+                capabilities.placeStats.needsResolution++;
+            }
+        }
+    }
+
+    // Check subjects
+    capabilities.hasSubjects = data.indices?.subjects && Object.keys(data.indices.subjects).length > 0;
+
+    // Check mentions
+    capabilities.hasMentions = data.letters.some(l =>
+        l.mentions?.persons && l.mentions.persons.length > 0
+    );
+
+    return capabilities;
+}

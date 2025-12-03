@@ -109,7 +109,7 @@ Browser-basierte Test-Ausführung:
 
 ## JavaScript Modules
 
-Die Anwendung verwendet 26 JavaScript-Module organisiert in 7 Kategorien. Alle Module sind ES6-Module ohne Build-Prozess. Die Architektur trennt klar zwischen Core Data Processing (CMIF-Parsing, State-Management), Infrastructure (DOM-Caching, Utilities) und UI-Komponenten (Views, Basket, Enrichment).
+Die Anwendung verwendet 27 JavaScript-Module organisiert in 7 Kategorien. Alle Module sind ES6-Module ohne Build-Prozess. Die Architektur trennt klar zwischen Core Data Processing (CMIF-Parsing, State-Management), Infrastructure (DOM-Caching, Utilities) und UI-Komponenten (Views, Basket, Enrichment).
 
 ### Core Data Processing
 
@@ -168,6 +168,7 @@ Shared utility functions:
 - formatNumber: Lokalisierte Zahlenformatierung
 - parseAuthorityRef: VIAF, GND, LCCN, ISNI, ORCID Erkennung
 - parseGeoNamesRef: GeoNames ID Extraktion
+- analyzeDataCapabilities: Erkennt ob Daten Koordinaten, Personen, Datums enthalten (für adaptive UI)
 - Imports: keine
 - Exports: Einzelne Funktionen
 
@@ -186,11 +187,11 @@ Zentrale Konstanten:
 
 ### Enrichment
 
-Optionale semantische Anreicherung über externe APIs. Beide Module cachen Ergebnisse in sessionStorage (7 Tage) um wiederholte API-Calls zu vermeiden.
+Optionale semantische Anreicherung über externe APIs. Alle Module cachen Ergebnisse in localStorage (7 Tage) um wiederholte API-Calls zu vermeiden.
 
 wikidata-enrichment.js
 
-Wikidata SPARQL-Integration:
+Wikidata SPARQL-Integration für Personen:
 - Queries via VIAF, GND, direct QID
 - Batch-Processing mit Progress-Callbacks
 - Biografische Daten: Lebensdaten, Bilder, Berufe
@@ -198,6 +199,18 @@ Wikidata SPARQL-Integration:
 - SessionStorage-Caching (7 Tage)
 - Imports: keine
 - Exports: enrichPersonsBatch, enrichPerson, countEnrichable, formatLifeDates, formatPlaces, buildExternalLinks
+
+geonames-enrichment.js
+
+Wikidata SPARQL-Integration für Orte:
+- Löst GeoNames-IDs zu Koordinaten auf via Wikidata (P1566 → P625)
+- Batch-Processing: 50 IDs pro Request
+- Rate Limiting: 1.5s zwischen Requests
+- Wendet Koordinaten auf data.letters und data.indices.places an
+- LocalStorage-Caching (7 Tage)
+- Progress-Callbacks für UI-Updates
+- Imports: keine
+- Exports: resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds
 
 enrichment.js
 
@@ -252,11 +265,13 @@ upload.js
 
 Handler für die Landing-Page:
 - Event-Handler: handleFileSelect, handleDragDrop, handleUrlSubmit, handleDatasetSelect, handleCorrespSearchSubmit
-- Config-Modal: Wikidata-Enrichment Option, Koordinaten-Auflösung
-- Datenverarbeitung: parseCMIF(), optional enrichPersonsBatch(), enrichWithCoordinates()
+- Config-Modal: Zeigt Enrichment-Optionen (Koordinaten, Personen)
+- Zwei-stufige Anreicherung: Koordinaten (0-50%), dann Personen (50-100%)
+- analyzeDataCapabilities() prüft verfügbare Daten für adaptive UI
+- Datenverarbeitung: parseCMIF(), optional geonames-enrichment.js, wikidata-enrichment.js
 - Speicherung in sessionStorage mit Quota-Exceeded-Handling
 - Weiterleitung zu explore.html nach erfolgreichem Upload
-- Imports: cmif-parser.js, correspsearch-api.js, wikidata-enrichment.js
+- Imports: cmif-parser.js, correspsearch-api.js, wikidata-enrichment.js, geonames-enrichment.js, utils.js
 
 explore.js
 

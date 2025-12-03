@@ -310,3 +310,47 @@
     justify-content: space-between;
     align-items: center;
 }
+
+/* ==========================================
+ * INFO BANNER
+ * ========================================== */
+
+.info-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+}
+
+.info-banner.hidden {
+    display: none;
+}
+
+.info-banner > i {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.info-banner-content {
+    flex: 1;
+}
+
+.info-banner-content strong {
+    display: block;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.info-banner-content p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+}
+
+.info-banner .btn {
+    flex-shrink: 0;
+}

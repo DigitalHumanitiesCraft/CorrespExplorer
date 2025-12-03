@@ -1,6 +1,6 @@
 # JavaScript Context Map
 
-17 Module | Modulare ES6-Architektur ohne Build-Tools
+18 Module | Modulare ES6-Architektur ohne Build-Tools
 
 ## Module nach Kategorie
 
@@ -23,6 +23,7 @@ Data (Parsing & Laden)
 
 Enrichment (Datenanreicherung)
 - wikidata-enrichment.js - SPARQL für Bilder, Lebensdaten, Orte
+- geonames-enrichment.js - GeoNames zu Koordinaten via Wikidata SPARQL
 - enrichment.js - Zusätzliche Enrichments
 
 UI/UX (User-Interaktion)
@@ -41,6 +42,9 @@ Tests (siehe tests/CONTEXT-MAP.md)
 upload.js
   ├─> Datei-Upload / URL-Input
   ├─> cmif-parser.js: XML → JSON
+  ├─> Config-Modal zeigen mit Enrichment-Optionen
+  │   ├─> Optional: geonames-enrichment.js (GeoNames IDs → Koordinaten)
+  │   └─> Optional: wikidata-enrichment.js (Authority IDs → Bilder/Daten)
   ├─> sessionStorage.setItem('cmif_data', ...)
   └─> window.location.href = 'explore.html'
 ```
