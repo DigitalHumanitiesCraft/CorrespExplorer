@@ -4,11 +4,12 @@ Regeln für alle Markdown-Dateien im knowledge/ Verzeichnis.
 
 ## Verbotene Elemente
 
-- Keine Bold-Formatierung
+- Keine Bold-Formatierung (weder ** noch __)
 - Keine Emojis
 - Keine Exclamation Marks für Emphasis
 - Keine "Estimated Time" Sektionen
 - Keine Line Counts oder Code Size Metrics
+- Keine File Size Angaben (z.B. 9.3K, 25K) - Dateien ändern sich
 - Keine Box Drawings oder ASCII Art Diagramme
 - Keine Code Snippets (außer minimal notwendige API-Signaturen)
 

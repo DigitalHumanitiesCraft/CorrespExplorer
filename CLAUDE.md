@@ -10,6 +10,7 @@ This document defines coding and documentation style rules for the CorrespExplor
 - Never include "Estimated Time" sections
 - Never use exclamation marks for emphasis
 - Never include line counts or code size metrics (code changes constantly, creates inconsistencies)
+- Never include file sizes in documentation (e.g., 9.3K, 25K) - files change size
 - Never include box drawings or ASCII art in documentation (use simple lists instead)
 
 ### Preferred Style

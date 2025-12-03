@@ -10,21 +10,21 @@ Stand: 2025-12-03
 
 ### Specifications (Fundament)
 
-**cmif-standard.md** (9.3K)
+#### cmif-standard.md
 - Zweck: TEI-basierte CMIF Format Spezifikation
 - Zielgruppe: Entwickler (Parser), Forscher (Datenstruktur)
 - Änderungsrate: Nie (externer Standard)
 - Abhängigkeiten: Keine (Quelle für alle)
 - Nutzen: XML-Struktur, Authority-Systeme, Parsing-Regeln
 
-**VAULT-RULES.md** (2.4K)
+#### VAULT-RULES.md
 - Zweck: Dokumentationsstandards für knowledge/ Ordner
 - Zielgruppe: Dokumentations-Autoren, Contributors, Claude
 - Änderungsrate: Selten (Standards stabil)
 - Abhängigkeiten: Keine (Meta-Dokument)
 - Nutzen: Schreibrichtlinien, verbotene Elemente, bevorzugte Formatierung
 
-**uncertainty-concept.md** (11K)
+#### uncertainty-concept.md
 - Zweck: Spezifikation für Unsicherheits-Handling in Parsing und UI
 - Zielgruppe: Entwickler (Implementation), Forscher (Interpretation)
 - Änderungsrate: Selten (stabile Spec)
@@ -33,21 +33,21 @@ Stand: 2025-12-03
 
 ### System (Architektur & Design)
 
-**architecture.md** (25K)
+#### architecture.md
 - Zweck: Vollständige System-Übersicht und Komponenten-Referenz
 - Zielgruppe: Entwickler, Claude
 - Änderungsrate: Selten (nur bei Architektur-Änderungen)
 - Abhängigkeiten: Referenziert von allen Development-Tasks
 - Nutzen: 26 Module, 8 Views, 4 Datenflüsse, Performance-Limits
 
-**design.md** (13K)
+#### design.md
 - Zweck: UI/UX Spezifikation mit visueller Sprache und Patterns
 - Zielgruppe: Designer, Frontend-Entwickler
 - Änderungsrate: Selten (Design-System stabil)
 - Abhängigkeiten: tokens.css (kanonische Quelle)
 - Nutzen: Farbpalette, Typografie, Komponenten-Specs, Unsicherheits-Icons
 
-**learnings.md** (8.6K)
+#### learnings.md
 - Zweck: Erklärt WARUM Entscheidungen getroffen wurden (Rationale)
 - Zielgruppe: Entwickler (Decision Framework), neue Contributors
 - Änderungsrate: Selten (nur bei neuen Major Decisions)
@@ -56,21 +56,21 @@ Stand: 2025-12-03
 
 ### Operational (Ausführung)
 
-**testing.md** (6.7K)
+#### testing.md
 - Zweck: Test-Philosophie und Execution-Strategy
 - Zielgruppe: Entwickler (Test-Writing), QA
 - Änderungsrate: Oft (Test-Coverage erweitert sich)
 - Abhängigkeiten: architecture.md, demo-datasets.md
 - Nutzen: Real Data Only Rule, 74+ Tests, Test-Pyramid, Best Practices
 
-**journal.md** (43K)
+#### journal.md
 - Zweck: Chronologisches Development-Log mit Decisions und Commits
 - Zielgruppe: Entwickler (Evolution verstehen), Claude (Context)
 - Änderungsrate: Kontinuierlich (nach jeder Phase)
 - Abhängigkeiten: Alle technischen Dateien
 - Nutzen: 27 Phasen dokumentiert, Architectural Decisions E1-E11
 
-**KNOWN-ISSUES.md** (3.8K)
+#### KNOWN-ISSUES.md
 - Zweck: Registry von dokumentierten Inkonsistenzen mit Priorisierung
 - Zielgruppe: Entwickler (Cleanup), Project Managers
 - Änderungsrate: Oft (Issues discovered/fixed)
@@ -79,21 +79,21 @@ Stand: 2025-12-03
 
 ### Reference (Discovery)
 
-**user-stories.md** (8.9K)
+#### user-stories.md
 - Zweck: Requirements-Spec mit 27 implementierten Features
 - Zielgruppe: Project Managers, Entwickler (Scope), Forscher
 - Änderungsrate: Selten (Core Stories stabil)
 - Abhängigkeiten: architecture.md (beschreibt Implementations)
 - Nutzen: 27/27 Stories complete, Acceptance Criteria, 9 Kategorien
 
-**demo-datasets.md** (8.6K)
+#### demo-datasets.md
 - Zweck: Analyse von 6 Test-CMIF-Datasets mit Coverage-Matrix
 - Zielgruppe: Entwickler (Testing), Forscher (Dataset-Auswahl)
 - Änderungsrate: Selten (bei neuen Datasets)
 - Abhängigkeiten: cmif-standard.md, uncertainty-concept.md
 - Nutzen: test-uncertainty.xml mit 22 Cases, Performance-Testing mit Rollett
 
-**cmif-sources.md** (4.4K)
+#### cmif-sources.md
 - Zweck: Katalog externer CMIF-Repositories mit URLs
 - Zielgruppe: Forscher, Entwickler (Data Loading)
 - Änderungsrate: Oft (neue Quellen entdeckt)
@@ -138,20 +138,20 @@ Stand: 2025-12-03
 
 ## Dokumenten-Matrix
 
-| Datei | Größe | Typ | Stabilität | Änderungsrate | Zuletzt |
-|-------|-------|-----|------------|---------------|---------|
-| architecture.md | 25K | Architektur | Niedrig | Selten | 2025-12 |
-| cmif-sources.md | 4.4K | Referenz | Hoch | Oft | 2025-12 |
-| cmif-standard.md | 9.3K | Spezifikation | Sehr hoch | Nie | - |
-| demo-datasets.md | 8.6K | Referenz | Mittel | Selten | 2025-11 |
-| design.md | 13K | Spezifikation | Hoch | Selten | 2025-11 |
-| journal.md | 43K | Historie | Niedrig | Kontinuierlich | 2025-12 |
-| KNOWN-ISSUES.md | 3.8K | Wartung | Niedrig | Oft | 2025-12 |
-| learnings.md | 8.6K | Konzept | Hoch | Selten | 2025-12 |
-| testing.md | 6.7K | Prozess | Mittel | Oft | 2025-12 |
-| uncertainty-concept.md | 11K | Spezifikation | Sehr hoch | Selten | 2025-11 |
-| user-stories.md | 8.9K | Requirements | Sehr hoch | Selten | 2025-11 |
-| VAULT-RULES.md | 2.4K | Governance | Sehr hoch | Selten | 2025-11 |
+| Datei | Typ | Stabilität | Änderungsrate | Zuletzt |
+|-------|-----|------------|---------------|---------|
+| architecture.md | Architektur | Niedrig | Selten | 2025-12 |
+| cmif-sources.md | Referenz | Hoch | Oft | 2025-12 |
+| cmif-standard.md | Spezifikation | Sehr hoch | Nie | - |
+| demo-datasets.md | Referenz | Mittel | Selten | 2025-11 |
+| design.md | Spezifikation | Hoch | Selten | 2025-11 |
+| journal.md | Historie | Niedrig | Kontinuierlich | 2025-12 |
+| KNOWN-ISSUES.md | Wartung | Niedrig | Oft | 2025-12 |
+| learnings.md | Konzept | Hoch | Selten | 2025-12 |
+| testing.md | Prozess | Mittel | Oft | 2025-12 |
+| uncertainty-concept.md | Spezifikation | Sehr hoch | Selten | 2025-11 |
+| user-stories.md | Requirements | Sehr hoch | Selten | 2025-11 |
+| VAULT-RULES.md | Governance | Sehr hoch | Selten | 2025-11 |
 
 ---
 
@@ -223,10 +223,7 @@ cmif-sources.md → Data-Loading
 
 ## Qualitäts-Metriken
 
-Total: 12 Dateien, 144.8K
-Durchschnitt: 12.1K pro Datei
-Größte: journal.md (43K)
-Kleinste: VAULT-RULES.md (2.4K)
+Total: 12 Dateien
 
 Compliance: 12/12 VAULT-RULES compliant (100%)
 Coverage: Alle Aspekte dokumentiert (System, Process, Standards, History)
