@@ -1,0 +1,99 @@
+/* Base Styles - CorrespExplorer
+ * Global element styles and resets
+ */
+
+/* ==========================================
+ * ACCESSIBILITY - Focus States
+ * WCAG 2.1 AA compliant
+ * ========================================== */
+
+/* Global focus style for all interactive elements */
+*:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Remove default outline for mouse users */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Special focus for buttons (tighter offset) */
+button:focus-visible,
+.btn:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+/* Special focus for inputs (inside border) */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(166, 75, 63, 0.1);
+}
+
+/* ==========================================
+ * RESET
+ * ========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+ * BASE ELEMENTS
+ * ========================================== */
+
+body {
+    font-family: var(--font-base);
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background: var(--color-bg);
+    line-height: 1.6;
+    padding-top: var(--navbar-height);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-headings);
+    color: var(--color-primary);
+}
+
+a {
+    color: var(--color-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================
+ * CODE & PRE
+ * ========================================== */
+
+code {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    background: var(--color-bg-light);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+pre {
+    font-family: var(--font-mono);
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    overflow-x: auto;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}

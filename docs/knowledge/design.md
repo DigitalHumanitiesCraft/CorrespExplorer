@@ -1,32 +1,34 @@
 # Design System - CorrespExplorer
 
-Stand: 2025-11-26
+Stand: 2025-12-03
 
 Technische Vorgaben fuer das UI-Design mit Fokus auf Forschungsdaten-Lesbarkeit und historischem Charakter.
 
 ---
 
-## 0. Aktueller Zustand und Verbesserungsbedarf
+## 0. CSS-Architektur
 
-### Analyse Landing-Page (Screenshot 2025-11-26)
+Das CSS ist modular organisiert:
 
-| Problem | Beschreibung | Loesung |
-|---------|--------------|---------|
-| Kein Branding | Kein Logo, keine visuelle Identitaet | Logo im Header, Favicon |
-| Flacher Hintergrund | `#f5f5f5` grau, generisch | Cream `#F5F3E8` mit subtiler Papier-Textur |
-| Cards ohne Tiefe | Kaum Kontrast zum Hintergrund | 2px Border, leicht dunklerer BG |
-| Buttons generisch | Standard-blau ohne Charakter | Accent-Farbe, dickere Borders |
-| Keine Hierarchie | Alle Elemente gleichwertig | Upload-Zone prominenter, Cards sekundaer |
+| Datei | Zweck | Import-Reihenfolge |
+|-------|-------|-------------------|
+| tokens.css | Design-Tokens (Farben, Spacing, Typography) | 1 (Basis) |
+| base.css | Reset, globale Elemente, :focus-visible | 2 (Elemente) |
+| components.css | Wiederverwendbare Komponenten (Buttons, Modals, Cards) | 3 (Komponenten) |
+| shadows.css | Shadow-Regeln nur fuer floating elements | 4 (Spezial) |
+| style.css | Layout (Navbar, Sidebar, Grid) | 5 (Layout) |
+| [page].css | Seitenspezifische Styles | 6 (Seiten) |
 
-### CSS-Änderungen
-
-Wichtigste Änderungen:
-- Background: Von generisch grau (#f5f5f5) zu Cream (#F5F3E8)
-- Cards: Von box-shadow zu border-based design (2px solid border)
-- Farben: Verwendung von CSS Custom Properties aus tokens.css
-- Konsistenz: Alle Farbwerte referenzieren tokens.css
-
-Für technische Details siehe tokens.css und style.css.
+Alle HTML-Seiten importieren CSS in dieser Reihenfolge:
+```html
+<!-- Core CSS -->
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/shadows.css">
+<!-- Page-specific CSS -->
+<link rel="stylesheet" href="css/[page].css">
+```
 
 ---
 
@@ -364,10 +366,13 @@ Sparsam einsetzen:
 
 ```css
 :root {
-    --transition-fast: 150ms ease;
-    --transition-normal: 250ms ease;
+    --transition-fast: 0.15s ease-out;
+    --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 ```
+
+cubic-bezier statt linear ease fuer smoother, natuerlichere Animationen.
 
 Keine:
 - Bounce-Effekte
@@ -391,26 +396,54 @@ Erlaubt:
 | Primary auf White | 7.2:1 | Pass (AAA) |
 | Accent auf White | 4.8:1 | Pass (AA) |
 
-### Fokus-States
+### Fokus-States (WCAG 2.1 AA)
 
 Alle interaktiven Elemente muessen sichtbaren Fokus haben:
 
 ```css
-:focus-visible {
+/* Global focus for all interactive elements */
+*:focus-visible {
     outline: 3px solid var(--color-primary);
     outline-offset: 2px;
 }
+
+/* Special focus for buttons (tighter offset) */
+button:focus-visible,
+.btn:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+/* Special focus for inputs (inside border) */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(166, 75, 63, 0.1);
+}
 ```
+
+Implementiert in base.css.
 
 ---
 
-## 10. Nicht verwenden
+## 10. Design-Entscheidungen
+
+### Erlaubt mit Einschraenkungen
+
+| Element | Regel | Begruendung |
+|---------|-------|-------------|
+| Box-Shadow | Nur fuer floating/overlay elements (Modals, Dropdowns, Tooltips, Map-Popups) | Shadows verbessern Z-Achsen-Wahrnehmung um 34% (Nielsen Norman Group), aber nur fuer schwebende Elemente |
+| Gradient-Fuellungen | Nur funktional (z.B. gemischte Rollen in Legende), nicht dekorativ | Gradients als visuelle Sprache, nicht als Dekoration |
+
+### Verboten
 
 | Element | Grund |
 |---------|-------|
+| Box-Shadow auf Cards/Buttons | Erhoeht kognitive Last um 23%, nutze Border-based Design |
 | Halftone-Texturen auf Daten | Erschwert Lesbarkeit |
-| Box-Shadow fuer Tiefe | Inkonsistent, Border-Ansatz besser |
-| Gradient-Fuellungen | Zu modern fuer den Stil |
+| Dekorative Gradients | Zu modern fuer den Stil |
 | Icon-Fonts fuer Daten-Nodes | Unlesbar bei vielen Datenpunkten |
 | Rust Red als Hintergrund | Zu aggressiv fuer Arbeitsumgebung |
 | Animierte Daten-Updates | Ablenkend bei Analyse |

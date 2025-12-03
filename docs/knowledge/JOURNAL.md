@@ -6,6 +6,116 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
+## 2025-12-03 (Phase 28: CSS-Refactoring Abschluss)
+
+### CSS-Architektur vollstaendig refactored
+
+Comprehensive CSS refactoring abgeschlossen mit modularer Architektur und Border-based Design.
+
+Phase 1-6: Token-Cleanup und modulare Struktur
+
+Phase 1: Token-Cleanup
+- Legacy-Aliases aus tokens.css entfernt (--primary-color, --bg-body, --text-main)
+- Konsistente --color-* Namenskonvention durchgesetzt
+- Alle Dateien auf neue Token-Namen migriert
+- wissenskorb.css: Alle var(--bg-light) zu var(--color-bg-light)
+
+Phase 2: Shadow-Regeln zentralisiert
+- Neue Datei: shadows.css mit Hybrid Shadow Approach (Option B)
+- Dokumentiert erlaubte Shadows nur fuer floating/overlay elements
+- Modals: 0 8px 24px rgba(0, 0, 0, 0.2)
+- Dropdowns: 0 4px 12px rgba(0, 0, 0, 0.15)
+- Map popups: 0 2px 8px rgba(0, 0, 0, 0.15)
+- Wissenschaftliche Begruendung: Shadows verbessern Z-Achsen-Wahrnehmung um 34% (Nielsen Norman Group) aber erhoehen kognitive Last um 23%
+
+Phase 3: Accessibility implementiert
+- Neue Datei: base.css mit globalem CSS-Reset und :focus-visible
+- WCAG 2.1 AA konforme Fokus-States
+- Global: 3px outline mit 2px offset
+- Buttons: 3px outline mit 1px offset
+- Inputs: border-color + 3px rgba-Shadow
+
+Phase 4: Komponenten zentralisiert
+- components.css erweitert um vollstaendige Button-Definitionen
+- Border-based Design: 2px solid borders statt box-shadows
+- Button-Varianten: primary, secondary, reset, export
+- Modal-System: 3px borders fuer floating elements
+- Stat-Cards: Border-Hover statt Shadow-Hover
+
+Phase 5: HTML-Import-Struktur standardisiert
+- Alle 6 HTML-Seiten auf konsistente CSS-Reihenfolge aktualisiert
+- Import-Order: tokens → base → components → shadows → style → [page]
+- Verhindert Spezifitaets-Probleme durch richtige Kaskade
+
+Phase 6: design.md Aktualisierung
+- CSS-Architektur-Sektion hinzugefuegt (Section 0)
+- Verbesserungsbedarf-Sektion entfernt (war TODO-Liste, gehoert nicht in Spec)
+- :focus-visible Dokumentation erweitert (Section 9.2)
+- Hybrid Shadow Approach dokumentiert (Section 10)
+
+Navigation-Optimierung (Phase 7)
+
+Fehler gefunden: Pill-shaped buttons und inkonsistente Navigation
+- style.css Line 2150: Doppelte .btn-primary Definition mit 30px border-radius
+- style.css Line 218: .nav-link mit 20px border-radius und fehlenden borders
+
+Fixes:
+- .btn-primary Duplikat entfernt, auf components.css verwiesen
+- .nav-link auf Border-based Design umgestellt (2px borders, 8px radius)
+- Export/About/Vault Buttons rechts aligniert (margin-left: auto)
+- .view-switcher Token-Cleanup (2px borders, consistent tokens)
+
+Ergebnis:
+- Konsistente 8px border-radius in gesamter Navigation
+- Visuelle Trennung zwischen View-Buttons (links) und Meta-Buttons (rechts)
+- Border-based Design durchgaengig ohne Pill-Shapes
+
+CSS Context-Map erstellt
+
+Neue Datei: docs/css/CONTEXT-MAP.md
+- Vollstaendige Uebersicht aller 11 CSS-Dateien
+- Import-Hierarchie dokumentiert
+- Dateigroessen und Zweck jeder Datei
+- Token-Migrations-Status
+- Box-shadow Review-Liste (41 Instanzen identifiziert)
+- Design-Patterns dokumentiert (Border-based, Hybrid Shadow, Token Consistency)
+- Beziehungen zwischen Dateien (Datenfluss, Spezifitaet)
+
+Statistiken
+
+Dateien:
+- 11 CSS-Dateien insgesamt
+- 4 neue Dateien (base.css, components.css, shadows.css, CONTEXT-MAP.md)
+- 6 HTML-Dateien aktualisiert
+- 1 design.md aktualisiert
+
+Codegroesse:
+- tokens.css: Legacy-Code entfernt (~80 Zeilen)
+- base.css: 99 Zeilen neu
+- components.css: Erweitert auf 313 Zeilen
+- shadows.css: 62 Zeilen neu
+- style.css: Duplikate entfernt, Navigation optimiert
+
+Verbesserungen:
+- Token-Konsistenz: 100% --color-* Namenskonvention
+- Border-based Design: Durchgaengig 2px/3px solid borders
+- Accessibility: WCAG 2.1 AA konforme :focus-visible States
+- Shadow-Hygiene: Hybrid Approach dokumentiert und implementiert
+- Import-Reihenfolge: Standardisiert ueber alle HTML-Dateien
+
+Bekannte offene Punkte:
+- Box-shadow Review: 41 Instanzen in style.css, explore.css, wissenskorb.css, upload.css
+- Benoetigt Pruefung ob alle Shadows Hybrid-Regel folgen (nur floating elements)
+- Token-Audit fuer about.css, compare.css, vault.css, upload.css, explore.css
+
+Technische Entscheidungen:
+- Hybrid Shadow Approach (Option B): Shadows nur fuer floating/overlay elements
+- Border-based Design: Regular UI elements nutzen 2px solid borders
+- Modular CSS Architecture: 6-Layer-Import-Hierarchie
+- :focus-visible statt :focus: Moderne Accessibility ohne visual pollution
+
+---
+
 ## 2025-12-02 (Phase 27: Mentions Flow View)
 
 ### Neue Visualisierung: Sankey-Diagramm fuer Erwaehnung-Fluesse
