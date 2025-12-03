@@ -99,7 +99,7 @@ button, .btn {
     min-height: 44px;
     width: 44px;
     height: 44px;
-    padding: 10px;
+    padding: calc(var(--space-sm) + var(--space-xs) / 2);
     cursor: pointer;
     margin-right: var(--space-sm);
     border-radius: var(--radius-md);
@@ -268,7 +268,7 @@ button, .btn {
 }
 
 .nav-dropdown-arrow {
-    font-size: 8px;
+    font-size: calc(var(--font-size-xs) - 4px);
     margin-left: 6px;
     opacity: 0.8;
     transition: transform 0.2s;
@@ -754,8 +754,8 @@ button, .btn {
         flex: 0 0 auto;
         min-height: 40px;
         min-width: 40px;
-        padding: 6px 8px;
-        font-size: 11px;
+        padding: calc(var(--space-xs) + var(--space-xs) / 2) var(--space-sm);
+        font-size: calc(var(--font-size-xs) - 1px);
         text-align: center;
         border: none;
         border-radius: 4px;
@@ -775,7 +775,7 @@ button, .btn {
     }
 
     .view-btn i {
-        font-size: 16px;
+        font-size: var(--font-size-md);
     }
 
     .view-btn.active,
@@ -863,7 +863,7 @@ button, .btn {
 
     .view-switcher {
         margin-right: var(--space-xs);
-        padding: 2px;
+        padding: calc(var(--space-xs) / 2);
         gap: 1px;
         flex: 1;
         max-width: none;
@@ -872,7 +872,7 @@ button, .btn {
     .view-btn {
         min-height: 36px;
         min-width: 36px;
-        padding: 4px;
+        padding: var(--space-xs);
         font-size: 0; /* Hide text */
     }
 
@@ -882,7 +882,7 @@ button, .btn {
     }
 
     .view-btn i {
-        font-size: 14px;
+        font-size: var(--font-size-sm);
     }
 
     /* Nav links - only essential buttons */
@@ -893,11 +893,11 @@ button, .btn {
     .nav-links .nav-link {
         min-width: 32px;
         min-height: 32px;
-        padding: 4px;
+        padding: var(--space-xs);
     }
 
     .nav-links .nav-link i {
-        font-size: 14px;
+        font-size: var(--font-size-sm);
     }
 
     .tabs {
@@ -925,7 +925,7 @@ button, .btn {
     }
 
     .view-btn {
-        padding: 4px 6px;
+        padding: var(--space-xs) calc(var(--space-xs) + var(--space-xs) / 2);
         font-size: var(--font-size-xs);
         min-height: 40px;  /* Slightly smaller for landscape */
     }
@@ -955,8 +955,8 @@ button, .btn {
 }
 
 .maplibregl-popup-close-button {
-    font-size: 20px;
-    padding: 4px;
+    font-size: calc(var(--font-size-lg) + 2px);
+    padding: var(--space-xs);
     color: var(--color-text-light);
 }
 
@@ -1122,7 +1122,7 @@ button, .btn {
 
 /* Basket buttons in popups */
 .btn-basket-toggle {
-    padding: 6px 12px;
+    padding: calc(var(--space-xs) + var(--space-xs) / 2) var(--space-md);
     background: white;
     color: var(--color-secondary);
     border: 2px solid var(--color-secondary);
@@ -1171,13 +1171,13 @@ button, .btn {
 }
 
 .btn-basket-mini {
-    padding: 4px 8px;
+    padding: var(--space-xs) var(--space-sm);
     background: white;
     color: var(--color-secondary);
     border: 1px solid var(--color-secondary);
     border-radius: 4px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     transition: all 0.2s;
 }
 
@@ -1226,7 +1226,7 @@ button, .btn {
 
 /* Attribution */
 .maplibregl-ctrl-attrib {
-    font-size: 11px;
+    font-size: calc(var(--font-size-xs) - 1px);
     background-color: rgba(255, 255, 255, 0.8);
 }
 
@@ -1276,8 +1276,8 @@ button, .btn {
 
 /* Sticky JSON popup with close button */
 .json-popup-sticky .maplibregl-popup-close-button {
-    font-size: 20px;
-    padding: 4px 8px;
+    font-size: calc(var(--font-size-lg) + 2px);
+    padding: var(--space-xs) var(--space-sm);
     color: var(--color-text-light);
     background: transparent;
     right: 8px;
@@ -1310,7 +1310,7 @@ button, .btn {
     border-radius: 4px;
     padding: var(--space-sm);
     font-family: 'Courier New', monospace;
-    font-size: 11px;
+    font-size: calc(var(--font-size-xs) - 1px);
     line-height: 1.4;
     overflow-x: auto;
     max-height: 400px;
@@ -1751,7 +1751,7 @@ button, .btn {
 }
 
 .legend-hint {
-    font-size: 11px;
+    font-size: calc(var(--font-size-xs) - 1px);
     margin-top: var(--space-sm);
     color: var(--color-text-light);
     font-style: italic;
@@ -1800,7 +1800,7 @@ button, .btn {
     position: absolute;
     text-align: center;
     padding: 10px 14px;
-    font-size: 13px;
+    font-size: calc(var(--font-size-sm) - 1px);
     background: rgba(0, 0, 0, 0.9);
     color: white;
     border-radius: 6px;
@@ -1885,7 +1885,7 @@ button, .btn {
 
 .btn-export {
     width: 100%;
-    padding: 10px 16px;
+    padding: calc(var(--space-sm) + var(--space-xs) / 2) var(--space-lg);
     background: var(--color-primary); /* Updated to primary */
     color: white;
     border: none;
@@ -1959,7 +1959,7 @@ button, .btn {
     color: var(--primary-color);
     border: none;
     border-radius: 4px;
-    padding: 10px 12px;
+    padding: calc(var(--space-sm) + var(--space-xs) / 2) var(--space-md);
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     z-index: 10; /* Above the map */
@@ -2109,7 +2109,7 @@ button, .btn {
 
 .step-text h3 {
     font-size: 1.1rem;
-    margin: 0 0 6px 0;
+    margin: 0 0 calc(var(--space-xs) + var(--space-xs) / 2) 0;
     color: var(--color-text);
     font-weight: 700;
 }
@@ -2122,7 +2122,7 @@ button, .btn {
 }
 
 .modal-footer {
-    padding: 24px 32px;
+    padding: var(--space-xl) var(--space-2xl);
     background: white; /* Seamless continuation */
     display: flex;
     justify-content: space-between;
@@ -2138,7 +2138,7 @@ button, .btn {
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    padding: 8px;
+    padding: var(--space-sm);
     border-radius: 6px;
     transition: background 0.2s;
 }

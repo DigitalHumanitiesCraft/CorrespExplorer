@@ -381,7 +381,7 @@
     }
 
     .upload-icon {
-        font-size: 3rem;
+        font-size: var(--font-size-3xl);
     }
 
     .url-input-wrapper {
@@ -438,7 +438,7 @@
 .modal-close {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
     color: var(--color-text-light);
     cursor: pointer;
     padding: 0;
@@ -471,7 +471,7 @@
 
 .config-stat i {
     display: block;
-    font-size: 1.5rem;
+    font-size: var(--font-size-xl);
     color: var(--color-primary);
     margin-bottom: var(--space-xs);
 }
@@ -544,7 +544,7 @@
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     color: white;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .config-label {

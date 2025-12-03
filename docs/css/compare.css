@@ -31,7 +31,7 @@
 
 .compare-header h1 {
     margin: 0 0 var(--space-sm) 0;
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
     color: var(--color-text);
 }
 
@@ -99,7 +99,7 @@
 }
 
 .dataset-upload > i {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
     color: var(--color-text-light);
 }
 
@@ -262,13 +262,13 @@
 }
 
 .summary-card i {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
     color: var(--color-primary);
     margin-bottom: var(--space-sm);
 }
 
 .summary-value {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
     font-weight: 700;
     color: var(--color-text);
     margin-bottom: var(--space-xs);
@@ -314,7 +314,7 @@
 
 .tab-count {
     background: var(--color-bg);
-    padding: 2px 8px;
+    padding: calc(var(--space-xs) / 2) var(--space-sm);
     border-radius: var(--radius-full);
     font-size: var(--font-size-xs);
 }
@@ -459,7 +459,7 @@
     }
 
     .compare-header h1 {
-        font-size: 1.5rem;
+        font-size: var(--font-size-xl);
     }
 
     .results-tabs {

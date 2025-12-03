@@ -16,19 +16,24 @@ import {
     getPersonInitials
 } from './formatters.js';
 import { checkAndStartDemoTour } from './demo-tour.js';
+import { state } from './state-manager.js';
+import { elements, initDOMCache } from './dom-cache.js';
 
 const IS_PRODUCTION = true;
 
-let map;
-let allLetters = [];
-let filteredLetters = [];
-let placeAggregation = {};
-let dataIndices = {};
-let dataMeta = {};
-let temporalFilter = null;
-let dateRange = { min: 1800, max: 2000 };
+// DEPRECATED: Moved to state-manager.js
+// These variables are kept temporarily for backward compatibility
+// TODO: Remove after full migration
+let map;  // Still used directly, not in state
+let allLetters = [];  // Use: state.getAllLetters()
+let filteredLetters = [];  // Use: state.getFilteredLetters()
+let placeAggregation = {};  // Use: state.getPlaceAggregation()
+let dataIndices = {};  // Use: state.getIndices()
+let dataMeta = {};  // Use: state.getMeta()
+let temporalFilter = null;  // Use: state.filters.temporal
+let dateRange = { min: 1800, max: 2000 };  // Use: state.ui.dateRange
 
-// Quality filter state
+// Quality filter state - Use: state.filters.quality
 let qualityFilter = {
     preciseDates: false,
     knownPersons: false,
@@ -37,26 +42,26 @@ let qualityFilter = {
 
 // Track state
 let handlersSetup = false;
-let mapInitialized = false;
+let mapInitialized = false;  // Use: state.mapInitialized
 
-// Topics view state
+// Topics view state - Use: state.ui.*
 let subjectIndex = {};
-let selectedSubjectId = null;
-let topicsSearchTerm = '';
-let topicsSortOrder = 'count-desc';
+let selectedSubjectId = null;  // Use: state.ui.selectedTopicId
+let topicsSearchTerm = '';  // Use: state.ui.topicsSearchTerm
+let topicsSortOrder = 'count-desc';  // Use: state.ui.topicsSortOrder
 
-// Places view state
+// Places view state - Use: state.ui.*
 let placesIndex = {};
-let selectedPlaceId = null;
-let placesSearchTerm = '';
-let placesSortOrder = 'count-desc';
+let selectedPlaceId = null;  // Use: state.ui.selectedPlaceId
+let placesSearchTerm = '';  // Use: state.ui.placesSearchTerm
+let placesSortOrder = 'count-desc';  // Use: state.ui.placesSortOrder
 
-// Mentions Flow view state
+// Mentions Flow view state - Use: state.ui.*
 let mentionedPersonsIndex = new Map();
-let mentionsFlowMode = 'sankey'; // 'sankey' or 'network'
-let mentionsTopN = 20;  // Reduced from 50 to reduce cognitive load
-let mentionsMinCount = 2;
-let mentionsMinSenderMentions = 5;  // Minimum mentions for sender to be shown
+let mentionsFlowMode = 'sankey';  // Use: state.ui.mentionsFlowMode
+let mentionsTopN = 20;  // Use: state.ui.mentionsTopN
+let mentionsMinCount = 2;  // Use: state.ui.mentionsMinCount
+let mentionsMinSenderMentions = 5;  // Use: state.ui.mentionsMinSenderMentions
 
 // Logging utility
 const log = {
@@ -239,6 +244,10 @@ function getFirstAvailableView() {
 async function init() {
     log.init('Starting CorrespExplorer');
 
+    // Initialize DOM Cache
+    initDOMCache();
+    log.init('DOM Cache initialized');
+
     try {
         const data = await loadData();
 
@@ -248,10 +257,21 @@ async function init() {
             return;
         }
 
+        // Initialize State Manager with data
+        state.setData({
+            letters: data.letters || [],
+            indices: data.indices || {},
+            meta: data.meta || {},
+            placeAggregation: {}  // Will be set below
+        });
+
+        // Keep backward-compatible references (TODO: Remove after full migration)
         allLetters = data.letters || [];
         filteredLetters = allLetters;
         dataIndices = data.indices || {};
         dataMeta = data.meta || {};
+
+        log.init('State Manager initialized with data');
 
         // Compute dynamic language colors based on data distribution
         computeLanguageColors(allLetters);
@@ -263,9 +283,13 @@ async function init() {
         if (years.length > 0) {
             dateRange.min = Math.min(...years);
             dateRange.max = Math.max(...years);
+            state.updateUI({ dateRange: { min: dateRange.min, max: dateRange.max } });
         }
 
         placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
+
+        // Update state with placeAggregation
+        state.data.placeAggregation = placeAggregation;
 
         // Build mentions index
         mentionedPersonsIndex = buildMentionedPersonsIndex(allLetters);

@@ -30,7 +30,7 @@
 
 .about-header h1 {
     margin: 0;
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
     color: var(--color-text);
 }
 
@@ -131,7 +131,7 @@
 }
 
 .feature-item i {
-    font-size: 2rem;
+    font-size: var(--font-size-2xl);
     color: var(--color-primary);
     margin-bottom: var(--space-sm);
 }
@@ -219,7 +219,7 @@
     }
 
     .about-header h1 {
-        font-size: 1.5rem;
+        font-size: var(--font-size-xl);
     }
 
     .feature-grid {
