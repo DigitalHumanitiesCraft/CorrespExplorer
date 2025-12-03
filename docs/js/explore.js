@@ -154,7 +154,7 @@ function updateViewButtons() {
 
 // Update sidebar data coverage details
 function updateDataCoverageDetails() {
-    const container = document.getElementById('data-coverage-details');
+    const container = elements.dataCoverageDetails;
     if (!container) return;
 
     // Calculate data coverage
@@ -407,16 +407,16 @@ async function loadData() {
 // Update UI with data info
 function updateUI(data) {
     // Update title
-    const titleEl = document.getElementById('dataset-title');
+    const titleEl = elements.datasetTitle;
     if (titleEl && data.meta?.title) {
         titleEl.textContent = data.meta.title;
         document.title = `${data.meta.title} - CorrespExplorer`;
     }
 
     // Update stats
-    const totalLetters = document.getElementById('total-letters-count');
-    const totalSenders = document.getElementById('total-senders-count');
-    const totalPlacesEl = document.getElementById('total-places-count');
+    const totalLetters = elements.totalLettersCount;
+    const totalSenders = elements.totalSendersCount;
+    const totalPlacesEl = elements.totalPlacesCount;
 
     if (totalLetters) totalLetters.textContent = (data.meta?.total_letters || allLetters.length).toLocaleString('de-DE');
     if (totalSenders) totalSenders.textContent = (data.meta?.unique_senders || Object.keys(dataIndices.persons || {}).length).toLocaleString('de-DE');
@@ -426,7 +426,7 @@ function updateUI(data) {
     updateUncertaintyStats(data.meta?.uncertainty);
 
     // Update source info
-    const sourceInfo = document.getElementById('source-info');
+    const sourceInfo = elements.sourceInfo;
     if (sourceInfo && data.sourceInfo) {
         if (data.sourceInfo.type === 'file') {
             sourceInfo.textContent = `Datei: ${data.sourceInfo.source}`;
@@ -505,8 +505,8 @@ function buildLanguageFilter() {
         return;
     }
 
-    const container = document.getElementById('language-checkboxes');
-    const filterGroup = document.getElementById('language-filter-group');
+    const container = elements.languageCheckboxes;
+    const filterGroup = elements.languageFilterGroup;
 
     if (!container || !filterGroup) return;
 
@@ -558,8 +558,8 @@ function initTopicsQuickFilter() {
 
     if (subjectKeys.length === 0) return;
 
-    const filterGroup = document.getElementById('topics-filter-group');
-    const showAllLink = document.getElementById('show-all-topics');
+    const filterGroup = elements.topicsFilterGroup;
+    const showAllLink = elements.showAllTopics;
 
     if (!filterGroup) return;
 
@@ -576,7 +576,7 @@ function initTopicsQuickFilter() {
     renderTopicsQuickFilter('');
 
     // Setup search input
-    const searchInput = document.getElementById('topics-quick-search');
+    const searchInput = elements.topicsQuickSearch;
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
             renderTopicsQuickFilter(e.target.value.toLowerCase());
@@ -593,7 +593,7 @@ function initTopicsQuickFilter() {
 }
 
 function renderTopicsQuickFilter(searchTerm) {
-    const container = document.getElementById('topics-quick-filter');
+    const container = elements.topicsQuickFilter;
     if (!container) return;
 
     // Filter by search term
@@ -649,7 +649,7 @@ function renderTopicsQuickFilter(searchTerm) {
 
 // Update topics quick filter state when subject filter changes
 function updateTopicsQuickFilterState() {
-    const container = document.getElementById('topics-quick-filter');
+    const container = elements.topicsQuickFilter;
     if (!container) return;
 
     container.querySelectorAll('.topic-quick-item').forEach(item => {
@@ -954,7 +954,7 @@ function initMap() {
     });
 
     // Layer switcher button
-    const layerSwitcherBtn = document.getElementById('layer-switcher');
+    const layerSwitcherBtn = elements.getById('layer-switcher');
     if (layerSwitcherBtn) {
         layerSwitcherBtn.addEventListener('click', () => {
             currentMapStyle = (currentMapStyle === 'light') ? 'dark' : 'light';
@@ -963,7 +963,7 @@ function initMap() {
     }
 
     // Color mode toggle button
-    const colorToggleBtn = document.getElementById('map-color-toggle');
+    const colorToggleBtn = elements.mapColorToggle;
     if (colorToggleBtn) {
         colorToggleBtn.addEventListener('click', toggleMapColorMode);
     }
@@ -995,7 +995,7 @@ function setMapStyle(styleKey) {
         maxzoom: 19
     }, 'places-clusters');
 
-    const layerSwitcherBtn = document.getElementById('layer-switcher');
+    const layerSwitcherBtn = elements.getById('layer-switcher');
     if (layerSwitcherBtn) {
         layerSwitcherBtn.innerHTML = (styleKey === 'light') ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
         layerSwitcherBtn.title = (styleKey === 'light') ? 'Dunklen Kartenlayer aktivieren' : 'Hellen Kartenlayer aktivieren';
@@ -1175,7 +1175,7 @@ function toggleMapColorMode() {
     updateMapColors();
 
     // Update button state
-    const btn = document.getElementById('map-color-toggle');
+    const btn = elements.mapColorToggle;
     if (btn) {
         if (mapColorMode === 'language') {
             btn.innerHTML = '<i class="fas fa-palette"></i>';
@@ -1189,7 +1189,7 @@ function toggleMapColorMode() {
 
 // Update the map legend based on current data and color mode
 function updateMapLegend() {
-    const legend = document.getElementById('map-legend');
+    const legend = elements.mapLegend;
     const legendItems = legend?.querySelector('.map-legend-items');
     if (!legend || !legendItems) return;
 
@@ -1392,9 +1392,9 @@ function setupPopupEventHandlers(popup) {
 
 // Initialize filters
 function initFilters() {
-    const yearRangeSlider = document.getElementById('year-range-slider');
-    const yearRangeText = document.getElementById('year-range-text');
-    const resetButton = document.getElementById('reset-filters');
+    const yearRangeSlider = elements.yearRangeSlider;
+    const yearRangeText = elements.yearRangeText;
+    const resetButton = elements.resetFiltersBtn;
 
     if (!yearRangeSlider) {
         log.init('Filter elements not found, skipping filter init');
@@ -1435,9 +1435,9 @@ function initFilters() {
     }
 
     // Quality filter checkboxes
-    const preciseDatesCheckbox = document.getElementById('filter-precise-dates');
-    const knownPersonsCheckbox = document.getElementById('filter-known-persons');
-    const locatedPlacesCheckbox = document.getElementById('filter-located-places');
+    const preciseDatesCheckbox = elements.filterPreciseDates;
+    const knownPersonsCheckbox = elements.filterKnownPersons;
+    const locatedPlacesCheckbox = elements.filterLocatedPlaces;
 
     if (preciseDatesCheckbox) {
         preciseDatesCheckbox.checked = qualityFilter.preciseDates;
@@ -1489,55 +1489,31 @@ function initFilters() {
 function applyFilters() {
     const languageFilters = getCheckedValues('language');
 
-    filteredLetters = allLetters.filter(letter => {
-        // Time filter
-        let temporalMatch = true;
-        if (temporalFilter && letter.year) {
-            temporalMatch = letter.year >= temporalFilter.start && letter.year <= temporalFilter.end;
-        }
+    // Update state with current filters (will trigger getFilteredLetters cache invalidation)
+    const filterUpdates = {};
 
-        // Language filter
-        let languageMatch = true;
-        if (languageFilters.length > 0 && letter.language) {
-            languageMatch = languageFilters.includes(letter.language.code);
-        }
+    if (temporalFilter) {
+        filterUpdates.temporal = { min: temporalFilter.start, max: temporalFilter.end };
+    } else {
+        filterUpdates.temporal = null;
+    }
 
-        // Person filter
-        let personMatch = true;
-        if (selectedPersonId) {
-            const senderId = letter.sender?.id || letter.sender?.name;
-            const recipientId = letter.recipient?.id || letter.recipient?.name;
-            personMatch = senderId === selectedPersonId || recipientId === selectedPersonId;
-        }
+    filterUpdates.languages = languageFilters.length > 0 ? languageFilters : [];
+    filterUpdates.person = selectedPersonId || null;
+    filterUpdates.subject = selectedSubjectId || null;
+    filterUpdates.quality = { ...qualityFilter };
 
-        // Subject filter
-        let subjectMatch = true;
-        if (selectedSubjectId) {
-            const letterSubjects = letter.mentions?.subjects || [];
-            subjectMatch = letterSubjects.some(s =>
-                (s.uri || s.id || s.label) === selectedSubjectId || s.label === selectedSubjectId
-            );
-        }
+    state.updateFilters(filterUpdates);
 
-        // Quality filters
-        let qualityMatch = true;
-        if (qualityFilter.preciseDates) {
-            qualityMatch = qualityMatch && letter.datePrecision === 'day';
-        }
-        if (qualityFilter.knownPersons) {
-            const senderOk = letter.sender?.precision === 'identified';
-            const recipientOk = !letter.recipient || letter.recipient.precision === 'identified';
-            qualityMatch = qualityMatch && senderOk && recipientOk;
-        }
-        if (qualityFilter.locatedPlaces) {
-            qualityMatch = qualityMatch && letter.place_sent?.precision === 'exact';
-        }
+    // Get filtered letters from state (uses cached filter logic)
+    filteredLetters = state.getFilteredLetters();
 
-        return temporalMatch && languageMatch && personMatch && subjectMatch && qualityMatch;
-    });
+    // Keep backward compatibility references
+    allLetters = state.getAllLetters();
 
     // Re-aggregate places based on filtered letters
     placeAggregation = aggregateLettersByPlace(filteredLetters, dataIndices.places || {});
+    state.data.placeAggregation = placeAggregation;
 
     if (map && map.loaded() && mapInitialized) {
         renderPlaceMarkers(placeAggregation);
@@ -1620,7 +1596,7 @@ function updateFilterIndicators() {
     }
 
     // Update stats card to show filtered count
-    const letterCountEl = document.getElementById('letter-count');
+    const letterCountEl = elements.getById('letter-count');
     if (letterCountEl && hasActiveFilter) {
         letterCountEl.innerHTML = `${filteredLetters.length} <span class="filtered-indicator">/ ${allLetters.length}</span>`;
     } else if (letterCountEl) {
@@ -1630,7 +1606,7 @@ function updateFilterIndicators() {
 
 // Update person filter display in sidebar
 function updatePersonFilterDisplay() {
-    let filterDisplay = document.getElementById('person-filter-display');
+    let filterDisplay = elements.getById('person-filter-display');
 
     if (selectedPersonId && filteredLetters.length > 0) {
         // Find person name
@@ -1726,7 +1702,7 @@ function updateFilterCounts() {
 
 // Get year range values from slider
 function getYearRangeValues() {
-    const slider = document.getElementById('year-range-slider');
+    const slider = elements.yearRangeSlider;
     if (slider && slider.noUiSlider) {
         const values = slider.noUiSlider.get();
         return [parseInt(values[0]), parseInt(values[1])];
@@ -1740,7 +1716,7 @@ function getCheckedValues(name) {
 }
 
 function hideLoading() {
-    const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingOverlay = elements.loadingOverlay;
     if (loadingOverlay) {
         loadingOverlay.classList.add('hidden');
     }
@@ -1828,38 +1804,14 @@ function updateUrlState() {
 
     // Preserve dataset parameter
     const dataset = urlParams.get('dataset');
-    const newParams = new URLSearchParams();
+
+    // Get URL params from state-manager
+    const newParams = state.toURLParams();
+
+    // Re-add dataset parameter (not part of state)
     if (dataset) newParams.set('dataset', dataset);
 
-    // View
-    if (currentView !== 'map') {
-        newParams.set('view', currentView);
-    }
-
-    // Year range (only if not default)
-    if (temporalFilter) {
-        newParams.set('yearMin', temporalFilter.start);
-        newParams.set('yearMax', temporalFilter.end);
-    }
-
-    // Person filter
-    if (selectedPersonId) {
-        newParams.set('person', selectedPersonId);
-    }
-
-    // Subject filter
-    if (selectedSubjectId) {
-        newParams.set('subject', selectedSubjectId);
-    }
-
-    // Languages (only if not all selected)
-    const checkedLangs = getCheckedValues('language');
-    const allLangs = Object.keys(dataIndices.languages || {});
-    if (checkedLangs.length > 0 && checkedLangs.length < allLangs.length) {
-        newParams.set('langs', checkedLangs.join(','));
-    }
-
-    // Quality filters
+    // Add quality filter parameters (custom to this app, not in base state)
     if (qualityFilter.preciseDates) newParams.set('precise', '1');
     if (qualityFilter.knownPersons) newParams.set('known', '1');
     if (qualityFilter.locatedPlaces) newParams.set('located', '1');
@@ -1952,13 +1904,13 @@ function switchView(view) {
 function updateSidebarLegend(view) {
     // All legend content elements
     const legendElements = {
-        map: document.getElementById('legend-map'),
-        letters: document.getElementById('legend-letters'),
-        timeline: document.getElementById('legend-timeline'),
-        persons: document.getElementById('legend-persons'),
-        topics: document.getElementById('legend-topics'),
-        places: document.getElementById('legend-places'),
-        network: document.getElementById('legend-network')
+        map: elements.getById('legend-map'),
+        letters: elements.getById('legend-letters'),
+        timeline: elements.getById('legend-timeline'),
+        persons: elements.getById('legend-persons'),
+        topics: elements.getById('legend-topics'),
+        places: elements.getById('legend-places'),
+        network: elements.getById('legend-network')
     };
 
     // Hide all legends
@@ -1979,7 +1931,7 @@ function updateSidebarLegend(view) {
 // Update view-specific filter controls visibility
 function updateViewSpecificFilters(view) {
     // Mentions Flow filters
-    const mentionsFilterGroup = document.getElementById('mentions-filter-group');
+    const mentionsFilterGroup = elements.getById('mentions-filter-group');
     if (mentionsFilterGroup) {
         mentionsFilterGroup.style.display = view === 'mentions-flow' ? 'block' : 'none';
     }
@@ -1993,8 +1945,8 @@ let personsSortOrder = 'letters-desc';
 let personsSearchTerm = '';
 
 function initPersonsView() {
-    const searchInput = document.getElementById('person-search');
-    const sortSelect = document.getElementById('person-sort');
+    const searchInput = elements.personSearch;
+    const sortSelect = elements.personSort;
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
@@ -2012,7 +1964,7 @@ function initPersonsView() {
 }
 
 function renderPersonsList() {
-    const container = document.getElementById('persons-list');
+    const container = elements.personsList;
     if (!container) return;
 
     // Build persons from filtered letters
@@ -2169,8 +2121,8 @@ let lettersSortOrder = 'date-desc';
 let lettersSearchTerm = '';
 
 function initLettersView() {
-    const searchInput = document.getElementById('letter-search');
-    const sortSelect = document.getElementById('letter-sort');
+    const searchInput = elements.letterSearch;
+    const sortSelect = elements.letterSort;
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
@@ -2188,7 +2140,7 @@ function initLettersView() {
 }
 
 function renderLettersList() {
-    const container = document.getElementById('letters-list');
+    const container = elements.lettersList;
     if (!container) return;
 
     let letters = [...filteredLetters];
@@ -2375,9 +2327,9 @@ function showLetterDetail(letterId) {
     const letter = allLetters.find(l => l.id === letterId);
     if (!letter) return;
 
-    const modal = document.getElementById('letter-modal');
-    const title = document.getElementById('letter-modal-title');
-    const body = document.getElementById('letter-modal-body');
+    const modal = elements.getById('letter-modal');
+    const title = elements.getById('letter-modal-title');
+    const body = elements.getById('letter-modal-body');
 
     if (!modal || !body) return;
 
@@ -2525,9 +2477,9 @@ async function showPersonDetail(personId) {
     const authorityId = person.viaf || person.id;
     const authority = person.authority || (person.viaf ? 'viaf' : null);
 
-    const modal = document.getElementById('person-modal');
-    const title = document.getElementById('person-modal-title');
-    const body = document.getElementById('person-modal-body');
+    const modal = elements.getById('person-modal');
+    const title = elements.getById('person-modal-title');
+    const body = elements.getById('person-modal-body');
 
     if (!modal || !body) return;
 
@@ -2647,7 +2599,7 @@ async function showPersonDetail(personId) {
         </a>`;
     }
 
-    html += `<button class="btn btn-secondary" onclick="filterByPerson('${escapeHtml(personId)}'); document.getElementById('person-modal').style.display='none';">
+    html += `<button class="btn btn-secondary" onclick="filterByPerson('${escapeHtml(personId)}'); elements.getById('person-modal').style.display='none';">
         <i class="fas fa-filter"></i> Briefe filtern
     </button>`;
 
@@ -2721,7 +2673,7 @@ function buildPlaceLink(place, compact = false) {
 
 // Global function for onclick handler
 window.filterByPerson = function(personId) {
-    const modal = document.getElementById('letter-modal');
+    const modal = elements.getById('letter-modal');
     if (modal) modal.style.display = 'none';
 
     applyPersonFilter(personId);
@@ -2740,7 +2692,7 @@ let timelineStackMode = 'language'; // 'language' or 'correspondent'
 
 function initTimeline() {
     // Setup stack mode toggle
-    const stackToggle = document.getElementById('timeline-stack-toggle');
+    const stackToggle = elements.getById('timeline-stack-toggle');
     if (stackToggle) {
         stackToggle.addEventListener('change', (e) => {
             timelineStackMode = e.target.value;
@@ -2750,10 +2702,10 @@ function initTimeline() {
 }
 
 function renderTimeline() {
-    const container = document.getElementById('timeline-chart');
-    const totalEl = document.getElementById('timeline-total');
-    const legendEl = document.getElementById('timeline-stack-legend');
-    const undatedBin = document.getElementById('timeline-undated-bin');
+    const container = elements.timelineChart;
+    const totalEl = elements.getById('timeline-total');
+    const legendEl = elements.getById('timeline-stack-legend');
+    const undatedBin = elements.getById('timeline-undated-bin');
     if (!container) return;
 
     // Use filtered letters
@@ -2960,7 +2912,7 @@ function renderTimeline() {
             undatedBin.onclick = () => {
                 // Filter to show only undated letters
                 // Set year filter to impossible range to exclude all dated
-                const slider = document.getElementById('year-range-slider');
+                const slider = elements.yearRangeSlider;
                 if (slider && slider.noUiSlider) {
                     // Set to min-1 to exclude all dated letters
                     slider.noUiSlider.set([minYear - 1, minYear - 1]);
@@ -3045,7 +2997,7 @@ function renderTimeline() {
             const lang = segment.dataset.lang;
 
             // Set year filter
-            const slider = document.getElementById('year-range-slider');
+            const slider = elements.yearRangeSlider;
             if (slider && slider.noUiSlider) {
                 slider.noUiSlider.set([year, year]);
             }
@@ -3070,7 +3022,7 @@ function renderTimeline() {
             const year = parseInt(wrapper.dataset.year);
 
             // Update year slider to single year
-            const slider = document.getElementById('year-range-slider');
+            const slider = elements.yearRangeSlider;
             if (slider && slider.noUiSlider) {
                 slider.noUiSlider.set([year, year]);
             }
@@ -3159,8 +3111,8 @@ function initTopicsView() {
     // Note: Topics button visibility is now handled by updateViewButtons()
 
     // Setup search and sort
-    const searchInput = document.getElementById('topic-search');
-    const sortSelect = document.getElementById('topic-sort');
+    const searchInput = elements.getById('topic-search');
+    const sortSelect = elements.getById('topic-sort');
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
@@ -3177,7 +3129,7 @@ function initTopicsView() {
     }
 
     // Setup filter button
-    const filterBtn = document.getElementById('topic-filter-btn');
+    const filterBtn = elements.getById('topic-filter-btn');
     if (filterBtn) {
         filterBtn.addEventListener('click', () => {
             if (selectedSubjectId) {
@@ -3247,7 +3199,7 @@ function buildSubjectIndex() {
 }
 
 function renderTopicsList() {
-    const container = document.getElementById('topics-list');
+    const container = elements.topicsList;
     if (!container) return;
 
     // Build dynamic topic counts based on filtered letters
@@ -3378,13 +3330,13 @@ function selectTopic(topicId) {
     });
 
     const emptyState = document.querySelector('.topic-detail-empty');
-    const content = document.getElementById('topic-detail-content');
-    const title = document.getElementById('topic-detail-title');
-    const count = document.getElementById('topic-detail-count');
-    const correspondents = document.getElementById('topic-correspondents');
-    const timeline = document.getElementById('topic-timeline');
-    const related = document.getElementById('topic-related');
-    const filterBtn = document.getElementById('topic-filter-btn');
+    const content = elements.getById('topic-detail-content');
+    const title = elements.getById('topic-detail-title');
+    const count = elements.getById('topic-detail-count');
+    const correspondents = elements.getById('topic-correspondents');
+    const timeline = elements.getById('topic-timeline');
+    const related = elements.getById('topic-related');
+    const filterBtn = elements.getById('topic-filter-btn');
 
     if (emptyState) emptyState.style.display = 'none';
     if (content) content.style.display = 'block';
@@ -3495,7 +3447,7 @@ function selectTopic(topicId) {
                 const relatedId = tag.dataset.id;
                 selectTopic(relatedId);
                 // Update list selection
-                const container = document.getElementById('topics-list');
+                const container = elements.topicsList;
                 container?.querySelectorAll('.topic-card').forEach(c => {
                     c.classList.toggle('active', c.dataset.id === relatedId);
                 });
@@ -3529,7 +3481,7 @@ function clearSubjectFilter() {
 
 // Update subject filter display in sidebar
 function updateSubjectFilterDisplay() {
-    let filterDisplay = document.getElementById('subject-filter-display');
+    let filterDisplay = elements.getById('subject-filter-display');
 
     if (selectedSubjectId && subjectIndex[selectedSubjectId]) {
         const topic = subjectIndex[selectedSubjectId];
@@ -3574,8 +3526,8 @@ window.filterBySubject = function(subjectId) {
 function initPlacesView() {
     buildPlacesIndex();
 
-    const searchInput = document.getElementById('place-search');
-    const sortSelect = document.getElementById('place-sort');
+    const searchInput = elements.getById('place-search');
+    const sortSelect = elements.getById('place-sort');
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
@@ -3592,7 +3544,7 @@ function initPlacesView() {
     }
 
     // Filter button
-    const filterBtn = document.getElementById('place-filter-btn');
+    const filterBtn = elements.getById('place-filter-btn');
     if (filterBtn) {
         filterBtn.addEventListener('click', () => {
             if (selectedPlaceId) {
@@ -3660,7 +3612,7 @@ function buildPlacesIndex() {
 }
 
 function renderPlacesList() {
-    const container = document.getElementById('places-list');
+    const container = elements.placesList;
     if (!container) return;
 
     // Get places filtered by current filters
@@ -3752,7 +3704,7 @@ function selectPlace(placeId) {
 
     // Show detail panel
     const emptyState = document.querySelector('.place-detail-empty');
-    const content = document.getElementById('place-detail-content');
+    const content = elements.getById('place-detail-content');
 
     if (emptyState) emptyState.style.display = 'none';
     if (content) content.style.display = 'block';
@@ -3765,11 +3717,11 @@ function selectPlace(placeId) {
     }).length;
 
     // Update title and count
-    document.getElementById('place-detail-title').textContent = place.name;
-    document.getElementById('place-detail-count').textContent = `${filteredCount} Briefe`;
+    elements.getById('place-detail-title').textContent = place.name;
+    elements.getById('place-detail-count').textContent = `${filteredCount} Briefe`;
 
     // Render top senders
-    const sendersContainer = document.getElementById('place-top-senders');
+    const sendersContainer = elements.getById('place-top-senders');
     if (sendersContainer) {
         sendersContainer.innerHTML = place.topSenders.map(s =>
             `<div class="place-sender-item">
@@ -3780,7 +3732,7 @@ function selectPlace(placeId) {
     }
 
     // Render mini timeline
-    const timelineContainer = document.getElementById('place-timeline');
+    const timelineContainer = elements.getById('place-timeline');
     if (timelineContainer && place.yearMin && place.yearMax) {
         const yearCounts = {};
         place.years.forEach(year => {
@@ -3810,7 +3762,7 @@ function selectPlace(placeId) {
     }
 
     // Render languages
-    const languagesContainer = document.getElementById('place-languages');
+    const languagesContainer = elements.getById('place-languages');
     if (languagesContainer) {
         const langEntries = Object.entries(place.languages)
             .sort((a, b) => b[1] - a[1]);
@@ -3823,7 +3775,7 @@ function selectPlace(placeId) {
     }
 
     // Update GeoNames link
-    const geonamesLink = document.getElementById('place-geonames-link');
+    const geonamesLink = elements.getById('place-geonames-link');
     if (geonamesLink) {
         geonamesLink.href = `https://www.geonames.org/${placeId}`;
     }
@@ -3856,14 +3808,14 @@ function applyPlaceFilter(placeId) {
 // ===================
 
 function initExport() {
-    const exportBtn = document.getElementById('export-btn');
-    const modal = document.getElementById('export-modal');
+    const exportBtn = elements.exportBtn;
+    const modal = elements.exportModal;
     const closeBtn = modal?.querySelector('.modal-close');
     const exportOptions = modal?.querySelectorAll('.export-option');
 
     if (exportBtn && modal) {
         exportBtn.addEventListener('click', () => {
-            const info = document.getElementById('export-info');
+            const info = elements.getById('export-info');
             if (info) {
                 info.textContent = `${filteredLetters.length} Briefe werden exportiert`;
             }
@@ -3957,10 +3909,10 @@ let networkSvg = null;
 let networkZoom = null;
 
 function initNetworkView() {
-    const typeSelect = document.getElementById('network-type');
-    const thresholdInput = document.getElementById('network-threshold');
-    const maxNodesInput = document.getElementById('network-max-nodes');
-    const resetZoomBtn = document.getElementById('network-reset-zoom');
+    const typeSelect = elements.getById('network-type');
+    const thresholdInput = elements.getById('network-threshold');
+    const maxNodesInput = elements.getById('network-max-nodes');
+    const resetZoomBtn = elements.networkResetZoom;
 
     // Calculate dynamic default for minYears based on dataset timespan
     const timespan = dateRange.max - dateRange.min;
@@ -3984,7 +3936,7 @@ function initNetworkView() {
     }
 
     if (thresholdInput) {
-        const thresholdValue = document.getElementById('network-threshold-value');
+        const thresholdValue = elements.getById('network-threshold-value');
         // Debounced render for slider
         const debouncedRender = debounce(() => renderNetwork(), 150);
 
@@ -4019,7 +3971,7 @@ function initNetworkView() {
     }
 
     // Color mode select
-    const colorModeSelect = document.getElementById('network-color-mode');
+    const colorModeSelect = elements.getById('network-color-mode');
     if (colorModeSelect) {
         colorModeSelect.addEventListener('change', (e) => {
             networkColorMode = e.target.value;
@@ -4028,7 +3980,7 @@ function initNetworkView() {
     }
 
     // Hide ego checkbox
-    const hideEgoCheckbox = document.getElementById('network-hide-ego');
+    const hideEgoCheckbox = elements.getById('network-hide-ego');
     if (hideEgoCheckbox) {
         hideEgoCheckbox.addEventListener('change', (e) => {
             networkHideEgo = e.target.checked;
@@ -4040,7 +3992,7 @@ function initNetworkView() {
 }
 
 function updateNetworkTypeOptions() {
-    const typeSelect = document.getElementById('network-type');
+    const typeSelect = elements.getById('network-type');
     if (!typeSelect) return;
 
     // Check if we have subjects data
@@ -4058,10 +4010,10 @@ function updateNetworkTypeOptions() {
 }
 
 function updateNetworkThresholdLabel() {
-    const label = document.getElementById('network-threshold-label');
-    const input = document.getElementById('network-threshold');
-    const valueDisplay = document.getElementById('network-threshold-value');
-    const colorGroup = document.getElementById('network-color-group');
+    const label = elements.getById('network-threshold-label');
+    const input = elements.getById('network-threshold');
+    const valueDisplay = elements.getById('network-threshold-value');
+    const colorGroup = elements.getById('network-color-group');
 
     if (!label || !input) return;
 
@@ -4083,7 +4035,7 @@ function updateNetworkThresholdLabel() {
         if (colorGroup) colorGroup.style.display = 'none';
         // Reset to type color mode when switching to topics
         networkColorMode = 'type';
-        const colorSelect = document.getElementById('network-color-mode');
+        const colorSelect = elements.getById('network-color-mode');
         if (colorSelect) colorSelect.value = 'type';
     }
 }
@@ -4285,7 +4237,7 @@ function buildTopicsNetwork(letters, minCooccurrence = NETWORK_DEFAULTS.minCoocc
 }
 
 function renderNetwork() {
-    const container = document.getElementById('network-graph');
+    const container = elements.getById('network-graph');
     if (!container) return;
 
     // Build network data based on selected type
@@ -4341,10 +4293,10 @@ function renderNetwork() {
     }
 
     // Update stats display
-    const nodeCount = document.getElementById('network-node-count');
-    const edgeCount = document.getElementById('network-edge-count');
-    const coverageDiv = document.getElementById('network-coverage');
-    const infoText = document.getElementById('network-info-text');
+    const nodeCount = elements.getById('network-node-count');
+    const edgeCount = elements.getById('network-edge-count');
+    const coverageDiv = elements.getById('network-coverage');
+    const infoText = elements.getById('network-info-text');
 
     if (nodeCount) nodeCount.textContent = data.nodes.length;
     if (edgeCount) edgeCount.textContent = data.links.length;
@@ -4359,7 +4311,7 @@ function renderNetwork() {
     }
 
     // Update network legend based on type and color mode
-    const legendDiv = document.getElementById('network-legend');
+    const legendDiv = elements.getById('network-legend');
     if (legendDiv) {
         const label = networkType === 'topics' ? 'Themen-Netzwerk' : 'Zeitgenossen-Netzwerk';
         const sizeHint = networkType === 'topics'
@@ -4632,7 +4584,7 @@ function resetNetworkZoom() {
 // ===================
 
 function initMissingPlacesModal() {
-    const modal = document.getElementById('missing-places-modal');
+    const modal = elements.getById('missing-places-modal');
     const closeBtn = modal?.querySelector('.modal-close');
 
     if (!modal) return;
@@ -4649,8 +4601,8 @@ function initMissingPlacesModal() {
 }
 
 function showMissingPlacesModal() {
-    const modal = document.getElementById('missing-places-modal');
-    const body = document.getElementById('missing-places-body');
+    const modal = elements.getById('missing-places-modal');
+    const body = elements.getById('missing-places-body');
 
     if (!modal || !body) return;
 
@@ -4737,14 +4689,14 @@ function initMentionsFlowView() {
 }
 
 function updateMentionsFilterInfo() {
-    const filterInfo = document.getElementById('mentions-flow-filter-info');
+    const filterInfo = elements.getById('mentions-flow-filter-info');
     if (filterInfo) {
         filterInfo.textContent = `Zeigt: Top ${mentionsTopN} meist-erwähnte Personen | Nur Korrespondenten mit ≥${mentionsMinSenderMentions} Mentions | Nur Verbindungen ≥${mentionsMinCount}`;
     }
 }
 
 function initMentionsFilterControls() {
-    const filterGroup = document.getElementById('mentions-filter-group');
+    const filterGroup = elements.getById('mentions-filter-group');
     if (!filterGroup) return;
 
     // Show filter controls when mentions flow view is available
@@ -4755,8 +4707,8 @@ function initMentionsFilterControls() {
         updateMentionsFilterInfo();
 
         // Top N slider
-        const topNSlider = document.getElementById('mentions-topn-slider');
-        const topNValue = document.getElementById('mentions-topn-value');
+        const topNSlider = elements.getById('mentions-topn-slider');
+        const topNValue = elements.getById('mentions-topn-value');
 
         if (topNSlider && topNValue) {
             // Sync with current state (may be from URL)
@@ -4777,8 +4729,8 @@ function initMentionsFilterControls() {
         }
 
         // Min Sender Mentions slider
-        const minSenderSlider = document.getElementById('mentions-minsender-slider');
-        const minSenderValue = document.getElementById('mentions-minsender-value');
+        const minSenderSlider = elements.getById('mentions-minsender-slider');
+        const minSenderValue = elements.getById('mentions-minsender-value');
 
         if (minSenderSlider && minSenderValue) {
             minSenderSlider.value = mentionsMinSenderMentions;
@@ -4798,8 +4750,8 @@ function initMentionsFilterControls() {
         }
 
         // Min Flow Strength slider
-        const minFlowSlider = document.getElementById('mentions-minflow-slider');
-        const minFlowValue = document.getElementById('mentions-minflow-value');
+        const minFlowSlider = elements.getById('mentions-minflow-slider');
+        const minFlowValue = elements.getById('mentions-minflow-value');
 
         if (minFlowSlider && minFlowValue) {
             minFlowSlider.value = mentionsMinCount;
@@ -4840,15 +4792,15 @@ function createTooltip() {
 
 function renderMentionsFlow() {
     if (!availableViews['mentions-flow']?.available) {
-        document.getElementById('mentions-flow-placeholder').innerHTML = `
+        elements.mentionsFlowPlaceholder.innerHTML = `
             <i class="fas fa-info-circle"></i>
             <p>${availableViews['mentions-flow']?.reason || 'Keine Mentions-Daten vorhanden'}</p>
         `;
         return;
     }
 
-    const container = document.getElementById('mentions-flow-graph');
-    const placeholder = document.getElementById('mentions-flow-placeholder');
+    const container = elements.getById('mentions-flow-graph');
+    const placeholder = elements.mentionsFlowPlaceholder;
 
     // Clear previous
     container.innerHTML = '';
@@ -4960,7 +4912,7 @@ function renderMentionsFlow() {
                 });
 
                 // Show tooltip
-                const tooltip = document.getElementById('mentions-tooltip') || createTooltip();
+                const tooltip = elements.getById('mentions-tooltip') || createTooltip();
                 tooltip.style.display = 'block';
                 tooltip.style.left = (event.pageX + 10) + 'px';
                 tooltip.style.top = (event.pageY - 10) + 'px';
@@ -4970,7 +4922,7 @@ function renderMentionsFlow() {
                 `;
             })
             .on('mousemove', function(event) {
-                const tooltip = document.getElementById('mentions-tooltip');
+                const tooltip = elements.getById('mentions-tooltip');
                 if (tooltip && tooltip.style.display === 'block') {
                     tooltip.style.left = (event.pageX + 10) + 'px';
                     tooltip.style.top = (event.pageY - 10) + 'px';
@@ -4980,7 +4932,7 @@ function renderMentionsFlow() {
                 link.attr('opacity', 0.5);
                 node.selectAll('rect').attr('opacity', 1.0);
 
-                const tooltip = document.getElementById('mentions-tooltip');
+                const tooltip = elements.getById('mentions-tooltip');
                 if (tooltip) tooltip.style.display = 'none';
             });
 
@@ -5054,7 +5006,7 @@ function renderMentionsFlow() {
             });
 
             // Show tooltip
-            const tooltip = document.getElementById('mentions-tooltip') || createTooltip();
+            const tooltip = elements.getById('mentions-tooltip') || createTooltip();
             tooltip.style.display = 'block';
             tooltip.style.left = (event.pageX + 10) + 'px';
             tooltip.style.top = (event.pageY - 10) + 'px';
@@ -5076,7 +5028,7 @@ function renderMentionsFlow() {
         })
         .on('mousemove', function(event) {
             // Update tooltip position on move (throttled by browser)
-            const tooltip = document.getElementById('mentions-tooltip');
+            const tooltip = elements.getById('mentions-tooltip');
             if (tooltip && tooltip.style.display === 'block') {
                 tooltip.style.left = (event.pageX + 10) + 'px';
                 tooltip.style.top = (event.pageY - 10) + 'px';
@@ -5085,7 +5037,7 @@ function renderMentionsFlow() {
         .on('mouseleave', function() {
             hoverTimeout = setTimeout(() => {
                 link.attr('opacity', 0.5);
-                const tooltip = document.getElementById('mentions-tooltip');
+                const tooltip = elements.getById('mentions-tooltip');
                 if (tooltip) tooltip.style.display = 'none';
             }, 50);  // Small delay to prevent flicker when moving between nodes
         });
