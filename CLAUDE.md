@@ -5,17 +5,21 @@ This document defines coding and documentation style rules for the CorrespExplor
 ## Documentation Style
 
 ### Forbidden Elements
-- Never use bold text formatting
+- Never use bold text formatting (saves tokens, improves readability)
 - Never use emojis in any documentation
 - Never include "Estimated Time" sections
 - Never use exclamation marks for emphasis
+- Never include line counts or code size metrics (code changes constantly, creates inconsistencies)
+- Never include box drawings or ASCII art in documentation (use simple lists instead)
 
 ### Preferred Style
 - Use clear headings with # markdown syntax
 - Use plain text for emphasis when needed
-- Use bullet points for lists
+- Use bullet points for lists (not boxes or tables when lists suffice)
 - Use code blocks for technical content
 - Keep language neutral and factual
+- Prioritize compact, precise information (every word counts)
+- Focus on relationships and data flow, not metrics
 
 ## Code Style
 
@@ -66,6 +70,18 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - Key decisions with rationale
 - No timestamps, only dates
 
+### CONTEXT-MAP.md
+- Essential for managing complexity when many files exist
+- Provides overview without opening individual files
+- Must be read before working on code to understand architecture
+- Located in key directories (e.g., js/CONTEXT-MAP.md, js/tests/CONTEXT-MAP.md)
+- Content focus:
+  - Module categories and purposes
+  - Data flow and relationships between modules
+  - Critical program flows (not every detail)
+  - Dependencies and interaction patterns
+- Update when architecture changes, not for minor edits
+
 ### Requirements
 - User stories format: "Als Nutzer*in möchte ich... um zu..."
 - Acceptance criteria clearly defined
@@ -74,17 +90,20 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Development Workflow
 
-1. Read existing documentation before starting
-2. Update JOURNAL.md at session end
-3. Create feature branches for major changes
-4. Test before committing
-5. Write clear commit messages
+1. Read CONTEXT-MAP.md in relevant directory first (essential for understanding)
+2. Read existing documentation before starting
+3. Update JOURNAL.md at session end
+4. Update CONTEXT-MAP.md when architecture changes
+5. Create feature branches for major changes
+6. Test before committing
+7. Write clear commit messages
 
 ## File Naming
 
 - Lowercase with underscores: `build_pipeline.py`
 - Descriptive names: `build_hsa_data.py` not `script.py`
-- Markdown files in UPPERCASE: `README.md`, `JOURNAL.md`
+- Markdown files in UPPERCASE: `README.md`, `JOURNAL.md`, `CONTEXT-MAP.md`
+- JavaScript: `kebab-case.js` for modules, `test-*.js` for tests
 
 ## Comments
 
@@ -106,6 +125,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 - Note data snapshot dates
 - Document data quality issues transparently
 - Reference other documentation files with relative links
+- Never include code metrics (line counts, file sizes) - they change constantly
+- Focus on what the code does, not how big it is
 
 ## Language
 
