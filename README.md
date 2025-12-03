@@ -90,6 +90,7 @@ preprocessing/
   analyze_hsa_cmif.py         - CMIF analysis tool
 
 docs/knowledge/
+  CONTEXT-MAP.md        - Overview of all 12 knowledge docs (start here!)
   JOURNAL.md            - Development log (27 phases)
   architecture.md       - Technical architecture and features
   cmif-standard.md      - CMIF standard documentation
