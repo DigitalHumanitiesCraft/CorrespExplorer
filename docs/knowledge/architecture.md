@@ -113,7 +113,7 @@ Die Anwendung verwendet 26 JavaScript-Module organisiert in 7 Kategorien. Alle M
 
 ### Core Data Processing
 
-**cmif-parser.js**
+cmif-parser.js
 
 Browser-basierter CMIF-Parser mit TEI-Namespace-Handling:
 - Parst CMIF-XML (TEI) zu interner JSON-Struktur
@@ -125,7 +125,7 @@ Browser-basierter CMIF-Parser mit TEI-Namespace-Handling:
 - Imports: correspsearch-api.js, utils.js
 - Exports: parseCMIF() returns Promise, enrichWithCoordinates()
 
-**state-manager.js**
+state-manager.js
 
 Zentrale State-Verwaltung:
 - Verwaltet globalen State (data, filters, ui)
@@ -137,7 +137,7 @@ Zentrale State-Verwaltung:
 - Imports: keine
 - Exports: state (singleton AppState)
 
-**formatters.js**
+formatters.js
 
 Formatierung mit Unsicherheitsindikatoren:
 - Formatiert Datumswerte mit Präzisions-Icons (Tag, Monat, Jahr, Range)
@@ -149,7 +149,7 @@ Formatierung mit Unsicherheitsindikatoren:
 
 ### Infrastructure
 
-**dom-cache.js**
+dom-cache.js
 
 DOM-Element-Caching:
 - Lazy-loading Cache für häufig genutzte Elemente
@@ -159,7 +159,7 @@ DOM-Element-Caching:
 - Imports: keine
 - Exports: DOMCache (Klasse), elements (singleton), initDOMCache()
 
-**utils.js**
+utils.js
 
 Shared utility functions:
 - debounce: Verzögerte Funktionsausführung
@@ -171,7 +171,7 @@ Shared utility functions:
 - Imports: keine
 - Exports: Einzelne Funktionen
 
-**constants.js**
+constants.js
 
 Zentrale Konstanten:
 - LANGUAGE_COLORS: Dynamisch berechnet basierend auf Briefverteilung (starke Farben für häufige Sprachen, Pastell für seltene)
@@ -188,7 +188,7 @@ Zentrale Konstanten:
 
 Optionale semantische Anreicherung über externe APIs. Beide Module cachen Ergebnisse in sessionStorage (7 Tage) um wiederholte API-Calls zu vermeiden.
 
-**wikidata-enrichment.js**
+wikidata-enrichment.js
 
 Wikidata SPARQL-Integration:
 - Queries via VIAF, GND, direct QID
@@ -199,7 +199,7 @@ Wikidata SPARQL-Integration:
 - Imports: keine
 - Exports: enrichPersonsBatch, enrichPerson, countEnrichable, formatLifeDates, formatPlaces, buildExternalLinks
 
-**enrichment.js**
+enrichment.js
 
 lobid.org GND API:
 - On-demand Enrichment für Personen mit GND-IDs
@@ -209,7 +209,7 @@ lobid.org GND API:
 - Imports: keine
 - Exports: enrichPersonFromGND
 
-**correspsearch-api.js**
+correspsearch-api.js
 
 Integration der correspSearch API v2.0:
 - Automatische Paginierung (10 Ergebnisse pro Seite)
@@ -224,7 +224,7 @@ Integration der correspSearch API v2.0:
 
 Persistente Sammlung von interessanten Items zur späteren Analyse. Basket-Daten werden in localStorage gespeichert und über Storage Events zwischen Tabs synchronisiert.
 
-**basket.js**
+basket.js
 
 Sammelt Items zur späteren Analyse:
 - Speichert Items: letters, persons, places
@@ -235,7 +235,7 @@ Sammelt Items zur späteren Analyse:
 - Imports: constants.js
 - Exports: initBasket, addToBasket, removeFromBasket, toggleBasketItem, isInBasket, getBasketItems, getBasketCounts, clearBasket, onBasketChange, resolveBasketItems, generateBasketUrl, loadBasketFromUrl
 
-**basket-ui.js**
+basket-ui.js
 
 UI-Komponenten für Basket:
 - Button mit Badge (zeigt Anzahl gesammelter Items)
@@ -248,7 +248,7 @@ UI-Komponenten für Basket:
 
 ### Main Application
 
-**upload.js**
+upload.js
 
 Handler für die Landing-Page:
 - Event-Handler: handleFileSelect, handleDragDrop, handleUrlSubmit, handleDatasetSelect, handleCorrespSearchSubmit
@@ -258,7 +258,7 @@ Handler für die Landing-Page:
 - Weiterleitung zu explore.html nach erfolgreichem Upload
 - Imports: cmif-parser.js, correspsearch-api.js, wikidata-enrichment.js
 
-**explore.js**
+explore.js
 
 Hauptvisualisierung:
 - Views: Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow
@@ -273,27 +273,27 @@ Hauptvisualisierung:
 
 ### Secondary Pages
 
-**wissenskorb.js**
+wissenskorb.js
 - Dedizierte Basket-Analyse-Seite
 - Visualisierungen: Timeline, Map, Network
 - Filter und Sortierung für gesammelte Personen
 - Imports: basket.js, utils.js
 
-**compare.js**
+compare.js
 - Dataset-Vergleich (zwei CMIF-Dateien)
 - Findet gemeinsame Personen und Orte via ID-Matching
 - Unique-Listen (nur in A, nur in B)
 - Export: JSON, CSV für Vergleichsergebnisse
 - Imports: cmif-parser.js, utils.js
 
-**vault.js**
+vault.js
 - Promptotyping Vault (Markdown-Viewer)
 - Lädt knowledge/ Markdown-Dateien via fetch
 - Sidebar-Navigation mit Kategorien (process, technical, requirements)
 - Markdown-Rendering im Content-Bereich
 - Imports: keine
 
-**demo-tour.js**
+demo-tour.js
 - Interaktives Onboarding für Demo-Dataset
 - Gesteuert via URL-Parameter (demo=true)
 - SessionStorage für Tour-Status (ce-demo-tour-completed)
@@ -305,13 +305,13 @@ Hauptvisualisierung:
 
 Browser-basiertes Testing ohne Node.js oder externes Test-Framework. Alle Tests verwenden real CMIF data statt Mock-Daten um die tatsächliche Datenverarbeitung zu validieren.
 
-**tests/test-runner.js**
+tests/test-runner.js
 - Test-Framework ohne Dependencies
 - TestRunner-Klasse mit runAll(), runSuite()
 - Einfaches Assert-System
 - Exports: TestRunner, runTests()
 
-**tests/run-all-tests.js**
+tests/run-all-tests.js
 - Test-Entry-Point
 - Registriert alle Suites: CMIFParserTests, AggregationTests, FormattersTests, StateManagerTests, DOMCacheTests
 - Auto-run via URL-Parameter (test=true)
@@ -508,7 +508,7 @@ Das Design System basiert auf CSS Custom Properties (Design Tokens) definiert in
 
 ### Design System
 
-**tokens.css**
+tokens.css
 - Design Tokens (Canonical Values)
 - Colors: Logo-derived palette (Rust Red Primary, Steel Blue Secondary, Cream Background)
 - Typography: Font families (Inter, Lato, Merriweather), sizes (xs bis 3xl), weights
@@ -522,7 +522,7 @@ Das Design System basiert auf CSS Custom Properties (Design Tokens) definiert in
 - Badge Colors: GND (Green), SNDB (Gold)
 - Verwendet von: Alle CSS-Dateien via import
 
-**style.css**
+style.css
 - Base styles und Layout
 - Reset (Box-Sizing, Margins, Paddings)
 - Body-Styles (Font, Color, Background)
@@ -531,7 +531,7 @@ Das Design System basiert auf CSS Custom Properties (Design Tokens) definiert in
 - Navigation (landing-nav)
 - Imports: tokens.css, components.css
 
-**components.css**
+components.css
 - Shared UI-Komponenten über alle Views
 - Sidebar Info Section (compact statistics)
 - Filter Group (checkboxes, sliders)

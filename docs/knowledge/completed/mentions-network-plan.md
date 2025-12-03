@@ -1,8 +1,10 @@
-# Mentions Flow View - Implementierungsplan
+# Mentions Flow View - Implementation Documentation (COMPLETED)
 
-Detaillierter Plan zur Implementierung des Mentions Flow Views mit Sankey-Diagramm und optionalem Netzwerk-Modus.
+ARCHIVIERT: Dieses Dokument beschreibt die Planung und Implementierung des Mentions Flow Views. Die Implementierung ist in Phase 27 (Dezember 2024) vollständig abgeschlossen.
 
-Stand: 2025-12-02
+Für die aktuelle Dokumentation siehe architecture.md, Sektion "Mentions Flow View".
+
+Stand: 2025-12-02 (Implementation Complete)
 
 ---
 

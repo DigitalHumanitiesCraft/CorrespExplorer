@@ -18,21 +18,15 @@ Technische Vorgaben fuer das UI-Design mit Fokus auf Forschungsdaten-Lesbarkeit 
 | Buttons generisch | Standard-blau ohne Charakter | Accent-Farbe, dickere Borders |
 | Keine Hierarchie | Alle Elemente gleichwertig | Upload-Zone prominenter, Cards sekundaer |
 
-### Konkrete CSS-Aenderungen
+### CSS-Änderungen
 
-```css
-/* VORHER */
-body { background: #f5f5f5; }
-.card { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+Wichtigste Änderungen:
+- Background: Von generisch grau (#f5f5f5) zu Cream (#F5F3E8)
+- Cards: Von box-shadow zu border-based design (2px solid border)
+- Farben: Verwendung von CSS Custom Properties aus tokens.css
+- Konsistenz: Alle Farbwerte referenzieren tokens.css
 
-/* NACHHER */
-body { background: var(--color-bg); } /* #F5F3E8 */
-.card {
-    background: var(--color-bg-light); /* #EDEADB */
-    border: 2px solid var(--color-border);
-    box-shadow: none;
-}
-```
+Für technische Details siehe tokens.css und style.css.
 
 ---
 

@@ -90,17 +90,22 @@ preprocessing/
   analyze_hsa_cmif.py         - CMIF analysis tool
 
 docs/knowledge/
-  JOURNAL.md            - Development log (26 phases)
+  JOURNAL.md            - Development log (27 phases)
   user-stories.md       - Requirements documentation (27 user stories)
   architecture.md       - Technical architecture
   design.md             - Design system documentation
   learnings.md          - Design decisions and patterns
-  plan.md               - Completed features (historical)
+  COMPLETED-ROADMAP.md  - Completed features (historical, archived)
   cmif-standard.md      - CMIF standard documentation
   demo-datasets.md      - Demo dataset documentation
   cmif-sources.md       - CMIF sources reference
   project-analysis.md   - Project analysis report
   uncertainty-concept.md - Uncertainty handling documentation
+  KNOWN-ISSUES.md       - Known inconsistencies and issues
+  VAULT-RULES.md        - Documentation standards for knowledge/
+
+  completed/
+    mentions-network-plan.md - Mentions Flow implementation (archived)
 ```
 
 ## Views

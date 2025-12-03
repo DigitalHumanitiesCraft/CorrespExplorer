@@ -1,10 +1,10 @@
-# CorrespExplorer - Abgeschlossene Features
+# CorrespExplorer - Completed Roadmap (Historical)
 
-Dokumentation aller implementierten Features und User Stories.
+Dokumentation aller implementierten Features und User Stories. Dieses Dokument ist ARCHIVIERT und dient als historische Referenz.
 
-Stand: 2025-12-01
+Stand: 2025-12-01 (Phase 27 abgeschlossen)
 
-HINWEIS: Alle geplanten Features sind vollstaendig implementiert. Dieses Dokument dient als historische Referenz der Entwicklungs-Roadmap.
+HINWEIS: Alle hier geplanten Features sind vollständig implementiert. Für aktuelle Entwicklungsarbeit siehe JOURNAL.md. Für zukünftige Planung siehe ROADMAP.md (wenn erstellt).
 
 ---
 

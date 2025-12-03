@@ -1,6 +1,8 @@
 # Journal: CorrespExplorer
 
-Entwicklungsprotokoll fuer den generischen CMIF-Visualisierer.
+Chronologisches Entwicklungsprotokoll mit detaillierten Implementierungsnotizen.
+
+HINWEIS: Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Format. Code-Snippets und technische Details sind als historische Dokumentation erlaubt. Für strukturierte technische Referenz siehe architecture.md.
 
 ---
 
