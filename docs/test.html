@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorrespExplorer - Test Suite</title>
+    <link rel="icon" type="image/png" href="assets/logo-no-background-no-text.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 2px solid #444;
+        }
+
+        h1 {
+            color: #16a34a;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .info {
+            background: #252525;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #16a34a;
+        }
+
+        .info h2 {
+            color: #16a34a;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .info p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .info ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .info li {
+            padding: 5px 0;
+        }
+
+        .info li:before {
+            content: "→ ";
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .test-suites {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .test-card {
+            background: #252525;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+
+        .test-card h3 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .test-card .count {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .test-card .test-list {
+            list-style: none;
+            font-size: 12px;
+        }
+
+        .test-card .test-list li {
+            padding: 3px 0;
+            color: #aaa;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #15803d;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.secondary {
+            background: #444;
+        }
+
+        button.secondary:hover {
+            background: #555;
+        }
+
+        #console-output {
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 2px solid #333;
+            display: none;
+        }
+
+        #console-output.visible {
+            display: block;
+        }
+
+        .console-line {
+            margin: 2px 0;
+            white-space: pre-wrap;
+        }
+
+        .console-line.error {
+            color: #ef4444;
+        }
+
+        .console-line.success {
+            color: #16a34a;
+        }
+
+        .console-line.info {
+            color: #3b82f6;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #666;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CorrespExplorer Test Suite</h1>
+            <p class="subtitle">Fokussiert, kompakt, automatisiert</p>
+        </header>
+
+        <div class="info">
+            <h2>Was wird getestet?</h2>
+            <ul>
+                <li>State-Manager: Filter-Logik, Caching, URL-State</li>
+                <li>DOM-Cache: Element-Caching, Performance</li>
+                <li>Integration: Zusammenspiel aller Komponenten</li>
+            </ul>
+        </div>
+
+        <div class="test-suites">
+            <div class="test-card">
+                <h3>State Manager</h3>
+                <p class="count">10 Tests</p>
+                <ul class="test-list">
+                    <li>Daten-Initialisierung</li>
+                    <li>Temporal-Filter</li>
+                    <li>Language-Filter</li>
+                    <li>Person-Filter</li>
+                    <li>Kombinierte Filter</li>
+                    <li>Quality-Filter</li>
+                    <li>Caching-Performance</li>
+                    <li>Filter-Reset</li>
+                    <li>URL-Export</li>
+                    <li>URL-Import</li>
+                </ul>
+            </div>
+
+            <div class="test-card">
+                <h3>DOM Cache</h3>
+                <p class="count">9 Tests</p>
+                <ul class="test-list">
+                    <li>getById Caching</li>
+                    <li>Null-Handling</li>
+                    <li>Selector-Zugriff</li>
+                    <li>NodeList-Zugriff</li>
+                    <li>Cache-Clear</li>
+                    <li>Predefined Accessors</li>
+                    <li>Fehlende Elemente</li>
+                    <li>Pre-Loading</li>
+                    <li>Performance-Test</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="run-tests">Tests ausführen</button>
+            <button id="toggle-console" class="secondary">Console anzeigen</button>
+            <button id="clear-console" class="secondary">Console leeren</button>
+        </div>
+
+        <div id="console-output"></div>
+
+        <footer>
+            <p>CorrespExplorer Test Suite | Test-Runner ohne externe Dependencies</p>
+            <p>Aufruf auch via: <code>?test=true</code> in URL</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { runAllTests } from './js/tests/run-all-tests.js';
+
+        const consoleOutput = document.getElementById('console-output');
+        const runBtn = document.getElementById('run-tests');
+        const toggleBtn = document.getElementById('toggle-console');
+        const clearBtn = document.getElementById('clear-console');
+
+        // Capture console
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addConsoleLine(text, type = 'info') {
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            line.textContent = text;
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        console.log = (...args) => {
+            originalLog(...args);
+            addConsoleLine(args.join(' '), 'info');
+        };
+
+        console.error = (...args) => {
+            originalError(...args);
+            addConsoleLine(args.join(' '), 'error');
+        };
+
+        console.warn = (...args) => {
+            originalWarn(...args);
+            addConsoleLine(args.join(' '), 'info');
+        };
+
+        // Buttons
+        runBtn.addEventListener('click', async () => {
+            runBtn.disabled = true;
+            runBtn.textContent = 'Tests laufen...';
+            consoleOutput.classList.add('visible');
+
+            try {
+                await runAllTests();
+            } catch (error) {
+                console.error('Test execution failed:', error);
+            }
+
+            runBtn.disabled = false;
+            runBtn.textContent = 'Tests erneut ausführen';
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            consoleOutput.classList.toggle('visible');
+            toggleBtn.textContent = consoleOutput.classList.contains('visible')
+                ? 'Console verbergen'
+                : 'Console anzeigen';
+        });
+
+        clearBtn.addEventListener('click', () => {
+            consoleOutput.innerHTML = '';
+        });
+
+        // Auto-run if ?test=true
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('test') === 'true') {
+            runBtn.click();
+        }
+    </script>
+</body>
+</html>
