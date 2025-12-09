@@ -1549,92 +1549,7 @@
     background: rgba(166, 75, 63, 0.05);
 }
 
-/* Topics View */
-.topics-container {
-    padding: var(--space-lg);
-    height: calc(100vh - var(--navbar-height));
-    display: flex;
-    flex-direction: column;
-}
-
-.topics-header {
-    margin-bottom: var(--space-lg);
-}
-
-.topics-header h3 {
-    margin: 0 0 var(--space-xs) 0;
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
-}
-
-.topics-info {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
-/* Topics - Layout now uses shared .entity-split-layout from components.css */
-
-/* Topic Card */
-.topic-card {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--color-bg-light);
-    border: 2px solid var(--color-border-light);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-sm);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.topic-card:hover {
-    border-color: var(--color-primary);
-}
-
-.topic-card.active {
-    border-color: var(--color-primary);
-    background: rgba(166, 75, 63, 0.05);
-}
-
-.topic-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.topic-name {
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.topic-bar-container {
-    height: 4px;
-    background: var(--color-border);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.topic-bar {
-    height: 100%;
-    background: var(--color-primary);
-    border-radius: 2px;
-    transition: width var(--transition-fast);
-}
-
-.topic-count {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--color-primary);
-    min-width: 50px;
-    text-align: right;
-}
-
-/* Topic detail components now use shared .entity-stat-row, .entity-mini-timeline-bar, .entity-tag from components.css */
+/* Topics and Places now use shared .entity-container, .entity-header, .entity-card from components.css */
 
 /* Subject Filter Badge */
 .subject-filter-active {
@@ -1766,81 +1681,7 @@
     background: var(--color-primary-dark);
 }
 
-/* Places View */
-.places-container {
-    padding: var(--space-lg);
-    height: calc(100vh - var(--navbar-height));
-    display: flex;
-    flex-direction: column;
-}
-
-.places-header {
-    margin-bottom: var(--space-lg);
-}
-
-.places-header h3 {
-    margin: 0 0 var(--space-xs) 0;
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
-}
-
-.places-info {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
-/* Places - Layout now uses shared .entity-split-layout from components.css */
-
-/* Place Card */
-.place-card {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--color-bg-light);
-    border: 2px solid var(--color-border-light);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-sm);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.place-card:hover {
-    border-color: var(--color-primary);
-}
-
-.place-card.active {
-    border-color: var(--color-primary);
-    background: rgba(166, 75, 63, 0.05);
-}
-
-.place-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.place-name {
-    font-weight: 600;
-    color: var(--color-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.place-meta {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-    margin-top: 2px;
-}
-
-.place-count {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
-    color: var(--color-primary);
-}
-
-/* Place detail components now use shared .entity-detail-panel, .entity-stat-row, .entity-mini-timeline-bar, .entity-tag from components.css */
+/* Places View - now uses shared entity components from components.css */
 
 .no-data {
     color: var(--color-text-light);
@@ -1933,10 +1774,7 @@
         height: 300px;
     }
 
-    /* Places mobile */
-    .place-card {
-        padding: var(--space-sm);
-    }
+    /* Entity cards mobile handled by components.css */
 
     /* Map mobile */
     #map {

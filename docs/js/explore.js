@@ -3259,26 +3259,26 @@ function renderTopicsList() {
         const isActive = selectedSubjectId === topic.id;
 
         return `
-            <div class="topic-card ${isActive ? 'active' : ''}" data-id="${escapeHtml(topic.id)}">
-                <div class="topic-info">
-                    <div class="topic-name" title="${escapeHtml(topic.label)}">${escapeHtml(topic.label)}</div>
-                    <div class="topic-bar-container">
-                        <div class="topic-bar" style="width: ${barWidth}%"></div>
+            <div class="entity-card ${isActive ? 'active' : ''}" data-id="${escapeHtml(topic.id)}">
+                <div class="entity-card-info">
+                    <div class="entity-card-name" title="${escapeHtml(topic.label)}">${escapeHtml(topic.label)}</div>
+                    <div class="entity-card-bar">
+                        <div class="entity-card-bar-fill" style="width: ${barWidth}%"></div>
                     </div>
                 </div>
-                <div class="topic-count">${topic.filteredCount}</div>
+                <div class="entity-card-count">${topic.filteredCount}</div>
             </div>
         `;
     }).join('');
 
     // Add click handlers
-    container.querySelectorAll('.topic-card').forEach(card => {
+    container.querySelectorAll('.entity-card').forEach(card => {
         card.addEventListener('click', () => {
             const topicId = card.dataset.id;
             selectTopic(topicId);
 
             // Update active state
-            container.querySelectorAll('.topic-card').forEach(c => c.classList.remove('active'));
+            container.querySelectorAll('.entity-card').forEach(c => c.classList.remove('active'));
             card.classList.add('active');
         });
     });
@@ -3448,7 +3448,7 @@ function selectTopic(topicId) {
                 selectTopic(relatedId);
                 // Update list selection
                 const container = elements.topicsList;
-                container?.querySelectorAll('.topic-card').forEach(c => {
+                container?.querySelectorAll('.entity-card').forEach(c => {
                     c.classList.toggle('active', c.dataset.id === relatedId);
                 });
             });
@@ -3681,18 +3681,18 @@ function renderPlacesList() {
         const precisionClass = getPlacePrecisionClass(place.precision);
         const noCoordIcon = !place.hasCoordinates ? '<i class="fas fa-question-circle" title="Ohne Koordinaten"></i> ' : '';
         return `
-            <div class="place-card ${isActive ? 'active' : ''} ${precisionClass}" data-place-id="${place.id}">
-                <div class="place-info">
-                    <div class="place-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
-                    <div class="place-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
+            <div class="entity-card ${isActive ? 'active' : ''} ${precisionClass}" data-place-id="${place.id}">
+                <div class="entity-card-info">
+                    <div class="entity-card-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
+                    <div class="entity-card-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
                 </div>
-                <div class="place-count">${place.filteredCount}</div>
+                <div class="entity-card-count">${place.filteredCount}</div>
             </div>
         `;
     }).join('');
 
     // Add click handlers
-    container.querySelectorAll('.place-card').forEach(card => {
+    container.querySelectorAll('.entity-card').forEach(card => {
         card.addEventListener('click', (e) => {
             const placeId = card.dataset.placeId;
             selectPlace(placeId);
@@ -3707,7 +3707,7 @@ function selectPlace(placeId) {
     if (!place) return;
 
     // Update active state in list
-    document.querySelectorAll('.place-card').forEach(card => {
+    document.querySelectorAll('.entity-card[data-place-id]').forEach(card => {
         card.classList.toggle('active', card.dataset.placeId === placeId);
     });
 

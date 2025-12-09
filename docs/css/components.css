@@ -544,3 +544,106 @@
         min-height: 300px;
     }
 }
+
+/* ==========================================
+ * ENTITY CONTAINER AND HEADER
+ * Gemeinsamer Container fuer Entity Views (Topics, Places, etc.)
+ * ========================================== */
+
+.entity-container {
+    padding: var(--space-lg);
+    height: calc(100vh - var(--navbar-height));
+    display: flex;
+    flex-direction: column;
+}
+
+.entity-header {
+    margin-bottom: var(--space-lg);
+}
+
+.entity-header h3 {
+    margin: 0 0 var(--space-xs) 0;
+    font-size: var(--font-size-xl);
+    color: var(--color-text);
+}
+
+.entity-header p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+/* ==========================================
+ * ENTITY CARD
+ * Gemeinsame Karte fuer Listen-Elemente (Topics, Places, etc.)
+ * ========================================== */
+
+.entity-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg-light);
+    border: 2px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.entity-card:hover {
+    border-color: var(--color-primary);
+}
+
+.entity-card.active {
+    border-color: var(--color-primary);
+    background: rgba(166, 75, 63, 0.05);
+}
+
+.entity-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.entity-card-name {
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.entity-card-meta {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    margin-top: 2px;
+}
+
+.entity-card-bar {
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.entity-card-bar-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 2px;
+    transition: width var(--transition-fast);
+}
+
+.entity-card-count {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-primary);
+    min-width: 50px;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .entity-card {
+        padding: var(--space-sm);
+    }
+}

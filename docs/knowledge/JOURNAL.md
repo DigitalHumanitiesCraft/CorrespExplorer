@@ -6,19 +6,20 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
-## 2025-12-09 (Phase 32: Entity Split Layout Refactoring)
+## 2025-12-09 (Phase 32: Vollstaendiges Entity Component Refactoring)
 
-### Gemeinsame CSS-Komponenten fuer Topics und Places Views
+### Topics und Places Views komplett vereinheitlicht
 
 Problem:
 - Topics und Places Views hatten identische HTML-Struktur aber separate CSS-Klassen
 - Topics Detail-Panel wurde nicht angezeigt (querySelector mit alter Klasse)
 - Inkonsistente Styling-Definitionen (topics-layout vs places-layout)
 - Duplizierter Code erschwert Wartung
+- Listen-Karten (.topic-card, .place-card) sahen unterschiedlich aus
 
-Loesung: Shared Entity Component Architecture
+Loesung: Vollstaendige Shared Entity Component Architecture
 
-Neue CSS-Komponenten in components.css:
+Neue CSS-Komponenten in components.css (Teil 1 - Layout):
 - .entity-split-layout: 2-Spalten Grid (1fr 1fr), responsive stacking bei 900px
 - .entity-list-panel: Flex-Container fuer Listen mit Scroll
 - .entity-detail-panel: Styled Panel mit Border und Padding
@@ -26,6 +27,8 @@ Neue CSS-Komponenten in components.css:
 - .entity-detail-header: Titel + Count Badge
 - .entity-detail-section: Gruppierung mit H5 Headings
 - .entity-detail-actions: Button-Leiste mit Border-Top
+
+Neue CSS-Komponenten in components.css (Teil 2 - Detail-Inhalte):
 - .entity-stat-row: Name + Count + Bar in einer Zeile
 - .entity-stat-name/count/bar: Flexible Statistik-Anzeige
 - .entity-mini-timeline: Balkendiagramm fuer Zeitverlaeufe
@@ -33,46 +36,47 @@ Neue CSS-Komponenten in components.css:
 - .entity-tags: Flexbox-Wrapper fuer Tags
 - .entity-tag: Klickbarer Tag mit Hover-Effekt
 
+Neue CSS-Komponenten in components.css (Teil 3 - Container und Karten):
+- .entity-container: Padding, Height, Flexbox fuer gesamten View
+- .entity-header: Titel + Beschreibung
+- .entity-card: Gemeinsame Karte fuer Listen-Elemente
+- .entity-card-info: Flex-Container fuer Karteninhalt
+- .entity-card-name: Titel mit Truncation
+- .entity-card-meta: Sekundaertext (grau, klein)
+- .entity-card-bar/bar-fill: Progress-Balken in Karten
+- .entity-card-count: Zaehler rechts
+
 HTML-Aenderungen (explore.html):
-- Topics View: topics-layout -> entity-split-layout
-- Topics View: topics-list-panel -> entity-list-panel
-- Topics View: topic-detail-panel -> entity-detail-panel
-- Topics View: topic-detail-empty -> entity-detail-empty (mit ID)
-- Topics View: topic-correspondent -> entity-stat-row
-- Topics View: topic-mini-timeline -> entity-mini-timeline
-- Topics View: topic-related-tag -> entity-tag
-- Places View: places-layout -> entity-split-layout
-- Places View: places-list-panel -> entity-list-panel
-- Places View: place-detail-panel -> entity-detail-panel
-- Places View: place-detail-empty -> entity-detail-empty (mit ID)
-- Places View: place-mini-timeline -> entity-mini-timeline
-- Places View: place-language-tag -> entity-tag
+- topics-container -> entity-container
+- places-container -> entity-container
+- topics-header -> entity-header
+- places-header -> entity-header
+- topics-info/places-info entfernt (p direktes Kind von entity-header)
+- Alle Layout-Klassen bereits in vorherigem Commit migriert
 
 JavaScript-Aenderungen (explore.js):
-- selectTopic(): querySelector('.topic-detail-empty') -> getElementById('topic-detail-empty')
-- selectTopic(): topic-correspondent -> entity-stat-row
-- selectTopic(): topic-mini-bar -> entity-mini-timeline-bar
-- selectTopic(): topic-related-tag -> entity-tag
-- selectPlace(): querySelector('.place-detail-empty') -> getElementById('place-detail-empty')
-- selectPlace(): place-sender-item -> entity-stat-row
-- selectPlace(): mini-timeline-bar -> entity-mini-timeline-bar
-- selectPlace(): place-language-tag -> entity-tag
+- renderTopicsList(): topic-card -> entity-card
+- renderTopicsList(): topic-info -> entity-card-info
+- renderTopicsList(): topic-name -> entity-card-name
+- renderTopicsList(): topic-bar-container/bar -> entity-card-bar/bar-fill
+- renderTopicsList(): topic-count -> entity-card-count
+- renderPlacesList(): place-card -> entity-card
+- renderPlacesList(): place-info -> entity-card-info
+- renderPlacesList(): place-name -> entity-card-name
+- renderPlacesList(): place-meta -> entity-card-meta
+- renderPlacesList(): place-count -> entity-card-count
+- selectPlace(): Selektor auf entity-card[data-place-id] angepasst
 
 CSS-Bereinigung (explore.css):
-- Entfernt: .topics-layout, .topics-list-panel, .topic-detail-panel, .topic-detail-empty
-- Entfernt: .topic-detail-header, .topic-detail-count, .topic-detail-section
-- Entfernt: .topic-correspondent*, .topic-mini-*, .topic-related-*
-- Entfernt: .places-layout, .places-list-panel, .place-detail-panel, .place-detail-empty
-- Entfernt: .place-detail-header, .place-detail-count, .place-detail-section
-- Entfernt: .place-sender-item, .mini-timeline-*, .place-language-tag
-- Kommentare dokumentieren Migration zu components.css
-
-Beibehaltene CSS-Klassen (view-spezifisch):
-- .topic-card, .topic-info, .topic-name, .topic-count, .topic-bar-container
-- .place-card, .place-info, .place-name, .place-meta, .place-count
+- Vollstaendig entfernt: .topics-container, .topics-header, .topics-info
+- Vollstaendig entfernt: .topic-card, .topic-info, .topic-name, .topic-bar-*, .topic-count
+- Vollstaendig entfernt: .places-container, .places-header, .places-info
+- Vollstaendig entfernt: .place-card, .place-info, .place-name, .place-meta, .place-count
+- Responsive .place-card Regel entfernt (nun in components.css)
 
 Responsive Design:
 - @media (max-width: 900px): Grid stackt zu einer Spalte
+- @media (max-width: 768px): entity-card padding reduziert
 - entity-list-panel: max-height 40vh auf Mobile
 - entity-detail-panel: min-height 300px auf Mobile
 
