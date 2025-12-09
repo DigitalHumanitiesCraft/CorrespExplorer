@@ -530,18 +530,22 @@
     color: var(--color-primary);
 }
 
-/* Responsive: Stack on mobile */
-@media (max-width: 900px) {
+/* Responsive: Stack when content area is too narrow for 2 columns
+   Sidebar is 380px, so at 1600px window we have 1220px for content
+   At 1400px we have 1020px - too narrow for comfortable 2 columns */
+@media (max-width: 1600px) {
     .entity-split-layout {
         grid-template-columns: 1fr;
     }
 
     .entity-list-panel {
-        max-height: 40vh;
+        max-height: 50vh;
+        overflow-y: auto;
     }
 
     .entity-detail-panel {
-        min-height: 300px;
+        min-height: 200px;
+        flex: 1;
     }
 }
 
@@ -552,7 +556,7 @@
 
 .entity-container {
     padding: var(--space-lg);
-    height: calc(100vh - var(--navbar-height));
+    height: 100%;
     display: flex;
     flex-direction: column;
 }
