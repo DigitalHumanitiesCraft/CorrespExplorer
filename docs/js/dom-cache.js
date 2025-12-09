@@ -122,12 +122,8 @@ export const elements = {
 
     // Mentions Flow filter
     get mentionsFilterGroup() { return cache.byId('mentions-filter-group'); },
-    get mentionsTopNSlider() { return cache.byId('mentions-topn-slider'); },
-    get mentionsTopNValue() { return cache.byId('mentions-topn-value'); },
-    get mentionsMinCountSlider() { return cache.byId('mentions-mincount-slider'); },
-    get mentionsMinCountValue() { return cache.byId('mentions-mincount-value'); },
-    get mentionsMinSenderSlider() { return cache.byId('mentions-minsender-slider'); },
-    get mentionsMinSenderValue() { return cache.byId('mentions-minsender-value'); },
+    get mentionsPersonSearch() { return cache.byId('mentions-person-search'); },
+    get mentionsPersonDropdown() { return cache.byId('mentions-person-dropdown'); },
 
     // View containers
     get mapContainer() { return cache.byId('map-container'); },

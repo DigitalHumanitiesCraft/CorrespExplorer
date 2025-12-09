@@ -59,10 +59,7 @@ let placesSortOrder = 'count-desc';  // Use: state.ui.placesSortOrder
 
 // Mentions Flow view state - Use: state.ui.*
 let mentionedPersonsIndex = new Map();
-let mentionsFlowMode = 'sankey';  // Use: state.ui.mentionsFlowMode
-let mentionsTopN = 20;  // Use: state.ui.mentionsTopN
-let mentionsMinCount = 2;  // Use: state.ui.mentionsMinCount
-let mentionsMinSenderMentions = 5;  // Use: state.ui.mentionsMinSenderMentions
+let selectedMentionsPerson = null;  // Currently selected person for mentions view
 
 // Logging utility
 const log = {
@@ -1785,19 +1782,6 @@ function initUrlState() {
         qualityFilter.locatedPlaces = true;
     }
 
-    // Mentions Flow parameters
-    const mentionsTopNParam = urlParams.get('mentionsTopN');
-    if (mentionsTopNParam) {
-        mentionsTopN = parseInt(mentionsTopNParam);
-    }
-    const mentionsMinSenderParam = urlParams.get('mentionsMinSender');
-    if (mentionsMinSenderParam) {
-        mentionsMinSenderMentions = parseInt(mentionsMinSenderParam);
-    }
-    const mentionsMinFlowParam = urlParams.get('mentionsMinFlow');
-    if (mentionsMinFlowParam) {
-        mentionsMinCount = parseInt(mentionsMinFlowParam);
-    }
 }
 
 function updateUrlState() {
@@ -1816,13 +1800,6 @@ function updateUrlState() {
     if (qualityFilter.preciseDates) newParams.set('precise', '1');
     if (qualityFilter.knownPersons) newParams.set('known', '1');
     if (qualityFilter.locatedPlaces) newParams.set('located', '1');
-
-    // Mentions Flow parameters (only if different from defaults)
-    if (currentView === 'mentions-flow') {
-        if (mentionsTopN !== 20) newParams.set('mentionsTopN', mentionsTopN);
-        if (mentionsMinSenderMentions !== 5) newParams.set('mentionsMinSender', mentionsMinSenderMentions);
-        if (mentionsMinCount !== 2) newParams.set('mentionsMinFlow', mentionsMinCount);
-    }
 
     // Update URL without reload
     const newUrl = newParams.toString()
@@ -4789,92 +4766,151 @@ function showMissingPlacesModal() {
 function initMentionsFlowView() {
     log.init('Initializing Mentions Flow View');
 
-    // Initialize filter controls
-    initMentionsFilterControls();
+    // Initialize autocomplete for person selection
+    initMentionsPersonAutocomplete();
 }
 
-function updateMentionsFilterInfo() {
-    const filterInfo = elements.getById('mentions-flow-filter-info');
-    if (filterInfo) {
-        filterInfo.textContent = `Zeigt: Top ${mentionsTopN} meist-erwähnte Personen | Nur Korrespondenten mit ≥${mentionsMinSenderMentions} Mentions | Nur Verbindungen ≥${mentionsMinCount}`;
+function initMentionsPersonAutocomplete() {
+    const input = elements.getById('mentions-person-search');
+    const dropdown = elements.getById('mentions-person-dropdown');
+    if (!input || !dropdown) return;
+
+    let highlightedIndex = -1;
+    let currentResults = [];
+
+    // Build persons list for autocomplete
+    function getPersonsWithMentions() {
+        const personsMap = new Map();
+
+        filteredLetters.forEach(letter => {
+            // Count how many times each person is mentioned
+            const mentions = letter.mentions?.persons || [];
+            mentions.forEach(person => {
+                const id = person.id || person.name;
+                const name = person.name || id;
+                if (!personsMap.has(id)) {
+                    personsMap.set(id, { id, name, mentionCount: 0 });
+                }
+                personsMap.get(id).mentionCount++;
+            });
+
+            // Also count correspondents who mention others
+            const senderId = letter.sender?.id;
+            const senderName = letter.sender?.name;
+            if (senderId && mentions.length > 0) {
+                if (!personsMap.has(senderId)) {
+                    personsMap.set(senderId, { id: senderId, name: senderName, mentionCount: 0 });
+                }
+            }
+        });
+
+        return Array.from(personsMap.values())
+            .sort((a, b) => b.mentionCount - a.mentionCount);
     }
-}
 
-function initMentionsFilterControls() {
-    const filterGroup = elements.getById('mentions-filter-group');
-    if (!filterGroup) return;
+    function renderDropdown(results) {
+        currentResults = results;
+        highlightedIndex = -1;
 
-    // Show filter controls when mentions flow view is available
-    if (availableViews['mentions-flow']?.available) {
-        // Controls will be shown/hidden by switchView
-
-        // Update filter info text on init
-        updateMentionsFilterInfo();
-
-        // Top N slider
-        const topNSlider = elements.getById('mentions-topn-slider');
-        const topNValue = elements.getById('mentions-topn-value');
-
-        if (topNSlider && topNValue) {
-            // Sync with current state (may be from URL)
-            topNSlider.value = mentionsTopN;
-            topNValue.textContent = mentionsTopN;
-
-            topNSlider.addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                topNValue.textContent = value;
-                mentionsTopN = value;
-
-                if (currentView === 'mentions-flow') {
-                    updateMentionsFilterInfo();
-                    renderMentionsFlow();
-                }
-                updateUrlState();
-            });
+        if (results.length === 0) {
+            dropdown.innerHTML = '<div class="autocomplete-empty">Keine Treffer</div>';
+            dropdown.classList.remove('hidden');
+            return;
         }
 
-        // Min Sender Mentions slider
-        const minSenderSlider = elements.getById('mentions-minsender-slider');
-        const minSenderValue = elements.getById('mentions-minsender-value');
+        dropdown.innerHTML = results.slice(0, 20).map((person, i) => `
+            <div class="autocomplete-item" data-index="${i}" data-id="${person.id}">
+                <span class="autocomplete-item-name">${escapeHtml(person.name)}</span>
+                <span class="autocomplete-item-count">${person.mentionCount}</span>
+            </div>
+        `).join('');
 
-        if (minSenderSlider && minSenderValue) {
-            minSenderSlider.value = mentionsMinSenderMentions;
-            minSenderValue.textContent = mentionsMinSenderMentions;
-
-            minSenderSlider.addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                minSenderValue.textContent = value;
-                mentionsMinSenderMentions = value;
-
-                if (currentView === 'mentions-flow') {
-                    updateMentionsFilterInfo();
-                    renderMentionsFlow();
-                }
-                updateUrlState();
-            });
-        }
-
-        // Min Flow Strength slider
-        const minFlowSlider = elements.getById('mentions-minflow-slider');
-        const minFlowValue = elements.getById('mentions-minflow-value');
-
-        if (minFlowSlider && minFlowValue) {
-            minFlowSlider.value = mentionsMinCount;
-            minFlowValue.textContent = mentionsMinCount;
-
-            minFlowSlider.addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                minFlowValue.textContent = value;
-                mentionsMinCount = value;
-
-                if (currentView === 'mentions-flow') {
-                    updateMentionsFilterInfo();
-                    renderMentionsFlow();
-                }
-                updateUrlState();
-            });
-        }
+        dropdown.classList.remove('hidden');
     }
+
+    function selectPerson(person) {
+        selectedMentionsPerson = person;
+        input.value = person.name;
+        dropdown.classList.add('hidden');
+
+        // Update selected person display
+        const selectedDisplay = elements.getById('mentions-flow-selected-person');
+        if (selectedDisplay) {
+            selectedDisplay.innerHTML = `<strong>${escapeHtml(person.name)}</strong> - ${person.mentionCount} Erwaehnungen`;
+        }
+
+        // Render the flow for this person
+        renderMentionsFlowForPerson(person);
+    }
+
+    // Input event - filter as user types
+    input.addEventListener('input', () => {
+        const query = input.value.toLowerCase().trim();
+        if (query.length < 2) {
+            dropdown.classList.add('hidden');
+            return;
+        }
+
+        const allPersons = getPersonsWithMentions();
+        const filtered = allPersons.filter(p =>
+            p.name.toLowerCase().includes(query)
+        );
+
+        renderDropdown(filtered);
+    });
+
+    // Focus - show dropdown if there's a query
+    input.addEventListener('focus', () => {
+        if (input.value.length >= 2) {
+            input.dispatchEvent(new Event('input'));
+        }
+    });
+
+    // Click outside - close dropdown
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    // Keyboard navigation
+    input.addEventListener('keydown', (e) => {
+        if (dropdown.classList.contains('hidden')) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            highlightedIndex = Math.min(highlightedIndex + 1, currentResults.length - 1);
+            updateHighlight();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            highlightedIndex = Math.max(highlightedIndex - 1, 0);
+            updateHighlight();
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (highlightedIndex >= 0 && currentResults[highlightedIndex]) {
+                selectPerson(currentResults[highlightedIndex]);
+            }
+        } else if (e.key === 'Escape') {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    function updateHighlight() {
+        dropdown.querySelectorAll('.autocomplete-item').forEach((item, i) => {
+            item.classList.toggle('highlighted', i === highlightedIndex);
+        });
+    }
+
+    // Click on dropdown item
+    dropdown.addEventListener('click', (e) => {
+        const item = e.target.closest('.autocomplete-item');
+        if (item) {
+            const index = parseInt(item.dataset.index);
+            if (currentResults[index]) {
+                selectPerson(currentResults[index]);
+            }
+        }
+    });
 }
 
 function createTooltip() {
@@ -4896,265 +4932,224 @@ function createTooltip() {
 }
 
 function renderMentionsFlow() {
-    if (!availableViews['mentions-flow']?.available) {
-        elements.mentionsFlowPlaceholder.innerHTML = `
-            <i class="fas fa-info-circle"></i>
-            <p>${availableViews['mentions-flow']?.reason || 'Keine Mentions-Daten vorhanden'}</p>
-        `;
-        return;
+    // Show placeholder - user needs to select a person
+    const placeholder = elements.mentionsFlowPlaceholder;
+    if (placeholder) {
+        if (!selectedMentionsPerson) {
+            placeholder.style.display = 'flex';
+            placeholder.innerHTML = '<i class="fas fa-user-circle"></i><p>Waehle eine Person in der Sidebar um deren Erwaehnungen zu sehen</p>';
+        } else {
+            renderMentionsFlowForPerson(selectedMentionsPerson);
+        }
     }
+}
 
+function renderMentionsFlowForPerson(person) {
     const container = elements.getById('mentions-flow-graph');
     const placeholder = elements.mentionsFlowPlaceholder;
 
+    if (!container) return;
+
     // Clear previous
     container.innerHTML = '';
-    placeholder.style.display = 'flex';
-    placeholder.innerHTML = '<i class="fas fa-spinner fa-spin"></i><p>Berechne Sankey-Diagramm...</p>';
 
-    try {
-        // Build Sankey data with filtering parameters
-        const sankeyData = buildSankeyData(
-            filteredLetters,
-            mentionsTopN,
-            mentionsMinSenderMentions,
-            mentionsMinCount
-        );
+    // Build data for this specific person
+    // Two scenarios:
+    // 1. Person is a correspondent (sender) - show who they mention
+    // 2. Person is mentioned - show who mentions them
 
-        if (sankeyData.nodes.length === 0) {
-            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Mentions-Daten in den gefilterten Briefen (nach Filtern)</p>';
-            return;
+    const mentionedByPerson = [];  // Person mentions these people
+    const personMentionedBy = [];  // These people mention the person
+
+    filteredLetters.forEach(letter => {
+        const senderId = letter.sender?.id;
+        const senderName = letter.sender?.name || 'Unbekannt';
+        const mentions = letter.mentions?.persons || [];
+
+        // Check if this person is the sender
+        if (senderId === person.id) {
+            mentions.forEach(m => {
+                const existingIdx = mentionedByPerson.findIndex(x => x.id === (m.id || m.name));
+                if (existingIdx >= 0) {
+                    mentionedByPerson[existingIdx].count++;
+                } else {
+                    mentionedByPerson.push({
+                        id: m.id || m.name,
+                        name: m.name || m.id,
+                        count: 1
+                    });
+                }
+            });
         }
 
-        // Setup dimensions
-        const width = container.clientWidth || 1200;
-
-        // Calculate required height based on node count for scrolling
-        const minHeightPerNode = 25; // Minimum pixels per node for readability
-        const calculatedHeight = sankeyData.nodes.length * minHeightPerNode;
-        const containerHeight = container.clientHeight || 800;
-        const height = Math.max(calculatedHeight, containerHeight);
-
-        // Make container scrollable if content is taller than viewport
-        container.style.overflowY = height > containerHeight ? 'auto' : 'visible';
-
-        // Create SVG
-        const svg = d3.select(container)
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('viewBox', `0 0 ${width} ${height}`);
-
-        const g = svg.append('g');
-
-        // Add zoom behavior
-        const zoom = d3.zoom()
-            .scaleExtent([0.5, 3])
-            .on('zoom', (event) => {
-                g.attr('transform', event.transform);
-            });
-
-        svg.call(zoom);
-
-        // Create Sankey generator
-        const sankeyGenerator = d3.sankey()
-            .nodeWidth(20)
-            .nodePadding(3)  // Minimal padding - Sankey optimiert automatisch
-            .extent([[50, 20], [width - 50, height - 20]]);
-
-        // Generate layout
-        const {nodes, links} = sankeyGenerator({
-            nodes: sankeyData.nodes.map(d => Object.assign({}, d)),
-            links: sankeyData.links.map(d => Object.assign({}, d))
-        });
-
-        // Detect hybrid nodes (appear as both correspondent and mentioned)
-        const correspondentIds = new Set(nodes.filter(n => n.column === 0).map(n => n.id));
-        const mentionedIds = new Set(nodes.filter(n => n.column === 1).map(n => n.id));
-        const hybridIds = new Set([...correspondentIds].filter(id => mentionedIds.has(id)));
-
-        // Define gradients for links
-        const defs = svg.append('defs');
-        links.forEach((link, i) => {
-            const gradient = defs.append('linearGradient')
-                .attr('id', `link-gradient-${i}`)
-                .attr('gradientUnits', 'userSpaceOnUse')
-                .attr('x1', link.source.x1)
-                .attr('x2', link.target.x0);
-
-            gradient.append('stop')
-                .attr('offset', '0%')
-                .attr('stop-color', '#2c5f8d'); // Steel blue (correspondent)
-
-            gradient.append('stop')
-                .attr('offset', '100%')
-                .attr('stop-color', hybridIds.has(link.target.id) ? '#059669' : '#f59e0b'); // Green for hybrid, amber for mentioned-only
-        });
-
-        // Render links
-        const link = g.append('g')
-            .attr('class', 'links')
-            .selectAll('path')
-            .data(links)
-            .join('path')
-            .attr('d', d3.sankeyLinkHorizontal())
-            .attr('stroke', (d, i) => `url(#link-gradient-${i})`)
-            .attr('stroke-width', d => Math.max(1, d.width))
-            .attr('fill', 'none')
-            .attr('opacity', 0.5)
-            .style('cursor', 'pointer')
-            .on('mouseenter', function(event, d) {
-                d3.select(this).attr('opacity', 1.0);
-
-                // Dim other links
-                link.attr('opacity', function(otherD) {
-                    return otherD === d ? 1.0 : 0.2;
-                });
-
-                // Highlight connected nodes
-                node.selectAll('rect').attr('opacity', function(nodeD) {
-                    return nodeD === d.source || nodeD === d.target ? 1.0 : 0.3;
-                });
-
-                // Show tooltip
-                const tooltip = elements.getById('mentions-tooltip') || createTooltip();
-                tooltip.style.display = 'block';
-                tooltip.style.left = (event.pageX + 10) + 'px';
-                tooltip.style.top = (event.pageY - 10) + 'px';
-                tooltip.innerHTML = `
-                    <strong>${d.source.name}</strong> → <strong>${d.target.name}</strong><br>
-                    ${d.value} Erwähnung${d.value !== 1 ? 'en' : ''}
-                `;
-            })
-            .on('mousemove', function(event) {
-                const tooltip = elements.getById('mentions-tooltip');
-                if (tooltip && tooltip.style.display === 'block') {
-                    tooltip.style.left = (event.pageX + 10) + 'px';
-                    tooltip.style.top = (event.pageY - 10) + 'px';
-                }
-            })
-            .on('mouseleave', function() {
-                link.attr('opacity', 0.5);
-                node.selectAll('rect').attr('opacity', 1.0);
-
-                const tooltip = elements.getById('mentions-tooltip');
-                if (tooltip) tooltip.style.display = 'none';
-            });
-
-        // Render nodes
-        const node = g.append('g')
-            .attr('class', 'nodes')
-            .selectAll('g')
-            .data(nodes)
-            .join('g')
-            .style('cursor', 'pointer');
-
-        node.append('rect')
-            .attr('x', d => d.x0)
-            .attr('y', d => d.y0)
-            .attr('height', d => d.y1 - d.y0)
-            .attr('width', sankeyGenerator.nodeWidth())
-            .attr('fill', d => {
-                if (d.column === 0) return '#2c5f8d'; // Steel blue for correspondents
-                return hybridIds.has(d.id) ? '#059669' : '#f59e0b'; // Green for hybrid, amber for mentioned-only
-            })
-            .attr('rx', 3)
-            .attr('stroke', d => hybridIds.has(d.id) ? '#047857' : 'none')
-            .attr('stroke-width', d => hybridIds.has(d.id) ? 2 : 0);
-
-        // Add hybrid indicator icon
-        node.filter(d => d.column === 1 && hybridIds.has(d.id))
-            .append('text')
-            .attr('x', d => d.x0 + sankeyGenerator.nodeWidth() / 2)
-            .attr('y', d => d.y0 - 5)
-            .attr('text-anchor', 'middle')
-            .attr('font-family', 'Font Awesome 6 Free')
-            .attr('font-weight', '900')
-            .attr('font-size', '10px')
-            .attr('fill', '#047857')
-            .text('\uf0c1'); // Link icon
-
-        // Add labels with better spacing
-        node.append('text')
-            .attr('x', d => d.column === 0 ? d.x1 + 8 : d.x0 - 8)
-            .attr('y', d => (d.y1 + d.y0) / 2)
-            .attr('dy', '0.35em')
-            .attr('text-anchor', d => d.column === 0 ? 'start' : 'end')
-            .text(d => {
-                // Kürze sehr lange Namen
-                const maxLength = 30;
-                return d.name.length > maxLength ? d.name.substring(0, maxLength) + '...' : d.name;
-            })
-            .style('font-size', '12px')
-            .style('fill', 'var(--color-text-primary)')
-            .style('font-weight', d => hybridIds.has(d.id) ? '600' : 'normal')
-            .style('pointer-events', 'none')  // Labels sollten keine Maus-Events blockieren
-            .each(function(d) {
-                // Füge Schatten für bessere Lesbarkeit hinzu
-                const text = d3.select(this);
-                text.clone(true).lower()
-                    .style('fill', 'var(--color-background)')
-                    .style('stroke', 'var(--color-background)')
-                    .style('stroke-width', '3px')
-                    .style('stroke-linejoin', 'round')
-                    .style('opacity', '0.8');
-            });
-
-        // Node hover behavior
-        let hoverTimeout;
-        node.on('mouseenter', function(event, d) {
-            clearTimeout(hoverTimeout);
-
-            // Dim unconnected links immediately
-            link.attr('opacity', function(linkD) {
-                return linkD.source === d || linkD.target === d ? 0.8 : 0.1;
-            });
-
-            // Show tooltip
-            const tooltip = elements.getById('mentions-tooltip') || createTooltip();
-            tooltip.style.display = 'block';
-            tooltip.style.left = (event.pageX + 10) + 'px';
-            tooltip.style.top = (event.pageY - 10) + 'px';
-
-            const incoming = links.filter(l => l.target === d).reduce((sum, l) => sum + l.value, 0);
-            const outgoing = links.filter(l => l.source === d).reduce((sum, l) => sum + l.value, 0);
-
-            let tooltipContent = `<strong>${d.name}</strong><br>`;
-            if (d.column === 0) {
-                tooltipContent += `Erwähnt: ${outgoing} Person${outgoing !== 1 ? 'en' : ''}`;
+        // Check if this person is mentioned in the letter
+        const isMentioned = mentions.some(m => (m.id || m.name) === person.id);
+        if (isMentioned && senderId) {
+            const existingIdx = personMentionedBy.findIndex(x => x.id === senderId);
+            if (existingIdx >= 0) {
+                personMentionedBy[existingIdx].count++;
             } else {
-                tooltipContent += `Erwähnt von: ${incoming} Korrespondent${incoming !== 1 ? 'en' : ''}`;
+                personMentionedBy.push({
+                    id: senderId,
+                    name: senderName,
+                    count: 1
+                });
             }
-            if (hybridIds.has(d.id)) {
-                tooltipContent += '<br><em>(Korrespondent + Erwähnt)</em>';
-            }
+        }
+    });
 
-            tooltip.innerHTML = tooltipContent;
-        })
-        .on('mousemove', function(event) {
-            // Update tooltip position on move (throttled by browser)
-            const tooltip = elements.getById('mentions-tooltip');
-            if (tooltip && tooltip.style.display === 'block') {
-                tooltip.style.left = (event.pageX + 10) + 'px';
-                tooltip.style.top = (event.pageY - 10) + 'px';
-            }
-        })
-        .on('mouseleave', function() {
-            hoverTimeout = setTimeout(() => {
-                link.attr('opacity', 0.5);
-                const tooltip = elements.getById('mentions-tooltip');
-                if (tooltip) tooltip.style.display = 'none';
-            }, 50);  // Small delay to prevent flicker when moving between nodes
-        });
+    // Sort by count
+    mentionedByPerson.sort((a, b) => b.count - a.count);
+    personMentionedBy.sort((a, b) => b.count - a.count);
 
-        // Hide placeholder
-        placeholder.style.display = 'none';
-
-        log.render(`Rendered Sankey: ${nodes.length} nodes, ${links.length} links`);
-    } catch (error) {
-        log.error('Error rendering Sankey: ' + error.message);
-        placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i><p>Fehler beim Rendern: ${error.message}</p>`;
+    if (mentionedByPerson.length === 0 && personMentionedBy.length === 0) {
+        placeholder.style.display = 'flex';
+        placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Mentions-Daten fuer diese Person</p>';
+        return;
     }
+
+    placeholder.style.display = 'none';
+
+    // Build simple Sankey: Left = who mentions person, Center = person, Right = who person mentions
+    const nodes = [];
+    const links = [];
+    const nodeIndexMap = new Map();
+
+    // Add "mentioned by" nodes on the left
+    personMentionedBy.slice(0, 15).forEach(p => {
+        const idx = nodes.length;
+        nodeIndexMap.set('left-' + p.id, idx);
+        nodes.push({ name: p.name, id: p.id, column: 0 });
+    });
+
+    // Add central person
+    const centerIdx = nodes.length;
+    nodeIndexMap.set('center-' + person.id, centerIdx);
+    nodes.push({ name: person.name, id: person.id, column: 1, isCenter: true });
+
+    // Add "mentions" nodes on the right
+    mentionedByPerson.slice(0, 15).forEach(p => {
+        const idx = nodes.length;
+        nodeIndexMap.set('right-' + p.id, idx);
+        nodes.push({ name: p.name, id: p.id, column: 2 });
+    });
+
+    // Create links from left to center
+    personMentionedBy.slice(0, 15).forEach(p => {
+        links.push({
+            source: nodeIndexMap.get('left-' + p.id),
+            target: centerIdx,
+            value: p.count
+        });
+    });
+
+    // Create links from center to right
+    mentionedByPerson.slice(0, 15).forEach(p => {
+        links.push({
+            source: centerIdx,
+            target: nodeIndexMap.get('right-' + p.id),
+            value: p.count
+        });
+    });
+
+    if (nodes.length < 2 || links.length === 0) {
+        placeholder.style.display = 'flex';
+        placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Zu wenig Daten fuer Visualisierung</p>';
+        return;
+    }
+
+    // Render Sankey
+    const width = container.clientWidth || 900;
+    const height = Math.max(400, nodes.length * 30);
+
+    const svg = d3.select(container)
+        .append('svg')
+        .attr('width', width)
+        .attr('height', height);
+
+    const g = svg.append('g');
+
+    // Sankey generator
+    const sankeyGenerator = d3.sankey()
+        .nodeWidth(20)
+        .nodePadding(10)
+        .extent([[80, 20], [width - 80, height - 20]]);
+
+    const { nodes: layoutNodes, links: layoutLinks } = sankeyGenerator({
+        nodes: nodes.map(d => Object.assign({}, d)),
+        links: links.map(d => Object.assign({}, d))
+    });
+
+    // Gradients
+    const defs = svg.append('defs');
+    layoutLinks.forEach((link, i) => {
+        const gradient = defs.append('linearGradient')
+            .attr('id', `person-link-gradient-${i}`)
+            .attr('gradientUnits', 'userSpaceOnUse')
+            .attr('x1', link.source.x1)
+            .attr('x2', link.target.x0);
+
+        const sourceColor = link.source.isCenter ? PRIMARY_COLOR : '#2c5f8d';
+        const targetColor = link.target.isCenter ? PRIMARY_COLOR : '#f59e0b';
+
+        gradient.append('stop').attr('offset', '0%').attr('stop-color', sourceColor);
+        gradient.append('stop').attr('offset', '100%').attr('stop-color', targetColor);
+    });
+
+    // Links
+    g.append('g')
+        .selectAll('path')
+        .data(layoutLinks)
+        .join('path')
+        .attr('d', d3.sankeyLinkHorizontal())
+        .attr('stroke', (d, i) => `url(#person-link-gradient-${i})`)
+        .attr('stroke-width', d => Math.max(2, d.width))
+        .attr('fill', 'none')
+        .attr('opacity', 0.6);
+
+    // Nodes
+    const node = g.append('g')
+        .selectAll('g')
+        .data(layoutNodes)
+        .join('g');
+
+    node.append('rect')
+        .attr('x', d => d.x0)
+        .attr('y', d => d.y0)
+        .attr('height', d => Math.max(4, d.y1 - d.y0))
+        .attr('width', sankeyGenerator.nodeWidth())
+        .attr('fill', d => d.isCenter ? PRIMARY_COLOR : (d.column === 0 ? '#2c5f8d' : '#f59e0b'))
+        .attr('rx', 3);
+
+    // Labels
+    node.append('text')
+        .attr('x', d => d.column === 0 ? d.x0 - 8 : (d.column === 2 ? d.x1 + 8 : d.x0 + 10))
+        .attr('y', d => (d.y1 + d.y0) / 2)
+        .attr('dy', '0.35em')
+        .attr('text-anchor', d => d.column === 0 ? 'end' : 'start')
+        .text(d => d.name.length > 25 ? d.name.substring(0, 25) + '...' : d.name)
+        .style('font-size', d => d.isCenter ? '14px' : '12px')
+        .style('font-weight', d => d.isCenter ? '700' : 'normal')
+        .style('fill', 'var(--color-text)');
+
+    // Add column labels
+    svg.append('text')
+        .attr('x', 40)
+        .attr('y', 12)
+        .attr('text-anchor', 'start')
+        .style('font-size', '11px')
+        .style('fill', 'var(--color-text-light)')
+        .text('erwaehnt von');
+
+    svg.append('text')
+        .attr('x', width - 40)
+        .attr('y', 12)
+        .attr('text-anchor', 'end')
+        .style('font-size', '11px')
+        .style('fill', 'var(--color-text-light)')
+        .text('erwaehnt');
+
+    log.render(`Rendered person flow: ${layoutNodes.length} nodes, ${layoutLinks.length} links`);
 }
 
 // Start application

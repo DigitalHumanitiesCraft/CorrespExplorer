@@ -651,3 +651,84 @@
         padding: var(--space-sm);
     }
 }
+
+/* ==========================================
+ * AUTOCOMPLETE COMPONENT
+ * Dropdown mit Suchfeld fuer Personen, Orte etc.
+ * ========================================== */
+
+.autocomplete-container {
+    position: relative;
+    width: 100%;
+}
+
+.autocomplete-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+}
+
+.autocomplete-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    z-index: 100;
+}
+
+.autocomplete-dropdown.hidden {
+    display: none;
+}
+
+.autocomplete-item {
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    border-bottom: 1px solid var(--color-border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.highlighted {
+    background: var(--color-bg-light);
+}
+
+.autocomplete-item-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.autocomplete-item-count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    margin-left: var(--space-sm);
+}
+
+.autocomplete-empty {
+    padding: var(--space-md);
+    color: var(--color-text-light);
+    text-align: center;
+    font-size: var(--font-size-sm);
+}

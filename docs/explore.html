@@ -195,40 +195,17 @@
 
                     <!-- Mentions Flow Filter (view-specific) -->
                     <div class="filter-group hidden" role="group" aria-labelledby="filter-mentions-heading" id="mentions-filter-group">
-                        <h5 id="filter-mentions-heading">Mentions Flow</h5>
-
-                        <!-- Top N Slider -->
-                        <div class="filter-slider-group">
-                            <label for="mentions-topn-slider">
-                                Top N Personen: <span id="mentions-topn-value">20</span>
-                            </label>
-                            <input type="range" id="mentions-topn-slider"
-                                   min="5" max="50" value="20" step="5"
-                                   aria-label="Anzahl meist-erwähnter Personen">
-                            <small class="filter-help">Meist-erwähnte Personen auf rechter Seite</small>
+                        <h5 id="filter-mentions-heading">Person waehlen</h5>
+                        <div class="autocomplete-container">
+                            <input type="search"
+                                   id="mentions-person-search"
+                                   class="autocomplete-input"
+                                   placeholder="Name eingeben..."
+                                   autocomplete="off"
+                                   aria-label="Person suchen">
+                            <div id="mentions-person-dropdown" class="autocomplete-dropdown hidden"></div>
                         </div>
-
-                        <!-- Min Sender Mentions Slider -->
-                        <div class="filter-slider-group">
-                            <label for="mentions-minsender-slider">
-                                Min. Sender-Mentions: <span id="mentions-minsender-value">5</span>
-                            </label>
-                            <input type="range" id="mentions-minsender-slider"
-                                   min="1" max="20" value="5" step="1"
-                                   aria-label="Minimum Erwähnungen pro Korrespondent">
-                            <small class="filter-help">Nur Korrespondenten mit ≥N Mentions</small>
-                        </div>
-
-                        <!-- Min Flow Strength Slider -->
-                        <div class="filter-slider-group">
-                            <label for="mentions-minflow-slider">
-                                Min. Flow-Stärke: <span id="mentions-minflow-value">2</span>
-                            </label>
-                            <input type="range" id="mentions-minflow-slider"
-                                   min="1" max="10" value="2" step="1"
-                                   aria-label="Minimum Erwähnungen pro Verbindung">
-                            <small class="filter-help">Nur Verbindungen mit ≥N Erwähnungen</small>
-                        </div>
+                        <small class="filter-help">Waehle eine Person um ihre Mentions zu sehen</small>
                     </div>
                 </div>
 
@@ -606,16 +583,14 @@
                 <div id="mentions-flow-view" class="tab-content">
                     <div class="mentions-flow-container">
                         <div class="mentions-flow-header">
-                            <h3>Erwähnungs-Flüsse</h3>
-                            <p class="mentions-flow-info">Visualisiert wer in wessen Briefen erwähnt wird</p>
-                            <p class="mentions-flow-filter-info" id="mentions-flow-filter-info">
-                                Zeigt: Top 20 meist-erwähnte Personen | Nur Korrespondenten mit ≥5 Mentions | Nur Verbindungen ≥2
-                            </p>
+                            <h3>Erwaehnungs-Fluesse</h3>
+                            <p class="mentions-flow-info">Visualisiert wer in wessen Briefen erwaehnt wird</p>
+                            <p class="mentions-flow-selected-person" id="mentions-flow-selected-person"></p>
                         </div>
                         <div id="mentions-flow-graph" class="mentions-flow-graph"></div>
                         <div class="content-placeholder" id="mentions-flow-placeholder">
-                            <i class="fas fa-diagram-project"></i>
-                            <p>Lade Visualisierung...</p>
+                            <i class="fas fa-user-circle"></i>
+                            <p>Waehle eine Person in der Sidebar um deren Erwaehnungen zu sehen</p>
                         </div>
                     </div>
                 </div>
