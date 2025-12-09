@@ -134,7 +134,8 @@ export const VIEWS = {
     TIMELINE: 'timeline',
     TOPICS: 'topics',
     PLACES: 'places',
-    NETWORK: 'network'
+    NETWORK: 'network',
+    MENTIONS_FLOW: 'mentions-flow'
 };
 
 // Map-Konfiguration

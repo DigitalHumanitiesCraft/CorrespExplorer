@@ -853,11 +853,14 @@
     display: flex;
     align-items: flex-end;
     gap: var(--space-md);
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: var(--space-sm);
 }
 
 .timeline-chart {
     flex: 1;
+    min-width: max-content; /* Ensure all bars are visible */
     height: 300px;
     position: relative;
     display: flex;
@@ -867,6 +870,7 @@
     padding-top: 60px; /* Space for tooltips above bars */
     padding-bottom: 40px; /* Space for X-axis labels */
     padding-left: 40px; /* Space for Y-axis labels */
+    padding-right: var(--space-md); /* Space for last bar label */
     border-bottom: 2px solid var(--color-border);
     margin-bottom: var(--space-md);
     overflow: visible;

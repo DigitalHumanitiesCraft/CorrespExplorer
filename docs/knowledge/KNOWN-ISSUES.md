@@ -84,38 +84,28 @@ Empfehlung: tokens.css als kanonische Quelle verwenden, design.md aktualisieren
 
 ## 6. VIEWS-Konstante unvollständig
 
-Status: Offen
-Schweregrad: Niedrig
-Auswirkung: Code funktioniert (String-Literal verwendet), aber inkonsistent
+Status: BEHOBEN
+Behoben in: Phase 31 / 2025-12-09
+Geänderte Dateien: constants.js
 
 Problem:
-- constants.js definiert 6 Views (MAP, PERSONS, LETTERS, TIMELINE, TOPICS, PLACES)
-- Fehlt: NETWORK und MENTIONS_FLOW (existieren in explore.html und explore.js)
+- constants.js definierte 6 Views (MAP, PERSONS, LETTERS, TIMELINE, TOPICS, PLACES)
+- Fehlten: NETWORK und MENTIONS_FLOW
 
-Beleg:
-- constants.js Zeile 72-79: nur 6 Views
-- architecture.md: listet 8 Views
-- explore.html: Buttons für network und mentions-flow vorhanden
-
-Empfehlung: VIEWS-Konstante um NETWORK und MENTIONS_FLOW ergänzen
+Lösung: VIEWS-Konstante um NETWORK und MENTIONS_FLOW ergänzt
 
 ---
 
 ## 7. Veraltete Dokumentation in README
 
-Status: Offen
-Schweregrad: Niedrig
-Auswirkung: Irreführend für Entwickler
+Status: BEHOBEN
+Behoben in: Phase 31 / 2025-12-09
 
 Problem:
-- README.md listet refactoring-plan.md in docs/knowledge/
-- Datei wurde in Phase 14 gelöscht (JOURNAL.md)
+- README.md listete refactoring-plan.md in docs/knowledge/
+- Datei wurde in Phase 14 gelöscht
 
-Beleg:
-- JOURNAL.md Phase 14: "Gelöscht: refactoring-plan.md (veraltet, nie umgesetzt)"
-- Glob-Suche: Datei existiert nicht
-
-Empfehlung: README.md Dateistruktur aktualisieren
+Lösung: README.md wurde bereits in frueherer Phase aktualisiert, refactoring-plan.md ist nicht mehr referenziert
 
 ---
 
@@ -123,10 +113,10 @@ Empfehlung: README.md Dateistruktur aktualisieren
 
 Empfohlene Bearbeitungsreihenfolge:
 
-1. **HIGH**: PRIMARY_COLOR in explore.js angleichen (visuelle Konsistenz)
-2. **HIGH**: Sidebar-Breite konsolidieren (Layout-Konsistenz)
-3. **MEDIUM**: VIEWS-Konstante ergänzen (Code-Qualität)
-4. **MEDIUM**: README.md aktualisieren (Dokumentation)
+1. **HIGH**: PRIMARY_COLOR in explore.js angleichen - BEHOBEN (war bereits korrekt #A64B3F)
+2. **HIGH**: Sidebar-Breite konsolidieren (Layout-Konsistenz) - OFFEN
+3. **MEDIUM**: VIEWS-Konstante ergänzen - BEHOBEN
+4. **MEDIUM**: README.md aktualisieren - BEHOBEN
 5. **LOW**: design.md mit tokens.css synchronisieren (Referenz-Genauigkeit)
 6. **LOW**: Breakpoints und Spacing vereinheitlichen (Edge-Cases)
 

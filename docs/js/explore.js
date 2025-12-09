@@ -3339,8 +3339,8 @@ function selectTopic(topicId) {
     const related = elements.getById('topic-related');
     const filterBtn = elements.getById('topic-filter-btn');
 
-    if (emptyState) emptyState.style.display = 'none';
-    if (content) content.style.display = 'block';
+    if (emptyState) emptyState.classList.add('hidden');
+    if (content) content.classList.remove('hidden');
 
     // Title and count (show filtered count)
     if (title) title.textContent = topic.label;
@@ -3716,8 +3716,8 @@ function selectPlace(placeId) {
     const emptyState = document.querySelector('.place-detail-empty');
     const content = elements.getById('place-detail-content');
 
-    if (emptyState) emptyState.style.display = 'none';
-    if (content) content.style.display = 'block';
+    if (emptyState) emptyState.classList.add('hidden');
+    if (content) content.classList.remove('hidden');
 
     // Calculate filtered count for this place
     const filteredCount = filteredLetters.filter(l => {
