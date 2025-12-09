@@ -6,6 +6,78 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
+## 2025-12-09 (Phase 32: Entity Split Layout Refactoring)
+
+### Gemeinsame CSS-Komponenten fuer Topics und Places Views
+
+Problem:
+- Topics und Places Views hatten identische HTML-Struktur aber separate CSS-Klassen
+- Topics Detail-Panel wurde nicht angezeigt (querySelector mit alter Klasse)
+- Inkonsistente Styling-Definitionen (topics-layout vs places-layout)
+- Duplizierter Code erschwert Wartung
+
+Loesung: Shared Entity Component Architecture
+
+Neue CSS-Komponenten in components.css:
+- .entity-split-layout: 2-Spalten Grid (1fr 1fr), responsive stacking bei 900px
+- .entity-list-panel: Flex-Container fuer Listen mit Scroll
+- .entity-detail-panel: Styled Panel mit Border und Padding
+- .entity-detail-empty: Zentrierter Platzhalter-Zustand
+- .entity-detail-header: Titel + Count Badge
+- .entity-detail-section: Gruppierung mit H5 Headings
+- .entity-detail-actions: Button-Leiste mit Border-Top
+- .entity-stat-row: Name + Count + Bar in einer Zeile
+- .entity-stat-name/count/bar: Flexible Statistik-Anzeige
+- .entity-mini-timeline: Balkendiagramm fuer Zeitverlaeufe
+- .entity-mini-timeline-bar: Einzelne Timeline-Balken
+- .entity-tags: Flexbox-Wrapper fuer Tags
+- .entity-tag: Klickbarer Tag mit Hover-Effekt
+
+HTML-Aenderungen (explore.html):
+- Topics View: topics-layout -> entity-split-layout
+- Topics View: topics-list-panel -> entity-list-panel
+- Topics View: topic-detail-panel -> entity-detail-panel
+- Topics View: topic-detail-empty -> entity-detail-empty (mit ID)
+- Topics View: topic-correspondent -> entity-stat-row
+- Topics View: topic-mini-timeline -> entity-mini-timeline
+- Topics View: topic-related-tag -> entity-tag
+- Places View: places-layout -> entity-split-layout
+- Places View: places-list-panel -> entity-list-panel
+- Places View: place-detail-panel -> entity-detail-panel
+- Places View: place-detail-empty -> entity-detail-empty (mit ID)
+- Places View: place-mini-timeline -> entity-mini-timeline
+- Places View: place-language-tag -> entity-tag
+
+JavaScript-Aenderungen (explore.js):
+- selectTopic(): querySelector('.topic-detail-empty') -> getElementById('topic-detail-empty')
+- selectTopic(): topic-correspondent -> entity-stat-row
+- selectTopic(): topic-mini-bar -> entity-mini-timeline-bar
+- selectTopic(): topic-related-tag -> entity-tag
+- selectPlace(): querySelector('.place-detail-empty') -> getElementById('place-detail-empty')
+- selectPlace(): place-sender-item -> entity-stat-row
+- selectPlace(): mini-timeline-bar -> entity-mini-timeline-bar
+- selectPlace(): place-language-tag -> entity-tag
+
+CSS-Bereinigung (explore.css):
+- Entfernt: .topics-layout, .topics-list-panel, .topic-detail-panel, .topic-detail-empty
+- Entfernt: .topic-detail-header, .topic-detail-count, .topic-detail-section
+- Entfernt: .topic-correspondent*, .topic-mini-*, .topic-related-*
+- Entfernt: .places-layout, .places-list-panel, .place-detail-panel, .place-detail-empty
+- Entfernt: .place-detail-header, .place-detail-count, .place-detail-section
+- Entfernt: .place-sender-item, .mini-timeline-*, .place-language-tag
+- Kommentare dokumentieren Migration zu components.css
+
+Beibehaltene CSS-Klassen (view-spezifisch):
+- .topic-card, .topic-info, .topic-name, .topic-count, .topic-bar-container
+- .place-card, .place-info, .place-name, .place-meta, .place-count
+
+Responsive Design:
+- @media (max-width: 900px): Grid stackt zu einer Spalte
+- entity-list-panel: max-height 40vh auf Mobile
+- entity-detail-panel: min-height 300px auf Mobile
+
+---
+
 ## 2025-12-03 (Phase 30: Koordinaten-Anreicherung mit Wikidata SPARQL)
 
 ### Adaptive Koordinaten-Aufloesung implementiert

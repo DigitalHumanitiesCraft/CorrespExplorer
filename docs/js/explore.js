@@ -3330,7 +3330,7 @@ function selectTopic(topicId) {
         });
     });
 
-    const emptyState = document.querySelector('.topic-detail-empty');
+    const emptyState = elements.getById('topic-detail-empty');
     const content = elements.getById('topic-detail-content');
     const title = elements.getById('topic-detail-title');
     const count = elements.getById('topic-detail-count');
@@ -3363,11 +3363,11 @@ function selectTopic(topicId) {
         correspondents.innerHTML = persons.map(person => {
             const barWidth = (person.count / maxPersonCount) * 100;
             return `
-                <div class="topic-correspondent">
-                    <span class="topic-correspondent-name">${escapeHtml(person.name)}</span>
-                    <span class="topic-correspondent-count">${person.count}</span>
-                    <div class="topic-correspondent-bar">
-                        <div class="topic-correspondent-bar-fill" style="width: ${barWidth}%"></div>
+                <div class="entity-stat-row">
+                    <span class="entity-stat-name">${escapeHtml(person.name)}</span>
+                    <span class="entity-stat-count">${person.count}</span>
+                    <div class="entity-stat-bar">
+                        <div class="entity-stat-bar-fill" style="width: ${barWidth}%"></div>
                     </div>
                 </div>
             `;
@@ -3414,7 +3414,7 @@ function selectTopic(topicId) {
 
             timeline.innerHTML = displayYears.map(y => {
                 const height = y.count > 0 ? Math.max(4, (y.count / displayMax) * 100) : 0;
-                return `<div class="topic-mini-bar" style="height: ${height}%" data-tooltip="${y.year}: ${y.count}"></div>`;
+                return `<div class="entity-mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
             }).join('');
         } else {
             timeline.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Jahresdaten</p>';
@@ -3436,14 +3436,13 @@ function selectTopic(topicId) {
             .slice(0, 10);
 
         related.innerHTML = relatedTopics.map(rt => `
-            <span class="topic-related-tag" data-id="${escapeHtml(rt.id)}">
-                ${escapeHtml(rt.label)}
-                <span class="topic-related-tag-count">(${rt.count})</span>
+            <span class="entity-tag" data-id="${escapeHtml(rt.id)}">
+                ${escapeHtml(rt.label)} (${rt.count})
             </span>
         `).join('');
 
         // Add click handlers to related tags
-        related.querySelectorAll('.topic-related-tag').forEach(tag => {
+        related.querySelectorAll('.entity-tag').forEach(tag => {
             tag.addEventListener('click', () => {
                 const relatedId = tag.dataset.id;
                 selectTopic(relatedId);
@@ -3713,7 +3712,7 @@ function selectPlace(placeId) {
     });
 
     // Show detail panel
-    const emptyState = document.querySelector('.place-detail-empty');
+    const emptyState = elements.getById('place-detail-empty');
     const content = elements.getById('place-detail-content');
 
     if (emptyState) emptyState.classList.add('hidden');
@@ -3733,12 +3732,17 @@ function selectPlace(placeId) {
     // Render top senders
     const sendersContainer = elements.getById('place-top-senders');
     if (sendersContainer) {
-        sendersContainer.innerHTML = place.topSenders.map(s =>
-            `<div class="place-sender-item">
-                <span class="place-sender-name">${escapeHtml(s.name)}</span>
-                <span class="place-sender-count">${s.count}</span>
-            </div>`
-        ).join('');
+        const maxCount = place.topSenders.length > 0 ? place.topSenders[0].count : 1;
+        sendersContainer.innerHTML = place.topSenders.map(s => {
+            const barWidth = (s.count / maxCount) * 100;
+            return `<div class="entity-stat-row">
+                <span class="entity-stat-name">${escapeHtml(s.name)}</span>
+                <span class="entity-stat-count">${s.count}</span>
+                <div class="entity-stat-bar">
+                    <div class="entity-stat-bar-fill" style="width: ${barWidth}%"></div>
+                </div>
+            </div>`;
+        }).join('');
     }
 
     // Render mini timeline
@@ -3755,18 +3759,10 @@ function selectPlace(placeId) {
             years.push({ year: y, count: yearCounts[y] || 0 });
         }
 
-        timelineContainer.innerHTML = `
-            <div class="mini-timeline-bars">
-                ${years.map(y => {
-                    const height = y.count > 0 ? Math.max(10, (y.count / maxCount) * 100) : 0;
-                    return `<div class="mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
-                }).join('')}
-            </div>
-            <div class="mini-timeline-labels">
-                <span>${place.yearMin}</span>
-                <span>${place.yearMax}</span>
-            </div>
-        `;
+        timelineContainer.innerHTML = years.map(y => {
+            const height = y.count > 0 ? Math.max(4, (y.count / maxCount) * 100) : 0;
+            return `<div class="entity-mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
+        }).join('');
     } else if (timelineContainer) {
         timelineContainer.innerHTML = '<p class="no-data">Keine Zeitdaten</p>';
     }
@@ -3780,7 +3776,7 @@ function selectPlace(placeId) {
         languagesContainer.innerHTML = langEntries.map(([code, count]) => {
             const label = LANGUAGE_LABELS[code] || code.toUpperCase();
             const color = LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other;
-            return `<span class="place-language-tag" style="border-left: 3px solid ${color}">${label} (${count})</span>`;
+            return `<span class="entity-tag" style="border-left: 3px solid ${color}">${label} (${count})</span>`;
         }).join('');
     }
 

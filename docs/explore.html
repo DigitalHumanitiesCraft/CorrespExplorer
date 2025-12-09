@@ -424,9 +424,9 @@
                             <h3>Themen der Korrespondenz</h3>
                             <p class="topics-info">Klicken Sie auf ein Thema, um Details zu sehen und zu filtern</p>
                         </div>
-                        <div class="topics-layout">
+                        <div class="entity-split-layout">
                             <!-- Topics List -->
-                            <div class="topics-list-panel">
+                            <div class="entity-list-panel">
                                 <div class="list-header">
                                     <input type="search" id="topic-search" class="list-search" placeholder="Thema suchen..." aria-label="Thema suchen">
                                     <div class="list-sort">
@@ -441,29 +441,29 @@
                                 <div id="topics-list" class="entity-list"></div>
                             </div>
                             <!-- Topic Detail Panel -->
-                            <div class="topic-detail-panel" id="topic-detail-panel">
-                                <div class="topic-detail-empty">
+                            <div class="entity-detail-panel" id="topic-detail-panel">
+                                <div class="entity-detail-empty" id="topic-detail-empty">
                                     <i class="fas fa-hand-pointer"></i>
                                     <p>Waehlen Sie ein Thema aus der Liste</p>
                                 </div>
-                                <div class="topic-detail-content hidden" id="topic-detail-content">
-                                    <div class="topic-detail-header">
+                                <div class="hidden" id="topic-detail-content">
+                                    <div class="entity-detail-header">
                                         <h4 id="topic-detail-title">Thema</h4>
-                                        <span class="topic-detail-count" id="topic-detail-count">0 Briefe</span>
+                                        <span class="entity-detail-count" id="topic-detail-count">0 Briefe</span>
                                     </div>
-                                    <div class="topic-detail-section">
+                                    <div class="entity-detail-section">
                                         <h5>Korrespondenten</h5>
-                                        <div id="topic-correspondents" class="topic-correspondents"></div>
+                                        <div id="topic-correspondents"></div>
                                     </div>
-                                    <div class="topic-detail-section">
+                                    <div class="entity-detail-section">
                                         <h5>Zeitliche Verteilung</h5>
-                                        <div id="topic-timeline" class="topic-mini-timeline"></div>
+                                        <div id="topic-timeline" class="entity-mini-timeline"></div>
                                     </div>
-                                    <div class="topic-detail-section">
+                                    <div class="entity-detail-section">
                                         <h5>Verwandte Themen</h5>
-                                        <div id="topic-related" class="topic-related-tags"></div>
+                                        <div id="topic-related" class="entity-tags"></div>
                                     </div>
-                                    <div class="topic-detail-actions">
+                                    <div class="entity-detail-actions">
                                         <button class="btn btn-primary" id="topic-filter-btn">
                                             <i class="fas fa-filter"></i> Briefe filtern
                                         </button>
@@ -494,9 +494,9 @@
                             </button>
                         </div>
 
-                        <div class="places-layout">
+                        <div class="entity-split-layout">
                             <!-- Places List -->
-                            <div class="places-list-panel">
+                            <div class="entity-list-panel">
                                 <div class="list-header">
                                     <input type="search" id="place-search" class="list-search" placeholder="Ort suchen..." aria-label="Ort suchen">
                                     <div class="list-sort">
@@ -512,29 +512,29 @@
                                 <div id="places-list" class="entity-list"></div>
                             </div>
                             <!-- Place Detail Panel -->
-                            <div class="place-detail-panel" id="place-detail-panel">
-                                <div class="place-detail-empty">
+                            <div class="entity-detail-panel" id="place-detail-panel">
+                                <div class="entity-detail-empty" id="place-detail-empty">
                                     <i class="fas fa-map-marker-alt"></i>
                                     <p>Waehlen Sie einen Ort aus der Liste</p>
                                 </div>
-                                <div class="place-detail-content hidden" id="place-detail-content">
-                                    <div class="place-detail-header">
+                                <div class="hidden" id="place-detail-content">
+                                    <div class="entity-detail-header">
                                         <h4 id="place-detail-title">Ort</h4>
-                                        <span class="place-detail-count" id="place-detail-count">0 Briefe</span>
+                                        <span class="entity-detail-count" id="place-detail-count">0 Briefe</span>
                                     </div>
-                                    <div class="place-detail-section">
+                                    <div class="entity-detail-section">
                                         <h5>Top Absender</h5>
-                                        <div id="place-top-senders" class="place-top-senders"></div>
+                                        <div id="place-top-senders"></div>
                                     </div>
-                                    <div class="place-detail-section">
+                                    <div class="entity-detail-section">
                                         <h5>Zeitliche Verteilung</h5>
-                                        <div id="place-timeline" class="place-mini-timeline"></div>
+                                        <div id="place-timeline" class="entity-mini-timeline"></div>
                                     </div>
-                                    <div class="place-detail-section">
+                                    <div class="entity-detail-section">
                                         <h5>Sprachen</h5>
-                                        <div id="place-languages" class="place-languages"></div>
+                                        <div id="place-languages" class="entity-tags"></div>
                                     </div>
-                                    <div class="place-detail-actions">
+                                    <div class="entity-detail-actions">
                                         <button class="btn btn-primary" id="place-filter-btn">
                                             <i class="fas fa-filter"></i> Briefe filtern
                                         </button>

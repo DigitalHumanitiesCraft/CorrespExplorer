@@ -354,3 +354,193 @@
 .info-banner .btn {
     flex-shrink: 0;
 }
+
+/* ==========================================
+ * ENTITY SPLIT LAYOUT
+ * Gemeinsames Layout fuer Topics, Places und aehnliche Views
+ * Liste links, Detail-Panel rechts, responsive
+ * ========================================== */
+
+.entity-split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    flex: 1;
+    min-height: 0;
+}
+
+.entity-list-panel {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.entity-list-panel .entity-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.entity-detail-panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    overflow-y: auto;
+}
+
+.entity-detail-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.entity-detail-empty i {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+.entity-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.entity-detail-header h4 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--color-text);
+}
+
+.entity-detail-count {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    background: var(--color-bg);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+}
+
+.entity-detail-section {
+    margin-bottom: var(--space-lg);
+}
+
+.entity-detail-section h5 {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.entity-detail-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+}
+
+/* Entity Stats Row (Name + Count + Bar) */
+.entity-stat-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs) 0;
+}
+
+.entity-stat-name {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.entity-stat-count {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    min-width: 40px;
+    text-align: right;
+}
+
+.entity-stat-bar {
+    width: 80px;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.entity-stat-bar-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 2px;
+}
+
+/* Mini Timeline (shared for entity details) */
+.entity-mini-timeline {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 60px;
+    padding: var(--space-sm) 0;
+}
+
+.entity-mini-timeline-bar {
+    flex: 1;
+    background: var(--color-primary);
+    border-radius: 2px 2px 0 0;
+    min-width: 4px;
+    opacity: 0.8;
+}
+
+.entity-mini-timeline-bar:hover {
+    opacity: 1;
+}
+
+/* Tags (shared for related items) */
+.entity-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.entity-tag {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.entity-tag:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 900px) {
+    .entity-split-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .entity-list-panel {
+        max-height: 40vh;
+    }
+
+    .entity-detail-panel {
+        min-height: 300px;
+    }
+}
