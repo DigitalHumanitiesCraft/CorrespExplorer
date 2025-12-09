@@ -665,10 +665,10 @@
 .autocomplete-input {
     width: 100%;
     padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
-    background: var(--color-surface);
+    background: #FFFFFF;
     color: var(--color-text);
 }
 
@@ -684,10 +684,11 @@
     right: 0;
     max-height: 300px;
     overflow-y: auto;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: #FFFFFF;
+    border: 2px solid var(--color-border);
     border-top: none;
     border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 100;
 }
 
@@ -710,7 +711,7 @@
 
 .autocomplete-item:hover,
 .autocomplete-item.highlighted {
-    background: var(--color-bg-light);
+    background: var(--color-bg);
 }
 
 .autocomplete-item-name {
@@ -730,5 +731,25 @@
     padding: var(--space-md);
     color: var(--color-text-light);
     text-align: center;
+    font-size: var(--font-size-sm);
+}
+
+/* ==========================================
+ * Sankey Zoom Controls
+ * ========================================== */
+
+.sankey-zoom-controls {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    z-index: 10;
+}
+
+.sankey-zoom-controls .map-control-btn {
+    width: 32px;
+    height: 32px;
     font-size: var(--font-size-sm);
 }

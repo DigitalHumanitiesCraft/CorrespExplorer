@@ -193,20 +193,6 @@
                         <a href="#" id="show-all-topics" class="show-all-link">Alle Themen anzeigen</a>
                     </div>
 
-                    <!-- Mentions Flow Filter (view-specific) -->
-                    <div class="filter-group hidden" role="group" aria-labelledby="filter-mentions-heading" id="mentions-filter-group">
-                        <h5 id="filter-mentions-heading">Person waehlen</h5>
-                        <div class="autocomplete-container">
-                            <input type="search"
-                                   id="mentions-person-search"
-                                   class="autocomplete-input"
-                                   placeholder="Name eingeben..."
-                                   autocomplete="off"
-                                   aria-label="Person suchen">
-                            <div id="mentions-person-dropdown" class="autocomplete-dropdown hidden"></div>
-                        </div>
-                        <small class="filter-help">Waehle eine Person um ihre Mentions zu sehen</small>
-                    </div>
                 </div>
 
                 <!-- ========================================
@@ -585,12 +571,23 @@
                         <div class="mentions-flow-header">
                             <h3>Erwaehnungs-Fluesse</h3>
                             <p class="mentions-flow-info">Visualisiert wer in wessen Briefen erwaehnt wird</p>
+                            <div class="mentions-flow-search">
+                                <div class="autocomplete-container" style="max-width: 400px; margin: var(--space-lg) auto;">
+                                    <input type="search"
+                                           id="mentions-person-search"
+                                           class="autocomplete-input"
+                                           placeholder="Person suchen..."
+                                           autocomplete="off"
+                                           aria-label="Person suchen">
+                                    <div id="mentions-person-dropdown" class="autocomplete-dropdown hidden"></div>
+                                </div>
+                            </div>
                             <p class="mentions-flow-selected-person" id="mentions-flow-selected-person"></p>
                         </div>
                         <div id="mentions-flow-graph" class="mentions-flow-graph"></div>
                         <div class="content-placeholder" id="mentions-flow-placeholder">
-                            <i class="fas fa-user-circle"></i>
-                            <p>Waehle eine Person in der Sidebar um deren Erwaehnungen zu sehen</p>
+                            <i class="fas fa-search"></i>
+                            <p>Suche eine Person um deren Erwaehnungen zu sehen</p>
                         </div>
                     </div>
                 </div>
