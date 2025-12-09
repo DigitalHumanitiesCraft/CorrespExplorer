@@ -74,7 +74,7 @@ Major sections:
 - Navbar (lines 78-208): Fixed top bar, flexbox layout, 2px borders
 - Navigation links (lines 203-239): Border-based design, 8px radius, right-aligned meta buttons
 - View switcher (lines 1668-1750): Button group for view modes
-- Sidebar (lines 653-840): Fixed 320px width, scrollable filters
+- Sidebar (lines 653-840): Uses var(--sidebar-width) from tokens.css, scrollable filters
 - Content area: Grid layouts for different views
 - Data source switcher: Dropdown for selecting datasets
 - Responsive breakpoints: 1200px, 900px, 768px, 600px

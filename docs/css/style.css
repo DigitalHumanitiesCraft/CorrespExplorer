@@ -836,7 +836,7 @@ button, .btn {
 
     .sidebar {
         position: fixed;
-        left: -280px;
+        left: calc(-1 * var(--sidebar-width));
         top: var(--navbar-height);
         height: calc(100vh - var(--navbar-height));
         z-index: 999;
