@@ -322,6 +322,38 @@ Akzeptanzkriterien:
 - Abbrechen-Option waehrend der Anreicherung
 - Status: IMPLEMENTIERT
 
+### US-30: Altersanzeige in Chronik
+Als Forschende moechte ich das Alter der Korrespondenten zum Zeitpunkt des Briefs sehen, um deren Lebensphasen zu verstehen.
+
+Akzeptanzkriterien:
+- Alter in Jahren neben Personenname angezeigt
+- Berechnung aus Geburtsjahr und Briefjahr
+- Datenquellen: Wikidata-Anreicherung oder CMIF-eigene Lebensdaten
+- Graceful degradation wenn keine Geburtsdaten vorhanden
+- Status: IMPLEMENTIERT
+
+### US-31: Beziehungskontext in Chronik
+Als Forschende moechte ich den Kontext einer Korrespondenzbeziehung sehen, um Briefwechsel besser einordnen zu koennen.
+
+Akzeptanzkriterien:
+- Badge "Erster Brief" bei erstem Kontakt zwischen zwei Personen
+- Anzeige "Brief X von Y" bei etablierten Beziehungen
+- Korrespondenz-Index wird automatisch aufgebaut
+- Richtungsabhaengig (Sender→Empfaenger)
+- Status: IMPLEMENTIERT
+
+### US-32: Chronik-Layout-Umschaltung
+Als Forschende moechte ich zwischen verschiedenen Chronik-Layouts wechseln, um je nach Forschungsfrage die passende Darstellung zu waehlen.
+
+Akzeptanzkriterien:
+- Drei Layout-Optionen: Karten (detailliert), Kompakt (Listenansicht), Timeline (Sender/Empfaenger getrennt)
+- Toggle-Buttons im Chronik-Header
+- Karten: Portraits, Lebensleisten, vollstaendige Namen
+- Kompakt: Einzelne Zeile pro Brief, viele Briefe sichtbar
+- Timeline: Sender links, Datum/Ort Mitte, Empfaenger rechts - zeigt Kommunikationsrichtung
+- Layout-Wechsel ohne Neuladen der Daten
+- Status: IMPLEMENTIERT
+
 ---
 
 ## Zusammenfassung: Implementierungs-Status
@@ -338,10 +370,10 @@ Akzeptanzkriterien:
 | Integration | 1 | 0 |
 | Themen | 3 | 0 |
 | Uebersicht | 1 | 0 |
-| Chronik | 2 | 0 |
-| **Gesamt** | **29** | **0** |
+| Chronik | 5 | 0 |
+| **Gesamt** | **32** | **0** |
 
 Stand: 2025-12-18
 
-Alle 29 User Stories sind implementiert.
+Alle 32 User Stories sind implementiert.
 

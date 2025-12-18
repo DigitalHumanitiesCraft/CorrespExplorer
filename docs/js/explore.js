@@ -1873,11 +1873,11 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
-    // On overview: hide entire sidebar for full-width content
+    // On overview and chronik: hide entire sidebar for full-width content
     // On other views: show sidebar with stats and filters
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        sidebar.classList.toggle('hidden', view === 'overview');
+        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik');
     }
 
     // Update sidebar legend for current view
@@ -5873,12 +5873,184 @@ let chronikEnrichmentData = new Map();
 let chronikSortedLetters = [];
 let chronikRenderedCount = 0;
 let chronikScrollHandler = null;
+let chronikCorrespondenceIndex = null;
+let chronikLayout = 'cards'; // 'cards' | 'compact' | 'timeline'
 const CHRONIK_BATCH_SIZE = 100;
+
+/**
+ * Build correspondence index for relationship context
+ * Maps sender→recipient pairs to their letter history
+ * @param {Array} letters - Array of letter objects
+ * @returns {Map} Index mapping "senderId→recipientId" to correspondence data
+ */
+function buildCorrespondenceIndex(letters) {
+    const index = new Map();
+
+    for (const letter of letters) {
+        const senderId = letter.sender?.id || letter.sender?.name;
+        const recipientId = letter.recipient?.id || letter.recipient?.name;
+
+        if (!senderId || !recipientId) continue;
+
+        const key = `${senderId}→${recipientId}`;
+
+        if (!index.has(key)) {
+            index.set(key, {
+                letters: [],
+                totalCount: 0
+            });
+        }
+
+        const entry = index.get(key);
+        entry.letters.push({
+            id: letter.id,
+            year: letter.year,
+            date: letter.date
+        });
+        entry.totalCount++;
+    }
+
+    // Sort letters chronologically within each correspondence
+    for (const entry of index.values()) {
+        entry.letters.sort((a, b) => {
+            const dateA = a.date || '9999';
+            const dateB = b.date || '9999';
+            return dateA.localeCompare(dateB);
+        });
+        entry.firstLetterId = entry.letters[0]?.id;
+    }
+
+    return index;
+}
+
+/**
+ * Get correspondence context for a letter
+ * @param {Object} letter - Letter object
+ * @returns {Object} Context with isFirstLetter, letterNumber, totalLetters
+ */
+function getCorrespondenceContext(letter) {
+    if (!chronikCorrespondenceIndex) return null;
+
+    const senderId = letter.sender?.id || letter.sender?.name;
+    const recipientId = letter.recipient?.id || letter.recipient?.name;
+
+    if (!senderId || !recipientId) return null;
+
+    const key = `${senderId}→${recipientId}`;
+    const entry = chronikCorrespondenceIndex.get(key);
+
+    if (!entry) return null;
+
+    // Find position of this letter in the correspondence
+    const letterIndex = entry.letters.findIndex(l => l.id === letter.id);
+
+    return {
+        isFirstLetter: letter.id === entry.firstLetterId,
+        letterNumber: letterIndex + 1,
+        totalLetters: entry.totalCount,
+        direction: 'sent'
+    };
+}
+
+/**
+ * Extract birth year from person data (CMIF or Wikidata enrichment)
+ * @param {Object} person - Person object from letter
+ * @param {Object} enrichment - Wikidata enrichment data (optional)
+ * @returns {number|null} Birth year or null
+ */
+function getPersonBirthYear(person, enrichment) {
+    // Priority 1: Wikidata enrichment
+    if (enrichment?.birthDate) {
+        const match = enrichment.birthDate.match(/^(-?\d{4})/);
+        if (match) return parseInt(match[1], 10);
+    }
+
+    // Priority 2: CMIF data (if present)
+    if (person?.birthDate) {
+        const match = person.birthDate.match(/^(-?\d{4})/);
+        if (match) return parseInt(match[1], 10);
+    }
+
+    return null;
+}
+
+/**
+ * Extract death year from person data (CMIF or Wikidata enrichment)
+ * @param {Object} person - Person object from letter
+ * @param {Object} enrichment - Wikidata enrichment data (optional)
+ * @returns {number|null} Death year or null
+ */
+function getPersonDeathYear(person, enrichment) {
+    // Priority 1: Wikidata enrichment
+    if (enrichment?.deathDate) {
+        const match = enrichment.deathDate.match(/^(-?\d{4})/);
+        if (match) return parseInt(match[1], 10);
+    }
+
+    // Priority 2: CMIF data (if present)
+    if (person?.deathDate) {
+        const match = person.deathDate.match(/^(-?\d{4})/);
+        if (match) return parseInt(match[1], 10);
+    }
+
+    return null;
+}
+
+/**
+ * Calculate age at time of letter
+ * @param {number} birthYear - Birth year
+ * @param {Object} letter - Letter object with date/year
+ * @returns {number|null} Age or null
+ */
+function calculateAge(birthYear, letter) {
+    if (!birthYear) return null;
+
+    const letterYear = letter.year || (letter.date ? parseInt(letter.date.substring(0, 4), 10) : null);
+    if (!letterYear) return null;
+
+    return letterYear - birthYear;
+}
+
+/**
+ * Build lifespan bar HTML showing where in life the person is at letter time
+ * @param {number} birthYear - Birth year
+ * @param {number} deathYear - Death year (or null if still alive/unknown)
+ * @param {number} age - Age at time of letter
+ * @returns {string} HTML for lifespan bar
+ */
+function buildLifespanBar(birthYear, deathYear, age) {
+    if (!birthYear || !age || age < 0) return '';
+
+    // Calculate total lifespan (use death year or estimate 85 if unknown)
+    const totalYears = deathYear ? (deathYear - birthYear) : 85;
+    const percentage = Math.min(100, Math.round((age / totalYears) * 100));
+
+    const tooltip = deathYear
+        ? `${birthYear}-${deathYear} (${totalYears} Jahre)`
+        : `*${birthYear}`;
+
+    return `
+        <div class="chronik-lifespan" title="${tooltip}">
+            <div class="chronik-lifespan-bar">
+                <div class="chronik-lifespan-progress" style="width: ${percentage}%"></div>
+            </div>
+            <span class="chronik-lifespan-age">${age}</span>
+        </div>
+    `;
+}
 
 /**
  * Initialize Chronik view event handlers
  */
 function initChronikView() {
+    // Layout toggle buttons
+    document.querySelectorAll('.chronik-layout-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const layout = btn.dataset.layout;
+            if (layout) switchChronikLayout(layout);
+        });
+    });
+
     // Open modal button
     const enrichBtn = document.getElementById('chronik-enrich-btn');
     if (enrichBtn) {
@@ -6066,6 +6238,9 @@ function renderChronik() {
         return dateA.localeCompare(dateB);
     });
 
+    // Build correspondence index for relationship context
+    chronikCorrespondenceIndex = buildCorrespondenceIndex(chronikSortedLetters);
+
     // Reset state
     chronikRenderedCount = 0;
     container.innerHTML = '';
@@ -6207,35 +6382,59 @@ function updateChronikLoadMoreInfo(container, total) {
 }
 
 /**
- * Render a single letter entry in the Chronik
+ * Render a single letter entry in the Chronik (dispatches to layout-specific renderer)
  */
 function renderChronikEntry(letter) {
+    if (chronikLayout === 'compact') {
+        return renderChronikEntryCompact(letter);
+    } else if (chronikLayout === 'timeline') {
+        return renderChronikEntryTimeline(letter);
+    }
+    return renderChronikEntryCards(letter);
+}
+
+/**
+ * Render letter entry in cards layout (original, detailed view)
+ */
+function renderChronikEntryCards(letter) {
     const senderName = letter.sender?.name || 'Unbekannt';
     const senderPrecision = letter.sender?.precision || 'identified';
     const recipientName = letter.recipient?.name || 'Unbekannt';
     const recipientPrecision = letter.recipient?.precision || 'identified';
 
-    // Get enrichment data if available
     const senderEnriched = getPersonEnrichment(letter.sender);
     const recipientEnriched = getPersonEnrichment(letter.recipient);
 
-    // Format date
+    const senderBirthYear = getPersonBirthYear(letter.sender, senderEnriched);
+    const recipientBirthYear = getPersonBirthYear(letter.recipient, recipientEnriched);
+    const senderDeathYear = getPersonDeathYear(letter.sender, senderEnriched);
+    const recipientDeathYear = getPersonDeathYear(letter.recipient, recipientEnriched);
+    const senderAge = calculateAge(senderBirthYear, letter);
+    const recipientAge = calculateAge(recipientBirthYear, letter);
+
+    const context = getCorrespondenceContext(letter);
     const dateDisplay = formatDateWithPrecision(letter);
 
-    // Build sender portrait HTML
     const senderPortrait = buildPortraitHtml(senderEnriched, senderName);
     const recipientPortrait = buildPortraitHtml(recipientEnriched, recipientName);
-
-    // Build biographical info if enriched
     const senderBio = buildBioHtml(senderEnriched);
     const recipientBio = buildBioHtml(recipientEnriched);
+    const senderLifespan = buildLifespanBar(senderBirthYear, senderDeathYear, senderAge);
+    const recipientLifespan = buildLifespanBar(recipientBirthYear, recipientDeathYear, recipientAge);
 
-    // Metadata
+    let contextHtml = '';
+    if (context) {
+        if (context.isFirstLetter) {
+            contextHtml = '<span class="chronik-first-letter"><i class="fas fa-star"></i> Erster Brief</span>';
+        } else if (context.totalLetters > 1) {
+            contextHtml = `<span class="chronik-letter-count">Brief ${context.letterNumber} von ${context.totalLetters}</span>`;
+        }
+    }
+
     const place = letter.place_sent?.name || '';
-    const language = letter.language?.label || letter.language?.code || '';
 
     return `
-        <div class="chronik-entry" data-letter-id="${letter.id}">
+        <div class="chronik-entry chronik-entry-cards" data-letter-id="${letter.id}">
             <a href="${letter.url || '#'}" target="_blank" class="chronik-entry-link"
                onclick="event.stopPropagation()" title="Quelle oeffnen">
                 <i class="fas fa-external-link-alt"></i>
@@ -6245,8 +6444,9 @@ function renderChronikEntry(letter) {
                 <div class="chronik-entry-persons">
                     <div class="chronik-entry-sender">
                         ${senderPortrait}
-                        <div>
-                            ${formatPersonName(senderName, senderPrecision)}
+                        <div class="chronik-person-info">
+                            <span class="chronik-person-name">${formatPersonName(senderName, senderPrecision)}</span>
+                            ${senderLifespan}
                             ${senderBio}
                         </div>
                     </div>
@@ -6255,21 +6455,197 @@ function renderChronikEntry(letter) {
                     </div>
                     <div class="chronik-entry-recipient">
                         ${recipientPortrait}
-                        <div>
-                            ${formatPersonName(recipientName, recipientPrecision)}
+                        <div class="chronik-person-info">
+                            <span class="chronik-person-name">${formatPersonName(recipientName, recipientPrecision)}</span>
+                            ${recipientLifespan}
                             ${recipientBio}
                         </div>
                     </div>
                 </div>
             </div>
-            ${(place || language) ? `
-                <div class="chronik-entry-meta">
-                    ${place ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
-                    ${language ? `<span><i class="fas fa-language"></i> ${escapeHtml(language)}</span>` : ''}
-                </div>
-            ` : ''}
+            <div class="chronik-entry-meta">
+                ${contextHtml}
+                ${place ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
+            </div>
         </div>
     `;
+}
+
+/**
+ * Render letter entry in compact layout (single row)
+ */
+function renderChronikEntryCompact(letter) {
+    const senderName = letter.sender?.name || 'Unbekannt';
+    const recipientName = letter.recipient?.name || 'Unbekannt';
+
+    const senderEnriched = getPersonEnrichment(letter.sender);
+    const recipientEnriched = getPersonEnrichment(letter.recipient);
+
+    const senderBirthYear = getPersonBirthYear(letter.sender, senderEnriched);
+    const recipientBirthYear = getPersonBirthYear(letter.recipient, recipientEnriched);
+    const senderDeathYear = getPersonDeathYear(letter.sender, senderEnriched);
+    const recipientDeathYear = getPersonDeathYear(letter.recipient, recipientEnriched);
+    const senderAge = calculateAge(senderBirthYear, letter);
+    const recipientAge = calculateAge(recipientBirthYear, letter);
+
+    const context = getCorrespondenceContext(letter);
+    const dateDisplay = formatDateWithPrecision(letter);
+    const place = letter.place_sent?.name || '';
+
+    // Compact lifespan (just the bar, smaller)
+    const senderBar = buildLifespanBarCompact(senderBirthYear, senderDeathYear, senderAge);
+    const recipientBar = buildLifespanBarCompact(recipientBirthYear, recipientDeathYear, recipientAge);
+
+    let contextBadge = '';
+    if (context?.isFirstLetter) {
+        contextBadge = '<span class="chronik-badge-first" title="Erster Brief"><i class="fas fa-star"></i></span>';
+    } else if (context?.totalLetters > 1) {
+        contextBadge = `<span class="chronik-badge-count" title="Brief ${context.letterNumber} von ${context.totalLetters}">${context.letterNumber}/${context.totalLetters}</span>`;
+    }
+
+    return `
+        <div class="chronik-entry chronik-entry-compact" data-letter-id="${letter.id}">
+            <div class="chronik-compact-date">${dateDisplay}</div>
+            <div class="chronik-compact-sender">
+                <span class="chronik-compact-name" title="${escapeHtml(senderName)}">${escapeHtml(truncateName(senderName))}</span>
+                ${senderBar}
+            </div>
+            <div class="chronik-compact-arrow"><i class="fas fa-arrow-right"></i></div>
+            <div class="chronik-compact-recipient">
+                <span class="chronik-compact-name" title="${escapeHtml(recipientName)}">${escapeHtml(truncateName(recipientName))}</span>
+                ${recipientBar}
+            </div>
+            <div class="chronik-compact-meta">
+                ${contextBadge}
+                ${place ? `<span class="chronik-compact-place" title="${escapeHtml(place)}"><i class="fas fa-map-marker-alt"></i></span>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Render letter entry in timeline layout (sender left, recipient right)
+ */
+function renderChronikEntryTimeline(letter) {
+    const senderName = letter.sender?.name || 'Unbekannt';
+    const recipientName = letter.recipient?.name || 'Unbekannt';
+
+    const senderEnriched = getPersonEnrichment(letter.sender);
+    const recipientEnriched = getPersonEnrichment(letter.recipient);
+
+    const senderBirthYear = getPersonBirthYear(letter.sender, senderEnriched);
+    const recipientBirthYear = getPersonBirthYear(letter.recipient, recipientEnriched);
+    const senderDeathYear = getPersonDeathYear(letter.sender, senderEnriched);
+    const recipientDeathYear = getPersonDeathYear(letter.recipient, recipientEnriched);
+    const senderAge = calculateAge(senderBirthYear, letter);
+    const recipientAge = calculateAge(recipientBirthYear, letter);
+
+    const context = getCorrespondenceContext(letter);
+    const dateDisplay = formatDateWithPrecision(letter);
+    const place = letter.place_sent?.name || '';
+
+    const senderPortraitSmall = buildPortraitHtmlSmall(senderEnriched, senderName);
+    const recipientPortraitSmall = buildPortraitHtmlSmall(recipientEnriched, recipientName);
+
+    const senderBar = buildLifespanBarCompact(senderBirthYear, senderDeathYear, senderAge);
+    const recipientBar = buildLifespanBarCompact(recipientBirthYear, recipientDeathYear, recipientAge);
+
+    let contextBadge = '';
+    if (context?.isFirstLetter) {
+        contextBadge = '<span class="chronik-tl-badge first"><i class="fas fa-star"></i></span>';
+    } else if (context?.totalLetters > 1) {
+        contextBadge = `<span class="chronik-tl-badge">${context.letterNumber}/${context.totalLetters}</span>`;
+    }
+
+    return `
+        <div class="chronik-entry chronik-entry-timeline" data-letter-id="${letter.id}">
+            <div class="chronik-tl-left">
+                ${senderPortraitSmall}
+                <div class="chronik-tl-person">
+                    <span class="chronik-tl-name">${escapeHtml(truncateName(senderName, 20))}</span>
+                    ${senderBar}
+                </div>
+            </div>
+            <div class="chronik-tl-center">
+                <div class="chronik-tl-date">${dateDisplay}</div>
+                ${contextBadge}
+                ${place ? `<div class="chronik-tl-place"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(truncateName(place, 15))}</div>` : ''}
+            </div>
+            <div class="chronik-tl-right">
+                ${recipientPortraitSmall}
+                <div class="chronik-tl-person">
+                    <span class="chronik-tl-name">${escapeHtml(truncateName(recipientName, 20))}</span>
+                    ${recipientBar}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Build compact lifespan bar (smaller version for compact/timeline layouts)
+ */
+function buildLifespanBarCompact(birthYear, deathYear, age) {
+    if (!birthYear || !age || age < 0) return '';
+
+    const totalYears = deathYear ? (deathYear - birthYear) : 85;
+    const percentage = Math.min(100, Math.round((age / totalYears) * 100));
+
+    const tooltip = deathYear
+        ? `${age} Jahre (${birthYear}-${deathYear})`
+        : `${age} Jahre (*${birthYear})`;
+
+    return `
+        <div class="chronik-lifespan-compact" title="${tooltip}">
+            <div class="chronik-lifespan-bar-compact">
+                <div class="chronik-lifespan-progress-compact" style="width: ${percentage}%"></div>
+            </div>
+            <span class="chronik-lifespan-age-compact">${age}</span>
+        </div>
+    `;
+}
+
+/**
+ * Build small portrait HTML (for timeline layout)
+ */
+function buildPortraitHtmlSmall(enriched, name) {
+    if (enriched?.thumbnail) {
+        return `<img src="${enriched.thumbnail}" alt="${escapeHtml(name)}" class="chronik-portrait-small" loading="lazy">`;
+    }
+    if (chronikEnriched) {
+        const initials = getPersonInitials(name, 'identified');
+        return `<div class="chronik-portrait-small-placeholder">${initials}</div>`;
+    }
+    return '';
+}
+
+/**
+ * Truncate name to max length
+ */
+function truncateName(name, maxLen = 25) {
+    if (!name || name.length <= maxLen) return name;
+    return name.substring(0, maxLen - 1) + '…';
+}
+
+/**
+ * Switch Chronik layout and re-render
+ */
+function switchChronikLayout(layout) {
+    chronikLayout = layout;
+
+    // Update toggle buttons
+    document.querySelectorAll('.chronik-layout-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.layout === layout);
+    });
+
+    // Update timeline class for CSS
+    const timeline = document.getElementById('chronik-timeline');
+    if (timeline) {
+        timeline.className = `chronik-timeline chronik-layout-${layout}`;
+    }
+
+    // Re-render
+    renderChronik();
 }
 
 /**

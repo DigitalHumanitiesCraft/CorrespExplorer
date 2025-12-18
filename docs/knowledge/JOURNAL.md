@@ -6,6 +6,39 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
+## 2025-12-18 (Phase 36: Chronik als Forschungswerkzeug)
+
+### Chronik-Erweiterung: Biografischer Kontext und Beziehungsanalyse
+
+Die Chronik wurde von einer einfachen Timeline zu einem kontextualisierten Lese-Werkzeug erweitert:
+
+Biografischer Kontext:
+- Alter der Korrespondenten zum Briefzeitpunkt berechnet
+- Lebensleisten-Visualisierung zeigt Lebensfortschritt
+- Daten aus Wikidata-Anreicherung oder CMIF-eigenen Lebensdaten
+
+Beziehungskontext:
+- Korrespondenz-Index trackt Sender-Empfaenger-Paare
+- Badge "Erster Brief" bei erstem Kontakt
+- Anzeige "Brief X von Y" bei etablierten Beziehungen
+
+Drei Layout-Optionen:
+- Karten: Detailliert mit Portraits, Lebensleisten, vollstaendigen Namen
+- Kompakt: Einzelne Zeile pro Brief, viele Briefe gleichzeitig sichtbar
+- Timeline: Sender links, Datum/Ort Mitte, Empfaenger rechts - zeigt Kommunikationsrichtung
+
+Neue Funktionen in explore.js:
+- buildCorrespondenceIndex() - Index ueber alle Korrespondenzen
+- getCorrespondenceContext() - Briefposition in Beziehung
+- getPersonBirthYear(), getPersonDeathYear() - Lebensdaten-Extraktion
+- calculateAge() - Alter zum Briefzeitpunkt
+- buildLifespanBar() - Lebensleisten-HTML
+- switchChronikLayout() - Layout-Umschaltung
+
+US-30, US-31, US-32 implementiert (32 User Stories gesamt).
+
+---
+
 ## 2025-12-18 (Phase 35: Chronik-View implementiert)
 
 ### Neuer View: Chronik - Vertikaler Zeitstrahl
