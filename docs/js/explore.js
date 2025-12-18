@@ -7436,8 +7436,8 @@ function buildActivityIndex(letters) {
         // By weekday aggregieren
         byWeekday[weekday]++;
 
-        // Max day tracken
-        if (dateEntry.count > maxDay.count) {
+        // Max day tracken (nur exakte Daten, nicht Platzhalter wie 1798-01-01)
+        if (letter.datePrecision === 'exact' && dateEntry.count > maxDay.count) {
             maxDay = { date, count: dateEntry.count };
         }
 
