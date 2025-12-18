@@ -44,7 +44,10 @@
             </a>
         </div>
         <div class="view-switcher" role="navigation" aria-label="Ansichtswechsel">
-            <button class="view-btn active" data-view="map" aria-pressed="true" title="Karte">
+            <button class="view-btn active" data-view="overview" aria-pressed="true" title="Uebersicht">
+                <i class="fas fa-home"></i> <span class="view-btn-text">Uebersicht</span>
+            </button>
+            <button class="view-btn" data-view="map" aria-pressed="false" title="Karte">
                 <i class="fas fa-map"></i> <span class="view-btn-text">Karte</span>
             </button>
             <button class="view-btn" data-view="persons" aria-pressed="false" title="Korrespondenten">
@@ -220,8 +223,119 @@
 
             <!-- Main Content -->
             <main class="main-content" role="main">
+                <!-- Overview View -->
+                <div id="overview-view" class="tab-content active">
+                    <div class="overview-container">
+                        <div class="overview-header">
+                            <h2 id="overview-title">Datensatz-Uebersicht</h2>
+                            <p id="overview-subtitle" class="overview-subtitle"></p>
+                        </div>
+
+                        <!-- Key Statistics -->
+                        <div class="overview-stats">
+                            <div class="overview-stat-card">
+                                <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="overview-letters">-</span>
+                                    <span class="stat-label">Briefe</span>
+                                </div>
+                            </div>
+                            <div class="overview-stat-card">
+                                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="overview-persons">-</span>
+                                    <span class="stat-label">Korrespondenten</span>
+                                </div>
+                            </div>
+                            <div class="overview-stat-card">
+                                <div class="stat-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="overview-places">-</span>
+                                    <span class="stat-label">Orte</span>
+                                </div>
+                            </div>
+                            <div class="overview-stat-card">
+                                <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div class="stat-content">
+                                    <span class="stat-number" id="overview-timespan">-</span>
+                                    <span class="stat-label">Zeitraum</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Quality Section -->
+                        <div class="overview-section">
+                            <h3><i class="fas fa-chart-pie"></i> Datenqualitaet</h3>
+                            <div class="quality-grid">
+                                <div class="quality-item">
+                                    <div class="quality-bar-container">
+                                        <div class="quality-bar" id="quality-bar-dates"></div>
+                                    </div>
+                                    <div class="quality-info">
+                                        <span class="quality-label">Exakte Datierungen</span>
+                                        <span class="quality-value" id="quality-dates">-</span>
+                                    </div>
+                                </div>
+                                <div class="quality-item">
+                                    <div class="quality-bar-container">
+                                        <div class="quality-bar" id="quality-bar-persons"></div>
+                                    </div>
+                                    <div class="quality-info">
+                                        <span class="quality-label">Identifizierte Personen</span>
+                                        <span class="quality-value" id="quality-persons">-</span>
+                                    </div>
+                                </div>
+                                <div class="quality-item">
+                                    <div class="quality-bar-container">
+                                        <div class="quality-bar" id="quality-bar-places"></div>
+                                    </div>
+                                    <div class="quality-info">
+                                        <span class="quality-label">Georeferenzierte Orte</span>
+                                        <span class="quality-value" id="quality-places">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- View Recommendations -->
+                        <div class="overview-section">
+                            <h3><i class="fas fa-compass"></i> Empfohlene Ansichten</h3>
+                            <div class="view-recommendations" id="view-recommendations">
+                                <!-- Filled by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Quick Access -->
+                        <div class="overview-section">
+                            <h3><i class="fas fa-rocket"></i> Schnellzugriff</h3>
+                            <div class="quick-access-grid">
+                                <button class="quick-access-btn" data-target="map">
+                                    <i class="fas fa-map"></i>
+                                    <span>Kartenansicht</span>
+                                </button>
+                                <button class="quick-access-btn" data-target="persons">
+                                    <i class="fas fa-users"></i>
+                                    <span>Korrespondenten</span>
+                                </button>
+                                <button class="quick-access-btn" data-target="letters">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>Briefliste</span>
+                                </button>
+                                <button class="quick-access-btn" data-target="timeline">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Timeline</span>
+                                </button>
+                                <button class="quick-access-btn" data-target="network">
+                                    <i class="fas fa-project-diagram"></i>
+                                    <span>Netzwerk</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Map View -->
-                <div id="map-view" class="tab-content active">
+                <div id="map-view" class="tab-content">
                     <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
                     <div class="map-controls">
                         <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln">

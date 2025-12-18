@@ -1824,7 +1824,7 @@ function initUrlState() {
 
     // View
     const view = urlParams.get('view');
-    if (view && ['map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'].includes(view)) {
+    if (view && ['overview', 'map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'].includes(view)) {
         currentView = view;
     }
 
@@ -1902,7 +1902,7 @@ let initialLanguageFilter = null;
 // VIEW SWITCHING
 // ===================
 
-let currentView = 'map';
+let currentView = 'overview';
 
 function initViewSwitcher() {
     const viewButtons = document.querySelectorAll('.view-btn');
@@ -1943,7 +1943,9 @@ function switchView(view) {
     updateViewSpecificFilters(view);
 
     // Render view-specific content
-    if (view === 'persons') {
+    if (view === 'overview') {
+        renderOverview();
+    } else if (view === 'persons') {
         renderPersonsList();
     } else if (view === 'letters') {
         renderLettersList();
@@ -2021,6 +2023,203 @@ function initPersonsView() {
             renderPersonsList();
         });
     }
+}
+
+/**
+ * Render the Overview view with statistics and recommendations
+ */
+function renderOverview() {
+    if (!cmifData || !cmifData.meta) return;
+
+    const meta = cmifData.meta;
+
+    // Update title and subtitle
+    const titleEl = document.getElementById('overview-title');
+    const subtitleEl = document.getElementById('overview-subtitle');
+    if (titleEl) {
+        titleEl.textContent = meta.title || 'Datensatz-Uebersicht';
+    }
+    if (subtitleEl && meta.date_range) {
+        const minYear = meta.date_range.min;
+        const maxYear = meta.date_range.max;
+        if (minYear && maxYear) {
+            subtitleEl.textContent = `Korrespondenz von ${minYear} bis ${maxYear}`;
+        }
+    }
+
+    // Update statistics
+    const lettersEl = document.getElementById('overview-letters');
+    const personsEl = document.getElementById('overview-persons');
+    const placesEl = document.getElementById('overview-places');
+    const timespanEl = document.getElementById('overview-timespan');
+
+    if (lettersEl) lettersEl.textContent = meta.total_letters?.toLocaleString('de-DE') || '0';
+    if (personsEl) personsEl.textContent = (meta.unique_senders + meta.unique_recipients)?.toLocaleString('de-DE') || '0';
+    if (placesEl) placesEl.textContent = meta.unique_places?.toLocaleString('de-DE') || '0';
+    if (timespanEl && meta.date_range) {
+        const years = meta.date_range.max - meta.date_range.min;
+        timespanEl.textContent = years > 0 ? `${years} Jahre` : '-';
+    }
+
+    // Calculate quality metrics
+    const quality = meta.uncertainty || {};
+    const totalLetters = meta.total_letters || 1;
+
+    // Date quality (precise dates)
+    const preciseDates = totalLetters - (quality.imprecise_dates || 0);
+    const dateQuality = Math.round((preciseDates / totalLetters) * 100);
+
+    // Person quality (identified with authority refs)
+    const allPersons = [...(cmifData.letters || [])].reduce((set, l) => {
+        if (l.sender?.name) set.add(l.sender.id || l.sender.name);
+        if (l.recipient?.name) set.add(l.recipient.id || l.recipient.name);
+        return set;
+    }, new Set());
+    const identifiedPersons = [...(cmifData.letters || [])].reduce((set, l) => {
+        if (l.sender?.id && l.sender.id.startsWith('http')) set.add(l.sender.id);
+        if (l.recipient?.id && l.recipient.id.startsWith('http')) set.add(l.recipient.id);
+        return set;
+    }, new Set());
+    const personQuality = allPersons.size > 0 ? Math.round((identifiedPersons.size / allPersons.size) * 100) : 0;
+
+    // Place quality (georeferenced)
+    const places = Object.values(cmifData.places || {});
+    const geoPlaces = places.filter(p => p.lat && p.lon).length;
+    const placeQuality = places.length > 0 ? Math.round((geoPlaces / places.length) * 100) : 0;
+
+    // Update quality bars
+    updateQualityBar('quality-bar-dates', 'quality-dates', dateQuality, preciseDates, totalLetters);
+    updateQualityBar('quality-bar-persons', 'quality-persons', personQuality, identifiedPersons.size, allPersons.size);
+    updateQualityBar('quality-bar-places', 'quality-places', placeQuality, geoPlaces, places.length);
+
+    // Generate view recommendations
+    renderViewRecommendations(dateQuality, personQuality, placeQuality);
+
+    // Setup quick access buttons
+    setupQuickAccessButtons();
+}
+
+/**
+ * Update a quality bar with percentage and label
+ */
+function updateQualityBar(barId, valueId, percentage, count, total) {
+    const bar = document.getElementById(barId);
+    const value = document.getElementById(valueId);
+
+    if (bar) {
+        bar.style.width = `${percentage}%`;
+        bar.classList.remove('high', 'medium', 'low');
+        if (percentage >= 70) {
+            bar.classList.add('high');
+        } else if (percentage >= 40) {
+            bar.classList.add('medium');
+        } else {
+            bar.classList.add('low');
+        }
+    }
+
+    if (value) {
+        value.textContent = `${percentage}% (${count}/${total})`;
+    }
+}
+
+/**
+ * Render view recommendations based on data quality
+ */
+function renderViewRecommendations(dateQuality, personQuality, placeQuality) {
+    const container = document.getElementById('view-recommendations');
+    if (!container) return;
+
+    const recommendations = [];
+
+    // Determine best views based on data quality
+    if (placeQuality >= 50) {
+        recommendations.push({
+            view: 'map',
+            icon: 'fa-map',
+            title: 'Kartenansicht',
+            reason: `${placeQuality}% der Orte sind georeferenziert`,
+            recommended: placeQuality >= 70
+        });
+    }
+
+    if (personQuality >= 30) {
+        recommendations.push({
+            view: 'network',
+            icon: 'fa-project-diagram',
+            title: 'Netzwerk-Ansicht',
+            reason: `${personQuality}% der Personen sind identifiziert`,
+            recommended: personQuality >= 60
+        });
+    }
+
+    // Timeline is always useful with dated letters
+    if (dateQuality >= 30) {
+        recommendations.push({
+            view: 'timeline',
+            icon: 'fa-chart-line',
+            title: 'Timeline',
+            reason: `${dateQuality}% der Briefe haben exakte Datierungen`,
+            recommended: dateQuality >= 70
+        });
+    }
+
+    // Persons view is always available
+    recommendations.push({
+        view: 'persons',
+        icon: 'fa-users',
+        title: 'Korrespondenten',
+        reason: 'Alle Absender und Empfaenger auflisten',
+        recommended: false
+    });
+
+    // Letters view is always available
+    recommendations.push({
+        view: 'letters',
+        icon: 'fa-envelope',
+        title: 'Briefliste',
+        reason: 'Alle Briefe durchsuchen und filtern',
+        recommended: false
+    });
+
+    // Sort: recommended first
+    recommendations.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
+
+    // Render
+    container.innerHTML = recommendations.map(rec => `
+        <div class="view-recommendation ${rec.recommended ? 'recommended' : ''}" data-view="${rec.view}">
+            <div class="rec-icon"><i class="fas ${rec.icon}"></i></div>
+            <div class="rec-content">
+                <div class="rec-title">${rec.title}</div>
+                <div class="rec-reason">${rec.reason}</div>
+            </div>
+            ${rec.recommended ? '<span class="rec-badge">Empfohlen</span>' : ''}
+        </div>
+    `).join('');
+
+    // Add click handlers
+    container.querySelectorAll('.view-recommendation').forEach(el => {
+        el.addEventListener('click', () => {
+            const view = el.dataset.view;
+            switchView(view);
+            updateUrlState();
+        });
+    });
+}
+
+/**
+ * Setup quick access buttons in overview
+ */
+function setupQuickAccessButtons() {
+    document.querySelectorAll('.quick-access-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.target;
+            if (target) {
+                switchView(target);
+                updateUrlState();
+            }
+        });
+    });
 }
 
 function renderPersonsList() {
