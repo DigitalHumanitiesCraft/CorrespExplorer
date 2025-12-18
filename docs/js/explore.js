@@ -1870,11 +1870,11 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
-    // On overview: show sidebar but hide filters section
-    // On other views: show full sidebar with filters
-    const sidebarFilters = document.getElementById('sidebar-filters');
-    if (sidebarFilters) {
-        sidebarFilters.classList.toggle('hidden', view === 'overview');
+    // On overview: hide entire sidebar for full-width content
+    // On other views: show sidebar with stats and filters
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('hidden', view === 'overview');
     }
 
     // Update sidebar legend for current view
