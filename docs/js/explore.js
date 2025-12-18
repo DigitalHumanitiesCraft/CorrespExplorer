@@ -2164,9 +2164,13 @@ function updateQualityChip(chipId, percentage, label) {
 }
 
 /**
- * Setup entry point button click handlers
+ * Setup entry point button click handlers (called once on init)
  */
+let entryPointsInitialized = false;
 function setupEntryPointButtons() {
+    if (entryPointsInitialized) return;
+    entryPointsInitialized = true;
+
     document.querySelectorAll('.entry-point-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const target = btn.dataset.target;
@@ -7409,6 +7413,11 @@ function analyzeResearchQuestions() {
             suggestion: 'xml:lang zu correspAction-Elementen hinzufuegen'
         });
     }
+
+    // Add unique IDs to all questions
+    questions.forEach((q, i) => {
+        q.id = `q-${q.category}-${i}`;
+    });
 
     return questions;
 }
