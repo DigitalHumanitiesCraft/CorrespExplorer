@@ -429,83 +429,10 @@ function updateUI(data) {
     // Update uncertainty statistics if available
     updateUncertaintyStats(data.meta?.uncertainty);
 
-    // Update dataset metadata from teiHeader
-    updateDatasetMetadata(data.meta, data.sourceInfo);
-
     // Build language filter
     buildLanguageFilter();
 }
 
-// Update dataset metadata display in sidebar
-function updateDatasetMetadata(meta, sourceInfo) {
-    // Editor(s)
-    const metaEditorRow = elements.metaEditorRow;
-    const metaEditor = elements.metaEditor;
-    if (metaEditorRow && metaEditor && meta?.editors?.length > 0) {
-        const editorNames = meta.editors.map(editor => {
-            if (editor.ref) {
-                return `<a href="${editor.ref}" target="_blank">${editor.name}</a>`;
-            }
-            return editor.name;
-        });
-        metaEditor.innerHTML = editorNames.join(', ');
-        metaEditorRow.classList.remove('hidden');
-    }
-
-    // Publisher(s)
-    const metaPublisherRow = elements.metaPublisherRow;
-    const metaPublisher = elements.metaPublisher;
-    if (metaPublisherRow && metaPublisher && meta?.publishers?.length > 0) {
-        const publisherLinks = meta.publishers.map(pub => {
-            if (pub.url) {
-                return `<a href="${pub.url}" target="_blank">${pub.name}</a>`;
-            }
-            return pub.name;
-        });
-        metaPublisher.innerHTML = publisherLinks.join(', ');
-        metaPublisherRow.classList.remove('hidden');
-    }
-
-    // Source Reference (bibl) - with optional link
-    const metaSourceRow = elements.metaSourceRow;
-    const metaSource = elements.metaSource;
-    if (metaSourceRow && metaSource && meta?.sourceReference) {
-        if (meta.sourceUrl) {
-            metaSource.innerHTML = `<a href="${meta.sourceUrl}" target="_blank" class="meta-source-text" title="${meta.sourceReference}">${meta.sourceReference}</a>`;
-        } else {
-            metaSource.textContent = meta.sourceReference;
-            metaSource.title = meta.sourceReference; // Full text on hover
-        }
-        metaSourceRow.classList.remove('hidden');
-    }
-
-    // CMIF URL
-    const metaCmifRow = elements.metaCmifRow;
-    const metaCmif = elements.metaCmif;
-    if (metaCmifRow && metaCmif) {
-        const cmifUrl = meta?.cmifUrl || (sourceInfo?.type === 'url' ? sourceInfo.source : null);
-        if (cmifUrl) {
-            metaCmif.innerHTML = `<a href="${cmifUrl}" target="_blank">CMIF-Datei</a>`;
-            metaCmifRow.classList.remove('hidden');
-        } else if (sourceInfo?.type === 'file') {
-            metaCmif.textContent = `Datei: ${sourceInfo.source}`;
-            metaCmifRow.classList.remove('hidden');
-        }
-    }
-
-    // Licence
-    const metaLicenceRow = elements.metaLicenceRow;
-    const metaLicence = elements.metaLicence;
-    if (metaLicenceRow && metaLicence && meta?.licence) {
-        const licenceText = formatLicence(meta.licence);
-        if (meta.licence.url) {
-            metaLicence.innerHTML = `<a href="${meta.licence.url}" target="_blank" class="licence-badge">${licenceText}</a>`;
-        } else {
-            metaLicence.innerHTML = `<span class="licence-badge">${licenceText}</span>`;
-        }
-        metaLicenceRow.classList.remove('hidden');
-    }
-}
 
 // Format licence text for display
 function formatLicence(licence) {
@@ -2233,55 +2160,80 @@ function setupQuickAccessButtons() {
 
 /**
  * Render metadata section on Overview page
+ * Supports both JSON format (teiHeader) and cmif-parser format (direct properties)
  */
 function renderOverviewMetadata() {
     const container = document.getElementById('overview-metadata');
     if (!container || !dataMeta) return;
 
-    const teiHeader = dataMeta.teiHeader || {};
     const items = [];
 
-    // Editor
-    if (teiHeader.editor) {
+    // Check for JSON format (teiHeader object) vs cmif-parser format (direct properties)
+    const teiHeader = dataMeta.teiHeader || {};
+    const hasJsonFormat = Object.keys(teiHeader).length > 0;
+
+    // Editor - JSON: teiHeader.editor (string), Parser: editors (array)
+    const editorValue = hasJsonFormat
+        ? teiHeader.editor
+        : (dataMeta.editors?.map(e => e.name).join(', ') || null);
+    if (editorValue) {
         items.push({
             icon: 'fa-user-edit',
             label: 'Herausgeber',
-            value: teiHeader.editor
+            value: editorValue
         });
     }
 
-    // Publisher
-    if (teiHeader.publisher) {
+    // Publisher - JSON: teiHeader.publisher (string), Parser: publishers (array)
+    const publisherValue = hasJsonFormat
+        ? teiHeader.publisher
+        : (dataMeta.publishers?.map(p => p.url
+            ? `<a href="${p.url}" target="_blank" rel="noopener">${p.name}</a>`
+            : p.name).join(', ') || null);
+    if (publisherValue) {
         items.push({
             icon: 'fa-building',
             label: 'Verlag',
-            value: teiHeader.publisher
+            value: publisherValue
         });
     }
 
-    // Source (bibl)
-    if (teiHeader.bibl) {
+    // Source (bibl) - JSON: teiHeader.bibl, Parser: sourceReference/sourceUrl
+    const sourceValue = hasJsonFormat
+        ? teiHeader.bibl
+        : (dataMeta.sourceUrl && dataMeta.sourceReference
+            ? `<a href="${dataMeta.sourceUrl}" target="_blank" rel="noopener">${dataMeta.sourceReference}</a>`
+            : dataMeta.sourceReference || null);
+    if (sourceValue) {
         items.push({
             icon: 'fa-quote-left',
             label: 'Quelle',
-            value: teiHeader.bibl
+            value: sourceValue
         });
     }
 
-    // CMIF URL
-    if (teiHeader.cmifUrl) {
+    // CMIF URL - both formats use cmifUrl
+    const cmifUrl = hasJsonFormat ? teiHeader.cmifUrl : dataMeta.cmifUrl;
+    if (cmifUrl) {
         items.push({
             icon: 'fa-link',
             label: 'CMIF',
-            value: `<a href="${teiHeader.cmifUrl}" target="_blank" rel="noopener">CMIF öffnen</a>`
+            value: `<a href="${cmifUrl}" target="_blank" rel="noopener">CMIF oeffnen</a>`
         });
     }
 
-    // Licence
-    if (teiHeader.licence) {
-        const licenceText = teiHeader.licenceTarget
+    // Licence - JSON: teiHeader.licence/licenceTarget, Parser: licence.text/url
+    let licenceText = null;
+    if (hasJsonFormat && teiHeader.licence) {
+        licenceText = teiHeader.licenceTarget
             ? `<a href="${teiHeader.licenceTarget}" target="_blank" rel="noopener">${teiHeader.licence}</a>`
             : teiHeader.licence;
+    } else if (dataMeta.licence?.text) {
+        licenceText = dataMeta.licence.url
+            ? `<a href="${dataMeta.licence.url}" target="_blank" rel="noopener">${dataMeta.licence.text}</a>`
+            : dataMeta.licence.text;
+    }
+    if (licenceText) {
         items.push({
             icon: 'fa-balance-scale',
             label: 'Lizenz',
@@ -2291,7 +2243,7 @@ function renderOverviewMetadata() {
 
     // If no metadata available
     if (items.length === 0) {
-        container.innerHTML = '<p class="no-data">Keine Metadaten verfügbar</p>';
+        container.innerHTML = '<p class="no-data">Keine Metadaten verfuegbar</p>';
         return;
     }
 

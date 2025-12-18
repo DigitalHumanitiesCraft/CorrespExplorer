@@ -79,32 +79,25 @@ Python-Pipeline (build_hsa_data.py - fuer erweiterte JSON-Datensaetze):
 - Felder: editor, publisher, cmifUrl, licence, licenceTarget, bibl
 - meta.teiHeader im Output-JSON
 
-UI-Anzeige (explore.js, explore.html):
-- renderOverviewMetadata() nutzt dataMeta.teiHeader
-- updateDatasetMetadata() zeigt Editor, Publisher, Source, CMIF-URL, Licence
+UI-Anzeige (nur im Overview):
+- Metadaten nur noch im Overview-View unter "Quelle" angezeigt
+- Sidebar-Metadaten entfernt (Redundanz vermeiden)
+- renderOverviewMetadata() unterstuetzt beide Formate:
+  - JSON-Format: dataMeta.teiHeader.editor, .publisher, .bibl, .cmifUrl, .licence
+  - Parser-Format: dataMeta.editors[], .publishers[], .sourceReference, .cmifUrl, .licence
 - Publisher mit Links wenn vorhanden
 - Source Reference als klickbarer Link wenn sourceUrl existiert
-- Licence als Badge (CC0, CC BY 4.0, etc.)
-- Funktioniert identisch fuer Standard-CMIF und erweiterte JSON
 
-Entfernte redundante Elemente:
-- Titel (steht bereits in Navbar)
-- Zeitraum (steht bereits im Filter-Bereich)
-- mailto-Links fuer Editoren
-
-DOM-Cache (dom-cache.js):
-- Neue Getter: metaPublisherRow, metaPublisher
-
-CSS (explore.css):
-- .dataset-meta: Minimales Styling ohne Hintergrundfarbe (Design-System konform)
-- .dataset-meta-item: Keine border-bottom mehr
-- .meta-source-text: Volle Anzeige statt Truncation
-- .licence-badge: Kompaktes Badge-Styling
+Entfernte Elemente:
+- Sidebar-Metadaten komplett entfernt (HTML, CSS, JS)
+- updateDatasetMetadata() Funktion entfernt
+- DOM-Cache Getter fuer meta-* Elemente entfernt
+- CSS-Klassen: .dataset-meta, .dataset-meta-item, .meta-source-text, .licence-badge
 
 Technische Entscheidung:
-- Keine rgba() oder andere nicht-Token-Farben
-- Abgrenzung durch Spacing statt Hintergrundfarbe
-- Konsistenz mit bestehendem Design-System
+- Keine Redundanz zwischen Sidebar und Overview
+- Metadaten gehoeren zum Overview als Datensatz-Einstieg
+- Sidebar fokussiert auf Filter und Statistiken
 
 ---
 

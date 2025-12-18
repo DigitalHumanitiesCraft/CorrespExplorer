@@ -51,7 +51,6 @@ Hauptansicht mit neun Views:
 
 Sidebar (ausgeblendet im Uebersicht-View):
 - Statistik-Cards (Briefe, Absender, Orte)
-- Metadaten (Editor, Publisher, Quelle, Lizenz)
 - Zeitraum-Filter (noUiSlider)
 - Sprach-Filter (Checkboxen, Top 10)
 - Person/Thema/Ort-Filter-Badge (wenn aktiv)
