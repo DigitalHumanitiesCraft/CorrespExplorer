@@ -6,6 +6,25 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
+## 2025-12-18 (Phase 37: Anreicherungs-Feedback und UI-Fixes)
+
+### Verbessertes Feedback bei Wikidata-Anreicherung
+
+Live-Log waehrend Anreicherung:
+- Zeigt jede Person mit Icons fuer gefundene Daten (Portrait, Geburt, Tod, Beruf, Wikipedia)
+- Personen ohne Daten werden mit "keine Daten" angezeigt
+- Letzte 8 Eintraege sichtbar, aeltere scrollen raus
+
+Summary nach Anreicherung:
+- Anzahl Portraits, Geburtsdaten, Sterbedaten, Berufe, Wikipedia-Links
+- Anzahl Personen ohne Daten
+
+CSS-Fixes:
+- Timeline-Kreise (Jahr-Marker und Brief-Punkte) exakt auf Linie zentriert
+- Verwendet transform: translate(-50%, -50%) fuer praezise Positionierung
+
+---
+
 ## 2025-12-18 (Phase 36: Chronik als Forschungswerkzeug)
 
 ### Chronik-Erweiterung: Biografischer Kontext und Beziehungsanalyse

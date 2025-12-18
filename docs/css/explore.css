@@ -3424,9 +3424,9 @@
 .chronik-year-marker::before {
     content: '';
     position: absolute;
-    left: -42px;
+    left: -36px;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     width: 14px;
     height: 14px;
     background: var(--color-primary);
@@ -3464,8 +3464,9 @@
 .chronik-entry::before {
     content: '';
     position: absolute;
-    left: -44px;
+    left: -36px;
     top: var(--space-md);
+    transform: translateX(-50%);
     width: 10px;
     height: 10px;
     background: var(--color-bg);
@@ -4028,6 +4029,84 @@
     color: var(--color-text);
 }
 
+/* Live log during enrichment */
+.enrichment-live-log {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: var(--space-md);
+    padding: var(--space-sm);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    text-align: left;
+}
+
+.enrichment-log-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-sm);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.enrichment-log-entry:last-child {
+    border-bottom: none;
+}
+
+.enrichment-log-success .log-name {
+    color: var(--color-success);
+}
+
+.enrichment-log-empty .log-name {
+    color: var(--color-text-tertiary);
+}
+
+.enrichment-log-empty .log-status {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+    font-size: var(--font-size-xs);
+}
+
+.log-icons {
+    display: flex;
+    gap: var(--space-xs);
+    color: var(--color-primary);
+}
+
+.log-icons i {
+    font-size: var(--font-size-xs);
+}
+
+/* Enrichment summary */
+.enrichment-summary {
+    margin-top: var(--space-md);
+}
+
+.enrichment-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+    text-align: center;
+}
+
+.summary-item {
+    padding: var(--space-sm);
+    background: var(--color-bg-light);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+}
+
+.summary-item i {
+    display: block;
+    font-size: var(--font-size-lg);
+    color: var(--color-primary);
+    margin-bottom: var(--space-xs);
+}
+
+.summary-item.summary-empty i {
+    color: var(--color-text-tertiary);
+}
+
 .enrichment-actions {
     display: flex;
     justify-content: center;
@@ -4052,13 +4131,13 @@
     }
 
     .chronik-year-marker::before {
-        left: -32px;
+        left: -26px;
         width: 10px;
         height: 10px;
     }
 
     .chronik-entry::before {
-        left: -34px;
+        left: -26px;
         width: 8px;
         height: 8px;
     }

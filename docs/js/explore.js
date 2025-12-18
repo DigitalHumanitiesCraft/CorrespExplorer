@@ -6172,6 +6172,16 @@ async function runEnrichment() {
     document.getElementById('enrichment-total').textContent = total;
 
     let enrichedCount = 0;
+    let notFoundCount = 0;
+    const enrichmentStats = {
+        withPortrait: 0,
+        withBirthDate: 0,
+        withDeathDate: 0,
+        withProfession: 0,
+        withWikipedia: 0
+    };
+    const liveLog = document.getElementById('enrichment-live-log');
+    liveLog.innerHTML = '';
 
     for (let i = 0; i < personsArray.length; i++) {
         if (chronikEnrichmentCancelled) break;
@@ -6189,10 +6199,43 @@ async function runEnrichment() {
                 chronikEnrichmentData.set(person.authorityId, enriched);
                 if (person.name) chronikEnrichmentData.set(person.name, enriched);
                 enrichedCount++;
+
+                // Track what was found
+                if (enriched.image) enrichmentStats.withPortrait++;
+                if (enriched.birthDate) enrichmentStats.withBirthDate++;
+                if (enriched.deathDate) enrichmentStats.withDeathDate++;
+                if (enriched.professions?.length > 0) enrichmentStats.withProfession++;
+                if (enriched.wikipediaUrl) enrichmentStats.withWikipedia++;
+
+                // Live log entry - show what was found
+                const found = [];
+                if (enriched.image) found.push('<i class="fas fa-portrait" title="Portrait"></i>');
+                if (enriched.birthDate) found.push('<i class="fas fa-baby" title="Geburtsdatum"></i>');
+                if (enriched.deathDate) found.push('<i class="fas fa-cross" title="Sterbedatum"></i>');
+                if (enriched.professions?.length > 0) found.push('<i class="fas fa-briefcase" title="Beruf"></i>');
+                if (enriched.wikipediaUrl) found.push('<i class="fas fa-wikipedia-w" title="Wikipedia"></i>');
+
+                const logEntry = document.createElement('div');
+                logEntry.className = 'enrichment-log-entry enrichment-log-success';
+                logEntry.innerHTML = `<span class="log-name">${escapeHtml(person.name || 'Unbekannt')}</span> <span class="log-icons">${found.join(' ')}</span>`;
+                liveLog.insertBefore(logEntry, liveLog.firstChild);
+            } else {
+                notFoundCount++;
+                const logEntry = document.createElement('div');
+                logEntry.className = 'enrichment-log-entry enrichment-log-empty';
+                logEntry.innerHTML = `<span class="log-name">${escapeHtml(person.name || 'Unbekannt')}</span> <span class="log-status">keine Daten</span>`;
+                liveLog.insertBefore(logEntry, liveLog.firstChild);
             }
+
+            // Keep only last 8 entries visible
+            while (liveLog.children.length > 8) {
+                liveLog.removeChild(liveLog.lastChild);
+            }
+
             await new Promise(resolve => setTimeout(resolve, 100));
         } catch (error) {
             console.warn(`Failed to enrich ${person.name}:`, error.message);
+            notFoundCount++;
         }
     }
 
@@ -6202,10 +6245,24 @@ async function runEnrichment() {
     document.querySelector('.chronik-container')?.classList.add('enriched');
     updateChronikEnrichmentUI();
 
-    // Show done state
+    // Show done state with summary
     document.getElementById('enrichment-progress').classList.add('hidden');
     document.getElementById('enrichment-done').classList.remove('hidden');
     document.getElementById('enrichment-success-count').textContent = enrichedCount;
+
+    // Build summary
+    const summaryEl = document.getElementById('enrichment-summary');
+    summaryEl.innerHTML = `
+        <div class="enrichment-summary-grid">
+            <div class="summary-item"><i class="fas fa-portrait"></i> ${enrichmentStats.withPortrait} Portraits</div>
+            <div class="summary-item"><i class="fas fa-baby"></i> ${enrichmentStats.withBirthDate} Geburtsdaten</div>
+            <div class="summary-item"><i class="fas fa-cross"></i> ${enrichmentStats.withDeathDate} Sterbedaten</div>
+            <div class="summary-item"><i class="fas fa-briefcase"></i> ${enrichmentStats.withProfession} Berufe</div>
+            <div class="summary-item"><i class="fas fa-wikipedia-w"></i> ${enrichmentStats.withWikipedia} Wikipedia</div>
+            <div class="summary-item summary-empty"><i class="fas fa-times-circle"></i> ${notFoundCount} ohne Daten</div>
+        </div>
+    `;
+
     document.getElementById('enrichment-cancel-btn').classList.add('hidden');
     document.getElementById('enrichment-close-btn').classList.remove('hidden');
 }
