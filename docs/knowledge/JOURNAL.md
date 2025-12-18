@@ -9,6 +9,7 @@ Entwicklungszeitraum: November - Dezember 2025
 ## Phasen-Uebersicht
 
 Aktuelle Phasen (Dezember 2025):
+- Phase 41: Compact Start-View
 - Phase 40: Wissenspfade mit Wissenskorb
 - Phase 39: Activity Heatmap View
 - Phase 38: Forschungspfade View
@@ -50,6 +51,60 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2025-12-18 (Phase 41: Compact Start-View)
+
+### Redesign der Start-View
+
+Vollstaendige Neugestaltung der Overview als kompakte Start-View mit Above-the-Fold-Fokus:
+
+Ziele:
+- Alle wichtigen Informationen auf einen Blick
+- Klare Einstiegspunkte in die Visualisierungen
+- Metadata und Datenqualitaet sofort sichtbar
+- Forschungspfade als zentrales Navigationselement
+
+Neue Struktur:
+
+Header (kompakt):
+- Datensatz-Titel
+- Inline-Statistiken: Briefe | Zeitraum | Personen | Orte
+- Quell-Info: Publisher | Lizenz | CMIF-Link
+
+Datenqualitaet (Chips):
+- 3 farbcodierte Chips mit Prozentangaben
+- Datiert (Kalender-Icon)
+- Identifiziert (Person-Check-Icon)
+- Georeferenziert (Map-Marker-Icon)
+- Farbskala: gruen (70%+), gelb (40-70%), rot (<40%)
+
+Entry-Points (6 Buttons im 3x2 Grid):
+- Karte: Orte der Korrespondenz
+- Netzwerk: Beziehungen zwischen Personen
+- Timeline: Zeitliche Verteilung
+- Suche: Briefe durchsuchen
+- Chronik: Wikidata-Anreicherung
+- Aktivitaet: Kalender-Heatmap
+
+Forschungspfade:
+- Limitiert auf 4 Pfade (statt alle)
+- "Alle X Pfade anzeigen" Button fuer Erweiterung
+- Klick startet Wissenspfad
+
+Technische Aenderungen:
+- renderOverview() komplett neu geschrieben
+- updateQualityChip() fuer Chip-Aktualisierung
+- setupEntryPointButtons() mit Duplikat-Schutz
+- renderOverviewResearchPaths() mit Limitierung
+- analyzeResearchQuestions() generiert IDs (q-category-index)
+
+CSS-Erweiterungen:
+- .overview-compact, .overview-header-compact
+- .overview-stats-inline, .overview-source-inline
+- .quality-bar-inline, .quality-chip (mit .high/.medium/.low)
+- .entry-point-grid (3 Spalten), .entry-point-btn
 
 ---
 

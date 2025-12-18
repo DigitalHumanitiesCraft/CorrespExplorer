@@ -57,7 +57,7 @@ Detailed documentation in `docs/knowledge/`:
 | [architecture.md](docs/knowledge/architecture.md) | Technical architecture, modules, data flow |
 | [user-stories.md](docs/knowledge/user-stories.md) | 36 implemented features with acceptance criteria |
 | [design.md](docs/knowledge/design.md) | UI/UX specifications, design system |
-| [JOURNAL.md](docs/knowledge/JOURNAL.md) | Development history (40 phases) |
+| [JOURNAL.md](docs/knowledge/JOURNAL.md) | Development history (41 phases) |
 | [testing.md](docs/knowledge/testing.md) | Test strategy (74+ tests) |
 | [CONTEXT-MAP.md](docs/knowledge/CONTEXT-MAP.md) | Documentation overview |
 
