@@ -89,6 +89,10 @@ function detectAvailableViews() {
     const hasLanguages = allLetters.some(l => l.language?.code);
 
     availableViews = {
+        overview: {
+            available: true,
+            reason: null
+        },
         map: {
             available: hasCoordinates,
             reason: hasCoordinates ? null : 'Keine Orte mit Koordinaten vorhanden'
@@ -2037,7 +2041,7 @@ function renderOverview() {
     const titleEl = document.getElementById('overview-title');
     const subtitleEl = document.getElementById('overview-subtitle');
     if (titleEl) {
-        titleEl.textContent = meta.title || 'Datensatz-Uebersicht';
+        titleEl.textContent = meta.title || 'Datensatz-Übersicht';
     }
     if (subtitleEl && meta.date_range) {
         const minYear = meta.date_range.min;
@@ -2169,7 +2173,7 @@ function renderViewRecommendations(dateQuality, personQuality, placeQuality) {
         view: 'persons',
         icon: 'fa-users',
         title: 'Korrespondenten',
-        reason: 'Alle Absender und Empfaenger auflisten',
+        reason: 'Alle Absender und Empfänger auflisten',
         recommended: false
     });
 
