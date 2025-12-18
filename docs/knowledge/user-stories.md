@@ -388,6 +388,23 @@ Akzeptanzkriterien:
 
 ---
 
+## Wissenspfade
+
+### US-35: Gefuehrte Exploration mit Datenkorb
+Als Forschende moechte ich von einer Forschungsfrage geleitet durch Views navigieren und dabei Daten in einem Korb sammeln, um methodisch strukturierte Exploration durchzufuehren.
+
+Akzeptanzkriterien:
+- Klick auf Forschungsfrage startet Wissenspfad
+- Pfad-Leiste zeigt aktuelle Position und alle Schritte
+- Datenkorb in Sidebar sammelt Selektionen
+- "Zum Korb hinzufuegen" speichert aktuelle Auswahl
+- "Zurueck" und "Weiter im Pfad" Navigation
+- Session in sessionStorage persistiert (ueberlebt Reload)
+- Pfad kann jederzeit beendet werden
+- Status: IMPLEMENTIERT
+
+---
+
 ## Zusammenfassung: Implementierungs-Status
 
 | Kategorie | Implementiert | Offen |
@@ -405,9 +422,10 @@ Akzeptanzkriterien:
 | Chronik | 5 | 0 |
 | Forschungspfade | 1 | 0 |
 | Aktivitaet | 1 | 0 |
-| **Gesamt** | **34** | **0** |
+| Wissenspfade | 1 | 0 |
+| **Gesamt** | **35** | **0** |
 
 Stand: 2025-12-18
 
-Alle 34 User Stories sind implementiert.
+Alle 35 User Stories sind implementiert.
 

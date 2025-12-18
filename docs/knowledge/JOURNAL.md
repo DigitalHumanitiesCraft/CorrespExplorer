@@ -9,6 +9,7 @@ Entwicklungszeitraum: November - Dezember 2025
 ## Phasen-Uebersicht
 
 Aktuelle Phasen (Dezember 2025):
+- Phase 40: Wissenspfade mit Datenkorb
 - Phase 39: Activity Heatmap View
 - Phase 38: Forschungspfade View
 - Phase 37: Anreicherungs-Feedback und UI-Fixes
@@ -49,6 +50,47 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2025-12-18 (Phase 40: Wissenspfade mit Datenkorb)
+
+### Neues Feature: Gefuehrte Exploration mit Datenkorb
+
+Erweiterung der Forschungspfade um interaktive Wissenspfad-Navigation:
+
+Konzept:
+- Klick auf Forschungsfrage startet einen Wissenspfad
+- Pfad-Leiste oben zeigt alle Schritte und aktuelle Position
+- Datenkorb in Sidebar sammelt Selektionen ueber Views hinweg
+- Navigation durch Pfad mit Zurueck/Weiter Buttons
+- Session in sessionStorage persistiert (ueberlebt Reload)
+
+Komponenten:
+- Pfad-Leiste (knowledge-path-bar): Frage, Schritte, Korb-Zaehler, Beenden-Button
+- Datenkorb-Sidebar (sidebar-basket): Zeigt gesammelte Personen, Orte, Briefe, Themen
+- Pfad-Navigation (knowledge-path-nav): Zurueck, Schritt-Info, Weiter-Button
+
+Technische Umsetzung:
+- startKnowledgePath() - Initialisiert neuen Pfad
+- loadKnowledgePath() - Laedt aus sessionStorage
+- saveKnowledgePath() - Persistiert in sessionStorage
+- nextPathStep() / previousPathStep() - Navigation
+- addToBasket() - Fuegt aktuelle Selektion zum Korb
+- updateKnowledgePathUI() - Aktualisiert alle UI-Elemente
+
+Datenkorb-Struktur:
+- personIds: Array von Personen-IDs
+- placeIds: Array von Orts-IDs
+- letterIds: Array von Brief-IDs
+- topicIds: Array von Themen-IDs
+- timeRange: { start, end } oder null
+
+Toast-Notifications:
+- showToast() Funktion fuer Feedback hinzugefuegt
+- Zeigt temporaere Meldungen bei Korb-Aktionen
+
+US-35 implementiert (35 User Stories gesamt).
 
 ---
 

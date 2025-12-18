@@ -96,6 +96,26 @@
         </div>
     </nav>
 
+    <!-- Wissenspfad-Leiste (hidden by default) -->
+    <div id="knowledge-path-bar" class="knowledge-path-bar hidden">
+        <div class="path-bar-content">
+            <div class="path-bar-question">
+                <i class="fas fa-route"></i>
+                <span id="path-bar-question-text">-</span>
+            </div>
+            <div class="path-bar-steps" id="path-bar-steps">
+                <!-- Dynamisch: Pfad-Schritte -->
+            </div>
+            <div class="path-bar-basket">
+                <i class="fas fa-shopping-basket"></i>
+                <span id="path-bar-basket-count">0</span> Items
+            </div>
+            <button class="path-bar-close" id="path-bar-close" title="Wissenspfad beenden">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div class="container">
         <div class="content-wrapper">
@@ -193,6 +213,27 @@
                         <a href="#" id="show-all-topics" class="show-all-link">Alle Themen anzeigen</a>
                     </div>
 
+                </div>
+
+                <!-- ========================================
+                     SECTION 3: DATENKORB (Wissenspfad)
+                     ======================================== -->
+                <div class="sidebar-section hidden" id="sidebar-basket">
+                    <div class="sidebar-section-header">
+                        <h4><i class="fas fa-shopping-basket"></i> Datenkorb</h4>
+                        <button id="clear-basket" class="btn-reset-small" title="Korb leeren">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="basket-content" id="basket-content">
+                        <!-- Dynamisch: Korb-Inhalt -->
+                        <div class="basket-empty">Korb ist leer</div>
+                    </div>
+                    <div class="basket-actions">
+                        <button id="add-to-basket" class="btn-add-basket">
+                            <i class="fas fa-plus"></i> Aktuelle Auswahl zum Korb
+                        </button>
+                    </div>
                 </div>
 
             </aside>
@@ -715,6 +756,19 @@
                             <div id="activity-details-list" class="activity-details-list"></div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Wissenspfad Navigation (hidden by default) -->
+                <div id="knowledge-path-nav" class="knowledge-path-nav hidden">
+                    <button id="path-nav-back" class="btn-path-nav btn-path-back" disabled>
+                        <i class="fas fa-arrow-left"></i> Zurueck
+                    </button>
+                    <div class="path-nav-info">
+                        <span id="path-nav-step">Schritt 1 von 3</span>
+                    </div>
+                    <button id="path-nav-next" class="btn-path-nav btn-path-next">
+                        Weiter im Pfad <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </main>
         </div>

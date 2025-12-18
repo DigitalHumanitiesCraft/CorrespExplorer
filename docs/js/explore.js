@@ -333,6 +333,10 @@ async function init() {
         initMissingPlacesModal();
         initBasketUI(dataIndices, allLetters);
 
+        // Setup Knowledge Path handlers and load existing session
+        setupKnowledgePathHandlers();
+        loadKnowledgePath();
+
         // Store data in sessionStorage for wissenskorb.js
         try {
             sessionStorage.setItem('correspData', JSON.stringify({
@@ -1748,6 +1752,44 @@ function showError(message) {
     setTimeout(() => {
         window.location.href = 'index.html';
     }, 2000);
+}
+
+/**
+ * Shows a toast notification
+ * @param {string} message - Message to display
+ * @param {number} duration - Duration in ms (default 3000)
+ */
+function showToast(message, duration = 3000) {
+    // Remove existing toast
+    const existing = document.querySelector('.toast-notification');
+    if (existing) existing.remove();
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `
+        <span class="toast-message">${escapeHtml(message)}</span>
+        <button class="toast-close"><i class="fas fa-times"></i></button>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Close button
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+        toast.classList.add('toast-hide');
+        setTimeout(() => toast.remove(), 300);
+    });
+
+    // Show with animation
+    requestAnimationFrame(() => {
+        toast.classList.add('toast-show');
+    });
+
+    // Auto-hide
+    setTimeout(() => {
+        toast.classList.add('toast-hide');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
 }
 
 // ===================
@@ -7338,24 +7380,42 @@ function renderResearchQuestions() {
         });
     });
 
-    // Add click handlers for cards (navigate to first step or default view)
-    container.querySelectorAll('.question-card').forEach(card => {
+    // Add click handlers for cards - start knowledge path
+    container.querySelectorAll('.question-card:not(.unavailable)').forEach(card => {
         card.addEventListener('click', (e) => {
-            // Don't navigate if clicking on path steps
+            // Don't start path if clicking on individual path steps
             if (e.target.closest('.path-step')) return;
 
-            // Try to get first path step, otherwise use default view
-            let view = card.dataset.view;
-            try {
-                const path = JSON.parse(card.dataset.path || '[]');
-                if (path.length > 0) {
-                    view = path[0].view;
-                }
-            } catch (err) { /* use default view */ }
+            // Extract question data and start knowledge path
+            const questionText = card.querySelector('.question-text')?.textContent || '';
+            const pathData = card.dataset.path || '[]';
+            const view = card.dataset.view;
 
-            if (view) {
-                switchView(view);
-                updateUrlState();
+            try {
+                const path = JSON.parse(pathData);
+                if (path && path.length > 0) {
+                    // Get category from parent element
+                    const categoryEl = card.closest('.questions-category');
+                    const categoryTitle = categoryEl?.querySelector('h3')?.textContent?.toLowerCase() || '';
+                    let category = 'descriptive';
+                    if (categoryTitle.includes('analytisch')) category = 'analytical';
+                    else if (categoryTitle.includes('interpretativ')) category = 'interpretive';
+
+                    // Start the knowledge path
+                    startKnowledgePath({
+                        question: questionText,
+                        category: category,
+                        path: path,
+                        view: view
+                    });
+                }
+            } catch (err) {
+                console.error('Error starting knowledge path:', err);
+                // Fallback: just navigate to the view
+                if (view) {
+                    switchView(view);
+                    updateUrlState();
+                }
             }
         });
     });
@@ -7383,6 +7443,451 @@ function renderResearchQuestions() {
             </div>
         `;
     }
+}
+
+// ===================
+// WISSENSPFAD (Knowledge Path)
+// ===================
+
+let knowledgePath = null;
+
+/**
+ * Startet einen neuen Wissenspfad
+ * @param {Object} question - Forschungsfrage mit path Array
+ */
+function startKnowledgePath(question) {
+    if (!question || !question.path || question.path.length === 0) {
+        console.error('Cannot start knowledge path: invalid question data');
+        return;
+    }
+
+    knowledgePath = {
+        active: true,
+        questionId: `kp-${Date.now()}`,
+        question: question.question,
+        category: question.category,
+        path: question.path,
+        currentStep: 0,
+        basket: {
+            personIds: [],
+            placeIds: [],
+            letterIds: [],
+            topicIds: [],
+            timeRange: null,
+            languages: []
+        },
+        stepHistory: []
+    };
+
+    // In sessionStorage speichern
+    sessionStorage.setItem('knowledgePath', JSON.stringify(knowledgePath));
+
+    // UI anzeigen
+    showKnowledgePathUI();
+
+    // Zum ersten View navigieren
+    const firstStep = question.path[0];
+    switchView(firstStep.view);
+    updateUrlState();
+}
+
+/**
+ * Laedt bestehenden Wissenspfad aus sessionStorage
+ */
+function loadKnowledgePath() {
+    const saved = sessionStorage.getItem('knowledgePath');
+    if (saved) {
+        try {
+            knowledgePath = JSON.parse(saved);
+            if (knowledgePath && knowledgePath.active) {
+                showKnowledgePathUI();
+                return true;
+            }
+        } catch (e) {
+            console.error('Error loading knowledge path:', e);
+        }
+    }
+    knowledgePath = null;
+    return false;
+}
+
+/**
+ * Speichert aktuellen Wissenspfad
+ */
+function saveKnowledgePath() {
+    if (knowledgePath) {
+        sessionStorage.setItem('knowledgePath', JSON.stringify(knowledgePath));
+    }
+}
+
+/**
+ * Beendet den Wissenspfad
+ */
+function endKnowledgePath() {
+    knowledgePath = null;
+    sessionStorage.removeItem('knowledgePath');
+    hideKnowledgePathUI();
+
+    // Zur Pfade-View zurueck
+    switchView('questions');
+    updateUrlState();
+}
+
+/**
+ * Navigiert zum naechsten Schritt im Pfad
+ */
+function nextPathStep() {
+    if (!knowledgePath) return;
+
+    // Aktuellen Zustand zur History hinzufuegen
+    knowledgePath.stepHistory.push({
+        step: knowledgePath.currentStep,
+        view: knowledgePath.path[knowledgePath.currentStep].view,
+        basket: JSON.parse(JSON.stringify(knowledgePath.basket)),
+        timestamp: Date.now()
+    });
+
+    knowledgePath.currentStep++;
+    saveKnowledgePath();
+
+    if (knowledgePath.currentStep >= knowledgePath.path.length) {
+        // Pfad abgeschlossen - zurueck zur Pfade-View
+        showPathCompletedMessage();
+        endKnowledgePath();
+    } else {
+        // Naechster View
+        const nextStep = knowledgePath.path[knowledgePath.currentStep];
+        switchView(nextStep.view);
+        updateUrlState();
+        updateKnowledgePathUI();
+    }
+}
+
+/**
+ * Navigiert zum vorherigen Schritt
+ */
+function previousPathStep() {
+    if (!knowledgePath || knowledgePath.currentStep === 0) return;
+
+    knowledgePath.currentStep--;
+
+    // Korb auf vorherigen Zustand zuruecksetzen
+    if (knowledgePath.stepHistory.length > 0) {
+        const prevState = knowledgePath.stepHistory.pop();
+        knowledgePath.basket = prevState.basket;
+    }
+
+    saveKnowledgePath();
+
+    const prevStep = knowledgePath.path[knowledgePath.currentStep];
+    switchView(prevStep.view);
+    updateUrlState();
+    updateKnowledgePathUI();
+}
+
+/**
+ * Fuegt aktuelle Auswahl zum Korb hinzu
+ */
+function addToBasket() {
+    if (!knowledgePath) return;
+
+    const currentView = state.ui.currentView;
+    const filteredLetters = state.getFilteredLetters();
+    let addedCount = 0;
+
+    switch (currentView) {
+        case 'persons':
+            // Alle Personen aus gefilterten Briefen
+            const personIds = new Set(knowledgePath.basket.personIds);
+            filteredLetters.forEach(l => {
+                if (l.sender?.id) personIds.add(l.sender.id);
+                if (l.recipient?.id) personIds.add(l.recipient.id);
+            });
+            addedCount = personIds.size - knowledgePath.basket.personIds.length;
+            knowledgePath.basket.personIds = Array.from(personIds);
+            break;
+
+        case 'places':
+            // Alle Orte aus gefilterten Briefen
+            const placeIds = new Set(knowledgePath.basket.placeIds);
+            filteredLetters.forEach(l => {
+                if (l.place_sent?.id) placeIds.add(l.place_sent.id);
+            });
+            addedCount = placeIds.size - knowledgePath.basket.placeIds.length;
+            knowledgePath.basket.placeIds = Array.from(placeIds);
+            break;
+
+        case 'letters':
+            // Alle gefilterten Briefe
+            const letterIds = new Set(knowledgePath.basket.letterIds);
+            filteredLetters.forEach(l => {
+                if (l.id) letterIds.add(l.id);
+            });
+            addedCount = letterIds.size - knowledgePath.basket.letterIds.length;
+            knowledgePath.basket.letterIds = Array.from(letterIds);
+            break;
+
+        case 'topics':
+            // Ausgewaehltes Thema
+            if (selectedSubjectId) {
+                if (!knowledgePath.basket.topicIds.includes(selectedSubjectId)) {
+                    knowledgePath.basket.topicIds.push(selectedSubjectId);
+                    addedCount = 1;
+                }
+            }
+            break;
+
+        case 'timeline':
+            // Zeitbereich aus Filter
+            if (state.filters.temporal) {
+                knowledgePath.basket.timeRange = { ...state.filters.temporal };
+                addedCount = 1;
+            }
+            break;
+
+        default:
+            // Generisch: alle Brief-IDs
+            const ids = new Set(knowledgePath.basket.letterIds);
+            filteredLetters.forEach(l => {
+                if (l.id) ids.add(l.id);
+            });
+            addedCount = ids.size - knowledgePath.basket.letterIds.length;
+            knowledgePath.basket.letterIds = Array.from(ids);
+    }
+
+    saveKnowledgePath();
+    updateBasketUI();
+
+    // Feedback
+    if (addedCount > 0) {
+        showToast(`${addedCount} Element(e) zum Korb hinzugefuegt`);
+    } else {
+        showToast('Auswahl bereits im Korb');
+    }
+}
+
+/**
+ * Leert den Korb
+ */
+function clearBasket() {
+    if (!knowledgePath) return;
+
+    knowledgePath.basket = {
+        personIds: [],
+        placeIds: [],
+        letterIds: [],
+        topicIds: [],
+        timeRange: null,
+        languages: []
+    };
+
+    saveKnowledgePath();
+    updateBasketUI();
+    showToast('Korb geleert');
+}
+
+/**
+ * Zeigt Wissenspfad UI-Elemente
+ */
+function showKnowledgePathUI() {
+    const pathBar = document.getElementById('knowledge-path-bar');
+    const basketSection = document.getElementById('sidebar-basket');
+    const pathNav = document.getElementById('knowledge-path-nav');
+
+    if (pathBar) pathBar.classList.remove('hidden');
+    if (basketSection) basketSection.classList.remove('hidden');
+    if (pathNav) pathNav.classList.remove('hidden');
+
+    updateKnowledgePathUI();
+}
+
+/**
+ * Versteckt Wissenspfad UI-Elemente
+ */
+function hideKnowledgePathUI() {
+    const pathBar = document.getElementById('knowledge-path-bar');
+    const basketSection = document.getElementById('sidebar-basket');
+    const pathNav = document.getElementById('knowledge-path-nav');
+
+    if (pathBar) pathBar.classList.add('hidden');
+    if (basketSection) basketSection.classList.add('hidden');
+    if (pathNav) pathNav.classList.add('hidden');
+}
+
+/**
+ * Aktualisiert alle Wissenspfad UI-Elemente
+ */
+function updateKnowledgePathUI() {
+    if (!knowledgePath) return;
+
+    // Frage-Text
+    const questionText = document.getElementById('path-bar-question-text');
+    if (questionText) {
+        questionText.textContent = knowledgePath.question;
+        questionText.title = knowledgePath.question;
+    }
+
+    // Pfad-Schritte rendern
+    const stepsContainer = document.getElementById('path-bar-steps');
+    if (stepsContainer) {
+        let html = '';
+        knowledgePath.path.forEach((step, i) => {
+            const isActive = i === knowledgePath.currentStep;
+            const isComplete = i < knowledgePath.currentStep;
+
+            html += `
+                <div class="path-bar-step ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}"
+                     data-step="${i}" title="${step.action}">
+                    <span class="path-bar-step-num">${i + 1}</span>
+                    <span class="path-bar-step-label">${step.label}</span>
+                </div>
+            `;
+
+            if (i < knowledgePath.path.length - 1) {
+                html += '<span class="path-bar-step-arrow"><i class="fas fa-chevron-right"></i></span>';
+            }
+        });
+        stepsContainer.innerHTML = html;
+
+        // Click-Handler fuer Schritte
+        stepsContainer.querySelectorAll('.path-bar-step').forEach(stepEl => {
+            stepEl.addEventListener('click', () => {
+                const stepIndex = parseInt(stepEl.dataset.step);
+                if (stepIndex <= knowledgePath.currentStep) {
+                    // Zu diesem Schritt zurueckspringen
+                    while (knowledgePath.currentStep > stepIndex) {
+                        previousPathStep();
+                    }
+                }
+            });
+        });
+    }
+
+    // Korb-Zaehler
+    const basketCount = document.getElementById('path-bar-basket-count');
+    if (basketCount) {
+        const total = knowledgePath.basket.personIds.length +
+                      knowledgePath.basket.placeIds.length +
+                      knowledgePath.basket.letterIds.length +
+                      knowledgePath.basket.topicIds.length +
+                      (knowledgePath.basket.timeRange ? 1 : 0);
+        basketCount.textContent = total;
+    }
+
+    // Navigation aktualisieren
+    updatePathNavigation();
+    updateBasketUI();
+}
+
+/**
+ * Aktualisiert Pfad-Navigation Buttons
+ */
+function updatePathNavigation() {
+    if (!knowledgePath) return;
+
+    const backBtn = document.getElementById('path-nav-back');
+    const nextBtn = document.getElementById('path-nav-next');
+    const stepInfo = document.getElementById('path-nav-step');
+
+    if (backBtn) {
+        backBtn.disabled = knowledgePath.currentStep === 0;
+    }
+
+    if (nextBtn) {
+        const isLastStep = knowledgePath.currentStep >= knowledgePath.path.length - 1;
+        nextBtn.innerHTML = isLastStep
+            ? 'Pfad abschliessen <i class="fas fa-check"></i>'
+            : 'Weiter im Pfad <i class="fas fa-arrow-right"></i>';
+    }
+
+    if (stepInfo) {
+        stepInfo.textContent = `Schritt ${knowledgePath.currentStep + 1} von ${knowledgePath.path.length}`;
+    }
+}
+
+/**
+ * Aktualisiert Korb-Sidebar
+ */
+function updateBasketUI() {
+    if (!knowledgePath) return;
+
+    const container = document.getElementById('basket-content');
+    if (!container) return;
+
+    const basket = knowledgePath.basket;
+    let html = '';
+
+    if (basket.personIds.length > 0) {
+        html += `
+            <div class="basket-group">
+                <span class="basket-group-label"><i class="fas fa-users"></i> Personen</span>
+                <span class="basket-group-count">${basket.personIds.length}</span>
+            </div>
+        `;
+    }
+
+    if (basket.placeIds.length > 0) {
+        html += `
+            <div class="basket-group">
+                <span class="basket-group-label"><i class="fas fa-map-marker-alt"></i> Orte</span>
+                <span class="basket-group-count">${basket.placeIds.length}</span>
+            </div>
+        `;
+    }
+
+    if (basket.letterIds.length > 0) {
+        html += `
+            <div class="basket-group">
+                <span class="basket-group-label"><i class="fas fa-envelope"></i> Briefe</span>
+                <span class="basket-group-count">${basket.letterIds.length}</span>
+            </div>
+        `;
+    }
+
+    if (basket.topicIds.length > 0) {
+        html += `
+            <div class="basket-group">
+                <span class="basket-group-label"><i class="fas fa-tags"></i> Themen</span>
+                <span class="basket-group-count">${basket.topicIds.length}</span>
+            </div>
+        `;
+    }
+
+    if (basket.timeRange) {
+        html += `
+            <div class="basket-group">
+                <span class="basket-group-label"><i class="fas fa-clock"></i> Zeitraum</span>
+                <span class="basket-group-count">${basket.timeRange.start}-${basket.timeRange.end}</span>
+            </div>
+        `;
+    }
+
+    if (html === '') {
+        html = '<div class="basket-empty">Korb ist leer</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+/**
+ * Zeigt Erfolgsmeldung bei Pfad-Abschluss
+ */
+function showPathCompletedMessage() {
+    showToast('Wissenspfad abgeschlossen');
+}
+
+/**
+ * Setup Event-Handler fuer Wissenspfad
+ */
+function setupKnowledgePathHandlers() {
+    // Pfad-Navigation
+    document.getElementById('path-nav-back')?.addEventListener('click', previousPathStep);
+    document.getElementById('path-nav-next')?.addEventListener('click', nextPathStep);
+    document.getElementById('path-bar-close')?.addEventListener('click', endKnowledgePath);
+
+    // Korb-Aktionen
+    document.getElementById('add-to-basket')?.addEventListener('click', addToBasket);
+    document.getElementById('clear-basket')?.addEventListener('click', clearBasket);
 }
 
 // ===================
