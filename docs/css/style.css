@@ -569,6 +569,10 @@ button, .btn {
     background: var(--color-bg);  /* Cream - contrasts with Manila sidebar */
 }
 
+.main-content.full-width {
+    max-width: 100%;
+}
+
 /* Tabs */
 .tabs {
     display: flex;

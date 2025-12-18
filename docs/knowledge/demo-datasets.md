@@ -1,10 +1,23 @@
 # Demo-Datensaetze fuer CorrespExplorer
 
-Dokumentation der analysierten CMIF-Datensaetze zur Verwendung als Beispiele und Testdaten.
+Dokumentation der CMIF-Datensaetze zur Verwendung als Beispiele und Testdaten.
+
+Stand: 2025-12-18
 
 ---
 
-## Uebersicht
+## Aktive Demo-Datensaetze (Landing Page)
+
+| ID | Name | Briefe | Zeitraum | Typ |
+|----|------|--------|----------|-----|
+| demo-showcase | Feature-Demo | 35 | 1880-1920 | Tutorial |
+| hsa | Hugo Schuchardt Archiv | 11.576 | 1842-1927 | Demo |
+
+Die Landing Page zeigt nur diese zwei Datensaetze. Weitere CMIF-Dateien koennen per URL oder Upload geladen werden (Hinweis auf correspSearch API).
+
+---
+
+## Test-Datensaetze (fuer Entwicklung)
 
 | ID | Name | Briefe | Zeitraum | Quelle |
 |----|------|--------|----------|--------|

@@ -35,26 +35,26 @@ Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
 
 ### explore.html - Visualisierung
 
-Hauptansicht mit acht Views:
-1. Karte (MapLibre GL JS mit Clustering)
-2. Korrespondenten (sortierbare/suchbare Liste)
-3. Briefe (sortierbare/suchbare Liste)
-4. Timeline (Stacked Bar Chart nach Jahr mit Sprachverteilung, Detached Bin für undatierte Briefe)
-5. Themen (Topics View mit Detail-Panel)
-6. Orte (Places View mit Detail-Panel)
-7. Netzwerk (Force-Directed Graph)
-8. Mentions Flow (Sankey Diagram für Erwähnungen)
+Hauptansicht mit neun Views:
+1. Uebersicht (Dashboard mit Statistiken, Datenqualitaet, Empfehlungen) - Default-View
+2. Karte (MapLibre GL JS mit Clustering)
+3. Korrespondenten (sortierbare/suchbare Liste)
+4. Briefe (sortierbare/suchbare Liste)
+5. Timeline (Stacked Bar Chart nach Jahr mit Sprachverteilung, Detached Bin für undatierte Briefe)
+6. Themen (Topics View mit Detail-Panel)
+7. Orte (Places View mit Detail-Panel)
+8. Netzwerk (Force-Directed Graph)
+9. Mentions Flow (Sankey Diagram für Erwähnungen)
 
-Sidebar mit:
+Sidebar (ausgeblendet im Uebersicht-View):
 - Statistik-Cards (Briefe, Absender, Orte)
-- Geodaten-Info (Orte mit/ohne Koordinaten)
+- Metadaten (Editor, Publisher, Quelle, Lizenz)
 - Zeitraum-Filter (noUiSlider)
 - Sprach-Filter (Checkboxen, Top 10)
 - Person/Thema/Ort-Filter-Badge (wenn aktiv)
-- Legende
 
 Navigation mit:
-- View-Switcher (8 Buttons)
+- View-Switcher (9 Buttons)
 - Export-Button
 - Neuer Datensatz-Link
 - About-Link
@@ -447,7 +447,19 @@ Metadaten:
 
 ## UI-Komponenten
 
-Alle Views teilen eine gemeinsame Sidebar mit Filtern und Statistiken. Filter sind kombinierbar und werden in der URL gespeichert für Bookmarking und Sharing.
+Alle Views teilen eine gemeinsame Sidebar mit Filtern und Statistiken. Filter sind kombinierbar und werden in der URL gespeichert für Bookmarking und Sharing. Der Uebersicht-View ist eine Ausnahme: hier wird die Sidebar ausgeblendet.
+
+### Uebersicht (Overview)
+
+Default-View beim Laden eines Datensatzes:
+- Statistik-Cards: Briefe, Korrespondenten, Orte, Zeitraum
+- Datenqualitaet: Balken fuer exakte Datierungen, identifizierte Personen, georeferenzierte Orte
+- Quellen-Metadaten: Editor, Publisher, CMIF-URL, Lizenz (aus teiHeader)
+- Top-Korrespondenten: Die 5 aktivsten Personen mit Briefanzahl
+- Sprachverteilung: Bei mehrsprachigen Datensaetzen
+- View-Empfehlungen: Basierend auf Datenqualitaet (z.B. Karte nur wenn >50% georeferenziert)
+- Schnellzugriff: Buttons zu allen anderen Views
+- Sidebar ausgeblendet fuer volle Breite
 
 ### Kartenansicht
 

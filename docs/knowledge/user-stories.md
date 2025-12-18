@@ -287,12 +287,31 @@ Akzeptanzkriterien:
 
 ---
 
+## Datensatz-Uebersicht
+
+### US-28: Datensatz-Uebersicht als Einstieg
+Als Forschende moechte ich beim Laden eines Datensatzes eine Uebersicht sehen, um die Datenqualitaet und Struktur sofort einschaetzen zu koennen.
+
+Akzeptanzkriterien:
+- Dashboard als Default-View beim Laden
+- Statistik-Cards: Briefe, Korrespondenten, Orte, Zeitraum
+- Datenqualitaet-Balken: Exakte Datierungen, Identifizierte Personen, Georeferenzierte Orte
+- Quellen-Metadaten aus teiHeader (Editor, Publisher, Lizenz)
+- Top-5-Korrespondenten mit Briefanzahl
+- Sprachverteilung bei mehrsprachigen Datensaetzen
+- View-Empfehlungen basierend auf Datenqualitaet
+- Schnellzugriff-Buttons zu anderen Views
+- Sidebar ausgeblendet fuer volle Breite
+- Status: IMPLEMENTIERT
+
+---
+
 ## Zusammenfassung: Implementierungs-Status
 
 | Kategorie | Implementiert | Offen |
 |-----------|---------------|-------|
 | Daten-Import | 3 | 0 |
-| Ueberblick | 2 | 0 |
+| Ueberblick | 3 | 0 |
 | Raeumlich | 3 | 0 |
 | Personen | 3 | 0 |
 | Briefe | 3 | 0 |
@@ -300,9 +319,9 @@ Akzeptanzkriterien:
 | Teilen/Export | 3 | 0 |
 | Vergleich | 2 | 0 |
 | Themen | 3 | 0 |
-| **Gesamt** | **27** | **0** |
+| **Gesamt** | **28** | **0** |
 
-Stand: 2025-11-26
+Stand: 2025-12-18
 
 Alle User Stories sind implementiert.
 

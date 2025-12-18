@@ -2,7 +2,7 @@
 
 Übersicht der 12 Dokumentationsdateien mit Zweck, Beziehungen und Nutzungsrichtlinien.
 
-Stand: 2025-12-03
+Stand: 2025-12-18
 
 ---
 
@@ -38,7 +38,7 @@ Stand: 2025-12-03
 - Zielgruppe: Entwickler, Claude
 - Änderungsrate: Selten (nur bei Architektur-Änderungen)
 - Abhängigkeiten: Referenziert von allen Development-Tasks
-- Nutzen: 26 Module, 8 Views, 4 Datenflüsse, Performance-Limits
+- Nutzen: 27 Module, 9 Views (inkl. Overview), 4 Datenflüsse, Performance-Limits
 
 #### design.md
 - Zweck: UI/UX Spezifikation mit visueller Sprache und Patterns
@@ -87,11 +87,11 @@ Stand: 2025-12-03
 - Nutzen: 27/27 Stories complete, Acceptance Criteria, 9 Kategorien
 
 #### demo-datasets.md
-- Zweck: Analyse von 6 Test-CMIF-Datasets mit Coverage-Matrix
+- Zweck: Analyse von Test-CMIF-Datasets mit Coverage-Matrix
 - Zielgruppe: Entwickler (Testing), Forscher (Dataset-Auswahl)
 - Änderungsrate: Selten (bei neuen Datasets)
 - Abhängigkeiten: cmif-standard.md, uncertainty-concept.md
-- Nutzen: test-uncertainty.xml mit 22 Cases, Performance-Testing mit Rollett
+- Nutzen: test-uncertainty.xml mit 22 Cases, Feature-Demo und HSA als Haupt-Demos
 
 #### cmif-sources.md
 - Zweck: Katalog externer CMIF-Repositories mit URLs

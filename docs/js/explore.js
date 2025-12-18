@@ -1940,6 +1940,16 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
+    // Hide sidebar on overview, show on other views
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    if (sidebar) {
+        sidebar.classList.toggle('hidden', view === 'overview');
+    }
+    if (mainContent) {
+        mainContent.classList.toggle('full-width', view === 'overview');
+    }
+
     // Update sidebar legend for current view
     updateSidebarLegend(view);
 
@@ -2099,6 +2109,15 @@ function renderOverview() {
     // Generate view recommendations
     renderViewRecommendations(dateQuality, personQuality, placeQuality);
 
+    // Render metadata section
+    renderOverviewMetadata();
+
+    // Render top correspondents
+    renderTopCorrespondents();
+
+    // Render language distribution
+    renderLanguageDistribution();
+
     // Setup quick access buttons
     setupQuickAccessButtons();
 }
@@ -2224,6 +2243,188 @@ function setupQuickAccessButtons() {
             }
         });
     });
+}
+
+/**
+ * Render metadata section on Overview page
+ */
+function renderOverviewMetadata() {
+    const container = document.getElementById('overview-metadata');
+    if (!container || !dataMeta) return;
+
+    const teiHeader = dataMeta.teiHeader || {};
+    const items = [];
+
+    // Editor
+    if (teiHeader.editor) {
+        items.push({
+            icon: 'fa-user-edit',
+            label: 'Herausgeber',
+            value: teiHeader.editor
+        });
+    }
+
+    // Publisher
+    if (teiHeader.publisher) {
+        items.push({
+            icon: 'fa-building',
+            label: 'Verlag',
+            value: teiHeader.publisher
+        });
+    }
+
+    // Source (bibl)
+    if (teiHeader.bibl) {
+        items.push({
+            icon: 'fa-quote-left',
+            label: 'Quelle',
+            value: teiHeader.bibl
+        });
+    }
+
+    // CMIF URL
+    if (teiHeader.cmifUrl) {
+        items.push({
+            icon: 'fa-link',
+            label: 'CMIF',
+            value: `<a href="${teiHeader.cmifUrl}" target="_blank" rel="noopener">CMIF öffnen</a>`
+        });
+    }
+
+    // Licence
+    if (teiHeader.licence) {
+        const licenceText = teiHeader.licenceTarget
+            ? `<a href="${teiHeader.licenceTarget}" target="_blank" rel="noopener">${teiHeader.licence}</a>`
+            : teiHeader.licence;
+        items.push({
+            icon: 'fa-balance-scale',
+            label: 'Lizenz',
+            value: licenceText
+        });
+    }
+
+    // If no metadata available
+    if (items.length === 0) {
+        container.innerHTML = '<p class="no-data">Keine Metadaten verfügbar</p>';
+        return;
+    }
+
+    container.innerHTML = items.map(item => `
+        <div class="overview-metadata-item">
+            <i class="fas ${item.icon}"></i>
+            <span>${item.value}</span>
+        </div>
+    `).join('');
+}
+
+/**
+ * Render top correspondents on Overview page
+ */
+function renderTopCorrespondents() {
+    const container = document.getElementById('overview-top-correspondents');
+    if (!container || !allLetters || allLetters.length === 0) return;
+
+    // Count letters per person (both as sender and recipient)
+    const personCounts = {};
+
+    allLetters.forEach(letter => {
+        if (letter.sender?.name) {
+            const key = letter.sender.id || letter.sender.name;
+            if (!personCounts[key]) {
+                personCounts[key] = { name: letter.sender.name, id: letter.sender.id, count: 0 };
+            }
+            personCounts[key].count++;
+        }
+        if (letter.recipient?.name) {
+            const key = letter.recipient.id || letter.recipient.name;
+            if (!personCounts[key]) {
+                personCounts[key] = { name: letter.recipient.name, id: letter.recipient.id, count: 0 };
+            }
+            personCounts[key].count++;
+        }
+    });
+
+    // Sort by count and take top 5
+    const topPersons = Object.values(personCounts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    if (topPersons.length === 0) {
+        container.innerHTML = '<p class="no-data">Keine Korrespondenten gefunden</p>';
+        return;
+    }
+
+    container.innerHTML = topPersons.map((person, index) => `
+        <div class="correspondent-item" data-person-id="${person.id || ''}" data-person-name="${person.name}">
+            <span class="correspondent-rank">${index + 1}.</span>
+            <span class="correspondent-name" title="${person.name}">${person.name}</span>
+            <span class="correspondent-count">${person.count} Briefe</span>
+        </div>
+    `).join('');
+
+    // Add click handlers to navigate to persons view
+    container.querySelectorAll('.correspondent-item').forEach(item => {
+        item.addEventListener('click', () => {
+            switchView('persons');
+            updateUrlState();
+            // Focus on search field with person name
+            const searchInput = document.getElementById('person-search');
+            if (searchInput) {
+                searchInput.value = item.dataset.personName;
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        });
+    });
+}
+
+/**
+ * Render language distribution on Overview page
+ */
+function renderLanguageDistribution() {
+    const container = document.getElementById('overview-languages');
+    const section = document.getElementById('overview-languages-section');
+    if (!container || !section || !allLetters || allLetters.length === 0) return;
+
+    // Count letters per language
+    const langCounts = {};
+    let totalWithLang = 0;
+
+    allLetters.forEach(letter => {
+        if (letter.language) {
+            const lang = letter.language;
+            langCounts[lang] = (langCounts[lang] || 0) + 1;
+            totalWithLang++;
+        }
+    });
+
+    const languages = Object.entries(langCounts);
+
+    // Only show if there are multiple languages
+    if (languages.length <= 1) {
+        section.classList.add('hidden');
+        return;
+    }
+
+    section.classList.remove('hidden');
+
+    // Sort by count
+    languages.sort((a, b) => b[1] - a[1]);
+
+    const maxCount = languages[0][1];
+
+    container.innerHTML = languages.map(([lang, count]) => {
+        const percentage = Math.round((count / totalWithLang) * 100);
+        const barWidth = Math.round((count / maxCount) * 100);
+        return `
+            <div class="language-item">
+                <span class="language-name">${lang.toUpperCase()}</span>
+                <div class="language-bar-container">
+                    <div class="language-bar" style="width: ${barWidth}%"></div>
+                </div>
+                <span class="language-count">${count} (${percentage}%)</span>
+            </div>
+        `;
+    }).join('');
 }
 
 function renderPersonsList() {

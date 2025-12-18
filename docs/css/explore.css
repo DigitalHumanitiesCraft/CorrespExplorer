@@ -419,6 +419,152 @@
     font-weight: 500;
 }
 
+/* Two-Column Layout for Overview */
+.overview-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+.overview-two-columns .overview-section {
+    margin-bottom: 0;
+}
+
+/* Overview Metadata */
+.overview-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.overview-metadata-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    font-size: var(--font-size-sm);
+}
+
+.overview-metadata-item i {
+    color: var(--color-text-light);
+    margin-top: 2px;
+    width: 16px;
+    flex-shrink: 0;
+}
+
+.overview-metadata-item span {
+    color: var(--color-text);
+    word-break: break-word;
+}
+
+.overview-metadata-item a {
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.overview-metadata-item a:hover {
+    text-decoration: underline;
+}
+
+/* Top Correspondents */
+.overview-top-correspondents {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.correspondent-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    background: var(--color-bg);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.correspondent-item:hover {
+    background: var(--color-primary-light, rgba(37, 99, 235, 0.05));
+}
+
+.correspondent-rank {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-light);
+    width: 20px;
+    text-align: center;
+}
+
+.correspondent-name {
+    flex: 1;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.correspondent-count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    background: var(--color-border-light);
+    padding: 2px var(--space-sm);
+    border-radius: var(--radius-sm);
+}
+
+/* Language Distribution */
+.overview-languages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.language-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+}
+
+.language-name {
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.language-count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.language-bar-container {
+    width: 60px;
+    height: 4px;
+    background: var(--color-border-light);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.language-bar {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: var(--radius-sm);
+}
+
+/* Responsive Overview */
+@media (max-width: 900px) {
+    .overview-two-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .overview-two-columns .overview-section {
+        margin-bottom: var(--space-lg);
+    }
+}
+
 /* Responsive Overview */
 @media (max-width: 768px) {
     .overview-container {
