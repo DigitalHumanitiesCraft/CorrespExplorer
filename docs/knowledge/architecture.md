@@ -104,7 +104,7 @@ Browser-basierte Test-Ausführung:
 
 ## JavaScript Modules
 
-Die Anwendung verwendet 27 JavaScript-Module organisiert in 7 Kategorien. Alle Module sind ES6-Module ohne Build-Prozess. Die Architektur trennt klar zwischen Core Data Processing (CMIF-Parsing, State-Management), Infrastructure (DOM-Caching, Utilities) und UI-Komponenten (Views, Basket, Enrichment).
+Die Anwendung verwendet 26 JavaScript-Module organisiert in 7 Kategorien. Alle Module sind ES6-Module ohne Build-Prozess. Die Architektur trennt klar zwischen Core Data Processing (CMIF-Parsing, State-Management), Infrastructure (DOM-Caching, Utilities) und UI-Komponenten (Views, Basket, Enrichment).
 
 ### Core Data Processing
 
@@ -270,16 +270,22 @@ Handler für die Landing-Page:
 
 explore.js
 
-Hauptvisualisierung:
-- Views: Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow
-- View-Rendering und Interaktivität
-- MapLibre GL für Karten-View
-- D3-Sankey für Mentions Flow
+Hauptvisualisierung (groesstes Modul, ~6.800 Zeilen):
+- Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik
+- View-Rendering und Interaktivitaet
+- MapLibre GL fuer Karten-View
+- D3-Sankey fuer Mentions Flow
+- Chronik-View mit:
+  - Vertikaler Zeitstrahl gruppiert nach Jahren
+  - Drei Layout-Optionen: Cards, Compact, Timeline
+  - Korrespondenz-Index (buildCorrespondenceIndex) fuer Beziehungskontext
+  - Altersberechnung aus Wikidata/CMIF-Lebensdaten
+  - Lebensleisten-Visualisierung (buildLifespanBar)
 - Initialisierung: loadData() aus sessionStorage oder URL-Parameter, initMap(), initFilters(), initViewSwitcher()
 - View-Switching: updateButtons(), showViewContent(), renderViewContent()
-- Export: prepareExportData(), downloadFile() für CSV/JSON
+- Export: prepareExportData(), downloadFile() fuer CSV/JSON
 - Imports: state-manager, dom-cache, formatters, constants, wikidata-enrichment, basket-ui, demo-tour
-- Migration zu state-manager läuft (Legacy-Code vorhanden)
+- Migration zu state-manager laeuft (Legacy-Code vorhanden)
 
 ### Secondary Pages
 
@@ -321,7 +327,7 @@ tests/run-all-tests.js
 - Imports: test-runner.js, alle Test-Suites
 - Exports: runAllTests()
 
-Test-Suites (69 Tests total):
+Test-Suites (74+ Tests total):
 - test-cmif-parser.js: 13 Tests - XML-Parsing, Unsicherheits-Erkennung, Indices-Erstellung
 - test-formatters.js: 26 Tests - Formatierung mit Präzisions-Indikatoren, CSS-Klassen
 - test-aggregation.js: 11 Tests - Indices-Erstellung, State-Integration, Filtering
@@ -508,6 +514,20 @@ Default-View beim Laden eines Datensatzes:
 - Links: Korrespondenten zu erwähnten Personen
 - Flow-Breite: Anzahl Erwähnungen
 
+### Chronik View
+
+- Vertikaler Zeitstrahl gruppiert nach Jahren
+- Drei Layout-Optionen via Toggle-Buttons:
+  - Cards: Detailliert mit Portraits und Lebensleisten
+  - Compact: Einzelne Zeile pro Brief, viele Briefe sichtbar
+  - Timeline: Sender links, Datum/Ort Mitte, Empfaenger rechts
+- Wikidata-Anreicherung mit Live-Fortschrittsanzeige
+  - Log zeigt pro Person gefundene Daten (Portrait, Geburt, Tod, Beruf, Wikipedia)
+  - Summary-Grid nach Abschluss mit Statistiken
+- Beziehungskontext: "Erster Brief" Badge, "Brief X von Y" Zaehler
+- Altersberechnung aus Wikidata/CMIF-Lebensdaten
+- Lazy Loading: 100 Briefe pro Batch
+
 ### Filter
 
 - noUiSlider für Zeitraum (Min/Max Jahr)
@@ -632,22 +652,20 @@ Design System:
 
 ## Migration Status
 
-Refactoring zu besserer State-Verwaltung und Performance-Optimierung erfolgt in Phasen. Aktueller Stand: Phase 27 (Dezember 2024).
+Refactoring zu besserer State-Verwaltung und Performance-Optimierung erfolgt in Phasen. Aktueller Stand: Phase 37 (Dezember 2025).
 
-Phase 1 (Completed):
-- state-manager.js introduced (Subscriber-Pattern, Caching, URL-State)
-- dom-cache.js introduced (Performance-Optimierung)
+Completed:
+- state-manager.js (Subscriber-Pattern, Caching, URL-State)
+- dom-cache.js (Performance-Optimierung)
 - tokens.css Design System (Logo-derived Colors, Spacing Scale)
-
-Aktuelle Phase 27:
-- Mentions Flow View mit Filter-Controls (Sidebar Sliders für topN, minSenderMentions, minCount)
-- Dynamic Filter Info Text (zeigt aktive Filter-Werte)
-- Cognitive Overload Mitigation (Default-Limits für übersichtliche Darstellung)
+- Mentions Flow View mit Filter-Controls
+- Overview-View als Default mit teiHeader-Metadaten
+- Chronik-View mit drei Layouts (Cards, Compact, Timeline)
+- Wikidata-Anreicherung mit Live-Fortschrittsanzeige und Statistik-Summary
 
 In Progress:
 - explore.js: Partial migration to state-manager (Legacy-Variablen koexistieren mit state-manager)
 - Vollständige Nutzung von state.getFilteredLetters() statt manuellem Filtering
-- Entfernung von Legacy-Variablen (allLetters, filteredLetters, placeAggregation direkt in explore.js)
 
 ## Testing Strategy
 

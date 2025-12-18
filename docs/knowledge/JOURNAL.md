@@ -2,7 +2,51 @@
 
 Chronologisches Entwicklungsprotokoll mit detaillierten Implementierungsnotizen.
 
-Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Format.
+37 Phasen | November - Dezember 2025
+
+---
+
+## Phasen-Uebersicht
+
+Aktuelle Phasen (Dezember 2025):
+- Phase 37: Anreicherungs-Feedback und UI-Fixes
+- Phase 36: Chronik als Forschungswerkzeug
+- Phase 35: Chronik-View implementiert
+- Phase 34: Compare-Feature entfernt
+- Phase 33: teiHeader Metadaten und Landing Page Optimierung
+- Phase 32: Vollstaendiges Entity Component Refactoring
+- Phase 30: Koordinaten-Anreicherung mit Wikidata SPARQL
+- Phase 29: HTML-Refactoring
+- Phase 28: CSS-Refactoring Abschluss
+- Phase 27: Mentions Flow View
+
+Fruehere Phasen (November - Dezember 2025):
+- Phase 26: Uncertainty Documentation und HSA Update
+- Phase 25: Wikidata Enrichment Visual Indicators
+- Phase 24: correspSearch Form Cleanup
+- Phase 23: Wissenskorb WIP-Status
+- Phase 22: Mobile Responsiveness
+- Phase 21: Demo Dataset und Onboarding Tour
+- Phase 20: Network View Improvements
+- Phase 19: Timeline Improvements
+- Phase 18: Quick Wins Refactoring
+- Phase 17: Themen-Filter Bugfix
+- Phase 16: Sprachfarben fuer Kartenmarker
+- Phase 15: Datensatz-Vergleich und Bug-Fixes
+- Phase 14: Design-Ueberarbeitung
+- Phase 13: Wikidata-Enrichment mit Konfigurationsdialog
+- Phase 11: Demo-Datensaetze und Dokumentation
+- Phase 10: Code-Refactoring
+- Phase 9: Wissenskorb Erweiterung
+- Phase 8: Integration und Netzwerk
+- Phase 7: Themen-Explorer und Netzwerk-View
+- Phase 6: Brief-Details und Timeline
+- Phase 5: Erweiterte Features
+
+Gruendungsphasen (November 2025):
+- Feature-Komplett
+- Projektvision
+- HSA-Implementation
 
 ---
 

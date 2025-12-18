@@ -34,11 +34,11 @@ Stand: 2025-12-18
 ### System (Architektur & Design)
 
 #### architecture.md
-- Zweck: Vollständige System-Übersicht und Komponenten-Referenz
+- Zweck: Vollständige System-Übersicht und Komponenten-Referenz (Single Source of Truth)
 - Zielgruppe: Entwickler, Claude
 - Änderungsrate: Selten (nur bei Architektur-Änderungen)
 - Abhängigkeiten: Referenziert von allen Development-Tasks
-- Nutzen: 26 Module, 9 Views (inkl. Overview), 4 Datenflüsse, Performance-Limits
+- Nutzen: 26 Module, 10 Views, 4 Datenflüsse, Performance-Limits
 
 #### design.md
 - Zweck: UI/UX Spezifikation mit visueller Sprache und Patterns
@@ -68,7 +68,7 @@ Stand: 2025-12-18
 - Zielgruppe: Entwickler (Evolution verstehen), Claude (Context)
 - Änderungsrate: Kontinuierlich (nach jeder Phase)
 - Abhängigkeiten: Alle technischen Dateien
-- Nutzen: 27 Phasen dokumentiert, Architectural Decisions E1-E11
+- Nutzen: 37 Phasen dokumentiert, Architectural Decisions E1-E11
 
 #### KNOWN-ISSUES.md
 - Zweck: Registry von dokumentierten Inkonsistenzen mit Priorisierung
@@ -80,11 +80,11 @@ Stand: 2025-12-18
 ### Reference (Discovery)
 
 #### user-stories.md
-- Zweck: Requirements-Spec mit 27 implementierten Features
+- Zweck: Requirements-Spec mit 32 implementierten Features
 - Zielgruppe: Project Managers, Entwickler (Scope), Forscher
 - Änderungsrate: Selten (Core Stories stabil)
 - Abhängigkeiten: architecture.md (beschreibt Implementations)
-- Nutzen: 27/27 Stories complete, Acceptance Criteria, 9 Kategorien
+- Nutzen: 32/32 Stories complete, Acceptance Criteria, 11 Kategorien
 
 #### demo-datasets.md
 - Zweck: Analyse von Test-CMIF-Datasets mit Coverage-Matrix
