@@ -8,6 +8,44 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ## 2025-12-18 (Phase 33: teiHeader Metadaten und Landing Page Optimierung)
 
+### Zwei-Tier Datensatz-Architektur
+
+Einfuehrung einer klaren Trennung zwischen Standard-CMIF und erweiterten Datensaetzen:
+
+Problem:
+- gams.uni-graz.at erlaubt keine CORS-Anfragen
+- correspSearch API liefert nur 9 Briefe (nicht das vollstaendige HSA)
+- HSA hat erweiterte Annotationen (mentionsSubject, mentionsPerson, mentionsPlace)
+
+Loesung - Zwei Datensatz-Typen:
+1. Standard CMIF: Live-Parsing von XML (URL oder Upload)
+2. Erweiterte Datensaetze: Vorprozessierte JSON mit zusaetzlichen Annotationen
+
+Implementierung:
+
+upload.js:
+- Neues data-json Attribut fuer Karten
+- handleDatasetSelect() unterscheidet zwischen url und json
+- JSON wird direkt geladen und Config-Dialog uebersprungen
+- sourceInfo.type = 'preprocessed' fuer erweiterte Datensaetze
+
+index.html:
+- HSA Card mit data-json="data/hsa-letters.json"
+- Neues Badge "Erweitert" statt "Demo"
+- dataset-extended-info zeigt Features an
+- Details/Summary erklaert den Unterschied
+
+CSS (upload.css):
+- .dataset-card-extended mit secondary color
+- .dataset-badge-extended
+- .dataset-extended-info
+- .dataset-explanation mit details/summary
+
+Preprocessing:
+- build_hsa_data.py erstellt hsa-letters.json (16.7 MB)
+- 11.576 Briefe mit vollstaendigen Mentions
+- 82% Coordinate Coverage
+
 ### Landing Page Bereinigung
 
 Entfernung ueberfluessiger Demo-Datensaetze und Optimierung der Startseite:
@@ -24,9 +62,9 @@ CSS (upload.css):
 
 ### teiHeader Metadaten-Extraktion
 
-Vollstaendige Extraktion und Anzeige der CMIF-Header-Metadaten im Sidebar:
+Vollstaendige Extraktion und Anzeige der CMIF-Header-Metadaten:
 
-Parser-Erweiterungen (cmif-parser.js):
+Parser-Erweiterungen (cmif-parser.js - fuer Standard CMIF):
 - extractMeta() erweitert fuer vollstaendigen teiHeader
 - editors: Array mit {name, email, ref} aus titleStmt
 - publishers: Array mit {name, url} - unterstuetzt mehrere Publisher
@@ -35,11 +73,19 @@ Parser-Erweiterungen (cmif-parser.js):
 - licence: Text und URL aus publicationStmt
 - cmifUrl: idno[@type="url"] aus publicationStmt
 
+Python-Pipeline (build_hsa_data.py - fuer erweiterte JSON-Datensaetze):
+- extract_tei_header() extrahiert dieselben Felder
+- normalize_whitespace() bereinigt Zeilenumbrueche aus XML
+- Felder: editor, publisher, cmifUrl, licence, licenceTarget, bibl
+- meta.teiHeader im Output-JSON
+
 UI-Anzeige (explore.js, explore.html):
+- renderOverviewMetadata() nutzt dataMeta.teiHeader
 - updateDatasetMetadata() zeigt Editor, Publisher, Source, CMIF-URL, Licence
 - Publisher mit Links wenn vorhanden
 - Source Reference als klickbarer Link wenn sourceUrl existiert
 - Licence als Badge (CC0, CC BY 4.0, etc.)
+- Funktioniert identisch fuer Standard-CMIF und erweiterte JSON
 
 Entfernte redundante Elemente:
 - Titel (steht bereits in Navbar)

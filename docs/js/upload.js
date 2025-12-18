@@ -175,15 +175,23 @@ async function handleDatasetSelect(card) {
     const dataset = card.dataset.dataset;
     const info = card.dataset.info;
     const url = card.dataset.url;
+    const jsonUrl = card.dataset.json;
     const isDemo = card.dataset.demo === 'true';
 
-    console.log('handleDatasetSelect:', { dataset, info, url, isDemo });
+    console.log('handleDatasetSelect:', { dataset, info, url, jsonUrl, isDemo });
 
     hideError();
 
-    if (dataset === 'hsa') {
-        // HSA uses preprocessed local data - redirect directly (already enriched)
-        window.location.href = 'explore.html?dataset=hsa';
+    if (jsonUrl) {
+        // Pre-processed JSON dataset (e.g., HSA with extended annotations)
+        // Redirect directly to explore.html with json URL parameter
+        // explore.js will load the JSON directly (bypasses sessionStorage size limits)
+        console.log('Redirecting to explore with JSON URL:', jsonUrl);
+        const params = new URLSearchParams();
+        params.set('json', jsonUrl);
+        params.set('view', 'overview');
+        if (isDemo) params.set('demo', 'true');
+        window.location.href = `explore.html?${params.toString()}`;
     } else if (url) {
         // External CMIF URL - load and show config
         console.log('Loading CMIF from:', url);
@@ -444,8 +452,8 @@ function finalizeAndRedirect(data, sourceInfo) {
         return;
     }
 
-    // Redirect to visualization - append demo flag if needed
-    const redirectUrl = sourceInfo?.isDemo ? 'explore.html?demo=true' : 'explore.html';
+    // Redirect to visualization - append demo flag if needed, always start with overview
+    const redirectUrl = sourceInfo?.isDemo ? 'explore.html?demo=true&view=overview' : 'explore.html?view=overview';
     window.location.href = redirectUrl;
 }
 

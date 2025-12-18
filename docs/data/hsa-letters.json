@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2025-11-27T19:24:10.085430",
+    "generated": "2025-12-18T12:42:23.437130",
     "source": "Hugo Schuchardt Archiv CMIF",
     "source_file": "data/hsa/CMIF.xml",
     "total_letters": 11576,
@@ -279,6 +279,14 @@
         "count": 26
       }
     ],
+    "teiHeader": {
+      "editor": "Elisabeth Steiner, Sanja Sarić",
+      "publisher": "Centre for Information Modelling - Austrian Centre for Digital Humanities, University of Graz",
+      "cmifUrl": "https://gams.uni-graz.at/context:hsa/CMIF",
+      "licenceTarget": "https://creativecommons.org/licenses/by/4.0/",
+      "licence": "This file is licensed under the terms of the Creative-Commons-License CC-BY 4.0",
+      "bibl": "Hurch, Bernhard (Hrsg.): Hugo Schuchardt Archiv. Graz 2022. URL: https://schuchardt.uni-graz.at"
+    },
     "uncertainty": {
       "date_precision": {
         "day": 10991,

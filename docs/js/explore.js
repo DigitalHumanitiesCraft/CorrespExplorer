@@ -369,30 +369,32 @@ async function init() {
     }
 }
 
-// Load data based on URL parameter or sessionStorage
+// Load data from sessionStorage or URL parameter
 async function loadData() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const dataset = urlParams.get('dataset');
+    // Check for direct JSON URL parameter (for large preprocessed datasets)
+    const params = new URLSearchParams(window.location.search);
+    const jsonUrl = params.get('json');
 
-    // HSA dataset - load from preprocessed JSON
-    if (dataset === 'hsa') {
+    if (jsonUrl) {
         try {
-            const response = await fetch('data/hsa-letters.json');
+            log.init(`Loading JSON from URL: ${jsonUrl}`);
+            const response = await fetch(jsonUrl);
             if (!response.ok) {
-                throw new Error('HSA-Daten konnten nicht geladen werden');
+                throw new Error(`HTTP ${response.status}`);
             }
             const data = await response.json();
-            return {
-                ...data,
-                sourceInfo: { type: 'preset', source: 'hsa' }
+            data.sourceInfo = {
+                type: 'preprocessed',
+                source: jsonUrl,
+                isDemo: params.get('demo') === 'true'
             };
+            return data;
         } catch (e) {
-            log.error('Failed to load HSA data: ' + e.message);
-            return null;
+            log.error(`Failed to load JSON from ${jsonUrl}: ${e.message}`);
         }
     }
 
-    // Other datasets - try sessionStorage (for smaller uploads)
+    // Try sessionStorage
     const storedData = sessionStorage.getItem('cmif-data');
     if (storedData) {
         try {
@@ -402,7 +404,7 @@ async function loadData() {
         }
     }
 
-    // No dataset specified and nothing in storage - redirect will happen
+    // Nothing in storage - redirect will happen
     return null;
 }
 
@@ -1922,6 +1924,7 @@ function initViewSwitcher() {
 
 function switchView(view) {
     currentView = view;
+    state.ui.currentView = view;
 
     // Update buttons
     document.querySelectorAll('.view-btn').forEach(btn => {
@@ -1940,14 +1943,11 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
-    // Hide sidebar on overview, show on other views
-    const sidebar = document.querySelector('.sidebar');
-    const mainContent = document.querySelector('.main-content');
-    if (sidebar) {
-        sidebar.classList.toggle('hidden', view === 'overview');
-    }
-    if (mainContent) {
-        mainContent.classList.toggle('full-width', view === 'overview');
+    // On overview: show sidebar but hide filters section
+    // On other views: show full sidebar with filters
+    const sidebarFilters = document.getElementById('sidebar-filters');
+    if (sidebarFilters) {
+        sidebarFilters.classList.toggle('hidden', view === 'overview');
     }
 
     // Update sidebar legend for current view
@@ -2059,20 +2059,6 @@ function renderOverview() {
         if (minYear && maxYear) {
             subtitleEl.textContent = `Korrespondenz von ${minYear} bis ${maxYear}`;
         }
-    }
-
-    // Update statistics
-    const lettersEl = document.getElementById('overview-letters');
-    const personsEl = document.getElementById('overview-persons');
-    const placesEl = document.getElementById('overview-places');
-    const timespanEl = document.getElementById('overview-timespan');
-
-    if (lettersEl) lettersEl.textContent = meta.total_letters?.toLocaleString('de-DE') || '0';
-    if (personsEl) personsEl.textContent = (meta.unique_senders + meta.unique_recipients)?.toLocaleString('de-DE') || '0';
-    if (placesEl) placesEl.textContent = meta.unique_places?.toLocaleString('de-DE') || '0';
-    if (timespanEl && meta.date_range) {
-        const years = meta.date_range.max - meta.date_range.min;
-        timespanEl.textContent = years > 0 ? `${years} Jahre` : '-';
     }
 
     // Calculate quality metrics

@@ -614,6 +614,11 @@ button, .btn {
     flex-direction: column;
 }
 
+/* Overview View - allow scrolling */
+#overview-view.active {
+    overflow-y: auto;
+}
+
 /* Map */
 #map {
     width: 100%;

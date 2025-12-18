@@ -141,10 +141,6 @@ export const elements = {
     get overviewContainer() { return cache.byId('overview-view'); },
     get overviewTitle() { return cache.byId('overview-title'); },
     get overviewSubtitle() { return cache.byId('overview-subtitle'); },
-    get overviewLetters() { return cache.byId('overview-letters'); },
-    get overviewPersons() { return cache.byId('overview-persons'); },
-    get overviewPlaces() { return cache.byId('overview-places'); },
-    get overviewTimespan() { return cache.byId('overview-timespan'); },
     get viewRecommendations() { return cache.byId('view-recommendations'); },
 
     get mapContainer() { return cache.byId('map-container'); },

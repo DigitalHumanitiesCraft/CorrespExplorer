@@ -133,12 +133,80 @@ def extract_date_info(date_elem) -> dict:
     }
 
 
+def normalize_whitespace(text: str) -> str:
+    """Normalisiert Whitespace: ersetzt Zeilenumbrueche und mehrere Leerzeichen."""
+    if not text:
+        return text
+    return ' '.join(text.split())
+
+
+def extract_tei_header(root) -> dict:
+    """Extrahiert teiHeader-Metadaten fuer das Frontend."""
+    tei_header = {}
+
+    # Editor(s)
+    editors = root.findall('.//tei:titleStmt/tei:editor', NS)
+    if editors:
+        editor_names = []
+        for ed in editors:
+            # Text ohne Email extrahieren
+            name_parts = []
+            for text in ed.itertext():
+                text = text.strip()
+                if text and '@' not in text:
+                    name_parts.append(text)
+            if name_parts:
+                editor_names.append(' '.join(name_parts))
+        if editor_names:
+            tei_header['editor'] = ', '.join(editor_names)
+
+    # Publisher
+    publisher = root.find('.//tei:publicationStmt/tei:publisher', NS)
+    if publisher is not None:
+        ref = publisher.find('tei:ref', NS)
+        if ref is not None and ref.text:
+            tei_header['publisher'] = normalize_whitespace(ref.text)
+        elif publisher.text:
+            tei_header['publisher'] = normalize_whitespace(publisher.text)
+
+    # CMIF URL
+    idno = root.find('.//tei:publicationStmt/tei:idno[@type="url"]', NS)
+    if idno is not None and idno.text:
+        tei_header['cmifUrl'] = idno.text.strip()
+
+    # Licence
+    licence = root.find('.//tei:availability/tei:licence', NS)
+    if licence is not None:
+        target = licence.get('target')
+        if target:
+            tei_header['licenceTarget'] = target
+        if licence.text:
+            tei_header['licence'] = normalize_whitespace(licence.text)
+
+    # Source (bibl)
+    bibl = root.find('.//tei:sourceDesc/tei:bibl', NS)
+    if bibl is not None:
+        bibl_parts = []
+        for text in bibl.itertext():
+            text = text.strip()
+            if text:
+                bibl_parts.append(text)
+        if bibl_parts:
+            tei_header['bibl'] = normalize_whitespace(' '.join(bibl_parts))
+
+    return tei_header
+
+
 def parse_cmif(file_path: Path) -> dict:
     """Parst die CMIF-Datei und erzeugt Frontend-taugliche Datenstruktur."""
 
     print(f"Parsing {file_path}...")
     tree = etree.parse(str(file_path))
     root = tree.getroot()
+
+    # teiHeader extrahieren
+    tei_header = extract_tei_header(root)
+    print(f"Extracted teiHeader: {list(tei_header.keys())}")
 
     # Datenstrukturen
     letters = []
@@ -349,6 +417,7 @@ def parse_cmif(file_path: Path) -> dict:
                 'max': max((l['year'] for l in letters if l['year']), default=None)
             },
             'timeline': timeline,
+            'teiHeader': tei_header,
             'uncertainty': {
                 'date_precision': {
                     'day': precision_counts['day'],

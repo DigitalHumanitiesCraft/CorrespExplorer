@@ -9,18 +9,21 @@ CorrespExplorer ist eine rein browser-basierte Single-Page-Application ohne Back
 Browser-Architektur:
 - index.html (Landing Page)
   - Upload via Drag and Drop
-  - URL Input für Remote-CMIF
-  - Beispiel-Datasets (HSA)
-  - Alle drei Wege führen zu cmif-parser.js
-    - Parser nutzt DOMParser für XML-Verarbeitung
-    - Erstellt Indices für Personen, Orte, Sprachen, Themen
-    - Speichert Ergebnis in sessionStorage
-    - Alternativ: URL-Parameter für Demo-Datasets
+  - URL Input fuer Remote-CMIF
+  - Zwei Datensatz-Typen:
+    1. Standard CMIF (XML): Live-Parsing via cmif-parser.js, Ergebnis in sessionStorage
+    2. Erweiterte Datensaetze (JSON): Redirect mit URL-Parameter, explore.js laedt direkt
 - explore.html (Hauptvisualisierung)
-  - Lädt Daten aus sessionStorage oder URL-Parameter
-  - Acht Views: Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow
+  - Laedt Daten aus sessionStorage oder via URL-Parameter json=
+  - Neun Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow
   - Sidebar mit Filter und Statistiken
-  - Export-Funktion für CSV und JSON
+  - Export-Funktion fuer CSV und JSON
+
+Zwei-Tier Datensatz-Architektur:
+- Standard CMIF: Absender, Empfaenger, Datum, Ort (correspAction)
+- Erweiterte Datensaetze: Zusaetzlich mentionsSubject, mentionsPerson, mentionsPlace, teiHeader
+- Erweiterte Daten werden vorprozessiert (Python-Pipeline) wegen CORS-Einschraenkungen
+- HSA ist ein erweiterter Datensatz mit 1622 Themen, erwaehnten Personen und Orten
 
 ## Seiten-Struktur
 
@@ -348,16 +351,20 @@ Die Anwendung unterstützt vier verschiedene Datenflüsse je nach Use Case: vorp
 
 ### 1. HSA (Vorprozessiert)
 
-Python-Preprocessing für Demo-Dataset:
+Python-Preprocessing fuer erweiterte Datensaetze:
 - CMIF.xml aus data/hsa/ als Input
 - build_hsa_data.py verarbeitet XML und erzeugt hsa-letters.json mit Indices
-- resolve_geonames_wikidata.py löst GeoNames-IDs zu Koordinaten auf
+  - extract_tei_header() extrahiert Editor, Publisher, Lizenz, Quelle aus teiHeader
+  - normalize_whitespace() bereinigt Zeilenumbrueche aus XML
+  - meta.teiHeader im Output fuer einheitliche Metadaten-Anzeige
+  - Erweiterter Briefdatensatz mit mentionsSubject, mentionsPerson, mentionsPlace
+- resolve_geonames_wikidata.py loest GeoNames-IDs zu Koordinaten auf
 - analyze_hsa_cmif.py analysiert CMIF-Struktur und Metadaten
 - consolidate_css_variables.py (Refactoring: CSS-Variablen zu tokens.css)
 - migrate_to_dom_cache.py (Refactoring: Legacy-Code zu dom-cache.js)
-- explore.html?dataset=hsa lädt direkt hsa-letters.json via fetch
-- explore.js visualisiert ohne zusätzliches clientseitiges Parsing
-- geonames_coordinates.json wird für Orte ohne Koordinaten verwendet
+- explore.html?json=data/hsa-letters.json laedt direkt via fetch
+- explore.js visualisiert ohne zusaetzliches clientseitiges Parsing
+- geonames_coordinates.json wird fuer Orte ohne Koordinaten verwendet
 
 ### 2. Upload (Browser-Parsing)
 

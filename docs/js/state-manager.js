@@ -40,7 +40,7 @@ class AppState {
 
         // UI state
         this.ui = {
-            currentView: 'map',
+            currentView: 'overview',
 
             // Topics view
             selectedTopicId: null,
