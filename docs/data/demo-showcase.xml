@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Demo Dataset: Showcases ALL CorrespExplorer features -->
 <!-- A fictional correspondence network of European scholars 1880-1920 -->
-<!-- Demonstrates: Timeline, Map, Network, Topics, Languages, Uncertainty -->
+<!-- Demonstrates: Timeline, Map, Network, Topics, Languages, Mentions, Uncertainty -->
+<!-- CMIF v2 Features: hasLanguage, mentionsSubject, mentionsPerson, mentionsPlace, mentionsOrg, mentionsBibl -->
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
     <fileDesc>
@@ -28,6 +29,7 @@
       <!-- ============================================== -->
 
       <!-- 1880s: Early career, German correspondence -->
+      <!-- Brief 001: Erwaehnt Jacob Grimm und die Universitaet Graz -->
       <correspDesc ref="https://example.org/demo/001" source="#demo-source" key="001">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
@@ -40,9 +42,12 @@
         <note>
           <ref type="hasLanguage" target="de"/>
           <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
+          <ref type="mentionsPerson" target="https://viaf.org/viaf/31997136">Jacob Grimm</ref>
+          <ref type="mentionsOrg" target="https://viaf.org/viaf/141440509">Universitaet Graz</ref>
         </note>
       </correspDesc>
 
+      <!-- Brief 002: Erwaehnt Leipzig und Goethes Werke -->
       <correspDesc ref="https://example.org/demo/002" source="#demo-source" key="002">
         <correspAction type="sent">
           <persName ref="https://d-nb.info/gnd/118540238">Johann Wolfgang von Goethe</persName>
@@ -55,9 +60,12 @@
         <note>
           <ref type="hasLanguage" target="de"/>
           <ref type="mentionsSubject" target="https://example.org/subject/literature">Literatur</ref>
+          <ref type="mentionsPlace" target="http://sws.geonames.org/2879139">Leipzig</ref>
+          <ref type="mentionsBibl" target="https://example.org/work/faust">Faust</ref>
         </note>
       </correspDesc>
 
+      <!-- Brief 003: Erwaehnt Kant und die Preussische Akademie -->
       <correspDesc ref="https://example.org/demo/003" source="#demo-source" key="003">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
@@ -71,6 +79,8 @@
           <ref type="hasLanguage" target="de"/>
           <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
           <ref type="mentionsSubject" target="https://example.org/subject/philosophy">Philosophie</ref>
+          <ref type="mentionsPerson" target="https://viaf.org/viaf/82088490">Immanuel Kant</ref>
+          <ref type="mentionsOrg" target="https://viaf.org/viaf/149075366">Preussische Akademie der Wissenschaften</ref>
         </note>
       </correspDesc>
 
@@ -90,6 +100,7 @@
       </correspDesc>
 
       <!-- 1885: International expansion - French correspondence -->
+      <!-- Brief 005: Erwaehnt Cours de linguistique generale und Universite de Geneve -->
       <correspDesc ref="https://example.org/demo/005" source="#demo-source" key="005">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
@@ -103,6 +114,8 @@
           <ref type="hasLanguage" target="fr"/>
           <ref type="mentionsSubject" target="https://example.org/subject/linguistics">Sprachwissenschaft</ref>
           <ref type="mentionsSubject" target="https://example.org/subject/structuralism">Strukturalismus</ref>
+          <ref type="mentionsBibl" target="https://example.org/work/cours">Cours de linguistique generale</ref>
+          <ref type="mentionsOrg" target="https://viaf.org/viaf/148483365">Universite de Geneve</ref>
         </note>
       </correspDesc>
 
@@ -137,6 +150,7 @@
       </correspDesc>
 
       <!-- 1890s: Basque studies - Spanish correspondence -->
+      <!-- Brief 008: Erwaehnt Bilbao und die Revista de Estudios Vascos -->
       <correspDesc ref="https://example.org/demo/008" source="#demo-source" key="008">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
@@ -149,9 +163,12 @@
         <note>
           <ref type="hasLanguage" target="es"/>
           <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
+          <ref type="mentionsPlace" target="http://sws.geonames.org/3128026">Bilbao</ref>
+          <ref type="mentionsBibl" target="https://example.org/work/riev">Revista Internacional de Estudios Vascos</ref>
         </note>
       </correspDesc>
 
+      <!-- Brief 009: Erwaehnt Georges Lacombe und das Baskenland -->
       <correspDesc ref="https://example.org/demo/009" source="#demo-source" key="009">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
@@ -165,6 +182,8 @@
           <ref type="hasLanguage" target="es"/>
           <ref type="mentionsSubject" target="https://example.org/subject/basque">Baskisch</ref>
           <ref type="mentionsSubject" target="https://example.org/subject/etymology">Etymologie</ref>
+          <ref type="mentionsPerson" target="https://viaf.org/viaf/34446283">Georges Lacombe</ref>
+          <ref type="mentionsPlace" target="http://sws.geonames.org/3336903">Baskenland</ref>
         </note>
       </correspDesc>
 
@@ -185,6 +204,7 @@
       </correspDesc>
 
       <!-- 1895: Italian connections -->
+      <!-- Brief 011: Erwaehnt Accademia dei Lincei und Dante -->
       <correspDesc ref="https://example.org/demo/011" source="#demo-source" key="011">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
@@ -197,9 +217,12 @@
         <note>
           <ref type="hasLanguage" target="it"/>
           <ref type="mentionsSubject" target="https://example.org/subject/romance">Romanistik</ref>
+          <ref type="mentionsOrg" target="https://viaf.org/viaf/127889519">Accademia dei Lincei</ref>
+          <ref type="mentionsPerson" target="https://viaf.org/viaf/97105654">Dante Alighieri</ref>
         </note>
       </correspDesc>
 
+      <!-- Brief 012: Erwaehnt Archivio glottologico italiano -->
       <correspDesc ref="https://example.org/demo/012" source="#demo-source" key="012">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/64013892">Graziadio Isaia Ascoli</persName>
@@ -212,6 +235,8 @@
         <note>
           <ref type="hasLanguage" target="it"/>
           <ref type="mentionsSubject" target="https://example.org/subject/dialectology">Dialektologie</ref>
+          <ref type="mentionsBibl" target="https://example.org/work/agi">Archivio glottologico italiano</ref>
+          <ref type="mentionsPlace" target="http://sws.geonames.org/3175395">Italien</ref>
         </note>
       </correspDesc>
 
@@ -294,6 +319,7 @@
       </correspDesc>
 
       <!-- English correspondence added -->
+      <!-- Brief 018: Erwaehnt Oxford University und Sacred Books of the East -->
       <correspDesc ref="https://example.org/demo/018" source="#demo-source" key="018">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
@@ -306,9 +332,12 @@
         <note>
           <ref type="hasLanguage" target="en"/>
           <ref type="mentionsSubject" target="https://example.org/subject/comparative">Vergleichende Sprachwissenschaft</ref>
+          <ref type="mentionsOrg" target="https://viaf.org/viaf/142129514">Oxford University</ref>
+          <ref type="mentionsBibl" target="https://example.org/work/sbe">Sacred Books of the East</ref>
         </note>
       </correspDesc>
 
+      <!-- Brief 019: Erwaehnt Indien und Panini -->
       <correspDesc ref="https://example.org/demo/019" source="#demo-source" key="019">
         <correspAction type="sent">
           <persName ref="https://viaf.org/viaf/9889965">Max Mueller</persName>
@@ -321,6 +350,8 @@
         <note>
           <ref type="hasLanguage" target="en"/>
           <ref type="mentionsSubject" target="https://example.org/subject/sanskrit">Sanskrit</ref>
+          <ref type="mentionsPlace" target="http://sws.geonames.org/1269750">Indien</ref>
+          <ref type="mentionsPerson" target="https://viaf.org/viaf/34516206">Panini</ref>
         </note>
       </correspDesc>
 

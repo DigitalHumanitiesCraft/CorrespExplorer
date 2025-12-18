@@ -9,6 +9,8 @@ Entwicklungszeitraum: November - Dezember 2025
 ## Phasen-Uebersicht
 
 Aktuelle Phasen (Dezember 2025):
+- Phase 43: CMIF v2 Vollstaendige Dimension
+- Phase 42: Wissenskorb-Integration in Views
 - Phase 41: Compact Start-View
 - Phase 40: Wissenspfade mit Wissenskorb
 - Phase 39: Activity Heatmap View
@@ -51,6 +53,97 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2025-12-18 (Phase 43: CMIF v2 Vollstaendige Dimensionen)
+
+### CMIF-Standard Verifikation
+
+Web-Recherche zur Verifikation der CMIF-Dokumentation:
+- CMIF v1.1.0 (2015) ist aktueller Standard
+- CMIF v2 ist Draft-Status mit LOD Academy Vocabulary
+- Vocabulary-URI: https://lod.academy/cmif/vocab/terms/
+
+Korrekturen an cmif-standard.md:
+- Offizielle Dokumentations-Links hinzugefuegt
+- CMIF v2 Draft-Status erklaert
+- Alle Mention-Typen dokumentiert
+
+### Parser-Erweiterung
+
+extractMentions() erweitert um zwei neue Typen:
+- mentionsOrg: Organisationen mit Authority-ID
+- mentionsBibl: Bibliographische Referenzen mit URI
+
+mentions-Objekt jetzt mit 5 Arrays:
+- subjects, persons, places, orgs, bibls
+
+### Demo-Showcase Komplett-Erweiterung
+
+demo-showcase.xml jetzt mit allen CMIF v2 Dimensionen:
+- hasLanguage: 5 Sprachen (de, fr, es, it, en)
+- mentionsSubject: 16 Themen (unveraendert)
+- mentionsPerson: 7 erwaehnte Personen (Jacob Grimm, Kant, Dante, Panini, Georges Lacombe)
+- mentionsPlace: 5 erwaehnte Orte (Leipzig, Bilbao, Baskenland, Italien, Indien)
+- mentionsOrg: 6 Organisationen (Univ. Graz, Preussische Akademie, Accademia dei Lincei, Univ. Geneve, Oxford)
+- mentionsBibl: 6 Werke (Faust, Cours de linguistique generale, RIEV, AGI, Sacred Books of the East)
+
+Briefe mit CMIF v2 Erweiterungen: 001, 002, 003, 005, 008, 009, 011, 012, 018, 019
+
+### Dokumentation
+
+demo-datasets.md aktualisiert:
+- Neuer Abschnitt 0b fuer Demo-Showcase
+- Datenabdeckung-Matrix mit allen CMIF-Dimensionen
+- Test-Reihenfolge mit Demo-Showcase als erstes
+
+---
+
+## 2025-12-18 (Phase 42: Wissenskorb-Integration in Views)
+
+### Wissenskorb-Buttons in allen relevanten Views
+
+Erweiterung der Wissenskorb-Funktionalitaet um direkte Add-to-Basket-Buttons in drei Views:
+
+Letters View:
+- Stern-Button rechts neben Datum in jeder Brief-Karte
+- Toggle-Verhalten: Klick fuegt hinzu, erneuter Klick entfernt
+- Visuelles Feedback: Gefuellt (gold) wenn im Korb, leer wenn nicht
+- Toast-Notification bei Add/Remove
+
+Persons View:
+- Stern-Button in person-actions (vor Info-Button)
+- Fuegt alle Briefe der Person zum Korb hinzu
+- Toast zeigt Anzahl hinzugefuegter Briefe
+- Warnung wenn alle Briefe bereits im Korb
+
+Timeline View:
+- Shift+Klick auf Jahres-Balken fuegt alle Briefe des Jahres zum Korb
+- Tooltip zeigt Hinweis "Shift+Klick: zum Korb"
+- Toast-Notification mit Jahr und Anzahl
+
+CSS-Erweiterungen:
+- .btn-letter-basket (transparent, gold bei hover/in-basket)
+- .btn-person-basket (border-box, gold hover)
+- .tooltip-hint (dezenter Hinweistext)
+
+### Dokumentations-Bereinigung
+
+Korrektur von Inkonsistenzen in der Dokumentation:
+
+architecture.md:
+- Views-Zaehlung von 12 auf 11 korrigiert (Questions in Overview integriert)
+- View-Switcher Buttons von 12 auf 11 korrigiert
+- Forschungspfade als Teil der Uebersicht dokumentiert
+
+testing.md:
+- Test-Pyramide vereinfacht (keine ASCII-Art mehr)
+- Testzahlen konsistent auf "74+ Tests" aktualisiert
+- Suite-Zahlen an architecture.md angepasst
+
+demo-datasets.md:
+- Uncertainty-Testfaelle von 18 auf 22 korrigiert
 
 ---
 
@@ -187,7 +280,7 @@ US-35, US-36 implementiert (36 User Stories gesamt).
 
 ### Neuer View: Aktivitaets-Heatmap
 
-Implementierung eines zwoelften Views zur Visualisierung der Korrespondenz-Aktivitaet:
+Implementierung eines elften Views zur Visualisierung der Korrespondenz-Aktivitaet:
 
 Konzept:
 - GitHub-Style Kalender-Heatmap

@@ -98,9 +98,19 @@ function loadData() {
             const parsed = JSON.parse(storedData);
             allLetters = parsed.letters || [];
             dataIndices = parsed.indices || {};
+
+            // Debug: Log loaded data structure
+            console.group('Wissenskorb: Geladene Daten');
+            console.log('Briefe geladen:', allLetters.length);
+            console.log('Indices:', Object.keys(dataIndices));
+            if (dataIndices.persons) console.log('Personen-Index:', Object.keys(dataIndices.persons).length, 'Eintraege');
+            if (dataIndices.places) console.log('Orte-Index:', Object.keys(dataIndices.places).length, 'Eintraege');
+            console.groupEnd();
+        } else {
+            console.warn('Wissenskorb: Keine Daten in sessionStorage gefunden');
         }
     } catch (e) {
-        // Data not available - wissenskorb page opened directly
+        console.error('Wissenskorb: Fehler beim Laden der Daten', e);
     }
 }
 

@@ -438,6 +438,8 @@ async function handleConfigStart() {
 
 // Store data and redirect to visualization
 function finalizeAndRedirect(data, sourceInfo) {
+    console.log('finalizeAndRedirect sourceInfo:', sourceInfo);
+
     const storedData = {
         ...data,
         sourceInfo,
@@ -454,6 +456,7 @@ function finalizeAndRedirect(data, sourceInfo) {
 
     // Redirect to visualization - append demo flag if needed, always start with overview
     const redirectUrl = sourceInfo?.isDemo ? 'explore.html?demo=true&view=overview' : 'explore.html?view=overview';
+    console.log('Redirecting to:', redirectUrl, 'isDemo:', sourceInfo?.isDemo);
     window.location.href = redirectUrl;
 }
 

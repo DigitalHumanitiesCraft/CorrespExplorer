@@ -377,6 +377,63 @@
 
 .dataset-badge-extended {
     background: var(--color-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* Badge Info Icon with Tooltip */
+.badge-info-icon {
+    position: relative;
+    cursor: help;
+    opacity: 0.8;
+    font-size: 0.85em;
+}
+
+.badge-info-icon:hover {
+    opacity: 1;
+}
+
+.badge-info-icon::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    right: 0;
+    width: 280px;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-bg);
+    border: 2px solid var(--color-secondary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+    font-weight: normal;
+    color: var(--color-text);
+    text-transform: none;
+    letter-spacing: normal;
+    line-height: var(--line-height-base);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+    pointer-events: none;
+}
+
+.badge-info-icon::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    right: 8px;
+    border: 6px solid transparent;
+    border-top-color: var(--color-secondary);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+}
+
+.badge-info-icon:hover::after,
+.badge-info-icon:hover::before {
+    opacity: 1;
+    visibility: visible;
 }
 
 .dataset-extended-info {

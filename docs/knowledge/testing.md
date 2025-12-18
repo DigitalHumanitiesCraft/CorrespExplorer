@@ -32,30 +32,22 @@ Wichtige Regel: NIE Mock-Daten verwenden
 
 ## Test-Pyramide
 
-```
-         /\        E2E Tests (0)
-        /  \       - Zu aufwendig für Prototyp-Phase
-       /    \
-      /------\     Integration Tests (~30)
-     /        \    - Filter-Kombinationen
-    /          \   - Aggregation-Logik
-   /------------\  - Unsicherheits-Erkennung
-  /              \
- /----------------\ Unit Tests (19)
-                    - State-Manager (10)
-                    - DOM-Cache (9)
-```
+E2E Tests (0): Zu aufwendig fuer Prototyp-Phase
+
+Integration Tests (~50): Filter-Kombinationen, Aggregation-Logik, Unsicherheits-Erkennung, CMIF-Parser, Formatters
+
+Unit Tests (~24): State-Manager (10-11), DOM-Cache (9-10), Uncertainty (5)
 
 ## Test-Abdeckung
 
-Business Logic mit echten CMIF-Daten
-- cmif-parser.js: 13 Tests - XML→JSON Parsing, Unsicherheits-Erkennung
-- test-aggregation.js: 11 Tests - Indices-Erstellung, State-Manager Integration
-- formatters.js: 26 Tests - Formatierung mit echten Daten
-- state-manager.js: 10 Tests - Filter-Logik mit echten CMIF-Daten
+Business Logic mit echten CMIF-Daten:
+- cmif-parser.js: 14 Tests - XML zu JSON Parsing, Unsicherheits-Erkennung
+- test-aggregation.js: 12 Tests - Indices-Erstellung, State-Manager Integration
+- formatters.js: 27 Tests - Formatierung mit echten Daten
+- state-manager.js: 11 Tests - Filter-Logik mit echten CMIF-Daten
 
-Infrastructure (ohne CMIF-Daten)
-- dom-cache.js: 9 Tests - Element-Caching, Performance
+Infrastructure (ohne CMIF-Daten):
+- dom-cache.js: 10 Tests - Element-Caching, Performance
 
 Verteilung: Ueberwiegende Mehrheit der Tests verwendet echte CMIF-Daten. Nur Infrastructure-Tests (DOM-Cache) benoetigen keine Daten.
 
@@ -174,7 +166,7 @@ Aktuelle Performance (test.html):
 - State-Manager: ~50ms (10 Tests)
 - DOM-Cache: ~30ms (9 Tests)
 - Integration: ~100ms (30 Tests)
-- **Gesamt: ~180ms (57 Tests)**
+- Gesamt: ~250ms (74+ Tests)
 
 ## Debugging fehlgeschlagener Tests
 

@@ -15,7 +15,7 @@ Browser-Architektur:
     2. Erweiterte Datensaetze (JSON): Redirect mit URL-Parameter, explore.js laedt direkt
 - explore.html (Hauptvisualisierung)
   - Laedt Daten aus sessionStorage oder via URL-Parameter json=
-  - Zehn Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik
+  - Elf Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik, Activity
   - Sidebar mit Filter und Statistiken
   - Export-Funktion fuer CSV und JSON
 
@@ -38,8 +38,8 @@ Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
 
 ### explore.html - Visualisierung
 
-Hauptansicht mit zwoelf Views:
-1. Uebersicht (Dashboard mit Statistiken, Datenqualitaet, Empfehlungen) - Default-View
+Hauptansicht mit elf Views:
+1. Uebersicht (Start-View mit Statistiken, Datenqualitaet, Entry-Points, Forschungspfade) - Default-View
 2. Karte (MapLibre GL JS mit Clustering)
 3. Korrespondenten (sortierbare/suchbare Liste)
 4. Briefe (sortierbare/suchbare Liste)
@@ -49,8 +49,9 @@ Hauptansicht mit zwoelf Views:
 8. Netzwerk (Force-Directed Graph)
 9. Mentions Flow (Sankey Diagram fuer Erwaehnungen)
 10. Chronik (Vertikaler Zeitstrahl mit optionaler Wikidata-Anreicherung fuer biografische Daten)
-11. Forschungspfade (Methodische Navigation mit epistemischen Kategorien und mehrstufigen Pfaden)
-12. Aktivitaet (GitHub-Style Kalender-Heatmap der Briefaktivitaet)
+11. Aktivitaet (GitHub-Style Kalender-Heatmap der Briefaktivitaet)
+
+Forschungspfade sind in die Uebersicht (Start-View) integriert, nicht als separater View.
 
 Sidebar (ausgeblendet im Uebersicht-View):
 - Statistik-Cards (Briefe, Absender, Orte)
@@ -59,7 +60,7 @@ Sidebar (ausgeblendet im Uebersicht-View):
 - Person/Thema/Ort-Filter-Badge (wenn aktiv)
 
 Navigation mit:
-- View-Switcher (12 Buttons)
+- View-Switcher (11 Buttons)
 - Export-Button
 - Neuer Datensatz-Link
 - About-Link

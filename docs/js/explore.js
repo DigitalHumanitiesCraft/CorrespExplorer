@@ -25,7 +25,7 @@ import {
     getPlacePrecisionClass,
     getPersonInitials
 } from './formatters.js';
-import { checkAndStartDemoTour } from './demo-tour.js';
+import { checkAndStartDemoTour, startTour } from './demo-tour.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
 
@@ -1904,6 +1904,11 @@ function initViewSwitcher() {
 }
 
 function switchView(view) {
+    // Redirect deprecated 'questions' view to 'overview' (Forschungspfade now in Start-View)
+    if (view === 'questions') {
+        view = 'overview';
+    }
+
     currentView = view;
     state.ui.currentView = view;
 
@@ -1924,11 +1929,11 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
-    // On overview, chronik, questions, and activity: hide entire sidebar for full-width content
+    // On overview, chronik, and activity: hide entire sidebar for full-width content
     // On other views: show sidebar with stats and filters
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'questions' || view === 'activity');
+        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'activity');
     }
 
     // Update sidebar legend for current view
@@ -1957,8 +1962,6 @@ function switchView(view) {
         renderMentionsFlow();
     } else if (view === 'chronik') {
         renderChronik();
-    } else if (view === 'questions') {
-        renderResearchQuestions();
     } else if (view === 'activity') {
         renderActivity();
     } else if (view === 'map' && map) {
@@ -2136,6 +2139,27 @@ function renderOverview() {
 
     // Setup entry point buttons
     setupEntryPointButtons();
+
+    // Show/hide tutorial button based on dataset
+    const tutorialBtn = document.getElementById('start-tutorial-btn');
+    if (tutorialBtn) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDemo = urlParams.get('demo') === 'true';
+        if (isDemo) {
+            tutorialBtn.classList.remove('hidden');
+            // Setup click handler (once)
+            if (!tutorialBtn.dataset.listenerAdded) {
+                tutorialBtn.addEventListener('click', () => {
+                    // Clear the "completed" flag so tour can restart
+                    sessionStorage.removeItem('ce-demo-tour-completed');
+                    startTour();
+                });
+                tutorialBtn.dataset.listenerAdded = 'true';
+            }
+        } else {
+            tutorialBtn.classList.add('hidden');
+        }
+    }
 
     // Render research paths in overview (limited)
     renderOverviewResearchPaths();
@@ -2651,6 +2675,10 @@ function renderPersonsList() {
                     </div>
                 </div>
                 <div class="person-actions">
+                    <button class="btn-person-basket" data-person-id="${escapeHtml(personKey)}"
+                            title="${total} Briefe zum Korb hinzufuegen" onclick="event.stopPropagation()">
+                        <i class="fas fa-star"></i>
+                    </button>
                     ${person.id ? `
                         <button class="btn-person-info" data-person-id="${escapeHtml(personKey)}"
                                 title="Person-Details anzeigen" onclick="event.stopPropagation()">
@@ -2688,6 +2716,35 @@ function renderPersonsList() {
             const personId = btn.dataset.personId;
             if (personId) {
                 showPersonDetail(personId);
+            }
+        });
+    });
+
+    // Add click handlers for person basket buttons
+    container.querySelectorAll('.btn-person-basket').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const personId = btn.dataset.personId;
+            if (!personId) return;
+
+            // Find all letters where this person is sender or recipient
+            const personLetterIds = filteredLetters
+                .filter(l => (l.sender?.id || l.sender?.name) === personId ||
+                             (l.recipient?.id || l.recipient?.name) === personId)
+                .map(l => l.id);
+
+            let addedCount = 0;
+            personLetterIds.forEach(id => {
+                if (!basketIsInBasket('letters', id)) {
+                    basketAdd('letters', id);
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
+            } else {
+                showToast('Alle Briefe bereits im Korb');
             }
         });
     });
@@ -2788,6 +2845,11 @@ function renderLettersList() {
                     </div>
                     <div class="letter-header-actions">
                         <div class="letter-date ${dateClass}">${date}</div>
+                        <button class="btn-letter-basket ${basketIsInBasket('letters', letter.id) ? 'in-basket' : ''}"
+                                data-letter-id="${letter.id || ''}"
+                                title="${basketIsInBasket('letters', letter.id) ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
+                            <i class="fas fa-star"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="letter-meta">
@@ -2818,6 +2880,28 @@ function renderLettersList() {
             if (e.target.closest('a') || e.target.closest('.basket-toggle') || e.target.closest('button')) return;
 
             toggleLetterExpand(card);
+        });
+    });
+
+    // Add click handlers for letter basket buttons
+    container.querySelectorAll('.btn-letter-basket').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const letterId = btn.dataset.letterId;
+            if (!letterId) return;
+
+            const isInBasket = basketIsInBasket('letters', letterId);
+            if (isInBasket) {
+                basketRemove('letters', letterId);
+                btn.classList.remove('in-basket');
+                btn.title = 'Zum Korb hinzufuegen';
+                showToast('Brief aus Korb entfernt');
+            } else {
+                basketAdd('letters', letterId);
+                btn.classList.add('in-basket');
+                btn.title = 'Aus Korb entfernen';
+                showToast('Brief zum Korb hinzugefuegt');
+            }
         });
     });
 }
@@ -3431,7 +3515,7 @@ function renderTimeline() {
 
         // Build stacked segments
         let segments = '';
-        let tooltipParts = [`${y}: ${data.total} Briefe`];
+        let tooltipParts = [`${y}: ${data.total} Briefe`, `<span class="tooltip-hint">Shift+Klick: zum Korb</span>`];
 
         // Add imprecise info to tooltip
         if (hasImprecise) {
@@ -3644,6 +3728,7 @@ function renderTimeline() {
     });
 
     // Click on bar wrapper (not segment) filters by year only
+    // Shift+Click adds all letters of that year to basket
     container.querySelectorAll('.timeline-bar-wrapper').forEach(wrapper => {
         wrapper.addEventListener('click', (e) => {
             // Only handle if click was not on a segment
@@ -3651,7 +3736,25 @@ function renderTimeline() {
 
             const year = parseInt(wrapper.dataset.year);
 
-            // Update year slider to single year
+            // Shift+Click: Add all letters of this year to basket
+            if (e.shiftKey) {
+                const yearLetters = filteredLetters.filter(l => l.year === year);
+                let addedCount = 0;
+                yearLetters.forEach(l => {
+                    if (!basketIsInBasket('letters', l.id)) {
+                        basketAdd('letters', l.id);
+                        addedCount++;
+                    }
+                });
+                if (addedCount > 0) {
+                    showToast(`${addedCount} Briefe aus ${year} zum Korb hinzugefuegt`);
+                } else if (yearLetters.length > 0) {
+                    showToast(`Alle ${yearLetters.length} Briefe aus ${year} bereits im Korb`);
+                }
+                return;
+            }
+
+            // Normal click: Update year slider to single year
             const slider = elements.yearRangeSlider;
             if (slider && slider.noUiSlider) {
                 slider.noUiSlider.set([year, year]);
@@ -7141,7 +7244,9 @@ function analyzeResearchQuestions() {
     // Languages - with Top 3 preview
     const languages = Object.keys(dataIndices.languages || {});
     if (languages.length > 1) {
+        // dataIndices.languages contains objects with letter_count property
         const topLangs = Object.entries(dataIndices.languages)
+            .map(([lang, data]) => [lang, data.letter_count || 0])
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3);
         questions.push({
@@ -7727,8 +7832,8 @@ function endKnowledgePath() {
     sessionStorage.removeItem('knowledgePath');
     hideKnowledgePathUI();
 
-    // Zur Pfade-View zurueck
-    switchView('questions');
+    // Zur Start-View (mit Forschungspfaden) zurueck
+    switchView('overview');
     updateUrlState();
 }
 

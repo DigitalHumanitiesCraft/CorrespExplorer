@@ -143,15 +143,15 @@ Stand: 2025-12-18
 | architecture.md | Architektur | Niedrig | Selten | 2025-12 |
 | cmif-sources.md | Referenz | Hoch | Oft | 2025-12 |
 | cmif-standard.md | Spezifikation | Sehr hoch | Nie | - |
-| demo-datasets.md | Referenz | Mittel | Selten | 2025-11 |
-| design.md | Spezifikation | Hoch | Selten | 2025-11 |
+| demo-datasets.md | Referenz | Mittel | Selten | 2025-12 |
+| design.md | Spezifikation | Hoch | Selten | 2025-12 |
 | journal.md | Historie | Niedrig | Kontinuierlich | 2025-12 |
 | KNOWN-ISSUES.md | Wartung | Niedrig | Oft | 2025-12 |
 | learnings.md | Konzept | Hoch | Selten | 2025-12 |
 | testing.md | Prozess | Mittel | Oft | 2025-12 |
-| uncertainty-concept.md | Spezifikation | Sehr hoch | Selten | 2025-11 |
-| user-stories.md | Requirements | Sehr hoch | Selten | 2025-11 |
-| VAULT-RULES.md | Governance | Sehr hoch | Selten | 2025-11 |
+| uncertainty-concept.md | Spezifikation | Sehr hoch | Selten | 2025-12 |
+| user-stories.md | Requirements | Sehr hoch | Selten | 2025-12 |
+| VAULT-RULES.md | Governance | Sehr hoch | Selten | 2025-12 |
 
 ---
 

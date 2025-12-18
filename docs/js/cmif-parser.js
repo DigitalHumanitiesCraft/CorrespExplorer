@@ -331,13 +331,15 @@ function extractLanguage(note) {
 }
 
 /**
- * Extract mentions (subjects, persons, places) from note element
+ * Extract mentions (subjects, persons, places, orgs, bibls) from note element
  */
 function extractMentions(note) {
     const mentions = {
         subjects: [],
         persons: [],
-        places: []
+        places: [],
+        orgs: [],
+        bibls: []
     };
 
     if (!note) return mentions;
@@ -366,6 +368,18 @@ function extractMentions(note) {
             mentions.places.push({
                 name: label,
                 geonames_id: geonames?.id || null
+            });
+        } else if (type.includes('mentionsOrg')) {
+            const authority = parseAuthorityRef(target);
+            mentions.orgs.push({
+                name: label,
+                id: authority?.id || null,
+                authority: authority?.type || null
+            });
+        } else if (type.includes('mentionsBibl')) {
+            mentions.bibls.push({
+                title: label,
+                uri: target
             });
         }
     }

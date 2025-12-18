@@ -2,9 +2,14 @@
 
 ## Correspondence Metadata Interchange Format
 
-CMIF ist ein TEI-basierter Standard der TEI Correspondence SIG für den Austausch von Korrespondenz-Metadaten.
+CMIF ist ein TEI-basierter Standard der TEI Correspondence SIG fuer den Austausch von Korrespondenz-Metadaten. Die aktuelle Version ist CMIF v1.1.0, eingefuehrt 2015 zusammen mit dem TEI-Element correspDesc (TEI P5 Version 2.8).
 
-Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
+Offizielle Dokumentation:
+- Spezifikation: https://github.com/TEI-Correspondence-SIG/CMIF
+- correspSearch Dokumentation: https://correspsearch.net/en/documentation.html
+- Encoding Correspondence: https://encoding-correspondence.bbaw.de/v1/CMIF.html
+
+CMIF v2 (Draft): Erweitert v1 um zusaetzliche Metadaten in correspDesc/note/ref. Rueckwaertskompatibel mit v1.x. CorrespExplorer unterstuetzt bereits CMIF v2 Features.
 
 ## Kernstruktur
 
@@ -132,47 +137,64 @@ GeoNames ist das primäre System für geografische Identifikation und liefert Ko
 
 ISO 639-1 verwendet Zwei-Buchstaben-Codes, Lexvo bietet URIs für alle ISO-639-3-Sprachcodes inklusive historischer und kleiner Sprachen.
 
-## Erweiterte Metadaten (note)
+## Erweiterte Metadaten (CMIF v2)
 
-Einige CMIF-Dateien enthalten erweiterte Metadaten im note-Element mit ref-Elementen verschiedener Typen.
+CMIF v2 erweitert v1 um zusaetzliche Metadaten im note-Element. Alle Erweiterungen nutzen ref-Elemente mit @type aus dem CMIF v2 Vocabulary (https://lod.academy/cmif/vocab/terms/).
 
-### hasLanguage
+In der Praxis werden die kurzen Typen (ohne cmif: Praefix) verwendet und von den meisten Parsern akzeptiert.
 
+### Entitaeten-Erwaehnungen
+
+hasLanguage - Sprache des Briefs:
 ```xml
 <ref type="hasLanguage" target="de"/>
 ```
+Kann ISO 639-1 Code oder Lexvo-URI sein.
 
-Gibt die Sprache an, in der der Brief geschrieben ist. Kann ISO-Code oder Lexvo-URI sein.
-
-### mentionsSubject
-
+mentionsSubject - Themen im Brief:
 ```xml
-<ref type="mentionsSubject" target="https://gams.uni-graz.at/o:hsa.subjects#S.4567">
-  Cercle d'Etudes Euskariennes
-</ref>
+<ref type="mentionsSubject" target="https://example.org/subject/123">Thema</ref>
+```
+Verweist auf kontrolliertes Vokabular oder Thesaurus.
+
+mentionsPerson - Erwaehnte Personen:
+```xml
+<ref type="mentionsPerson" target="https://viaf.org/viaf/34446283">Lacombe, Georges</ref>
+```
+Personen die erwaehnt werden (nicht Sender/Empfaenger). Nutzt Authority-IDs.
+
+mentionsPlace - Erwaehnte Orte:
+```xml
+<ref type="mentionsPlace" target="http://sws.geonames.org/2988507">Paris</ref>
+```
+Orte die erwaehnt werden (nicht Absende-/Empfangsort). Nutzt GeoNames-URIs.
+
+mentionsOrg - Erwaehnte Organisationen:
+```xml
+<ref type="mentionsOrg" target="https://viaf.org/viaf/123456">Akademie der Wissenschaften</ref>
 ```
 
-Themen, die im Brief behandelt werden. Der target verweist auf ein kontrolliertes Vokabular oder Thesaurus, der Textinhalt ist die menschenlesbare Bezeichnung.
-
-### mentionsPerson
-
+mentionsBibl - Erwaehnte Werke:
 ```xml
-<ref type="mentionsPerson" target="https://viaf.org/viaf/34446283">
-  Lacombe, Georges
-</ref>
+<ref type="mentionsBibl" target="https://example.org/work/123">Titel des Werks</ref>
 ```
 
-Personen, die im Brief erwähnt werden, aber nicht Absender oder Empfänger sind. Nutzt dieselben Authority-Systeme wie persName.
+### Weitere CMIF v2 Typen (nicht in CorrespExplorer implementiert)
 
-### mentionsPlace
-
+hasTextBase - Textgrundlage (Entwurf, Kopie, etc.):
 ```xml
-<ref type="mentionsPlace" target="http://sws.geonames.org/2988507">
-  Paris
-</ref>
+<ref type="hasTextBase" target="cmif:Draft"/>
 ```
 
-Orte, die im Brief erwähnt werden, aber nicht Absende- oder Empfangsort sind. Nutzt GeoNames-URIs.
+isPublishedWith - Publikationstyp:
+```xml
+<ref type="isPublishedWith" target="cmif:transcription"/>
+```
+
+isEditionOf - Verweis auf Archivdokument:
+```xml
+<ref type="isEditionOf" target="https://archive.org/..."/>
+```
 
 ## Parsing-Logik
 

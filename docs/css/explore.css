@@ -276,6 +276,32 @@
     color: var(--color-error);
 }
 
+/* Tutorial Start Button */
+.tutorial-start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
+    background: var(--color-primary);
+    border: 2px solid var(--color-primary-dark);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-left: var(--space-sm);
+}
+
+.tutorial-start-btn:hover {
+    background: var(--color-primary-dark);
+    transform: scale(1.05);
+}
+
+.tutorial-start-btn i {
+    font-size: 0.9em;
+}
+
 /* Entry Points */
 .overview-entry-points {
     margin-bottom: var(--space-xl);
@@ -1287,6 +1313,32 @@
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+}
+
+.btn-letter-basket {
+    background: transparent;
+    border: none;
+    color: var(--color-text-lighter);
+    cursor: pointer;
+    padding: var(--space-xs);
+    font-size: var(--font-size-sm);
+    transition: color var(--transition-fast), transform var(--transition-fast);
+    opacity: 0.5;
+}
+
+.btn-letter-basket:hover {
+    color: var(--color-warning);
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.btn-letter-basket.in-basket {
+    color: var(--color-warning);
+    opacity: 1;
+}
+
+.btn-letter-basket.in-basket:hover {
+    color: var(--color-text-light);
 }
 
 .letter-meta {
@@ -2308,6 +2360,28 @@
     border-color: var(--color-primary);
 }
 
+/* Person Basket Button */
+.btn-person-basket {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text-lighter);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-person-basket:hover {
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+    background: rgba(217, 119, 6, 0.1);
+}
+
 /* Person Info Button */
 .btn-person-info {
     display: flex;
@@ -3317,6 +3391,13 @@
     color: #fbbf24;
     font-style: italic;
     font-size: 0.9em;
+}
+
+/* Tooltip hint for basket action */
+.tooltip-hint {
+    color: var(--color-text-lighter);
+    font-size: 0.85em;
+    opacity: 0.8;
 }
 
 /* Filter section for date quality */

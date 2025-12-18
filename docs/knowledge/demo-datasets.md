@@ -90,6 +90,37 @@ Verwendung:
 - UI-Tests fuer visuelle Indikatoren
 - Dokumentation siehe: uncertainty-concept.md
 
+### 0b. Demo-Showcase (CorrespExplorer)
+
+URL: `data/demo-showcase.xml` (lokal)
+
+Datenfelder:
+- persName: ja (mit VIAF und GND)
+- placeName: ja (mit GeoNames)
+- date: ja (alle Varianten inkl. Unsicherheit)
+- hasLanguage: ja (de, fr, es, it, en)
+- mentionsSubject: ja (16 Themen)
+- mentionsPerson: ja (7 erwaehnte Personen)
+- mentionsPlace: ja (5 erwaehnte Orte)
+- mentionsOrg: ja (6 Organisationen)
+- mentionsBibl: ja (6 Werke)
+
+Besonderheiten:
+- Vollstaendiger CMIF v2 Showcase mit allen Dimensionen
+- Fiktives Gelehrtennetzwerk um Hugo Schuchardt 1880-1920
+- 35 Briefe mit 8 Personen und 11 Orten
+- 5 Sprachen: Deutsch, Franzoesisch, Spanisch, Italienisch, Englisch
+- Erwaehnte Personen: Jacob Grimm, Kant, Dante, Panini, Georges Lacombe
+- Organisationen: Universitaet Graz, Preussische Akademie, Accademia dei Lincei, Oxford University
+- Werke: Faust, Cours de linguistique generale, Archivio glottologico italiano
+- Unsicherheitsfaelle: Jahres-Datum, Datumsbereich, cert=low, [NN] Absender, unbekannter Ort
+
+Verwendung:
+- Demonstration aller CorrespExplorer Features
+- Test des Mentions Flow View
+- CMIF v2 Parser-Validierung
+- Landing Page Tutorial-Datensatz
+
 ### 1. Hebel-Briefe (TU Darmstadt)
 
 URL: `https://tueditions.ulb.tu-darmstadt.de/g/pa000018-0077`
@@ -206,26 +237,31 @@ Testfaelle:
 
 ## Datenabdeckung Matrix
 
-| Feature | Uncertainty | Hebel | Rollett | H-Spiker | H-Duvinage | Schoenbach |
-|---------|-------------|-------|---------|----------|------------|------------|
-| GND-IDs | teils | ja | ja | ja | ja | ja |
-| GeoNames | teils | ja | ja | ja | ja | ja |
-| Sprache | teils | ja | nein | nein | nein | nein |
-| Themen | nein | nein | nein | nein | nein | nein |
-| Exakte Daten | teils | teils | ja | teils | teils | ja |
-| Alle Orte bekannt | nein | nein | ja | ja | ja | ja |
-| Alle Personen bekannt | nein | ja | nein | ja | ja | ja |
+| Feature | Demo-Showcase | Uncertainty | Hebel | Rollett | H-Spiker | H-Duvinage | Schoenbach |
+|---------|---------------|-------------|-------|---------|----------|------------|------------|
+| Authority-IDs | ja | teils | ja | ja | ja | ja | ja |
+| GeoNames | ja | teils | ja | ja | ja | ja | ja |
+| hasLanguage | ja (5) | teils | ja | nein | nein | nein | nein |
+| mentionsSubject | ja (16) | ja | nein | nein | nein | nein | nein |
+| mentionsPerson | ja (7) | nein | nein | nein | nein | nein | nein |
+| mentionsPlace | ja (5) | nein | nein | nein | nein | nein | nein |
+| mentionsOrg | ja (6) | nein | nein | nein | nein | nein | nein |
+| mentionsBibl | ja (6) | nein | nein | nein | nein | nein | nein |
+| Datums-Varianten | ja | ja | teils | ja | teils | teils | ja |
+| Personen-Varianten | teils | ja | ja | nein | ja | ja | ja |
+| Orts-Varianten | teils | ja | nein | ja | ja | ja | ja |
 
 ---
 
 ## Empfohlene Test-Reihenfolge
 
-1. Uncertainty - Alle Unsicherheitsfaelle, systematische Validierung
-2. Schoenbach - Minimal, schnell, alle Features pruefbar
-3. Hebel - Einziger mit Sprache, viele fehlende Orte
-4. Humboldt-Spiker - Mittlere Groesse, Datierungsunsicherheit
-5. Humboldt-Duvinage - Wenige Orte, fehlende Daten
-6. Rollett - Gross, Performance-Test, [NN]-Behandlung
+1. Demo-Showcase - Alle CMIF v2 Features, Mentions Flow, Sprachen
+2. Uncertainty - Alle Unsicherheitsfaelle, systematische Validierung
+3. Schoenbach - Minimal, schnell, alle Features pruefbar
+4. Hebel - Mit Sprache, viele fehlende Orte
+5. Humboldt-Spiker - Mittlere Groesse, Datierungsunsicherheit
+6. Humboldt-Duvinage - Wenige Orte, fehlende Daten
+7. Rollett - Gross, Performance-Test, [NN]-Behandlung
 
 ---
 
@@ -239,7 +275,7 @@ const DEMO_DATASETS = [
         id: 'uncertainty',
         name: 'Uncertainty Test (1900)',
         url: 'data/test-uncertainty.xml',
-        description: '18 Testfaelle fuer Unsicherheits-Visualisierung'
+        description: '22 Testfaelle fuer Unsicherheits-Visualisierung'
     },
     {
         id: 'hebel',
