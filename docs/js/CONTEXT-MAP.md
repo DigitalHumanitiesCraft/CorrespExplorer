@@ -50,7 +50,7 @@ Aenderungen an diesen Modulen haben weitreichende Auswirkungen:
 
 ## Views in explore.js
 
-Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik
+Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik, Questions
 
 Jeder View hat:
 - renderXYZ() Funktion

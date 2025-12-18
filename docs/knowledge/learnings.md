@@ -2,7 +2,7 @@
 
 Dokumentation der wichtigsten Entscheidungen mit Rationale. Erklärt WARUM bestimmte Lösungen gewählt wurden.
 
-Stand: 2025-12-03
+Stand: 2025-12-18
 
 ---
 
@@ -195,6 +195,71 @@ Rationale: Bei 11.576 Briefen würde Anzeige aller Details gleichzeitig zu Cogni
 Keine doppelten Informationen in verschiedenen Views. Filter-State wird zentral verwaltet. Indices werden einmal berechnet und wiederverwendet.
 
 Rationale: Redundanz führt zu Inkonsistenzen. Single Source of Truth Prinzip verhindert Synchronisations-Bugs.
+
+---
+
+## 9. Forschungspfade - Methodische Navigation
+
+### Epistemische Kategorisierung
+
+Forschungsfragen werden in vier Kategorien eingeteilt basierend auf der Art der benoetigten Erkenntnis:
+
+1. Deskriptiv: Direkt aus Daten ablesbar (Zahlen, Fakten)
+2. Analytisch: Erfordert Berechnung/Aggregation
+3. Interpretativ: Erfordert Kontext und Interpretation
+4. Nicht beantwortbar: Fehlende Daten verhindern Antwort
+
+Rationale: Diese Kategorisierung macht den epistemischen Status einer Frage explizit. Nutzer wissen sofort, welche Art von Antwort sie erwarten koennen.
+
+Implementation: analyzeResearchQuestions() kategorisiert Fragen basierend auf Datenverfuegbarkeit
+
+### Multi-Step Forschungspfade
+
+Jede Frage zeigt einen Pfad durch mehrere Views mit konkreten Aktionen:
+
+Struktur pro Schritt:
+- view: Ziel-View zum Navigieren
+- label: Kurzbeschreibung des Schritts
+- action: Konkrete Taetigkeit im View
+
+Rationale: Forschung ist selten linear. Pfade zeigen dass Fragen oft mehrere Views erfordern und geben methodische Anleitung.
+
+UI-Entscheidung: Aktionen werden unter dem Label angezeigt, nicht im Tooltip. Tooltips erfordern Hover und verstecken kritische Information.
+
+### Nicht-wertende Sprache fuer Partner-Daten
+
+"Anreicherungspotential" statt "Datenqualitaet" oder "Datenabdeckung".
+
+Rationale: CMIF-Daten stammen oft von Forschungspartnern. "Qualitaet" impliziert Bewertung deren Arbeit. "Anreicherungspotential" fokussiert auf zukuenftige Moeglichkeiten statt auf Defizite.
+
+Lesson Learned: UI-Sprache muss diplomatisch sein wenn Daten von externen Quellen kommen.
+
+### Sichtbarkeit von UI-Elementen
+
+Pfad-Nummern: Akzentfarbe statt neutrales Grau
+
+Problem: Weisse Zahlen auf hellem Hintergrund waren unsichtbar.
+Loesung: Background auf var(--color-accent) gesetzt.
+
+Rationale: Nummerierung ist kritisch fuer Pfad-Verstaendnis. Wichtige Elemente brauchen starken Kontrast.
+
+### Parser-Datenstrukturen
+
+Erkenntnisse aus der Forschungspfade-Implementation:
+
+1. Personen:
+   - letter_count enthaelt Gesamtzahl (as_sender + as_recipient)
+   - letters_sent existiert nicht im Parser
+
+2. Subjects:
+   - Parser verwendet label-Property, nicht name
+   - Fallback: s.label || s.name
+
+3. Sprachen:
+   - CMIF speichert URLs als Sprachcodes (z.B. http://lexvo.org/id/iso639-3/deu)
+   - LANGUAGE_LABELS mappt URLs zu lesbaren Labels
+
+Lesson Learned: Parser-Dokumentation vor Verwendung pruefen. Annahmen ueber Datenstrukturen oft falsch.
 
 ---
 

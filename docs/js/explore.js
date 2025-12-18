@@ -1873,11 +1873,11 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
-    // On overview and chronik: hide entire sidebar for full-width content
+    // On overview, chronik, and questions: hide entire sidebar for full-width content
     // On other views: show sidebar with stats and filters
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik');
+        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'questions');
     }
 
     // Update sidebar legend for current view
@@ -1906,6 +1906,8 @@ function switchView(view) {
         renderMentionsFlow();
     } else if (view === 'chronik') {
         renderChronik();
+    } else if (view === 'questions') {
+        renderResearchQuestions();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -6775,6 +6777,609 @@ function updateChronikEnrichmentUI() {
     } else {
         if (enrichBtn) enrichBtn.classList.remove('hidden');
         if (statusEl) statusEl.classList.add('hidden');
+    }
+}
+
+// ============================================================================
+// RESEARCH QUESTIONS VIEW
+// ============================================================================
+
+/**
+ * Analyze corpus data and generate research questions with epistemological categories
+ * Categories: descriptive (what), analytical (patterns), interpretive (meaning)
+ */
+function analyzeResearchQuestions() {
+    if (!allLetters || !dataIndices) return [];
+
+    const questions = [];
+    const totalLetters = allLetters.length;
+
+    // --- DESCRIPTIVE QUESTIONS (What is in the corpus?) ---
+
+    // Persons - with Top 3 preview
+    const persons = Object.values(dataIndices.persons || {});
+    const personsWithAuthority = persons.filter(p => p.viaf || p.gnd);
+    if (persons.length > 0) {
+        // Calculate total letters per person and get top 3
+        // Use letter_count from parser (as_sender + as_recipient counts)
+        const personsByActivity = persons
+            .map(p => ({
+                name: p.name,
+                count: p.letter_count || 0
+            }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 3);
+
+        questions.push({
+            category: 'descriptive',
+            question: 'Wer sind die aktivsten Korrespondenten?',
+            description: `${persons.length} Personen im Korpus`,
+            preview: personsByActivity.map(p => `${p.name} (${p.count})`),
+            view: 'persons',
+            icon: 'fa-users',
+            coverage: Math.round((personsWithAuthority.length / persons.length) * 100),
+            dataField: 'persons',
+            path: [
+                { view: 'persons', label: 'Korrespondenten', action: 'sortieren nach Briefanzahl' }
+            ]
+        });
+    }
+
+    // Places - with Top 3 preview
+    const places = Object.values(dataIndices.places || {});
+    const placesWithCoords = places.filter(p => p.lat && p.lon);
+    if (places.length > 0) {
+        const topPlaces = places
+            .map(p => ({ name: p.name, count: p.letter_count || 0 }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 3);
+
+        questions.push({
+            category: 'descriptive',
+            question: 'Von welchen Orten wurde korrespondiert?',
+            description: `${places.length} Orte, ${placesWithCoords.length} georeferenziert`,
+            preview: topPlaces.map(p => `${p.name} (${p.count})`),
+            view: 'places',
+            icon: 'fa-map-marker-alt',
+            coverage: Math.round((placesWithCoords.length / places.length) * 100),
+            dataField: 'places',
+            path: [
+                { view: 'places', label: 'Orte', action: 'Liste durchsuchen' },
+                { view: 'map', label: 'Karte', action: 'geografische Verteilung' }
+            ]
+        });
+    }
+
+    // Subjects/Topics - with Top 3 preview
+    const subjects = Object.values(dataIndices.subjects || {});
+    if (subjects.length > 0) {
+        const topSubjects = subjects
+            .map(s => ({ name: s.label || s.name, count: s.letter_count || 0 }))
+            .filter(s => s.name && s.count > 0)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 3);
+
+        questions.push({
+            category: 'descriptive',
+            question: 'Welche Themen dominieren die Korrespondenz?',
+            description: `${subjects.length} verschiedene Themen`,
+            preview: topSubjects.length > 0 ? topSubjects.map(s => `${s.name} (${s.count})`) : null,
+            view: 'topics',
+            icon: 'fa-tags',
+            coverage: 100,
+            dataField: 'subjects',
+            path: [
+                { view: 'topics', label: 'Themen', action: 'Thema auswaehlen' },
+                { view: 'letters', label: 'Briefe', action: 'gefilterte Briefe ansehen' }
+            ]
+        });
+    }
+
+    // Languages - with Top 3 preview
+    const languages = Object.keys(dataIndices.languages || {});
+    if (languages.length > 1) {
+        const topLangs = Object.entries(dataIndices.languages)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3);
+        questions.push({
+            category: 'descriptive',
+            question: 'In welchen Sprachen wurde korrespondiert?',
+            description: `${languages.length} Sprachen im Korpus`,
+            preview: topLangs.map(([lang, count]) => {
+                // Use LANGUAGE_LABELS for display, fallback to short code
+                const label = LANGUAGE_LABELS[lang] || (lang.length > 10 ? lang.substring(0, 10) + '...' : lang);
+                return `${label} (${count})`;
+            }),
+            view: 'timeline',
+            icon: 'fa-language',
+            coverage: 100,
+            dataField: 'languages',
+            path: [
+                { view: 'timeline', label: 'Timeline', action: 'Sprachverteilung nach Jahr' },
+                { view: 'letters', label: 'Briefe', action: 'nach Sprache filtern' }
+            ]
+        });
+    }
+
+    // --- ANALYTICAL QUESTIONS (What patterns exist?) ---
+
+    // Temporal patterns - with top years preview
+    const datedLetters = allLetters.filter(l => l.year);
+    if (datedLetters.length > 0) {
+        const years = datedLetters.map(l => l.year);
+        const minYear = Math.min(...years);
+        const maxYear = Math.max(...years);
+        // Count letters per year and get top 3
+        const yearCounts = {};
+        years.forEach(y => { yearCounts[y] = (yearCounts[y] || 0) + 1; });
+        const topYears = Object.entries(yearCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3);
+        questions.push({
+            category: 'analytical',
+            question: 'Wie entwickelt sich die Korrespondenzfrequenz ueber Zeit?',
+            description: `Zeitraum ${minYear}-${maxYear}, ${datedLetters.length} datierte Briefe`,
+            preview: topYears.map(([year, count]) => `${year} (${count})`),
+            view: 'timeline',
+            icon: 'fa-chart-line',
+            coverage: Math.round((datedLetters.length / totalLetters) * 100),
+            dataField: 'dates',
+            path: [
+                { view: 'timeline', label: 'Timeline', action: 'Peaks identifizieren' },
+                { view: 'chronik', label: 'Chronik', action: 'Details zu Spitzenjahren' }
+            ]
+        });
+    }
+
+    // Network structure - with top network nodes preview
+    if (persons.length >= 5) {
+        // Check for ego-network pattern and get top 3 by connections
+        // Use letter_count from parser
+        const personsWithCounts = persons
+            .map(p => ({
+                name: p.name,
+                count: p.letter_count || 0
+            }))
+            .sort((a, b) => b.count - a.count);
+        const topNetworkNodes = personsWithCounts.slice(0, 3);
+        const maxLetters = personsWithCounts[0]?.count || 0;
+        const totalConnections = personsWithCounts.reduce((a, b) => a + b.count, 0) / 2;
+        const isEgoNetwork = maxLetters > totalConnections * 0.6;
+
+        questions.push({
+            category: 'analytical',
+            question: isEgoNetwork
+                ? 'Wie ist das Ego-Netzwerk um die zentrale Person strukturiert?'
+                : 'Welche Cluster und Vermittler gibt es im Korrespondenz-Netzwerk?',
+            description: isEgoNetwork
+                ? 'Ego-Netzwerk erkannt: Eine Person dominiert die Korrespondenz'
+                : `${persons.length} Personen in Beziehung`,
+            preview: topNetworkNodes.map(p => `${p.name} (${p.count})`),
+            view: 'network',
+            icon: 'fa-project-diagram',
+            coverage: Math.round((personsWithAuthority.length / persons.length) * 100),
+            dataField: 'network',
+            path: [
+                { view: 'network', label: 'Netzwerk', action: 'Struktur erkunden' },
+                { view: 'persons', label: 'Korrespondenten', action: 'Person auswaehlen' },
+                { view: 'chronik', label: 'Chronik', action: 'Beziehungsverlauf' }
+            ]
+        });
+    }
+
+    // Geographic patterns
+    if (placesWithCoords.length >= 3) {
+        questions.push({
+            category: 'analytical',
+            question: 'Gibt es geografische Cluster in der Korrespondenz?',
+            description: `${placesWithCoords.length} Orte mit Koordinaten`,
+            view: 'map',
+            icon: 'fa-map',
+            coverage: Math.round((placesWithCoords.length / places.length) * 100),
+            dataField: 'coordinates',
+            path: [
+                { view: 'map', label: 'Karte', action: 'Cluster identifizieren' },
+                { view: 'places', label: 'Orte', action: 'Ort auswaehlen' },
+                { view: 'letters', label: 'Briefe', action: 'Briefe von diesem Ort' }
+            ]
+        });
+    }
+
+    // Mentions analysis (if available) - with top mentioned persons
+    const lettersWithMentions = allLetters.filter(l => l.mentions?.persons?.length > 0);
+    if (lettersWithMentions.length > 0) {
+        const totalMentions = lettersWithMentions.reduce((sum, l) => sum + l.mentions.persons.length, 0);
+        // Count mentions per person
+        const mentionCounts = {};
+        lettersWithMentions.forEach(l => {
+            l.mentions.persons.forEach(p => {
+                const name = p.name || p.ref || 'Unbekannt';
+                mentionCounts[name] = (mentionCounts[name] || 0) + 1;
+            });
+        });
+        const topMentioned = Object.entries(mentionCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3);
+        questions.push({
+            category: 'analytical',
+            question: 'Wer wird in wessen Briefen erwaehnt?',
+            description: `${totalMentions} Personen-Erwaehnungen in ${lettersWithMentions.length} Briefen`,
+            preview: topMentioned.map(([name, count]) => `${name} (${count}x)`),
+            view: 'mentions-flow',
+            icon: 'fa-diagram-project',
+            coverage: Math.round((lettersWithMentions.length / totalLetters) * 100),
+            dataField: 'mentions',
+            path: [
+                { view: 'mentions-flow', label: 'Mentions', action: 'Erwaehnungs-Muster' },
+                { view: 'persons', label: 'Korrespondenten', action: 'Person filtern' }
+            ]
+        });
+    }
+
+    // --- INTERPRETIVE QUESTIONS (What does it mean?) ---
+
+    // Language-geography correlation
+    if (languages.length > 1 && placesWithCoords.length >= 3) {
+        questions.push({
+            category: 'interpretive',
+            question: 'Korreliert die Briefsprache mit dem Absende-Ort?',
+            description: 'Werden bestimmte Sprachen an bestimmten Orten bevorzugt?',
+            view: 'map',
+            icon: 'fa-globe',
+            coverage: Math.min(
+                Math.round((placesWithCoords.length / places.length) * 100),
+                100
+            ),
+            dataField: 'language-geography',
+            path: [
+                { view: 'timeline', label: 'Timeline', action: 'Sprache identifizieren' },
+                { view: 'map', label: 'Karte', action: 'Sprach-Filter aktivieren' },
+                { view: 'places', label: 'Orte', action: 'Verteilung vergleichen' }
+            ]
+        });
+    }
+
+    // Biographical context
+    if (datedLetters.length > 0 && personsWithAuthority.length > 0) {
+        questions.push({
+            category: 'interpretive',
+            question: 'Wie veraendert sich die Korrespondenz im Lebensverlauf?',
+            description: 'Alter der Korrespondenten zum Briefzeitpunkt analysieren',
+            view: 'chronik',
+            icon: 'fa-scroll',
+            coverage: Math.round((personsWithAuthority.length / persons.length) * 100),
+            dataField: 'biography',
+            path: [
+                { view: 'chronik', label: 'Chronik', action: 'Wikidata anreichern' },
+                { view: 'persons', label: 'Korrespondenten', action: 'Person mit Lebensdaten waehlen' },
+                { view: 'chronik', label: 'Chronik', action: 'Alter zum Briefzeitpunkt sehen' }
+            ]
+        });
+    }
+
+    // Topic evolution
+    if (subjects.length > 0 && datedLetters.length > 0) {
+        questions.push({
+            category: 'interpretive',
+            question: 'Wie entwickeln sich die diskutierten Themen ueber Zeit?',
+            description: 'Themen-Schwerpunkte in verschiedenen Perioden',
+            view: 'topics',
+            icon: 'fa-stream',
+            coverage: 100,
+            dataField: 'topic-evolution',
+            path: [
+                { view: 'timeline', label: 'Timeline', action: 'Zeitraum eingrenzen' },
+                { view: 'topics', label: 'Themen', action: 'Themen in diesem Zeitraum' },
+                { view: 'letters', label: 'Briefe', action: 'Beispiel-Briefe lesen' }
+            ]
+        });
+    }
+
+    // Relationship development
+    if (persons.length >= 2 && datedLetters.length > 0) {
+        questions.push({
+            category: 'interpretive',
+            question: 'Wie entwickeln sich einzelne Briefbeziehungen?',
+            description: 'Erster Brief, Frequenz, Dauer einer Korrespondenz',
+            view: 'chronik',
+            icon: 'fa-handshake',
+            coverage: Math.round((datedLetters.length / totalLetters) * 100),
+            dataField: 'relationships',
+            path: [
+                { view: 'persons', label: 'Korrespondenten', action: 'Person auswaehlen' },
+                { view: 'chronik', label: 'Chronik', action: 'Beziehungsverlauf sehen' },
+                { view: 'network', label: 'Netzwerk', action: 'Kontext im Gesamtnetzwerk' }
+            ]
+        });
+    }
+
+    // --- UNAVAILABLE QUESTIONS (what's missing) ---
+    // These questions COULD be asked but can't be answered with current data
+
+    // No geo data
+    if (places.length > 0 && placesWithCoords.length === 0) {
+        questions.push({
+            category: 'unavailable',
+            question: 'Wo wurde korrespondiert? (Kartenansicht)',
+            description: `${places.length} Orte ohne Koordinaten - Geo-Visualisierung nicht moeglich`,
+            icon: 'fa-map-marked-alt',
+            coverage: 0,
+            missingData: 'Koordinaten',
+            suggestion: 'GeoNames-IDs oder Wikidata-IDs in CMIF hinzufuegen'
+        });
+    }
+
+    // No dates
+    if (datedLetters.length === 0 && totalLetters > 0) {
+        questions.push({
+            category: 'unavailable',
+            question: 'Wie entwickelt sich die Korrespondenz zeitlich?',
+            description: `${totalLetters} Briefe ohne Datierung - Timeline nicht moeglich`,
+            icon: 'fa-calendar-times',
+            coverage: 0,
+            missingData: 'Datumsangaben',
+            suggestion: 'correspAction-Elemente mit when/notBefore/notAfter befuellen'
+        });
+    }
+
+    // No authority IDs
+    if (persons.length > 0 && personsWithAuthority.length === 0) {
+        questions.push({
+            category: 'unavailable',
+            question: 'Wer sind die Korrespondenten? (Wikidata-Anreicherung)',
+            description: `${persons.length} Personen ohne Authority-IDs - keine Anreicherung moeglich`,
+            icon: 'fa-user-slash',
+            coverage: 0,
+            missingData: 'GND/VIAF IDs',
+            suggestion: 'Authority-IDs (GND, VIAF) zu persName-Elementen hinzufuegen'
+        });
+    }
+
+    // No mentions
+    if (lettersWithMentions.length === 0 && totalLetters > 10) {
+        questions.push({
+            category: 'unavailable',
+            question: 'Wer wird in Briefen erwaehnt?',
+            description: 'Keine Personen-Erwaehnungen erfasst - Mentions-Analyse nicht moeglich',
+            icon: 'fa-comment-slash',
+            coverage: 0,
+            missingData: 'rs/persName in correspDesc',
+            suggestion: 'Erwaehnungen als rs-Elemente innerhalb note erfassen'
+        });
+    }
+
+    // No subjects/topics
+    if (subjects.length === 0 && totalLetters > 10) {
+        questions.push({
+            category: 'unavailable',
+            question: 'Welche Themen werden behandelt?',
+            description: 'Keine Themen-Verschlagwortung - Topic-Analyse nicht moeglich',
+            icon: 'fa-tags',
+            coverage: 0,
+            missingData: 'Keywords/Subjects',
+            suggestion: 'Keywords als rs type="subject" in note erfassen'
+        });
+    }
+
+    // Only one language
+    if (languages.length <= 1 && totalLetters > 10) {
+        questions.push({
+            category: 'unavailable',
+            question: 'In welchen Sprachen wurde korrespondiert?',
+            description: languages.length === 1
+                ? `Nur eine Sprache erfasst (${languages[0]}) - Sprachvergleich nicht moeglich`
+                : 'Keine Sprachangaben - Sprachanalyse nicht moeglich',
+            icon: 'fa-language',
+            coverage: 0,
+            missingData: 'xml:lang Attribute',
+            suggestion: 'xml:lang zu correspAction-Elementen hinzufuegen'
+        });
+    }
+
+    return questions;
+}
+
+/**
+ * Render the Research Questions view
+ */
+function renderResearchQuestions() {
+    const container = document.getElementById('questions-grid');
+    const metaContainer = document.getElementById('questions-meta');
+    if (!container) return;
+
+    const questions = analyzeResearchQuestions();
+
+    if (questions.length === 0) {
+        container.innerHTML = `
+            <div class="questions-empty">
+                <i class="fas fa-question-circle"></i>
+                <p>Keine Forschungsfragen konnten generiert werden. Das Korpus enthaelt moeglicherweise zu wenig strukturierte Daten.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Group by category
+    const categories = {
+        descriptive: {
+            title: 'Deskriptiv',
+            subtitle: 'Was ist im Korpus?',
+            icon: 'fa-list',
+            questions: []
+        },
+        analytical: {
+            title: 'Analytisch',
+            subtitle: 'Welche Muster gibt es?',
+            icon: 'fa-search',
+            questions: []
+        },
+        interpretive: {
+            title: 'Interpretativ',
+            subtitle: 'Was bedeutet das?',
+            icon: 'fa-lightbulb',
+            questions: []
+        },
+        unavailable: {
+            title: 'Nicht beantwortbar',
+            subtitle: 'Fehlende Daten im Korpus',
+            icon: 'fa-exclamation-triangle',
+            questions: []
+        }
+    };
+
+    questions.forEach(q => {
+        if (categories[q.category]) {
+            categories[q.category].questions.push(q);
+        }
+    });
+
+    // Render categories
+    let html = '';
+    for (const [catKey, cat] of Object.entries(categories)) {
+        if (cat.questions.length === 0) continue;
+
+        html += `
+            <div class="questions-category">
+                <div class="questions-category-header">
+                    <i class="fas ${cat.icon}"></i>
+                    <div>
+                        <h3>${cat.title}</h3>
+                        <span class="questions-category-subtitle">${cat.subtitle}</span>
+                    </div>
+                </div>
+                <div class="questions-list">
+        `;
+
+        for (const q of cat.questions) {
+            const isUnavailable = catKey === 'unavailable';
+            const coverageClass = q.coverage >= 70 ? 'high' : q.coverage >= 40 ? 'medium' : 'low';
+
+            // Build preview HTML if available
+            let previewHtml = '';
+            if (q.preview && q.preview.length > 0) {
+                previewHtml = `
+                    <div class="question-preview">
+                        <span class="preview-label">Top ${q.preview.length}:</span>
+                        ${q.preview.map(item => `<span class="preview-item">${item}</span>`).join('')}
+                    </div>
+                `;
+            }
+
+            // Build path HTML if available (not for unavailable)
+            let pathHtml = '';
+            if (q.path && q.path.length > 0 && !isUnavailable) {
+                const pathSteps = q.path.map((step, i) => `
+                    <span class="path-step" data-view="${step.view}">
+                        <span class="path-step-header">
+                            <span class="path-step-num">${i + 1}</span>
+                            <span class="path-step-label">${step.label}</span>
+                        </span>
+                        <span class="path-step-action">${step.action}</span>
+                    </span>
+                `).join('<span class="path-arrow"><i class="fas fa-chevron-right"></i></span>');
+                pathHtml = `<div class="question-path">${pathSteps}</div>`;
+            }
+
+            // Build suggestion HTML for unavailable questions
+            let suggestionHtml = '';
+            if (isUnavailable && q.suggestion) {
+                suggestionHtml = `
+                    <div class="question-suggestion">
+                        <span class="suggestion-label"><i class="fas fa-wrench"></i> Fehlend:</span>
+                        <span class="suggestion-text">${q.missingData}</span>
+                    </div>
+                    <div class="question-fix">
+                        <i class="fas fa-lightbulb"></i> ${q.suggestion}
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="question-card ${isUnavailable ? 'unavailable' : ''}" ${!isUnavailable ? `data-view="${q.view}" data-path='${JSON.stringify(q.path || [])}'` : ''}>
+                    <div class="question-icon"><i class="fas ${q.icon}"></i></div>
+                    <div class="question-content">
+                        <div class="question-text">${q.question}</div>
+                        <div class="question-description">${q.description}</div>
+                        ${previewHtml}
+                        ${pathHtml}
+                        ${suggestionHtml}
+                        ${q.filterHint ? `<div class="question-hint"><i class="fas fa-info-circle"></i> ${q.filterHint}</div>` : ''}
+                    </div>
+                    ${!isUnavailable ? `
+                    <div class="question-meta">
+                        <div class="question-coverage ${coverageClass}" title="Anreicherungspotential: ${q.coverage}% der Daten haben IDs fuer Wikidata-Lookup">
+                            <div class="question-coverage-bar" style="width: ${q.coverage}%"></div>
+                            <span>${q.coverage}%</span>
+                        </div>
+                        <div class="question-action">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>` : ''}
+                </div>
+            `;
+        }
+
+        html += '</div></div>';
+    }
+
+    container.innerHTML = html;
+
+    // Add click handlers for path steps (navigate to that specific view)
+    container.querySelectorAll('.path-step').forEach(step => {
+        step.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent card click
+            const view = step.dataset.view;
+            if (view) {
+                switchView(view);
+                updateUrlState();
+            }
+        });
+    });
+
+    // Add click handlers for cards (navigate to first step or default view)
+    container.querySelectorAll('.question-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            // Don't navigate if clicking on path steps
+            if (e.target.closest('.path-step')) return;
+
+            // Try to get first path step, otherwise use default view
+            let view = card.dataset.view;
+            try {
+                const path = JSON.parse(card.dataset.path || '[]');
+                if (path.length > 0) {
+                    view = path[0].view;
+                }
+            } catch (err) { /* use default view */ }
+
+            if (view) {
+                switchView(view);
+                updateUrlState();
+            }
+        });
+    });
+
+    // Render meta info
+    if (metaContainer) {
+        const answerable = questions.filter(q => q.category !== 'unavailable').length;
+        const unavailable = categories.unavailable.questions.length;
+        const descriptive = categories.descriptive.questions.length;
+        const analytical = categories.analytical.questions.length;
+        const interpretive = categories.interpretive.questions.length;
+
+        metaContainer.innerHTML = `
+            <div class="questions-meta-info">
+                <p>
+                    <strong>${answerable} Forschungspfade</strong> wurden aus der Datenstruktur abgeleitet:
+                    ${descriptive} deskriptive, ${analytical} analytische, ${interpretive} interpretative.
+                    ${unavailable > 0 ? `<span class="meta-unavailable">${unavailable} weitere Pfade sind wegen fehlender Daten nicht verfuegbar.</span>` : ''}
+                </p>
+                <p class="questions-meta-note">
+                    <i class="fas fa-info-circle"></i>
+                    Klicke auf einen Pfad-Schritt um direkt zu diesem View zu navigieren.
+                    Die Datenabdeckung zeigt, wie vollstaendig die Daten fuer diese Frage sind.
+                </p>
+            </div>
+        `;
     }
 }
 

@@ -619,6 +619,11 @@ button, .btn {
     overflow-y: auto;
 }
 
+/* Questions View - allow scrolling */
+#questions-view.active {
+    overflow-y: auto;
+}
+
 /* Map */
 #map {
     width: 100%;

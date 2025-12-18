@@ -74,6 +74,9 @@
             <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" title="Chronik">
                 <i class="fas fa-scroll"></i> <span class="view-btn-text">Chronik</span>
             </button>
+            <button class="view-btn" data-view="questions" aria-pressed="false" id="questions-view-btn" title="Forschungspfade">
+                <i class="fas fa-route"></i> <span class="view-btn-text">Pfade</span>
+            </button>
         </div>
         <div class="nav-links">
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
@@ -616,6 +619,27 @@
                         <div class="chronik-loading hidden" id="chronik-loading">
                             <i class="fas fa-spinner fa-spin"></i>
                             <span>Lade Wikidata-Informationen...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Research Paths View -->
+                <div id="questions-view" class="tab-content">
+                    <div class="questions-container">
+                        <div class="questions-header">
+                            <div class="experimental-badge" title="Dieser View wurde im Promptotyping-Prozess mit einem LLM entwickelt und macht den Erkenntnisprozess explizit sichtbar">
+                                <i class="fas fa-flask"></i>
+                                <span class="experimental-label">Experimentell</span>
+                                <span class="experimental-detail">LLM-generierter View</span>
+                            </div>
+                            <h2><i class="fas fa-route"></i> Forschungspfade</h2>
+                            <p class="questions-intro">Methodische Pfade durch das Korpus. Jeder Pfad zeigt Forschungsfragen und die Schritte zu ihrer Beantwortung.</p>
+                        </div>
+                        <div class="questions-grid" id="questions-grid">
+                            <!-- Rendered by JavaScript -->
+                        </div>
+                        <div class="questions-meta" id="questions-meta">
+                            <!-- Corpus capabilities summary -->
                         </div>
                     </div>
                 </div>

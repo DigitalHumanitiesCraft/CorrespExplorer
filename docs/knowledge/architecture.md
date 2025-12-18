@@ -38,7 +38,7 @@ Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
 
 ### explore.html - Visualisierung
 
-Hauptansicht mit zehn Views:
+Hauptansicht mit elf Views:
 1. Uebersicht (Dashboard mit Statistiken, Datenqualitaet, Empfehlungen) - Default-View
 2. Karte (MapLibre GL JS mit Clustering)
 3. Korrespondenten (sortierbare/suchbare Liste)
@@ -49,6 +49,7 @@ Hauptansicht mit zehn Views:
 8. Netzwerk (Force-Directed Graph)
 9. Mentions Flow (Sankey Diagram für Erwähnungen)
 10. Chronik (Vertikaler Zeitstrahl mit optionaler Wikidata-Anreicherung für biografische Daten)
+11. Forschungspfade (Methodische Navigation mit epistemischen Kategorien und mehrstufigen Pfaden)
 
 Sidebar (ausgeblendet im Uebersicht-View):
 - Statistik-Cards (Briefe, Absender, Orte)
@@ -527,6 +528,18 @@ Default-View beim Laden eines Datensatzes:
 - Beziehungskontext: "Erster Brief" Badge, "Brief X von Y" Zaehler
 - Altersberechnung aus Wikidata/CMIF-Lebensdaten
 - Lazy Loading: 100 Briefe pro Batch
+
+### Forschungsfragen View
+
+- Automatisch generierte Forschungsfragen basierend auf Korpus-Struktur
+- Drei epistemologische Kategorien:
+  - Deskriptiv: Was ist im Korpus? (Personen, Orte, Themen, Sprachen)
+  - Analytisch: Welche Muster gibt es? (Zeitverlaeufe, Netzwerk-Struktur, Cluster)
+  - Interpretativ: Was bedeutet das? (Sprache-Geografie-Korrelation, biografischer Kontext)
+- Datenabdeckungs-Indikator pro Frage (Coverage-Bar)
+- Klick navigiert zum relevanten View
+- Filter-Hinweise fuer interpretative Fragen
+- Anti-Vibe-Research Feature: Macht implizite Forschungsfragen explizit
 
 ### Filter
 

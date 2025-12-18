@@ -356,6 +356,21 @@ Akzeptanzkriterien:
 
 ---
 
+## Forschungspfade
+
+### US-33: Methodisch geleitete Exploration
+Als Forschende moechte ich sehen, welche Forschungsfragen mit dem aktuellen Datensatz beantwortbar sind, um meine Analyse methodisch zu strukturieren.
+
+Akzeptanzkriterien:
+- Vier epistemische Kategorien: Deskriptiv, Analytisch, Interpretativ, Nicht beantwortbar
+- Jede Frage zeigt einen mehrstufigen Forschungspfad durch Views
+- Klickbare Pfad-Schritte navigieren zum entsprechenden View
+- Top-N Previews zeigen schnelle Antworten
+- "Nicht beantwortbar" zeigt fehlende Daten mit Anreicherungs-Hinweisen
+- Status: IMPLEMENTIERT
+
+---
+
 ## Zusammenfassung: Implementierungs-Status
 
 | Kategorie | Implementiert | Offen |
@@ -371,9 +386,10 @@ Akzeptanzkriterien:
 | Themen | 3 | 0 |
 | Uebersicht | 1 | 0 |
 | Chronik | 5 | 0 |
-| **Gesamt** | **32** | **0** |
+| Forschungspfade | 1 | 0 |
+| **Gesamt** | **33** | **0** |
 
 Stand: 2025-12-18
 
-Alle 32 User Stories sind implementiert.
+Alle 33 User Stories sind implementiert.
 

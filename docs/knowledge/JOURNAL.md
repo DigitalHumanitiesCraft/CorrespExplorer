@@ -9,6 +9,7 @@ Entwicklungszeitraum: November - Dezember 2025
 ## Phasen-Uebersicht
 
 Aktuelle Phasen (Dezember 2025):
+- Phase 38: Forschungspfade View
 - Phase 37: Anreicherungs-Feedback und UI-Fixes
 - Phase 36: Chronik als Forschungswerkzeug
 - Phase 35: Chronik-View implementiert
@@ -47,6 +48,64 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2025-12-18 (Phase 38: Forschungspfade View)
+
+### Neuer View: Forschungspfade - Methodische Navigation
+
+Implementierung eines elften Views zur methodisch geleiteten Exploration:
+
+Konzept:
+- Anti-Vibe-Research Feature: Zeigt explizit, welche Fragen mit den Daten beantwortbar sind
+- Vier epistemische Kategorien: Deskriptiv, Analytisch, Interpretativ, Nicht beantwortbar
+- Jede Frage zeigt einen mehrstufigen Forschungspfad durch verschiedene Views
+- Top-N Previews geben schnelle Antworten direkt auf der Karte
+
+Epistemische Kategorien:
+- Deskriptiv: Fakten, die direkt aus den Daten ablesbar sind
+- Analytisch: Fragen, die Berechnung oder Aggregation erfordern
+- Interpretativ: Fragen, die Kontext und Interpretation erfordern
+- Nicht beantwortbar: Fragen, die mit den aktuellen Daten nicht zu beantworten sind
+
+Forschungspfade (Multi-Step Navigation):
+- Jeder Pfad-Schritt hat View, Label und Aktion
+- Klickbare Schritte navigieren zum entsprechenden View
+- Visuelle Darstellung mit nummerierten Kreisen und Pfeilen
+- Aktions-Label unter jedem Schritt erklaert die Taetigkeit
+
+Preview-Daten:
+- Personen: Top 5 nach Briefanzahl
+- Orte: Top 5 nach Briefhaeufigkeit
+- Themen: Top 5 Subjects (bei erweiterten Datensaetzen)
+- Sprachen: Verteilung mit lesbaren Labels (statt URLs)
+- Timeline: Jahrzehnte mit meisten Briefen
+- Netzwerk: Staerkste Verbindungen
+
+Nicht beantwortbare Fragen:
+- Zeigt Fragen, die aufgrund fehlender Daten nicht bearbeitet werden koennen
+- Anreicherungs-Hinweise mit konkreten Vorschlaegen
+- Geordnet nach Anreicherungspotential
+
+Technische Implementierung:
+- analyzeResearchQuestions() - Generiert Fragen basierend auf Datenverfuegbarkeit
+- renderResearchQuestions() - Rendert Karten mit Pfaden und Previews
+- Button "Pfade" mit Route-Icon in Navigation
+- CSS: .question-card, .question-path, .path-step, .question-preview
+
+UI-Entscheidungen:
+- Pfad-Nummern mit Akzentfarbe statt grau (Sichtbarkeit)
+- Aktionen unter dem Schritt-Label statt im Tooltip (Klarheit)
+- "Anreicherungspotential" statt "Datenqualitaet" (nicht wertend gegenueber Forschungspartnern)
+
+Learnings:
+- CMIF-Parser verwendet letter_count, nicht letters_sent
+- Subject-Objekte haben label-Property, nicht name
+- Sprach-URLs muessen via LANGUAGE_LABELS gemappt werden
+- UI-Sprache sollte nicht wertend sein (Partner-Daten)
+
+US-33 implementiert (33 User Stories gesamt).
 
 ---
 
