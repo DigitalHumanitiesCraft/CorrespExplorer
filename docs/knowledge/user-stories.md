@@ -296,6 +296,34 @@ Akzeptanzkriterien:
 
 ---
 
+## Chronik
+
+### US-28: Chronologische Briefansicht
+Als Forschende moechte ich alle Briefe in einem vertikalen Zeitstrahl sehen, um den chronologischen Verlauf der Korrespondenz nachzuvollziehen.
+
+Akzeptanzkriterien:
+- Vertikaler Zeitstrahl von oben (aelteste) nach unten (neueste)
+- Briefe gruppiert nach Jahren mit visuellen Jahr-Markern
+- Jeder Brief zeigt Datum, Absender, Empfaenger und Ort
+- Klick auf Brief oeffnet Detail-Modal
+- Lazy Loading fuer grosse Datensaetze (100 Briefe pro Batch)
+- Status: IMPLEMENTIERT
+
+### US-29: Biografische Anreicherung
+Als Forschende moechte ich biografische Informationen zu den Korrespondenten sehen, um den historischen Kontext besser zu verstehen.
+
+Akzeptanzkriterien:
+- Button "Mit Wikidata anreichern" in Chronik-View
+- Modal mit Fortschrittsanzeige waehrend der Anreicherung
+- Portraits von Wikimedia Commons
+- Lebensdaten (Geburts-/Sterbejahr)
+- Berufsbezeichnungen
+- Anreicherung nur fuer Personen mit Normdaten (VIAF, GND)
+- Abbrechen-Option waehrend der Anreicherung
+- Status: IMPLEMENTIERT
+
+---
+
 ## Zusammenfassung: Implementierungs-Status
 
 | Kategorie | Implementiert | Offen |
@@ -310,9 +338,10 @@ Akzeptanzkriterien:
 | Integration | 1 | 0 |
 | Themen | 3 | 0 |
 | Uebersicht | 1 | 0 |
-| **Gesamt** | **27** | **0** |
+| Chronik | 2 | 0 |
+| **Gesamt** | **29** | **0** |
 
 Stand: 2025-12-18
 
-Alle User Stories sind implementiert.
+Alle 29 User Stories sind implementiert.
 
