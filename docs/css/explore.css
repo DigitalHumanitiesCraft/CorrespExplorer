@@ -5591,6 +5591,108 @@
     font-style: italic;
 }
 
+.overlap-clickable {
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.overlap-clickable:hover {
+    background: var(--color-surface-hover);
+    transform: translateX(4px);
+}
+
+.overlap-arrow {
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.overlap-clickable:hover .overlap-arrow {
+    opacity: 1;
+}
+
+/* Show Letters Button */
+.btn-show-letters {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    transition: background 0.15s ease;
+}
+
+.btn-show-letters:hover {
+    background: var(--color-accent-dark);
+}
+
+/* Common Letters Modal */
+.common-letters-modal {
+    max-width: 600px;
+    max-height: 80vh;
+}
+
+.common-letters-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.common-letter-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.common-letter-item:hover {
+    background: var(--color-surface-hover);
+}
+
+.common-letter-date {
+    color: var(--color-text-light);
+    font-size: var(--font-size-xs);
+    min-width: 80px;
+}
+
+.common-letter-sender {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.common-letter-item i {
+    color: var(--color-text-lighter);
+    font-size: var(--font-size-xs);
+}
+
+.common-letter-recipient {
+    color: var(--color-secondary);
+}
+
+.common-letter-place {
+    color: var(--color-text-light);
+    font-size: var(--font-size-xs);
+    margin-left: auto;
+}
+
+.common-letters-more {
+    text-align: center;
+    color: var(--color-text-light);
+    font-style: italic;
+    margin-top: var(--space-md);
+}
+
 /* Platzhalter */
 .comparison-placeholder {
     text-align: center;

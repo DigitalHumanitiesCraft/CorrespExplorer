@@ -91,6 +91,27 @@ Aenderungen:
 
 US-37 implementiert.
 
+### Erweiterung: Navigation zu Briefen
+
+Zusaetzliche Funktionalitaet zur Navigation von Vergleich zu Briefen:
+
+Neue Features:
+- "Briefe anzeigen" Button in jedem Metriken-Panel
+- Klick setzt entsprechenden Filter (Person/Ort/Zeitraum) und wechselt zu Letters View
+- "Gemeinsame Briefe" im Overlap-Bereich klickbar
+- Klick oeffnet Modal mit Liste der gemeinsamen Briefe
+- Briefe in Modal klickbar fuer Detail-Ansicht
+
+Neue Funktionen:
+- showComparisonLetters() - Setzt Filter und wechselt zu Letters View
+- showCommonLettersModal() - Zeigt gemeinsame Briefe in Modal
+
+CSS-Erweiterungen:
+- .btn-show-letters - Primaer-Button fuer "Briefe anzeigen"
+- .overlap-clickable - Klickbarer Overlap-Eintrag mit Hover-Animation
+- .common-letters-modal - Modal fuer gemeinsame Brief-Liste
+- .common-letter-item - Brief-Eintrag mit Sender/Empfaenger-Darstellung
+
 ---
 
 ## 2025-12-18 (Phase 43: CMIF v2 Vollstaendige Dimensionen)

@@ -8559,7 +8559,7 @@ function buildComparisonData(mode, itemA, itemB) {
     const metricsB = calculateComparisonMetrics(lettersB);
     const overlap = findComparisonOverlap(lettersA, lettersB);
 
-    return { metricsA, metricsB, overlap };
+    return { metricsA, metricsB, overlap, lettersA, lettersB };
 }
 
 /**
@@ -8832,22 +8832,26 @@ function selectComparisonItem(side, item) {
 /**
  * Rendert Vergleichs-Ergebnisse
  */
+// Store comparison data for click handlers
+let comparisonData = null;
+
 function renderComparisonResults() {
     const resultsContainer = document.getElementById('comparison-results');
     const placeholder = document.getElementById('comparison-placeholder');
 
     if (!resultsContainer || !comparisonA || !comparisonB) return;
 
-    const { metricsA, metricsB, overlap } = buildComparisonData(
+    comparisonData = buildComparisonData(
         comparisonMode, comparisonA, comparisonB
     );
+    const { metricsA, metricsB, overlap, lettersA, lettersB } = comparisonData;
 
     document.getElementById('comparison-title-a').textContent = comparisonA.name;
     document.getElementById('comparison-title-b').textContent = comparisonB.name;
 
-    renderComparisonMetrics('a', metricsA);
-    renderComparisonMetrics('b', metricsB);
-    renderComparisonOverlap(overlap);
+    renderComparisonMetrics('a', metricsA, lettersA.length);
+    renderComparisonMetrics('b', metricsB, lettersB.length);
+    renderComparisonOverlap(overlap, lettersA, lettersB);
 
     resultsContainer.classList.remove('hidden');
     placeholder.classList.add('hidden');
@@ -8856,7 +8860,7 @@ function renderComparisonResults() {
 /**
  * Rendert Metriken fuer ein Panel
  */
-function renderComparisonMetrics(side, metrics) {
+function renderComparisonMetrics(side, metrics, letterCount) {
     const container = document.getElementById(`comparison-metrics-${side}`);
     if (!container) return;
 
@@ -8866,6 +8870,15 @@ function renderComparisonMetrics(side, metrics) {
             <span class="metric-label">Briefe</span>
         </div>
     `;
+
+    // Show letters button if there are letters
+    if (letterCount > 0) {
+        html += `
+            <button class="btn btn-show-letters" data-side="${side}">
+                <i class="fas fa-list"></i> Briefe anzeigen
+            </button>
+        `;
+    }
 
     if (metrics.yearRange) {
         html += `
@@ -8917,22 +8930,61 @@ function renderComparisonMetrics(side, metrics) {
     }
 
     container.innerHTML = html;
+
+    // Add click handler for show letters button
+    const showBtn = container.querySelector('.btn-show-letters');
+    if (showBtn) {
+        showBtn.addEventListener('click', () => {
+            const side = showBtn.dataset.side;
+            showComparisonLetters(side);
+        });
+    }
+}
+
+/**
+ * Zeigt Briefe einer Vergleichs-Seite im Letters View
+ */
+function showComparisonLetters(side) {
+    if (!comparisonData) return;
+
+    const letters = side === 'a' ? comparisonData.lettersA : comparisonData.lettersB;
+    const item = side === 'a' ? comparisonA : comparisonB;
+
+    if (letters.length === 0) return;
+
+    // Set appropriate filter based on mode
+    if (comparisonMode === 'persons') {
+        state.setFilter('person', item.id);
+    } else if (comparisonMode === 'places') {
+        state.setFilter('place', item.id);
+    } else if (comparisonMode === 'periods') {
+        state.setFilter('yearStart', item.from);
+        state.setFilter('yearEnd', item.to);
+    }
+
+    // Switch to letters view
+    switchView('letters');
 }
 
 /**
  * Rendert Ueberschneidungs-Bereich
  */
-function renderComparisonOverlap(overlap) {
+function renderComparisonOverlap(overlap, lettersA, lettersB) {
     const container = document.getElementById('comparison-overlap-content');
     if (!container) return;
 
     let html = '';
 
+    // Find common letter IDs for clickable link
+    const setA = new Set(lettersA.map(l => l.id));
+    const commonLetterIds = lettersB.filter(l => setA.has(l.id)).map(l => l.id);
+
     if (overlap.commonLetters > 0) {
         html += `
-            <div class="overlap-item">
+            <div class="overlap-item overlap-clickable" id="overlap-common-letters">
                 <i class="fas fa-envelope"></i>
                 <span>${overlap.commonLetters} gemeinsame Briefe</span>
+                <i class="fas fa-arrow-right overlap-arrow"></i>
             </div>
         `;
     }
@@ -8975,6 +9027,88 @@ function renderComparisonOverlap(overlap) {
     }
 
     container.innerHTML = html;
+
+    // Add click handler for common letters
+    const commonLettersEl = container.querySelector('#overlap-common-letters');
+    if (commonLettersEl && commonLetterIds.length > 0) {
+        commonLettersEl.addEventListener('click', () => {
+            showCommonLettersModal(commonLetterIds);
+        });
+    }
+}
+
+/**
+ * Zeigt Modal mit gemeinsamen Briefen
+ */
+function showCommonLettersModal(letterIds) {
+    const allLetters = state.getFilteredLetters();
+    const letters = allLetters.filter(l => letterIds.includes(l.id));
+
+    if (letters.length === 0) return;
+
+    // Create modal content
+    let html = `
+        <div class="modal-header">
+            <h3>Gemeinsame Briefe (${letters.length})</h3>
+            <button class="modal-close" id="common-letters-modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="common-letters-list">
+    `;
+
+    for (const letter of letters.slice(0, 50)) {
+        const date = letter.date || 'Undatiert';
+        const sender = letter.sender?.name || 'Unbekannt';
+        const recipient = letter.recipient?.name || 'Unbekannt';
+        const place = letter.place_sent?.name || '';
+
+        html += `
+            <div class="common-letter-item" data-letter-id="${letter.id}">
+                <span class="common-letter-date">${date}</span>
+                <span class="common-letter-sender">${escapeHtml(sender)}</span>
+                <i class="fas fa-arrow-right"></i>
+                <span class="common-letter-recipient">${escapeHtml(recipient)}</span>
+                ${place ? `<span class="common-letter-place">(${escapeHtml(place)})</span>` : ''}
+            </div>
+        `;
+    }
+
+    if (letters.length > 50) {
+        html += `<p class="common-letters-more">... und ${letters.length - 50} weitere</p>`;
+    }
+
+    html += `
+            </div>
+        </div>
+    `;
+
+    // Show modal
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'common-letters-modal';
+    modal.innerHTML = `<div class="modal common-letters-modal">${html}</div>`;
+    document.body.appendChild(modal);
+
+    // Close handler
+    document.getElementById('common-letters-modal-close').addEventListener('click', () => {
+        modal.remove();
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+
+    // Click on letter opens detail
+    modal.querySelectorAll('.common-letter-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const letterId = item.dataset.letterId;
+            const letter = allLetters.find(l => l.id === letterId);
+            if (letter) {
+                modal.remove();
+                showLetterDetailModal(letter);
+            }
+        });
+    });
 }
 
 /**
