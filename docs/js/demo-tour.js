@@ -2,7 +2,7 @@
 // Interactive onboarding tour for CorrespExplorer Demo
 
 let currentStep = 1;
-const totalSteps = 9;
+const totalSteps = 12;
 let tourActive = false;
 
 /**
