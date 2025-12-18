@@ -1743,6 +1743,7 @@ button, .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: var(--space-xs);
     flex-shrink: 0;
     white-space: nowrap;
     border-right: 1px solid var(--border-color, #e0e0e0);
