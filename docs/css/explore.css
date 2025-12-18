@@ -5087,7 +5087,28 @@
     background: var(--color-error-light, #ffebee);
 }
 
-/* Datenkorb Sidebar */
+/* Aktions-Anleitung */
+.path-action-hint {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--color-info-light, #e3f2fd);
+    border-top: 1px solid var(--color-info, #2196f3);
+    color: var(--color-info-dark, #1565c0);
+    font-size: var(--font-size-sm);
+}
+
+.path-action-hint i {
+    color: var(--color-info, #2196f3);
+    font-size: var(--font-size-md);
+}
+
+#path-action-text {
+    flex: 1;
+}
+
+/* Wissenskorb Sidebar */
 #sidebar-basket {
     border-top: 2px solid var(--color-accent);
     background: var(--color-accent-light, #fff8f6);
@@ -5171,6 +5192,27 @@
 .btn-add-basket:disabled {
     background: var(--color-border);
     cursor: not-allowed;
+}
+
+.basket-view-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+    padding: var(--space-sm);
+    background: var(--color-surface);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    color: var(--color-accent);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition: all 0.15s;
+}
+
+.basket-view-link:hover {
+    background: var(--color-accent);
+    color: white;
 }
 
 /* Pfad-Navigation (unten) */

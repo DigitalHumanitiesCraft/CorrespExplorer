@@ -44,9 +44,15 @@
             </a>
         </div>
         <div class="view-switcher" role="navigation" aria-label="Ansichtswechsel">
-            <button class="view-btn active" data-view="overview" aria-pressed="true" title="Übersicht">
-                <i class="fas fa-home"></i> <span class="view-btn-text">Übersicht</span>
+            <!-- Meta-Views: Orientierung und Navigation -->
+            <button class="view-btn active" data-view="overview" aria-pressed="true" title="Uebersicht">
+                <i class="fas fa-home"></i> <span class="view-btn-text">Uebersicht</span>
             </button>
+            <button class="view-btn" data-view="questions" aria-pressed="false" id="questions-view-btn" title="Forschungspfade">
+                <i class="fas fa-route"></i> <span class="view-btn-text">Pfade</span>
+            </button>
+            <span class="view-separator"></span>
+            <!-- Daten-Views: Visualisierungen -->
             <button class="view-btn" data-view="map" aria-pressed="false" title="Karte">
                 <i class="fas fa-map"></i> <span class="view-btn-text">Karte</span>
             </button>
@@ -74,14 +80,16 @@
             <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" title="Chronik">
                 <i class="fas fa-scroll"></i> <span class="view-btn-text">Chronik</span>
             </button>
-            <button class="view-btn" data-view="questions" aria-pressed="false" id="questions-view-btn" title="Forschungspfade">
-                <i class="fas fa-route"></i> <span class="view-btn-text">Pfade</span>
-            </button>
             <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" title="Aktivitaet">
                 <i class="fas fa-calendar-alt"></i> <span class="view-btn-text">Aktivitaet</span>
             </button>
         </div>
         <div class="nav-links">
+            <a href="wissenskorb.html" class="nav-link basket-nav-link" title="Wissenskorb" id="basket-nav-link">
+                <i class="fas fa-star"></i>
+                <span class="nav-link-text">Korb</span>
+                <span class="basket-badge" id="basket-badge">0</span>
+            </a>
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
                 <i class="fas fa-download"></i> <span class="nav-link-text">Export</span>
             </button>
@@ -113,6 +121,11 @@
             <button class="path-bar-close" id="path-bar-close" title="Wissenspfad beenden">
                 <i class="fas fa-times"></i>
             </button>
+        </div>
+        <!-- Aktions-Anleitung fuer aktuellen Schritt -->
+        <div class="path-action-hint" id="path-action-hint">
+            <i class="fas fa-lightbulb"></i>
+            <span id="path-action-text">-</span>
         </div>
     </div>
 
@@ -216,11 +229,11 @@
                 </div>
 
                 <!-- ========================================
-                     SECTION 3: DATENKORB (Wissenspfad)
+                     SECTION 3: WISSENSKORB (universell, immer sichtbar)
                      ======================================== -->
-                <div class="sidebar-section hidden" id="sidebar-basket">
+                <div class="sidebar-section" id="sidebar-basket">
                     <div class="sidebar-section-header">
-                        <h4><i class="fas fa-shopping-basket"></i> Datenkorb</h4>
+                        <h4><i class="fas fa-star"></i> Wissenskorb</h4>
                         <button id="clear-basket" class="btn-reset-small" title="Korb leeren">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -231,7 +244,7 @@
                     </div>
                     <div class="basket-actions">
                         <button id="add-to-basket" class="btn-add-basket">
-                            <i class="fas fa-plus"></i> Aktuelle Auswahl zum Korb
+                            <i class="fas fa-plus"></i> Zum Wissenskorb
                         </button>
                     </div>
                 </div>

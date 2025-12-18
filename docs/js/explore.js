@@ -3,7 +3,14 @@
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS, computeLanguageColors } from './constants.js';
 import { initBasketUI } from './basket-ui.js';
-import { isInBasket } from './basket.js';
+import {
+    isInBasket,
+    addToBasket as basketAdd,
+    getBasketCounts,
+    clearBasket as basketClear,
+    onBasketChange,
+    getBasketItems
+} from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
 import { debounce, escapeHtml } from './utils.js';
 import {
@@ -7586,11 +7593,10 @@ function previousPathStep() {
 }
 
 /**
- * Fuegt aktuelle Auswahl zum Korb hinzu
+ * Fuegt aktuelle Auswahl zum universellen Korb hinzu (basket.js)
+ * Funktioniert auch ohne aktiven Wissenspfad
  */
-function addToBasket() {
-    if (!knowledgePath) return;
-
+function addToBasketFromView() {
     const currentView = state.ui.currentView;
     const filteredLetters = state.getFilteredLetters();
     let addedCount = 0;
@@ -7598,119 +7604,100 @@ function addToBasket() {
     switch (currentView) {
         case 'persons':
             // Alle Personen aus gefilterten Briefen
-            const personIds = new Set(knowledgePath.basket.personIds);
             filteredLetters.forEach(l => {
-                if (l.sender?.id) personIds.add(l.sender.id);
-                if (l.recipient?.id) personIds.add(l.recipient.id);
+                if (l.sender?.id) {
+                    const result = basketAdd('persons', l.sender.id);
+                    if (result === true) addedCount++;
+                }
+                if (l.recipient?.id) {
+                    const result = basketAdd('persons', l.recipient.id);
+                    if (result === true) addedCount++;
+                }
             });
-            addedCount = personIds.size - knowledgePath.basket.personIds.length;
-            knowledgePath.basket.personIds = Array.from(personIds);
             break;
 
         case 'places':
+        case 'map':
             // Alle Orte aus gefilterten Briefen
-            const placeIds = new Set(knowledgePath.basket.placeIds);
             filteredLetters.forEach(l => {
-                if (l.place_sent?.id) placeIds.add(l.place_sent.id);
+                if (l.place_sent?.id) {
+                    const result = basketAdd('places', l.place_sent.id);
+                    if (result === true) addedCount++;
+                }
             });
-            addedCount = placeIds.size - knowledgePath.basket.placeIds.length;
-            knowledgePath.basket.placeIds = Array.from(placeIds);
             break;
 
         case 'letters':
+        case 'chronik':
             // Alle gefilterten Briefe
-            const letterIds = new Set(knowledgePath.basket.letterIds);
             filteredLetters.forEach(l => {
-                if (l.id) letterIds.add(l.id);
-            });
-            addedCount = letterIds.size - knowledgePath.basket.letterIds.length;
-            knowledgePath.basket.letterIds = Array.from(letterIds);
-            break;
-
-        case 'topics':
-            // Ausgewaehltes Thema
-            if (selectedSubjectId) {
-                if (!knowledgePath.basket.topicIds.includes(selectedSubjectId)) {
-                    knowledgePath.basket.topicIds.push(selectedSubjectId);
-                    addedCount = 1;
+                if (l.id) {
+                    const result = basketAdd('letters', l.id);
+                    if (result === true) addedCount++;
                 }
-            }
+            });
             break;
 
         case 'timeline':
-            // Zeitbereich aus Filter
-            if (state.filters.temporal) {
-                knowledgePath.basket.timeRange = { ...state.filters.temporal };
-                addedCount = 1;
-            }
+        case 'activity':
+            // Bei Timeline/Activity: alle gefilterten Briefe
+            filteredLetters.forEach(l => {
+                if (l.id) {
+                    const result = basketAdd('letters', l.id);
+                    if (result === true) addedCount++;
+                }
+            });
             break;
 
         default:
             // Generisch: alle Brief-IDs
-            const ids = new Set(knowledgePath.basket.letterIds);
             filteredLetters.forEach(l => {
-                if (l.id) ids.add(l.id);
+                if (l.id) {
+                    const result = basketAdd('letters', l.id);
+                    if (result === true) addedCount++;
+                }
             });
-            addedCount = ids.size - knowledgePath.basket.letterIds.length;
-            knowledgePath.basket.letterIds = Array.from(ids);
     }
-
-    saveKnowledgePath();
-    updateBasketUI();
 
     // Feedback
     if (addedCount > 0) {
         showToast(`${addedCount} Element(e) zum Korb hinzugefuegt`);
     } else {
-        showToast('Auswahl bereits im Korb');
+        showToast('Auswahl bereits im Korb oder Limit erreicht');
     }
 }
 
 /**
- * Leert den Korb
+ * Leert den universellen Korb (basket.js)
  */
-function clearBasket() {
-    if (!knowledgePath) return;
-
-    knowledgePath.basket = {
-        personIds: [],
-        placeIds: [],
-        letterIds: [],
-        topicIds: [],
-        timeRange: null,
-        languages: []
-    };
-
-    saveKnowledgePath();
-    updateBasketUI();
+function clearBasketHandler() {
+    basketClear();
     showToast('Korb geleert');
 }
 
 /**
- * Zeigt Wissenspfad UI-Elemente
+ * Zeigt Wissenspfad UI-Elemente (Pfad-Leiste und Navigation)
+ * Wissenskorb-Sidebar bleibt IMMER sichtbar
  */
 function showKnowledgePathUI() {
     const pathBar = document.getElementById('knowledge-path-bar');
-    const basketSection = document.getElementById('sidebar-basket');
     const pathNav = document.getElementById('knowledge-path-nav');
 
     if (pathBar) pathBar.classList.remove('hidden');
-    if (basketSection) basketSection.classList.remove('hidden');
     if (pathNav) pathNav.classList.remove('hidden');
 
     updateKnowledgePathUI();
 }
 
 /**
- * Versteckt Wissenspfad UI-Elemente
+ * Versteckt Wissenspfad UI-Elemente (nur Pfad-Leiste und Navigation)
+ * Wissenskorb-Sidebar bleibt IMMER sichtbar
  */
 function hideKnowledgePathUI() {
     const pathBar = document.getElementById('knowledge-path-bar');
-    const basketSection = document.getElementById('sidebar-basket');
     const pathNav = document.getElementById('knowledge-path-nav');
 
     if (pathBar) pathBar.classList.add('hidden');
-    if (basketSection) basketSection.classList.add('hidden');
     if (pathNav) pathNav.classList.add('hidden');
 }
 
@@ -7763,20 +7750,23 @@ function updateKnowledgePathUI() {
         });
     }
 
-    // Korb-Zaehler
+    // Korb-Zaehler aus basket.js
     const basketCount = document.getElementById('path-bar-basket-count');
     if (basketCount) {
-        const total = knowledgePath.basket.personIds.length +
-                      knowledgePath.basket.placeIds.length +
-                      knowledgePath.basket.letterIds.length +
-                      knowledgePath.basket.topicIds.length +
-                      (knowledgePath.basket.timeRange ? 1 : 0);
-        basketCount.textContent = total;
+        const counts = getBasketCounts();
+        basketCount.textContent = counts.total;
+    }
+
+    // Aktions-Anleitung aktualisieren
+    const actionText = document.getElementById('path-action-text');
+    if (actionText && knowledgePath.path[knowledgePath.currentStep]) {
+        const currentStep = knowledgePath.path[knowledgePath.currentStep];
+        actionText.textContent = currentStep.action || 'Erkunde diese Ansicht und fuege interessante Elemente zum Korb hinzu.';
     }
 
     // Navigation aktualisieren
     updatePathNavigation();
-    updateBasketUI();
+    updateSidebarBasketUI();
 }
 
 /**
@@ -7806,58 +7796,38 @@ function updatePathNavigation() {
 }
 
 /**
- * Aktualisiert Korb-Sidebar
+ * Aktualisiert Korb-Sidebar mit Daten aus basket.js
  */
-function updateBasketUI() {
-    if (!knowledgePath) return;
-
+function updateSidebarBasketUI() {
     const container = document.getElementById('basket-content');
     if (!container) return;
 
-    const basket = knowledgePath.basket;
+    const counts = getBasketCounts();
     let html = '';
 
-    if (basket.personIds.length > 0) {
+    if (counts.persons > 0) {
         html += `
             <div class="basket-group">
                 <span class="basket-group-label"><i class="fas fa-users"></i> Personen</span>
-                <span class="basket-group-count">${basket.personIds.length}</span>
+                <span class="basket-group-count">${counts.persons}</span>
             </div>
         `;
     }
 
-    if (basket.placeIds.length > 0) {
+    if (counts.places > 0) {
         html += `
             <div class="basket-group">
                 <span class="basket-group-label"><i class="fas fa-map-marker-alt"></i> Orte</span>
-                <span class="basket-group-count">${basket.placeIds.length}</span>
+                <span class="basket-group-count">${counts.places}</span>
             </div>
         `;
     }
 
-    if (basket.letterIds.length > 0) {
+    if (counts.letters > 0) {
         html += `
             <div class="basket-group">
                 <span class="basket-group-label"><i class="fas fa-envelope"></i> Briefe</span>
-                <span class="basket-group-count">${basket.letterIds.length}</span>
-            </div>
-        `;
-    }
-
-    if (basket.topicIds.length > 0) {
-        html += `
-            <div class="basket-group">
-                <span class="basket-group-label"><i class="fas fa-tags"></i> Themen</span>
-                <span class="basket-group-count">${basket.topicIds.length}</span>
-            </div>
-        `;
-    }
-
-    if (basket.timeRange) {
-        html += `
-            <div class="basket-group">
-                <span class="basket-group-label"><i class="fas fa-clock"></i> Zeitraum</span>
-                <span class="basket-group-count">${basket.timeRange.start}-${basket.timeRange.end}</span>
+                <span class="basket-group-count">${counts.letters}</span>
             </div>
         `;
     }
@@ -7866,7 +7836,33 @@ function updateBasketUI() {
         html = '<div class="basket-empty">Korb ist leer</div>';
     }
 
+    // Link zur Wissenskorb-Seite
+    if (counts.total > 0) {
+        html += `
+            <a href="wissenskorb.html" class="basket-view-link">
+                <i class="fas fa-external-link-alt"></i> Korb oeffnen
+            </a>
+        `;
+    }
+
     container.innerHTML = html;
+
+    // Korb-Zaehler in Pfad-Leiste aktualisieren
+    const pathBarCount = document.getElementById('path-bar-basket-count');
+    if (pathBarCount) {
+        pathBarCount.textContent = counts.total;
+    }
+
+    // Navbar-Badge aktualisieren
+    const badge = document.getElementById('basket-badge');
+    if (badge) {
+        badge.textContent = counts.total;
+        if (counts.total > 0) {
+            badge.classList.add('has-items');
+        } else {
+            badge.classList.remove('has-items');
+        }
+    }
 }
 
 /**
@@ -7877,7 +7873,7 @@ function showPathCompletedMessage() {
 }
 
 /**
- * Setup Event-Handler fuer Wissenspfad
+ * Setup Event-Handler fuer Wissenspfad und Korb
  */
 function setupKnowledgePathHandlers() {
     // Pfad-Navigation
@@ -7885,9 +7881,17 @@ function setupKnowledgePathHandlers() {
     document.getElementById('path-nav-next')?.addEventListener('click', nextPathStep);
     document.getElementById('path-bar-close')?.addEventListener('click', endKnowledgePath);
 
-    // Korb-Aktionen
-    document.getElementById('add-to-basket')?.addEventListener('click', addToBasket);
-    document.getElementById('clear-basket')?.addEventListener('click', clearBasket);
+    // Korb-Aktionen (nutzt jetzt basket.js)
+    document.getElementById('add-to-basket')?.addEventListener('click', addToBasketFromView);
+    document.getElementById('clear-basket')?.addEventListener('click', clearBasketHandler);
+
+    // Listener fuer Korb-Aenderungen (synchronisiert UI)
+    onBasketChange((counts) => {
+        updateSidebarBasketUI();
+    });
+
+    // Initiales UI-Update
+    updateSidebarBasketUI();
 }
 
 // ===================

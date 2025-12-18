@@ -9,7 +9,7 @@ Entwicklungszeitraum: November - Dezember 2025
 ## Phasen-Uebersicht
 
 Aktuelle Phasen (Dezember 2025):
-- Phase 40: Wissenspfade mit Datenkorb
+- Phase 40: Wissenspfade mit Wissenskorb
 - Phase 39: Activity Heatmap View
 - Phase 38: Forschungspfade View
 - Phase 37: Anreicherungs-Feedback und UI-Fixes
@@ -53,38 +53,38 @@ Gruendungsphasen (November 2025):
 
 ---
 
-## 2025-12-18 (Phase 40: Wissenspfade mit Datenkorb)
+## 2025-12-18 (Phase 40: Wissenspfade mit Wissenskorb)
 
-### Neues Feature: Gefuehrte Exploration mit Datenkorb
+### Neues Feature: Gefuehrte Exploration mit Wissenskorb
 
 Erweiterung der Forschungspfade um interaktive Wissenspfad-Navigation:
 
 Konzept:
 - Klick auf Forschungsfrage startet einen Wissenspfad
 - Pfad-Leiste oben zeigt alle Schritte und aktuelle Position
-- Datenkorb in Sidebar sammelt Selektionen ueber Views hinweg
+- Wissenskorb in Sidebar sammelt Selektionen ueber Views hinweg
 - Navigation durch Pfad mit Zurueck/Weiter Buttons
-- Session in sessionStorage persistiert (ueberlebt Reload)
+- Wissenskorb in localStorage persistiert (auch nach Browser-Neustart verfuegbar)
 
 Komponenten:
 - Pfad-Leiste (knowledge-path-bar): Frage, Schritte, Korb-Zaehler, Beenden-Button
-- Datenkorb-Sidebar (sidebar-basket): Zeigt gesammelte Personen, Orte, Briefe, Themen
+- Wissenskorb-Sidebar (sidebar-basket): Zeigt gesammelte Personen, Orte, Briefe
 - Pfad-Navigation (knowledge-path-nav): Zurueck, Schritt-Info, Weiter-Button
+- Wissenskorb-Button in Top-Navigation mit Badge-Zaehler
 
 Technische Umsetzung:
 - startKnowledgePath() - Initialisiert neuen Pfad
 - loadKnowledgePath() - Laedt aus sessionStorage
 - saveKnowledgePath() - Persistiert in sessionStorage
 - nextPathStep() / previousPathStep() - Navigation
-- addToBasket() - Fuegt aktuelle Selektion zum Korb
+- addToBasketFromView() - Fuegt aktuelle Selektion zum Korb (nutzt basket.js)
 - updateKnowledgePathUI() - Aktualisiert alle UI-Elemente
+- updateSidebarBasketUI() - Synchronisiert Sidebar und Badge mit basket.js
 
-Datenkorb-Struktur:
-- personIds: Array von Personen-IDs
-- placeIds: Array von Orts-IDs
-- letterIds: Array von Brief-IDs
-- topicIds: Array von Themen-IDs
-- timeRange: { start, end } oder null
+Wissenskorb-Struktur (via basket.js mit localStorage):
+- persons: Array von Personen-IDs
+- places: Array von Orts-IDs
+- letters: Array von Brief-IDs
 
 Toast-Notifications:
 - showToast() Funktion fuer Feedback hinzugefuegt
