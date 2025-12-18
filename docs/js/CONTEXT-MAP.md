@@ -1,13 +1,12 @@
 # JavaScript Context Map
 
-18 Module | Modulare ES6-Architektur ohne Build-Tools
+17 Module | Modulare ES6-Architektur ohne Build-Tools
 
 ## Module nach Kategorie
 
 Entry Points (App-Initialisierung)
 - upload.js - Landing Page (index.html)
 - explore.js - Hauptansicht (explore.html) - größte Datei
-- compare.js - Datensatz-Vergleich
 - wissenskorb.js - Persönlicher Wissenskorb (WIP)
 
 Core (keine Dependencies)
@@ -69,7 +68,7 @@ explore.js (5.084 Zeilen - zentrale Datei)
   │   ├─> state.updateFilters()
   │   └─> state.getFilteredLetters() [cached]
   │
-  ├─> 8 VIEWS (Rendering)
+  ├─> 9 VIEWS (Rendering)
   │   ├─> renderMap() - MapLibre GL + GeoJSON
   │   ├─> renderPersonsList() + wikidata-enrichment.js
   │   ├─> renderLettersList() + formatters.js
@@ -77,7 +76,8 @@ explore.js (5.084 Zeilen - zentrale Datei)
   │   ├─> renderTopicsList() + renderTopicDetail()
   │   ├─> renderPlacesList()
   │   ├─> renderNetwork() - D3 Force-Directed
-  │   └─> renderMentionsFlow() - D3 Sankey
+  │   ├─> renderMentionsFlow() - D3 Sankey
+  │   └─> renderChronik() - Vertikaler Zeitstrahl + Wikidata-Anreicherung
   │
   ├─> INTERACTIONS
   │   ├─> basket-ui.js: Hinzufügen zu Wissenskorb
@@ -146,9 +146,8 @@ Ursprungsdaten (CMIF-XML)
 - basket-ui.js → basket.js, formatters.js
 
 ### Level 3 (Hauptmodule)
-- explore.js → ALLE (außer upload, compare, wissenskorb)
+- explore.js → ALLE (außer upload, wissenskorb)
 - upload.js → cmif-parser, correspsearch-api
-- compare.js → cmif-parser, formatters
 - wissenskorb.js → basket, formatters
 
 ## Daten-Strukturen

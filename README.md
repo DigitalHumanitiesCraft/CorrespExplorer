@@ -67,7 +67,6 @@ docs/
     utils.js                 - Shared utility functions
     basket.js                - Knowledge basket storage logic
     basket-ui.js             - Knowledge basket UI components
-    compare.js               - Dataset comparison logic
     wissenskorb.js           - Knowledge basket page logic
     enrichment.js            - Additional enrichment functions
     explore-tests.js         - Browser-based test suite

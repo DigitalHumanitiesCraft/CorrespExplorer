@@ -163,7 +163,6 @@ def main():
         css_dir / 'components.css',
         css_dir / 'upload.css',
         css_dir / 'about.css',
-        css_dir / 'compare.css',
         css_dir / 'wissenskorb.css'
     ]
 

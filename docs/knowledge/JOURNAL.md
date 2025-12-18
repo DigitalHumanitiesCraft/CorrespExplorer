@@ -6,6 +6,64 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
+## 2025-12-18 (Phase 35: Chronik-View implementiert)
+
+### Neuer View: Chronik - Vertikaler Zeitstrahl
+
+Implementierung eines neuen Views zur chronologischen Darstellung aller Briefe:
+
+Features:
+- Vertikaler Zeitstrahl von oben nach unten
+- Briefe gruppiert nach Jahren mit visuellen Jahr-Markern
+- Brief-Eintraege zeigen Absender, Empfaenger, Datum, Ort und Sprache
+- Klick auf Brief oeffnet Detail-Modal
+- Optionale Wikidata-Anreicherung fuer biografische Daten
+
+Anreicherung (on-demand):
+- Button "Mit Wikidata anreichern" in Header
+- Laedt Portraits von Wikimedia Commons
+- Zeigt Lebensdaten (Geburts-/Sterbejahr)
+- Zeigt erste Profession
+- Nutzt bestehende wikidata-enrichment.js API
+- Caching in sessionStorage
+
+Technische Umsetzung:
+- renderChronik() in explore.js
+- chronik-view Container in explore.html
+- CSS-Styles in explore.css (.chronik-*)
+- Integration in switchView() und applyFilters()
+
+Zehnter View in explore.html (nach Mentions Flow).
+
+---
+
+## 2025-12-18 (Phase 34: Compare-Feature entfernt)
+
+### Entfernung der Datensatz-Vergleichsfunktion
+
+Die compare.html Seite wurde vollstaendig entfernt:
+
+Geloeschte Dateien:
+- docs/compare.html
+- docs/css/compare.css
+- docs/js/compare.js
+
+Entfernte Referenzen:
+- Link "Datensaetze vergleichen" aus index.html
+- compare.html Sektion aus architecture.md
+- compare.js Modul-Dokumentation aus architecture.md
+- compare.css aus View-Specific Styles
+- US-23 (Datensatz-Vergleich) aus user-stories.md
+
+Begruendung:
+- Feature wurde selten genutzt
+- Fokussierung auf Kernfunktionalitaet
+- Reduzierung der Wartungslast
+
+User Stories neu nummeriert (27 statt 28 Stories).
+
+---
+
 ## 2025-12-18 (Phase 33: teiHeader Metadaten und Landing Page Optimierung)
 
 ### Zwei-Tier Datensatz-Architektur

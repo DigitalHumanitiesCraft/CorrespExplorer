@@ -71,6 +71,9 @@
             <button class="view-btn" data-view="mentions-flow" aria-pressed="false" id="mentions-flow-view-btn" title="Mentions Flow">
                 <i class="fas fa-diagram-project"></i> <span class="view-btn-text">Mentions Flow</span>
             </button>
+            <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" title="Chronik">
+                <i class="fas fa-scroll"></i> <span class="view-btn-text">Chronik</span>
+            </button>
         </div>
         <div class="nav-links">
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
@@ -244,7 +247,7 @@
 
                             <!-- Top Correspondents -->
                             <div class="overview-section">
-                                <h3><i class="fas fa-star"></i> Top-Korrespondenten</h3>
+                                <h3><i class="fas fa-star"></i> Haeufigste Briefpartner</h3>
                                 <div class="overview-top-correspondents" id="overview-top-correspondents">
                                     <!-- Filled by JavaScript -->
                                 </div>
@@ -580,7 +583,77 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Chronik View -->
+                <div id="chronik-view" class="tab-content">
+                    <div class="chronik-container">
+                        <div class="chronik-header">
+                            <h3>Chronik</h3>
+                            <p class="chronik-info">Vertikaler Zeitstrahl aller Briefe in chronologischer Reihenfolge</p>
+                            <div class="chronik-controls">
+                                <button id="chronik-enrich-btn" class="btn btn-secondary">
+                                    <i class="fas fa-magic"></i> Mit Wikidata anreichern
+                                </button>
+                                <span id="chronik-enrich-status" class="chronik-enrich-status hidden">
+                                    <i class="fas fa-check-circle"></i> Angereichert
+                                </span>
+                            </div>
+                        </div>
+                        <div class="chronik-timeline" id="chronik-timeline">
+                            <!-- Timeline content rendered by JavaScript -->
+                        </div>
+                        <div class="chronik-loading hidden" id="chronik-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Lade Wikidata-Informationen...</span>
+                        </div>
+                    </div>
+                </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Enrichment Modal -->
+    <div id="enrichment-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Wikidata-Anreicherung</h3>
+                <button class="modal-close" aria-label="Schliessen">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="enrichment-info" class="enrichment-info">
+                    <p>Biografische Daten von Wikidata laden:</p>
+                    <ul>
+                        <li>Portraits von Wikimedia Commons</li>
+                        <li>Lebensdaten (Geburt/Tod)</li>
+                        <li>Berufsbezeichnungen</li>
+                    </ul>
+                    <p class="enrichment-count"><span id="enrichment-person-count">0</span> Personen mit Normdaten gefunden</p>
+                </div>
+                <div id="enrichment-progress" class="enrichment-progress hidden">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="enrichment-progress-bar"></div>
+                    </div>
+                    <p class="progress-text">
+                        <span id="enrichment-current">0</span> / <span id="enrichment-total">0</span> Personen
+                    </p>
+                    <p class="progress-person" id="enrichment-current-person"></p>
+                </div>
+                <div id="enrichment-done" class="enrichment-done hidden">
+                    <i class="fas fa-check-circle"></i>
+                    <p><span id="enrichment-success-count">0</span> Personen erfolgreich angereichert</p>
+                </div>
+                <div class="enrichment-actions">
+                    <button id="enrichment-start-btn" class="btn btn-primary">
+                        <i class="fas fa-magic"></i> Anreicherung starten
+                    </button>
+                    <button id="enrichment-cancel-btn" class="btn btn-secondary hidden">
+                        <i class="fas fa-stop"></i> Abbrechen
+                    </button>
+                    <button id="enrichment-close-btn" class="btn btn-primary hidden">
+                        <i class="fas fa-check"></i> Fertig
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

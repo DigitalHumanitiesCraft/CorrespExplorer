@@ -98,6 +98,7 @@ Major components:
 - Network view: Force-directed graph with D3.js
 - Topics view: Tag cloud and topic exploration
 - Mentions flow: Sankey diagrams
+- Chronik view: Vertical timeline with year markers, letter entries, and optional Wikidata enrichment for portraits and biographical data
 
 Note: Large file size due to multiple visualization types. Contains box-shadows that need review.
 
@@ -130,20 +131,6 @@ Sections:
 - Legend table (data quality indicators)
 
 Clean implementation, consistent token usage.
-
-### compare.css (9966 bytes)
-Dataset comparison interface.
-
-Components:
-- Dataset slots (2-column grid for upload areas)
-- Upload/URL input controls
-- Loading states with spinners
-- Results section with tabs
-- Summary cards (statistics)
-- Result items (person/place comparison)
-- Count badges (dataset A vs B indicators)
-
-Uses consistent token system, border-based design.
 
 ### vault.css (6723 bytes)
 Promptotyping Vault documentation viewer.
@@ -246,7 +233,6 @@ Completed:
 
 Not yet reviewed:
 - about.css: Uses tokens, needs verification
-- compare.css: Uses tokens, needs verification
 - vault.css: Uses tokens, needs verification
 - upload.css: Uses tokens, needs verification
 - explore.css: Large file, token audit needed

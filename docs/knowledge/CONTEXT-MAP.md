@@ -38,7 +38,7 @@ Stand: 2025-12-18
 - Zielgruppe: Entwickler, Claude
 - Änderungsrate: Selten (nur bei Architektur-Änderungen)
 - Abhängigkeiten: Referenziert von allen Development-Tasks
-- Nutzen: 27 Module, 9 Views (inkl. Overview), 4 Datenflüsse, Performance-Limits
+- Nutzen: 26 Module, 9 Views (inkl. Overview), 4 Datenflüsse, Performance-Limits
 
 #### design.md
 - Zweck: UI/UX Spezifikation mit visueller Sprache und Patterns

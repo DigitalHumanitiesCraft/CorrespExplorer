@@ -3344,3 +3344,434 @@
     margin-top: var(--space-xs);
     font-style: italic;
 }
+
+/* ===================
+   CHRONIK VIEW
+   =================== */
+
+/* Enable scrolling for chronik view */
+#chronik-view.active {
+    overflow-y: auto;
+}
+
+.chronik-container {
+    padding: var(--space-lg);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.chronik-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.chronik-header h3 {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--space-sm);
+}
+
+.chronik-info {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.chronik-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.chronik-enrich-status {
+    color: var(--color-success);
+    font-size: var(--font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.chronik-enrich-status i {
+    color: var(--color-success);
+}
+
+/* Timeline Structure */
+.chronik-timeline {
+    position: relative;
+    padding-left: 60px;
+}
+
+/* Vertical line */
+.chronik-timeline::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--color-border);
+    border-radius: 2px;
+}
+
+/* Year markers */
+.chronik-year-marker {
+    position: relative;
+    margin: var(--space-xl) 0 var(--space-md) 0;
+}
+
+.chronik-year-marker::before {
+    content: '';
+    position: absolute;
+    left: -42px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    border: 3px solid var(--color-bg);
+    box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+.chronik-year-label {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-primary);
+    background: var(--color-bg);
+    padding: var(--space-xs) var(--space-sm);
+    display: inline-block;
+}
+
+/* Letter entries */
+.chronik-entry {
+    position: relative;
+    margin-bottom: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.chronik-entry:hover {
+    border-color: var(--color-primary);
+    transform: translateX(4px);
+}
+
+/* Date dot on timeline */
+.chronik-entry::before {
+    content: '';
+    position: absolute;
+    left: -44px;
+    top: var(--space-md);
+    width: 10px;
+    height: 10px;
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    transition: all var(--transition-fast);
+}
+
+.chronik-entry:hover::before {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light);
+}
+
+/* Entry header with date and persons */
+.chronik-entry-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.chronik-entry-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    min-width: 90px;
+}
+
+.chronik-entry-persons {
+    flex: 1;
+}
+
+.chronik-entry-sender,
+.chronik-entry-recipient {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.chronik-entry-sender {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.chronik-entry-arrow {
+    color: var(--color-text-tertiary);
+    margin: var(--space-xs) 0;
+    padding-left: var(--space-md);
+}
+
+.chronik-entry-recipient {
+    color: var(--color-text-secondary);
+}
+
+/* Person portrait (shown when enriched) */
+.chronik-portrait {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.chronik-portrait-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-bg-light);
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+}
+
+/* Biographical info (shown when enriched) */
+.chronik-bio {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--space-xs);
+}
+
+.chronik-bio-dates {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.chronik-bio-profession {
+    margin-top: 2px;
+    font-style: italic;
+}
+
+/* Entry metadata */
+.chronik-entry-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-light);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+}
+
+.chronik-entry-meta span {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.chronik-entry-meta i {
+    width: 14px;
+    text-align: center;
+}
+
+/* Entry link */
+.chronik-entry-link {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    color: var(--color-text-tertiary);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.chronik-entry:hover .chronik-entry-link {
+    opacity: 1;
+}
+
+.chronik-entry-link:hover {
+    color: var(--color-primary);
+}
+
+/* Loading state */
+.chronik-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: var(--space-xl);
+    color: var(--color-text-secondary);
+}
+
+.chronik-loading i {
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+}
+
+/* Empty state */
+.chronik-empty {
+    text-align: center;
+    padding: var(--space-3xl);
+    color: var(--color-text-tertiary);
+}
+
+.chronik-empty i {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+/* Enriched state modifier */
+.chronik-container.enriched .chronik-header h3::after {
+    content: ' (angereichert)';
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    color: var(--color-success);
+}
+
+/* Virtual scrolling placeholder */
+.chronik-scroll-sentinel {
+    height: 1px;
+    width: 100%;
+}
+
+/* Load more info */
+.chronik-load-info {
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    margin-top: var(--space-lg);
+    border-top: 1px dashed var(--color-border);
+}
+
+.chronik-load-info p {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-md);
+}
+
+/* Enrichment Modal */
+.enrichment-info ul {
+    margin: var(--space-md) 0;
+    padding-left: var(--space-lg);
+}
+
+.enrichment-info li {
+    margin-bottom: var(--space-xs);
+    color: var(--color-text-secondary);
+}
+
+.enrichment-count {
+    font-weight: 500;
+    color: var(--color-primary);
+    margin-top: var(--space-md);
+}
+
+.enrichment-progress {
+    text-align: center;
+    padding: var(--space-lg) 0;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: var(--color-bg-light);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: var(--space-md);
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.progress-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.progress-person {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    min-height: 1.2em;
+}
+
+.enrichment-done {
+    text-align: center;
+    padding: var(--space-xl) 0;
+}
+
+.enrichment-done i {
+    font-size: var(--font-size-3xl);
+    color: var(--color-success);
+    margin-bottom: var(--space-md);
+}
+
+.enrichment-done p {
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.enrichment-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border-light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chronik-container {
+        padding: var(--space-md);
+    }
+
+    .chronik-timeline {
+        padding-left: 40px;
+    }
+
+    .chronik-timeline::before {
+        left: 14px;
+    }
+
+    .chronik-year-marker::before {
+        left: -32px;
+        width: 10px;
+        height: 10px;
+    }
+
+    .chronik-entry::before {
+        left: -34px;
+        width: 8px;
+        height: 8px;
+    }
+
+    .chronik-entry-header {
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+
+    .chronik-entry-date {
+        min-width: auto;
+    }
+
+    .chronik-portrait,
+    .chronik-portrait-placeholder {
+        width: 32px;
+        height: 32px;
+    }
+}

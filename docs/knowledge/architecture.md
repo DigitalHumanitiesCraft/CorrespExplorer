@@ -15,7 +15,7 @@ Browser-Architektur:
     2. Erweiterte Datensaetze (JSON): Redirect mit URL-Parameter, explore.js laedt direkt
 - explore.html (Hauptvisualisierung)
   - Laedt Daten aus sessionStorage oder via URL-Parameter json=
-  - Neun Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow
+  - Zehn Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik
   - Sidebar mit Filter und Statistiken
   - Export-Funktion fuer CSV und JSON
 
@@ -38,7 +38,7 @@ Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
 
 ### explore.html - Visualisierung
 
-Hauptansicht mit neun Views:
+Hauptansicht mit zehn Views:
 1. Uebersicht (Dashboard mit Statistiken, Datenqualitaet, Empfehlungen) - Default-View
 2. Karte (MapLibre GL JS mit Clustering)
 3. Korrespondenten (sortierbare/suchbare Liste)
@@ -48,6 +48,7 @@ Hauptansicht mit neun Views:
 7. Orte (Places View mit Detail-Panel)
 8. Netzwerk (Force-Directed Graph)
 9. Mentions Flow (Sankey Diagram für Erwähnungen)
+10. Chronik (Vertikaler Zeitstrahl mit optionaler Wikidata-Anreicherung für biografische Daten)
 
 Sidebar (ausgeblendet im Uebersicht-View):
 - Statistik-Cards (Briefe, Absender, Orte)
@@ -56,7 +57,7 @@ Sidebar (ausgeblendet im Uebersicht-View):
 - Person/Thema/Ort-Filter-Badge (wenn aktiv)
 
 Navigation mit:
-- View-Switcher (9 Buttons)
+- View-Switcher (10 Buttons)
 - Export-Button
 - Neuer Datensatz-Link
 - About-Link
@@ -92,14 +93,6 @@ Dedizierte Analyse-Seite für gesammelte Items:
 - Visualisierungen: Timeline, Map, Network
 - Filter und Sortierung
 - Export-Funktionen
-
-### compare.html - Datensatz-Vergleich
-
-Vergleichsseite für zwei CMIF-Datensätze:
-- Zwei Upload-Slots (Datei oder URL)
-- Gemeinsame Personen/Orte finden
-- Unique-Listen (nur in A, nur in B)
-- CSV-Export der Ergebnisse
 
 ### test.html - Test Suite
 
@@ -295,13 +288,6 @@ wissenskorb.js
 - Visualisierungen: Timeline, Map, Network
 - Filter und Sortierung für gesammelte Personen
 - Imports: basket.js, utils.js
-
-compare.js
-- Dataset-Vergleich (zwei CMIF-Dateien)
-- Findet gemeinsame Personen und Orte via ID-Matching
-- Unique-Listen (nur in A, nur in B)
-- Export: JSON, CSV für Vergleichsergebnisse
-- Imports: cmif-parser.js, utils.js
 
 vault.js
 - Promptotyping Vault (Markdown-Viewer)
@@ -584,7 +570,6 @@ CSS-Dateien pro View:
 - about.css: About Page, Content Sections, Feature Lists
 - vault.css: Vault Page, Document Viewer, Sidebar Navigation
 - wissenskorb.css: Basket Analysis Page, Person-List-Panel
-- compare.css: Dataset Comparison, Upload-Slots, Results
 
 Alle View-Specific Styles verwenden tokens.css für konsistente Gestaltung. Keine Duplikation von Token-Werten.
 
@@ -610,14 +595,13 @@ Aspekt - Limit - Begründung:
 
 ## HTML Pages
 
-Sieben spezialisierte HTML-Seiten ohne gemeinsames Template-System. Jede Seite lädt nur die benötigten JavaScript-Module und Stylesheets.
+Sechs spezialisierte HTML-Seiten ohne gemeinsames Template-System. Jede Seite lädt nur die benötigten JavaScript-Module und Stylesheets.
 
 - index.html: Landing Page (upload.js, upload.css)
 - explore.html: Main App (explore.js, explore.css)
 - about.html: Info Page (about.css)
 - vault.html: Documentation Viewer (vault.js, vault.css)
 - wissenskorb.html: Basket Analysis (wissenskorb.js, wissenskorb.css)
-- compare.html: Dataset Comparison (compare.js, compare.css)
 - test.html: Test Suite (run-all-tests.js, style.css)
 
 ## Technology Stack
@@ -635,7 +619,7 @@ Sieben spezialisierte HTML-Seiten ohne gemeinsames Template-System. Jede Seite l
 Fünf zentrale Module bilden das Fundament der Anwendung. Änderungen an diesen Modulen haben weitreichende Auswirkungen.
 
 Zentrale Module:
-- cmif-parser.js: Alle Datenverarbeitung, wird von upload, compare, tests verwendet
+- cmif-parser.js: Alle Datenverarbeitung, wird von upload, tests verwendet
 - state-manager.js: Alle Filter und UI-State, wird von explore verwendet
 - formatters.js: Alle Views, wird für jede Datenanzeige verwendet
 - constants.js: Fast alle Module, zentrale Konfiguration

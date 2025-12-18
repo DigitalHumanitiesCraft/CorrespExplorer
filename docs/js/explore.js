@@ -328,6 +328,7 @@ async function init() {
         initPlacesView();
         initNetworkView();
         initMentionsFlowView();
+        initChronikView();
         initExport();
         initMissingPlacesModal();
         initBasketUI(dataIndices, allLetters);
@@ -1552,6 +1553,8 @@ function applyFilters() {
         renderLettersList();
     } else if (currentView === 'places') {
         renderPlacesList();
+    } else if (currentView === 'chronik') {
+        renderChronik();
     }
 }
 
@@ -1901,6 +1904,8 @@ function switchView(view) {
         renderNetwork();
     } else if (view === 'mentions-flow') {
         renderMentionsFlow();
+    } else if (view === 'chronik') {
+        renderChronik();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -5856,6 +5861,488 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
     }
 
     modal.style.display = 'flex';
+}
+
+// ===================
+// CHRONIK VIEW
+// ===================
+
+// Chronik view state
+let chronikEnriched = false;
+let chronikEnrichmentData = new Map();
+let chronikSortedLetters = [];
+let chronikRenderedCount = 0;
+let chronikScrollHandler = null;
+const CHRONIK_BATCH_SIZE = 100;
+
+/**
+ * Initialize Chronik view event handlers
+ */
+function initChronikView() {
+    // Open modal button
+    const enrichBtn = document.getElementById('chronik-enrich-btn');
+    if (enrichBtn) {
+        enrichBtn.addEventListener('click', () => {
+            openEnrichmentModal();
+        });
+    }
+
+    // Modal buttons
+    const startBtn = document.getElementById('enrichment-start-btn');
+    const cancelBtn = document.getElementById('enrichment-cancel-btn');
+    const closeBtn = document.getElementById('enrichment-close-btn');
+    const modal = document.getElementById('enrichment-modal');
+
+    if (startBtn) {
+        startBtn.addEventListener('click', async () => {
+            await runEnrichment();
+        });
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            chronikEnrichmentCancelled = true;
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            closeEnrichmentModal();
+        });
+    }
+
+    // Close modal on X or backdrop click
+    if (modal) {
+        modal.querySelector('.modal-close')?.addEventListener('click', closeEnrichmentModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeEnrichmentModal();
+        });
+    }
+}
+
+let chronikEnrichmentCancelled = false;
+
+/**
+ * Open the enrichment modal
+ */
+function openEnrichmentModal() {
+    const modal = document.getElementById('enrichment-modal');
+    if (!modal) return;
+
+    // Count enrichable persons
+    const letters = state.getFilteredLetters();
+    const personsToEnrich = new Map();
+
+    letters.forEach(letter => {
+        [letter.sender, letter.recipient].forEach(person => {
+            if (!person) return;
+            const authority = person.authority || (person.viaf ? 'viaf' : (person.gnd ? 'gnd' : null));
+            const authorityId = person.viaf || person.gnd || person.id;
+            if (authority && authorityId && !personsToEnrich.has(authorityId)) {
+                personsToEnrich.set(authorityId, { name: person.name, authority, authorityId });
+            }
+        });
+    });
+
+    // Update count
+    document.getElementById('enrichment-person-count').textContent = personsToEnrich.size;
+
+    // Reset modal state
+    document.getElementById('enrichment-info').classList.remove('hidden');
+    document.getElementById('enrichment-progress').classList.add('hidden');
+    document.getElementById('enrichment-done').classList.add('hidden');
+    document.getElementById('enrichment-start-btn').classList.remove('hidden');
+    document.getElementById('enrichment-cancel-btn').classList.add('hidden');
+    document.getElementById('enrichment-close-btn').classList.add('hidden');
+
+    // Show modal
+    modal.classList.remove('hidden');
+}
+
+/**
+ * Close the enrichment modal
+ */
+function closeEnrichmentModal() {
+    const modal = document.getElementById('enrichment-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+/**
+ * Run the enrichment process with progress
+ */
+async function runEnrichment() {
+    chronikEnrichmentCancelled = false;
+
+    // Update UI
+    document.getElementById('enrichment-info').classList.add('hidden');
+    document.getElementById('enrichment-progress').classList.remove('hidden');
+    document.getElementById('enrichment-start-btn').classList.add('hidden');
+    document.getElementById('enrichment-cancel-btn').classList.remove('hidden');
+
+    // Collect persons
+    const letters = state.getFilteredLetters();
+    const personsToEnrich = new Map();
+
+    letters.forEach(letter => {
+        [letter.sender, letter.recipient].forEach(person => {
+            if (!person) return;
+            const authority = person.authority || (person.viaf ? 'viaf' : (person.gnd ? 'gnd' : null));
+            const authorityId = person.viaf || person.gnd || person.id;
+            if (authority && authorityId && !personsToEnrich.has(authorityId)) {
+                personsToEnrich.set(authorityId, { name: person.name, authority, authorityId });
+            }
+        });
+    });
+
+    const personsArray = Array.from(personsToEnrich.values());
+    const total = personsArray.length;
+
+    document.getElementById('enrichment-total').textContent = total;
+
+    let enrichedCount = 0;
+
+    for (let i = 0; i < personsArray.length; i++) {
+        if (chronikEnrichmentCancelled) break;
+
+        const person = personsArray[i];
+
+        // Update progress
+        document.getElementById('enrichment-current').textContent = i + 1;
+        document.getElementById('enrichment-current-person').textContent = person.name || '';
+        document.getElementById('enrichment-progress-bar').style.width = `${((i + 1) / total) * 100}%`;
+
+        try {
+            const enriched = await enrichPerson(person.authority, person.authorityId);
+            if (enriched) {
+                chronikEnrichmentData.set(person.authorityId, enriched);
+                if (person.name) chronikEnrichmentData.set(person.name, enriched);
+                enrichedCount++;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (error) {
+            console.warn(`Failed to enrich ${person.name}:`, error.message);
+        }
+    }
+
+    // Done
+    chronikEnriched = true;
+    renderChronik();
+    document.querySelector('.chronik-container')?.classList.add('enriched');
+    updateChronikEnrichmentUI();
+
+    // Show done state
+    document.getElementById('enrichment-progress').classList.add('hidden');
+    document.getElementById('enrichment-done').classList.remove('hidden');
+    document.getElementById('enrichment-success-count').textContent = enrichedCount;
+    document.getElementById('enrichment-cancel-btn').classList.add('hidden');
+    document.getElementById('enrichment-close-btn').classList.remove('hidden');
+}
+
+/**
+ * Render the Chronik timeline view with lazy loading
+ */
+function renderChronik() {
+    const container = elements.getById('chronik-timeline');
+    if (!container) return;
+
+    const letters = state.getFilteredLetters();
+
+    if (!letters || letters.length === 0) {
+        container.innerHTML = `
+            <div class="chronik-empty">
+                <i class="fas fa-scroll"></i>
+                <p>Keine Briefe im ausgewaehlten Zeitraum</p>
+            </div>
+        `;
+        chronikSortedLetters = [];
+        chronikRenderedCount = 0;
+        return;
+    }
+
+    // Sort letters by date (oldest first for top-to-bottom timeline)
+    chronikSortedLetters = [...letters].sort((a, b) => {
+        const dateA = a.date || '9999';
+        const dateB = b.date || '9999';
+        return dateA.localeCompare(dateB);
+    });
+
+    // Reset state
+    chronikRenderedCount = 0;
+    container.innerHTML = '';
+
+    // Render first batch
+    renderChronikBatch(container);
+
+    // Update enrichment button visibility
+    updateChronikEnrichmentUI();
+
+    // Setup scroll handler for lazy loading
+    setupChronikScrollHandler(container);
+
+    // Show total count info
+    const totalCount = chronikSortedLetters.length;
+    if (totalCount > CHRONIK_BATCH_SIZE) {
+        updateChronikLoadMoreInfo(container, totalCount);
+    }
+
+    log.render(`Rendered Chronik: ${Math.min(CHRONIK_BATCH_SIZE, totalCount)} of ${totalCount} letters (lazy loading)`);
+}
+
+/**
+ * Render a batch of letters to the Chronik
+ */
+function renderChronikBatch(container) {
+    const startIdx = chronikRenderedCount;
+    const endIdx = Math.min(startIdx + CHRONIK_BATCH_SIZE, chronikSortedLetters.length);
+
+    if (startIdx >= chronikSortedLetters.length) return;
+
+    // Track current year for year markers
+    let currentYear = null;
+    if (startIdx > 0 && chronikSortedLetters[startIdx - 1]) {
+        const prevLetter = chronikSortedLetters[startIdx - 1];
+        currentYear = prevLetter.year || (prevLetter.date ? prevLetter.date.substring(0, 4) : null);
+    }
+
+    // Build HTML for this batch
+    let html = '';
+    for (let i = startIdx; i < endIdx; i++) {
+        const letter = chronikSortedLetters[i];
+        const year = letter.year || (letter.date ? letter.date.substring(0, 4) : 'Unbekannt');
+
+        // Add year marker if year changed
+        if (year !== currentYear) {
+            html += `
+                <div class="chronik-year-marker">
+                    <span class="chronik-year-label">${year}</span>
+                </div>
+            `;
+            currentYear = year;
+        }
+
+        html += renderChronikEntry(letter);
+    }
+
+    // Append to container
+    const fragment = document.createElement('div');
+    fragment.innerHTML = html;
+
+    // Add click handlers before appending
+    fragment.querySelectorAll('.chronik-entry').forEach(entry => {
+        entry.addEventListener('click', () => {
+            const letterId = entry.dataset.letterId;
+            if (letterId && window.openLetterDetail) {
+                window.openLetterDetail(letterId);
+            }
+        });
+    });
+
+    // Move children to container
+    while (fragment.firstChild) {
+        container.appendChild(fragment.firstChild);
+    }
+
+    chronikRenderedCount = endIdx;
+
+    // Update load more info
+    if (chronikSortedLetters.length > CHRONIK_BATCH_SIZE) {
+        updateChronikLoadMoreInfo(container, chronikSortedLetters.length);
+    }
+}
+
+/**
+ * Setup scroll handler for lazy loading
+ */
+function setupChronikScrollHandler(container) {
+    // Remove old handler
+    if (chronikScrollHandler) {
+        window.removeEventListener('scroll', chronikScrollHandler);
+    }
+
+    const mainContent = document.querySelector('.main-content');
+    if (!mainContent) return;
+
+    chronikScrollHandler = debounce(() => {
+        if (currentView !== 'chronik') return;
+        if (chronikRenderedCount >= chronikSortedLetters.length) return;
+
+        // Check if user scrolled near bottom
+        const scrollTop = mainContent.scrollTop;
+        const scrollHeight = mainContent.scrollHeight;
+        const clientHeight = mainContent.clientHeight;
+
+        if (scrollTop + clientHeight >= scrollHeight - 500) {
+            renderChronikBatch(container);
+        }
+    }, 100);
+
+    mainContent.addEventListener('scroll', chronikScrollHandler);
+}
+
+/**
+ * Update the load more info display
+ */
+function updateChronikLoadMoreInfo(container, total) {
+    // Remove existing info
+    const existingInfo = container.querySelector('.chronik-load-info');
+    if (existingInfo) existingInfo.remove();
+
+    if (chronikRenderedCount < total) {
+        const remaining = total - chronikRenderedCount;
+        const info = document.createElement('div');
+        info.className = 'chronik-load-info';
+        info.innerHTML = `
+            <p>${chronikRenderedCount} von ${total} Briefen geladen</p>
+            <button class="btn btn-secondary btn-sm" id="chronik-load-more">
+                <i class="fas fa-plus"></i> ${Math.min(remaining, CHRONIK_BATCH_SIZE)} weitere laden
+            </button>
+        `;
+        container.appendChild(info);
+
+        // Add click handler
+        info.querySelector('#chronik-load-more')?.addEventListener('click', () => {
+            renderChronikBatch(container);
+        });
+    }
+}
+
+/**
+ * Render a single letter entry in the Chronik
+ */
+function renderChronikEntry(letter) {
+    const senderName = letter.sender?.name || 'Unbekannt';
+    const senderPrecision = letter.sender?.precision || 'identified';
+    const recipientName = letter.recipient?.name || 'Unbekannt';
+    const recipientPrecision = letter.recipient?.precision || 'identified';
+
+    // Get enrichment data if available
+    const senderEnriched = getPersonEnrichment(letter.sender);
+    const recipientEnriched = getPersonEnrichment(letter.recipient);
+
+    // Format date
+    const dateDisplay = formatDateWithPrecision(letter);
+
+    // Build sender portrait HTML
+    const senderPortrait = buildPortraitHtml(senderEnriched, senderName);
+    const recipientPortrait = buildPortraitHtml(recipientEnriched, recipientName);
+
+    // Build biographical info if enriched
+    const senderBio = buildBioHtml(senderEnriched);
+    const recipientBio = buildBioHtml(recipientEnriched);
+
+    // Metadata
+    const place = letter.place_sent?.name || '';
+    const language = letter.language?.label || letter.language?.code || '';
+
+    return `
+        <div class="chronik-entry" data-letter-id="${letter.id}">
+            <a href="${letter.url || '#'}" target="_blank" class="chronik-entry-link"
+               onclick="event.stopPropagation()" title="Quelle oeffnen">
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+            <div class="chronik-entry-header">
+                <div class="chronik-entry-date">${dateDisplay}</div>
+                <div class="chronik-entry-persons">
+                    <div class="chronik-entry-sender">
+                        ${senderPortrait}
+                        <div>
+                            ${formatPersonName(senderName, senderPrecision)}
+                            ${senderBio}
+                        </div>
+                    </div>
+                    <div class="chronik-entry-arrow">
+                        <i class="fas fa-arrow-right"></i> an
+                    </div>
+                    <div class="chronik-entry-recipient">
+                        ${recipientPortrait}
+                        <div>
+                            ${formatPersonName(recipientName, recipientPrecision)}
+                            ${recipientBio}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            ${(place || language) ? `
+                <div class="chronik-entry-meta">
+                    ${place ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
+                    ${language ? `<span><i class="fas fa-language"></i> ${escapeHtml(language)}</span>` : ''}
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+/**
+ * Build portrait HTML for a person
+ */
+function buildPortraitHtml(enriched, name) {
+    if (enriched && enriched.thumbnail) {
+        return `<img src="${enriched.thumbnail}" alt="${escapeHtml(name)}" class="chronik-portrait" loading="lazy">`;
+    }
+
+    if (chronikEnriched) {
+        // Show placeholder if enrichment was done but no image found
+        const initials = getPersonInitials(name, 'identified');
+        return `<div class="chronik-portrait-placeholder">${initials}</div>`;
+    }
+
+    // Before enrichment, show nothing
+    return '';
+}
+
+/**
+ * Build biographical info HTML
+ */
+function buildBioHtml(enriched) {
+    if (!enriched) return '';
+
+    const lifeDates = formatLifeDates(enriched);
+    const profession = enriched.professions?.[0] || '';
+
+    if (!lifeDates && !profession) return '';
+
+    return `
+        <div class="chronik-bio">
+            ${lifeDates ? `<div class="chronik-bio-dates"><i class="fas fa-birthday-cake"></i> ${lifeDates}</div>` : ''}
+            ${profession ? `<div class="chronik-bio-profession">${escapeHtml(profession)}</div>` : ''}
+        </div>
+    `;
+}
+
+/**
+ * Get enrichment data for a person
+ */
+function getPersonEnrichment(person) {
+    if (!person || !chronikEnriched) return null;
+
+    // Try to find by authority ID
+    const authorityId = person.viaf || person.gnd || person.id;
+    if (authorityId && chronikEnrichmentData.has(authorityId)) {
+        return chronikEnrichmentData.get(authorityId);
+    }
+
+    // Try to find by name
+    if (person.name && chronikEnrichmentData.has(person.name)) {
+        return chronikEnrichmentData.get(person.name);
+    }
+
+    return null;
+}
+
+/**
+ * Update Chronik enrichment UI elements
+ */
+function updateChronikEnrichmentUI() {
+    const enrichBtn = elements.getById('chronik-enrich-btn');
+    const statusEl = elements.getById('chronik-enrich-status');
+
+    if (chronikEnriched) {
+        if (enrichBtn) enrichBtn.classList.add('hidden');
+        if (statusEl) statusEl.classList.remove('hidden');
+    } else {
+        if (enrichBtn) enrichBtn.classList.remove('hidden');
+        if (statusEl) statusEl.classList.add('hidden');
+    }
 }
 
 // Start application

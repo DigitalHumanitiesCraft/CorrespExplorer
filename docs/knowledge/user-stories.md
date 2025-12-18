@@ -234,19 +234,9 @@ Akzeptanzkriterien:
 
 ---
 
-## Vergleich und Integration
+## Integration
 
-### US-23: Mehrere Datensaetze vergleichen
-Als Forschende moechte ich zwei CMIF-Datensaetze vergleichen, um Ueberschneidungen oder Unterschiede zu finden.
-
-Akzeptanzkriterien:
-- Zwei Datensaetze laden
-- Gemeinsame Personen/Orte markieren
-- Eigene Vergleichsseite (compare.html)
-- Export der Vergleichsergebnisse als CSV
-- Status: IMPLEMENTIERT
-
-### US-24: Mit correspSearch verknuepfen
+### US-23: Mit correspSearch verknuepfen
 Als Forschende moechte ich von einer Person zu deren Profil bei correspSearch navigieren, um weitere Korrespondenzen zu finden.
 
 Akzeptanzkriterien:
@@ -256,9 +246,9 @@ Akzeptanzkriterien:
 
 ---
 
-## Themen-Exploration (Neu)
+## Themen-Exploration
 
-### US-25: Themen durchsuchen
+### US-24: Themen durchsuchen
 Als Forschende moechte ich alle Themen des Datensatzes durchsuchen, um relevante Diskurse zu finden.
 
 Akzeptanzkriterien:
@@ -267,7 +257,7 @@ Akzeptanzkriterien:
 - Anzeige der Briefanzahl pro Thema
 - Status: IMPLEMENTIERT
 
-### US-26: Thema-Detail ansehen
+### US-25: Thema-Detail ansehen
 Als Forschende moechte ich zu einem Thema sehen, wer darueber geschrieben hat und wann.
 
 Akzeptanzkriterien:
@@ -276,7 +266,7 @@ Akzeptanzkriterien:
 - Verwandte Themen (Co-Occurrence)
 - Status: IMPLEMENTIERT
 
-### US-27: Nach Thema filtern
+### US-26: Nach Thema filtern
 Als Forschende moechte ich alle Briefe filtern, die ein bestimmtes Thema erwaehnen.
 
 Akzeptanzkriterien:
@@ -289,7 +279,7 @@ Akzeptanzkriterien:
 
 ## Datensatz-Uebersicht
 
-### US-28: Datensatz-Uebersicht als Einstieg
+### US-27: Datensatz-Uebersicht als Einstieg
 Als Forschende moechte ich beim Laden eines Datensatzes eine Uebersicht sehen, um die Datenqualitaet und Struktur sofort einschaetzen zu koennen.
 
 Akzeptanzkriterien:
@@ -317,9 +307,10 @@ Akzeptanzkriterien:
 | Briefe | 3 | 0 |
 | Filter | 6 | 0 |
 | Teilen/Export | 3 | 0 |
-| Vergleich | 2 | 0 |
+| Integration | 1 | 0 |
 | Themen | 3 | 0 |
-| **Gesamt** | **28** | **0** |
+| Uebersicht | 1 | 0 |
+| **Gesamt** | **27** | **0** |
 
 Stand: 2025-12-18
 
