@@ -57,9 +57,7 @@ Business Logic mit echten CMIF-Daten
 Infrastructure (ohne CMIF-Daten)
 - dom-cache.js: 9 Tests - Element-Caching, Performance
 
-Gesamt: 69 Tests
-Mit echten CMIF-Daten: 60 Tests (87%)
-Infrastructure ohne Daten: 9 Tests (13%)
+Verteilung: Ueberwiegende Mehrheit der Tests verwendet echte CMIF-Daten. Nur Infrastructure-Tests (DOM-Cache) benoetigen keine Daten.
 
 ## Test-Typen
 

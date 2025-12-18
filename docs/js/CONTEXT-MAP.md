@@ -1,6 +1,6 @@
 # JavaScript Context Map
 
-26 Module | ES6-Architektur ohne Build-Tools
+ES6-Architektur ohne Build-Tools
 
 Detaillierte Dokumentation: [architecture.md](../knowledge/architecture.md)
 
@@ -8,7 +8,7 @@ Detaillierte Dokumentation: [architecture.md](../knowledge/architecture.md)
 
 Entry Points (App-Initialisierung)
 - upload.js - Landing Page (index.html)
-- explore.js - Hauptansicht (explore.html), 10 Views
+- explore.js - Hauptansicht (explore.html)
 - wissenskorb.js - Persoenlicher Wissenskorb
 - vault.js - Dokumentations-Viewer
 
@@ -36,7 +36,7 @@ UI/UX (User-Interaktion)
 Tests (siehe tests/CONTEXT-MAP.md)
 - test-runner.js - Test-Framework
 - run-all-tests.js - Test-Entry-Point
-- test-*.js - 5 Test-Suites (74+ Tests)
+- test-*.js - Test-Suites
 
 ## Kritische Abhaengigkeiten
 
@@ -50,7 +50,7 @@ Aenderungen an diesen Modulen haben weitreichende Auswirkungen:
 
 ## Views in explore.js
 
-10 Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik
+Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik
 
 Jeder View hat:
 - renderXYZ() Funktion

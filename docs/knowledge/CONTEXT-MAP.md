@@ -34,11 +34,11 @@ Stand: 2025-12-18
 ### System (Architektur & Design)
 
 #### architecture.md
-- Zweck: Vollständige System-Übersicht und Komponenten-Referenz (Single Source of Truth)
+- Zweck: Vollstaendige System-Uebersicht und Komponenten-Referenz (Single Source of Truth)
 - Zielgruppe: Entwickler, Claude
-- Änderungsrate: Selten (nur bei Architektur-Änderungen)
-- Abhängigkeiten: Referenziert von allen Development-Tasks
-- Nutzen: 26 Module, 10 Views, 4 Datenflüsse, Performance-Limits
+- Aenderungsrate: Selten (nur bei Architektur-Aenderungen)
+- Abhaengigkeiten: Referenziert von allen Development-Tasks
+- Nutzen: Module, Views, Datenfluesse, Performance-Limits
 
 #### design.md
 - Zweck: UI/UX Spezifikation mit visueller Sprache und Patterns
@@ -59,32 +59,32 @@ Stand: 2025-12-18
 #### testing.md
 - Zweck: Test-Philosophie und Execution-Strategy
 - Zielgruppe: Entwickler (Test-Writing), QA
-- Änderungsrate: Oft (Test-Coverage erweitert sich)
-- Abhängigkeiten: architecture.md, demo-datasets.md
-- Nutzen: Real Data Only Rule, 74+ Tests, Test-Pyramid, Best Practices
+- Aenderungsrate: Oft (Test-Coverage erweitert sich)
+- Abhaengigkeiten: architecture.md, demo-datasets.md
+- Nutzen: Real Data Only Rule, Test-Pyramid, Best Practices
 
 #### journal.md
 - Zweck: Chronologisches Development-Log mit Decisions und Commits
 - Zielgruppe: Entwickler (Evolution verstehen), Claude (Context)
-- Änderungsrate: Kontinuierlich (nach jeder Phase)
-- Abhängigkeiten: Alle technischen Dateien
-- Nutzen: 37 Phasen dokumentiert, Architectural Decisions E1-E11
+- Aenderungsrate: Kontinuierlich (nach jeder Phase)
+- Abhaengigkeiten: Alle technischen Dateien
+- Nutzen: Phasen-Historie, Architectural Decisions
 
 #### KNOWN-ISSUES.md
 - Zweck: Registry von dokumentierten Inkonsistenzen mit Priorisierung
 - Zielgruppe: Entwickler (Cleanup), Project Managers
-- Änderungsrate: Oft (Issues discovered/fixed)
-- Abhängigkeiten: architecture.md, design.md, tokens.css
-- Nutzen: 7 Issues ranked, Fix-Reihenfolge, Tracking-Template
+- Aenderungsrate: Oft (Issues discovered/fixed)
+- Abhaengigkeiten: architecture.md, design.md, tokens.css
+- Nutzen: Issue-Tracking, Fix-Reihenfolge
 
 ### Reference (Discovery)
 
 #### user-stories.md
-- Zweck: Requirements-Spec mit 32 implementierten Features
+- Zweck: Requirements-Spec mit implementierten Features
 - Zielgruppe: Project Managers, Entwickler (Scope), Forscher
-- Änderungsrate: Selten (Core Stories stabil)
-- Abhängigkeiten: architecture.md (beschreibt Implementations)
-- Nutzen: 32/32 Stories complete, Acceptance Criteria, 11 Kategorien
+- Aenderungsrate: Selten (Core Stories stabil)
+- Abhaengigkeiten: architecture.md (beschreibt Implementations)
+- Nutzen: Alle Stories implementiert, Acceptance Criteria
 
 #### demo-datasets.md
 - Zweck: Analyse von Test-CMIF-Datasets mit Coverage-Matrix

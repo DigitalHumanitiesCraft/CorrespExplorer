@@ -2,7 +2,7 @@
 
 Chronologisches Entwicklungsprotokoll mit detaillierten Implementierungsnotizen.
 
-37 Phasen | November - Dezember 2025
+Entwicklungszeitraum: November - Dezember 2025
 
 ---
 

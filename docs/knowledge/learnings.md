@@ -166,13 +166,13 @@ Entscheidung: Vorteile überwiegen für Academic-Open-Source-Projekt. Zielgruppe
 
 ### Monolithisches explore.js
 
-explore.js enthält alle 8 Views in einer 5000+ Zeilen Datei statt separater View-Module.
+explore.js enthaelt alle Views in einer grossen Datei statt separater View-Module.
 
-Rationale (initial): Views teilen viel State (filteredLetters, indices, temporalFilter). Separate Dateien würden komplexes Import-Geflecht erzeugen.
+Rationale (initial): Views teilen viel State (filteredLetters, indices, temporalFilter). Separate Dateien wuerden komplexes Import-Geflecht erzeugen.
 
-Status: Phase 1 Refactoring führte state-manager.js ein. Weitere Modularisierung geplant aber noch nicht umgesetzt.
+Status: Phase 1 Refactoring fuehrte state-manager.js ein. Weitere Modularisierung geplant aber noch nicht umgesetzt.
 
-Lesson Learned: Frühes Refactoring wäre einfacher gewesen. Monolith ist nach 27 Phasen schwerer aufzubrechen.
+Lesson Learned: Fruehes Refactoring waere einfacher gewesen. Monolith ist nach vielen Phasen schwerer aufzubrechen.
 
 ---
 
