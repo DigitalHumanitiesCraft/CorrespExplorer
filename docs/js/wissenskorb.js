@@ -18,6 +18,7 @@ import { debounce, escapeHtml, downloadFile, showToast } from './utils.js';
 let dataIndices = {};
 let allLetters = [];
 let currentViz = 'timeline';
+let currentItemType = 'persons';
 let map = null;
 
 // DOM Elements
@@ -53,13 +54,32 @@ async function init() {
 function cacheElements() {
     elements.emptyState = document.getElementById('empty-state');
     elements.content = document.getElementById('wissenskorb-content');
-    elements.personList = document.getElementById('person-list');
+
+    // Item lists
+    elements.personsList = document.getElementById('persons-list');
+    elements.lettersList = document.getElementById('letters-list');
+    elements.placesList = document.getElementById('places-list');
+
+    // Tab counts
+    elements.tabPersonsCount = document.getElementById('tab-persons-count');
+    elements.tabLettersCount = document.getElementById('tab-letters-count');
+    elements.tabPlacesCount = document.getElementById('tab-places-count');
+
+    // List counts
+    elements.personsListCount = document.getElementById('persons-list-count');
+    elements.lettersListCount = document.getElementById('letters-list-count');
+    elements.placesListCount = document.getElementById('places-list-count');
+
+    // Nav count (legacy)
     elements.personCount = document.getElementById('person-count');
-    elements.personListCount = document.getElementById('person-list-count');
+
+    // Stats
     elements.statLetters = document.getElementById('stat-letters');
     elements.statYears = document.getElementById('stat-years');
     elements.statPlaces = document.getElementById('stat-places');
     elements.statConnections = document.getElementById('stat-connections');
+
+    // Visualizations
     elements.timelineChart = document.getElementById('timeline-chart');
     elements.timelineLegend = document.getElementById('timeline-legend');
     elements.networkChart = document.getElementById('network-chart');
@@ -95,6 +115,11 @@ function setupEventListeners() {
     document.getElementById('export-csv-btn')?.addEventListener('click', () => exportData('csv'));
     document.getElementById('export-json-btn')?.addEventListener('click', () => exportData('json'));
 
+    // Item type tabs (Personen/Briefe/Orte)
+    document.querySelectorAll('.item-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchItemType(tab.dataset.type));
+    });
+
     // Visualization tabs
     document.querySelectorAll('.viz-tab').forEach(tab => {
         tab.addEventListener('click', () => switchViz(tab.dataset.viz));
@@ -103,6 +128,20 @@ function setupEventListeners() {
     // Details search and sort
     elements.detailsSearch?.addEventListener('input', debounce(renderDetails, 300));
     elements.detailsSort?.addEventListener('change', renderDetails);
+}
+
+function switchItemType(type) {
+    currentItemType = type;
+
+    // Update tab active state
+    document.querySelectorAll('.item-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.type === type);
+    });
+
+    // Update list container visibility
+    document.querySelectorAll('.item-list-container').forEach(container => {
+        container.classList.toggle('active', container.id === `${type}-list-container`);
+    });
 }
 
 function setupStorageSync() {
@@ -119,15 +158,23 @@ function handleBasketChange(counts) {
 }
 
 function render() {
-    const personIds = getBasketItems('persons');
     const counts = getBasketCounts();
 
-    // Update counts
-    elements.personCount.textContent = counts.persons;
-    elements.personListCount.textContent = `${counts.persons} / 50`;
+    // Update tab counts
+    if (elements.tabPersonsCount) elements.tabPersonsCount.textContent = counts.persons;
+    if (elements.tabLettersCount) elements.tabLettersCount.textContent = counts.letters;
+    if (elements.tabPlacesCount) elements.tabPlacesCount.textContent = counts.places;
+
+    // Update list counts
+    if (elements.personsListCount) elements.personsListCount.textContent = `${counts.persons} / 50`;
+    if (elements.lettersListCount) elements.lettersListCount.textContent = `${counts.letters} / 100`;
+    if (elements.placesListCount) elements.placesListCount.textContent = `${counts.places} / 50`;
+
+    // Legacy nav count
+    if (elements.personCount) elements.personCount.textContent = counts.persons;
 
     // Show empty state or content
-    if (personIds.length === 0) {
+    if (counts.total === 0) {
         elements.emptyState.style.display = 'flex';
         elements.content.style.display = 'none';
         return;
@@ -136,14 +183,22 @@ function render() {
     elements.emptyState.style.display = 'none';
     elements.content.style.display = 'flex';
 
-    // Get resolved person data
+    // Resolve all item types
+    const personIds = getBasketItems('persons');
+    const letterIds = getBasketItems('letters');
+    const placeIds = getBasketItems('places');
+
     const persons = resolvePersons(personIds);
+    const letters = resolveLetters(letterIds);
+    const places = resolvePlaces(placeIds);
 
     // Update stats
-    updateStats(persons);
+    updateStats(persons, letters, places);
 
-    // Render person list
+    // Render all lists
     renderPersonList(persons);
+    renderLetterList(letters);
+    renderPlaceList(places);
 
     // Render current visualization
     renderCurrentViz(persons);
@@ -185,7 +240,46 @@ function resolvePersons(personIds) {
     return persons;
 }
 
-function updateStats(persons) {
+function resolveLetters(letterIds) {
+    const letters = [];
+    const letterMap = new Map(allLetters.map(l => [l.id, l]));
+
+    for (const id of letterIds) {
+        const letter = letterMap.get(id);
+        if (letter) {
+            letters.push(letter);
+        }
+    }
+
+    return letters;
+}
+
+function resolvePlaces(placeIds) {
+    const places = [];
+    const placeIndex = dataIndices.places || {};
+
+    for (const id of placeIds) {
+        const place = placeIndex[id];
+        if (place) {
+            // Count letters from this place
+            const letterCount = allLetters.filter(l =>
+                l.place_sent?.authority === id || l.place_sent?.name === id
+            ).length;
+
+            places.push({
+                id,
+                name: place.name || id,
+                lat: place.lat,
+                lon: place.lon,
+                letterCount
+            });
+        }
+    }
+
+    return places;
+}
+
+function updateStats(persons, letters = [], places = []) {
     // Total letters (unique)
     const allLetterIds = new Set();
     persons.forEach(p => p.letters.forEach(l => allLetterIds.add(l.id)));
@@ -226,25 +320,89 @@ function countConnections(persons) {
 }
 
 function renderPersonList(persons) {
-    if (!elements.personList) return;
+    if (!elements.personsList) return;
 
-    elements.personList.innerHTML = persons.map(person => `
-        <div class="person-item" data-id="${escapeHtml(person.id)}">
-            <div class="person-item-content">
-                <div class="person-name">${escapeHtml(person.name)}</div>
-                <div class="person-meta">${person.letter_count} Briefe</div>
+    if (persons.length === 0) {
+        elements.personsList.innerHTML = '<div class="item-list-empty">Keine Personen im Korb</div>';
+        return;
+    }
+
+    elements.personsList.innerHTML = persons.map(person => `
+        <div class="item-row" data-id="${escapeHtml(person.id)}">
+            <div class="item-row-content">
+                <div class="item-row-name">${escapeHtml(person.name)}</div>
+                <div class="item-row-meta">${person.letter_count} Briefe</div>
             </div>
-            <button class="person-remove-btn" data-id="${escapeHtml(person.id)}" title="Entfernen">
+            <button class="item-remove-btn" data-type="persons" data-id="${escapeHtml(person.id)}" title="Entfernen">
                 <i class="fas fa-times"></i>
             </button>
         </div>
     `).join('');
 
-    // Setup remove buttons
-    elements.personList.querySelectorAll('.person-remove-btn').forEach(btn => {
+    setupRemoveButtons(elements.personsList);
+}
+
+function renderLetterList(letters) {
+    if (!elements.lettersList) return;
+
+    if (letters.length === 0) {
+        elements.lettersList.innerHTML = '<div class="item-list-empty">Keine Briefe im Korb</div>';
+        return;
+    }
+
+    elements.lettersList.innerHTML = letters.map(letter => `
+        <div class="item-row" data-id="${escapeHtml(letter.id)}">
+            <div class="item-row-content">
+                <div class="item-row-name">
+                    ${escapeHtml(letter.sender?.name || 'Unbekannt')}
+                    <i class="fas fa-arrow-right item-row-arrow"></i>
+                    ${escapeHtml(letter.recipient?.name || 'Unbekannt')}
+                </div>
+                <div class="item-row-meta">
+                    ${escapeHtml(letter.date || 'o.D.')}
+                    ${letter.place_sent?.name ? ` - ${escapeHtml(letter.place_sent.name)}` : ''}
+                </div>
+            </div>
+            <button class="item-remove-btn" data-type="letters" data-id="${escapeHtml(letter.id)}" title="Entfernen">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+
+    setupRemoveButtons(elements.lettersList);
+}
+
+function renderPlaceList(places) {
+    if (!elements.placesList) return;
+
+    if (places.length === 0) {
+        elements.placesList.innerHTML = '<div class="item-list-empty">Keine Orte im Korb</div>';
+        return;
+    }
+
+    elements.placesList.innerHTML = places.map(place => `
+        <div class="item-row" data-id="${escapeHtml(place.id)}">
+            <div class="item-row-content">
+                <div class="item-row-name">
+                    <i class="fas fa-map-marker-alt item-row-icon"></i>
+                    ${escapeHtml(place.name)}
+                </div>
+                <div class="item-row-meta">${place.letterCount} Briefe</div>
+            </div>
+            <button class="item-remove-btn" data-type="places" data-id="${escapeHtml(place.id)}" title="Entfernen">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+
+    setupRemoveButtons(elements.placesList);
+}
+
+function setupRemoveButtons(container) {
+    container.querySelectorAll('.item-remove-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            removeFromBasket('persons', btn.dataset.id);
+            removeFromBasket(btn.dataset.type, btn.dataset.id);
         });
     });
 }

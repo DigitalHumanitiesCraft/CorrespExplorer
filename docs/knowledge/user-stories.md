@@ -404,6 +404,17 @@ Akzeptanzkriterien:
 - Pfad kann jederzeit beendet werden
 - Status: IMPLEMENTIERT
 
+### US-36: Kontextuelle Korb-Aktionen
+Als Forschende moechte ich von jeder Detail-Ansicht (Brief, Person, Ort) direkt Items zum Wissenskorb hinzufuegen, um flexibel Daten zu sammeln ohne zur Korb-Seite wechseln zu muessen.
+
+Akzeptanzkriterien:
+- Brief-Detail-Modal: Toggle-Button zum Hinzufuegen/Entfernen einzelner Briefe
+- Person-Detail-Modal: Button "X Briefe zum Korb" fuer alle Briefe einer Person
+- Places-Detail-Panel: Button "X Briefe zum Korb" fuer alle Briefe eines Ortes
+- Toast-Benachrichtigung zeigt Anzahl hinzugefuegter Items
+- Visuelles Feedback (Button-Styling) wenn Item bereits im Korb
+- Status: IMPLEMENTIERT
+
 ---
 
 ## Zusammenfassung: Implementierungs-Status
@@ -423,10 +434,10 @@ Akzeptanzkriterien:
 | Chronik | 5 | 0 |
 | Forschungspfade | 1 | 0 |
 | Aktivitaet | 1 | 0 |
-| Wissenspfade | 1 | 0 |
-| **Gesamt** | **35** | **0** |
+| Wissenspfade | 2 | 0 |
+| **Gesamt** | **36** | **0** |
 
 Stand: 2025-12-18
 
-Alle 35 User Stories sind implementiert.
+Alle 36 User Stories sind implementiert.
 

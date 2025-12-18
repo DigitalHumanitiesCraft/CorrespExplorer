@@ -90,7 +90,41 @@ Toast-Notifications:
 - showToast() Funktion fuer Feedback hinzugefuegt
 - Zeigt temporaere Meldungen bei Korb-Aktionen
 
-US-35 implementiert (35 User Stories gesamt).
+### Kontextuelle Basket-Buttons
+
+Neue Buttons zum Hinzufuegen von Items zum Wissenskorb an allen relevanten Stellen:
+
+Brief-Detail-Modal:
+- "Zum Korb" Toggle-Button hinzugefuegt
+- Einzelnen Brief zum Korb hinzufuegen/entfernen
+- Visuelles Feedback (gefuellt wenn im Korb)
+
+Person-Detail-Modal:
+- "X Briefe zum Korb" Button
+- Fuegt alle Briefe einer Person hinzu
+- Toast-Notification mit Anzahl hinzugefuegter Briefe
+
+Places-Detail-Panel:
+- "X Briefe zum Korb" Button
+- Fuegt alle Briefe eines Ortes hinzu
+- Dynamische Aktualisierung bei Ort-Wechsel
+
+### Pfad-Leiste kompakter gestaltet
+
+CSS-Optimierungen fuer weniger Platzbedarf:
+- Kleinere Schriftgroessen (font-size-xs)
+- Reduzierte Paddings und Gaps
+- Kompaktere Schritt-Nummern (16px statt 20px)
+- Action-Hint kompakter (eine Zeile)
+
+### Forschungspfade ohne "Briefe"-View
+
+Pfade enden nicht mehr bei "Briefe" als letztem Schritt:
+- "Briefe" ist Drill-Down, kein analytischer View
+- Pfade enden bei aggregierten Views (Themen, Orte, Timeline)
+- Aktionen auf "zum Korb hinzufuegen" angepasst
+
+US-35, US-36 implementiert (36 User Stories gesamt).
 
 ---
 

@@ -76,14 +76,55 @@
 
         <!-- Main Content (visible when basket has items) -->
         <div class="wissenskorb-content" id="wissenskorb-content">
-            <!-- Left Panel: Person List -->
-            <aside class="person-list-panel">
-                <div class="panel-header">
-                    <h3><i class="fas fa-users"></i> Gesammelte Personen</h3>
-                    <span class="person-list-count" id="person-list-count">0 / 50</span>
+            <!-- Left Panel: Item Lists with Tabs -->
+            <aside class="item-list-panel">
+                <!-- Item Type Tabs -->
+                <div class="item-tabs">
+                    <button class="item-tab active" data-type="persons">
+                        <i class="fas fa-users"></i>
+                        <span class="item-tab-label">Personen</span>
+                        <span class="item-tab-count" id="tab-persons-count">0</span>
+                    </button>
+                    <button class="item-tab" data-type="letters">
+                        <i class="fas fa-envelope"></i>
+                        <span class="item-tab-label">Briefe</span>
+                        <span class="item-tab-count" id="tab-letters-count">0</span>
+                    </button>
+                    <button class="item-tab" data-type="places">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="item-tab-label">Orte</span>
+                        <span class="item-tab-count" id="tab-places-count">0</span>
+                    </button>
                 </div>
-                <div class="person-list" id="person-list">
-                    <!-- Persons will be rendered here -->
+
+                <!-- Persons List -->
+                <div class="item-list-container active" id="persons-list-container">
+                    <div class="panel-header">
+                        <span class="item-list-count" id="persons-list-count">0 / 50</span>
+                    </div>
+                    <div class="item-list" id="persons-list">
+                        <!-- Persons will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Letters List -->
+                <div class="item-list-container" id="letters-list-container">
+                    <div class="panel-header">
+                        <span class="item-list-count" id="letters-list-count">0 / 100</span>
+                    </div>
+                    <div class="item-list" id="letters-list">
+                        <!-- Letters will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Places List -->
+                <div class="item-list-container" id="places-list-container">
+                    <div class="panel-header">
+                        <span class="item-list-count" id="places-list-count">0 / 50</span>
+                    </div>
+                    <div class="item-list" id="places-list">
+                        <!-- Places will be rendered here -->
+                    </div>
                 </div>
             </aside>
 

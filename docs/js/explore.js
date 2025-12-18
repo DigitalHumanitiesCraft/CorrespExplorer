@@ -4,8 +4,10 @@
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS, computeLanguageColors } from './constants.js';
 import { initBasketUI } from './basket-ui.js';
 import {
-    isInBasket,
+    isInBasket as basketIsInBasket,
     addToBasket as basketAdd,
+    removeFromBasket as basketRemove,
+    toggleBasketItem as basketToggle,
     getBasketCounts,
     clearBasket as basketClear,
     onBasketChange,
@@ -2879,6 +2881,11 @@ function showLetterDetail(letterId) {
             <i class="fas fa-external-link-alt"></i> Zur Quelle
         </a>`;
     }
+    // Add to basket button
+    const inBasket = basketIsInBasket('letters', letter.id);
+    html += `<button class="btn btn-basket ${inBasket ? 'in-basket' : ''}" data-letter-id="${escapeHtml(letter.id)}">
+        <i class="fas fa-star"></i> ${inBasket ? 'Im Korb' : 'Zum Korb'}
+    </button>`;
     html += `<button class="btn btn-secondary" onclick="filterByPerson('${letter.sender?.id || letter.sender?.name}')">
         <i class="fas fa-filter"></i> Briefe von ${escapeHtml(letter.sender?.name || 'Absender')}
     </button>`;
@@ -2905,6 +2912,17 @@ function showLetterDetail(letterId) {
     html += '</div>';
 
     body.innerHTML = html;
+
+    // Setup basket button handler
+    const basketBtn = body.querySelector('.btn-basket[data-letter-id]');
+    if (basketBtn) {
+        basketBtn.addEventListener('click', () => {
+            const letterId = basketBtn.dataset.letterId;
+            const nowInBasket = basketToggle('letters', letterId);
+            basketBtn.classList.toggle('in-basket', nowInBasket);
+            basketBtn.innerHTML = `<i class="fas fa-star"></i> ${nowInBasket ? 'Im Korb' : 'Zum Korb'}`;
+        });
+    }
 
     // Show modal
     modal.style.display = 'flex';
@@ -3049,6 +3067,14 @@ async function showPersonDetail(personId) {
         html += '</div></div>';
     }
 
+    // Calculate letter count for this person
+    const personLetterIds = allLetters.filter(l =>
+        l.sender?.id === personId || l.sender?.viaf === personId ||
+        l.recipient?.id === personId || l.recipient?.viaf === personId ||
+        l.sender?.name === person.name || l.recipient?.name === person.name
+    ).map(l => l.id);
+    const totalLetters = personLetterIds.length;
+
     // Action buttons
     html += '<div class="person-detail-actions">';
 
@@ -3059,6 +3085,11 @@ async function showPersonDetail(personId) {
         </a>`;
     }
 
+    // Add to basket button
+    html += `<button class="btn btn-basket" id="person-add-basket-btn" data-letter-ids="${escapeHtml(JSON.stringify(personLetterIds))}">
+        <i class="fas fa-star"></i> ${totalLetters} Briefe zum Korb
+    </button>`;
+
     html += `<button class="btn btn-secondary" onclick="filterByPerson('${escapeHtml(personId)}'); elements.getById('person-modal').style.display='none';">
         <i class="fas fa-filter"></i> Briefe filtern
     </button>`;
@@ -3066,6 +3097,27 @@ async function showPersonDetail(personId) {
     html += '</div></div>';
 
     body.innerHTML = html;
+
+    // Setup basket button handler
+    const personBasketBtn = document.getElementById('person-add-basket-btn');
+    if (personBasketBtn) {
+        personBasketBtn.addEventListener('click', () => {
+            const letterIds = JSON.parse(personBasketBtn.dataset.letterIds);
+            let addedCount = 0;
+            letterIds.forEach(id => {
+                if (!basketIsInBasket('letters', id)) {
+                    basketAdd('letters', id);
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
+            } else {
+                showToast('Alle Briefe bereits im Korb');
+            }
+        });
+    }
 }
 
 // Helper to build correspSearch URL for a person
@@ -4013,6 +4065,30 @@ function initPlacesView() {
         });
     }
 
+    // Add to basket button
+    const addBasketBtn = elements.getById('place-add-basket-btn');
+    if (addBasketBtn) {
+        addBasketBtn.addEventListener('click', () => {
+            const letterIdsJson = addBasketBtn.dataset.letterIds;
+            if (!letterIdsJson) return;
+
+            const letterIds = JSON.parse(letterIdsJson);
+            let addedCount = 0;
+            letterIds.forEach(id => {
+                if (!basketIsInBasket('letters', id)) {
+                    basketAdd('letters', id);
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
+            } else {
+                showToast('Alle Briefe bereits im Korb');
+            }
+        });
+    }
+
     // Resolve coordinates button
     const resolveBtn = elements.getById('resolve-coords-btn');
     if (resolveBtn) {
@@ -4243,6 +4319,25 @@ function selectPlace(placeId) {
     const geonamesLink = elements.getById('place-geonames-link');
     if (geonamesLink) {
         geonamesLink.href = `https://www.geonames.org/${placeId}`;
+    }
+
+    // Update basket button count and handler
+    const basketCountSpan = elements.getById('place-basket-count');
+    if (basketCountSpan) {
+        basketCountSpan.textContent = filteredCount;
+    }
+
+    // Store letter IDs for this place for basket add
+    const placeLetterIds = filteredLetters.filter(l => {
+        if (!l.place_sent?.name) return false;
+        const letterPlaceId = l.place_sent.geonames_id || `name:${l.place_sent.name}`;
+        return letterPlaceId === placeId;
+    }).map(l => l.id);
+
+    // Update basket button
+    const addBasketBtn = elements.getById('place-add-basket-btn');
+    if (addBasketBtn) {
+        addBasketBtn.dataset.letterIds = JSON.stringify(placeLetterIds);
     }
 }
 
@@ -6920,8 +7015,7 @@ function analyzeResearchQuestions() {
             coverage: 100,
             dataField: 'subjects',
             path: [
-                { view: 'topics', label: 'Themen', action: 'Thema auswaehlen' },
-                { view: 'letters', label: 'Briefe', action: 'gefilterte Briefe ansehen' }
+                { view: 'topics', label: 'Themen', action: 'Thema auswaehlen und zum Korb' }
             ]
         });
     }
@@ -6946,8 +7040,7 @@ function analyzeResearchQuestions() {
             coverage: 100,
             dataField: 'languages',
             path: [
-                { view: 'timeline', label: 'Timeline', action: 'Sprachverteilung nach Jahr' },
-                { view: 'letters', label: 'Briefe', action: 'nach Sprache filtern' }
+                { view: 'timeline', label: 'Timeline', action: 'Sprachen in Farblegende sehen' }
             ]
         });
     }
@@ -6971,13 +7064,13 @@ function analyzeResearchQuestions() {
             question: 'Wie entwickelt sich die Korrespondenzfrequenz ueber Zeit?',
             description: `Zeitraum ${minYear}-${maxYear}, ${datedLetters.length} datierte Briefe`,
             preview: topYears.map(([year, count]) => `${year} (${count})`),
-            view: 'timeline',
+            view: 'activity',
             icon: 'fa-chart-line',
             coverage: Math.round((datedLetters.length / totalLetters) * 100),
             dataField: 'dates',
             path: [
-                { view: 'timeline', label: 'Timeline', action: 'Peaks identifizieren' },
-                { view: 'chronik', label: 'Chronik', action: 'Details zu Spitzenjahren' }
+                { view: 'activity', label: 'Aktivitaet', action: 'Heatmap fuer Muster pruefen' },
+                { view: 'timeline', label: 'Timeline', action: 'Jaehrliche Verteilung' }
             ]
         });
     }
@@ -7030,8 +7123,7 @@ function analyzeResearchQuestions() {
             dataField: 'coordinates',
             path: [
                 { view: 'map', label: 'Karte', action: 'Cluster identifizieren' },
-                { view: 'places', label: 'Orte', action: 'Ort auswaehlen' },
-                { view: 'letters', label: 'Briefe', action: 'Briefe von diesem Ort' }
+                { view: 'places', label: 'Orte', action: 'Ort auswaehlen und zum Korb' }
             ]
         });
     }
@@ -7069,59 +7161,37 @@ function analyzeResearchQuestions() {
 
     // --- INTERPRETIVE QUESTIONS (What does it mean?) ---
 
-    // Language-geography correlation
-    if (languages.length > 1 && placesWithCoords.length >= 3) {
-        questions.push({
-            category: 'interpretive',
-            question: 'Korreliert die Briefsprache mit dem Absende-Ort?',
-            description: 'Werden bestimmte Sprachen an bestimmten Orten bevorzugt?',
-            view: 'map',
-            icon: 'fa-globe',
-            coverage: Math.min(
-                Math.round((placesWithCoords.length / places.length) * 100),
-                100
-            ),
-            dataField: 'language-geography',
-            path: [
-                { view: 'timeline', label: 'Timeline', action: 'Sprache identifizieren' },
-                { view: 'map', label: 'Karte', action: 'Sprach-Filter aktivieren' },
-                { view: 'places', label: 'Orte', action: 'Verteilung vergleichen' }
-            ]
-        });
-    }
+    // Language-geography correlation - REMOVED: No view shows this correlation directly
+    // The path was misleading - users couldn't actually filter map by language
 
     // Biographical context
     if (datedLetters.length > 0 && personsWithAuthority.length > 0) {
         questions.push({
             category: 'interpretive',
             question: 'Wie veraendert sich die Korrespondenz im Lebensverlauf?',
-            description: 'Alter der Korrespondenten zum Briefzeitpunkt analysieren',
+            description: 'Erfordert Wikidata-Anreicherung fuer Lebensdaten',
             view: 'chronik',
             icon: 'fa-scroll',
             coverage: Math.round((personsWithAuthority.length / persons.length) * 100),
             dataField: 'biography',
             path: [
-                { view: 'chronik', label: 'Chronik', action: 'Wikidata anreichern' },
-                { view: 'persons', label: 'Korrespondenten', action: 'Person mit Lebensdaten waehlen' },
-                { view: 'chronik', label: 'Chronik', action: 'Alter zum Briefzeitpunkt sehen' }
+                { view: 'chronik', label: 'Chronik', action: 'Wikidata-Anreicherung aktivieren' }
             ]
         });
     }
 
-    // Topic evolution
+    // Topic evolution - Note: We don't have a topics-over-time view, just topic filtering
     if (subjects.length > 0 && datedLetters.length > 0) {
         questions.push({
             category: 'interpretive',
-            question: 'Wie entwickeln sich die diskutierten Themen ueber Zeit?',
-            description: 'Themen-Schwerpunkte in verschiedenen Perioden',
+            question: 'Welche Themen dominieren in bestimmten Zeitraeumen?',
+            description: 'Zeitfilter + Themenansicht kombinieren',
             view: 'topics',
             icon: 'fa-stream',
             coverage: 100,
             dataField: 'topic-evolution',
             path: [
-                { view: 'timeline', label: 'Timeline', action: 'Zeitraum eingrenzen' },
-                { view: 'topics', label: 'Themen', action: 'Themen in diesem Zeitraum' },
-                { view: 'letters', label: 'Briefe', action: 'Beispiel-Briefe lesen' }
+                { view: 'topics', label: 'Themen', action: 'Thema waehlen, dann Zeitfilter setzen' }
             ]
         });
     }
@@ -7132,14 +7202,13 @@ function analyzeResearchQuestions() {
             category: 'interpretive',
             question: 'Wie entwickeln sich einzelne Briefbeziehungen?',
             description: 'Erster Brief, Frequenz, Dauer einer Korrespondenz',
-            view: 'chronik',
+            view: 'persons',
             icon: 'fa-handshake',
             coverage: Math.round((datedLetters.length / totalLetters) * 100),
             dataField: 'relationships',
             path: [
-                { view: 'persons', label: 'Korrespondenten', action: 'Person auswaehlen' },
-                { view: 'chronik', label: 'Chronik', action: 'Beziehungsverlauf sehen' },
-                { view: 'network', label: 'Netzwerk', action: 'Kontext im Gesamtnetzwerk' }
+                { view: 'persons', label: 'Korrespondenten', action: 'Person waehlen und filtern' },
+                { view: 'activity', label: 'Aktivitaet', action: 'Aktivitaetsmuster der Person' }
             ]
         });
     }

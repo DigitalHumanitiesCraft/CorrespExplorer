@@ -668,8 +668,8 @@ button, .btn {
 
 /* Responsive Design */
 
-/* Large screens - hide view button text earlier to prevent overflow */
-@media (max-width: 1400px) {
+/* Large screens - hide view button text earlier to prevent navbar overflow */
+@media (max-width: 1600px) {
     .view-btn {
         padding: var(--space-sm) var(--space-md);
     }
@@ -680,6 +680,16 @@ button, .btn {
 
     .view-btn i {
         font-size: var(--font-size-lg);
+    }
+}
+
+@media (max-width: 1400px) {
+    .view-btn {
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .view-btn i {
+        font-size: var(--font-size-md);
     }
 }
 
@@ -1256,6 +1266,31 @@ button, .btn {
 
 .btn-basket-mini.in-basket:hover {
     background: #c9423a;
+}
+
+/* Generic basket button for entity detail panels */
+.btn-basket {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-background);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-basket:hover {
+    background: var(--color-warning);
+    color: white;
+}
+
+.btn-basket.in-basket {
+    background: var(--color-warning);
+    color: white;
 }
 
 /* Custom scrollbar for person list */
