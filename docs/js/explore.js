@@ -2033,9 +2033,9 @@ function initPersonsView() {
  * Render the Overview view with statistics and recommendations
  */
 function renderOverview() {
-    if (!cmifData || !cmifData.meta) return;
+    if (!dataMeta) return;
 
-    const meta = cmifData.meta;
+    const meta = dataMeta;
 
     // Update title and subtitle
     const titleEl = document.getElementById('overview-title');
@@ -2074,26 +2074,26 @@ function renderOverview() {
     const dateQuality = Math.round((preciseDates / totalLetters) * 100);
 
     // Person quality (identified with authority refs)
-    const allPersons = [...(cmifData.letters || [])].reduce((set, l) => {
+    const allPersonsSet = allLetters.reduce((set, l) => {
         if (l.sender?.name) set.add(l.sender.id || l.sender.name);
         if (l.recipient?.name) set.add(l.recipient.id || l.recipient.name);
         return set;
     }, new Set());
-    const identifiedPersons = [...(cmifData.letters || [])].reduce((set, l) => {
+    const identifiedPersons = allLetters.reduce((set, l) => {
         if (l.sender?.id && l.sender.id.startsWith('http')) set.add(l.sender.id);
         if (l.recipient?.id && l.recipient.id.startsWith('http')) set.add(l.recipient.id);
         return set;
     }, new Set());
-    const personQuality = allPersons.size > 0 ? Math.round((identifiedPersons.size / allPersons.size) * 100) : 0;
+    const personQuality = allPersonsSet.size > 0 ? Math.round((identifiedPersons.size / allPersonsSet.size) * 100) : 0;
 
     // Place quality (georeferenced)
-    const places = Object.values(cmifData.places || {});
+    const places = Object.values(dataIndices.places || {});
     const geoPlaces = places.filter(p => p.lat && p.lon).length;
     const placeQuality = places.length > 0 ? Math.round((geoPlaces / places.length) * 100) : 0;
 
     // Update quality bars
     updateQualityBar('quality-bar-dates', 'quality-dates', dateQuality, preciseDates, totalLetters);
-    updateQualityBar('quality-bar-persons', 'quality-persons', personQuality, identifiedPersons.size, allPersons.size);
+    updateQualityBar('quality-bar-persons', 'quality-persons', personQuality, identifiedPersons.size, allPersonsSet.size);
     updateQualityBar('quality-bar-places', 'quality-places', placeQuality, geoPlaces, places.length);
 
     // Generate view recommendations
