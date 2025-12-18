@@ -1873,11 +1873,11 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
-    // On overview, chronik, and questions: hide entire sidebar for full-width content
+    // On overview, chronik, questions, and activity: hide entire sidebar for full-width content
     // On other views: show sidebar with stats and filters
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'questions');
+        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'questions' || view === 'activity');
     }
 
     // Update sidebar legend for current view
@@ -1908,6 +1908,8 @@ function switchView(view) {
         renderChronik();
     } else if (view === 'questions') {
         renderResearchQuestions();
+    } else if (view === 'activity') {
+        renderActivity();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -7381,6 +7383,324 @@ function renderResearchQuestions() {
             </div>
         `;
     }
+}
+
+// ===================
+// ACTIVITY HEATMAP VIEW
+// ===================
+
+let activityIndex = null;
+let activitySelectedYear = 'all';
+
+/**
+ * Baut Index fuer Aktivitaets-Heatmap
+ * @param {Array} letters - Array von Brief-Objekten
+ * @returns {Object} Index mit byDate, byYear, byMonth, byWeekday, stats
+ */
+function buildActivityIndex(letters) {
+    const byDate = new Map();      // "YYYY-MM-DD" -> {count, ids}
+    const byYear = new Map();      // YYYY -> count
+    const byMonth = new Map();     // "YYYY-MM" -> count
+    const byWeekday = [0, 0, 0, 0, 0, 0, 0]; // Mo-So counts
+
+    let total = 0;
+    let maxDay = { date: null, count: 0 };
+    let maxYear = { year: null, count: 0 };
+
+    for (const letter of letters) {
+        // Nur Briefe mit Datum (nicht 'unknown')
+        if (!letter.date || letter.datePrecision === 'unknown') continue;
+
+        const date = letter.date;  // "YYYY-MM-DD"
+        const year = letter.year;
+        const month = date.substring(0, 7);  // "YYYY-MM"
+
+        // Wochentag berechnen (0=So in JS, wir wollen 0=Mo)
+        const jsWeekday = new Date(date).getDay();
+        const weekday = jsWeekday === 0 ? 6 : jsWeekday - 1;
+
+        // By date aggregieren
+        if (!byDate.has(date)) {
+            byDate.set(date, { count: 0, ids: [] });
+        }
+        const dateEntry = byDate.get(date);
+        dateEntry.count++;
+        dateEntry.ids.push(letter.id);
+
+        // By year aggregieren
+        byYear.set(year, (byYear.get(year) || 0) + 1);
+
+        // By month aggregieren
+        byMonth.set(month, (byMonth.get(month) || 0) + 1);
+
+        // By weekday aggregieren
+        byWeekday[weekday]++;
+
+        // Max day tracken
+        if (dateEntry.count > maxDay.count) {
+            maxDay = { date, count: dateEntry.count };
+        }
+
+        total++;
+    }
+
+    // Max year finden
+    for (const [year, count] of byYear) {
+        if (count > maxYear.count) {
+            maxYear = { year, count };
+        }
+    }
+
+    // Statistiken berechnen
+    const years = Array.from(byYear.keys()).sort((a, b) => a - b);
+    const monthCount = byMonth.size || 1;
+    const avgPerMonth = Math.round(total / monthCount * 10) / 10;
+
+    return {
+        byDate,
+        byYear,
+        byMonth,
+        byWeekday,
+        total,
+        maxDay,
+        maxYear,
+        years,
+        avgPerMonth
+    };
+}
+
+/**
+ * Rendert den Activity-Heatmap-View
+ */
+function renderActivity() {
+    const container = document.getElementById('activity-view');
+    if (!container) return;
+
+    const letters = state.getFilteredLetters();
+
+    // Index bauen
+    activityIndex = buildActivityIndex(letters);
+
+    // Statistik-Karten aktualisieren
+    const totalEl = document.getElementById('activity-total');
+    const busiestDayEl = document.getElementById('activity-busiest-day');
+    const busiestYearEl = document.getElementById('activity-busiest-year');
+    const avgEl = document.getElementById('activity-avg-per-month');
+
+    if (totalEl) totalEl.textContent = activityIndex.total.toLocaleString('de-DE');
+    if (busiestDayEl) {
+        busiestDayEl.textContent = activityIndex.maxDay.date
+            ? `${activityIndex.maxDay.count} (${activityIndex.maxDay.date})`
+            : '-';
+    }
+    if (busiestYearEl) {
+        busiestYearEl.textContent = activityIndex.maxYear.year
+            ? `${activityIndex.maxYear.year} (${activityIndex.maxYear.count})`
+            : '-';
+    }
+    if (avgEl) avgEl.textContent = activityIndex.avgPerMonth;
+
+    // Jahr-Selector rendern
+    renderActivityYearSelector();
+
+    // Heatmap rendern
+    renderActivityHeatmap();
+
+    // Details ausblenden
+    const detailsPanel = document.getElementById('activity-details');
+    if (detailsPanel) detailsPanel.classList.add('hidden');
+}
+
+/**
+ * Rendert Jahr-Auswahl-Buttons
+ */
+function renderActivityYearSelector() {
+    const container = document.getElementById('activity-year-selector');
+    if (!container || !activityIndex) return;
+
+    const years = activityIndex.years;
+
+    let html = `<button class="activity-year-btn ${activitySelectedYear === 'all' ? 'active' : ''}"
+                        data-year="all">Alle Jahre</button>`;
+
+    // Nur jeden 5. Jahr zeigen wenn viele Jahre
+    const step = years.length > 20 ? 5 : (years.length > 10 ? 2 : 1);
+
+    for (let i = 0; i < years.length; i += step) {
+        const year = years[i];
+        const isActive = activitySelectedYear === year;
+        html += `<button class="activity-year-btn ${isActive ? 'active' : ''}"
+                         data-year="${year}">${year}</button>`;
+    }
+
+    container.innerHTML = html;
+
+    // Click-Handler
+    container.querySelectorAll('.activity-year-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const year = btn.dataset.year;
+            activitySelectedYear = year === 'all' ? 'all' : parseInt(year);
+
+            // Active-Status aktualisieren
+            container.querySelectorAll('.activity-year-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Heatmap neu rendern
+            renderActivityHeatmap();
+        });
+    });
+}
+
+/**
+ * Rendert die Heatmap-Grid
+ */
+function renderActivityHeatmap() {
+    const container = document.getElementById('activity-heatmap');
+    if (!container || !activityIndex) return;
+
+    const { byDate, years } = activityIndex;
+
+    // Jahre filtern
+    const displayYears = activitySelectedYear === 'all'
+        ? years
+        : [activitySelectedYear];
+
+    // Max-Wert fuer Farbskala berechnen (fuer angezeigte Jahre)
+    let maxCount = 0;
+    for (const [date, data] of byDate) {
+        const year = parseInt(date.substring(0, 4));
+        if (displayYears.includes(year) && data.count > maxCount) {
+            maxCount = data.count;
+        }
+    }
+
+    // HTML generieren
+    let html = '';
+
+    for (const year of displayYears) {
+        html += `<div class="activity-year-block">
+            <div class="activity-year-label">${year}</div>
+            <div class="activity-year-grid">`;
+
+        // Erstes Datum des Jahres
+        const firstDay = new Date(year, 0, 1);
+        const lastDay = new Date(year, 11, 31);
+
+        // Fuer jeden Tag des Jahres
+        const currentDate = new Date(firstDay);
+        let weekHtml = '<div class="activity-week">';
+
+        // Leere Zellen am Anfang (vor erstem Wochentag)
+        const firstWeekday = firstDay.getDay();
+        const adjustedFirstWeekday = firstWeekday === 0 ? 6 : firstWeekday - 1;
+        for (let i = 0; i < adjustedFirstWeekday; i++) {
+            weekHtml += '<span class="activity-cell activity-cell-empty"></span>';
+        }
+
+        while (currentDate <= lastDay) {
+            const dateStr = currentDate.toISOString().substring(0, 10);
+            const data = byDate.get(dateStr);
+            const count = data ? data.count : 0;
+            const level = getActivityLevel(count, maxCount);
+
+            const weekday = currentDate.getDay();
+            const adjustedWeekday = weekday === 0 ? 6 : weekday - 1;
+
+            // Neue Woche starten (Montag)
+            if (adjustedWeekday === 0 && currentDate > firstDay) {
+                weekHtml += '</div><div class="activity-week">';
+            }
+
+            weekHtml += `<span class="activity-cell activity-level-${level}"
+                              data-date="${dateStr}"
+                              data-count="${count}"
+                              title="${dateStr}: ${count} Brief${count !== 1 ? 'e' : ''}"></span>`;
+
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        weekHtml += '</div>';
+        html += weekHtml + '</div></div>';
+    }
+
+    container.innerHTML = html;
+
+    // Click-Handler fuer Zellen
+    container.querySelectorAll('.activity-cell[data-date]').forEach(cell => {
+        cell.addEventListener('click', () => {
+            const date = cell.dataset.date;
+            const count = parseInt(cell.dataset.count);
+            if (count > 0) {
+                showActivityDetails(date);
+            }
+        });
+    });
+}
+
+/**
+ * Berechnet Aktivitaets-Level (0-4) fuer Farbskala
+ */
+function getActivityLevel(count, maxCount) {
+    if (count === 0) return 0;
+    if (maxCount === 0) return 0;
+
+    const ratio = count / maxCount;
+    if (ratio <= 0.25) return 1;
+    if (ratio <= 0.5) return 2;
+    if (ratio <= 0.75) return 3;
+    return 4;
+}
+
+/**
+ * Zeigt Details fuer einen bestimmten Tag
+ */
+function showActivityDetails(date) {
+    const detailsPanel = document.getElementById('activity-details');
+    const dateEl = document.getElementById('activity-details-date');
+    const listEl = document.getElementById('activity-details-list');
+
+    if (!detailsPanel || !dateEl || !listEl || !activityIndex) return;
+
+    const data = activityIndex.byDate.get(date);
+    if (!data) return;
+
+    // Datum formatieren
+    const dateObj = new Date(date);
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    dateEl.textContent = dateObj.toLocaleDateString('de-DE', options);
+
+    // Briefe des Tages finden
+    const allLetters = state.getFilteredLetters();
+    const dayLetters = allLetters.filter(l => l.date === date);
+
+    // Liste rendern
+    let html = '';
+    for (const letter of dayLetters) {
+        const senderName = letter.sender?.name || 'Unbekannt';
+        const recipientName = letter.recipient?.name || 'Unbekannt';
+        const place = letter.place_sent?.name || '';
+
+        html += `<div class="activity-detail-item" data-letter-id="${letter.id}">
+            <span class="activity-detail-sender">${senderName}</span>
+            <span class="activity-detail-arrow"><i class="fas fa-arrow-right"></i></span>
+            <span class="activity-detail-recipient">${recipientName}</span>
+            ${place ? `<span class="activity-detail-place">(${place})</span>` : ''}
+        </div>`;
+    }
+
+    listEl.innerHTML = html;
+    detailsPanel.classList.remove('hidden');
+
+    // Click-Handler fuer Brief-Details
+    listEl.querySelectorAll('.activity-detail-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const letterId = item.dataset.letterId;
+            const letter = allLetters.find(l => l.id === letterId);
+            if (letter) {
+                showLetterDetailModal(letter);
+            }
+        });
+    });
 }
 
 // Start application

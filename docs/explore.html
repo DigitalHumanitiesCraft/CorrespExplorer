@@ -77,6 +77,9 @@
             <button class="view-btn" data-view="questions" aria-pressed="false" id="questions-view-btn" title="Forschungspfade">
                 <i class="fas fa-route"></i> <span class="view-btn-text">Pfade</span>
             </button>
+            <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" title="Aktivitaet">
+                <i class="fas fa-calendar-alt"></i> <span class="view-btn-text">Aktivitaet</span>
+            </button>
         </div>
         <div class="nav-links">
             <button id="export-btn" class="nav-link" aria-label="Daten exportieren">
@@ -640,6 +643,76 @@
                         </div>
                         <div class="questions-meta" id="questions-meta">
                             <!-- Corpus capabilities summary -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Heatmap View -->
+                <div id="activity-view" class="tab-content">
+                    <div class="activity-container">
+                        <div class="activity-header">
+                            <div class="experimental-badge" title="Experimenteller View zur Visualisierung von Korrespondenz-Aktivitaet">
+                                <i class="fas fa-flask"></i>
+                                <span class="experimental-label">Experimentell</span>
+                            </div>
+                            <h2><i class="fas fa-calendar-alt"></i> Korrespondenz-Aktivitaet</h2>
+                            <p class="activity-subtitle">GitHub-Style Heatmap der Briefaktivitaet</p>
+                        </div>
+
+                        <!-- Statistik-Karten -->
+                        <div class="activity-stats">
+                            <div class="stat-card">
+                                <div class="stat-value" id="activity-total">-</div>
+                                <div class="stat-label">Briefe mit Datum</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="activity-busiest-day">-</div>
+                                <div class="stat-label">Aktivster Tag</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="activity-busiest-year">-</div>
+                                <div class="stat-label">Aktivstes Jahr</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="activity-avg-per-month">-</div>
+                                <div class="stat-label">Briefe/Monat</div>
+                            </div>
+                        </div>
+
+                        <!-- Jahr-Auswahl -->
+                        <div class="activity-year-selector" id="activity-year-selector">
+                            <!-- Dynamisch gefuellt mit Jahr-Buttons -->
+                        </div>
+
+                        <!-- Heatmap Container -->
+                        <div class="activity-heatmap-wrapper">
+                            <div class="activity-weekday-labels">
+                                <span>Mo</span>
+                                <span>Di</span>
+                                <span>Mi</span>
+                                <span>Do</span>
+                                <span>Fr</span>
+                                <span>Sa</span>
+                                <span>So</span>
+                            </div>
+                            <div id="activity-heatmap" class="activity-heatmap"></div>
+                        </div>
+
+                        <!-- Legende -->
+                        <div class="activity-legend">
+                            <span class="activity-legend-label">Weniger</span>
+                            <span class="activity-cell activity-level-0"></span>
+                            <span class="activity-cell activity-level-1"></span>
+                            <span class="activity-cell activity-level-2"></span>
+                            <span class="activity-cell activity-level-3"></span>
+                            <span class="activity-cell activity-level-4"></span>
+                            <span class="activity-legend-label">Mehr</span>
+                        </div>
+
+                        <!-- Detail-Panel fuer ausgewaehlten Tag -->
+                        <div id="activity-details" class="activity-details hidden">
+                            <h4 id="activity-details-date">-</h4>
+                            <div id="activity-details-list" class="activity-details-list"></div>
                         </div>
                     </div>
                 </div>
