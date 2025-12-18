@@ -20,11 +20,6 @@
     margin-bottom: var(--space-sm);
 }
 
-/* Center header when no button present */
-.sidebar-section-header:not(:has(button)) {
-    justify-content: center;
-}
-
 .sidebar-section-header h4 {
     margin: 0;
     font-size: var(--font-size-sm);
@@ -43,16 +38,6 @@
     font-size: var(--font-size-sm);
     color: var(--color-text);
     margin-top: var(--space-md);
-}
-
-.dataset-meta-header {
-    margin: 0 0 var(--space-sm) 0;
-    font-size: var(--font-size-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--color-text-light);
-    font-weight: 600;
-    text-align: center;
 }
 
 /* Dataset Metadata Items */
