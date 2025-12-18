@@ -8509,7 +8509,7 @@ function showActivityDetails(date) {
             const letterId = item.dataset.letterId;
             const letter = allLetters.find(l => l.id === letterId);
             if (letter) {
-                showLetterDetailModal(letter);
+                showLetterDetail(letter.id);
             }
         });
     });
@@ -8954,12 +8954,16 @@ function showComparisonLetters(side) {
 
     // Set appropriate filter based on mode
     if (comparisonMode === 'persons') {
-        state.setFilter('person', item.id);
+        applyPersonFilter(item.id);
     } else if (comparisonMode === 'places') {
-        state.setFilter('place', item.id);
+        applyPlaceFilter(item.id);
     } else if (comparisonMode === 'periods') {
-        state.setFilter('yearStart', item.from);
-        state.setFilter('yearEnd', item.to);
+        // For periods, set the year range slider
+        const slider = elements.getById('year-slider');
+        if (slider && slider.noUiSlider) {
+            slider.noUiSlider.set([item.from, item.to]);
+        }
+        applyFilters();
     }
 
     // Switch to letters view
@@ -9105,7 +9109,7 @@ function showCommonLettersModal(letterIds) {
             const letter = allLetters.find(l => l.id === letterId);
             if (letter) {
                 modal.remove();
-                showLetterDetailModal(letter);
+                showLetterDetail(letter.id);
             }
         });
     });
