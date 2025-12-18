@@ -624,6 +624,11 @@ button, .btn {
     overflow-y: auto;
 }
 
+/* Activity View - allow scrolling */
+#activity-view.active {
+    overflow-y: auto;
+}
+
 /* Map */
 #map {
     width: 100%;
