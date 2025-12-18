@@ -38,18 +38,19 @@ Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
 
 ### explore.html - Visualisierung
 
-Hauptansicht mit elf Views:
+Hauptansicht mit zwoelf Views:
 1. Uebersicht (Dashboard mit Statistiken, Datenqualitaet, Empfehlungen) - Default-View
 2. Karte (MapLibre GL JS mit Clustering)
 3. Korrespondenten (sortierbare/suchbare Liste)
 4. Briefe (sortierbare/suchbare Liste)
-5. Timeline (Stacked Bar Chart nach Jahr mit Sprachverteilung, Detached Bin für undatierte Briefe)
+5. Timeline (Stacked Bar Chart nach Jahr mit Sprachverteilung, Detached Bin fuer undatierte Briefe)
 6. Themen (Topics View mit Detail-Panel)
 7. Orte (Places View mit Detail-Panel)
 8. Netzwerk (Force-Directed Graph)
-9. Mentions Flow (Sankey Diagram für Erwähnungen)
-10. Chronik (Vertikaler Zeitstrahl mit optionaler Wikidata-Anreicherung für biografische Daten)
+9. Mentions Flow (Sankey Diagram fuer Erwaehnungen)
+10. Chronik (Vertikaler Zeitstrahl mit optionaler Wikidata-Anreicherung fuer biografische Daten)
 11. Forschungspfade (Methodische Navigation mit epistemischen Kategorien und mehrstufigen Pfaden)
+12. Aktivitaet (GitHub-Style Kalender-Heatmap der Briefaktivitaet)
 
 Sidebar (ausgeblendet im Uebersicht-View):
 - Statistik-Cards (Briefe, Absender, Orte)
@@ -58,7 +59,7 @@ Sidebar (ausgeblendet im Uebersicht-View):
 - Person/Thema/Ort-Filter-Badge (wenn aktiv)
 
 Navigation mit:
-- View-Switcher (10 Buttons)
+- View-Switcher (12 Buttons)
 - Export-Button
 - Neuer Datensatz-Link
 - About-Link
@@ -540,6 +541,19 @@ Default-View beim Laden eines Datensatzes:
 - Klick navigiert zum relevanten View
 - Filter-Hinweise fuer interpretative Fragen
 - Anti-Vibe-Research Feature: Macht implizite Forschungsfragen explizit
+
+### Aktivitaets-Heatmap View
+
+- GitHub-Style Kalender-Heatmap der Korrespondenz-Aktivitaet
+- Zeilen: Wochentage (Mo-So)
+- Spalten: Wochen des Jahres
+- Farbintensitaet: Anzahl Briefe pro Tag (5-stufige Skala)
+- Jahr-Auswahl oder Multi-Jahr-Uebersicht
+- Statistik-Karten: Total, aktivster Tag, aktivstes Jahr, Durchschnitt/Monat
+- Aktivster Tag nur fuer exakte Daten (keine Platzhalter-Datierungen)
+- Klick auf Zelle zeigt Briefe des Tages in Detail-Panel
+- Click-Through zu Brief-Detail-Modal
+- Reagiert auf aktive Filter (Person, Thema, Zeitraum)
 
 ### Filter
 

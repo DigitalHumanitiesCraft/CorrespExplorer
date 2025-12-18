@@ -371,6 +371,23 @@ Akzeptanzkriterien:
 
 ---
 
+## Aktivitaet
+
+### US-34: Korrespondenz-Aktivitaet visualisieren
+Als Forschende moechte ich die zeitliche Verteilung der Korrespondenz als Kalender-Heatmap sehen, um Aktivitaetsphasen und Muster zu erkennen.
+
+Akzeptanzkriterien:
+- GitHub-Style Heatmap mit Wochentagen und Wochen
+- Farbintensitaet zeigt Briefanzahl pro Tag
+- Jahr-Auswahl fuer Fokus auf einzelne Jahre
+- Statistik-Karten mit Gesamtzahlen
+- Klick auf Tag zeigt Briefe in Detail-Panel
+- Reagiert auf aktive Filter (Person, Thema, Zeitraum)
+- Aktivster Tag nur fuer exakte Daten berechnet (keine Platzhalter)
+- Status: IMPLEMENTIERT
+
+---
+
 ## Zusammenfassung: Implementierungs-Status
 
 | Kategorie | Implementiert | Offen |
@@ -387,9 +404,10 @@ Akzeptanzkriterien:
 | Uebersicht | 1 | 0 |
 | Chronik | 5 | 0 |
 | Forschungspfade | 1 | 0 |
-| **Gesamt** | **33** | **0** |
+| Aktivitaet | 1 | 0 |
+| **Gesamt** | **34** | **0** |
 
 Stand: 2025-12-18
 
-Alle 33 User Stories sind implementiert.
+Alle 34 User Stories sind implementiert.
 

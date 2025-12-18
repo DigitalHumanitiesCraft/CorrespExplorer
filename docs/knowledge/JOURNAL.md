@@ -9,6 +9,7 @@ Entwicklungszeitraum: November - Dezember 2025
 ## Phasen-Uebersicht
 
 Aktuelle Phasen (Dezember 2025):
+- Phase 39: Activity Heatmap View
 - Phase 38: Forschungspfade View
 - Phase 37: Anreicherungs-Feedback und UI-Fixes
 - Phase 36: Chronik als Forschungswerkzeug
@@ -48,6 +49,45 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2025-12-18 (Phase 39: Activity Heatmap View)
+
+### Neuer View: Aktivitaets-Heatmap
+
+Implementierung eines zwoelften Views zur Visualisierung der Korrespondenz-Aktivitaet:
+
+Konzept:
+- GitHub-Style Kalender-Heatmap
+- Zeigt wann Briefe geschrieben wurden
+- Keine Annahmen ueber "Antworten" oder Latenz
+- Funktioniert mit Hub-Struktur (Schuchardt in 100% der Briefe)
+
+Features:
+- Heatmap-Grid: Zeilen = Wochentage (Mo-So), Spalten = Wochen
+- Farbskala: 5 Stufen von leer bis dunkelgruen
+- Jahr-Auswahl oder Multi-Jahr-Uebersicht
+- Statistik-Karten: Total, aktivster Tag, aktivstes Jahr, Durchschnitt/Monat
+- Detail-Panel: Klick auf Zelle zeigt Briefe des Tages
+- Click-Through zu Brief-Detail-Modal
+
+Technische Umsetzung:
+- buildActivityIndex() - Aggregiert nach Datum, Jahr, Monat, Wochentag
+- renderActivity() - Hauptrenderer
+- renderActivityHeatmap() - Grid-Rendering mit Jahr-Bloecken
+- getActivityLevel() - Farbstufen-Berechnung (0-4)
+- showActivityDetails() - Tag-Details mit Brief-Liste
+
+Bug-Fix:
+- Aktivster Tag nur fuer exakte Daten (datePrecision === 'exact')
+- Verhindert falsche Statistik durch Platzhalter wie 1798-01-01
+
+Workflow:
+- Feature-Branch feature/activity-heatmap erstellt
+- Nach Implementierung und Tests nach main gemergt
+
+US-34 implementiert (34 User Stories gesamt).
 
 ---
 
