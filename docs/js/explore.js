@@ -404,7 +404,7 @@ async function loadData() {
 
 // Update UI with data info
 function updateUI(data) {
-    // Update title
+    // Update navbar title
     const titleEl = elements.datasetTitle;
     if (titleEl && data.meta?.title) {
         titleEl.textContent = data.meta.title;
@@ -423,20 +423,105 @@ function updateUI(data) {
     // Update uncertainty statistics if available
     updateUncertaintyStats(data.meta?.uncertainty);
 
-    // Update source info
-    const sourceInfo = elements.sourceInfo;
-    if (sourceInfo && data.sourceInfo) {
-        if (data.sourceInfo.type === 'file') {
-            sourceInfo.textContent = `Datei: ${data.sourceInfo.source}`;
-        } else if (data.sourceInfo.type === 'url') {
-            sourceInfo.innerHTML = `<a href="${data.sourceInfo.source}" target="_blank">URL</a>`;
-        } else if (data.sourceInfo.type === 'preset') {
-            sourceInfo.textContent = `Beispieldatensatz: ${data.sourceInfo.source.toUpperCase()}`;
-        }
-    }
+    // Update dataset metadata from teiHeader
+    updateDatasetMetadata(data.meta, data.sourceInfo);
 
     // Build language filter
     buildLanguageFilter();
+}
+
+// Update dataset metadata display in sidebar
+function updateDatasetMetadata(meta, sourceInfo) {
+    // Editor(s)
+    const metaEditorRow = elements.metaEditorRow;
+    const metaEditor = elements.metaEditor;
+    if (metaEditorRow && metaEditor && meta?.editors?.length > 0) {
+        const editorNames = meta.editors.map(editor => {
+            if (editor.ref) {
+                return `<a href="${editor.ref}" target="_blank">${editor.name}</a>`;
+            }
+            return editor.name;
+        });
+        metaEditor.innerHTML = editorNames.join(', ');
+        metaEditorRow.classList.remove('hidden');
+    }
+
+    // Publisher(s)
+    const metaPublisherRow = elements.metaPublisherRow;
+    const metaPublisher = elements.metaPublisher;
+    if (metaPublisherRow && metaPublisher && meta?.publishers?.length > 0) {
+        const publisherLinks = meta.publishers.map(pub => {
+            if (pub.url) {
+                return `<a href="${pub.url}" target="_blank">${pub.name}</a>`;
+            }
+            return pub.name;
+        });
+        metaPublisher.innerHTML = publisherLinks.join(', ');
+        metaPublisherRow.classList.remove('hidden');
+    }
+
+    // Source Reference (bibl) - with optional link
+    const metaSourceRow = elements.metaSourceRow;
+    const metaSource = elements.metaSource;
+    if (metaSourceRow && metaSource && meta?.sourceReference) {
+        if (meta.sourceUrl) {
+            metaSource.innerHTML = `<a href="${meta.sourceUrl}" target="_blank" class="meta-source-text" title="${meta.sourceReference}">${meta.sourceReference}</a>`;
+        } else {
+            metaSource.textContent = meta.sourceReference;
+            metaSource.title = meta.sourceReference; // Full text on hover
+        }
+        metaSourceRow.classList.remove('hidden');
+    }
+
+    // CMIF URL
+    const metaCmifRow = elements.metaCmifRow;
+    const metaCmif = elements.metaCmif;
+    if (metaCmifRow && metaCmif) {
+        const cmifUrl = meta?.cmifUrl || (sourceInfo?.type === 'url' ? sourceInfo.source : null);
+        if (cmifUrl) {
+            metaCmif.innerHTML = `<a href="${cmifUrl}" target="_blank">CMIF-Datei</a>`;
+            metaCmifRow.classList.remove('hidden');
+        } else if (sourceInfo?.type === 'file') {
+            metaCmif.textContent = `Datei: ${sourceInfo.source}`;
+            metaCmifRow.classList.remove('hidden');
+        }
+    }
+
+    // Licence
+    const metaLicenceRow = elements.metaLicenceRow;
+    const metaLicence = elements.metaLicence;
+    if (metaLicenceRow && metaLicence && meta?.licence) {
+        const licenceText = formatLicence(meta.licence);
+        if (meta.licence.url) {
+            metaLicence.innerHTML = `<a href="${meta.licence.url}" target="_blank" class="licence-badge">${licenceText}</a>`;
+        } else {
+            metaLicence.innerHTML = `<span class="licence-badge">${licenceText}</span>`;
+        }
+        metaLicenceRow.classList.remove('hidden');
+    }
+}
+
+// Format licence text for display
+function formatLicence(licence) {
+    if (!licence) return '';
+
+    const text = licence.text || '';
+    const url = licence.url || '';
+
+    // Detect common licence types
+    if (url.includes('publicdomain/zero') || text.includes('CC0')) {
+        return 'CC0';
+    } else if (url.includes('by-sa/4.0') || text.includes('CC BY-SA 4.0')) {
+        return 'CC BY-SA 4.0';
+    } else if (url.includes('by/4.0') || text.includes('CC BY 4.0')) {
+        return 'CC BY 4.0';
+    } else if (url.includes('by-nc/4.0') || text.includes('CC BY-NC 4.0')) {
+        return 'CC BY-NC 4.0';
+    } else if (text.length > 20) {
+        return text.substring(0, 20) + '...';
+    }
+
+    return text || 'Lizenz';
 }
 
 // Update uncertainty statistics in sidebar using icons with tooltips

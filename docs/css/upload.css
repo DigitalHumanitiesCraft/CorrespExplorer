@@ -34,6 +34,65 @@
     text-decoration: underline;
 }
 
+/* Tooltip for Promptotyping */
+.tooltip-trigger {
+    position: relative;
+    cursor: help;
+    font-weight: 600;
+    color: var(--color-primary);
+    border-bottom: 1px dotted var(--color-primary);
+}
+
+.tooltip-trigger i {
+    font-size: 0.8em;
+    margin-left: var(--space-xs);
+    opacity: 0.7;
+}
+
+.tooltip-content {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    padding: var(--space-md);
+    background: var(--color-bg);
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: normal;
+    color: var(--color-text);
+    text-align: left;
+    line-height: var(--line-height-base);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    transition: opacity var(--transition-fast), visibility var(--transition-fast);
+    margin-bottom: var(--space-sm);
+}
+
+.tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: var(--color-primary);
+}
+
+.tooltip-trigger:hover .tooltip-content,
+.tooltip-trigger:focus .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip-content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
 /* Landing Page Navigation */
 .landing-nav {
     position: fixed;
@@ -302,6 +361,32 @@
     display: flex;
     align-items: center;
     gap: var(--space-xs);
+}
+
+/* API Hint */
+.api-hint {
+    margin-top: var(--space-lg);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.api-hint i {
+    color: var(--color-secondary);
+    margin-right: var(--space-sm);
+}
+
+.api-hint a {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.api-hint a:hover {
+    color: var(--color-primary-dark);
 }
 
 /* Loading State */

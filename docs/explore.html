@@ -123,14 +123,37 @@
                         </div>
                     </div>
 
-                    <!-- Data Source & Coverage -->
+                    <!-- Dataset Metadata -->
                     <div class="dataset-meta">
-                        <div class="dataset-source">
-                            <i class="fas fa-database"></i>
-                            <span id="source-info">Daten werden geladen...</span>
+                        <h5 class="dataset-meta-header">Quelle</h5>
+                        <!-- Editor -->
+                        <div class="dataset-meta-item hidden" id="meta-editor-row">
+                            <i class="fas fa-user-edit"></i>
+                            <span id="meta-editor"></span>
                         </div>
-                        <div class="dataset-coverage" id="data-coverage-details">
-                            <!-- Filled by JavaScript -->
+
+                        <!-- Publisher -->
+                        <div class="dataset-meta-item hidden" id="meta-publisher-row">
+                            <i class="fas fa-building"></i>
+                            <span id="meta-publisher"></span>
+                        </div>
+
+                        <!-- Source Reference (bibl) -->
+                        <div class="dataset-meta-item hidden" id="meta-source-row">
+                            <i class="fas fa-quote-left"></i>
+                            <span id="meta-source" class="meta-source-text"></span>
+                        </div>
+
+                        <!-- CMIF URL -->
+                        <div class="dataset-meta-item hidden" id="meta-cmif-row">
+                            <i class="fas fa-link"></i>
+                            <span id="meta-cmif"></span>
+                        </div>
+
+                        <!-- Licence -->
+                        <div class="dataset-meta-item hidden" id="meta-licence-row">
+                            <i class="fas fa-balance-scale"></i>
+                            <span id="meta-licence"></span>
                         </div>
                     </div>
                 </div>
@@ -162,7 +185,7 @@
 
                     <!-- Data Quality Filter -->
                     <div class="filter-group" role="group" aria-labelledby="filter-quality-heading" id="quality-filter-group">
-                        <h5 id="filter-quality-heading">Datenqualitaet</h5>
+                        <h5 id="filter-quality-heading">Datenqualität</h5>
                         <div class="quality-checkboxes">
                             <label class="filter-checkbox">
                                 <input type="checkbox" id="filter-precise-dates">
@@ -193,114 +216,6 @@
                         <a href="#" id="show-all-topics" class="show-all-link">Alle Themen anzeigen</a>
                     </div>
 
-                </div>
-
-                <!-- ========================================
-                     SECTION 3: LEGENDE (View-spezifisch)
-                     ======================================== -->
-                <div class="sidebar-section" id="sidebar-legend">
-                    <div class="sidebar-section-header">
-                        <h4>Legende</h4>
-                    </div>
-
-                    <!-- Map legend -->
-                    <div id="legend-map" class="legend-content">
-                        <div class="legend-item">
-                            <span class="legend-color" aria-hidden="true"></span>
-                            <span>Absendeort (Groesse = Briefanzahl)</span>
-                        </div>
-                        <p class="legend-hint">Klick auf Marker zeigt Details</p>
-                    </div>
-
-                    <!-- Letters legend (date precision) -->
-                    <div id="legend-letters" class="legend-content hidden">
-                        <div class="legend-item">
-                            <i class="fas fa-arrows-alt-h color-info"></i>
-                            <span>Zeitraum (notBefore/notAfter)</span>
-                        </div>
-                        <div class="legend-item">
-                            <i class="fas fa-calendar-alt color-warning"></i>
-                            <span>Nur Jahr/Monat bekannt</span>
-                        </div>
-                        <div class="legend-item">
-                            <i class="fas fa-question-circle color-error"></i>
-                            <span>Unsichere Datierung</span>
-                        </div>
-                        <p class="legend-hint"><a href="about.html#data-quality">Mehr zur Datenqualitaet</a></p>
-                    </div>
-
-                    <!-- Timeline legend -->
-                    <div id="legend-timeline" class="legend-content hidden">
-                        <div class="legend-item">
-                            <span class="legend-hatched-small"></span>
-                            <span>Anteil mit unscharfem Datum</span>
-                        </div>
-                        <p class="legend-hint">Hover zeigt Details pro Jahr</p>
-                    </div>
-
-                    <!-- Persons legend -->
-                    <div id="legend-persons" class="legend-content hidden">
-                        <div class="legend-item">
-                            <span class="legend-color legend-role-sender"></span>
-                            <span>Nur Absender</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-color legend-role-receiver"></span>
-                            <span>Nur Empfaenger</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-color legend-role-both"></span>
-                            <span>Beides</span>
-                        </div>
-                        <div class="legend-item">
-                            <svg viewBox="0 0 30 20" width="14" height="10">
-                                <rect fill="#990000" width="6" height="20"/>
-                                <rect fill="#339966" x="8" width="6" height="20"/>
-                                <rect fill="#006699" x="16" width="6" height="20"/>
-                            </svg>
-                            <span>Wikidata-Anreicherung</span>
-                        </div>
-                        <p class="legend-hint">Klick filtert nach Person</p>
-                    </div>
-
-                    <!-- Topics legend -->
-                    <div id="legend-topics" class="legend-content hidden">
-                        <div class="legend-item">
-                            <i class="fas fa-circle color-primary"></i>
-                            <span>Anzahl = Briefhaeufigkeit</span>
-                        </div>
-                        <p class="legend-hint">Klick zeigt Kookkurrenzen</p>
-                    </div>
-
-                    <!-- Places legend -->
-                    <div id="legend-places" class="legend-content hidden">
-                        <div class="legend-item">
-                            <i class="fas fa-map-marker-alt color-primary"></i>
-                            <span>Mit Koordinaten</span>
-                        </div>
-                        <div class="legend-item">
-                            <i class="fas fa-map-marker-alt color-text-light"></i>
-                            <span>Ohne Koordinaten</span>
-                        </div>
-                        <p class="legend-hint">Klick filtert nach Ort</p>
-                    </div>
-
-                    <!-- Network legend -->
-                    <div id="legend-network" class="legend-content hidden">
-                        <div class="legend-item">
-                            <span class="legend-color legend-network-sender"></span>
-                            <span>Absender</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-color legend-network-receiver"></span>
-                            <span>Empfaenger</span>
-                        </div>
-                        <div class="legend-item">
-                            <span class="legend-line"></span>
-                            <span>Korrespondenz (Staerke = Anzahl)</span>
-                        </div>
-                        <p class="legend-hint">Drag zum Verschieben, Scroll zum Zoomen</p>
-                    </div>
                 </div>
 
             </aside>

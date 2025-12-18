@@ -6,6 +6,62 @@ Dieses Dokument ist ein chronologisches Journal und folgt einem narrativen Forma
 
 ---
 
+## 2025-12-18 (Phase 33: teiHeader Metadaten und Landing Page Optimierung)
+
+### Landing Page Bereinigung
+
+Entfernung ueberfluessiger Demo-Datensaetze und Optimierung der Startseite:
+
+Aenderungen:
+- Nur noch zwei Beispiel-Datensaetze: Feature-Demo (Tutorial) und Hugo Schuchardt Archiv (Demo)
+- Disclaimer geaendert von "Vibe-Coding Demo" zu "Promptotyping Demo"
+- Tooltip erklaert Promptotyping-Methodik mit Link zum Vault
+- API-Hint mit Link zu correspSearch fuer weitere CMIF-Datensaetze
+
+CSS (upload.css):
+- .tooltip-trigger und .tooltip-content fuer Promptotyping-Info
+- .api-hint fuer correspSearch-Verweis
+
+### teiHeader Metadaten-Extraktion
+
+Vollstaendige Extraktion und Anzeige der CMIF-Header-Metadaten im Sidebar:
+
+Parser-Erweiterungen (cmif-parser.js):
+- extractMeta() erweitert fuer vollstaendigen teiHeader
+- editors: Array mit {name, email, ref} aus titleStmt
+- publishers: Array mit {name, url} - unterstuetzt mehrere Publisher
+- sourceReference: bibl-Text aus sourceDesc
+- sourceUrl: Link aus bibl/ref@target
+- licence: Text und URL aus publicationStmt
+- cmifUrl: idno[@type="url"] aus publicationStmt
+
+UI-Anzeige (explore.js, explore.html):
+- updateDatasetMetadata() zeigt Editor, Publisher, Source, CMIF-URL, Licence
+- Publisher mit Links wenn vorhanden
+- Source Reference als klickbarer Link wenn sourceUrl existiert
+- Licence als Badge (CC0, CC BY 4.0, etc.)
+
+Entfernte redundante Elemente:
+- Titel (steht bereits in Navbar)
+- Zeitraum (steht bereits im Filter-Bereich)
+- mailto-Links fuer Editoren
+
+DOM-Cache (dom-cache.js):
+- Neue Getter: metaPublisherRow, metaPublisher
+
+CSS (explore.css):
+- .dataset-meta: Minimales Styling ohne Hintergrundfarbe (Design-System konform)
+- .dataset-meta-item: Keine border-bottom mehr
+- .meta-source-text: Volle Anzeige statt Truncation
+- .licence-badge: Kompaktes Badge-Styling
+
+Technische Entscheidung:
+- Keine rgba() oder andere nicht-Token-Farben
+- Abgrenzung durch Spacing statt Hintergrundfarbe
+- Konsistenz mit bestehendem Design-System
+
+---
+
 ## 2025-12-09 (Phase 32: Vollstaendiges Entity Component Refactoring)
 
 ### Topics und Places Views komplett vereinheitlicht

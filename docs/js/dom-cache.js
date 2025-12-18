@@ -93,6 +93,18 @@ export const elements = {
     get sourceInfo() { return cache.byId('source-info'); },
     get dataCoverageDetails() { return cache.byId('data-coverage-details'); },
 
+    // Dataset metadata (teiHeader)
+    get metaEditorRow() { return cache.byId('meta-editor-row'); },
+    get metaEditor() { return cache.byId('meta-editor'); },
+    get metaPublisherRow() { return cache.byId('meta-publisher-row'); },
+    get metaPublisher() { return cache.byId('meta-publisher'); },
+    get metaSourceRow() { return cache.byId('meta-source-row'); },
+    get metaSource() { return cache.byId('meta-source'); },
+    get metaCmifRow() { return cache.byId('meta-cmif-row'); },
+    get metaCmif() { return cache.byId('meta-cmif'); },
+    get metaLicenceRow() { return cache.byId('meta-licence-row'); },
+    get metaLicence() { return cache.byId('meta-licence'); },
+
     // Quality icons
     get lettersQualityIcon() { return cache.byId('letters-quality-icon'); },
     get sendersQualityIcon() { return cache.byId('senders-quality-icon'); },

@@ -33,7 +33,7 @@
             <p>Visualisieren Sie Korrespondenz-Metadaten im CMIF-Format. Laden Sie eine XML-Datei hoch oder geben Sie eine URL ein.</p>
 
             <div class="disclaimer">
-                <p><strong>Vibe-Coding Demo:</strong> Dieses Projekt befindet sich in aktiver Entwicklung. Ideen und Bugs können gerne als <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues" target="_blank">Issues im GitHub-Repo</a> dokumentiert werden. Projekt ohne Finanzierung.</p>
+                <p><span class="tooltip-trigger">Promptotyping<i class="fas fa-info-circle"></i><span class="tooltip-content">Promptotyping ist eine iterative Context-Engineering-Arbeitstechnik, um datengetrieben und gemeinsam mit Frontier-LLMs Forschungsartefakte wie Interfaces, Tools oder Workflows zu entwickeln. Im <a href="vault.html">Promptotyping Vault</a> ist das Wissen zum CorrespExplorer destilliert.</span></span> Demo: Dieses Projekt befindet sich in aktiver Entwicklung. Ideen und Bugs koennen gerne als <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues" target="_blank">Issues im GitHub-Repo</a> dokumentiert werden.</p>
             </div>
         </header>
 
@@ -85,54 +85,27 @@
             <h3><img src="assets/logo-no-background-no-text.png" alt="" class="section-icon"> Beispiel-Datensaetze</h3>
             <div class="dataset-grid">
                 <div class="dataset-card dataset-card-featured" data-url="data/demo-showcase.xml" data-demo="true">
-                    <div class="dataset-badge">Demo</div>
+                    <div class="dataset-badge">Tutorial</div>
                     <h4>Feature-Demo</h4>
-                    <p>Synthetisches Gelehrtennetzwerk 1880-1920 (generiert mit Claude Opus 4.5). Demonstriert alle Funktionen mit interaktiver Tour.</p>
+                    <p>Synthetisches Gelehrtennetzwerk 1880-1920. Demonstriert alle Funktionen mit interaktiver Tour.</p>
                     <div class="dataset-stats">
                         <span><i class="fas fa-envelope"></i> 35 Briefe</span>
-                        <span><i class="fas fa-robot"></i> AI-generiert</span>
+                        <span><i class="fas fa-graduation-cap"></i> Interaktive Tour</span>
                     </div>
                 </div>
                 <div class="dataset-card" data-dataset="hsa">
+                    <div class="dataset-badge">Demo</div>
                     <h4>Hugo Schuchardt Archiv</h4>
-                    <p>Korrespondenz des Sprachwissenschaftlers Hugo Schuchardt (1842-1927)</p>
+                    <p>Korrespondenz des Sprachwissenschaftlers Hugo Schuchardt (1842-1927). Vorverarbeiteter Datensatz.</p>
                     <div class="dataset-stats">
                         <span><i class="fas fa-envelope"></i> 11.576 Briefe</span>
                         <span><i class="fas fa-users"></i> 846 Korrespondenten</span>
                     </div>
                 </div>
-                <div class="dataset-card" data-url="https://correspsearch.net/storage/avhumboldt/Spiker.xml">
-                    <h4>Humboldt-Spiker</h4>
-                    <p>Korrespondenz Alexander von Humboldts mit Samuel H. Spiker</p>
-                    <div class="dataset-stats">
-                        <span><i class="fas fa-envelope"></i> 156 Briefe</span>
-                        <span><i class="fas fa-calendar"></i> 1827-1846</span>
-                    </div>
-                </div>
-                <div class="dataset-card" data-url="https://tueditions.ulb.tu-darmstadt.de/g/pa000018-0077">
-                    <h4>Hebel-Briefe</h4>
-                    <p>Briefe von Johann Peter Hebel (1791-1826)</p>
-                    <div class="dataset-stats">
-                        <span><i class="fas fa-envelope"></i> 25 Briefe</span>
-                        <span><i class="fas fa-language"></i> mit Sprache</span>
-                    </div>
-                </div>
-                <div class="dataset-card" data-url="https://correspsearch.net/storage/avhumboldt/Duvinage.xml">
-                    <h4>Humboldt-Duvinage</h4>
-                    <p>Briefe Humboldts an Charles Duvinage (1835-1857)</p>
-                    <div class="dataset-stats">
-                        <span><i class="fas fa-envelope"></i> 67 Briefe</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Berlin/Potsdam</span>
-                    </div>
-                </div>
-                <div class="dataset-card" data-url="data/schoenbach.xml">
-                    <h4>Schoenbach-Briefe</h4>
-                    <p>Korrespondenz von Anton Schoenbach (1888-1911)</p>
-                    <div class="dataset-stats">
-                        <span><i class="fas fa-envelope"></i> 5 Briefe</span>
-                        <span><i class="fas fa-vial"></i> Minimal-Test</span>
-                    </div>
-                </div>
+            </div>
+            <div class="api-hint">
+                <i class="fas fa-database"></i>
+                Weitere CMIF-Datensaetze zum Laden via URL finden Sie bei <a href="https://correspsearch.net/de/daten.html" target="_blank">correspSearch</a>.
             </div>
         </section>
     </div>

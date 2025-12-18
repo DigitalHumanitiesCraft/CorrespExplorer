@@ -618,18 +618,93 @@ function calculateUncertaintyStats(letters) {
 }
 
 /**
- * Extract metadata from document
+ * Extract metadata from document (full teiHeader)
  */
 function extractMeta(doc, letters) {
-    const title = doc.getElementsByTagNameNS(TEI_NS, 'title')[0]?.textContent.trim() || 'Untitled';
-    const publisher = doc.getElementsByTagNameNS(TEI_NS, 'publisher')[0]?.textContent.trim() || null;
+    // titleStmt
+    const titleStmt = doc.getElementsByTagNameNS(TEI_NS, 'titleStmt')[0];
+    const title = titleStmt?.getElementsByTagNameNS(TEI_NS, 'title')[0]?.textContent.trim() || 'Untitled';
 
+    // Editor(s) from titleStmt
+    const editors = [];
+    const editorEls = titleStmt?.getElementsByTagNameNS(TEI_NS, 'editor') || [];
+    for (const editorEl of editorEls) {
+        const emailEl = editorEl.getElementsByTagNameNS(TEI_NS, 'email')[0];
+        const refAttr = editorEl.getAttribute('ref');
+        // Get text content without email
+        let name = editorEl.textContent.trim();
+        if (emailEl) {
+            name = name.replace(emailEl.textContent, '').trim();
+        }
+        editors.push({
+            name,
+            email: emailEl?.textContent.trim() || null,
+            ref: refAttr || null
+        });
+    }
+
+    // publicationStmt
+    const publicationStmt = doc.getElementsByTagNameNS(TEI_NS, 'publicationStmt')[0];
+
+    // Publisher(s) - can be multiple, each can be text or contain ref
+    const publishers = [];
+    const publisherEls = publicationStmt?.getElementsByTagNameNS(TEI_NS, 'publisher') || [];
+    for (const publisherEl of publisherEls) {
+        const refEl = publisherEl.getElementsByTagNameNS(TEI_NS, 'ref')[0];
+        if (refEl) {
+            publishers.push({
+                name: refEl.textContent.trim(),
+                url: refEl.getAttribute('target') || null
+            });
+        } else {
+            publishers.push({
+                name: publisherEl.textContent.trim(),
+                url: null
+            });
+        }
+    }
+
+    // Publication date
+    const pubDateEl = publicationStmt?.getElementsByTagNameNS(TEI_NS, 'date')[0];
+    const publicationDate = pubDateEl?.getAttribute('when') || pubDateEl?.textContent.trim() || null;
+
+    // Licence
+    const licenceEl = publicationStmt?.getElementsByTagNameNS(TEI_NS, 'licence')[0];
+    const licence = licenceEl ? {
+        text: licenceEl.textContent.trim(),
+        url: licenceEl.getAttribute('target') || null
+    } : null;
+
+    // CMIF URL (idno with type="url")
+    const idnoEls = publicationStmt?.getElementsByTagNameNS(TEI_NS, 'idno') || [];
+    let cmifUrl = null;
+    for (const idno of idnoEls) {
+        if (idno.getAttribute('type') === 'url') {
+            cmifUrl = idno.textContent.trim();
+            break;
+        }
+    }
+
+    // sourceDesc/bibl - bibliographic reference with optional link
+    const sourceDesc = doc.getElementsByTagNameNS(TEI_NS, 'sourceDesc')[0];
+    const biblEl = sourceDesc?.getElementsByTagNameNS(TEI_NS, 'bibl')[0];
+    let sourceReference = null;
+    let sourceUrl = null;
+    if (biblEl) {
+        const biblRefEl = biblEl.getElementsByTagNameNS(TEI_NS, 'ref')[0];
+        if (biblRefEl) {
+            sourceUrl = biblRefEl.getAttribute('target') || null;
+        }
+        // Get text without the ref URL text for cleaner display
+        sourceReference = biblEl.textContent.trim();
+    }
+
+    // Letter statistics
     const years = letters.map(l => l.year).filter(y => y !== null);
     const minYear = years.length > 0 ? Math.min(...years) : null;
     const maxYear = years.length > 0 ? Math.max(...years) : null;
 
     const uniquePlaces = new Set(letters.map(l => l.place_sent?.geonames_id).filter(Boolean));
-    // Count unique senders/recipients by name to include unidentified persons
     const uniqueSenders = new Set(letters.map(l => l.sender?.name).filter(Boolean));
     const uniqueRecipients = new Set(letters.map(l => l.recipient?.name).filter(Boolean));
 
@@ -637,8 +712,16 @@ function extractMeta(doc, letters) {
     const uncertainty = calculateUncertaintyStats(letters);
 
     return {
+        // Header metadata
         title,
-        publisher,
+        editors,
+        publishers,
+        publicationDate,
+        licence,
+        cmifUrl,
+        sourceReference,
+        sourceUrl,
+        // Letter statistics
         total_letters: letters.length,
         unique_senders: uniqueSenders.size,
         unique_recipients: uniqueRecipients.size,
