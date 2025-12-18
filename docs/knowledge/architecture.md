@@ -15,7 +15,7 @@ Browser-Architektur:
     2. Erweiterte Datensaetze (JSON): Redirect mit URL-Parameter, explore.js laedt direkt
 - explore.html (Hauptvisualisierung)
   - Laedt Daten aus sessionStorage oder via URL-Parameter json=
-  - Elf Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik, Activity
+  - Zwoelf Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik, Activity, Comparison
   - Sidebar mit Filter und Statistiken
   - Export-Funktion fuer CSV und JSON
 
@@ -38,7 +38,7 @@ Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
 
 ### explore.html - Visualisierung
 
-Hauptansicht mit elf Views:
+Hauptansicht mit zwoelf Views:
 1. Uebersicht (Start-View mit Statistiken, Datenqualitaet, Entry-Points, Forschungspfade) - Default-View
 2. Karte (MapLibre GL JS mit Clustering)
 3. Korrespondenten (sortierbare/suchbare Liste)
@@ -50,6 +50,7 @@ Hauptansicht mit elf Views:
 9. Mentions Flow (Sankey Diagram fuer Erwaehnungen)
 10. Chronik (Vertikaler Zeitstrahl mit optionaler Wikidata-Anreicherung fuer biografische Daten)
 11. Aktivitaet (GitHub-Style Kalender-Heatmap der Briefaktivitaet)
+12. Vergleich (Split-Screen Vergleich von Personen, Zeitraeumen oder Orten)
 
 Forschungspfade sind in die Uebersicht (Start-View) integriert, nicht als separater View.
 
@@ -60,7 +61,7 @@ Sidebar (ausgeblendet im Uebersicht-View):
 - Person/Thema/Ort-Filter-Badge (wenn aktiv)
 
 Navigation mit:
-- View-Switcher (11 Buttons)
+- View-Switcher (12 Buttons)
 - Export-Button
 - Neuer Datensatz-Link
 - About-Link

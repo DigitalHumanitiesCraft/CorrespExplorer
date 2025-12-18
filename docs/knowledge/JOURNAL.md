@@ -9,6 +9,7 @@ Entwicklungszeitraum: November - Dezember 2025
 ## Phasen-Uebersicht
 
 Aktuelle Phasen (Dezember 2025):
+- Phase 44: Vergleichs-View
 - Phase 43: CMIF v2 Vollstaendige Dimension
 - Phase 42: Wissenskorb-Integration in Views
 - Phase 41: Compact Start-View
@@ -53,6 +54,42 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2025-12-18 (Phase 44: Vergleichs-View)
+
+### Neuer View: Vergleichsanalyse
+
+Implementierung eines zwoelften Views zur komparativen Analyse:
+
+Konzept:
+- Split-Screen Vergleich von zwei Elementen nebeneinander
+- Drei Modi: Personen, Zeitraeume, Orte
+- Beantwortet Forschungsfragen wie "Wie unterscheidet sich die Korrespondenz mit A von der mit B?"
+
+Features:
+- Modus-Auswahl via Tab-Buttons (Personen, Zeitraeume, Orte)
+- Quick-Select fuer Top-5 Elemente pro Modus
+- Autocomplete-Suche fuer Personen und Orte
+- Metriken-Panels: Briefanzahl, Zeitraum, Top-Orte, Top-Themen, Sprachen
+- Ueberschneidungs-Bereich: Gemeinsame Briefe, Themen, Korrespondenten, Zeitraum
+
+Technische Umsetzung:
+- buildComparisonData() - Filtert Briefe und berechnet Metriken
+- calculateComparisonMetrics() - Aggregiert Daten pro Element
+- findComparisonOverlap() - Findet gemeinsame Elemente
+- renderComparison() - Hauptrenderer
+- setupComparisonAutocomplete() - Personen/Ort-Suche
+
+Aenderungen:
+- explore.html: Navigation-Button, View-Container
+- explore.js: 6 neue Funktionen, detectAvailableViews erweitert
+- explore.css: Comparison-Styles (Container, Panels, Overlap)
+- architecture.md: View 12 dokumentiert
+- user-stories.md: US-37 hinzugefuegt (37 Stories gesamt)
+
+US-37 implementiert.
 
 ---
 

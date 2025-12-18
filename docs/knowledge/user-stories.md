@@ -388,6 +388,22 @@ Akzeptanzkriterien:
 
 ---
 
+## Vergleich
+
+### US-37: Elemente vergleichen
+Als Forschende moechte ich zwei Personen, Zeitraeume oder Orte nebeneinander vergleichen, um Unterschiede und Gemeinsamkeiten in der Korrespondenz zu erkennen.
+
+Akzeptanzkriterien:
+- Drei Vergleichs-Modi: Personen, Zeitraeume, Orte
+- Split-Screen mit zwei Panels
+- Metriken: Briefanzahl, Zeitraum, Top-Orte, Top-Themen
+- Ueberschneidungen werden angezeigt (gemeinsame Briefe, Themen, Korrespondenten)
+- Quick-Select fuer haeufige Elemente
+- Autocomplete-Suche fuer Auswahl
+- Status: IMPLEMENTIERT
+
+---
+
 ## Wissenspfade
 
 ### US-35: Gefuehrte Exploration mit Wissenskorb
@@ -434,10 +450,11 @@ Akzeptanzkriterien:
 | Chronik | 5 | 0 |
 | Forschungspfade | 1 | 0 |
 | Aktivitaet | 1 | 0 |
+| Vergleich | 1 | 0 |
 | Wissenspfade | 2 | 0 |
-| **Gesamt** | **36** | **0** |
+| **Gesamt** | **37** | **0** |
 
 Stand: 2025-12-18
 
-Alle 36 User Stories sind implementiert.
+Alle 37 User Stories sind implementiert.
 

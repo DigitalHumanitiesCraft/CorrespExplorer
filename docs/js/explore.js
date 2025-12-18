@@ -133,6 +133,10 @@ function detectAvailableViews() {
         'mentions-flow': {
             available: mentionedPersonsIndex.size > 0,
             reason: mentionedPersonsIndex.size > 0 ? null : 'Keine Mentions-Daten im Datensatz'
+        },
+        comparison: {
+            available: hasPersons || hasPlaces,
+            reason: (hasPersons || hasPlaces) ? null : 'Keine Personen oder Orte zum Vergleichen'
         }
     };
 
@@ -1929,11 +1933,11 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
-    // On overview, chronik, and activity: hide entire sidebar for full-width content
+    // On overview, chronik, activity, and comparison: hide entire sidebar for full-width content
     // On other views: show sidebar with stats and filters
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'activity');
+        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'activity' || view === 'comparison');
     }
 
     // Update sidebar legend for current view
@@ -1964,6 +1968,8 @@ function switchView(view) {
         renderChronik();
     } else if (view === 'activity') {
         renderActivity();
+    } else if (view === 'comparison') {
+        renderComparison();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -8506,6 +8512,532 @@ function showActivityDetails(date) {
                 showLetterDetailModal(letter);
             }
         });
+    });
+}
+
+// ===================
+// COMPARISON VIEW
+// ===================
+
+let comparisonMode = 'persons';  // 'persons', 'periods', 'places'
+let comparisonA = null;
+let comparisonB = null;
+
+/**
+ * Baut Vergleichsdaten fuer zwei Elemente
+ */
+function buildComparisonData(mode, itemA, itemB) {
+    const letters = state.getFilteredLetters();
+
+    let lettersA = [];
+    let lettersB = [];
+
+    if (mode === 'persons') {
+        lettersA = letters.filter(l =>
+            l.sender?.id === itemA.id || l.recipient?.id === itemA.id
+        );
+        lettersB = letters.filter(l =>
+            l.sender?.id === itemB.id || l.recipient?.id === itemB.id
+        );
+    } else if (mode === 'periods') {
+        lettersA = letters.filter(l =>
+            l.year >= itemA.from && l.year <= itemA.to
+        );
+        lettersB = letters.filter(l =>
+            l.year >= itemB.from && l.year <= itemB.to
+        );
+    } else if (mode === 'places') {
+        lettersA = letters.filter(l =>
+            l.place_sent?.geonames_id === itemA.id || l.place_sent?.name === itemA.id
+        );
+        lettersB = letters.filter(l =>
+            l.place_sent?.geonames_id === itemB.id || l.place_sent?.name === itemB.id
+        );
+    }
+
+    const metricsA = calculateComparisonMetrics(lettersA);
+    const metricsB = calculateComparisonMetrics(lettersB);
+    const overlap = findComparisonOverlap(lettersA, lettersB);
+
+    return { metricsA, metricsB, overlap };
+}
+
+/**
+ * Berechnet Metriken fuer eine Briefmenge
+ */
+function calculateComparisonMetrics(letters) {
+    if (letters.length === 0) {
+        return {
+            count: 0,
+            yearRange: null,
+            topPlaces: [],
+            topTopics: [],
+            topCorrespondents: [],
+            languages: {}
+        };
+    }
+
+    // Zeitraum
+    const years = letters.map(l => l.year).filter(y => y);
+    const yearRange = years.length > 0
+        ? { min: Math.min(...years), max: Math.max(...years) }
+        : null;
+
+    // Top-Orte
+    const placeCounts = new Map();
+    for (const letter of letters) {
+        if (letter.place_sent?.name) {
+            const key = letter.place_sent.geonames_id || letter.place_sent.name;
+            const entry = placeCounts.get(key) || { name: letter.place_sent.name, count: 0 };
+            entry.count++;
+            placeCounts.set(key, entry);
+        }
+    }
+    const topPlaces = Array.from(placeCounts.values())
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    // Top-Themen
+    const topicCounts = new Map();
+    for (const letter of letters) {
+        for (const subject of letter.mentions?.subjects || []) {
+            const key = subject.label || subject.uri;
+            topicCounts.set(key, (topicCounts.get(key) || 0) + 1);
+        }
+    }
+    const topTopics = Array.from(topicCounts.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    // Top-Korrespondenten
+    const personCounts = new Map();
+    for (const letter of letters) {
+        if (letter.sender?.name) {
+            const key = letter.sender.id || letter.sender.name;
+            const entry = personCounts.get(key) || { name: letter.sender.name, count: 0 };
+            entry.count++;
+            personCounts.set(key, entry);
+        }
+        if (letter.recipient?.name) {
+            const key = letter.recipient.id || letter.recipient.name;
+            const entry = personCounts.get(key) || { name: letter.recipient.name, count: 0 };
+            entry.count++;
+            personCounts.set(key, entry);
+        }
+    }
+    const topCorrespondents = Array.from(personCounts.values())
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+    // Sprachen
+    const languages = {};
+    for (const letter of letters) {
+        if (letter.language?.code) {
+            languages[letter.language.code] = (languages[letter.language.code] || 0) + 1;
+        }
+    }
+
+    return {
+        count: letters.length,
+        yearRange,
+        topPlaces,
+        topTopics,
+        topCorrespondents,
+        languages
+    };
+}
+
+/**
+ * Findet Ueberschneidungen zwischen zwei Briefmengen
+ */
+function findComparisonOverlap(lettersA, lettersB) {
+    // Gemeinsame Brief-IDs
+    const idsA = new Set(lettersA.map(l => l.id));
+    const idsB = new Set(lettersB.map(l => l.id));
+    const commonIds = [...idsA].filter(id => idsB.has(id));
+
+    // Gemeinsame Themen
+    const topicsA = new Set();
+    const topicsB = new Set();
+    for (const letter of lettersA) {
+        for (const s of letter.mentions?.subjects || []) {
+            topicsA.add(s.label || s.uri);
+        }
+    }
+    for (const letter of lettersB) {
+        for (const s of letter.mentions?.subjects || []) {
+            topicsB.add(s.label || s.uri);
+        }
+    }
+    const commonTopics = [...topicsA].filter(t => topicsB.has(t));
+
+    // Gemeinsame Korrespondenten
+    const personsA = new Set();
+    const personsB = new Set();
+    for (const letter of lettersA) {
+        if (letter.sender?.id) personsA.add(letter.sender.id);
+        if (letter.recipient?.id) personsA.add(letter.recipient.id);
+    }
+    for (const letter of lettersB) {
+        if (letter.sender?.id) personsB.add(letter.sender.id);
+        if (letter.recipient?.id) personsB.add(letter.recipient.id);
+    }
+    const commonPersons = [...personsA].filter(p => personsB.has(p));
+
+    // Zeitliche Ueberlappung
+    const yearsA = lettersA.map(l => l.year).filter(y => y);
+    const yearsB = lettersB.map(l => l.year).filter(y => y);
+    let timeOverlap = null;
+    if (yearsA.length > 0 && yearsB.length > 0) {
+        const overlapStart = Math.max(Math.min(...yearsA), Math.min(...yearsB));
+        const overlapEnd = Math.min(Math.max(...yearsA), Math.max(...yearsB));
+        if (overlapStart <= overlapEnd) {
+            timeOverlap = { from: overlapStart, to: overlapEnd };
+        }
+    }
+
+    return {
+        commonLetters: commonIds.length,
+        commonTopics,
+        commonPersons: commonPersons.length,
+        timeOverlap
+    };
+}
+
+/**
+ * Rendert den Vergleichs-View
+ */
+function renderComparison() {
+    const container = document.getElementById('comparison-view');
+    if (!container) return;
+
+    setupComparisonModeSelector();
+    renderComparisonQuickSelect();
+    setupComparisonAutocomplete('a');
+    setupComparisonAutocomplete('b');
+
+    if (comparisonA && comparisonB) {
+        renderComparisonResults();
+    } else {
+        document.getElementById('comparison-results')?.classList.add('hidden');
+        document.getElementById('comparison-placeholder')?.classList.remove('hidden');
+    }
+}
+
+/**
+ * Initialisiert Modus-Auswahl
+ */
+function setupComparisonModeSelector() {
+    const buttons = document.querySelectorAll('.comparison-mode-btn');
+    buttons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === comparisonMode);
+        btn.onclick = () => {
+            comparisonMode = btn.dataset.mode;
+            comparisonA = null;
+            comparisonB = null;
+            buttons.forEach(b => b.classList.toggle('active', b === btn));
+            renderComparisonQuickSelect();
+            document.getElementById('comparison-results')?.classList.add('hidden');
+            document.getElementById('comparison-placeholder')?.classList.remove('hidden');
+            const inputA = document.getElementById('comparison-input-a');
+            const inputB = document.getElementById('comparison-input-b');
+            if (inputA) inputA.value = '';
+            if (inputB) inputB.value = '';
+        };
+    });
+}
+
+/**
+ * Rendert Quick-Select Buttons basierend auf Modus
+ */
+function renderComparisonQuickSelect() {
+    const quickA = document.getElementById('comparison-quick-a');
+    const quickB = document.getElementById('comparison-quick-b');
+    if (!quickA || !quickB) return;
+
+    let items = [];
+
+    if (comparisonMode === 'persons') {
+        const persons = Object.values(dataIndices.persons || {})
+            .sort((a, b) => b.letter_count - a.letter_count)
+            .slice(0, 10);
+        items = persons.map(p => ({ id: p.id, name: p.name }));
+    } else if (comparisonMode === 'periods') {
+        const meta = state.getMeta();
+        const min = meta.date_range?.min || 1850;
+        const max = meta.date_range?.max || 1930;
+        const mid = Math.floor((min + max) / 2);
+        items = [
+            { id: `${min}-${mid}`, name: `${min}-${mid}`, from: min, to: mid },
+            { id: `${mid+1}-${max}`, name: `${mid+1}-${max}`, from: mid+1, to: max }
+        ];
+    } else if (comparisonMode === 'places') {
+        const places = Object.values(dataIndices.places || {})
+            .sort((a, b) => b.letter_count - a.letter_count)
+            .slice(0, 10);
+        items = places.map(p => ({ id: p.geonames_id || p.name, name: p.name }));
+    }
+
+    const renderQuickButtons = (container, exclude) => {
+        const filtered = items.filter(item => item.id !== exclude?.id);
+        container.innerHTML = filtered.slice(0, 5).map(item =>
+            `<button class="comparison-quick-btn" data-id="${item.id}" data-name="${escapeHtml(item.name)}"
+                     ${item.from ? `data-from="${item.from}" data-to="${item.to}"` : ''}>
+                ${escapeHtml(item.name.length > 15 ? item.name.substring(0, 15) + '...' : item.name)}
+            </button>`
+        ).join('');
+    };
+
+    renderQuickButtons(quickA, comparisonB);
+    renderQuickButtons(quickB, comparisonA);
+
+    quickA.querySelectorAll('.comparison-quick-btn').forEach(btn => {
+        btn.onclick = () => selectComparisonItem('a', {
+            id: btn.dataset.id,
+            name: btn.dataset.name,
+            from: btn.dataset.from ? parseInt(btn.dataset.from) : undefined,
+            to: btn.dataset.to ? parseInt(btn.dataset.to) : undefined
+        });
+    });
+    quickB.querySelectorAll('.comparison-quick-btn').forEach(btn => {
+        btn.onclick = () => selectComparisonItem('b', {
+            id: btn.dataset.id,
+            name: btn.dataset.name,
+            from: btn.dataset.from ? parseInt(btn.dataset.from) : undefined,
+            to: btn.dataset.to ? parseInt(btn.dataset.to) : undefined
+        });
+    });
+}
+
+/**
+ * Waehlt ein Element fuer Vergleich aus
+ */
+function selectComparisonItem(side, item) {
+    if (side === 'a') {
+        comparisonA = item;
+        document.getElementById('comparison-input-a').value = item.name;
+    } else {
+        comparisonB = item;
+        document.getElementById('comparison-input-b').value = item.name;
+    }
+
+    renderComparisonQuickSelect();
+
+    if (comparisonA && comparisonB) {
+        renderComparisonResults();
+    }
+}
+
+/**
+ * Rendert Vergleichs-Ergebnisse
+ */
+function renderComparisonResults() {
+    const resultsContainer = document.getElementById('comparison-results');
+    const placeholder = document.getElementById('comparison-placeholder');
+
+    if (!resultsContainer || !comparisonA || !comparisonB) return;
+
+    const { metricsA, metricsB, overlap } = buildComparisonData(
+        comparisonMode, comparisonA, comparisonB
+    );
+
+    document.getElementById('comparison-title-a').textContent = comparisonA.name;
+    document.getElementById('comparison-title-b').textContent = comparisonB.name;
+
+    renderComparisonMetrics('a', metricsA);
+    renderComparisonMetrics('b', metricsB);
+    renderComparisonOverlap(overlap);
+
+    resultsContainer.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+}
+
+/**
+ * Rendert Metriken fuer ein Panel
+ */
+function renderComparisonMetrics(side, metrics) {
+    const container = document.getElementById(`comparison-metrics-${side}`);
+    if (!container) return;
+
+    let html = `
+        <div class="comparison-metric">
+            <span class="metric-value">${metrics.count.toLocaleString('de-DE')}</span>
+            <span class="metric-label">Briefe</span>
+        </div>
+    `;
+
+    if (metrics.yearRange) {
+        html += `
+            <div class="comparison-metric">
+                <span class="metric-value">${metrics.yearRange.min} - ${metrics.yearRange.max}</span>
+                <span class="metric-label">Zeitraum</span>
+            </div>
+        `;
+    }
+
+    if (metrics.topPlaces.length > 0) {
+        html += `
+            <div class="comparison-metric-list">
+                <span class="metric-label">Top-Orte</span>
+                <ul>
+                    ${metrics.topPlaces.map(p =>
+                        `<li>${escapeHtml(p.name)} <span class="metric-count">(${p.count})</span></li>`
+                    ).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    if (metrics.topTopics.length > 0) {
+        html += `
+            <div class="comparison-metric-list">
+                <span class="metric-label">Top-Themen</span>
+                <ul>
+                    ${metrics.topTopics.map(t =>
+                        `<li>${escapeHtml(t.name)} <span class="metric-count">(${t.count})</span></li>`
+                    ).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    const langEntries = Object.entries(metrics.languages);
+    if (langEntries.length > 0) {
+        html += `
+            <div class="comparison-metric-list">
+                <span class="metric-label">Sprachen</span>
+                <ul>
+                    ${langEntries.sort((a, b) => b[1] - a[1]).slice(0, 5).map(([code, count]) =>
+                        `<li>${LANGUAGE_LABELS[code] || code} <span class="metric-count">(${count})</span></li>`
+                    ).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+}
+
+/**
+ * Rendert Ueberschneidungs-Bereich
+ */
+function renderComparisonOverlap(overlap) {
+    const container = document.getElementById('comparison-overlap-content');
+    if (!container) return;
+
+    let html = '';
+
+    if (overlap.commonLetters > 0) {
+        html += `
+            <div class="overlap-item">
+                <i class="fas fa-envelope"></i>
+                <span>${overlap.commonLetters} gemeinsame Briefe</span>
+            </div>
+        `;
+    }
+
+    if (overlap.timeOverlap) {
+        html += `
+            <div class="overlap-item">
+                <i class="fas fa-clock"></i>
+                <span>Zeitliche Ueberlappung: ${overlap.timeOverlap.from} - ${overlap.timeOverlap.to}</span>
+            </div>
+        `;
+    }
+
+    if (overlap.commonPersons > 0) {
+        html += `
+            <div class="overlap-item">
+                <i class="fas fa-users"></i>
+                <span>${overlap.commonPersons} gemeinsame Korrespondenten</span>
+            </div>
+        `;
+    }
+
+    if (overlap.commonTopics.length > 0) {
+        html += `
+            <div class="overlap-item overlap-topics">
+                <i class="fas fa-tags"></i>
+                <span>${overlap.commonTopics.length} gemeinsame Themen:</span>
+                <div class="overlap-tags">
+                    ${overlap.commonTopics.slice(0, 10).map(t =>
+                        `<span class="overlap-tag">${escapeHtml(t)}</span>`
+                    ).join('')}
+                    ${overlap.commonTopics.length > 10 ? `<span class="overlap-more">+${overlap.commonTopics.length - 10} weitere</span>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    if (!html) {
+        html = '<p class="overlap-none">Keine direkten Ueberschneidungen gefunden</p>';
+    }
+
+    container.innerHTML = html;
+}
+
+/**
+ * Initialisiert Autocomplete fuer Vergleichs-Suche
+ */
+function setupComparisonAutocomplete(side) {
+    const input = document.getElementById(`comparison-input-${side}`);
+    const dropdown = document.getElementById(`comparison-dropdown-${side}`);
+    if (!input || !dropdown) return;
+
+    // Remove old listeners by cloning
+    const newInput = input.cloneNode(true);
+    input.parentNode.replaceChild(newInput, input);
+
+    const debouncedSearch = debounce((query) => {
+        const dd = document.getElementById(`comparison-dropdown-${side}`);
+        if (query.length < 2) {
+            dd.classList.add('hidden');
+            return;
+        }
+
+        let results = [];
+        const lowerQuery = query.toLowerCase();
+
+        if (comparisonMode === 'persons') {
+            results = Object.values(dataIndices.persons || {})
+                .filter(p => p.name.toLowerCase().includes(lowerQuery))
+                .sort((a, b) => b.letter_count - a.letter_count)
+                .slice(0, 10)
+                .map(p => ({ id: p.id, name: p.name }));
+        } else if (comparisonMode === 'places') {
+            results = Object.values(dataIndices.places || {})
+                .filter(p => p.name.toLowerCase().includes(lowerQuery))
+                .sort((a, b) => b.letter_count - a.letter_count)
+                .slice(0, 10)
+                .map(p => ({ id: p.geonames_id || p.name, name: p.name }));
+        }
+
+        if (results.length > 0) {
+            dd.innerHTML = results.map(r =>
+                `<div class="autocomplete-item" data-id="${r.id}" data-name="${escapeHtml(r.name)}">
+                    ${escapeHtml(r.name)}
+                </div>`
+            ).join('');
+            dd.classList.remove('hidden');
+
+            dd.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.onclick = () => {
+                    selectComparisonItem(side, {
+                        id: item.dataset.id,
+                        name: item.dataset.name
+                    });
+                    dd.classList.add('hidden');
+                };
+            });
+        } else {
+            dd.classList.add('hidden');
+        }
+    }, 200);
+
+    newInput.addEventListener('input', () => debouncedSearch(newInput.value));
+    newInput.addEventListener('blur', () => {
+        setTimeout(() => document.getElementById(`comparison-dropdown-${side}`)?.classList.add('hidden'), 200);
     });
 }
 

@@ -80,6 +80,9 @@
             <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" data-tooltip="Aktivitaet" data-tooltip-desc="GitHub-Style Heatmap der Briefaktivitaet">
                 <i class="fas fa-calendar-alt"></i> <span class="view-btn-text">Aktivitaet</span>
             </button>
+            <button class="view-btn" data-view="comparison" aria-pressed="false" id="comparison-view-btn" data-tooltip="Vergleich" data-tooltip-desc="Personen, Zeitraeume oder Orte vergleichen">
+                <i class="fas fa-columns"></i> <span class="view-btn-text">Vergleich</span>
+            </button>
         </div>
         <div class="nav-links">
             <a href="wissenskorb.html" class="nav-link basket-nav-link" title="Wissenskorb" id="basket-nav-link">
@@ -721,6 +724,88 @@
                         <div id="activity-details" class="activity-details hidden">
                             <h4 id="activity-details-date">-</h4>
                             <div id="activity-details-list" class="activity-details-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison View -->
+                <div id="comparison-view" class="tab-content">
+                    <div class="comparison-container">
+                        <div class="comparison-header">
+                            <h2><i class="fas fa-columns"></i> Vergleichsanalyse</h2>
+                            <p class="comparison-subtitle">Vergleiche zwei Personen, Zeitraeume oder Orte</p>
+                        </div>
+
+                        <!-- Modus-Auswahl -->
+                        <div class="comparison-mode-selector">
+                            <button class="comparison-mode-btn active" data-mode="persons">
+                                <i class="fas fa-users"></i> Personen
+                            </button>
+                            <button class="comparison-mode-btn" data-mode="periods">
+                                <i class="fas fa-clock"></i> Zeitraeume
+                            </button>
+                            <button class="comparison-mode-btn" data-mode="places">
+                                <i class="fas fa-map-marker-alt"></i> Orte
+                            </button>
+                        </div>
+
+                        <!-- Auswahl-Bereich -->
+                        <div class="comparison-selectors">
+                            <div class="comparison-selector comparison-selector-a">
+                                <label>Auswahl A</label>
+                                <div class="autocomplete-container">
+                                    <input type="search" id="comparison-input-a" class="autocomplete-input" placeholder="Suchen..." autocomplete="off">
+                                    <div id="comparison-dropdown-a" class="autocomplete-dropdown hidden"></div>
+                                </div>
+                                <div class="comparison-quick-select" id="comparison-quick-a">
+                                    <!-- Top-5 als Buttons -->
+                                </div>
+                            </div>
+                            <div class="comparison-vs">
+                                <span>vs</span>
+                            </div>
+                            <div class="comparison-selector comparison-selector-b">
+                                <label>Auswahl B</label>
+                                <div class="autocomplete-container">
+                                    <input type="search" id="comparison-input-b" class="autocomplete-input" placeholder="Suchen..." autocomplete="off">
+                                    <div id="comparison-dropdown-b" class="autocomplete-dropdown hidden"></div>
+                                </div>
+                                <div class="comparison-quick-select" id="comparison-quick-b">
+                                    <!-- Top-5 als Buttons -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ergebnis-Panels -->
+                        <div class="comparison-results hidden" id="comparison-results">
+                            <div class="comparison-panels">
+                                <div class="comparison-panel comparison-panel-a" id="comparison-panel-a">
+                                    <h3 id="comparison-title-a">-</h3>
+                                    <div class="comparison-metrics" id="comparison-metrics-a">
+                                        <!-- Metriken werden dynamisch gefuellt -->
+                                    </div>
+                                </div>
+                                <div class="comparison-panel comparison-panel-b" id="comparison-panel-b">
+                                    <h3 id="comparison-title-b">-</h3>
+                                    <div class="comparison-metrics" id="comparison-metrics-b">
+                                        <!-- Metriken werden dynamisch gefuellt -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ueberschneidungen -->
+                            <div class="comparison-overlap" id="comparison-overlap">
+                                <h3>Ueberschneidungen</h3>
+                                <div class="comparison-overlap-content" id="comparison-overlap-content">
+                                    <!-- Gemeinsame Elemente -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Platzhalter -->
+                        <div class="comparison-placeholder" id="comparison-placeholder">
+                            <i class="fas fa-balance-scale"></i>
+                            <p>Waehle zwei Elemente zum Vergleichen</p>
                         </div>
                     </div>
                 </div>
