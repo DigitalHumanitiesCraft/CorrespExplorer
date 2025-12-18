@@ -32,7 +32,7 @@ export function startTour() {
 
     tourActive = true;
     currentStep = 1;
-    tourElement.style.display = 'block';
+    tourElement.classList.remove('hidden');
 
     // Add progress dots to each step
     addProgressDots();
@@ -50,7 +50,7 @@ export function startTour() {
 function endTour() {
     const tourElement = document.getElementById('demo-tour');
     if (tourElement) {
-        tourElement.style.display = 'none';
+        tourElement.classList.add('hidden');
     }
 
     tourActive = false;

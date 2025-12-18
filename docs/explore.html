@@ -44,12 +44,9 @@
             </a>
         </div>
         <div class="view-switcher" role="navigation" aria-label="Ansichtswechsel">
-            <!-- Meta-Views: Orientierung und Navigation -->
-            <button class="view-btn active" data-view="overview" aria-pressed="true" data-tooltip="Uebersicht" data-tooltip-desc="Statistiken und Datenqualitaet">
-                <i class="fas fa-home"></i> <span class="view-btn-text">Uebersicht</span>
-            </button>
-            <button class="view-btn" data-view="questions" aria-pressed="false" id="questions-view-btn" data-tooltip="Pfade" data-tooltip-desc="Forschungsfragen mit Wissenspfaden">
-                <i class="fas fa-route"></i> <span class="view-btn-text">Pfade</span>
+            <!-- Start View (Overview + Pfade kombiniert) -->
+            <button class="view-btn active" data-view="overview" aria-pressed="true" data-tooltip="Start" data-tooltip-desc="Uebersicht und Forschungspfade">
+                <i class="fas fa-home"></i> <span class="view-btn-text">Start</span>
             </button>
             <span class="view-separator"></span>
             <!-- Daten-Views: Visualisierungen -->
@@ -255,106 +252,67 @@
             <main class="main-content" role="main">
                 <!-- Overview View -->
                 <div id="overview-view" class="tab-content active">
-                    <div class="overview-container">
-                        <div class="overview-header">
-                            <h2 id="overview-title">Datensatz-Übersicht</h2>
-                            <p id="overview-subtitle" class="overview-subtitle"></p>
-                        </div>
-
-                        <!-- Data Quality Section -->
-                        <div class="overview-section">
-                            <h3><i class="fas fa-chart-pie"></i> Datenqualität</h3>
-                            <div class="quality-grid">
-                                <div class="quality-item">
-                                    <div class="quality-bar-container">
-                                        <div class="quality-bar" id="quality-bar-dates"></div>
-                                    </div>
-                                    <div class="quality-info">
-                                        <span class="quality-label">Exakte Datierungen</span>
-                                        <span class="quality-value" id="quality-dates">-</span>
-                                    </div>
-                                </div>
-                                <div class="quality-item">
-                                    <div class="quality-bar-container">
-                                        <div class="quality-bar" id="quality-bar-persons"></div>
-                                    </div>
-                                    <div class="quality-info">
-                                        <span class="quality-label">Identifizierte Personen</span>
-                                        <span class="quality-value" id="quality-persons">-</span>
-                                    </div>
-                                </div>
-                                <div class="quality-item">
-                                    <div class="quality-bar-container">
-                                        <div class="quality-bar" id="quality-bar-places"></div>
-                                    </div>
-                                    <div class="quality-info">
-                                        <span class="quality-label">Georeferenzierte Orte</span>
-                                        <span class="quality-value" id="quality-places">-</span>
-                                    </div>
-                                </div>
+                    <div class="overview-container overview-compact">
+                        <!-- Header with Title, Stats and Source -->
+                        <div class="overview-header-compact">
+                            <h2 id="overview-title">Datensatz</h2>
+                            <div class="overview-stats-inline" id="overview-stats-inline">
+                                <!-- Filled by JavaScript: Briefe | Zeitraum | Personen | Orte -->
+                            </div>
+                            <div class="overview-source-inline" id="overview-source-inline">
+                                <!-- Filled by JavaScript: Quelle | Lizenz -->
                             </div>
                         </div>
 
-                        <!-- Two-column layout for metadata and highlights -->
-                        <div class="overview-two-columns">
-                            <!-- Source Metadata -->
-                            <div class="overview-section">
-                                <h3><i class="fas fa-info-circle"></i> Quelle</h3>
-                                <div class="overview-metadata" id="overview-metadata">
-                                    <!-- Filled by JavaScript -->
-                                </div>
-                            </div>
-
-                            <!-- Top Correspondents -->
-                            <div class="overview-section">
-                                <h3><i class="fas fa-star"></i> Haeufigste Briefpartner</h3>
-                                <div class="overview-top-correspondents" id="overview-top-correspondents">
-                                    <!-- Filled by JavaScript -->
-                                </div>
-                            </div>
+                        <!-- Data Quality Bar (compact, always visible) -->
+                        <div class="quality-bar-inline">
+                            <span class="quality-chip" id="quality-chip-dates" title="Exakte Datierungen">
+                                <i class="fas fa-calendar"></i> <span>-</span>
+                            </span>
+                            <span class="quality-chip" id="quality-chip-persons" title="Identifizierte Personen">
+                                <i class="fas fa-user-check"></i> <span>-</span>
+                            </span>
+                            <span class="quality-chip" id="quality-chip-places" title="Georeferenzierte Orte">
+                                <i class="fas fa-map-marker-alt"></i> <span>-</span>
+                            </span>
                         </div>
 
-                        <!-- Language Distribution (if multilingual) -->
-                        <div class="overview-section hidden" id="overview-languages-section">
-                            <h3><i class="fas fa-language"></i> Sprachen</h3>
-                            <div class="overview-languages" id="overview-languages">
-                                <!-- Filled by JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- View Recommendations -->
-                        <div class="overview-section">
-                            <h3><i class="fas fa-compass"></i> Empfohlene Ansichten</h3>
-                            <div class="view-recommendations" id="view-recommendations">
-                                <!-- Filled by JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- Quick Access -->
-                        <div class="overview-section">
-                            <h3><i class="fas fa-rocket"></i> Schnellzugriff</h3>
-                            <div class="quick-access-grid">
-                                <button class="quick-access-btn" data-target="map">
+                        <!-- Main Entry Points -->
+                        <div class="overview-entry-points">
+                            <h3>Was moechten Sie erkunden?</h3>
+                            <div class="entry-point-grid">
+                                <button class="entry-point-btn" data-target="map">
                                     <i class="fas fa-map"></i>
-                                    <span>Kartenansicht</span>
+                                    <span class="entry-label">Karte</span>
+                                    <span class="entry-desc">Orte der Korrespondenz</span>
                                 </button>
-                                <button class="quick-access-btn" data-target="persons">
-                                    <i class="fas fa-users"></i>
-                                    <span>Korrespondenten</span>
-                                </button>
-                                <button class="quick-access-btn" data-target="letters">
-                                    <i class="fas fa-envelope"></i>
-                                    <span>Briefliste</span>
-                                </button>
-                                <button class="quick-access-btn" data-target="timeline">
-                                    <i class="fas fa-chart-line"></i>
-                                    <span>Timeline</span>
-                                </button>
-                                <button class="quick-access-btn" data-target="network">
+                                <button class="entry-point-btn" data-target="network">
                                     <i class="fas fa-project-diagram"></i>
-                                    <span>Netzwerk</span>
+                                    <span class="entry-label">Netzwerk</span>
+                                    <span class="entry-desc">Beziehungen zwischen Personen</span>
+                                </button>
+                                <button class="entry-point-btn" data-target="timeline">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span class="entry-label">Timeline</span>
+                                    <span class="entry-desc">Zeitliche Verteilung</span>
+                                </button>
+                                <button class="entry-point-btn" data-target="letters">
+                                    <i class="fas fa-search"></i>
+                                    <span class="entry-label">Suche</span>
+                                    <span class="entry-desc">Briefe durchsuchen</span>
                                 </button>
                             </div>
+                        </div>
+
+                        <!-- Research Paths (limited) -->
+                        <div class="overview-research-paths">
+                            <h3>Forschungspfade</h3>
+                            <div class="questions-grid" id="overview-questions-grid">
+                                <!-- Filled by JavaScript - max 4 questions -->
+                            </div>
+                            <button class="show-all-paths-btn hidden" id="show-all-paths-btn">
+                                <i class="fas fa-list"></i> Alle Pfade anzeigen
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -938,7 +896,7 @@
             </div>
         </div>
         <div class="tour-step" data-step="4">
-            <div class="tour-content" data-target="#timeline-range-wrapper">
+            <div class="tour-content" data-target="#sidebar-filters">
                 <h3>Zeitraum filtern</h3>
                 <p>Mit dem Timeline-Slider koennen Sie den Zeitraum einschraenken. Alle Ansichten werden automatisch aktualisiert.</p>
                 <div class="tour-nav">
@@ -948,7 +906,7 @@
             </div>
         </div>
         <div class="tour-step" data-step="5">
-            <div class="tour-content" data-target=".filter-section">
+            <div class="tour-content" data-target="#sidebar-filters">
                 <h3>Filter anwenden</h3>
                 <p>Suchen Sie nach Personen, Orten oder Themen. Die Filter lassen sich kombinieren und werden in der Sidebar angezeigt.</p>
                 <div class="tour-nav">
@@ -958,7 +916,7 @@
             </div>
         </div>
         <div class="tour-step" data-step="6">
-            <div class="tour-content" data-target="#map-container">
+            <div class="tour-content" data-target=".view-btn[data-view='map']">
                 <h3>Interaktive Karte</h3>
                 <p>Die Karte zeigt Briefe nach Absendeort. Klicken Sie auf Marker fuer Details. Die Legende erklaert die Farben (nach Sprache).</p>
                 <div class="tour-nav">
@@ -984,9 +942,10 @@
             </div>
         </div>
         <div class="tour-step" data-step="8">
-            <div class="tour-content" data-target="#questions-view-btn">
+            <div class="tour-content" data-target=".overview-research-paths">
                 <h3>Forschungspfade</h3>
-                <p>Der "Pfade"-View zeigt Forschungsfragen, die mit dem Datensatz beantwortbar sind. Jede Frage hat einen mehrstufigen Pfad durch verschiedene Ansichten.</p>
+                <p>Im Start-View finden Sie Forschungspfade - methodische Wege durch das Korpus. Jede Frage zeigt Schritte zur Beantwortung.</p>
+                <p>Klicken Sie auf eine Frage um den Wissenspfad zu starten.</p>
                 <div class="tour-nav">
                     <button class="tour-prev">Zurueck</button>
                     <button class="tour-next">Weiter</button>
@@ -1020,7 +979,7 @@
             </div>
         </div>
         <div class="tour-step" data-step="11">
-            <div class="tour-content" data-target="#basket-btn">
+            <div class="tour-content" data-target="#basket-nav-link">
                 <h3>Wissenskorb</h3>
                 <p>Der Korb-Button in der Navigation zeigt die Anzahl gesammelter Items. Klicken Sie darauf, um zur Wissenskorb-Seite zu gelangen.</p>
                 <p>Dort koennen Sie Ihre kuratierte Sammlung als CSV oder JSON exportieren.</p>

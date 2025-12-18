@@ -293,7 +293,7 @@
 
 .dataset-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-md);
 }
 
@@ -313,7 +313,6 @@
 
 /* Featured Dataset Card (Demo) */
 .dataset-card-featured {
-    grid-column: 1 / -1;
     border-color: var(--color-primary);
     background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(139, 69, 19, 0.05) 100%);
     position: relative;

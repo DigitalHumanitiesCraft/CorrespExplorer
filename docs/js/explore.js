@@ -2033,28 +2033,79 @@ function renderOverview() {
     if (!dataMeta) return;
 
     const meta = dataMeta;
+    const totalLetters = meta.total_letters || 0;
 
-    // Update title and subtitle
+    // Update title
     const titleEl = document.getElementById('overview-title');
-    const subtitleEl = document.getElementById('overview-subtitle');
     if (titleEl) {
-        titleEl.textContent = meta.title || 'Datensatz-Übersicht';
+        titleEl.textContent = meta.title || 'Datensatz';
     }
-    if (subtitleEl && meta.date_range) {
-        const minYear = meta.date_range.min;
-        const maxYear = meta.date_range.max;
-        if (minYear && maxYear) {
-            subtitleEl.textContent = `Korrespondenz von ${minYear} bis ${maxYear}`;
+
+    // Update inline stats: Briefe | Zeitraum | Personen | Orte
+    const statsInlineEl = document.getElementById('overview-stats-inline');
+    if (statsInlineEl) {
+        const minYear = meta.date_range?.min;
+        const maxYear = meta.date_range?.max;
+        const personCount = Object.keys(dataIndices.persons || {}).length;
+        const placeCount = Object.keys(dataIndices.places || {}).length;
+
+        statsInlineEl.innerHTML = `
+            <span class="stat-item"><i class="fas fa-envelope"></i> <span class="stat-value">${totalLetters.toLocaleString('de-DE')}</span> Briefe</span>
+            ${minYear && maxYear ? `<span class="stat-item"><i class="fas fa-calendar"></i> <span class="stat-value">${minYear}–${maxYear}</span></span>` : ''}
+            <span class="stat-item"><i class="fas fa-users"></i> <span class="stat-value">${personCount.toLocaleString('de-DE')}</span> Personen</span>
+            <span class="stat-item"><i class="fas fa-map-marker-alt"></i> <span class="stat-value">${placeCount.toLocaleString('de-DE')}</span> Orte</span>
+        `;
+    }
+
+    // Update source info: Quelle | Lizenz
+    const sourceInlineEl = document.getElementById('overview-source-inline');
+    if (sourceInlineEl) {
+        const parts = [];
+
+        // Check for JSON format (teiHeader) vs cmif-parser format
+        const teiHeader = meta.teiHeader || {};
+        const hasJsonFormat = Object.keys(teiHeader).length > 0;
+
+        // Source/Publisher
+        const publisherValue = hasJsonFormat
+            ? teiHeader.publisher
+            : (meta.publishers?.map(p => p.name).join(', ') || null);
+        if (publisherValue) {
+            parts.push(publisherValue);
         }
+
+        // Licence
+        let licenceText = null;
+        if (hasJsonFormat && teiHeader.licence) {
+            licenceText = teiHeader.licenceTarget
+                ? `<a href="${teiHeader.licenceTarget}" target="_blank" rel="noopener">${teiHeader.licence}</a>`
+                : teiHeader.licence;
+        } else if (meta.licence?.text) {
+            licenceText = meta.licence.url
+                ? `<a href="${meta.licence.url}" target="_blank" rel="noopener">${meta.licence.text}</a>`
+                : meta.licence.text;
+        }
+        if (licenceText) {
+            parts.push(licenceText);
+        }
+
+        // CMIF URL
+        const cmifUrl = hasJsonFormat ? teiHeader.cmifUrl : meta.cmifUrl;
+        if (cmifUrl) {
+            parts.push(`<a href="${cmifUrl}" target="_blank" rel="noopener">CMIF</a>`);
+        }
+
+        sourceInlineEl.innerHTML = parts.length > 0
+            ? parts.join(' <span class="source-sep">|</span> ')
+            : '';
     }
 
     // Calculate quality metrics
     const quality = meta.uncertainty || {};
-    const totalLetters = meta.total_letters || 1;
 
     // Date quality (precise dates)
     const preciseDates = totalLetters - (quality.imprecise_dates || 0);
-    const dateQuality = Math.round((preciseDates / totalLetters) * 100);
+    const dateQuality = totalLetters > 0 ? Math.round((preciseDates / totalLetters) * 100) : 0;
 
     // Person quality (identified with authority refs)
     const allPersonsSet = allLetters.reduce((set, l) => {
@@ -2063,7 +2114,6 @@ function renderOverview() {
         return set;
     }, new Set());
     const identifiedPersons = allLetters.reduce((set, l) => {
-        // Check for authority type (viaf, gnd, etc.) or precision='identified'
         if (l.sender?.authority || l.sender?.precision === 'identified') {
             set.add(l.sender.id || l.sender.name);
         }
@@ -2079,25 +2129,53 @@ function renderOverview() {
     const geoPlaces = places.filter(p => p.lat && p.lon).length;
     const placeQuality = places.length > 0 ? Math.round((geoPlaces / places.length) * 100) : 0;
 
-    // Update quality bars
-    updateQualityBar('quality-bar-dates', 'quality-dates', dateQuality, preciseDates, totalLetters);
-    updateQualityBar('quality-bar-persons', 'quality-persons', personQuality, identifiedPersons.size, allPersonsSet.size);
-    updateQualityBar('quality-bar-places', 'quality-places', placeQuality, geoPlaces, places.length);
+    // Update quality chips
+    updateQualityChip('quality-chip-dates', dateQuality, `${dateQuality}% Datiert`);
+    updateQualityChip('quality-chip-persons', personQuality, `${personQuality}% Identifiziert`);
+    updateQualityChip('quality-chip-places', placeQuality, `${placeQuality}% Georeferenziert`);
 
-    // Generate view recommendations
-    renderViewRecommendations(dateQuality, personQuality, placeQuality);
+    // Setup entry point buttons
+    setupEntryPointButtons();
 
-    // Render metadata section
-    renderOverviewMetadata();
+    // Render research paths in overview (limited)
+    renderOverviewResearchPaths();
+}
 
-    // Render top correspondents
-    renderTopCorrespondents();
+/**
+ * Update a quality chip with percentage and class
+ */
+function updateQualityChip(chipId, percentage, label) {
+    const chip = document.getElementById(chipId);
+    if (!chip) return;
 
-    // Render language distribution
-    renderLanguageDistribution();
+    const spanEl = chip.querySelector('span');
+    if (spanEl) {
+        spanEl.textContent = label;
+    }
 
-    // Setup quick access buttons
-    setupQuickAccessButtons();
+    chip.classList.remove('high', 'medium', 'low');
+    if (percentage >= 70) {
+        chip.classList.add('high');
+    } else if (percentage >= 40) {
+        chip.classList.add('medium');
+    } else {
+        chip.classList.add('low');
+    }
+}
+
+/**
+ * Setup entry point button click handlers
+ */
+function setupEntryPointButtons() {
+    document.querySelectorAll('.entry-point-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.target;
+            if (target) {
+                switchView(target);
+                updateUrlState();
+            }
+        });
+    });
 }
 
 /**
@@ -2125,85 +2203,116 @@ function updateQualityBar(barId, valueId, percentage, count, total) {
 }
 
 /**
- * Render view recommendations based on data quality
+ * Render research paths in the Overview view
+ * Uses the same analyzeResearchQuestions() function as the questions view
+ * Limited to 4 paths with "show all" button
  */
-function renderViewRecommendations(dateQuality, personQuality, placeQuality) {
-    const container = document.getElementById('view-recommendations');
+function renderOverviewResearchPaths() {
+    const container = document.getElementById('overview-questions-grid');
+    const showAllBtn = document.getElementById('show-all-paths-btn');
     if (!container) return;
 
-    const recommendations = [];
+    const questions = analyzeResearchQuestions();
 
-    // Determine best views based on data quality
-    if (placeQuality >= 50) {
-        recommendations.push({
-            view: 'map',
-            icon: 'fa-map',
-            title: 'Kartenansicht',
-            reason: `${placeQuality}% der Orte sind georeferenziert`,
-            recommended: placeQuality >= 70
-        });
-    }
-
-    if (personQuality >= 30) {
-        recommendations.push({
-            view: 'network',
-            icon: 'fa-project-diagram',
-            title: 'Netzwerk-Ansicht',
-            reason: `${personQuality}% der Personen sind identifiziert`,
-            recommended: personQuality >= 60
-        });
-    }
-
-    // Timeline is always useful with dated letters
-    if (dateQuality >= 30) {
-        recommendations.push({
-            view: 'timeline',
-            icon: 'fa-chart-line',
-            title: 'Timeline',
-            reason: `${dateQuality}% der Briefe haben exakte Datierungen`,
-            recommended: dateQuality >= 70
-        });
-    }
-
-    // Persons view is always available
-    recommendations.push({
-        view: 'persons',
-        icon: 'fa-users',
-        title: 'Korrespondenten',
-        reason: 'Alle Absender und Empfänger auflisten',
-        recommended: false
-    });
-
-    // Letters view is always available
-    recommendations.push({
-        view: 'letters',
-        icon: 'fa-envelope',
-        title: 'Briefliste',
-        reason: 'Alle Briefe durchsuchen und filtern',
-        recommended: false
-    });
-
-    // Sort: recommended first
-    recommendations.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
-
-    // Render
-    container.innerHTML = recommendations.map(rec => `
-        <div class="view-recommendation ${rec.recommended ? 'recommended' : ''}" data-view="${rec.view}">
-            <div class="rec-icon"><i class="fas ${rec.icon}"></i></div>
-            <div class="rec-content">
-                <div class="rec-title">${rec.title}</div>
-                <div class="rec-reason">${rec.reason}</div>
+    if (questions.length === 0) {
+        container.innerHTML = `
+            <div class="questions-empty">
+                <i class="fas fa-question-circle"></i>
+                <p>Keine Forschungspfade verfuegbar.</p>
             </div>
-            ${rec.recommended ? '<span class="rec-badge">Empfohlen</span>' : ''}
+        `;
+        if (showAllBtn) showAllBtn.classList.add('hidden');
+        return;
+    }
+
+    // Only show descriptive and analytical questions (not unanswerable)
+    const answerable = questions.filter(q => q.category !== 'unanswerable');
+
+    // Limit to 4 paths for compact overview
+    const MAX_PATHS = 4;
+    const displayPaths = answerable.slice(0, MAX_PATHS);
+    const hasMore = answerable.length > MAX_PATHS;
+
+    // Show/hide "show all" button
+    if (showAllBtn) {
+        if (hasMore) {
+            showAllBtn.classList.remove('hidden');
+            showAllBtn.innerHTML = `<i class="fas fa-list"></i> Alle ${answerable.length} Pfade anzeigen`;
+            showAllBtn.onclick = () => {
+                renderResearchPathCards(container, answerable, questions);
+                showAllBtn.classList.add('hidden');
+            };
+        } else {
+            showAllBtn.classList.add('hidden');
+        }
+    }
+
+    // Render limited cards
+    renderResearchPathCards(container, displayPaths, questions);
+}
+
+/**
+ * Render research path cards (shared by limited and expanded view)
+ */
+function renderResearchPathCards(container, paths, allQuestions) {
+    container.innerHTML = paths.map(q => `
+        <div class="question-card question-${q.category}" data-question-id="${q.id}">
+            <div class="question-icon">
+                <i class="fas ${q.icon || 'fa-question'}"></i>
+            </div>
+            <div class="question-content">
+                <div class="question-text">${q.question}</div>
+                <div class="question-path">
+                    ${q.path.map((step, i) => `
+                        <span class="path-step" data-view="${step.view}" data-step="${i}">
+                            <span class="path-step-num">${i + 1}</span>
+                            <span class="path-step-label">${step.label}</span>
+                        </span>
+                        ${i < q.path.length - 1 ? '<span class="path-arrow"><i class="fas fa-chevron-right"></i></span>' : ''}
+                    `).join('')}
+                </div>
+            </div>
+            <button class="question-start-btn" title="Wissenspfad starten">
+                <i class="fas fa-play"></i>
+            </button>
         </div>
     `).join('');
 
-    // Add click handlers
-    container.querySelectorAll('.view-recommendation').forEach(el => {
-        el.addEventListener('click', () => {
-            const view = el.dataset.view;
-            switchView(view);
-            updateUrlState();
+    // Add click handlers for path steps
+    container.querySelectorAll('.path-step').forEach(step => {
+        step.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const view = step.dataset.view;
+            if (view) {
+                switchView(view);
+                updateUrlState();
+            }
+        });
+    });
+
+    // Add click handler for start button - starts knowledge path
+    container.querySelectorAll('.question-start-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = btn.closest('.question-card');
+            const questionId = card?.dataset.questionId;
+            if (questionId) {
+                const question = allQuestions.find(q => q.id === questionId);
+                if (question && typeof startKnowledgePath === 'function') {
+                    startKnowledgePath(question);
+                }
+            }
+        });
+    });
+
+    // Card click also starts knowledge path
+    container.querySelectorAll('.question-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const questionId = card.dataset.questionId;
+            const question = allQuestions.find(q => q.id === questionId);
+            if (question && typeof startKnowledgePath === 'function') {
+                startKnowledgePath(question);
+            }
         });
     });
 }
