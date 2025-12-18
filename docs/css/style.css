@@ -668,19 +668,17 @@ button, .btn {
 
 /* Responsive Design */
 
-/* Large screens - hide view button text earlier to prevent navbar overflow */
-@media (max-width: 1600px) {
-    .view-btn {
-        padding: var(--space-sm) var(--space-md);
-    }
+/* With 12 views, always hide text and show only icons to prevent overflow */
+.view-btn .view-btn-text {
+    display: none;
+}
 
-    .view-btn .view-btn-text {
-        display: none;
-    }
+.view-btn {
+    padding: var(--space-sm) var(--space-md);
+}
 
-    .view-btn i {
-        font-size: var(--font-size-lg);
-    }
+.view-btn i {
+    font-size: var(--font-size-lg);
 }
 
 @media (max-width: 1400px) {
@@ -1806,6 +1804,61 @@ button, .btn {
     flex-shrink: 0;
     white-space: nowrap;
     border-right: 1px solid var(--border-color, #e0e0e0);
+    position: relative;
+}
+
+/* Custom Tooltip for View Buttons */
+.view-btn[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-text, #1a1a2e);
+    color: white;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.view-btn[data-tooltip-desc]::before {
+    content: attr(data-tooltip-desc);
+    position: absolute;
+    top: calc(100% + 28px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-surface, #f8f9fa);
+    color: var(--color-text-light, #666);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 400;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    z-index: 999;
+    pointer-events: none;
+    border: 1px solid var(--color-border-light, #e0e0e0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.view-btn[data-tooltip]:hover::after,
+.view-btn[data-tooltip]:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Arrow for main tooltip */
+.view-btn[data-tooltip]::after {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .view-btn:last-child {

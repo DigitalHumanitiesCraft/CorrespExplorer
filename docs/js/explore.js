@@ -2063,8 +2063,13 @@ function renderOverview() {
         return set;
     }, new Set());
     const identifiedPersons = allLetters.reduce((set, l) => {
-        if (l.sender?.id && l.sender.id.startsWith('http')) set.add(l.sender.id);
-        if (l.recipient?.id && l.recipient.id.startsWith('http')) set.add(l.recipient.id);
+        // Check for authority type (viaf, gnd, etc.) or precision='identified'
+        if (l.sender?.authority || l.sender?.precision === 'identified') {
+            set.add(l.sender.id || l.sender.name);
+        }
+        if (l.recipient?.authority || l.recipient?.precision === 'identified') {
+            set.add(l.recipient.id || l.recipient.name);
+        }
         return set;
     }, new Set());
     const personQuality = allPersonsSet.size > 0 ? Math.round((identifiedPersons.size / allPersonsSet.size) * 100) : 0;
