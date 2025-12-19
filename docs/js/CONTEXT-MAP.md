@@ -38,6 +38,14 @@ Tests (siehe tests/CONTEXT-MAP.md)
 - run-all-tests.js - Test-Entry-Point
 - test-*.js - Test-Suites
 
+Views (extrahierte Module, siehe views/CONTEXT-MAP.md)
+- views/timeline-view.js - Zeitleisten-Visualisierung
+- views/activity-view.js - GitHub-style Heatmap
+- views/chronik-view.js - Chronologische Liste mit Wikidata
+- views/comparison-view.js - Side-by-Side Vergleich
+- views/network-view.js - D3.js Force-Graph
+- views/mentions-view.js - Sankey fuer Erwahnungen
+
 ## Kritische Abhaengigkeiten
 
 explore.js importiert fast alle Module und ist das Herzstueck.
@@ -50,7 +58,9 @@ Aenderungen an diesen Modulen haben weitreichende Auswirkungen:
 
 ## Views in explore.js
 
-Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik, Questions, Activity
+Verbleibende Views (nicht extrahiert): Overview, Map, Persons, Letters, Topics, Places, Questions
+
+Extrahierte Views: Timeline, Activity, Chronik, Comparison, Network, Mentions Flow
 
 Jeder View hat:
 - renderXYZ() Funktion

@@ -1,737 +1,234 @@
 # CorrespExplorer - Architecture
 
-Technische Architektur und Modulübersicht der Web-Applikation.
+Technische Architektur der Web-Applikation.
+
+Fuer detaillierte Modul-Referenz siehe [modules.md](modules.md).
 
 ## Systemuebersicht
 
 CorrespExplorer ist eine rein browser-basierte Single-Page-Application ohne Backend. Alle Datenverarbeitung erfolgt clientseitig mit JavaScript ES6 Modules. Die Architektur folgt einem Upload-Parse-Visualize Pattern mit optionaler Wikidata-Anreicherung.
 
-Browser-Architektur:
-- index.html (Landing Page)
-  - Upload via Drag and Drop
-  - URL Input fuer Remote-CMIF
-  - Zwei Datensatz-Typen:
-    1. Standard CMIF (XML): Live-Parsing via cmif-parser.js, Ergebnis in sessionStorage
-    2. Erweiterte Datensaetze (JSON): Redirect mit URL-Parameter, explore.js laedt direkt
-- explore.html (Hauptvisualisierung)
-  - Laedt Daten aus sessionStorage oder via URL-Parameter json=
-  - Zwoelf Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik, Activity, Comparison
-  - Sidebar mit Filter und Statistiken
-  - Export-Funktion fuer CSV und JSON
+Zwei Einstiegspunkte:
+- index.html - Landing Page mit Upload/URL-Input
+- explore.html - Hauptvisualisierung mit 12 Views
 
 Zwei-Tier Datensatz-Architektur:
 - Standard CMIF: Absender, Empfaenger, Datum, Ort (correspAction)
 - Erweiterte Datensaetze: Zusaetzlich mentionsSubject, mentionsPerson, mentionsPlace, teiHeader
 - Erweiterte Daten werden vorprozessiert (Python-Pipeline) wegen CORS-Einschraenkungen
-- HSA ist ein erweiterter Datensatz mit 1622 Themen, erwaehnten Personen und Orten
 
 ## Seiten-Struktur
 
-### index.html - Landing-Page
+### index.html - Landing Page
 
-Einstiegspunkt für alle Nutzer:
 - Upload-Zone (Drag-and-Drop, Datei-Auswahl)
-- URL-Input für Remote-CMIF
+- URL-Input fuer Remote-CMIF
 - Beispiel-Datensaetze (HSA als Default)
+- Nach Upload: Weiterleitung zu explore.html
 
-Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
+### explore.html - Hauptvisualisierung
 
-### explore.html - Visualisierung
+12 Views:
+1. Uebersicht - Start-View mit Statistiken, Datenqualitaet, Entry-Points
+2. Karte - MapLibre GL mit Clustering
+3. Korrespondenten - Sortierbare/suchbare Liste
+4. Briefe - Sortierbare/suchbare Liste
+5. Timeline - Stacked Bar Chart nach Jahr
+6. Themen - Topics mit Detail-Panel
+7. Orte - Places mit Detail-Panel
+8. Netzwerk - Force-Directed Graph
+9. Mentions Flow - Sankey Diagram
+10. Chronik - Vertikaler Zeitstrahl mit Wikidata
+11. Aktivitaet - GitHub-Style Heatmap
+12. Vergleich - Split-Screen Analyse
 
-Hauptansicht mit zwoelf Views:
-1. Uebersicht (Start-View mit Statistiken, Datenqualitaet, Entry-Points, Forschungspfade) - Default-View
-2. Karte (MapLibre GL JS mit Clustering)
-3. Korrespondenten (sortierbare/suchbare Liste)
-4. Briefe (sortierbare/suchbare Liste)
-5. Timeline (Stacked Bar Chart nach Jahr mit Sprachverteilung, Detached Bin fuer undatierte Briefe)
-6. Themen (Topics View mit Detail-Panel)
-7. Orte (Places View mit Detail-Panel)
-8. Netzwerk (Force-Directed Graph)
-9. Mentions Flow (Sankey Diagram fuer Erwaehnungen)
-10. Chronik (Vertikaler Zeitstrahl mit optionaler Wikidata-Anreicherung fuer biografische Daten)
-11. Aktivitaet (GitHub-Style Kalender-Heatmap der Briefaktivitaet)
-12. Vergleich (Split-Screen Vergleich von Personen, Zeitraeumen oder Orten)
+Sidebar: Statistiken, Zeitraum-Filter, Sprach-Filter, aktive Filter-Badges
 
-Forschungspfade sind in die Uebersicht (Start-View) integriert, nicht als separater View.
+URL-State: Filter werden in URL gespeichert (dataset, view, yearMin, yearMax, person, subject, place, langs)
 
-Sidebar (ausgeblendet im Uebersicht-View):
-- Statistik-Cards (Briefe, Absender, Orte)
-- Zeitraum-Filter (noUiSlider)
-- Sprach-Filter (Checkboxen, Top 10)
-- Person/Thema/Ort-Filter-Badge (wenn aktiv)
+### Weitere Seiten
 
-Navigation mit:
-- View-Switcher (12 Buttons)
-- Export-Button
-- Neuer Datensatz-Link
-- About-Link
-- Vault-Link
-- Tests-Link
+- about.html - Projektinformation
+- vault.html - Dokumentations-Viewer fuer knowledge/
+- wissenskorb.html - Dedizierte Basket-Analyse
+- test.html - Browser-basierte Test Suite
 
-URL-State:
-- Filter werden in URL gespeichert
-- Parameter: dataset, view, yearMin, yearMax, person, subject, place, langs
-- Ermöglicht Bookmarking und Teilen
+## Modul-Kategorien
 
-### about.html - Projektinformation
+### Core (keine zirkulaeren Dependencies)
 
-Statische Seite mit:
-- Projekthintergrund
-- CMIF-Format Erklärung
-- Nutzungshinweise
-- Promptotyping-Methodik
-- Kontaktinformationen
+- state-manager.js - Zentrales State-Management mit Subscriber-Pattern
+- dom-cache.js - DOM-Element-Caching fuer Performance
+- constants.js - Farben, UI-Defaults, Konfiguration
+- utils.js - Shared Hilfsfunktionen
+- formatters.js - Formatierung mit Unsicherheitsindikatoren
 
-### vault.html - Promptotyping Vault
+### Data Processing
 
-Dokumentations-Viewer für knowledge/ Ordner:
-- Sidebar mit Dokumenten-Liste
-- Markdown-Rendering
-- Kategorie-Filter
-- Laden von knowledge/ Markdown-Dateien
+- cmif-parser.js - Browser-XML-Parser fuer CMIF/TEI
+- correspsearch-api.js - correspSearch API v2.0 Integration
 
-### wissenskorb.html - Knowledge Basket
+### Enrichment (optionale Datenanreicherung)
 
-Dedizierte Analyse-Seite für gesammelte Items:
-- Person-Liste Panel
-- Visualisierungen: Timeline, Map, Network
-- Filter und Sortierung
-- Export-Funktionen
+- wikidata-enrichment.js - Wikidata SPARQL fuer Personen
+- geonames-enrichment.js - GeoNames zu Koordinaten via Wikidata
+- enrichment.js - lobid.org GND API
 
-### test.html - Test Suite
+### Extracted Views (views/)
 
-Browser-basierte Test-Ausführung:
-- Run Tests Button
-- Test-Output Anzeige
-- Test-Summary mit Pass/Fail Count
-- Auto-run via URL-Parameter
+6 View-Module extrahiert aus explore.js:
+- timeline-view.js, activity-view.js, chronik-view.js
+- comparison-view.js, network-view.js, mentions-view.js
 
-## JavaScript Modules
+Pattern: Dependency Injection - externe Abhaengigkeiten via init() injiziert
 
-Die Anwendung verwendet 26 JavaScript-Module organisiert in 7 Kategorien. Alle Module sind ES6-Module ohne Build-Prozess. Die Architektur trennt klar zwischen Core Data Processing (CMIF-Parsing, State-Management), Infrastructure (DOM-Caching, Utilities) und UI-Komponenten (Views, Basket, Enrichment).
+### UI/UX
 
-### Core Data Processing
-
-cmif-parser.js
-
-Browser-basierter CMIF-Parser mit TEI-Namespace-Handling:
-- Parst CMIF-XML (TEI) zu interner JSON-Struktur
-- Unterstützt File, URL, XML-String, correspSearch API
-- Erkennt Unsicherheiten: date/person/place precision
-- Erstellt Indices: persons, places, subjects, languages
-- Berechnet Metadaten und Statistiken
-- Authority-Erkennung für VIAF, GND, GeoNames, Lexvo
-- Imports: correspsearch-api.js, utils.js
-- Exports: parseCMIF() returns Promise, enrichWithCoordinates()
-
-state-manager.js
-
-Zentrale State-Verwaltung:
-- Verwaltet globalen State (data, filters, ui)
-- Subscriber-Pattern für State-Updates
-- Filter-Logik: temporal, languages, person, subject, place, quality
-- Caching für Performance (invalidiert bei Filter-Änderungen)
-- URL-Serialisierung: toURLParams(), fromURLParams()
-- State-Struktur: data (letters, indices, meta), filters, ui (currentView, selections)
-- Imports: keine
-- Exports: state (singleton AppState)
-
-formatters.js
-
-Formatierung mit Unsicherheitsindikatoren:
-- Formatiert Datumswerte mit Präzisions-Icons (Tag, Monat, Jahr, Range)
-- Person- und Ortsnamen mit CSS-Klassen für Unsicherheiten
-- CSS-Helper-Funktionen für Styling (getDatePrecisionClass, getPersonPrecisionClass, getPlacePrecisionClass)
-- Initialen-Generator für Personen-Avatare
-- Imports: utils.js
-- Exports: formatDateWithPrecision, formatPersonName, formatPlaceName, getPersonInitials, CSS-Klassen-Funktionen
-
-### Infrastructure
-
-dom-cache.js
-
-DOM-Element-Caching:
-- Lazy-loading Cache für häufig genutzte Elemente
-- Reduziert wiederholte querySelector-Aufrufe
-- Methoden: byId(), bySelector(), allBySelector()
-- Map-basiertes Caching-System
-- Imports: keine
-- Exports: DOMCache (Klasse), elements (singleton), initDOMCache()
-
-utils.js
-
-Shared utility functions:
-- debounce: Verzögerte Funktionsausführung
-- escapeHtml: XSS-Prävention
-- downloadFile: Client-seitiger File-Download
-- formatNumber: Lokalisierte Zahlenformatierung
-- parseAuthorityRef: VIAF, GND, LCCN, ISNI, ORCID Erkennung
-- parseGeoNamesRef: GeoNames ID Extraktion
-- analyzeDataCapabilities: Erkennt ob Daten Koordinaten, Personen, Datums enthalten (für adaptive UI)
-- Imports: keine
-- Exports: Einzelne Funktionen
-
-constants.js
-
-Zentrale Konstanten:
-- LANGUAGE_COLORS: Dynamisch berechnet basierend auf Briefverteilung (starke Farben für häufige Sprachen, Pastell für seltene)
-- LANGUAGE_LABELS: Menschenlesbare Sprachnamen
-- UI_DEFAULTS: View-Einstellungen, Limits, Defaults
-- MAP_DEFAULTS: MapLibre-Konfiguration, Clustering-Parameter
-- NETWORK_DEFAULTS: Force-Directed-Graph-Parameter
-- API_DEFAULTS: correspSearch API Einstellungen
-- BASKET_LIMITS: MAX_PERSONS, MAX_LETTERS, MAX_PLACES
-- Imports: keine
-- Exports: Konstanten, computeLanguageColors()
-
-### Enrichment
-
-Optionale semantische Anreicherung über externe APIs. Alle Module cachen Ergebnisse in localStorage (7 Tage) um wiederholte API-Calls zu vermeiden.
-
-wikidata-enrichment.js
-
-Wikidata SPARQL-Integration für Personen:
-- Queries via VIAF, GND, direct QID
-- Batch-Processing mit Progress-Callbacks
-- Biografische Daten: Lebensdaten, Bilder, Berufe
-- Auflösung von Authority-IDs zu Wikidata-Entities
-- SessionStorage-Caching (7 Tage)
-- Imports: keine
-- Exports: enrichPersonsBatch, enrichPerson, countEnrichable, formatLifeDates, formatPlaces, buildExternalLinks
-
-geonames-enrichment.js
-
-Wikidata SPARQL-Integration für Orte:
-- Löst GeoNames-IDs zu Koordinaten auf via Wikidata (P1566 → P625)
-- Batch-Processing: 50 IDs pro Request
-- Rate Limiting: 1.5s zwischen Requests
-- Wendet Koordinaten auf data.letters und data.indices.places an
-- LocalStorage-Caching (7 Tage)
-- Progress-Callbacks für UI-Updates
-- Imports: keine
-- Exports: resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds
-
-enrichment.js
-
-lobid.org GND API:
-- On-demand Enrichment für Personen mit GND-IDs
-- Wikidata-ID und Wikipedia-Link Extraktion aus lobid.org Daten
-- Biographical Summary Extraction
-- SessionStorage-Caching (7 Tage)
-- Imports: keine
-- Exports: enrichPersonFromGND
-
-correspsearch-api.js
-
-Integration der correspSearch API v2.0:
-- Automatische Paginierung (10 Ergebnisse pro Seite)
-- TEI-JSON zu internem Format Transformation
-- Ergebnis-Vorschau mit Gesamtanzahl
-- Retry-Logik bei Netzwerkfehlern
-- Parameter: correspondent (GND/VIAF URI), placeSender (GeoNames URI), startdate/enddate (YYYY-MM-DD)
-- Imports: utils.js, constants.js
-- Exports: searchCorrespSearch, fetchFromCorrespSearchUrl, getResultCount, isCorrespSearchUrl
-
-### Knowledge Basket
-
-Persistente Sammlung von interessanten Items zur späteren Analyse. Basket-Daten werden in localStorage gespeichert und über Storage Events zwischen Tabs synchronisiert.
-
-basket.js
-
-Sammelt Items zur späteren Analyse:
-- Speichert Items: letters, persons, places
-- LocalStorage-Persistenz mit Multi-Tab-Sync via Storage Events
-- Capacity Limits: MAX_PERSONS, MAX_LETTERS, MAX_PLACES
-- URL-Serialisierung für Sharing (Base64-encoded compressed JSON)
-- Event-System für Basket-Änderungen
-- Imports: constants.js
-- Exports: initBasket, addToBasket, removeFromBasket, toggleBasketItem, isInBasket, getBasketItems, getBasketCounts, clearBasket, onBasketChange, resolveBasketItems, generateBasketUrl, loadBasketFromUrl
-
-basket-ui.js
-
-UI-Komponenten für Basket:
-- Button mit Badge (zeigt Anzahl gesammelter Items)
-- Modal mit Tabs (Letters, Persons, Places)
-- Add/Remove Actions in allen Views
-- Export: JSON, CSV, URL
-- Resolve-Logik: Verknüpft Basket-IDs mit Daten aus Indices
-- Imports: basket.js, utils.js
-- Exports: initBasketUI, setupBasketButton, setupBasketModal
-
-### Main Application
-
-upload.js
-
-Handler für die Landing-Page:
-- Event-Handler: handleFileSelect, handleDragDrop, handleUrlSubmit, handleDatasetSelect, handleCorrespSearchSubmit
-- Config-Modal: Zeigt Enrichment-Optionen (Koordinaten, Personen)
-- Zwei-stufige Anreicherung: Koordinaten (0-50%), dann Personen (50-100%)
-- analyzeDataCapabilities() prüft verfügbare Daten für adaptive UI
-- Datenverarbeitung: parseCMIF(), optional geonames-enrichment.js, wikidata-enrichment.js
-- Speicherung in sessionStorage mit Quota-Exceeded-Handling
-- Weiterleitung zu explore.html nach erfolgreichem Upload
-- Imports: cmif-parser.js, correspsearch-api.js, wikidata-enrichment.js, geonames-enrichment.js, utils.js
-
-explore.js
-
-Hauptvisualisierung (groesstes Modul, ~6.800 Zeilen):
-- Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik
-- View-Rendering und Interaktivitaet
-- MapLibre GL fuer Karten-View
-- D3-Sankey fuer Mentions Flow
-- Chronik-View mit:
-  - Vertikaler Zeitstrahl gruppiert nach Jahren
-  - Drei Layout-Optionen: Cards, Compact, Timeline
-  - Korrespondenz-Index (buildCorrespondenceIndex) fuer Beziehungskontext
-  - Altersberechnung aus Wikidata/CMIF-Lebensdaten
-  - Lebensleisten-Visualisierung (buildLifespanBar)
-- Initialisierung: loadData() aus sessionStorage oder URL-Parameter, initMap(), initFilters(), initViewSwitcher()
-- View-Switching: updateButtons(), showViewContent(), renderViewContent()
-- Export: prepareExportData(), downloadFile() fuer CSV/JSON
-- Imports: state-manager, dom-cache, formatters, constants, wikidata-enrichment, basket-ui, demo-tour
-- Migration zu state-manager laeuft (Legacy-Code vorhanden)
-
-### Secondary Pages
-
-wissenskorb.js
-- Dedizierte Basket-Analyse-Seite
-- Visualisierungen: Timeline, Map, Network
-- Filter und Sortierung für gesammelte Personen
-- Imports: basket.js, utils.js
-
-vault.js
-- Promptotyping Vault (Markdown-Viewer)
-- Lädt knowledge/ Markdown-Dateien via fetch
-- Sidebar-Navigation mit Kategorien (process, technical, requirements)
-- Markdown-Rendering im Content-Bereich
-- Imports: keine
-
-demo-tour.js
-- Interaktives Onboarding für Demo-Dataset
-- Gesteuert via URL-Parameter (demo=true)
-- SessionStorage für Tour-Status (ce-demo-tour-completed)
-- 9 Steps mit Progress-Dots
-- Imports: keine
-- Exports: checkAndStartDemoTour, startTour
-
-### Test Suite
-
-Browser-basiertes Testing ohne Node.js oder externes Test-Framework. Alle Tests verwenden real CMIF data statt Mock-Daten um die tatsächliche Datenverarbeitung zu validieren.
-
-tests/test-runner.js
-- Test-Framework ohne Dependencies
-- TestRunner-Klasse mit runAll(), runSuite()
-- Einfaches Assert-System
-- Exports: TestRunner, runTests()
-
-tests/run-all-tests.js
-- Test-Entry-Point
-- Registriert alle Suites: CMIFParserTests, AggregationTests, FormattersTests, StateManagerTests, DOMCacheTests
-- Auto-run via URL-Parameter (test=true)
-- Imports: test-runner.js, alle Test-Suites
-- Exports: runAllTests()
-
-Test-Suites (74+ Tests total):
-- test-cmif-parser.js: 13 Tests - XML-Parsing, Unsicherheits-Erkennung, Indices-Erstellung
-- test-formatters.js: 26 Tests - Formatierung mit Präzisions-Indikatoren, CSS-Klassen
-- test-aggregation.js: 11 Tests - Indices-Erstellung, State-Integration, Filtering
-- test-state-manager.js: 10 Tests - Filter-Logik, Caching, URL-State Serialisierung
-- test-dom-cache.js: 9 Tests - Element-Caching, Performance
-
-Alle Tests verwenden real CMIF data aus data/test-uncertainty.xml, keine Mock-Daten.
+- basket.js - LocalStorage-Wissenskorb-Logik
+- basket-ui.js - Wissenskorb UI-Komponenten
+- demo-tour.js - Onboarding-Tour
 
 ## Datenfluss
 
-Die Anwendung unterstützt vier verschiedene Datenflüsse je nach Use Case: vorprozessierte Demo-Daten (HSA), User-Upload, Knowledge Basket und automatisierte Tests.
+### 1. Vorprozessierte Daten (HSA)
 
-### 1. HSA (Vorprozessiert)
+Python-Pipeline erzeugt JSON mit Indices:
+```
+CMIF.xml -> build_hsa_data.py -> hsa-letters.json
+explore.html?json=data/hsa-letters.json -> explore.js visualisiert
+```
 
-Python-Preprocessing fuer erweiterte Datensaetze:
-- CMIF.xml aus data/hsa/ als Input
-- build_hsa_data.py verarbeitet XML und erzeugt hsa-letters.json mit Indices
-  - extract_tei_header() extrahiert Editor, Publisher, Lizenz, Quelle aus teiHeader
-  - normalize_whitespace() bereinigt Zeilenumbrueche aus XML
-  - meta.teiHeader im Output fuer einheitliche Metadaten-Anzeige
-  - Erweiterter Briefdatensatz mit mentionsSubject, mentionsPerson, mentionsPlace
-- resolve_geonames_wikidata.py loest GeoNames-IDs zu Koordinaten auf
-- analyze_hsa_cmif.py analysiert CMIF-Struktur und Metadaten
-- consolidate_css_variables.py (Refactoring: CSS-Variablen zu tokens.css)
-- migrate_to_dom_cache.py (Refactoring: Legacy-Code zu dom-cache.js)
-- explore.html?json=data/hsa-letters.json laedt direkt via fetch
-- explore.js visualisiert ohne zusaetzliches clientseitiges Parsing
-- geonames_coordinates.json wird fuer Orte ohne Koordinaten verwendet
+### 2. User-Upload (Browser-Parsing)
 
-### 2. Upload (Browser-Parsing)
+```
+File/URL -> upload.js -> cmif-parser.js -> sessionStorage -> explore.js
+           Optional: geonames-enrichment, wikidata-enrichment
+```
 
-Browser-basierte Verarbeitung ohne Backend:
-- User Upload (File via Drag-Drop oder URL via Fetch)
-- upload.js empfängt Input
-- cmif-parser.js parst mit DOMParser (clientseitig)
-  - Extrahiert Briefe aus correspDesc-Elementen
-  - Erstellt Indices für Personen, Orte, Sprachen, Themen
-  - Erkennt Unsicherheiten in Daten (date precision, person precision, place precision)
-- Optional: Wikidata-Enrichment via enrichPersonsBatch()
-- Speichert JSON in sessionStorage (Quota-Limit ~5MB)
-- Weiterleitung zu explore.html
-- explore.js lädt aus sessionStorage und visualisiert
+### 3. Knowledge Basket
 
-### 3. Basket (Knowledge Basket)
-
-User-Collection Workflow:
-- User sammelt interessante Items (Letters, Persons, Places) in Views
-- basket-ui.js UI-Actions (Add/Remove Buttons)
-- basket.js Storage-Logic speichert in localStorage
-- localStorage-JSON mit IDs der gesammelten Items
-- Multi-Tab Sync via Storage Events (automatisch zwischen Tabs synchronisiert)
-- URL-Sharing via generateBasketUrl() (Base64-compressed)
-- Export als JSON oder CSV
-- wissenskorb.html: Dedizierte Analyse-Seite für Basket-Items
-
-### 4. Tests
-
-Automatisierte Test-Ausführung:
-- run-all-tests.js startet Test-Runner
-- test-runner.js führt alle Suites aus
-- Jede Suite ruft parseCMIF() auf
-- cmif-parser.js lädt data/test-uncertainty.xml
-- Tests validieren XML-Parsing, Formatierung, State-Management, DOM-Caching
-- Ergebnisse als Pass/Fail mit Duration
-- Keine Mock-Daten, nur real CMIF-XML
+```
+User sammelt Items -> basket.js (localStorage) -> Multi-Tab-Sync
+Export: JSON, CSV, URL-Sharing
+```
 
 ## Datenmodell
 
-Das interne Datenmodell ist normalisiert mit Briefen als Hauptentitäten und separierten Indices für Personen, Orte, Sprachen und Themen. Alle Referenzen verwenden Authority-IDs (GND, VIAF, GeoNames) für eindeutige Identifikation.
-
 ### Brief (Letter)
 
-Jeder Brief enthält:
-- id: Eindeutige Kennung
-- url: Link zur Quelle (optional)
-- date: ISO-Datum (YYYY-MM-DD)
-- year: Extrahiertes Jahr für Timeline
-- datePrecision: day, month, year, range, unknown
-- sender: Objekt mit name, id, authority, precision
-- recipient: Objekt mit name, id, authority, precision
-- place_sent: Objekt mit name, geonames_id, lat, lon, precision
-- language: Objekt mit code, label
-- mentions: Objekt mit subjects, persons, places Arrays
+```javascript
+{
+  id: "unique-id",
+  url: "source-link",
+  date: "YYYY-MM-DD",
+  year: 1798,
+  datePrecision: "day|month|year|range|unknown",
+  sender: { name, id, authority, precision },
+  recipient: { name, id, authority, precision },
+  place_sent: { name, geonames_id, lat, lon, precision },
+  language: { code, label },
+  mentions: { subjects: [], persons: [], places: [] }
+}
+```
 
-### Indizes
+### Indices
 
-Personen-Index:
-- Schlüssel: Authority-ID (VIAF, GND) oder generated ID
-- Wert: name, authority, letter_count, as_sender, as_recipient
-
-Orte-Index:
-- Schlüssel: GeoNames-ID
-- Wert: name, lat, lon, letter_count
-
-Sprachen-Index:
-- Schlüssel: ISO 639 Language Code
-- Wert: code, label, letter_count
-
-Themen-Index:
-- Schlüssel: Subject URI
-- Wert: label, uri, category (lexvo, gnd, etc), letter_count
+- persons: Authority-ID -> { name, authority, letter_count, as_sender, as_recipient }
+- places: GeoNames-ID -> { name, lat, lon, letter_count }
+- languages: ISO-Code -> { code, label, letter_count }
+- subjects: URI -> { label, uri, category, letter_count }
 
 ### Meta
 
-Metadaten:
-- title: Dataset-Titel
-- publisher: Herausgeber
-- total_letters: Anzahl Briefe
-- unique_senders: Anzahl eindeutiger Absender
-- unique_recipients: Anzahl eindeutiger Empfänger
-- unique_places: Anzahl eindeutiger Orte
-- date_range: min/max Jahr
-- uncertainty: Statistiken zu Unsicherheiten (dates, senders, recipients, places mit Präzisions-Verteilung)
-- generated: Timestamp
+- title, publisher, total_letters
+- unique_senders, unique_recipients, unique_places
+- date_range: { min, max }
+- uncertainty: Statistiken zu Praezision
 
-## UI-Komponenten
+## Design Patterns
 
-Alle Views teilen eine gemeinsame Sidebar mit Filtern und Statistiken. Filter sind kombinierbar und werden in der URL gespeichert für Bookmarking und Sharing. Der Uebersicht-View ist eine Ausnahme: hier wird die Sidebar ausgeblendet.
+### Dependency Injection (Views)
 
-### Uebersicht (Overview)
+View-Module erhalten Abhaengigkeiten via init():
+```javascript
+initNetworkView({
+    getFilteredLetters: () => state.getFilteredLetters(),
+    applyPersonFilter,
+    switchView,
+    log
+});
+```
 
-Default-View beim Laden eines Datensatzes:
-- Statistik-Cards: Briefe, Korrespondenten, Orte, Zeitraum
-- Datenqualitaet: Balken fuer exakte Datierungen, identifizierte Personen, georeferenzierte Orte
-- Quellen-Metadaten: Editor, Publisher, CMIF-URL, Lizenz (aus teiHeader)
-- Top-Korrespondenten: Die 5 aktivsten Personen mit Briefanzahl
-- Sprachverteilung: Bei mehrsprachigen Datensaetzen
-- View-Empfehlungen: Basierend auf Datenqualitaet (z.B. Karte nur wenn >50% georeferenziert)
-- Schnellzugriff: Buttons zu allen anderen Views
-- Sidebar ausgeblendet fuer volle Breite
+Vorteile: Keine zirkulaeren Imports, testbar, lose Kopplung.
 
-### Kartenansicht
+### Subscriber Pattern (State)
 
-- MapLibre GL JS 4.x für WebGL-Rendering
-- CartoDB Basemap mit Light/Dark Toggle
-- GeoJSON-Clustering mit Aggregation bei vielen Punkten
-- Popup mit Orts-Statistiken (Briefanzahl, Top Korrespondenten)
+State-Aenderungen via subscribe():
+```javascript
+state.subscribe('filters', (newFilters) => {
+    renderCurrentView();
+});
+```
 
-### Korrespondenten-Liste
+### Caching Layers
 
-- Suche nach Name (debounced)
-- Sortierung: Briefanzahl, Name (A-Z/Z-A)
-- Avatar mit Initialen und Farbe
-- Statistik: Gesendet/Empfangen
-- Wikidata-Enrichment optional sichtbar (Portrait, Lebensdaten)
-
-### Brief-Liste
-
-- Suche nach Sender, Empfänger, Ort
-- Sortierung: Datum, Absender
-- Link zur Quelle (wenn URL vorhanden)
-- Limit: 500 Briefe (DOM-Performance)
-- Unsicherheits-Indikatoren für Datum, Personen, Orte
-
-### Timeline View
-
-- Stacked Bar Chart nach Jahr
-- Sprachverteilung sichtbar durch Farben
-- Detached Bin für undatierte Briefe
-- Click-Interaktion: Zoom zu Jahr
-
-### Topics View
-
-- Liste aller Themen mit Briefanzahl
-- Detail-Panel: Co-occurring Topics
-- Click-Filter: Zeigt Briefe zu Thema
-
-### Places View
-
-- Geografische Liste mit Koordinaten
-- Statistiken pro Ort
-- Click-Filter: Zeigt Briefe von Ort
-
-### Network View
-
-- Force-Directed Graph
-- Knoten: Personen
-- Kanten: Korrespondenz-Beziehungen
-- Farben: Rolle (Sender, Mentioned, Both)
-
-### Mentions Flow View
-
-- Sankey Diagram mit D3-Sankey
-- Links: Korrespondenten zu erwähnten Personen
-- Flow-Breite: Anzahl Erwähnungen
-
-### Chronik View
-
-- Vertikaler Zeitstrahl gruppiert nach Jahren
-- Drei Layout-Optionen via Toggle-Buttons:
-  - Cards: Detailliert mit Portraits und Lebensleisten
-  - Compact: Einzelne Zeile pro Brief, viele Briefe sichtbar
-  - Timeline: Sender links, Datum/Ort Mitte, Empfaenger rechts
-- Wikidata-Anreicherung mit Live-Fortschrittsanzeige
-  - Log zeigt pro Person gefundene Daten (Portrait, Geburt, Tod, Beruf, Wikipedia)
-  - Summary-Grid nach Abschluss mit Statistiken
-- Beziehungskontext: "Erster Brief" Badge, "Brief X von Y" Zaehler
-- Altersberechnung aus Wikidata/CMIF-Lebensdaten
-- Lazy Loading: 100 Briefe pro Batch
-
-### Forschungsfragen View
-
-- Automatisch generierte Forschungsfragen basierend auf Korpus-Struktur
-- Drei epistemologische Kategorien:
-  - Deskriptiv: Was ist im Korpus? (Personen, Orte, Themen, Sprachen)
-  - Analytisch: Welche Muster gibt es? (Zeitverlaeufe, Netzwerk-Struktur, Cluster)
-  - Interpretativ: Was bedeutet das? (Sprache-Geografie-Korrelation, biografischer Kontext)
-- Datenabdeckungs-Indikator pro Frage (Coverage-Bar)
-- Klick navigiert zum relevanten View
-- Filter-Hinweise fuer interpretative Fragen
-- Anti-Vibe-Research Feature: Macht implizite Forschungsfragen explizit
-
-### Aktivitaets-Heatmap View
-
-- GitHub-Style Kalender-Heatmap der Korrespondenz-Aktivitaet
-- Zeilen: Wochentage (Mo-So)
-- Spalten: Wochen des Jahres
-- Farbintensitaet: Anzahl Briefe pro Tag (5-stufige Skala)
-- Jahr-Auswahl oder Multi-Jahr-Uebersicht
-- Statistik-Karten: Total, aktivster Tag, aktivstes Jahr, Durchschnitt/Monat
-- Aktivster Tag nur fuer exakte Daten (keine Platzhalter-Datierungen)
-- Klick auf Zelle zeigt Briefe des Tages in Detail-Panel
-- Click-Through zu Brief-Detail-Modal
-- Reagiert auf aktive Filter (Person, Thema, Zeitraum)
-
-### Filter
-
-- noUiSlider für Zeitraum (Min/Max Jahr)
-- Checkboxen für Sprachen (Top 10, dynamisch sortiert)
-- Reset-Button
-- Quality-Filter: Precise Dates, Known Persons, Located Places
-
-### Export-Modal
-
-- CSV-Format (Tabellenstruktur für Excel)
-- JSON-Format (Strukturierte Daten für weitere Verarbeitung)
-- Zeigt Anzahl der exportierten Briefe
-
-## CSS Stylesheets
-
-Das Design System basiert auf CSS Custom Properties (Design Tokens) definiert in tokens.css. Alle Styles folgen einem Logo-derived Color Scheme (Rust Red, Steel Blue, Cream) mit border-based Card Design im Retro-Stil.
-
-### Design System
-
-tokens.css
-- Design Tokens (Canonical Values)
-- Colors: Logo-derived palette (Rust Red Primary, Steel Blue Secondary, Cream Background)
-- Typography: Font families (Inter, Lato, Merriweather), sizes (xs bis 3xl), weights
-- Spacing: Space scale (xs, sm, md, lg, xl, 2xl, 3xl)
-- Layout: Sidebar width, navbar height, responsive breakpoints
-- Borders: Border width (2-3px für thick borders), radius (sm, md, lg)
-- Shadows: Box shadows für Cards
-- Transitions: Animation timing (fast, normal, slow)
-- Status-Farben: Success (Forest Green), Info (Academic Blue), Warning (Dark Gold), Error (Dark Red)
-- Role Colors: Sender (Steel Blue), Mentioned (Medium Gray), Both (Forest Green)
-- Badge Colors: GND (Green), SNDB (Gold)
-- Verwendet von: Alle CSS-Dateien via import
-
-style.css
-- Base styles und Layout
-- Reset (Box-Sizing, Margins, Paddings)
-- Body-Styles (Font, Color, Background)
-- Global Card Style (border-based design, 2px border, hover effect)
-- Global Button Style
-- Navigation (landing-nav)
-- Imports: tokens.css, components.css
-
-components.css
-- Shared UI-Komponenten über alle Views
-- Sidebar Info Section (compact statistics)
-- Filter Group (checkboxes, sliders)
-- Button Groups (view-switcher, action-buttons)
-- Badge Styles (GND, SNDB, Precision-Indicators)
-- Modal Styles (overlay, content, close-button)
-- Toast Notifications
-- Progress Indicators (loading-spinner, progress-bar)
-- Search Bars
-- Table Styles
-
-### View-Specific Styles
-
-CSS-Dateien pro View:
-- explore.css: Explore View (Map, Timeline, Network, Sankey, Sidebar)
-- upload.css: Landing Page, Upload Zone, Disclaimer, Dataset Cards
-- about.css: About Page, Content Sections, Feature Lists
-- vault.css: Vault Page, Document Viewer, Sidebar Navigation
-- wissenskorb.css: Basket Analysis Page, Person-List-Panel
-
-Alle View-Specific Styles verwenden tokens.css für konsistente Gestaltung. Keine Duplikation von Token-Werten.
+1. DOM-Cache: Haeufig genutzte Elemente
+2. State-Cache: Gefilterte Briefe (invalidiert bei Filter-Aenderung)
+3. Storage-Cache: Wikidata/GeoNames-Ergebnisse (7 Tage)
 
 ## Performance-Strategien
 
-Die Performance-Optimierung fokussiert auf Client-Side-Rendering großer Datenmengen ohne Server-Backend.
+1. Lazy Rendering - Views nur rendern wenn aktiv
+2. Debouncing - Filter-Updates mit 300ms Verzoegerung
+3. Clustering - MapLibre-Cluster fuer viele Punkte
+4. Limits - Brief-Liste auf 500 begrenzt
+5. Index-Lookups - O(1) Zugriff via Map
 
-1. Lazy Rendering: Listen nur rendern wenn View aktiv (View-Switching invalidiert nicht andere Views)
-2. Debouncing: Filter-Updates mit 300ms Verzögerung (vermeidet zu häufige Re-Renders)
-3. Clustering: MapLibre-Cluster für 1000+ Punkte (reduziert DOM-Elemente)
-4. Limit: Brief-Liste auf 500 Einträge begrenzt (DOM-Performance, zeigt Warning wenn mehr vorhanden)
-5. Index-Lookups: O(1) Zugriff auf Personen/Orte via Map-basierte Indices
+## Technische Limits
 
-## Limits und Einschraenkungen
-
-Browser-basierte Architektur hat technische Grenzen durch Storage-Quotas und DOM-Performance. Limits sind bewusst gewählt um Usability zu erhalten.
-
-Aspekt - Limit - Begründung:
-- sessionStorage: ~5MB - Browser-Limit, größere Datasets via Preprocessing
-- Brief-Liste: 500 Einträge - DOM-Performance, Warning bei mehr Ergebnissen
-- Sprach-Filter: Top 10 - UI-Übersichtlichkeit, alle anderen unter "Other"
-- CMIF-Upload: ~50MB - Browser-Parsing-Performance
-
-## HTML Pages
-
-Sechs spezialisierte HTML-Seiten ohne gemeinsames Template-System. Jede Seite lädt nur die benötigten JavaScript-Module und Stylesheets.
-
-- index.html: Landing Page (upload.js, upload.css)
-- explore.html: Main App (explore.js, explore.css)
-- about.html: Info Page (about.css)
-- vault.html: Documentation Viewer (vault.js, vault.css)
-- wissenskorb.html: Basket Analysis (wissenskorb.js, wissenskorb.css)
-- test.html: Test Suite (run-all-tests.js, style.css)
+- sessionStorage: ~5MB (Browser-Limit)
+- Brief-Liste: 500 Eintraege (DOM-Performance)
+- Sprach-Filter: Top 10 (UI-Uebersichtlichkeit)
+- CMIF-Upload: ~50MB (Browser-Parsing)
 
 ## Technology Stack
 
-- Vanilla JavaScript ES6 Modules (kein Build-Prozess, direkt im Browser lauffähig)
-- MapLibre GL JS 4.x: WebGL map rendering mit Clustering
-- D3-Sankey 0.12.3: Flow diagram visualization für Mentions Flow
-- noUiSlider: Time range filtering für Timeline
-- CSS Custom Properties: Design tokens ohne Preprocessor
-- SessionStorage: Data persistence für aktuelle Session
-- LocalStorage: Basket persistence über Sessions hinweg
+- Vanilla JavaScript ES6 Modules (kein Build-Prozess)
+- MapLibre GL JS 4.x - WebGL Map Rendering
+- D3.js - Timeline, Network, Sankey
+- noUiSlider - Zeitraum-Filter
+- CSS Custom Properties - Design Tokens
 
-## Kritische Abhängigkeiten
+## CSS Architecture
 
-Fünf zentrale Module bilden das Fundament der Anwendung. Änderungen an diesen Modulen haben weitreichende Auswirkungen.
+Design System in tokens.css:
+- Logo-derived Colors (Rust Red, Steel Blue, Cream)
+- Typography Scale (Inter, Lato, Merriweather)
+- Spacing Scale (xs bis 3xl)
+- Border-based Card Design
 
-Zentrale Module:
-- cmif-parser.js: Alle Datenverarbeitung, wird von upload, tests verwendet
-- state-manager.js: Alle Filter und UI-State, wird von explore verwendet
-- formatters.js: Alle Views, wird für jede Datenanzeige verwendet
-- constants.js: Fast alle Module, zentrale Konfiguration
-- utils.js: Überall verwendet, Shared Functions
-
-Design System:
-- tokens.css: Von allen CSS-Dateien verwendet, keine Token-Duplikation
-- components.css: Shared Components über alle Views
-- Konsistente Verwendung von CSS Custom Properties
-
-## Migration Status
-
-Refactoring zu besserer State-Verwaltung und Performance-Optimierung erfolgt in Phasen. Aktueller Stand: Phase 37 (Dezember 2025).
-
-Completed:
-- state-manager.js (Subscriber-Pattern, Caching, URL-State)
-- dom-cache.js (Performance-Optimierung)
-- tokens.css Design System (Logo-derived Colors, Spacing Scale)
-- Mentions Flow View mit Filter-Controls
-- Overview-View als Default mit teiHeader-Metadaten
-- Chronik-View mit drei Layouts (Cards, Compact, Timeline)
-- Wikidata-Anreicherung mit Live-Fortschrittsanzeige und Statistik-Summary
-
-In Progress:
-- explore.js: Partial migration to state-manager (Legacy-Variablen koexistieren mit state-manager)
-- Vollständige Nutzung von state.getFilteredLetters() statt manuellem Filtering
-
-## Testing Strategy
-
-Tests validieren die tatsächliche Datenverarbeitung mit real CMIF-XML Dateien. Kein Mock-Data um realitätsnahe Test-Coverage zu garantieren.
-
-Test-Suites:
-- test-cmif-parser.js: CMIF-XML zu JSON Parsing (14 Tests)
-- test-formatters.js: Datum, Person, Ort Formatierung (27 Tests)
-- test-aggregation.js: Indices-Erstellung, Daten-Aggregation (12 Tests)
-- test-state-manager.js: Filter-Logik, Caching, URL-State (11 Tests)
-- test-dom-cache.js: Element-Caching, Performance (10 Tests)
-- test-uncertainty.js: Uncertainty-Handling (zusätzliche Tests)
-- explore-tests.js: Legacy Exploratory Tests (416 Zeilen)
-
-Total: 74+ Tests über 7 Suites
-
-Strategie:
-- Real CMIF data only (data/test-uncertainty.xml mit 22 repräsentativen Unsicherheits-Fällen)
-- No mock data or synthetic objects (alle Tests verwenden parseCMIF() mit echten Daten)
-- Business logic tests: ~90% - CMIF-Parser, Formatters, Aggregation, State-Manager, Uncertainty
-- Infrastructure tests: ~10% - DOM-Cache (keine CMIF-Daten benötigt)
-- Browser-based testing (no Node.js, läuft direkt in test.html)
-- All tests pass: 100%
+Stylesheets:
+- tokens.css - Design Tokens
+- style.css - Base Styles
+- components.css - Shared Components
+- explore.css, upload.css, etc. - View-spezifisch
 
 ## Browser-Kompatibilitaet
 
-Moderne Browser-Features erforderlich. Keine Polyfills für ältere Browser. Getestet auf aktuellen Versionen der Major Browsers.
-
-Getestet mit:
-- Chrome 120+
-- Firefox 120+
-- Safari 17+
-- Edge 120+
+Getestet: Chrome 120+, Firefox 120+, Safari 17+, Edge 120+
 
 Erforderlich:
-- ES6 Module Support (import/export)
-- DOMParser API (XML-Parsing)
+- ES6 Module Support
+- DOMParser API
 - sessionStorage/localStorage
 - Fetch API
 - CSS Custom Properties
+
+## Testing
+
+Browser-basierte Tests ohne Node.js:
+- 74+ Tests ueber 7 Suites
+- Real CMIF data (keine Mocks)
+- test.html mit Auto-run Option
+
+Test-Suites: cmif-parser, formatters, aggregation, state-manager, dom-cache
