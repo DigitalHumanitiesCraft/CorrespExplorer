@@ -18,7 +18,6 @@ Infrastructure Tests (State Management)
 - test-dom-cache.js - 9 Tests für dom-cache.js
 
 Legacy Tests (nicht in run-all-tests.js)
-- explore-tests.js - Filter, Aggregation, UI (alt)
 - test-uncertainty.js - CMIF Unsicherheits-Erkennung (alt)
 
 Test-UI
