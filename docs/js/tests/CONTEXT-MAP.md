@@ -17,9 +17,6 @@ Infrastructure Tests (State Management)
 - test-state-manager.js - 10 Tests für state-manager.js
 - test-dom-cache.js - 9 Tests für dom-cache.js
 
-Legacy Tests (nicht in run-all-tests.js)
-- test-uncertainty.js - CMIF Unsicherheits-Erkennung (alt)
-
 Test-UI
 - ../test.html - Browser-basierte Test-Ausführung
 

@@ -66,13 +66,11 @@ URL-State: Filter werden in URL gespeichert (dataset, view, yearMin, yearMax, pe
 ### Data Processing
 
 - cmif-parser.js - Browser-XML-Parser fuer CMIF/TEI
-- correspsearch-api.js - correspSearch API v2.0 Integration
 
 ### Enrichment (optionale Datenanreicherung)
 
 - wikidata-enrichment.js - Wikidata SPARQL fuer Personen
 - geonames-enrichment.js - GeoNames zu Koordinaten via Wikidata
-- enrichment.js - lobid.org GND API
 
 ### Extracted Views (views/)
 

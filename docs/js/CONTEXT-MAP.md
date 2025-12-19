@@ -21,12 +21,10 @@ Core (keine Dependencies)
 
 Data (Parsing und Laden)
 - cmif-parser.js - Browser-XML-Parser, TEI-JSON-Handler
-- correspsearch-api.js - correspSearch API v2.0 Integration
 
 Enrichment (Datenanreicherung)
 - wikidata-enrichment.js - SPARQL fuer Bilder, Lebensdaten
 - geonames-enrichment.js - GeoNames zu Koordinaten via Wikidata
-- enrichment.js - lobid.org GND API
 
 UI/UX (User-Interaktion)
 - basket.js - LocalStorage-Wissenskorb-Logik

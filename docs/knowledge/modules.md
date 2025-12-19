@@ -304,31 +304,6 @@ Exports:
 - applyCoordinatesToData(data, coords) - Wendet Koordinaten an
 - analyzeCoordinateNeeds(data) - Analysiert fehlende Koordinaten
 
-### enrichment.js
-
-lobid.org GND API.
-
-Funktion: On-demand Enrichment fuer Personen mit GND-IDs. Wikidata-ID und Wikipedia-Link Extraktion.
-
-Imports: keine
-
-Exports:
-- enrichPersonFromGND(gndId) - Anreicherung via lobid.org
-
-### correspsearch-api.js
-
-correspSearch API v2.0 Integration.
-
-Funktion: Automatische Paginierung. TEI-JSON Transformation. Retry-Logik.
-
-Imports: utils.js, constants.js
-
-Exports:
-- searchCorrespSearch(params) - Suche mit Parametern
-- fetchFromCorrespSearchUrl(url) - Direkter URL-Abruf
-- getResultCount(params) - Ergebnis-Vorschau
-- isCorrespSearchUrl(url) - URL-Pruefung
-
 ## Basket Modules
 
 ### basket.js
