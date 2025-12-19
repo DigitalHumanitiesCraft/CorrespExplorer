@@ -98,7 +98,7 @@ const VAULT_DOCUMENTS = [
         filename: 'mentions-network-plan.md',
         title: 'Mentions Network Plan',
         description: 'Implementierungsplan fuer Mentions Network View',
-        icon: 'fa-diagram-project',
+        icon: 'fa-stream',
         category: 'planning'
     }
 ];

@@ -4010,7 +4010,7 @@ function analyzeResearchQuestions() {
             description: `${totalMentions} Personen-Erwaehnungen in ${lettersWithMentions.length} Briefen`,
             preview: topMentioned.map(([name, count]) => `${name} (${count}x)`),
             view: 'mentions-flow',
-            icon: 'fa-diagram-project',
+            icon: 'fa-stream',
             coverage: Math.round((lettersWithMentions.length / totalLetters) * 100),
             dataField: 'mentions',
             path: [
