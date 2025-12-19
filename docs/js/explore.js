@@ -40,24 +40,18 @@ import { initPlacesView, renderPlacesList as renderPlacesListView, getPlacesInde
 
 const IS_PRODUCTION = true;
 
-// DEPRECATED: Moved to state-manager.js
-// These variables are kept temporarily for backward compatibility
-// TODO: Remove after full migration
-let map;  // Still used directly, not in state
-let allLetters = [];  // Use: state.getAllLetters()
-let filteredLetters = [];  // Use: state.getFilteredLetters()
-let placeAggregation = {};  // Use: state.getPlaceAggregation()
-let dataIndices = {};  // Use: state.getIndices()
-let dataMeta = {};  // Use: state.getMeta()
-let temporalFilter = null;  // Use: state.filters.temporal
-let dateRange = { min: 1800, max: 2000 };  // Use: state.ui.dateRange
+// Map instance (not in state - MapLibre manages its own state)
+let map;
 
-// Quality filter state - Use: state.filters.quality
-let qualityFilter = {
-    preciseDates: false,
-    knownPersons: false,
-    locatedPlaces: false
-};
+// DEPRECATED: Legacy variables for backward compatibility
+// TODO: Migrate remaining usages to state-manager.js
+let allLetters = [];       // Use: state.getAllLetters()
+let filteredLetters = [];  // Use: state.getFilteredLetters()
+let placeAggregation = {}; // Use: state.getPlaceAggregation()
+let dataIndices = {};      // Use: state.getDataIndices()
+let temporalFilter = null; // Use: state.filters.temporal
+let dateRange = { min: 1800, max: 2000 }; // Use: state.ui.dateRange
+let qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
 
 // Track state
 let handlersSetup = false;
@@ -286,7 +280,6 @@ async function init() {
         allLetters = data.letters || [];
         filteredLetters = allLetters;
         dataIndices = data.indices || {};
-        dataMeta = data.meta || {};
 
         log.init('State Manager initialized with data');
 
@@ -417,9 +410,9 @@ async function init() {
         // Store data in sessionStorage for wissenskorb.js
         try {
             sessionStorage.setItem('correspData', JSON.stringify({
-                letters: allLetters,
-                indices: dataIndices,
-                meta: dataMeta
+                letters: state.getAllLetters(),
+                indices: state.getDataIndices(),
+                meta: state.getMeta()
             }));
         } catch (e) {
             // sessionStorage may be full or unavailable
@@ -2124,9 +2117,8 @@ function initPersonsView() {
  * Render the Overview view with statistics and recommendations
  */
 function renderOverview() {
-    if (!dataMeta) return;
-
-    const meta = dataMeta;
+    const meta = state.getMeta();
+    if (!meta) return;
     const totalLetters = meta.total_letters || 0;
 
     // Update title
@@ -2457,18 +2449,19 @@ function setupQuickAccessButtons() {
  */
 function renderOverviewMetadata() {
     const container = document.getElementById('overview-metadata');
-    if (!container || !dataMeta) return;
+    const meta = state.getMeta();
+    if (!container || !meta) return;
 
     const items = [];
 
     // Check for JSON format (teiHeader object) vs cmif-parser format (direct properties)
-    const teiHeader = dataMeta.teiHeader || {};
+    const teiHeader = meta.teiHeader || {};
     const hasJsonFormat = Object.keys(teiHeader).length > 0;
 
     // Editor - JSON: teiHeader.editor (string), Parser: editors (array)
     const editorValue = hasJsonFormat
         ? teiHeader.editor
-        : (dataMeta.editors?.map(e => e.name).join(', ') || null);
+        : (meta.editors?.map(e => e.name).join(', ') || null);
     if (editorValue) {
         items.push({
             icon: 'fa-user-edit',
@@ -2480,7 +2473,7 @@ function renderOverviewMetadata() {
     // Publisher - JSON: teiHeader.publisher (string), Parser: publishers (array)
     const publisherValue = hasJsonFormat
         ? teiHeader.publisher
-        : (dataMeta.publishers?.map(p => p.url
+        : (meta.publishers?.map(p => p.url
             ? `<a href="${p.url}" target="_blank" rel="noopener">${p.name}</a>`
             : p.name).join(', ') || null);
     if (publisherValue) {
@@ -2494,9 +2487,9 @@ function renderOverviewMetadata() {
     // Source (bibl) - JSON: teiHeader.bibl, Parser: sourceReference/sourceUrl
     const sourceValue = hasJsonFormat
         ? teiHeader.bibl
-        : (dataMeta.sourceUrl && dataMeta.sourceReference
-            ? `<a href="${dataMeta.sourceUrl}" target="_blank" rel="noopener">${dataMeta.sourceReference}</a>`
-            : dataMeta.sourceReference || null);
+        : (meta.sourceUrl && meta.sourceReference
+            ? `<a href="${meta.sourceUrl}" target="_blank" rel="noopener">${meta.sourceReference}</a>`
+            : meta.sourceReference || null);
     if (sourceValue) {
         items.push({
             icon: 'fa-quote-left',
@@ -2506,7 +2499,7 @@ function renderOverviewMetadata() {
     }
 
     // CMIF URL - both formats use cmifUrl
-    const cmifUrl = hasJsonFormat ? teiHeader.cmifUrl : dataMeta.cmifUrl;
+    const cmifUrl = hasJsonFormat ? teiHeader.cmifUrl : meta.cmifUrl;
     if (cmifUrl) {
         items.push({
             icon: 'fa-link',
@@ -2521,10 +2514,10 @@ function renderOverviewMetadata() {
         licenceText = teiHeader.licenceTarget
             ? `<a href="${teiHeader.licenceTarget}" target="_blank" rel="noopener">${teiHeader.licence}</a>`
             : teiHeader.licence;
-    } else if (dataMeta.licence?.text) {
-        licenceText = dataMeta.licence.url
-            ? `<a href="${dataMeta.licence.url}" target="_blank" rel="noopener">${dataMeta.licence.text}</a>`
-            : dataMeta.licence.text;
+    } else if (meta.licence?.text) {
+        licenceText = meta.licence.url
+            ? `<a href="${meta.licence.url}" target="_blank" rel="noopener">${meta.licence.text}</a>`
+            : meta.licence.text;
     }
     if (licenceText) {
         items.push({
