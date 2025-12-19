@@ -42,6 +42,16 @@ mentions-view.js
 - Abhaengigkeiten: getFilteredLetters, showLetterDetail, log
 - Exports: initMentionsView, renderMentionsFlow, resetMentionsPerson
 
+topics-view.js
+- Themen-Browse mit Detail-Panel
+- Abhaengigkeiten: getFilteredLetters, getAllLetters, applySubjectFilter, log
+- Exports: initTopicsView, renderTopicsList, getSubjectIndex, getSelectedSubjectId, setSelectedSubjectId, rebuildSubjectIndex, resetTopicsState
+
+places-view.js
+- Orte-Browse mit Detail-Panel und Koordinaten-Aufloesung
+- Abhaengigkeiten: getFilteredLetters, getAllLetters, getDataIndices, applyPlaceFilter, switchView, basketAdd, basketIsInBasket, showToast, onDataUpdated, log
+- Exports: initPlacesView, renderPlacesList, getPlacesIndex, getSelectedPlaceId, setSelectedPlaceId, rebuildPlacesIndex, resetPlacesState, updateMissingCoordinatesBanner
+
 ## Dependency Injection Pattern
 
 Beispiel aus network-view.js:
@@ -108,9 +118,7 @@ Render in switchView():
 ## Verbleibende Views in explore.js
 
 Noch nicht extrahiert:
-- Map View (Mapbox-Integration, komplex)
+- Map View (MapLibre-Integration, komplex)
 - Persons View (integriert mit Filter-System)
 - Letters View (stark mit State verwoben)
-- Places View (aehnlich wie Persons)
-- Topics View (aehnlich wie Persons)
 - Overview/Questions View (Research Questions)

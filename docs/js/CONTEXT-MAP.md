@@ -45,6 +45,8 @@ Views (extrahierte Module, siehe views/CONTEXT-MAP.md)
 - views/comparison-view.js - Side-by-Side Vergleich
 - views/network-view.js - D3.js Force-Graph
 - views/mentions-view.js - Sankey fuer Erwahnungen
+- views/topics-view.js - Themen-Browse mit Detail-Panel
+- views/places-view.js - Orte-Browse mit Koordinaten-Aufloesung
 
 ## Kritische Abhaengigkeiten
 
@@ -58,9 +60,9 @@ Aenderungen an diesen Modulen haben weitreichende Auswirkungen:
 
 ## Views in explore.js
 
-Verbleibende Views (nicht extrahiert): Overview, Map, Persons, Letters, Topics, Places, Questions
+Verbleibende Views (nicht extrahiert): Overview, Map, Persons, Letters, Questions
 
-Extrahierte Views: Timeline, Activity, Chronik, Comparison, Network, Mentions Flow
+Extrahierte Views: Timeline, Activity, Chronik, Comparison, Network, Mentions Flow, Topics, Places
 
 Jeder View hat:
 - renderXYZ() Funktion

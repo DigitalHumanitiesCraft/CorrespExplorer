@@ -35,6 +35,8 @@ import { initComparisonView, renderComparison as renderComparisonView } from './
 import { initChronikView, renderChronik as renderChronikView, resetChronikState } from './views/chronik-view.js';
 import { initNetworkView as initNetworkViewModule, renderNetwork as renderNetworkView, resetNetworkZoom } from './views/network-view.js';
 import { initMentionsView, renderMentionsFlow as renderMentionsFlowView, resetMentionsPerson } from './views/mentions-view.js';
+import { initTopicsView, renderTopicsList as renderTopicsListView, getSubjectIndex, getSelectedSubjectId, setSelectedSubjectId, rebuildSubjectIndex, resetTopicsState } from './views/topics-view.js';
+import { initPlacesView, renderPlacesList as renderPlacesListView, getPlacesIndex, getSelectedPlaceId, setSelectedPlaceId, rebuildPlacesIndex, resetPlacesState, updateMissingCoordinatesBanner } from './views/places-view.js';
 
 const IS_PRODUCTION = true;
 
@@ -61,17 +63,11 @@ let qualityFilter = {
 let handlersSetup = false;
 let mapInitialized = false;  // Use: state.mapInitialized
 
-// Topics view state - Use: state.ui.*
-let subjectIndex = {};
-let selectedSubjectId = null;  // Use: state.ui.selectedTopicId
-let topicsSearchTerm = '';  // Use: state.ui.topicsSearchTerm
-let topicsSortOrder = 'count-desc';  // Use: state.ui.topicsSortOrder
+// Topics view state - now in views/topics-view.js
+// Access via getSubjectIndex(), getSelectedSubjectId()
 
-// Places view state - Use: state.ui.*
-let placesIndex = {};
-let selectedPlaceId = null;  // Use: state.ui.selectedPlaceId
-let placesSearchTerm = '';  // Use: state.ui.placesSearchTerm
-let placesSortOrder = 'count-desc';  // Use: state.ui.placesSortOrder
+// Places view state - now in views/places-view.js
+// Access via getPlacesIndex(), getSelectedPlaceId()
 
 // Mentions Flow view state
 let mentionedPersonsIndex = new Map();  // Used for detectAvailableViews
@@ -352,8 +348,26 @@ async function init() {
             basketAdd,
             showToast
         });
-        initTopicsView();
-        initPlacesView();
+        // Initialize extracted topics view with dependencies
+        initTopicsView({
+            getFilteredLetters: () => filteredLetters,
+            getAllLetters: () => allLetters,
+            applySubjectFilter,
+            log
+        });
+        // Initialize extracted places view with dependencies
+        initPlacesView({
+            getFilteredLetters: () => filteredLetters,
+            getAllLetters: () => allLetters,
+            getDataIndices: () => dataIndices,
+            applyPlaceFilter,
+            switchView,
+            basketAdd,
+            basketIsInBasket,
+            showToast,
+            onDataUpdated: handlePlacesDataUpdated,
+            log
+        });
         // Initialize extracted network view with dependencies
         initNetworkViewModule({
             getFilteredLetters: () => state.getFilteredLetters(),
@@ -421,8 +435,8 @@ async function init() {
         }
 
         // Apply subject filter from URL
-        if (selectedSubjectId) {
-            applySubjectFilter(selectedSubjectId);
+        if (getSelectedSubjectId()) {
+            applySubjectFilter(getSelectedSubjectId());
         }
 
         hideLoading();
@@ -694,8 +708,9 @@ function renderTopicsQuickFilter(searchTerm) {
         return;
     }
 
+    const currentSubjectId = getSelectedSubjectId();
     container.innerHTML = toShow.map(topic => {
-        const isActive = selectedSubjectId === topic.id;
+        const isActive = currentSubjectId === topic.id;
         return `
             <div class="topic-quick-item ${isActive ? 'active' : ''}" data-topic-id="${escapeHtml(topic.id)}" title="${escapeHtml(topic.label)}">
                 <span class="topic-label">${escapeHtml(topic.label)}</span>
@@ -736,9 +751,10 @@ function updateTopicsQuickFilterState() {
     const container = elements.topicsQuickFilter;
     if (!container) return;
 
+    const currentSubjectId = getSelectedSubjectId();
     container.querySelectorAll('.topic-quick-item').forEach(item => {
         const topicId = item.dataset.topicId;
-        if (selectedSubjectId === topicId) {
+        if (currentSubjectId === topicId) {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
@@ -1555,7 +1571,7 @@ function initFilters() {
             }
             temporalFilter = null;
             selectedPersonId = null;
-            selectedSubjectId = null;
+            setSelectedSubjectId(null);
 
             // Reset quality filters
             qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
@@ -1584,7 +1600,7 @@ function applyFilters() {
 
     filterUpdates.languages = languageFilters.length > 0 ? languageFilters : [];
     filterUpdates.person = selectedPersonId || null;
-    filterUpdates.subject = selectedSubjectId || null;
+    filterUpdates.subject = getSelectedSubjectId() || null;
     filterUpdates.quality = { ...qualityFilter };
 
     state.updateFilters(filterUpdates);
@@ -1611,7 +1627,7 @@ function applyFilters() {
 
     // Re-render active view
     if (currentView === 'topics') {
-        renderTopicsList();
+        renderTopicsListView();
     } else if (currentView === 'timeline') {
         renderTimelineView();
     } else if (currentView === 'persons') {
@@ -1619,7 +1635,7 @@ function applyFilters() {
     } else if (currentView === 'letters') {
         renderLettersList();
     } else if (currentView === 'places') {
-        renderPlacesList();
+        renderPlacesListView();
     } else if (currentView === 'chronik') {
         renderChronikView();
     }
@@ -1646,7 +1662,7 @@ function clearPersonFilter() {
 
 // Update filter indicators on view buttons
 function updateFilterIndicators() {
-    const hasActiveFilter = selectedPersonId || selectedSubjectId ||
+    const hasActiveFilter = selectedPersonId || getSelectedSubjectId() ||
         qualityFilter.preciseDates || qualityFilter.knownPersons || qualityFilter.locatedPlaces;
 
     // Update letters button with filter indicator
@@ -1737,7 +1753,7 @@ function updateFilterCounts() {
     // Get current filter state excluding language
     const yearRange = getYearRangeValues();
     const personFilters = selectedPersonId ? [selectedPersonId] : [];
-    const topicFilters = selectedSubjectId ? [selectedSubjectId] : [];
+    const topicFilters = getSelectedSubjectId() ? [getSelectedSubjectId()] : [];
 
     // Filter letters without language constraint to show potential counts
     const lettersWithoutLanguageFilter = allLetters.filter(letter => {
@@ -1855,6 +1871,25 @@ function showToast(message, duration = 3000) {
     }, duration);
 }
 
+/**
+ * Callback for places view when coordinates are resolved
+ * Updates map and view state
+ */
+function handlePlacesDataUpdated(coordinates) {
+    // Rebuild place aggregation
+    placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
+
+    // Update views
+    detectAvailableViews();
+    updateViewButtons();
+
+    // Reinitialize map if it's now available
+    if (availableViews.map?.available && map) {
+        initMap();
+        updateMap();
+    }
+}
+
 // ===================
 // URL STATE MANAGEMENT
 // ===================
@@ -1888,7 +1923,7 @@ function initUrlState() {
     // Subject filter
     const subject = urlParams.get('subject');
     if (subject) {
-        selectedSubjectId = subject;
+        setSelectedSubjectId(subject);
     }
 
     // Languages
@@ -2007,9 +2042,9 @@ function switchView(view) {
         // Always re-render timeline when switching to it (to reflect filters)
         renderTimelineView();
     } else if (view === 'topics') {
-        renderTopicsList();
+        renderTopicsListView();
     } else if (view === 'places') {
-        renderPlacesList();
+        renderPlacesListView();
     } else if (view === 'network') {
         renderNetworkView();
     } else if (view === 'mentions-flow') {
@@ -3456,367 +3491,13 @@ window.filterByPerson = function(personId) {
 // ===================
 
 // ===================
-// TOPICS VIEW
+// TOPICS VIEW - Extracted to views/topics-view.js
 // ===================
 
-function initTopicsView() {
-    // Build subject index from letters
-    buildSubjectIndex();
-
-    // Note: Topics button visibility is now handled by updateViewButtons()
-
-    // Setup search and sort
-    const searchInput = elements.getById('topic-search');
-    const sortSelect = elements.getById('topic-sort');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce((e) => {
-            topicsSearchTerm = e.target.value.toLowerCase();
-            renderTopicsList();
-        }, 300));
-    }
-
-    if (sortSelect) {
-        sortSelect.addEventListener('change', (e) => {
-            topicsSortOrder = e.target.value;
-            renderTopicsList();
-        });
-    }
-
-    // Setup filter button
-    const filterBtn = elements.getById('topic-filter-btn');
-    if (filterBtn) {
-        filterBtn.addEventListener('click', () => {
-            if (selectedSubjectId) {
-                applySubjectFilter(selectedSubjectId);
-            }
-        });
-    }
-}
-
-// Build inverted index for subjects
-function buildSubjectIndex() {
-    subjectIndex = {};
-
-    allLetters.forEach(letter => {
-        if (!letter.mentions?.subjects) return;
-
-        const letterSubjects = letter.mentions.subjects;
-        const senderName = letter.sender?.name || 'Unbekannt';
-        const senderId = letter.sender?.id || letter.sender?.name;
-        const year = letter.year;
-
-        letterSubjects.forEach(subject => {
-            // Use uri as primary identifier, fallback to id, then label
-            const subjectId = subject.uri || subject.id || subject.label;
-            const subjectLabel = subject.label;
-
-            if (!subjectIndex[subjectId]) {
-                subjectIndex[subjectId] = {
-                    id: subjectId,
-                    label: subjectLabel,
-                    count: 0,
-                    letterIds: [],
-                    persons: {},
-                    years: {},
-                    cooccurrence: {}
-                };
-            }
-
-            subjectIndex[subjectId].count++;
-            subjectIndex[subjectId].letterIds.push(letter.id);
-
-            // Track persons
-            if (senderId) {
-                if (!subjectIndex[subjectId].persons[senderId]) {
-                    subjectIndex[subjectId].persons[senderId] = { name: senderName, count: 0 };
-                }
-                subjectIndex[subjectId].persons[senderId].count++;
-            }
-
-            // Track years
-            if (year) {
-                subjectIndex[subjectId].years[year] = (subjectIndex[subjectId].years[year] || 0) + 1;
-            }
-
-            // Track co-occurrence with other subjects in same letter
-            letterSubjects.forEach(otherSubject => {
-                const otherId = otherSubject.uri || otherSubject.id || otherSubject.label;
-                if (otherId !== subjectId) {
-                    subjectIndex[subjectId].cooccurrence[otherId] =
-                        (subjectIndex[subjectId].cooccurrence[otherId] || 0) + 1;
-                }
-            });
-        });
-    });
-
-    log.init(`Subject index built: ${Object.keys(subjectIndex).length} subjects`);
-}
-
-function renderTopicsList() {
-    const container = elements.topicsList;
-    if (!container) return;
-
-    // Build dynamic topic counts based on filtered letters
-    const filteredTopicCounts = {};
-    filteredLetters.forEach(letter => {
-        if (!letter.mentions?.subjects) return;
-        letter.mentions.subjects.forEach(subject => {
-            const subjectId = subject.uri || subject.id || subject.label;
-            if (!filteredTopicCounts[subjectId]) {
-                filteredTopicCounts[subjectId] = 0;
-            }
-            filteredTopicCounts[subjectId]++;
-        });
-    });
-
-    // Create topics array with filtered counts
-    let topics = Object.values(subjectIndex)
-        .map(topic => ({
-            ...topic,
-            filteredCount: filteredTopicCounts[topic.id] || 0
-        }))
-        .filter(t => t.filteredCount > 0); // Only show topics with matches in filtered letters
-
-    // Filter by search
-    if (topicsSearchTerm) {
-        topics = topics.filter(t =>
-            t.label.toLowerCase().includes(topicsSearchTerm)
-        );
-    }
-
-    // Sort (use filteredCount instead of count)
-    topics.sort((a, b) => {
-        switch (topicsSortOrder) {
-            case 'count-desc': return b.filteredCount - a.filteredCount;
-            case 'count-asc': return a.filteredCount - b.filteredCount;
-            case 'name-asc': return a.label.localeCompare(b.label);
-            default: return 0;
-        }
-    });
-
-    // Find max count for bar scaling (use filteredCount)
-    const maxCount = topics.length > 0 ? Math.max(...topics.map(t => t.filteredCount)) : 1;
-
-    if (topics.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-tags"></i>
-                <p>Keine Themen gefunden</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = topics.map(topic => {
-        const barWidth = (topic.filteredCount / maxCount) * 100;
-        const isActive = selectedSubjectId === topic.id;
-
-        return `
-            <div class="entity-card ${isActive ? 'active' : ''}" data-id="${escapeHtml(topic.id)}">
-                <div class="entity-card-info">
-                    <div class="entity-card-name" title="${escapeHtml(topic.label)}">${escapeHtml(topic.label)}</div>
-                    <div class="entity-card-bar">
-                        <div class="entity-card-bar-fill" style="width: ${barWidth}%"></div>
-                    </div>
-                </div>
-                <div class="entity-card-count">${topic.filteredCount}</div>
-            </div>
-        `;
-    }).join('');
-
-    // Add click handlers
-    container.querySelectorAll('.entity-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const topicId = card.dataset.id;
-            selectTopic(topicId);
-
-            // Update active state
-            container.querySelectorAll('.entity-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-        });
-    });
-}
-
-function selectTopic(topicId) {
-    selectedSubjectId = topicId;
-    const topic = subjectIndex[topicId];
-    if (!topic) return;
-
-    // Calculate filtered data for this topic
-    const filteredTopicLetters = filteredLetters.filter(letter => {
-        const subjects = letter.mentions?.subjects || [];
-        return subjects.some(s => (s.uri || s.id || s.label) === topicId);
-    });
-
-    const filteredCount = filteredTopicLetters.length;
-
-    // Build filtered correspondents
-    const filteredPersons = {};
-    filteredTopicLetters.forEach(letter => {
-        const senderId = letter.sender?.id || letter.sender?.name;
-        const senderName = letter.sender?.name || 'Unbekannt';
-        if (senderId) {
-            if (!filteredPersons[senderId]) {
-                filteredPersons[senderId] = { name: senderName, count: 0 };
-            }
-            filteredPersons[senderId].count++;
-        }
-    });
-
-    // Build filtered years
-    const filteredYears = {};
-    filteredTopicLetters.forEach(letter => {
-        if (letter.year) {
-            filteredYears[letter.year] = (filteredYears[letter.year] || 0) + 1;
-        }
-    });
-
-    // Build filtered cooccurrence
-    const filteredCooccurrence = {};
-    filteredTopicLetters.forEach(letter => {
-        const subjects = letter.mentions?.subjects || [];
-        subjects.forEach(s => {
-            const otherId = s.uri || s.id || s.label;
-            if (otherId !== topicId) {
-                filteredCooccurrence[otherId] = (filteredCooccurrence[otherId] || 0) + 1;
-            }
-        });
-    });
-
-    const emptyState = elements.getById('topic-detail-empty');
-    const content = elements.getById('topic-detail-content');
-    const title = elements.getById('topic-detail-title');
-    const count = elements.getById('topic-detail-count');
-    const correspondents = elements.getById('topic-correspondents');
-    const timeline = elements.getById('topic-timeline');
-    const related = elements.getById('topic-related');
-    const filterBtn = elements.getById('topic-filter-btn');
-
-    if (emptyState) emptyState.classList.add('hidden');
-    if (content) content.classList.remove('hidden');
-
-    // Title and count (show filtered count)
-    if (title) title.textContent = topic.label;
-    if (count) count.textContent = `${filteredCount} Briefe`;
-
-    // Update filter button text
-    if (filterBtn) {
-        filterBtn.innerHTML = `<i class="fas fa-filter"></i> ${filteredCount} Briefe filtern`;
-    }
-
-    // Correspondents (top 10, from filtered data)
-    if (correspondents) {
-        const persons = Object.entries(filteredPersons)
-            .map(([id, data]) => ({ id, ...data }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 10);
-
-        const maxPersonCount = persons.length > 0 ? persons[0].count : 1;
-
-        correspondents.innerHTML = persons.map(person => {
-            const barWidth = (person.count / maxPersonCount) * 100;
-            return `
-                <div class="entity-stat-row">
-                    <span class="entity-stat-name">${escapeHtml(person.name)}</span>
-                    <span class="entity-stat-count">${person.count}</span>
-                    <div class="entity-stat-bar">
-                        <div class="entity-stat-bar-fill" style="width: ${barWidth}%"></div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        if (persons.length === 0) {
-            correspondents.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Korrespondenten</p>';
-        }
-    }
-
-    // Mini timeline (from filtered data)
-    if (timeline) {
-        const years = Object.entries(filteredYears)
-            .map(([year, count]) => ({ year: parseInt(year), count }))
-            .sort((a, b) => a.year - b.year);
-
-        if (years.length > 0) {
-            const minYear = years[0].year;
-            const maxYear = years[years.length - 1].year;
-            const maxYearCount = Math.max(...years.map(y => y.count));
-
-            // Fill gaps
-            const allYears = [];
-            for (let y = minYear; y <= maxYear; y++) {
-                const found = years.find(yr => yr.year === y);
-                allYears.push({ year: y, count: found ? found.count : 0 });
-            }
-
-            // Limit to ~30 bars max
-            let displayYears = allYears;
-            if (allYears.length > 30) {
-                // Group by 5-year periods
-                const grouped = {};
-                allYears.forEach(y => {
-                    const period = Math.floor(y.year / 5) * 5;
-                    grouped[period] = (grouped[period] || 0) + y.count;
-                });
-                displayYears = Object.entries(grouped)
-                    .map(([year, count]) => ({ year: parseInt(year), count }))
-                    .sort((a, b) => a.year - b.year);
-            }
-
-            const displayMax = Math.max(...displayYears.map(y => y.count));
-
-            timeline.innerHTML = displayYears.map(y => {
-                const height = y.count > 0 ? Math.max(4, (y.count / displayMax) * 100) : 0;
-                return `<div class="entity-mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
-            }).join('');
-        } else {
-            timeline.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Jahresdaten</p>';
-        }
-    }
-
-    // Related topics (co-occurrence from filtered data)
-    if (related) {
-        const relatedTopics = Object.entries(filteredCooccurrence)
-            .map(([id, count]) => {
-                const relatedTopic = subjectIndex[id];
-                return {
-                    id,
-                    label: relatedTopic?.label || id,
-                    count
-                };
-            })
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 10);
-
-        related.innerHTML = relatedTopics.map(rt => `
-            <span class="entity-tag" data-id="${escapeHtml(rt.id)}">
-                ${escapeHtml(rt.label)} (${rt.count})
-            </span>
-        `).join('');
-
-        // Add click handlers to related tags
-        related.querySelectorAll('.entity-tag').forEach(tag => {
-            tag.addEventListener('click', () => {
-                const relatedId = tag.dataset.id;
-                selectTopic(relatedId);
-                // Update list selection
-                const container = elements.topicsList;
-                container?.querySelectorAll('.entity-card').forEach(c => {
-                    c.classList.toggle('active', c.dataset.id === relatedId);
-                });
-            });
-        });
-
-        if (relatedTopics.length === 0) {
-            related.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine verwandten Themen</p>';
-        }
-    }
-}
 
 // Apply subject filter (stays on current view, updates map/data)
 function applySubjectFilter(subjectId) {
-    selectedSubjectId = subjectId;
+    setSelectedSubjectId(subjectId);
     applyFilters();
     updateSubjectFilterDisplay();
     updateTopicsQuickFilterState();
@@ -3826,7 +3507,7 @@ function applySubjectFilter(subjectId) {
 
 // Clear subject filter
 function clearSubjectFilter() {
-    selectedSubjectId = null;
+    setSelectedSubjectId(null);
     applyFilters();
     updateSubjectFilterDisplay();
     updateTopicsQuickFilterState();
@@ -3836,6 +3517,8 @@ function clearSubjectFilter() {
 // Update subject filter display in sidebar
 function updateSubjectFilterDisplay() {
     let filterDisplay = elements.getById('subject-filter-display');
+    const subjectIndex = getSubjectIndex();
+    const selectedSubjectId = getSelectedSubjectId();
 
     if (selectedSubjectId && subjectIndex[selectedSubjectId]) {
         const topic = subjectIndex[selectedSubjectId];
@@ -3874,315 +3557,8 @@ window.filterBySubject = function(subjectId) {
 };
 
 // ===================
-// PLACES VIEW
+// PLACES VIEW - Extracted to views/places-view.js
 // ===================
-
-function initPlacesView() {
-    buildPlacesIndex();
-
-    const searchInput = elements.getById('place-search');
-    const sortSelect = elements.getById('place-sort');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce((e) => {
-            placesSearchTerm = e.target.value.toLowerCase();
-            renderPlacesList();
-        }, 300));
-    }
-
-    if (sortSelect) {
-        sortSelect.addEventListener('change', (e) => {
-            placesSortOrder = e.target.value;
-            renderPlacesList();
-        });
-    }
-
-    // Filter button
-    const filterBtn = elements.getById('place-filter-btn');
-    if (filterBtn) {
-        filterBtn.addEventListener('click', () => {
-            if (selectedPlaceId) {
-                applyPlaceFilter(selectedPlaceId);
-                switchView('letters');
-            }
-        });
-    }
-
-    // Add to basket button
-    const addBasketBtn = elements.getById('place-add-basket-btn');
-    if (addBasketBtn) {
-        addBasketBtn.addEventListener('click', () => {
-            const letterIdsJson = addBasketBtn.dataset.letterIds;
-            if (!letterIdsJson) return;
-
-            const letterIds = JSON.parse(letterIdsJson);
-            let addedCount = 0;
-            letterIds.forEach(id => {
-                if (!basketIsInBasket('letters', id)) {
-                    basketAdd('letters', id);
-                    addedCount++;
-                }
-            });
-
-            if (addedCount > 0) {
-                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
-            } else {
-                showToast('Alle Briefe bereits im Korb');
-            }
-        });
-    }
-
-    // Resolve coordinates button
-    const resolveBtn = elements.getById('resolve-coords-btn');
-    if (resolveBtn) {
-        resolveBtn.addEventListener('click', handleResolveCoordinates);
-    }
-
-    // Update missing coordinates banner
-    updateMissingCoordinatesBanner();
-
-    log.init(`Places view initialized: ${Object.keys(placesIndex).length} places`);
-}
-
-function buildPlacesIndex() {
-    placesIndex = {};
-
-    allLetters.forEach(letter => {
-        if (!letter.place_sent?.name) return;
-
-        // Use geonames_id if available, otherwise create ID from name
-        const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
-        const hasCoordinates = letter.place_sent.lat != null && letter.place_sent.lon != null;
-        const precision = letter.place_sent.precision || (hasCoordinates ? 'exact' : 'region');
-
-        if (!placesIndex[placeId]) {
-            placesIndex[placeId] = {
-                id: placeId,
-                name: letter.place_sent.name,
-                lat: letter.place_sent.lat,
-                lon: letter.place_sent.lon,
-                precision: precision,
-                hasCoordinates: hasCoordinates,
-                letterCount: 0,
-                letters: [],
-                senders: {},
-                languages: {},
-                years: []
-            };
-        }
-
-        placesIndex[placeId].letterCount++;
-        placesIndex[placeId].letters.push(letter.id);
-        if (letter.year) placesIndex[placeId].years.push(letter.year);
-
-        if (letter.sender?.name) {
-            const senderName = letter.sender.name;
-            placesIndex[placeId].senders[senderName] = (placesIndex[placeId].senders[senderName] || 0) + 1;
-        }
-
-        if (letter.language?.code) {
-            const langCode = letter.language.code;
-            placesIndex[placeId].languages[langCode] = (placesIndex[placeId].languages[langCode] || 0) + 1;
-        }
-    });
-
-    // Calculate top senders and year range for each place
-    Object.values(placesIndex).forEach(place => {
-        place.topSenders = Object.entries(place.senders)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([name, count]) => ({ name, count }));
-        place.senderCount = Object.keys(place.senders).length;
-        place.yearMin = place.years.length > 0 ? Math.min(...place.years) : null;
-        place.yearMax = place.years.length > 0 ? Math.max(...place.years) : null;
-    });
-}
-
-function renderPlacesList() {
-    const container = elements.placesList;
-    if (!container) return;
-
-    // Get places filtered by current filters
-    const filteredPlaceIds = new Set();
-    filteredLetters.forEach(letter => {
-        if (letter.place_sent?.name) {
-            const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
-            filteredPlaceIds.add(placeId);
-        }
-    });
-
-    // Count letters per place in filtered set
-    const filteredPlaceCounts = {};
-    filteredLetters.forEach(letter => {
-        if (letter.place_sent?.name) {
-            const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
-            filteredPlaceCounts[placeId] = (filteredPlaceCounts[placeId] || 0) + 1;
-        }
-    });
-
-    let places = Object.values(placesIndex)
-        .filter(place => filteredPlaceIds.has(place.id))
-        .map(place => ({
-            ...place,
-            filteredCount: filteredPlaceCounts[place.id] || 0
-        }));
-
-    // Apply search filter
-    if (placesSearchTerm) {
-        places = places.filter(place =>
-            place.name.toLowerCase().includes(placesSearchTerm)
-        );
-    }
-
-    // Apply sort
-    switch (placesSortOrder) {
-        case 'count-desc':
-            places.sort((a, b) => b.filteredCount - a.filteredCount);
-            break;
-        case 'count-asc':
-            places.sort((a, b) => a.filteredCount - b.filteredCount);
-            break;
-        case 'name-asc':
-            places.sort((a, b) => a.name.localeCompare(b.name, 'de'));
-            break;
-        case 'name-desc':
-            places.sort((a, b) => b.name.localeCompare(a.name, 'de'));
-            break;
-    }
-
-    // Render list with precision indicators
-    container.innerHTML = places.map(place => {
-        const isActive = selectedPlaceId === place.id;
-        const yearRange = place.yearMin && place.yearMax
-            ? `${place.yearMin}-${place.yearMax}`
-            : '';
-        const precisionClass = getPlacePrecisionClass(place.precision);
-        const noCoordIcon = !place.hasCoordinates ? '<i class="fas fa-question-circle" title="Ohne Koordinaten"></i> ' : '';
-        return `
-            <div class="entity-card ${isActive ? 'active' : ''} ${precisionClass}" data-place-id="${place.id}">
-                <div class="entity-card-info">
-                    <div class="entity-card-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
-                    <div class="entity-card-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
-                </div>
-                <div class="entity-card-count">${place.filteredCount}</div>
-            </div>
-        `;
-    }).join('');
-
-    // Add click handlers
-    container.querySelectorAll('.entity-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            const placeId = card.dataset.placeId;
-            selectPlace(placeId);
-        });
-    });
-}
-
-function selectPlace(placeId) {
-    selectedPlaceId = placeId;
-    const place = placesIndex[placeId];
-
-    if (!place) return;
-
-    // Update active state in list
-    document.querySelectorAll('.entity-card[data-place-id]').forEach(card => {
-        card.classList.toggle('active', card.dataset.placeId === placeId);
-    });
-
-    // Show detail panel
-    const emptyState = elements.getById('place-detail-empty');
-    const content = elements.getById('place-detail-content');
-
-    if (emptyState) emptyState.classList.add('hidden');
-    if (content) content.classList.remove('hidden');
-
-    // Calculate filtered count for this place
-    const filteredCount = filteredLetters.filter(l => {
-        if (!l.place_sent?.name) return false;
-        const letterPlaceId = l.place_sent.geonames_id || `name:${l.place_sent.name}`;
-        return letterPlaceId === placeId;
-    }).length;
-
-    // Update title and count
-    elements.getById('place-detail-title').textContent = place.name;
-    elements.getById('place-detail-count').textContent = `${filteredCount} Briefe`;
-
-    // Render top senders
-    const sendersContainer = elements.getById('place-top-senders');
-    if (sendersContainer) {
-        const maxCount = place.topSenders.length > 0 ? place.topSenders[0].count : 1;
-        sendersContainer.innerHTML = place.topSenders.map(s => {
-            const barWidth = (s.count / maxCount) * 100;
-            return `<div class="entity-stat-row">
-                <span class="entity-stat-name">${escapeHtml(s.name)}</span>
-                <span class="entity-stat-count">${s.count}</span>
-                <div class="entity-stat-bar">
-                    <div class="entity-stat-bar-fill" style="width: ${barWidth}%"></div>
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    // Render mini timeline
-    const timelineContainer = elements.getById('place-timeline');
-    if (timelineContainer && place.yearMin && place.yearMax) {
-        const yearCounts = {};
-        place.years.forEach(year => {
-            yearCounts[year] = (yearCounts[year] || 0) + 1;
-        });
-
-        const maxCount = Math.max(...Object.values(yearCounts));
-        const years = [];
-        for (let y = place.yearMin; y <= place.yearMax; y++) {
-            years.push({ year: y, count: yearCounts[y] || 0 });
-        }
-
-        timelineContainer.innerHTML = years.map(y => {
-            const height = y.count > 0 ? Math.max(4, (y.count / maxCount) * 100) : 0;
-            return `<div class="entity-mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
-        }).join('');
-    } else if (timelineContainer) {
-        timelineContainer.innerHTML = '<p class="no-data">Keine Zeitdaten</p>';
-    }
-
-    // Render languages
-    const languagesContainer = elements.getById('place-languages');
-    if (languagesContainer) {
-        const langEntries = Object.entries(place.languages)
-            .sort((a, b) => b[1] - a[1]);
-
-        languagesContainer.innerHTML = langEntries.map(([code, count]) => {
-            const label = LANGUAGE_LABELS[code] || code.toUpperCase();
-            const color = LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other;
-            return `<span class="entity-tag" style="border-left: 3px solid ${color}">${label} (${count})</span>`;
-        }).join('');
-    }
-
-    // Update GeoNames link
-    const geonamesLink = elements.getById('place-geonames-link');
-    if (geonamesLink) {
-        geonamesLink.href = `https://www.geonames.org/${placeId}`;
-    }
-
-    // Update basket button count and handler
-    const basketCountSpan = elements.getById('place-basket-count');
-    if (basketCountSpan) {
-        basketCountSpan.textContent = filteredCount;
-    }
-
-    // Store letter IDs for this place for basket add
-    const placeLetterIds = filteredLetters.filter(l => {
-        if (!l.place_sent?.name) return false;
-        const letterPlaceId = l.place_sent.geonames_id || `name:${l.place_sent.name}`;
-        return letterPlaceId === placeId;
-    }).map(l => l.id);
-
-    // Update basket button
-    const addBasketBtn = elements.getById('place-add-basket-btn');
-    if (addBasketBtn) {
-        addBasketBtn.dataset.letterIds = JSON.stringify(placeLetterIds);
-    }
-}
 
 function applyPlaceFilter(placeId) {
     log.event(`Applying place filter: ${placeId}`);
@@ -4206,104 +3582,7 @@ function applyPlaceFilter(placeId) {
     log.event(`Filtered letters count: ${filteredLetters.length}`);
 }
 
-// Update missing coordinates banner in Places View
-function updateMissingCoordinatesBanner() {
-    const banner = elements.getById('places-missing-coords-banner');
-    const countSpan = elements.getById('places-missing-count');
-
-    if (!banner || !countSpan) return;
-
-    // Count places without coordinates that have GeoNames IDs
-    let missingCount = 0;
-    const missingIds = [];
-
-    Object.values(placesIndex).forEach(place => {
-        if (!place.lat && place.geonames_id) {
-            missingCount++;
-            missingIds.push(place.geonames_id);
-        }
-    });
-
-    if (missingCount > 0) {
-        countSpan.textContent = missingCount;
-        banner.classList.remove('hidden');
-        banner.dataset.missingIds = JSON.stringify(missingIds);
-    } else {
-        banner.classList.add('hidden');
-    }
-}
-
-// Handle coordinate resolution button click
-async function handleResolveCoordinates() {
-    const banner = elements.getById('places-missing-coords-banner');
-    const btn = elements.getById('resolve-coords-btn');
-
-    if (!banner || !btn) return;
-
-    const missingIds = JSON.parse(banner.dataset.missingIds || '[]');
-
-    if (missingIds.length === 0) {
-        showToast('Keine Orte zum Auflösen gefunden', 'info');
-        return;
-    }
-
-    // Disable button and show loading state
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Koordinaten...';
-
-    try {
-        // Dynamically import the geonames enrichment module
-        const { resolveGeoNamesCoordinates, applyCoordinatesToData } = await import('./geonames-enrichment.js');
-
-        // Resolve coordinates
-        const coordinates = await resolveGeoNamesCoordinates(missingIds, (loaded, total) => {
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loaded}/${total}`;
-        });
-
-        // Apply coordinates to current data
-        const currentData = {
-            letters: allLetters,
-            indices: dataIndices
-        };
-
-        applyCoordinatesToData(currentData, coordinates);
-
-        // Update sessionStorage with new coordinates
-        const storedData = JSON.parse(sessionStorage.getItem('cmif-data') || '{}');
-        storedData.letters = allLetters;
-        storedData.indices = dataIndices;
-        sessionStorage.setItem('cmif-data', JSON.stringify(storedData));
-
-        // Rebuild place aggregation
-        placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
-
-        // Rebuild places index
-        buildPlacesIndex();
-        renderPlacesList();
-
-        // Update views
-        detectAvailableViews();
-        updateViewButtons();
-
-        // Reinitialize map if it's now available
-        if (availableViews.map?.available && map) {
-            initMap();
-            updateMap();
-        }
-
-        const resolvedCount = Object.keys(coordinates).length;
-        showToast(`${resolvedCount} Orte erfolgreich georeferenziert`, 'success');
-
-        // Update banner
-        updateMissingCoordinatesBanner();
-
-    } catch (error) {
-        console.error('Failed to resolve coordinates:', error);
-        showToast(`Fehler beim Auflösen: ${error.message}`, 'error');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-globe"></i> Koordinaten nachladen';
-    }
-}
+// updateMissingCoordinatesBanner and handleResolveCoordinates - now in views/places-view.js
 
 // ===================
 // EXPORT

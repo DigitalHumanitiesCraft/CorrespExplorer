@@ -234,6 +234,45 @@ Exports:
 
 Dependencies (via init): getFilteredLetters, showLetterDetail, log
 
+### views/topics-view.js
+
+Themen-Browse mit Detail-Panel.
+
+Funktion: Subject/Topic-Index aus Briefen. Liste mit Suche/Sortierung. Detail-Panel zeigt Korrespondenten, Timeline, verwandte Themen. Click-Handler fuer Filter.
+
+Imports: utils.js, dom-cache.js
+
+Exports:
+- initTopicsView(deps) - Initialisierung
+- renderTopicsList() - Render-Funktion
+- getSubjectIndex() - Aktueller Index
+- getSelectedSubjectId() - Aktuell ausgewaehltes Thema
+- setSelectedSubjectId(id) - Setzt Auswahl
+- rebuildSubjectIndex() - Index neu aufbauen
+- resetTopicsState() - Reset State
+
+Dependencies (via init): getFilteredLetters, getAllLetters, applySubjectFilter, log
+
+### views/places-view.js
+
+Orte-Browse mit Koordinaten-Aufloesung.
+
+Funktion: Places-Index aus Briefen. Liste mit Suche/Sortierung. Detail-Panel zeigt Absender, Timeline, Sprachen. GeoNames-Link. Koordinaten-Aufloesung via Wikidata. Basket-Integration.
+
+Imports: utils.js, formatters.js, dom-cache.js, constants.js
+
+Exports:
+- initPlacesView(deps) - Initialisierung
+- renderPlacesList() - Render-Funktion
+- getPlacesIndex() - Aktueller Index
+- getSelectedPlaceId() - Aktuell ausgewaehlter Ort
+- setSelectedPlaceId(id) - Setzt Auswahl
+- rebuildPlacesIndex() - Index neu aufbauen
+- resetPlacesState() - Reset State
+- updateMissingCoordinatesBanner() - Banner aktualisieren
+
+Dependencies (via init): getFilteredLetters, getAllLetters, getDataIndices, applyPlaceFilter, switchView, basketAdd, basketIsInBasket, showToast, onDataUpdated, log
+
 ## Enrichment Modules
 
 ### wikidata-enrichment.js
