@@ -9,6 +9,8 @@ Entwicklungszeitraum: November - Dezember 2025
 ## Phasen-Uebersicht
 
 Aktuelle Phasen (Dezember 2025):
+- Phase 46: View-Extraktion (Topics, Places)
+- Phase 45: View-Extraktion (Network, Mentions, Chronik, Comparison)
 - Phase 44: Vergleichs-View
 - Phase 43: CMIF v2 Vollstaendige Dimension
 - Phase 42: Wissenskorb-Integration in Views
@@ -54,6 +56,98 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2025-12-19 (Phase 46: View-Extraktion Topics und Places)
+
+### Modularisierung fortgesetzt
+
+Extraktion weiterer Views aus explore.js zur besseren Wartbarkeit:
+
+topics-view.js (~430 Zeilen):
+- Subject/Topic-Index aus Briefen
+- Liste mit Suche und Sortierung
+- Detail-Panel: Korrespondenten, Mini-Timeline, verwandte Themen
+- Co-Occurrence-Analyse fuer Themen-Beziehungen
+- Exports: initTopicsView, renderTopicsList, getSubjectIndex, getSelectedSubjectId, setSelectedSubjectId, rebuildSubjectIndex, resetTopicsState
+
+places-view.js (~510 Zeilen):
+- Places-Index mit GeoNames-Links
+- Koordinaten-Aufloesung via Wikidata SPARQL
+- Basket-Integration (Add-to-Basket-Button)
+- Detail-Panel: Absender, Timeline, Sprachen
+- Missing-Coordinates-Banner mit Resolve-Funktion
+- Exports: initPlacesView, renderPlacesList, getPlacesIndex, getSelectedPlaceId, setSelectedPlaceId, rebuildPlacesIndex, resetPlacesState, updateMissingCoordinatesBanner
+
+### CSS Grid-Fix
+
+Problem: Entity-List-Panel in Topics/Places View zu breit (~75% statt 50%)
+Loesung: min-width: 0 und overflow: hidden auf beide Grid-Panels
+Ursache: CSS Grid Default min-width: auto verhindert Schrumpfen bei langen Inhalten
+
+### Icon-Korrektur
+
+Problem: Network (fa-project-diagram) und Mentions Flow (fa-diagram-project) hatten fast identische Icons
+Loesung: Mentions Flow jetzt fa-stream (fliessende Linien, passt zu Sankey)
+Geaendert in: explore.html, about.html, explore.js, vault.js
+
+### Stand der Extraktion
+
+8 von 12 Views extrahiert:
+- Timeline, Activity, Chronik, Comparison (Phase 45)
+- Network, Mentions Flow (Phase 45)
+- Topics, Places (Phase 46)
+
+Verbleibend in explore.js:
+- Overview (Start-View mit Forschungspfaden)
+- Map (MapLibre-Integration, komplex)
+- Persons (stark mit Filter-System integriert)
+- Letters (stark mit State verwoben)
+
+explore.js reduziert um weitere ~800 Zeilen.
+
+---
+
+## 2025-12-18 (Phase 45: View-Extraktion)
+
+### Architektur-Refactoring
+
+Extraktion von 6 Views aus explore.js in separate Module:
+
+Extrahierte Module:
+- views/timeline-view.js - Brush-Selection Timeline
+- views/activity-view.js - GitHub-style Heatmap
+- views/chronik-view.js - Brief-Liste mit Wikidata
+- views/comparison-view.js - Side-by-Side Vergleich
+- views/network-view.js - D3.js Force-Graph
+- views/mentions-view.js - Sankey-Diagramm
+
+Design-Pattern: Dependency Injection
+- Keine direkten Imports von explore.js (vermeidet zirkulaere Abhaengigkeiten)
+- Dependencies via init()-Funktion injiziert
+- Lokaler State pro Modul
+- Einheitliches Interface: init(), render(), optional reset()
+
+Beispiel (network-view.js):
+```javascript
+export function initNetworkView(deps) {
+    getFilteredLetters = deps.getFilteredLetters;
+    applyPersonFilter = deps.applyPersonFilter;
+    // ...
+}
+```
+
+Vorteile:
+- Bessere Testbarkeit (Dependencies mockbar)
+- Klare Modul-Grenzen
+- Reduzierte Dateigroesse von explore.js
+- Einfachere Navigation im Code
+
+Dokumentation:
+- views/CONTEXT-MAP.md erstellt
+- js/CONTEXT-MAP.md aktualisiert
+- knowledge/modules.md erweitert
 
 ---
 
