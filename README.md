@@ -70,9 +70,9 @@ docs/test.html?test=true
 
 See [CLAUDE.md](CLAUDE.md) for coding guidelines.
 
-## License
+## Licence
 
-CC BY 4.0
+Code is licensed under the MIT License (see [LICENSE](LICENSE)). Documentation and knowledge documents are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0). Third-party research data is excluded from these terms; rights remain with their respective holders. The bundled example correspondence dataset (Hugo Schuchardt Archiv) remains with the archive.
 
 ## Resources
 
