@@ -2484,13 +2484,13 @@ function renderPersonsList() {
                 <div class="person-actions">
                     ${person.id ? `
                         <button class="btn-person-info" data-person-id="${escapeHtml(personKey)}"
-                                title="Person-Details anzeigen" onclick="event.stopPropagation()">
+                                title="Person-Details anzeigen">
                             <i class="fas fa-info-circle"></i>
                         </button>
                     ` : ''}
                     ${correspSearchUrl ? `
                         <a href="${escapeHtml(correspSearchUrl)}" target="_blank" class="btn-correspsearch"
-                           title="Weitere Briefe bei correspSearch suchen" onclick="event.stopPropagation()">
+                           title="Weitere Briefe bei correspSearch suchen">
                             <i class="fas fa-search"></i>
                         </a>
                     ` : ''}
@@ -2502,7 +2502,8 @@ function renderPersonsList() {
 
     // Add click handlers for person filtering
     container.querySelectorAll('.person-card').forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('a, button')) return;
             const personId = card.dataset.id;
             if (personId) {
                 applyPersonFilter(personId);
@@ -2830,7 +2831,7 @@ function showLetterDetail(letterId) {
             <i class="fas fa-external-link-alt"></i> Zur Quelle
         </a>`;
     }
-    html += `<button class="btn btn-secondary" onclick="filterByPerson('${letter.sender?.id || letter.sender?.name}')">
+    html += `<button class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(letter.sender?.id || letter.sender?.name)}">
         <i class="fas fa-filter"></i> Briefe von ${escapeHtml(letter.sender?.name || 'Absender')}
     </button>`;
 
@@ -2856,8 +2857,12 @@ function showLetterDetail(letterId) {
     html += '</div>';
 
     body.innerHTML = html;
+    body.querySelector('.btn-filter-person').addEventListener('click', (e) => {
+        filterByPerson(e.currentTarget.dataset.personId);
+    });
 
     // Show modal
+    modal.classList.remove('hidden');
     modal.style.display = 'flex';
 
     // Setup close handlers
@@ -2909,6 +2914,7 @@ async function showPersonDetail(personId) {
         `;
     }
 
+    modal.classList.remove('hidden');
     modal.style.display = 'flex';
 
     // Setup close handlers
@@ -3010,13 +3016,17 @@ async function showPersonDetail(personId) {
         </a>`;
     }
 
-    html += `<button class="btn btn-secondary" onclick="filterByPerson('${escapeHtml(personId)}'); elements.getById('person-modal').style.display='none';">
+    html += `<button class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(personId)}">
         <i class="fas fa-filter"></i> Briefe filtern
     </button>`;
 
     html += '</div></div>';
 
     body.innerHTML = html;
+    body.querySelector('.btn-filter-person').addEventListener('click', (e) => {
+        modal.style.display = 'none';
+        filterByPerson(e.currentTarget.dataset.personId);
+    });
 }
 
 // Helper to build correspSearch URL for a person
@@ -3082,15 +3092,14 @@ function buildPlaceLink(place, compact = false) {
     return name;
 }
 
-// Global function for onclick handler
-window.filterByPerson = function(personId) {
+function filterByPerson(personId) {
     const modal = elements.getById('letter-modal');
     if (modal) modal.style.display = 'none';
 
     applyPersonFilter(personId);
     switchView('letters');
     updateUrlState();
-};
+}
 
 // ===================
 // TIMELINE
@@ -4334,6 +4343,7 @@ function initExport() {
             if (info) {
                 info.textContent = `${filteredLetters.length} Briefe werden exportiert`;
             }
+            modal.classList.remove('hidden');
             modal.style.display = 'flex';
         });
 
@@ -5189,6 +5199,7 @@ function showMissingPlacesModal() {
         `;
     }
 
+    modal.classList.remove('hidden');
     modal.style.display = 'flex';
 }
 
@@ -5829,14 +5840,20 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
             <div class="modal-content" style="max-width:700px;max-height:80vh;overflow-y:auto;">
                 <div class="modal-header">
                     <h3 id="mention-modal-title"></h3>
-                    <button class="modal-close" onclick="document.getElementById('mention-letters-modal').style.display='none'">&times;</button>
+                    <button class="modal-close" aria-label="Schliessen">&times;</button>
                 </div>
                 <div class="modal-body" id="mention-modal-body"></div>
             </div>
         `;
         document.body.appendChild(modal);
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.style.display = 'none';
+            const item = e.target.closest('[data-letter-id]');
+            if (e.target === modal || e.target.closest('.modal-close')) {
+                modal.style.display = 'none';
+            } else if (item) {
+                modal.style.display = 'none';
+                showLetterDetail(item.dataset.letterId);
+            }
         });
     }
 
@@ -5851,7 +5868,7 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
         const place = letter.place_sent?.name || '';
         return `
             <div style="padding:12px;border-bottom:1px solid var(--color-border-light);cursor:pointer;"
-                 onclick="window.openLetterDetail && window.openLetterDetail('${letter.id}')">
+                 data-letter-id="${escapeHtml(letter.id)}">
                 <div style="font-weight:600;color:var(--color-text);">${escapeHtml(date)}</div>
                 <div style="font-size:13px;color:var(--color-text-light);">
                     An: ${escapeHtml(recipient)}${place ? ' | ' + escapeHtml(place) : ''}
@@ -6365,10 +6382,11 @@ function renderChronikBatch(container) {
 
     // Add click handlers before appending
     fragment.querySelectorAll('.chronik-entry').forEach(entry => {
-        entry.addEventListener('click', () => {
+        entry.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
             const letterId = entry.dataset.letterId;
-            if (letterId && window.openLetterDetail) {
-                window.openLetterDetail(letterId);
+            if (letterId) {
+                showLetterDetail(letterId);
             }
         });
     });
@@ -6497,7 +6515,7 @@ function renderChronikEntryCards(letter) {
     return `
         <div class="chronik-entry chronik-entry-cards" data-letter-id="${escapeHtml(letter.id)}">
             <a href="${escapeHtml(safeUrl(letter.url) || '#')}" target="_blank" class="chronik-entry-link"
-               onclick="event.stopPropagation()" title="Quelle oeffnen">
+               title="Quelle oeffnen">
                 <i class="fas fa-external-link-alt"></i>
             </a>
             <div class="chronik-entry-header">
@@ -7695,10 +7713,7 @@ function showActivityDetails(date) {
     listEl.querySelectorAll('.activity-detail-item').forEach(item => {
         item.addEventListener('click', () => {
             const letterId = item.dataset.letterId;
-            const letter = allLetters.find(l => l.id === letterId);
-            if (letter) {
-                showLetterDetailModal(letter);
-            }
+            showLetterDetail(letterId);
         });
     });
 }
