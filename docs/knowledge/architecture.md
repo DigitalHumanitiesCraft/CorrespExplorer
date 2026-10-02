@@ -464,7 +464,7 @@ Default-View beim Laden eines Datensatzes:
 ### Kartenansicht
 
 - MapLibre GL JS 4.x für WebGL-Rendering
-- CartoDB Basemap mit Light/Dark Toggle
+- OpenFreeMap Basemap (Vektor-Styles positron und dark, ohne API-Key) mit Light/Dark Toggle
 - GeoJSON-Clustering mit Aggregation bei vielen Punkten
 - Popup mit Orts-Statistiken (Briefanzahl, Top Korrespondenten)
 

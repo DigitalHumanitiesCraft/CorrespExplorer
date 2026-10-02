@@ -929,17 +929,11 @@ function aggregateLettersByPlace(letters, placesIndex) {
 // Map styles
 let currentMapStyle = 'dark';
 
+// OpenFreeMap needs no API key; its styles carry the OpenFreeMap/OpenMapTiles/OSM attribution
+// (CARTO raster tiles now return an "API key required" placeholder)
 const mapStyles = {
-    'light': {
-        name: 'CartoDB Positron',
-        url: 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png',
-        attribution: '&copy; OpenStreetMap &copy; CARTO'
-    },
-    'dark': {
-        name: 'CartoDB Dark Matter',
-        url: 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
-        attribution: '&copy; OpenStreetMap &copy; CARTO'
-    }
+    'light': 'https://tiles.openfreemap.org/styles/positron',
+    'dark': 'https://tiles.openfreemap.org/styles/dark'
 };
 
 function initMap() {
@@ -954,12 +948,7 @@ function initMap() {
 
     map = new maplibregl.Map({
         container: 'map',
-        style: {
-            version: 8,
-            glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-            sources: {},
-            layers: []
-        },
+        style: mapStyles[currentMapStyle],
         center: center,
         zoom: 4
     });
@@ -968,7 +957,7 @@ function initMap() {
 
     map.on('load', () => {
         renderPlaceMarkers(placeAggregation);
-        setMapStyle(currentMapStyle);
+        updateLayerSwitcherButton(currentMapStyle);
         mapInitialized = true;
         updateMapLegend();
     });
@@ -990,31 +979,29 @@ function initMap() {
 }
 
 function setMapStyle(styleKey) {
-    const style = mapStyles[styleKey];
-    if (!style) return;
+    const styleUrl = mapStyles[styleKey];
+    if (!styleUrl) return;
 
-    if (map.getLayer('base-tiles-layer')) {
-        map.removeLayer('base-tiles-layer');
-    }
-    if (map.getSource('base-tiles')) {
-        map.removeSource('base-tiles');
-    }
-
-    map.addSource('base-tiles', {
-        type: 'raster',
-        tiles: [style.url],
-        tileSize: 256,
-        attribution: style.attribution
+    // setStyle replaces the whole style, so the data sources and their layers are carried over
+    map.setStyle(styleUrl, {
+        transformStyle: (previous, next) => {
+            if (!previous) return next;
+            const ownSources = Object.keys(previous.sources).filter(id => !(id in next.sources));
+            return {
+                ...next,
+                sources: {
+                    ...next.sources,
+                    ...Object.fromEntries(ownSources.map(id => [id, previous.sources[id]]))
+                },
+                layers: [...next.layers, ...previous.layers.filter(layer => ownSources.includes(layer.source))]
+            };
+        }
     });
 
-    map.addLayer({
-        id: 'base-tiles-layer',
-        type: 'raster',
-        source: 'base-tiles',
-        minzoom: 0,
-        maxzoom: 19
-    }, 'places-clusters');
+    updateLayerSwitcherButton(styleKey);
+}
 
+function updateLayerSwitcherButton(styleKey) {
     const layerSwitcherBtn = elements.getById('layer-switcher');
     if (layerSwitcherBtn) {
         layerSwitcherBtn.innerHTML = (styleKey === 'light') ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';

@@ -579,7 +579,7 @@ function renderMap(persons) {
     if (!map) {
         map = new maplibregl.Map({
             container: 'basket-map',
-            style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+            style: 'https://tiles.openfreemap.org/styles/positron',
             center: [10, 50],
             zoom: 4
         });
