@@ -170,10 +170,11 @@ export function formatDateWithPrecision(letter) {
     }
 
     // Build final output with icon prefix for imprecise dates
+    // Date strings come verbatim from CMIF attributes, so the result is escaped
     if (icon) {
-        return `<span class="date-with-precision" title="${tooltip}">${icon} ${formattedDate}</span>`;
+        return `<span class="date-with-precision" title="${tooltip}">${icon} ${escapeHtml(formattedDate)}</span>`;
     }
-    return formattedDate;
+    return escapeHtml(formattedDate);
 }
 
 // ===================

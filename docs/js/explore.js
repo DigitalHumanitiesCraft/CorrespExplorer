@@ -5,7 +5,7 @@ import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DE
 import { initBasketUI } from './basket-ui.js';
 import { isInBasket } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml } from './utils.js';
+import { debounce, escapeHtml, safeUrl } from './utils.js';
 import {
     formatDateWithPrecision,
     formatSingleDate,
@@ -548,9 +548,9 @@ function buildLanguageFilter() {
             label.title = tooltip;
         }
         label.innerHTML = `
-            <input type="checkbox" name="language" value="${code}" checked>
-            <span>${displayLabel}</span>
-            <span class="filter-count" id="count-lang-${code}">(${lang.letter_count})</span>
+            <input type="checkbox" name="language" value="${escapeHtml(code)}" checked>
+            <span>${escapeHtml(displayLabel)}</span>
+            <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${lang.letter_count})</span>
         `;
         container.appendChild(label);
     });
@@ -1242,7 +1242,7 @@ function updateMapLegend() {
         html += `
             <div class="map-legend-item">
                 <span class="map-legend-color" style="background-color: ${color}"></span>
-                <span class="map-legend-label">${label}</span>
+                <span class="map-legend-label">${escapeHtml(label)}</span>
                 <span class="map-legend-count">${counts.places}</span>
             </div>
         `;
@@ -1344,7 +1344,7 @@ function showPlacePopup(lngLat, props) {
                 <p><strong>${props.letter_count}</strong> Briefe von ${props.sender_count} Absendern</p>
                 <p class="popup-year-range">${yearRange}</p>
                 ${topSendersHtml}
-                ${props.languages ? `<p class="popup-languages"><small>Sprachen: ${props.languages}</small></p>` : ''}
+                ${props.languages ? `<p class="popup-languages"><small>Sprachen: ${escapeHtml(props.languages)}</small></p>` : ''}
             </div>
             <div class="popup-actions">
                 <button class="popup-action-btn popup-show-letters" data-place-id="${escapeHtml(placeId)}">
@@ -2181,10 +2181,15 @@ function renderOverviewMetadata() {
     const teiHeader = dataMeta.teiHeader || {};
     const hasJsonFormat = Object.keys(teiHeader).length > 0;
 
+    // Values are HTML; every text and URL from the dataset passes through here
+    const link = (url, text) => safeUrl(url)
+        ? `<a href="${escapeHtml(safeUrl(url))}" target="_blank" rel="noopener">${escapeHtml(text)}</a>`
+        : escapeHtml(text);
+
     // Editor - JSON: teiHeader.editor (string), Parser: editors (array)
-    const editorValue = hasJsonFormat
+    const editorValue = escapeHtml(hasJsonFormat
         ? teiHeader.editor
-        : (dataMeta.editors?.map(e => e.name).join(', ') || null);
+        : (dataMeta.editors?.map(e => e.name).join(', ') || null));
     if (editorValue) {
         items.push({
             icon: 'fa-user-edit',
@@ -2195,10 +2200,8 @@ function renderOverviewMetadata() {
 
     // Publisher - JSON: teiHeader.publisher (string), Parser: publishers (array)
     const publisherValue = hasJsonFormat
-        ? teiHeader.publisher
-        : (dataMeta.publishers?.map(p => p.url
-            ? `<a href="${p.url}" target="_blank" rel="noopener">${p.name}</a>`
-            : p.name).join(', ') || null);
+        ? escapeHtml(teiHeader.publisher)
+        : (dataMeta.publishers?.map(p => link(p.url, p.name)).join(', ') || null);
     if (publisherValue) {
         items.push({
             icon: 'fa-building',
@@ -2209,10 +2212,8 @@ function renderOverviewMetadata() {
 
     // Source (bibl) - JSON: teiHeader.bibl, Parser: sourceReference/sourceUrl
     const sourceValue = hasJsonFormat
-        ? teiHeader.bibl
-        : (dataMeta.sourceUrl && dataMeta.sourceReference
-            ? `<a href="${dataMeta.sourceUrl}" target="_blank" rel="noopener">${dataMeta.sourceReference}</a>`
-            : dataMeta.sourceReference || null);
+        ? escapeHtml(teiHeader.bibl)
+        : (dataMeta.sourceReference ? link(dataMeta.sourceUrl, dataMeta.sourceReference) : null);
     if (sourceValue) {
         items.push({
             icon: 'fa-quote-left',
@@ -2222,25 +2223,21 @@ function renderOverviewMetadata() {
     }
 
     // CMIF URL - both formats use cmifUrl
-    const cmifUrl = hasJsonFormat ? teiHeader.cmifUrl : dataMeta.cmifUrl;
+    const cmifUrl = safeUrl(hasJsonFormat ? teiHeader.cmifUrl : dataMeta.cmifUrl);
     if (cmifUrl) {
         items.push({
             icon: 'fa-link',
             label: 'CMIF',
-            value: `<a href="${cmifUrl}" target="_blank" rel="noopener">CMIF oeffnen</a>`
+            value: link(cmifUrl, 'CMIF oeffnen')
         });
     }
 
     // Licence - JSON: teiHeader.licence/licenceTarget, Parser: licence.text/url
     let licenceText = null;
     if (hasJsonFormat && teiHeader.licence) {
-        licenceText = teiHeader.licenceTarget
-            ? `<a href="${teiHeader.licenceTarget}" target="_blank" rel="noopener">${teiHeader.licence}</a>`
-            : teiHeader.licence;
+        licenceText = link(teiHeader.licenceTarget, teiHeader.licence);
     } else if (dataMeta.licence?.text) {
-        licenceText = dataMeta.licence.url
-            ? `<a href="${dataMeta.licence.url}" target="_blank" rel="noopener">${dataMeta.licence.text}</a>`
-            : dataMeta.licence.text;
+        licenceText = link(dataMeta.licence.url, dataMeta.licence.text);
     }
     if (licenceText) {
         items.push({
@@ -2302,9 +2299,9 @@ function renderTopCorrespondents() {
     }
 
     container.innerHTML = topPersons.map((person, index) => `
-        <div class="correspondent-item" data-person-id="${person.id || ''}" data-person-name="${person.name}">
+        <div class="correspondent-item" data-person-id="${escapeHtml(person.id || '')}" data-person-name="${escapeHtml(person.name)}">
             <span class="correspondent-rank">${index + 1}.</span>
-            <span class="correspondent-name" title="${person.name}">${person.name}</span>
+            <span class="correspondent-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}</span>
             <span class="correspondent-count">${person.count} Briefe</span>
         </div>
     `).join('');
@@ -2364,7 +2361,7 @@ function renderLanguageDistribution() {
         const barWidth = Math.round((count / maxCount) * 100);
         return `
             <div class="language-item">
-                <span class="language-name">${lang.toUpperCase()}</span>
+                <span class="language-name">${escapeHtml(lang.toUpperCase())}</span>
                 <div class="language-bar-container">
                     <div class="language-bar" style="width: ${barWidth}%"></div>
                 </div>
@@ -2473,7 +2470,7 @@ function renderPersonsList() {
 
         return `
             <div class="person-card ${precisionClass}" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
-                <div class="person-avatar">${initials}</div>
+                <div class="person-avatar">${escapeHtml(initials)}</div>
                 <div class="person-info">
                     <div class="person-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}${wikidataIndicator}</div>
                     <div class="person-stats">
@@ -2489,7 +2486,7 @@ function renderPersonsList() {
                         </button>
                     ` : ''}
                     ${correspSearchUrl ? `
-                        <a href="${correspSearchUrl}" target="_blank" class="btn-correspsearch"
+                        <a href="${escapeHtml(correspSearchUrl)}" target="_blank" class="btn-correspsearch"
                            title="Weitere Briefe bei correspSearch suchen" onclick="event.stopPropagation()">
                             <i class="fas fa-search"></i>
                         </a>
@@ -2609,7 +2606,7 @@ function renderLettersList() {
                           letter.recipient?.id;
 
         return `
-            <div class="letter-card ${hasDetails ? 'has-details' : ''}" data-id="${letter.id || ''}">
+            <div class="letter-card ${hasDetails ? 'has-details' : ''}" data-id="${escapeHtml(letter.id || '')}">
                 <div class="letter-header">
                     <div class="letter-participants">
                         ${hasDetails ? '<i class="fas fa-chevron-right expand-icon"></i>' : ''}
@@ -2624,7 +2621,7 @@ function renderLettersList() {
                 <div class="letter-meta">
                     ${placeName ? `<span><i class="fas fa-map-marker-alt"></i> ${placeName}</span>` : ''}
                     ${language ? `<span><i class="fas fa-language"></i> ${escapeHtml(language)}</span>` : ''}
-                    ${letter.url ? `<span><a href="${letter.url}" target="_blank"><i class="fas fa-external-link-alt"></i> Quelle</a></span>` : ''}
+                    ${safeUrl(letter.url) ? `<span><a href="${escapeHtml(safeUrl(letter.url))}" target="_blank"><i class="fas fa-external-link-alt"></i> Quelle</a></span>` : ''}
                 </div>
                 <div class="letter-details" style="display: none;">
                     ${buildLetterDetails(letter)}
@@ -2714,12 +2711,12 @@ function buildLetterDetails(letter) {
     const recipientCorrespUrl = buildCorrespSearchUrl(letter.recipient);
 
     if (senderCorrespUrl) {
-        html += `<a href="${senderCorrespUrl}" target="_blank" class="detail-link" title="Alle Briefe von ${escapeHtml(letter.sender?.name)} bei correspSearch">
+        html += `<a href="${escapeHtml(senderCorrespUrl)}" target="_blank" class="detail-link" title="Alle Briefe von ${escapeHtml(letter.sender?.name)} bei correspSearch">
             <i class="fas fa-search"></i> ${escapeHtml(letter.sender?.name)} bei correspSearch
         </a>`;
     }
     if (recipientCorrespUrl && letter.recipient?.name !== letter.sender?.name) {
-        html += `<a href="${recipientCorrespUrl}" target="_blank" class="detail-link" title="Alle Briefe von ${escapeHtml(letter.recipient?.name)} bei correspSearch">
+        html += `<a href="${escapeHtml(recipientCorrespUrl)}" target="_blank" class="detail-link" title="Alle Briefe von ${escapeHtml(letter.recipient?.name)} bei correspSearch">
             <i class="fas fa-search"></i> ${escapeHtml(letter.recipient?.name)} bei correspSearch
         </a>`;
     }
@@ -2758,7 +2755,7 @@ function showLetterDetail(letterId) {
 
     html += `<div class="letter-detail-row">
         <span class="letter-detail-label">Datum</span>
-        <span class="letter-detail-value">${letter.date || 'Unbekannt'}</span>
+        <span class="letter-detail-value">${escapeHtml(letter.date || 'Unbekannt')}</span>
     </div>`;
 
     html += `<div class="letter-detail-row">
@@ -2825,8 +2822,8 @@ function showLetterDetail(letterId) {
 
     // Actions section
     html += '<div class="letter-detail-actions">';
-    if (letter.url) {
-        html += `<a href="${letter.url}" target="_blank" class="btn btn-primary">
+    if (safeUrl(letter.url)) {
+        html += `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" class="btn btn-primary">
             <i class="fas fa-external-link-alt"></i> Zur Quelle
         </a>`;
     }
@@ -2840,12 +2837,12 @@ function showLetterDetail(letterId) {
     if (senderCorrespUrl || recipientCorrespUrl) {
         html += '<div class="corresp-search-links">';
         if (senderCorrespUrl) {
-            html += `<a href="${senderCorrespUrl}" target="_blank" class="btn btn-corresp" title="Briefe von ${escapeHtml(letter.sender?.name)} bei correspSearch">
+            html += `<a href="${escapeHtml(senderCorrespUrl)}" target="_blank" class="btn btn-corresp" title="Briefe von ${escapeHtml(letter.sender?.name)} bei correspSearch">
                 <i class="fas fa-search"></i> ${escapeHtml(letter.sender?.name)} bei correspSearch
             </a>`;
         }
         if (recipientCorrespUrl) {
-            html += `<a href="${recipientCorrespUrl}" target="_blank" class="btn btn-corresp" title="Briefe von ${escapeHtml(letter.recipient?.name)} bei correspSearch">
+            html += `<a href="${escapeHtml(recipientCorrespUrl)}" target="_blank" class="btn btn-corresp" title="Briefe von ${escapeHtml(letter.recipient?.name)} bei correspSearch">
                 <i class="fas fa-search"></i> ${escapeHtml(letter.recipient?.name)} bei correspSearch
             </a>`;
         }
@@ -2943,10 +2940,10 @@ async function showPersonDetail(personId) {
     // Header with avatar/image and basic info
     html += '<div class="person-detail-header">';
     if (enriched?.thumbnail) {
-        html += `<img class="person-detail-image" src="${enriched.thumbnail}" alt="${escapeHtml(person.name)}">`;
+        html += `<img class="person-detail-image" src="${escapeHtml(safeUrl(enriched.thumbnail))}" alt="${escapeHtml(person.name)}">`;
     } else {
         const initials = person.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        html += `<div class="person-detail-avatar">${initials}</div>`;
+        html += `<div class="person-detail-avatar">${escapeHtml(initials)}</div>`;
     }
     html += '<div class="person-detail-info">';
     html += `<h3>${escapeHtml(enriched?.name || person.name)}</h3>`;
@@ -2967,13 +2964,13 @@ async function showPersonDetail(personId) {
         const lifeDates = formatLifeDates(enriched);
         const places = formatPlaces(enriched);
         if (lifeDates) {
-            html += `<div class="person-life-dates"><i class="fas fa-calendar"></i> ${lifeDates}</div>`;
+            html += `<div class="person-life-dates"><i class="fas fa-calendar"></i> ${escapeHtml(lifeDates)}</div>`;
         }
         if (places) {
-            html += `<div class="person-places"><i class="fas fa-map-marker-alt"></i> ${places}</div>`;
+            html += `<div class="person-places"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(places)}</div>`;
         }
         if (enriched.professions?.length > 0) {
-            html += `<div class="person-professions"><i class="fas fa-briefcase"></i> ${enriched.professions.slice(0, 3).join(', ')}</div>`;
+            html += `<div class="person-professions"><i class="fas fa-briefcase"></i> ${escapeHtml(enriched.professions.slice(0, 3).join(', '))}</div>`;
         }
     }
     html += '</div></div>';
@@ -2993,9 +2990,9 @@ async function showPersonDetail(personId) {
         html += '<h4>Externe Links</h4>';
         html += '<div class="person-detail-links">';
         if (authority === 'viaf') {
-            html += `<a href="https://viaf.org/viaf/${authorityId}" target="_blank" rel="noopener" title="VIAF">VIAF</a>`;
+            html += `<a href="https://viaf.org/viaf/${encodeURIComponent(authorityId)}" target="_blank" rel="noopener" title="VIAF">VIAF</a>`;
         } else if (authority === 'gnd') {
-            html += `<a href="https://d-nb.info/gnd/${authorityId}" target="_blank" rel="noopener" title="GND">GND</a>`;
+            html += `<a href="https://d-nb.info/gnd/${encodeURIComponent(authorityId)}" target="_blank" rel="noopener" title="GND">GND</a>`;
         }
         html += '</div></div>';
     }
@@ -3005,7 +3002,7 @@ async function showPersonDetail(personId) {
 
     const correspSearchUrl = buildCorrespSearchUrl(person);
     if (correspSearchUrl) {
-        html += `<a href="${correspSearchUrl}" target="_blank" class="btn btn-primary">
+        html += `<a href="${escapeHtml(correspSearchUrl)}" target="_blank" class="btn btn-primary">
             <i class="fas fa-search"></i> Bei correspSearch suchen
         </a>`;
     }
@@ -3056,16 +3053,16 @@ function buildPersonLink(person, compact = false) {
     if (person.id && person.authority) {
         switch (person.authority) {
             case 'viaf':
-                url = `https://viaf.org/viaf/${person.id}`;
+                url = `https://viaf.org/viaf/${encodeURIComponent(person.id)}`;
                 break;
             case 'gnd':
-                url = `https://d-nb.info/gnd/${person.id}`;
+                url = `https://d-nb.info/gnd/${encodeURIComponent(person.id)}`;
                 break;
         }
     }
 
     if (url) {
-        return `<a href="${url}" target="_blank" title="In ${person.authority.toUpperCase()} ansehen">${name}</a>`;
+        return `<a href="${escapeHtml(url)}" target="_blank" title="In ${escapeHtml(person.authority.toUpperCase())} ansehen">${name}</a>`;
     }
     return name;
 }
@@ -3077,7 +3074,7 @@ function buildPlaceLink(place, compact = false) {
     const name = escapeHtml(place.name);
 
     if (place.geonames_id) {
-        return `<a href="https://www.geonames.org/${place.geonames_id}" target="_blank" title="In GeoNames ansehen">${name}</a>`;
+        return `<a href="https://www.geonames.org/${encodeURIComponent(place.geonames_id)}" target="_blank" title="In GeoNames ansehen">${name}</a>`;
     }
     return name;
 }
@@ -3228,12 +3225,12 @@ function renderTimeline() {
                     const segmentPct = (count / data.total) * 100;
                     // Use primary color for _total (no language data), otherwise language color
                     const color = lang === '_total' ? 'var(--color-primary)' : (LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other);
-                    segments += `<div class="timeline-stack-segment" style="height: ${segmentPct}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${lang}" data-count="${count}"></div>`;
+                    segments += `<div class="timeline-stack-segment" style="height: ${segmentPct}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
                     currentBottom += segmentPct;
                     // Only add language breakdown to tooltip if we have language data
                     if (lang !== '_total') {
                         const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
-                        tooltipParts.push(`${langLabel}: ${count}`);
+                        tooltipParts.push(`${escapeHtml(langLabel)}: ${count}`);
                     }
                 }
             });
@@ -3292,10 +3289,10 @@ function renderTimeline() {
                 if (count > 0) {
                     const segmentHeight = (count / undatedLetters.length) * 100;
                     const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
-                    undatedSegments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${lang}" data-count="${count}"></div>`;
+                    undatedSegments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
                     currentBottom += segmentHeight;
                     const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
-                    tooltipParts.push(`${langLabel}: ${count}`);
+                    tooltipParts.push(`${escapeHtml(langLabel)}: ${count}`);
                 }
             });
 
@@ -3382,7 +3379,7 @@ function renderTimeline() {
                     const count = languageTotals[lang];
                     const label = LANGUAGE_LABELS[lang] || lang.toUpperCase();
                     const tooltip = (lang === 'None') ? 'Keine Sprachzuordnung in den Quelldaten' : '';
-                    return `<span class="timeline-legend-item"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${label} (${count})</span>`;
+                    return `<span class="timeline-legend-item"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count})</span>`;
                 });
         } else {
             // No language data - show info message
@@ -4091,7 +4088,7 @@ function renderPlacesList() {
         const precisionClass = getPlacePrecisionClass(place.precision);
         const noCoordIcon = !place.hasCoordinates ? '<i class="fas fa-question-circle" title="Ohne Koordinaten"></i> ' : '';
         return `
-            <div class="entity-card ${isActive ? 'active' : ''} ${precisionClass}" data-place-id="${place.id}">
+            <div class="entity-card ${isActive ? 'active' : ''} ${precisionClass}" data-place-id="${escapeHtml(place.id)}">
                 <div class="entity-card-info">
                     <div class="entity-card-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
                     <div class="entity-card-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
@@ -4186,7 +4183,7 @@ function selectPlace(placeId) {
         languagesContainer.innerHTML = langEntries.map(([code, count]) => {
             const label = LANGUAGE_LABELS[code] || code.toUpperCase();
             const color = LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other;
-            return `<span class="entity-tag" style="border-left: 3px solid ${color}">${label} (${count})</span>`;
+            return `<span class="entity-tag" style="border-left: 3px solid ${color}">${escapeHtml(label)} (${count})</span>`;
         }).join('');
     }
 
@@ -5182,7 +5179,7 @@ function showMissingPlacesModal() {
                     <div class="missing-place-item">
                         <span class="missing-place-name">${escapeHtml(place.name)}</span>
                         <span class="missing-place-count">${place.letterCount} ${place.letterCount === 1 ? 'Brief' : 'Briefe'}</span>
-                        ${place.id ? `<a href="${geonamesBase}${place.id}" target="_blank" class="missing-place-link" title="GeoNames"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                        ${place.id ? `<a href="${geonamesBase}${encodeURIComponent(place.id)}" target="_blank" class="missing-place-link" title="GeoNames"><i class="fas fa-external-link-alt"></i></a>` : ''}
                     </div>
                 `).join('')}
             </div>
@@ -5255,7 +5252,7 @@ function initMentionsPersonAutocomplete() {
 
         // Show all results - scrollable dropdown handles large lists
         dropdown.innerHTML = results.map((person, i) => `
-            <div class="autocomplete-item" data-index="${i}" data-id="${person.id}">
+            <div class="autocomplete-item" data-index="${i}" data-id="${escapeHtml(person.id)}">
                 <span class="autocomplete-item-name">${escapeHtml(person.name)}</span>
                 <span class="autocomplete-item-count">${person.mentionCount}</span>
             </div>
@@ -5674,8 +5671,8 @@ function renderMentionsFlowForPerson(person) {
             const targetName = d.target.name;
             const isLeftToCenter = d.source.column === 0;
             const text = isLeftToCenter
-                ? `<strong>${sourceName}</strong> erwaehnt <strong>${targetName}</strong> in ${d.value} Brief(en)`
-                : `<strong>${sourceName}</strong> erwaehnt <strong>${targetName}</strong> in ${d.value} Brief(en)`;
+                ? `<strong>${escapeHtml(sourceName)}</strong> erwaehnt <strong>${escapeHtml(targetName)}</strong> in ${d.value} Brief(en)`
+                : `<strong>${escapeHtml(sourceName)}</strong> erwaehnt <strong>${escapeHtml(targetName)}</strong> in ${d.value} Brief(en)`;
             tooltip.innerHTML = text;
             tooltip.style.display = 'block';
         })
@@ -5726,7 +5723,7 @@ function renderMentionsFlowForPerson(person) {
                 .transition().duration(150)
                 .style('text-decoration', 'underline')
                 .style('fill', 'var(--color-primary)');
-            tooltip.innerHTML = `<strong>${d.name}</strong><br>Klicken um zu dieser Person zu wechseln`;
+            tooltip.innerHTML = `<strong>${escapeHtml(d.name)}</strong><br>Klicken um zu dieser Person zu wechseln`;
             tooltip.style.display = 'block';
             tooltip.style.left = (event.clientX + 10) + 'px';
             tooltip.style.top = (event.clientY - 10) + 'px';
@@ -5852,9 +5849,9 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
         return `
             <div style="padding:12px;border-bottom:1px solid var(--color-border-light);cursor:pointer;"
                  onclick="window.openLetterDetail && window.openLetterDetail('${letter.id}')">
-                <div style="font-weight:600;color:var(--color-text);">${date}</div>
+                <div style="font-weight:600;color:var(--color-text);">${escapeHtml(date)}</div>
                 <div style="font-size:13px;color:var(--color-text-light);">
-                    An: ${recipient}${place ? ' | ' + place : ''}
+                    An: ${escapeHtml(recipient)}${place ? ' | ' + escapeHtml(place) : ''}
                 </div>
             </div>
         `;
@@ -6350,7 +6347,7 @@ function renderChronikBatch(container) {
         if (year !== currentYear) {
             html += `
                 <div class="chronik-year-marker">
-                    <span class="chronik-year-label">${year}</span>
+                    <span class="chronik-year-label">${escapeHtml(year)}</span>
                 </div>
             `;
             currentYear = year;
@@ -6495,8 +6492,8 @@ function renderChronikEntryCards(letter) {
     const place = letter.place_sent?.name || '';
 
     return `
-        <div class="chronik-entry chronik-entry-cards" data-letter-id="${letter.id}">
-            <a href="${letter.url || '#'}" target="_blank" class="chronik-entry-link"
+        <div class="chronik-entry chronik-entry-cards" data-letter-id="${escapeHtml(letter.id)}">
+            <a href="${escapeHtml(safeUrl(letter.url) || '#')}" target="_blank" class="chronik-entry-link"
                onclick="event.stopPropagation()" title="Quelle oeffnen">
                 <i class="fas fa-external-link-alt"></i>
             </a>
@@ -6565,7 +6562,7 @@ function renderChronikEntryCompact(letter) {
     }
 
     return `
-        <div class="chronik-entry chronik-entry-compact" data-letter-id="${letter.id}">
+        <div class="chronik-entry chronik-entry-compact" data-letter-id="${escapeHtml(letter.id)}">
             <div class="chronik-compact-date">${dateDisplay}</div>
             <div class="chronik-compact-sender">
                 <span class="chronik-compact-name" title="${escapeHtml(senderName)}">${escapeHtml(truncateName(senderName))}</span>
@@ -6619,7 +6616,7 @@ function renderChronikEntryTimeline(letter) {
     }
 
     return `
-        <div class="chronik-entry chronik-entry-timeline" data-letter-id="${letter.id}">
+        <div class="chronik-entry chronik-entry-timeline" data-letter-id="${escapeHtml(letter.id)}">
             <div class="chronik-tl-left">
                 ${senderPortraitSmall}
                 <div class="chronik-tl-person">
@@ -6671,11 +6668,11 @@ function buildLifespanBarCompact(birthYear, deathYear, age) {
  */
 function buildPortraitHtmlSmall(enriched, name) {
     if (enriched?.thumbnail) {
-        return `<img src="${enriched.thumbnail}" alt="${escapeHtml(name)}" class="chronik-portrait-small" loading="lazy">`;
+        return `<img src="${escapeHtml(safeUrl(enriched.thumbnail))}" alt="${escapeHtml(name)}" class="chronik-portrait-small" loading="lazy">`;
     }
     if (chronikEnriched) {
         const initials = getPersonInitials(name, 'identified');
-        return `<div class="chronik-portrait-small-placeholder">${initials}</div>`;
+        return `<div class="chronik-portrait-small-placeholder">${escapeHtml(initials)}</div>`;
     }
     return '';
 }
@@ -6714,13 +6711,13 @@ function switchChronikLayout(layout) {
  */
 function buildPortraitHtml(enriched, name) {
     if (enriched && enriched.thumbnail) {
-        return `<img src="${enriched.thumbnail}" alt="${escapeHtml(name)}" class="chronik-portrait" loading="lazy">`;
+        return `<img src="${escapeHtml(safeUrl(enriched.thumbnail))}" alt="${escapeHtml(name)}" class="chronik-portrait" loading="lazy">`;
     }
 
     if (chronikEnriched) {
         // Show placeholder if enrichment was done but no image found
         const initials = getPersonInitials(name, 'identified');
-        return `<div class="chronik-portrait-placeholder">${initials}</div>`;
+        return `<div class="chronik-portrait-placeholder">${escapeHtml(initials)}</div>`;
     }
 
     // Before enrichment, show nothing
@@ -6740,7 +6737,7 @@ function buildBioHtml(enriched) {
 
     return `
         <div class="chronik-bio">
-            ${lifeDates ? `<div class="chronik-bio-dates"><i class="fas fa-birthday-cake"></i> ${lifeDates}</div>` : ''}
+            ${lifeDates ? `<div class="chronik-bio-dates"><i class="fas fa-birthday-cake"></i> ${escapeHtml(lifeDates)}</div>` : ''}
             ${profession ? `<div class="chronik-bio-profession">${escapeHtml(profession)}</div>` : ''}
         </div>
     `;
@@ -7245,8 +7242,8 @@ function renderResearchQuestions() {
                 <div class="questions-category-header">
                     <i class="fas ${cat.icon}"></i>
                     <div>
-                        <h3>${cat.title}</h3>
-                        <span class="questions-category-subtitle">${cat.subtitle}</span>
+                        <h3>${escapeHtml(cat.title)}</h3>
+                        <span class="questions-category-subtitle">${escapeHtml(cat.subtitle)}</span>
                     </div>
                 </div>
                 <div class="questions-list">
@@ -7262,7 +7259,7 @@ function renderResearchQuestions() {
                 previewHtml = `
                     <div class="question-preview">
                         <span class="preview-label">Top ${q.preview.length}:</span>
-                        ${q.preview.map(item => `<span class="preview-item">${item}</span>`).join('')}
+                        ${q.preview.map(item => `<span class="preview-item">${escapeHtml(item)}</span>`).join('')}
                     </div>
                 `;
             }
@@ -7271,12 +7268,12 @@ function renderResearchQuestions() {
             let pathHtml = '';
             if (q.path && q.path.length > 0 && !isUnavailable) {
                 const pathSteps = q.path.map((step, i) => `
-                    <span class="path-step" data-view="${step.view}">
+                    <span class="path-step" data-view="${escapeHtml(step.view)}">
                         <span class="path-step-header">
                             <span class="path-step-num">${i + 1}</span>
-                            <span class="path-step-label">${step.label}</span>
+                            <span class="path-step-label">${escapeHtml(step.label)}</span>
                         </span>
-                        <span class="path-step-action">${step.action}</span>
+                        <span class="path-step-action">${escapeHtml(step.action)}</span>
                     </span>
                 `).join('<span class="path-arrow"><i class="fas fa-chevron-right"></i></span>');
                 pathHtml = `<div class="question-path">${pathSteps}</div>`;
@@ -7288,24 +7285,24 @@ function renderResearchQuestions() {
                 suggestionHtml = `
                     <div class="question-suggestion">
                         <span class="suggestion-label"><i class="fas fa-wrench"></i> Fehlend:</span>
-                        <span class="suggestion-text">${q.missingData}</span>
+                        <span class="suggestion-text">${escapeHtml(q.missingData)}</span>
                     </div>
                     <div class="question-fix">
-                        <i class="fas fa-lightbulb"></i> ${q.suggestion}
+                        <i class="fas fa-lightbulb"></i> ${escapeHtml(q.suggestion)}
                     </div>
                 `;
             }
 
             html += `
-                <div class="question-card ${isUnavailable ? 'unavailable' : ''}" ${!isUnavailable ? `data-view="${q.view}" data-path='${JSON.stringify(q.path || [])}'` : ''}>
+                <div class="question-card ${isUnavailable ? 'unavailable' : ''}" ${!isUnavailable ? `data-view="${escapeHtml(q.view)}" data-path="${escapeHtml(JSON.stringify(q.path || []))}"` : ''}>
                     <div class="question-icon"><i class="fas ${q.icon}"></i></div>
                     <div class="question-content">
-                        <div class="question-text">${q.question}</div>
-                        <div class="question-description">${q.description}</div>
+                        <div class="question-text">${escapeHtml(q.question)}</div>
+                        <div class="question-description">${escapeHtml(q.description)}</div>
                         ${previewHtml}
                         ${pathHtml}
                         ${suggestionHtml}
-                        ${q.filterHint ? `<div class="question-hint"><i class="fas fa-info-circle"></i> ${q.filterHint}</div>` : ''}
+                        ${q.filterHint ? `<div class="question-hint"><i class="fas fa-info-circle"></i> ${escapeHtml(q.filterHint)}</div>` : ''}
                     </div>
                     ${!isUnavailable ? `
                     <div class="question-meta">
@@ -7680,11 +7677,11 @@ function showActivityDetails(date) {
         const recipientName = letter.recipient?.name || 'Unbekannt';
         const place = letter.place_sent?.name || '';
 
-        html += `<div class="activity-detail-item" data-letter-id="${letter.id}">
-            <span class="activity-detail-sender">${senderName}</span>
+        html += `<div class="activity-detail-item" data-letter-id="${escapeHtml(letter.id)}">
+            <span class="activity-detail-sender">${escapeHtml(senderName)}</span>
             <span class="activity-detail-arrow"><i class="fas fa-arrow-right"></i></span>
-            <span class="activity-detail-recipient">${recipientName}</span>
-            ${place ? `<span class="activity-detail-place">(${place})</span>` : ''}
+            <span class="activity-detail-recipient">${escapeHtml(recipientName)}</span>
+            ${place ? `<span class="activity-detail-place">(${escapeHtml(place)})</span>` : ''}
         </div>`;
     }
 

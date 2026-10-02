@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Hostile CMIF for escaping and URL-scheme regression tests (test-cmif-parser.js) -->
+<!-- Names, labels and refs carry markup and javascript: URLs that must never execute -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Hostile &lt;img src=x onerror=alert(1)&gt; Dataset</title>
+        <editor ref="javascript:alert(1)">Editor &lt;img src=x onerror=alert(1)&gt;</editor>
+      </titleStmt>
+      <publicationStmt>
+        <publisher><ref target="javascript:alert(1)">Publisher &lt;img src=x onerror=alert(1)&gt;</ref></publisher>
+        <availability>
+          <licence target="javascript:alert(1)">Licence &lt;img src=x onerror=alert(1)&gt;</licence>
+        </availability>
+        <date when="2026-10-02"/>
+        <idno type="url">javascript:alert(1)</idno>
+      </publicationStmt>
+      <sourceDesc>
+        <bibl type="online">Source <ref target="javascript:alert(1)">link</ref></bibl>
+      </sourceDesc>
+    </fileDesc>
+    <profileDesc>
+
+      <!-- Markup in sender and place, javascript: letter ref -->
+      <correspDesc ref="javascript:alert(1)">
+        <correspAction type="sent">
+          <persName ref="https://d-nb.info/gnd/118540238">&lt;img src=x onerror=alert(1)&gt;</persName>
+          <placeName ref="http://sws.geonames.org/2778067">&lt;img src=x onerror=alert(2)&gt;</placeName>
+          <date when="1900-06-15"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Name with " quote' and apostrophe</persName>
+        </correspAction>
+        <note>
+          <ref type="http://www.lodac.de/cmif#mentionsSubject" target="https://example.org/subject/1">&lt;img src=x onerror=alert(3)&gt;</ref>
+          <ref type="hasLanguage" target="&quot;&gt;&lt;img src=x onerror=alert(4)&gt;"/>
+        </note>
+      </correspDesc>
+
+      <!-- Attribute breakout in a person name, data: URL ref -->
+      <correspDesc ref="data:text/html,&lt;script&gt;alert(1)&lt;/script&gt;">
+        <correspAction type="sent">
+          <persName>x" onmouseover="alert(1)</persName>
+          <placeName>Unbekannt' onmouseover='alert(1)</placeName>
+          <date when="1901"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName>Recipient &lt;b&gt;bold&lt;/b&gt;</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- No ref and no key: id must be derived from document position -->
+      <correspDesc>
+        <correspAction type="sent">
+          <persName>Sender without ref</persName>
+          <date when="1902-01-01"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName>Recipient without ref</persName>
+        </correspAction>
+      </correspDesc>
+
+      <!-- Valid https ref for comparison -->
+      <correspDesc ref="https://example.org/letter/004">
+        <correspAction type="sent">
+          <persName>Regular Sender</persName>
+          <date when="1903-03-03"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName>Regular Recipient</persName>
+        </correspAction>
+      </correspDesc>
+
+    </profileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <p/>
+    </body>
+  </text>
+</TEI>

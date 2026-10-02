@@ -21,10 +21,25 @@ export function debounce(fn, delay) {
  * @returns {string} - Escaped HTML
  */
 export function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    if (text === null || text === undefined) return '';
+    // Quotes are escaped too, because results are interpolated into attribute values
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+/**
+ * Return the URL only if it uses the http or https scheme
+ * @param {string} url - URL from CMIF or loaded JSON
+ * @returns {string} - The URL, or '' for any other scheme or invalid input
+ */
+export function safeUrl(url) {
+    if (typeof url !== 'string') return '';
+    const trimmed = url.trim();
+    return /^https?:\/\//i.test(trimmed) ? trimmed : '';
 }
 
 /**
@@ -140,6 +155,7 @@ export async function copyToClipboard(text) {
  * @returns {string} - HTML link
  */
 export function buildAuthorityLink(authorityUri) {
+    authorityUri = safeUrl(authorityUri);
     if (!authorityUri) return '';
 
     let label = 'Link';

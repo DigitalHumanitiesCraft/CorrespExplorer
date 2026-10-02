@@ -7,6 +7,7 @@ import { AggregationTests } from './test-aggregation.js';
 import { FormattersTests } from './test-formatters.js';
 import { StateManagerTests } from './test-state-manager.js';
 import { DOMCacheTests } from './test-dom-cache.js';
+import { SecurityTests } from './test-security.js';
 
 /**
  * Führe alle Tests aus
@@ -19,6 +20,7 @@ export async function runAllTests() {
         CMIFParserTests,
         AggregationTests,
         FormattersTests,
+        SecurityTests,
 
         // Infrastructure (State Management)
         StateManagerTests,

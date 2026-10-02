@@ -12,7 +12,7 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 
-import { debounce, escapeHtml, downloadFile, showToast } from './utils.js';
+import { debounce, escapeHtml, safeUrl, downloadFile, showToast } from './utils.js';
 
 // State
 let dataIndices = {};
@@ -696,7 +696,7 @@ function renderDetails() {
                 </div>
                 ${letter.place_sent?.name ? `<div class="details-place"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(letter.place_sent.name)}</div>` : ''}
             </div>
-            ${letter.url ? `<a href="${escapeHtml(letter.url)}" target="_blank" class="details-link" title="Zum Brief"><i class="fas fa-external-link-alt"></i></a>` : ''}
+            ${safeUrl(letter.url) ? `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" class="details-link" title="Zum Brief"><i class="fas fa-external-link-alt"></i></a>` : ''}
         </div>
     `).join('');
 

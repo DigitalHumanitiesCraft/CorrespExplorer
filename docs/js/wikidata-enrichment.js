@@ -2,6 +2,8 @@
 // Fetches biographical data from Wikidata via VIAF, GND, or direct QID
 // Supports batch processing with progress callbacks
 
+import { escapeHtml, safeUrl } from './utils.js';
+
 const WIKIDATA_SPARQL = 'https://query.wikidata.org/sparql';
 const CACHE_PREFIX = 'ce-wikidata-';
 const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -326,16 +328,16 @@ export function buildExternalLinks(enriched) {
     const links = [];
 
     if (enriched.qid) {
-        links.push(`<a href="${enriched.wikidataUrl}" target="_blank" rel="noopener" title="Wikidata">Wikidata</a>`);
+        links.push(`<a href="${escapeHtml(safeUrl(enriched.wikidataUrl))}" target="_blank" rel="noopener" title="Wikidata">Wikidata</a>`);
     }
     if (enriched.gndId) {
-        links.push(`<a href="https://d-nb.info/gnd/${enriched.gndId}" target="_blank" rel="noopener" title="GND">GND</a>`);
+        links.push(`<a href="https://d-nb.info/gnd/${encodeURIComponent(enriched.gndId)}" target="_blank" rel="noopener" title="GND">GND</a>`);
     }
     if (enriched.viafId) {
-        links.push(`<a href="https://viaf.org/viaf/${enriched.viafId}" target="_blank" rel="noopener" title="VIAF">VIAF</a>`);
+        links.push(`<a href="https://viaf.org/viaf/${encodeURIComponent(enriched.viafId)}" target="_blank" rel="noopener" title="VIAF">VIAF</a>`);
     }
     if (enriched.wikipediaUrl) {
-        links.push(`<a href="${enriched.wikipediaUrl}" target="_blank" rel="noopener" title="Wikipedia">Wikipedia</a>`);
+        links.push(`<a href="${escapeHtml(safeUrl(enriched.wikipediaUrl))}" target="_blank" rel="noopener" title="Wikipedia">Wikipedia</a>`);
     }
 
     return links.join(' | ');

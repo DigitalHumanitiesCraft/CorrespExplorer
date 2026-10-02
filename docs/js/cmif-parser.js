@@ -3,7 +3,7 @@
 // Also handles correspSearch API responses (TEI-JSON format)
 
 import { isCorrespSearchUrl, fetchFromCorrespSearchUrl } from './correspsearch-api.js';
-import { parseAuthorityRef, parseGeoNamesRef } from './utils.js';
+import { parseAuthorityRef, parseGeoNamesRef, safeUrl } from './utils.js';
 
 const TEI_NS = 'http://www.tei-c.org/ns/1.0';
 
@@ -91,7 +91,7 @@ function extractLetters(doc) {
  */
 function extractLetter(desc) {
     const id = desc.getAttribute('ref') || desc.getAttribute('key') || `letter-${Math.random().toString(36).substr(2, 9)}`;
-    const url = desc.getAttribute('ref') || null;
+    const url = safeUrl(desc.getAttribute('ref')) || null;
 
     const sentAction = getCorrespAction(desc, 'sent');
     const receivedAction = getCorrespAction(desc, 'received');
@@ -639,7 +639,7 @@ function extractMeta(doc, letters) {
         editors.push({
             name,
             email: emailEl?.textContent.trim() || null,
-            ref: refAttr || null
+            ref: safeUrl(refAttr) || null
         });
     }
 
@@ -654,7 +654,7 @@ function extractMeta(doc, letters) {
         if (refEl) {
             publishers.push({
                 name: refEl.textContent.trim(),
-                url: refEl.getAttribute('target') || null
+                url: safeUrl(refEl.getAttribute('target')) || null
             });
         } else {
             publishers.push({
@@ -672,7 +672,7 @@ function extractMeta(doc, letters) {
     const licenceEl = publicationStmt?.getElementsByTagNameNS(TEI_NS, 'licence')[0];
     const licence = licenceEl ? {
         text: licenceEl.textContent.trim(),
-        url: licenceEl.getAttribute('target') || null
+        url: safeUrl(licenceEl.getAttribute('target')) || null
     } : null;
 
     // CMIF URL (idno with type="url")
@@ -680,7 +680,7 @@ function extractMeta(doc, letters) {
     let cmifUrl = null;
     for (const idno of idnoEls) {
         if (idno.getAttribute('type') === 'url') {
-            cmifUrl = idno.textContent.trim();
+            cmifUrl = safeUrl(idno.textContent) || null;
             break;
         }
     }
@@ -693,7 +693,7 @@ function extractMeta(doc, letters) {
     if (biblEl) {
         const biblRefEl = biblEl.getElementsByTagNameNS(TEI_NS, 'ref')[0];
         if (biblRefEl) {
-            sourceUrl = biblRefEl.getAttribute('target') || null;
+            sourceUrl = safeUrl(biblRefEl.getAttribute('target')) || null;
         }
         // Get text without the ref URL text for cleaner display
         sourceReference = biblEl.textContent.trim();
