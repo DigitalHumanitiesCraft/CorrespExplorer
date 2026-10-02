@@ -175,8 +175,22 @@
     margin-bottom: var(--space-lg);
 }
 
+/* Visually hidden but focusable, so keyboard users can reach the file picker */
 .upload-input {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.upload-input:focus-visible + .upload-btn {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
 }
 
 .upload-btn {

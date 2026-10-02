@@ -2289,7 +2289,7 @@ function renderTopCorrespondents() {
     }
 
     container.innerHTML = topPersons.map((person, index) => `
-        <div class="correspondent-item" data-person-id="${escapeHtml(person.id || '')}" data-person-name="${escapeHtml(person.name)}">
+        <div class="correspondent-item" role="button" tabindex="0" data-person-id="${escapeHtml(person.id || '')}" data-person-name="${escapeHtml(person.name)}">
             <span class="correspondent-rank">${index + 1}.</span>
             <span class="correspondent-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}</span>
             <span class="correspondent-count">${person.count} Briefe</span>
@@ -2459,7 +2459,7 @@ function renderPersonsList() {
         ` : '';
 
         return `
-            <div class="person-card ${precisionClass}" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
+            <div class="person-card ${precisionClass}" role="button" tabindex="0" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
                 <div class="person-avatar">${escapeHtml(initials)}</div>
                 <div class="person-info">
                     <div class="person-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}${wikidataIndicator}</div>
@@ -2598,7 +2598,7 @@ function renderLettersList() {
 
         return `
             <div class="letter-card ${hasDetails ? 'has-details' : ''}" data-id="${escapeHtml(letter.id || '')}">
-                <div class="letter-header">
+                <div class="letter-header"${hasDetails ? ' role="button" tabindex="0" aria-expanded="false"' : ''}>
                     <div class="letter-participants">
                         ${hasDetails ? '<i class="fas fa-chevron-right expand-icon"></i>' : ''}
                         ${senderName}
@@ -2646,6 +2646,7 @@ function toggleLetterExpand(card) {
     const details = card.querySelector('.letter-details');
     const icon = card.querySelector('.expand-icon');
     const isExpanded = card.classList.contains('expanded');
+    card.querySelector('.letter-header').setAttribute('aria-expanded', String(!isExpanded));
 
     if (isExpanded) {
         card.classList.remove('expanded');
@@ -7704,6 +7705,15 @@ function showActivityDetails(date) {
         });
     });
 }
+
+// role="button" elements get native button keyboard behaviour: Enter and Space trigger their click handler
+document.addEventListener('keydown', (e) => {
+    const el = e.target;
+    if ((e.key === 'Enter' || e.key === ' ') && el.getAttribute?.('role') === 'button' && el.tagName !== 'BUTTON') {
+        e.preventDefault();
+        el.click();
+    }
+});
 
 // Start application
 if (document.readyState === 'loading') {

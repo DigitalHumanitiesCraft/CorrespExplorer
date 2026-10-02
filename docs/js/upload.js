@@ -74,6 +74,13 @@ function setupEventListeners() {
             console.log('Card clicked:', card.dataset.url || card.dataset.dataset);
             handleDatasetSelect(card);
         });
+        // Cards are role="button" divs (block content cannot go into <button>)
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleDatasetSelect(card);
+            }
+        });
     });
 
     // Config modal buttons
