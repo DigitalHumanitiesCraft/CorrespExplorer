@@ -18,7 +18,11 @@ export async function parseCMIF(source, onProgress = null) {
 
     if (source instanceof File) {
         xmlString = await source.text();
-    } else if (source.startsWith('http://') || source.startsWith('https://')) {
+    } else if (typeof source !== 'string') {
+        throw new TypeError('parseCMIF erwartet eine Datei, eine URL oder einen XML-String');
+    } else if (source.trimStart().startsWith('<')) {
+        xmlString = source;
+    } else if (/^https?:\/\//i.test(source)) {
         // Check if this is a correspSearch API URL
         if (isCorrespSearchUrl(source)) {
             return await fetchFromCorrespSearchUrl(source, onProgress);
@@ -39,7 +43,9 @@ export async function parseCMIF(source, onProgress = null) {
             }
             throw fetchError;
         }
-    } else if (source.endsWith('.xml') || source.includes('/')) {
+    } else if (/^[a-z][a-z0-9+.-]*:/i.test(source)) {
+        throw new Error(`Nicht unterstuetztes URL-Schema: ${source.split(':')[0]}`);
+    } else {
         // Relative URL (local file path like 'data/test.xml')
         try {
             const response = await fetch(source);
@@ -50,8 +56,6 @@ export async function parseCMIF(source, onProgress = null) {
         } catch (fetchError) {
             throw new Error(`Fehler beim Laden der lokalen Datei: ${fetchError.message}`);
         }
-    } else {
-        xmlString = source;
     }
 
     const parser = new DOMParser();
@@ -74,10 +78,13 @@ export async function parseCMIF(source, onProgress = null) {
  */
 function extractLetters(doc) {
     const correspDescs = doc.getElementsByTagNameNS(TEI_NS, 'correspDesc');
+    if (correspDescs.length === 0) {
+        throw new Error('Keine Briefe gefunden: Die Datei enthaelt kein correspDesc-Element im TEI-Namensraum. Ist es eine CMIF-Datei?');
+    }
     const letters = [];
 
-    for (const desc of correspDescs) {
-        const letter = extractLetter(desc);
+    for (let i = 0; i < correspDescs.length; i++) {
+        const letter = extractLetter(correspDescs[i], i);
         if (letter) {
             letters.push(letter);
         }
@@ -89,8 +96,9 @@ function extractLetters(doc) {
 /**
  * Extract a single letter from a correspDesc element
  */
-function extractLetter(desc) {
-    const id = desc.getAttribute('ref') || desc.getAttribute('key') || `letter-${Math.random().toString(36).substr(2, 9)}`;
+function extractLetter(desc, index) {
+    // Fallback id from document position, so ids stay stable across reloads and URL state
+    const id = desc.getAttribute('ref') || desc.getAttribute('key') || `letter-${index + 1}`;
     const url = safeUrl(desc.getAttribute('ref')) || null;
 
     const sentAction = getCorrespAction(desc, 'sent');

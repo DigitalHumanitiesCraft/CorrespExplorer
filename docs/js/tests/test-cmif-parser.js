@@ -176,6 +176,56 @@ export const CMIFParserTests = {
         },
 
         {
+            name: 'parseCMIF: Akzeptiert XML-String mit "/" im Inhalt',
+            async run() {
+                const xml = await (await fetch('data/test-uncertainty.xml')).text();
+                const fromString = await parseCMIF(xml);
+                const fromPath = await parseCMIF('data/test-uncertainty.xml');
+                assert(fromString.letters.length === fromPath.letters.length,
+                    `String and path parse should agree, got ${fromString.letters.length} vs ${fromPath.letters.length}`);
+            }
+        },
+
+        {
+            name: 'parseCMIF: Lehnt andere Typen und URL-Schemata ab',
+            async run() {
+                for (const bad of [42, null, { url: 'data/test-uncertainty.xml' }]) {
+                    const error = await parseCMIF(bad).then(() => null, e => e);
+                    assert(error instanceof TypeError, `Should reject ${JSON.stringify(bad)} with TypeError, got ${error}`);
+                }
+                for (const bad of ['javascript:alert(1)', 'data:application/xml,<TEI/>', 'file:///etc/passwd']) {
+                    const error = await parseCMIF(bad).then(() => null, e => e);
+                    assert(error && error.message.includes('URL-Schema'), `Should reject ${bad}, got ${error}`);
+                }
+            }
+        },
+
+        {
+            name: 'parseCMIF: Ohne correspDesc klarer Fehler',
+            async run() {
+                const xml = await (await fetch('data/test-uncertainty.xml')).text();
+                const doc = new DOMParser().parseFromString(xml, 'application/xml');
+                [...doc.getElementsByTagNameNS('http://www.tei-c.org/ns/1.0', 'correspDesc')].forEach(el => el.remove());
+                const emptyXml = new XMLSerializer().serializeToString(doc);
+                const error = await parseCMIF(emptyXml).then(() => null, e => e);
+                assert(error && error.message.includes('correspDesc'), `Should throw a correspDesc error, got ${error}`);
+            }
+        },
+
+        {
+            name: 'parseCMIF: Fallback-ID aus Dokumentposition ist deterministisch',
+            async run() {
+                const first = await parseCMIF('data/test-hostile.xml');
+                const second = await parseCMIF('data/test-hostile.xml');
+                // Third correspDesc in test-hostile.xml has neither ref nor key
+                assert(first.letters[2].id === 'letter-3', `Expected letter-3, got ${first.letters[2].id}`);
+                assert(second.letters[2].id === first.letters[2].id, 'Fallback id should be stable across parses');
+                const ids = first.letters.map(l => l.id);
+                assert(new Set(ids).size === ids.length, `Letter ids should be unique, got ${ids.join(', ')}`);
+            }
+        },
+
+        {
             name: 'Meta: Extrahiert metadata aus echten Daten',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
