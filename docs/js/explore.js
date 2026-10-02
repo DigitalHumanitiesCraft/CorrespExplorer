@@ -1642,12 +1642,12 @@ function updatePersonFilterDisplay() {
 
         if (!filterDisplay) {
             // Create filter display element
-            const sidebar = document.querySelector('.sidebar');
+            // .stats-cards sits inside a sidebar section, not directly in .sidebar
             const statsCards = document.querySelector('.stats-cards');
             filterDisplay = document.createElement('div');
             filterDisplay.id = 'person-filter-display';
             filterDisplay.className = 'person-filter-active';
-            sidebar.insertBefore(filterDisplay, statsCards.nextSibling);
+            statsCards.after(filterDisplay);
         }
 
         filterDisplay.innerHTML = `
@@ -3898,12 +3898,12 @@ function updateSubjectFilterDisplay() {
 
         if (!filterDisplay) {
             // Create filter display element
-            const sidebar = document.querySelector('.sidebar');
+            // .stats-cards sits inside a sidebar section, not directly in .sidebar
             const statsCards = document.querySelector('.stats-cards');
             filterDisplay = document.createElement('div');
             filterDisplay.id = 'subject-filter-display';
             filterDisplay.className = 'subject-filter-active';
-            sidebar.insertBefore(filterDisplay, statsCards.nextSibling);
+            statsCards.after(filterDisplay);
         }
 
         filterDisplay.innerHTML = `
