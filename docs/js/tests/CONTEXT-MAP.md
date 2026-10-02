@@ -9,9 +9,10 @@ Test-Runner (Infrastructure)
 - run-all-tests.js - Entry Point für alle Tests
 
 Business Logic Tests (CMIF-Datenverarbeitung)
-- test-cmif-parser.js - 13 Tests für XML→JSON Parsing und Unsicherheits-Erkennung
+- test-cmif-parser.js - 17 Tests für XML→JSON Parsing, Eingabevertrag und Unsicherheits-Erkennung
 - test-aggregation.js - 11 Tests für Daten-Aggregation (Orte, Sprachen, Netzwerke)
 - test-formatters.js - 26 Tests für Datum/Person/Ort Formatierung
+- test-security.js - Escaping, URL-Schemata und ?json=-Pfade gegen data/test-hostile.xml
 
 Infrastructure Tests (State Management)
 - test-state-manager.js - 10 Tests für state-manager.js

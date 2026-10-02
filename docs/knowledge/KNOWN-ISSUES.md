@@ -1,12 +1,40 @@
 # Known Issues and Inconsistencies
 
-Stand: 2025-12-18
+Stand: 2026-10-02
 
-Alle dokumentierten Issues wurden behoben.
+---
+
+## 6. Personenfilter ohne Authority-ID liefert keine Briefe
+
+Status: Offen
+Schweregrad: Mittel
+Auswirkung: Klick auf Personen ohne ID (Karte, Liste, Dialog) filtert auf null Briefe
+
+Problem:
+- explore.js verwendet als Personenschluessel id oder Name
+- state-manager.js vergleicht im Personenfilter nur sender.id und recipient.id
+
+Empfehlung: Im state-manager wie in explore.js auf id oder Name vergleichen
+
+## 7. Karten-Bedienelemente verdeckt
+
+Status: Offen
+Schweregrad: Niedrig
+Auswirkung: Layer-Wechsel und Farbmodus-Schalter der Karte liegen unter der Navigationsleiste und sind nicht anklickbar
+
+Problem:
+- .map-controls ist absolut positioniert, der Bezugsrahmen liegt oberhalb der Kartenansicht
+
+Empfehlung: #map-view als Bezugsrahmen (position: relative) setzen und pruefen
 
 ---
 
 ## Behobene Issues (Archiv)
+
+### Review-Befunde Oktober 2026
+- Behoben in: Phase 40 / 2026-10-02
+- Problem: XSS ueber CMIF- und JSON-Werte, ?json= von fremden Quellen, Absturz bei Personen- und Themenfilter, Inline-onclick mit Datenwerten, CARTO-Basiskarte ohne Key, unklarer parseCMIF-Eingabevertrag, fehlender Tastaturzugang
+- Loesung: siehe JOURNAL.md, Phase 40
 
 ### 1. PRIMARY_COLOR Inkonsistenz
 - Behoben in: Phase 33 / 2025-12-18

@@ -8,7 +8,8 @@ Entwicklungszeitraum: November - Dezember 2025
 
 ## Phasen-Uebersicht
 
-Aktuelle Phasen (Dezember 2025):
+Aktuelle Phasen:
+- Phase 40: Sicherheits-, Stabilitaets- und Tastatur-Fixes (Oktober 2026)
 - Phase 39: Activity Heatmap View
 - Phase 38: Forschungspfade View
 - Phase 37: Anreicherungs-Feedback und UI-Fixes
@@ -49,6 +50,23 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2026-10-02 (Phase 40: Sicherheits-, Stabilitaets- und Tastatur-Fixes)
+
+Befunde eines Code-Reviews auf main, jeweils im Code verifiziert und behoben:
+- Escaping: escapeHtml ersetzt jetzt & < > " ' per String-Replace (die DOM-Variante liess Anfuehrungszeichen in Attributen stehen); safeUrl() laesst nur http/https zu; alle innerHTML-Senken in explore.js, wissenskorb.js und wikidata-enrichment.js escapen CMIF-, JSON- und Wikidata-Werte
+- ?json= laedt nur relative Pfade unter data/ mit Endung .json (isAllowedJsonPath)
+- Personen- und Themenfilter brachen applyFilters ab, weil .stats-cards kein direktes Kind von .sidebar ist; Badge wird jetzt mit after() eingefuegt
+- Inline-onclick mit Datenwerten durch data-Attribute und Listener ersetzt; window.filterByPerson entfernt; Chronik-, Aktivitaets- und Erwaehnungs-Klicks oeffnen den Brief-Dialog (vorher undefinierte Funktionen); Brief-, Personen-, Export- und Fehlende-Orte-Dialog entfernen beim Oeffnen die Klasse hidden
+- Basiskarte: CARTO liefert nur noch einen API-Key-Platzhalter; beide Karten nutzen OpenFreeMap (positron, dark), der Layer-Wechsel uebernimmt die eigenen Quellen per transformStyle
+- parseCMIF: explizite Eingabepruefung (File, XML-String ab "<", URL), Fehler bei fehlendem correspDesc, deterministische Fallback-ID letter-N
+- Tastatur: Datei-Input visuell versteckt statt display:none, Datensatzkarten und Listeneintraege in explore mit role="button", tabindex und Enter/Space
+
+Tests: neue Suite test-security.js mit data/test-hostile.xml, vier neue Parser-Tests.
+
+Offen (nicht behoben, siehe KNOWN-ISSUES.md): Personenfilter fuer Personen ohne Authority-ID, verdeckte Karten-Bedienelemente.
 
 ---
 
