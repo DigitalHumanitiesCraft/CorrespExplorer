@@ -5,7 +5,7 @@ import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DE
 import { initBasketUI } from './basket-ui.js';
 import { isInBasket } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl } from './utils.js';
+import { debounce, escapeHtml, safeUrl, isAllowedJsonPath } from './utils.js';
 import {
     formatDateWithPrecision,
     formatSingleDate,
@@ -379,6 +379,9 @@ async function loadData() {
     if (jsonUrl) {
         try {
             log.init(`Loading JSON from URL: ${jsonUrl}`);
+            if (!isAllowedJsonPath(jsonUrl)) {
+                throw new Error('json parameter must be a relative path under data/ ending in .json');
+            }
             const response = await fetch(jsonUrl);
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);

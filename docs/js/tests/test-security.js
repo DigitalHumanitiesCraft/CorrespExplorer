@@ -2,7 +2,7 @@
 // Escaping and URL-scheme checks against the hostile CMIF fixture data/test-hostile.xml
 
 import { parseCMIF } from '../cmif-parser.js';
-import { escapeHtml, safeUrl, buildAuthorityLink } from '../utils.js';
+import { escapeHtml, safeUrl, buildAuthorityLink, isAllowedJsonPath } from '../utils.js';
 import { formatPersonName, formatPlaceName, formatDateWithPrecision } from '../formatters.js';
 
 const URL_KEYS = ['url', 'ref', 'cmifUrl', 'sourceUrl'];
@@ -64,6 +64,17 @@ export const SecurityTests = {
             run() {
                 assert(buildAuthorityLink('javascript:alert(1)') === '', 'javascript: URI must not become a link');
                 assert(buildAuthorityLink('https://d-nb.info/gnd/118540238').includes('href="https://d-nb.info/gnd/118540238"'), 'GND link should be built');
+            }
+        },
+
+        {
+            name: 'isAllowedJsonPath: Nur relative .json-Pfade unter data/',
+            run() {
+                assert(isAllowedJsonPath('data/hsa-letters.json'), 'data/hsa-letters.json should be allowed');
+                for (const bad of ['https://evil.example/x.json', '//evil.example/data/x.json', '/data/x.json',
+                    'data/../x.json', 'data/x.json?y', 'data/x.xml', 'javascript:alert(1)//data/x.json', 'data\\x.json', '', null]) {
+                    assert(!isAllowedJsonPath(bad), `Should reject ${String(bad)}`);
+                }
             }
         },
 

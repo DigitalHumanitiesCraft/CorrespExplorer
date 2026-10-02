@@ -43,6 +43,17 @@ export function safeUrl(url) {
 }
 
 /**
+ * Check a ?json= parameter: only same-origin relative paths to .json files under data/
+ * @param {string} path - Value of the json URL parameter
+ * @returns {boolean}
+ */
+export function isAllowedJsonPath(path) {
+    if (typeof path !== 'string') return false;
+    if (!/^data\/[\w\-./]+\.json$/.test(path)) return false;
+    return !path.split('/').includes('..');
+}
+
+/**
  * Download file helper
  * @param {string} content - File content
  * @param {string} filename - Name for downloaded file
