@@ -13,7 +13,7 @@ updated: 2026-10-28
 authors: [Christopher Pollin]
 template:
   name: Vorlage Journal
-  version: 0.5
+  version: 0.6
   url: https://dhcraft.org/Promptotyping/promptotyping-document/journal
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-journal
 related: [project, specification, plan, handoff]
@@ -21,2059 +21,253 @@ related: [project, specification, plan, handoff]
 
 # Journal: CorrespExplorer
 
-Chronologisches Entwicklungsprotokoll mit detaillierten Implementierungsnotizen.
-
-Entwicklungszeitraum: Oktober 2025 (HerData) bis Dezember 2025, Nacharbeiten 2026
-
----
-
-## Phasen-Uebersicht
-
-Aktuelle Phasen:
-- Vereinheitlichung nach Promptotyping-Vorlagen (Oktober 2026, ohne Phasennummer)
-- Kuration fuer die Promptotyping-Fallstudie (Oktober 2026, ohne Phasennummer)
-- Phase 40: Sicherheits-, Stabilitaets- und Tastatur-Fixes (Oktober 2026)
-- Phase 39: Activity Heatmap View
-- Phase 38: Forschungspfade View
-- Phase 37: Anreicherungs-Feedback und UI-Fixes
-- Phase 36: Chronik als Forschungswerkzeug
-- Phase 35: Chronik-View implementiert
-- Phase 34: Compare-Feature entfernt
-- Phase 33: teiHeader Metadaten und Landing Page Optimierung
-- Phase 32: Vollstaendiges Entity Component Refactoring
-- Phase 30: Koordinaten-Anreicherung mit Wikidata SPARQL
-- Phase 29: HTML-Refactoring
-- Phase 28: CSS-Refactoring Abschluss
-- Phase 27: Mentions Flow View
-
-Fruehere Phasen (November - Dezember 2025):
-- Phase 26: Uncertainty Documentation und HSA Update
-- Phase 25: Wikidata Enrichment Visual Indicators
-- Phase 24: correspSearch Form Cleanup
-- Phase 23: Wissenskorb WIP-Status
-- Phase 22: Mobile Responsiveness
-- Phase 21: Demo Dataset und Onboarding Tour
-- Phase 20: Network View Improvements
-- Phase 19: Timeline Improvements
-- Phase 18: Quick Wins Refactoring
-- Phase 17: Themen-Filter Bugfix
-- Phase 16: Sprachfarben fuer Kartenmarker
-- Phase 15: Datensatz-Vergleich und Bug-Fixes
-- Phase 14: Design-Ueberarbeitung
-- Phase 13: Wikidata-Enrichment mit Konfigurationsdialog
-- Phase 11: Demo-Datensaetze und Dokumentation
-- Phase 10: Code-Refactoring
-- Phase 9: Wissenskorb Erweiterung
-- Phase 8: Integration und Netzwerk
-- Phase 7: Themen-Explorer und Netzwerk-View
-- Phase 6: Brief-Details und Timeline
-- Phase 5: Erweiterte Features
-
-Gruendungsphasen (November 2025):
-- Feature-Komplett
-- Projektvision
-- HSA-Implementation
-
----
-
-## 2026-10-28 Vereinheitlichung nach Promptotyping-Vorlagen
-
-Die Wissensbasis in `docs/knowledge/` folgt jetzt der Konvention für Promptotyping Documents und ihren Vorlagen. Der Stand davor ist Commit `29dfc15`, den das Paper zur Fallstudie zitiert. Er führte Journal, Context Map, die Liste bekannter Probleme und Themendokumente. Die Belegcommits der Fallstudie bleiben unverändert gültig, `91d965a` (Einführung der Context Map) und `39b86d4` (Entfernung ihrer Selbstbescheinigung) für die Episode der Context Map, `85da32f` für die entfernten unbelegten NN/g-Zahlen.
-
-- Umbenannt: `CONTEXT-MAP.md` zu `INDEX.md`, `JOURNAL.md` zu `journal.md`, `uncertainty-concept.md` zu `uncertainty-specification.md`. Die Paper-Dateien liegen in `research-artefacts/`.
-- `INDEX.md` nach Vorlage Index neu geschrieben. Wartungsabläufe gingen nach `CLAUDE.md`, Dokumentmatrix mit Stabilitätsangaben und die Konformitätsnotiz entfielen.
-- `user-stories.md` wurde zu `specification.md` mit Anforderungen, Stories, Funktionsumfang und Entscheidungen. Die Aussage „Alle 34 User Stories sind implementiert“ und die Status-Zeilen je Story wurden nicht übernommen, weil der Umsetzungsstand nie gegen den Code geprüft war und die Befunde 6 und 8 ihm widersprechen.
-- `cmif-standard.md`, `demo-datasets.md` und `cmif-sources.md` gingen in `data.md` auf. Die vorgeschlagenen Presets wurden als historischer Stand in `architecture.md` beschrieben, die Verbesserungsvorschläge der Datensatzanalyse in `plan.md` übernommen.
-- `learnings.md` wurde aufgeteilt, Parsing nach `data.md`, Zero-Build, Entwurfsmuster und `explore.js` nach `architecture.md`, Visualisierung und Interaktion nach `design.md`, übergreifende Entscheidungen als ADR-001 bis ADR-005 nach `specification.md`. Die unbelegte Angabe „unter 200 ms Renderzeit“ entfiel.
-- `KNOWN-ISSUES.md`: Die offenen Befunde 6 bis 8 stehen mit ihren Nummern in `plan.md`. Aus dem Archiv fehlten im Journal die folgenden Behebungen. PRIMARY_COLOR in `explore.js` von `#C65D3B` auf `#A64B3F` und der README-Verweis auf die gelöschte `refactoring-plan.md`, beide in `dbda53f` (2025-11-27). Sidebar-Breite über `var(--sidebar-width)` (`7657cd1`) und fehlende VIEWS-Konstante MENTIONS_FLOW (`c528d8c`), beide am 2025-12-09 als Phase 31 verzeichnet, die im Journal sonst fehlt. design.md mit tokens.css synchronisiert, als behoben vermerkt am 2025-12-18 (Phase 33).
-- `VAULT-RULES.md` ging in die Schreibregeln von `CLAUDE.md` auf. Neu sind `project.md`, `plan.md` und `handoff.md` mit dem offenen Punkt zum Branch `feature/research-dashboards`.
-- `docs/js/vault.js` entfernt YAML-Frontmatter vor dem Rendern und führt die neue Dokumentliste, alte Anker (`#user-stories`, `#learnings`, `#cmif-sources`, `#demo-datasets`, `#uncertainty`) leiten weiter.
-
-Prüfung: Browser-Test-Runner und `vault.html` für jeden Dokumentanker in headless Chrome, YAML-Parse aller Frontmatter.
-
----
-
-## 2026-10-28 (Kuration fuer die Promptotyping-Fallstudie)
-
-Das Repository dient als Fallstudie in einem Paper ueber Promptotyping. Die Kuration korrigiert Sachfehler und macht die Entstehung fuer externe Leser nachvollziehbar. Die historische Form der Wissensbasis bleibt erhalten. Keine Phasennummer, weil der unverschmolzene Branch feature/research-dashboards die Nummern 40 bis 46 bereits vergibt.
-
-- README: correspSearch-API nicht mehr als Feature gefuehrt, volatile Zahlen entfernt, neuer Abschnitt "How this was built" mit Herkunft aus HerData, Modellen laut Commit-Trailern, Verifikationspraxis und Verweisen auf dokumentierte Fehlerepisoden
-- Die Angaben "34 %" und "23 %" zu Shadows, Nielsen Norman Group zugeschrieben, liessen sich in keiner NN/g-Quelle finden und wurden aus shadows.css, design.md und css/CONTEXT-MAP.md entfernt. Der Eintrag in Phase 28 bleibt als Historie stehen
-- CONTEXT-MAP.md auf den tatsaechlichen Dateibestand gebracht (paper/, JOURNAL.md), Selbstbescheinigung "12/12 compliant, keine Redundanz" entfernt
-- explore-tests.js geloescht. Die Datei importierte kein Produktionsmodul, wurde von keiner Seite geladen und implementierte die geprueften Logiken inline auf Mock-Arrays nach. testing.md loest den Widerspruch zwischen Real-Data-Regel und Inline-Testdaten zugunsten kleiner CMIF-Fixture-Dateien auf, ungemessene Coverage- und Laufzeitwerte entfernt
-- KNOWN-ISSUES: Behebungsdatum von #1 und #4 auf Commit dbda53f (2025-11-27) korrigiert, neues Issue #8 zur defekten Paginierung des correspSearch-API-Pfads
-
-Pruefung: Browser-Test-Runner (test.html?test=true) in headless Chrome vor und nach der Loeschung ohne Fehlschlag.
-
----
-
-## 2026-10-02 (Phase 40: Sicherheits-, Stabilitaets- und Tastatur-Fixes)
-
-Befunde eines Code-Reviews auf main, jeweils im Code verifiziert und behoben:
-- Escaping: escapeHtml ersetzt jetzt & < > " ' per String-Replace (die DOM-Variante liess Anfuehrungszeichen in Attributen stehen); safeUrl() laesst nur http/https zu; alle innerHTML-Senken in explore.js, wissenskorb.js und wikidata-enrichment.js escapen CMIF-, JSON- und Wikidata-Werte
-- ?json= laedt nur relative Pfade unter data/ mit Endung .json (isAllowedJsonPath)
-- Personen- und Themenfilter brachen applyFilters ab, weil .stats-cards kein direktes Kind von .sidebar ist; Badge wird jetzt mit after() eingefuegt
-- Inline-onclick mit Datenwerten durch data-Attribute und Listener ersetzt; window.filterByPerson entfernt; Chronik-, Aktivitaets- und Erwaehnungs-Klicks oeffnen den Brief-Dialog (vorher undefinierte Funktionen); Brief-, Personen-, Export- und Fehlende-Orte-Dialog entfernen beim Oeffnen die Klasse hidden
-- Basiskarte: CARTO liefert nur noch einen API-Key-Platzhalter; beide Karten nutzen OpenFreeMap (positron, dark), der Layer-Wechsel uebernimmt die eigenen Quellen per transformStyle
-- parseCMIF: explizite Eingabepruefung (File, XML-String ab "<", URL), Fehler bei fehlendem correspDesc, deterministische Fallback-ID letter-N
-- Tastatur: Datei-Input visuell versteckt statt display:none, Datensatzkarten und Listeneintraege in explore mit role="button", tabindex und Enter/Space
-
-Tests: neue Suite test-security.js mit data/test-hostile.xml, vier neue Parser-Tests.
-
-Offen (nicht behoben, siehe KNOWN-ISSUES.md): Personenfilter fuer Personen ohne Authority-ID, verdeckte Karten-Bedienelemente.
-
----
+## Einträge
 
-## 2025-12-18 (Phase 39: Activity Heatmap View)
+### 2026-10-28 verdichtet Journal
 
-### Neuer View: Aktivitaets-Heatmap
+- Vorgängerstand: `2ecd575`
+- Bereich: alle Einträge von den Gründungsphasen im November 2025 bis zur Vereinheitlichung vom 2026-10-28, dazu der Kopf mit Phasenübersicht und die Abschnitte „Architektur-Entscheidungen“, „HSA-Datenstruktur“ und „Mögliche Erweiterungen“ am Dateiende.
+- Ergebnis: Die Einträge folgen den Feldern der Vorlage Journal 0.6 und stehen neueste zuerst. Überschriften und Phasennummern bleiben unverändert, weil das Paper zur Fallstudie die Phasen als Abschluss je eines Journaleintrags zitiert. Behalten sind Entscheidungen mit Grund, die benannten Entscheidungen E1 bis E4 und E9 bis E12, Rückbaugründe, Korrekturen und alle Commit-Hashes. Die Phasenübersicht entfällt, weil die Überschriften sie tragen. Die HSA-Kennzahlen stehen in [data.md](data.md#hugo-schuchardt-archiv). Die „Möglichen Erweiterungen“ entfallen, weil Netzwerk (Phase 8), Koordinaten-Auflösung (Phase 30), Themenfilter (Phase 7) und Brief-Detail (Phase 6) umgesetzt sind. Funktionsnamen, CSS-Klassen, Datei- und Löschlisten, Code-Blöcke und Zeilenzahlen sind ausschließlich über Git bewahrt. Die Belege der Einträge bis Oktober 2026 sind nach Datum und Commit-Betreff zugeordnet, wo der Eintrag selbst keinen Hash nannte.
+- Belege: `2ecd575`
 
-Implementierung eines zwoelften Views zur Visualisierung der Korrespondenz-Aktivitaet:
+### 2026-10-28 Vereinheitlichung nach Promptotyping-Vorlagen
 
-Konzept:
-- GitHub-Style Kalender-Heatmap
-- Zeigt wann Briefe geschrieben wurden
-- Keine Annahmen ueber "Antworten" oder Latenz
-- Funktioniert mit Hub-Struktur (Schuchardt in 100% der Briefe)
+- Anlass: Angleichung der Wissensbasis in `docs/knowledge/` an die Konvention für Promptotyping Documents und ihre Vorlagen. Der Stand davor ist `29dfc15`, den das Paper zur Fallstudie zitiert. Die Belegcommits der Fallstudie bleiben gültig, `91d965a` (Einführung der Context Map) und `39b86d4` (Entfernung ihrer Selbstbescheinigung) für die Episode der Context Map, `85da32f` für die entfernten unbelegten NN/g-Zahlen.
+- Befund: Aus dem früheren Archiv bekannter Probleme fehlten im Journal einige Behebungen. PRIMARY_COLOR in `explore.js` von `#C65D3B` auf `#A64B3F` und der README-Verweis auf die gelöschte `refactoring-plan.md` stehen in `dbda53f` (2025-11-27). Sidebar-Breite über `var(--sidebar-width)` (`7657cd1`) und die fehlende VIEWS-Konstante MENTIONS_FLOW (`c528d8c`) wurden am 2025-12-09 als Phase 31 verzeichnet, die im Journal sonst fehlt. Die Synchronisation von design.md mit tokens.css war am 2025-12-18 (Phase 33) als behoben vermerkt.
+- Entschieden: Die Aussage „Alle 34 User Stories sind implementiert“ und die Status-Zeilen je Story gingen nicht in `specification.md` über, weil der Umsetzungsstand nie gegen den Code geprüft war und die Befunde 6 und 8 ihm widersprechen. Die unbelegte Angabe „unter 200 ms Renderzeit“ entfiel.
+- Geändert: `CONTEXT-MAP.md` heißt `INDEX.md`, `JOURNAL.md` heißt `journal.md`, `uncertainty-concept.md` heißt `uncertainty-specification.md`, und die Paper-Dateien liegen in `research-artefacts/`. `user-stories.md` wurde zu [specification.md](specification.md) mit Anforderungen, Stories, Funktionsumfang und ADR-001 bis ADR-005. CMIF-Standard, Demo-Datensätze und Quellen gingen in [data.md](data.md) auf, `learnings.md` wurde auf [data.md](data.md), [architecture.md](architecture.md), [design.md](design.md) und die ADRs verteilt, die offenen Befunde 6 bis 8 stehen in [plan.md](plan.md). Neu sind `project.md`, `plan.md` und `handoff.md` mit dem offenen Punkt zum Branch `feature/research-dashboards`. `docs/js/vault.js` entfernt YAML-Frontmatter vor dem Rendern und leitet alte Anker weiter.
+- Belege: `5953383`, `af1f9b2`, `a4cbba0`, `a001765`, `8da6176`. Geprüft mit dem Browser-Test-Runner und `vault.html` für jeden Dokumentanker in headless Chrome.
 
-Features:
-- Heatmap-Grid: Zeilen = Wochentage (Mo-So), Spalten = Wochen
-- Farbskala: 5 Stufen von leer bis dunkelgruen
-- Jahr-Auswahl oder Multi-Jahr-Uebersicht
-- Statistik-Karten: Total, aktivster Tag, aktivstes Jahr, Durchschnitt/Monat
-- Detail-Panel: Klick auf Zelle zeigt Briefe des Tages
-- Click-Through zu Brief-Detail-Modal
+### 2026-10-28 (Kuration fuer die Promptotyping-Fallstudie)
 
-Technische Umsetzung:
-- buildActivityIndex() - Aggregiert nach Datum, Jahr, Monat, Wochentag
-- renderActivity() - Hauptrenderer
-- renderActivityHeatmap() - Grid-Rendering mit Jahr-Bloecken
-- getActivityLevel() - Farbstufen-Berechnung (0-4)
-- showActivityDetails() - Tag-Details mit Brief-Liste
+- Anlass: Das Repository dient als Fallstudie in einem Paper über Promptotyping. Die Kuration korrigiert Sachfehler und macht die Entstehung für externe Leser nachvollziehbar, die historische Form der Wissensbasis bleibt erhalten. Keine Phasennummer, weil der unverschmolzene Branch `feature/research-dashboards` die Nummern 40 bis 46 bereits vergibt.
+- Befund: Die Angaben „34 %“ und „23 %“ zu Schatten, der Nielsen Norman Group zugeschrieben, ließen sich in keiner NN/g-Quelle finden. `explore-tests.js` importierte kein Produktionsmodul, wurde von keiner Seite geladen und implementierte die geprüften Logiken inline auf Mock-Arrays nach. Die Context Map bescheinigte sich selbst „12/12 compliant, keine Redundanz“. Der correspSearch-API-Pfad paginiert fehlerhaft.
+- Entschieden: Die NN/g-Zahlen werden aus `shadows.css`, `design.md` und `css/CONTEXT-MAP.md` entfernt, der Eintrag zu Phase 28 bleibt als Historie stehen. `explore-tests.js` wird gelöscht, und `testing.md` löst den Widerspruch zwischen Real-Data-Regel und Inline-Testdaten zugunsten kleiner CMIF-Fixture-Dateien auf. Ungemessene Coverage- und Laufzeitwerte entfallen.
+- Korrigiert: Das Behebungsdatum der Probleme 1 und 4 ist `dbda53f` (2025-11-27).
+- Geändert: Das README führt die correspSearch-API nicht mehr als Feature und hat den Abschnitt „How this was built“. Die defekte Paginierung ist Befund 8 in [plan.md](plan.md).
+- Belege: `85da32f`, `86ef43c`, `2f60cbf`, `39b86d4`, `0b2e9c9`, `77fb766`, `4cb2a32`. Geprüft mit dem Browser-Test-Runner (`test.html?test=true`) in headless Chrome vor und nach der Löschung.
 
-Bug-Fix:
-- Aktivster Tag nur fuer exakte Daten (datePrecision === 'exact')
-- Verhindert falsche Statistik durch Platzhalter wie 1798-01-01
+### 2026-10-02 (Phase 40: Sicherheits-, Stabilitaets- und Tastatur-Fixes)
 
-Workflow:
-- Feature-Branch feature/activity-heatmap erstellt
-- Nach Implementierung und Tests nach main gemergt
+- Anlass: Befunde eines Code-Reviews auf main, jeweils im Code verifiziert.
+- Befund: Die DOM-Variante von `escapeHtml` ließ Anführungszeichen in Attributen stehen. Personen- und Themenfilter brachen `applyFilters` ab, weil `.stats-cards` kein direktes Kind von `.sidebar` ist. Chronik-, Aktivitäts- und Erwähnungs-Klicks riefen undefinierte Funktionen auf. CARTO liefert nur noch einen API-Key-Platzhalter.
+- Entschieden: Escaping per String-Replace, `safeUrl()` lässt nur http und https zu, und alle innerHTML-Senken escapen CMIF-, JSON- und Wikidata-Werte. `?json=` lädt nur relative Pfade unter `data/` mit Endung `.json`. Inline-onclick mit Datenwerten weicht data-Attributen und Listenern. Beide Karten nutzen OpenFreeMap. `parseCMIF` prüft seine Eingabe explizit und vergibt eine deterministische Fallback-ID. Datei-Input, Datensatzkarten und Listeneinträge sind per Tastatur bedienbar.
+- Geändert: neue Testsuite `test-security.js` mit `data/test-hostile.xml` und Parser-Tests. Personenfilter ohne Normdaten-ID und verdeckte Kartenbedienelemente blieben offen, heute Befunde 6 und 7 in [plan.md](plan.md).
+- Belege: `6204990`, `c65c7af`, `d35643f`, `24ba8f9`, `5cea2bf`, `6536181`, `a0de0b8`, `cedf6b8`
 
-US-34 implementiert (34 User Stories gesamt).
+### 2025-12-18 (Phase 39: Activity Heatmap View)
 
----
+- Entschieden: Ein zwölfter View zeigt als Kalender-Heatmap, wann Briefe geschrieben wurden, ohne Annahmen über Antworten oder Latenz, sodass er auch mit der Hub-Struktur des HSA funktioniert. Der aktivste Tag wird nur aus exakten Daten (`datePrecision === 'exact'`) berechnet, weil Platzhalter wie 1798-01-01 die Statistik verfälschten. Entwickelt auf einem Feature-Branch, nach Tests nach main gemergt.
+- Geändert: US-34 in [specification.md](specification.md).
+- Belege: `aa73072`, `c1cb9cc`, `70db9d4`, `e7adb9b`
 
-## 2025-12-18 (Phase 38: Forschungspfade View)
+### 2025-12-18 (Phase 38: Forschungspfade View)
 
-### Neuer View: Forschungspfade - Methodische Navigation
+- Entschieden: Ein elfter View zeigt, welche Fragen mit den Daten beantwortbar sind, in vier epistemischen Kategorien (deskriptiv, analytisch, interpretativ, nicht beantwortbar), jede Frage mit einem mehrstufigen Pfad durch die Views. Nicht beantwortbare Fragen nennen Anreicherungsvorschläge. „Anreicherungspotential“ ersetzt „Datenqualität“, weil die UI-Sprache gegenüber Partnerdaten nicht wertend sein soll.
+- Befund: Der CMIF-Parser verwendet `letter_count` statt `letters_sent`, Subject-Objekte haben `label` statt `name`, Sprach-URLs müssen über `LANGUAGE_LABELS` gemappt werden.
+- Geändert: US-33 in [specification.md](specification.md), ADR-004 und ADR-005.
+- Belege: `2534ef8`
 
-Implementierung eines elften Views zur methodisch geleiteten Exploration:
+### 2025-12-18 (Phase 37: Anreicherungs-Feedback und UI-Fixes)
 
-Konzept:
-- Anti-Vibe-Research Feature: Zeigt explizit, welche Fragen mit den Daten beantwortbar sind
-- Vier epistemische Kategorien: Deskriptiv, Analytisch, Interpretativ, Nicht beantwortbar
-- Jede Frage zeigt einen mehrstufigen Forschungspfad durch verschiedene Views
-- Top-N Previews geben schnelle Antworten direkt auf der Karte
+- Geändert: Die Wikidata-Anreicherung zeigt ein Live-Log je Person und eine Zusammenfassung der gefundenen Daten. Die Kreise der Timeline sitzen exakt auf der Linie.
+- Belege: `6774c80`
 
-Epistemische Kategorien:
-- Deskriptiv: Fakten, die direkt aus den Daten ablesbar sind
-- Analytisch: Fragen, die Berechnung oder Aggregation erfordern
-- Interpretativ: Fragen, die Kontext und Interpretation erfordern
-- Nicht beantwortbar: Fragen, die mit den aktuellen Daten nicht zu beantworten sind
+### 2025-12-18 (Phase 36: Chronik als Forschungswerkzeug)
 
-Forschungspfade (Multi-Step Navigation):
-- Jeder Pfad-Schritt hat View, Label und Aktion
-- Klickbare Schritte navigieren zum entsprechenden View
-- Visuelle Darstellung mit nummerierten Kreisen und Pfeilen
-- Aktions-Label unter jedem Schritt erklaert die Taetigkeit
+- Entschieden: Die Chronik wird zum kontextualisierten Lesewerkzeug mit Alter der Korrespondenten zum Briefzeitpunkt, Lebensleiste, Beziehungskontext („Erster Brief“, „Brief X von Y“) und drei Layouts (Karten, Kompakt, Timeline mit Kommunikationsrichtung). Lebensdaten kommen aus der Wikidata-Anreicherung oder aus dem CMIF.
+- Geändert: US-30 bis US-32 in [specification.md](specification.md).
+- Belege: `f728c72`
 
-Preview-Daten:
-- Personen: Top 5 nach Briefanzahl
-- Orte: Top 5 nach Briefhaeufigkeit
-- Themen: Top 5 Subjects (bei erweiterten Datensaetzen)
-- Sprachen: Verteilung mit lesbaren Labels (statt URLs)
-- Timeline: Jahrzehnte mit meisten Briefen
-- Netzwerk: Staerkste Verbindungen
+### 2025-12-18 (Phase 35: Chronik-View implementiert)
 
-Nicht beantwortbare Fragen:
-- Zeigt Fragen, die aufgrund fehlender Daten nicht bearbeitet werden koennen
-- Anreicherungs-Hinweise mit konkreten Vorschlaegen
-- Geordnet nach Anreicherungspotential
+- Entschieden: Ein vertikaler Zeitstrahl gruppiert alle Briefe nach Jahren, die Wikidata-Anreicherung für Porträts und Lebensdaten läuft nur auf Abruf und nutzt das bestehende Anreicherungsmodul.
+- Belege: `7959a5c`, `ffde902`
 
-Technische Implementierung:
-- analyzeResearchQuestions() - Generiert Fragen basierend auf Datenverfuegbarkeit
-- renderResearchQuestions() - Rendert Karten mit Pfaden und Previews
-- Button "Pfade" mit Route-Icon in Navigation
-- CSS: .question-card, .question-path, .path-step, .question-preview
+### 2025-12-18 (Phase 34: Compare-Feature entfernt)
 
-UI-Entscheidungen:
-- Pfad-Nummern mit Akzentfarbe statt grau (Sichtbarkeit)
-- Aktionen unter dem Schritt-Label statt im Tooltip (Klarheit)
-- "Anreicherungspotential" statt "Datenqualitaet" (nicht wertend gegenueber Forschungspartnern)
+- Entschieden: Die Vergleichsseite `compare.html` mit Skript und Stylesheet wird vollständig entfernt, weil sie selten genutzt wurde, der Fokus auf der Kernfunktionalität liegt und die Wartungslast sinkt. Die Story US-23 (Datensatz-Vergleich) entfällt, die Stories wurden neu nummeriert.
+- Belege: `7959a5c`
 
-Learnings:
-- CMIF-Parser verwendet letter_count, nicht letters_sent
-- Subject-Objekte haben label-Property, nicht name
-- Sprach-URLs muessen via LANGUAGE_LABELS gemappt werden
-- UI-Sprache sollte nicht wertend sein (Partner-Daten)
+### 2025-12-18 (Phase 33: teiHeader Metadaten und Landing Page Optimierung)
 
-US-33 implementiert (33 User Stories gesamt).
+- Befund: `gams.uni-graz.at` erlaubt keine CORS-Anfragen, und die correspSearch-API liefert nur einen kleinen Ausschnitt des HSA statt des vollständigen Archivs. Das HSA trägt erweiterte Annotationen (`mentionsSubject`, `mentionsPerson`, `mentionsPlace`).
+- Entschieden: Zwei Datensatztypen, Standard-CMIF mit Live-Parsing von XML und erweiterte Datensätze als vorprozessiertes JSON mit zusätzlichen Annotationen. Die Startseite führt nur noch die Feature-Demo und das HSA. Der Hinweis „Vibe-Coding Demo“ heißt jetzt „Promptotyping Demo“. Die teiHeader-Metadaten werden vollständig extrahiert und nur im Overview angezeigt, weil Sidebar und Overview sie sonst doppelt führen und die Sidebar Filtern und Statistik dient.
+- Belege: `a40f14c`, `84a058b`, `ddc47b6`, `3717704`
 
----
+### 2025-12-09 (Phase 32: Vollstaendiges Entity Component Refactoring)
 
-## 2025-12-18 (Phase 37: Anreicherungs-Feedback und UI-Fixes)
+- Befund: Topics- und Places-View hatten identische Struktur mit getrennten CSS-Klassen, und das Detail-Panel der Topics wurde wegen eines Selektors auf eine alte Klasse nicht angezeigt.
+- Entschieden: Eine gemeinsame Entity-Komponente in `components.css` trägt Layout, Detail-Inhalte und Karten beider Views, die alten Klassen entfallen.
+- Belege: `b00037b`, `abfb369`
 
-### Verbessertes Feedback bei Wikidata-Anreicherung
+### 2025-12-03 (Phase 30: Koordinaten-Anreicherung mit Wikidata SPARQL)
 
-Live-Log waehrend Anreicherung:
-- Zeigt jede Person mit Icons fuer gefundene Daten (Portrait, Geburt, Tod, Beruf, Wikipedia)
-- Personen ohne Daten werden mit "keine Daten" angezeigt
-- Letzte 8 Eintraege sichtbar, aeltere scrollen raus
+- Befund: CMIF-Daten enthalten oft nur GeoNames-IDs, und der statische Koordinaten-Cache war unvollständig, sodass die Karte für manche Datensätze nicht nutzbar war.
+- Entschieden: Das Interface passt sich den Daten an, der Map-View verschwindet ohne Koordinaten. Nutzer können Koordinaten über Wikidata SPARQL (GeoNames-ID P1566 zu Koordinaten P625) nachladen, gebündelt, mit Pause zwischen Anfragen und lokalem Cache, vor der Personen-Anreicherung.
+- Belege: `5a9c1fc`
 
-Summary nach Anreicherung:
-- Anzahl Portraits, Geburtsdaten, Sterbedaten, Berufe, Wikipedia-Links
-- Anzahl Personen ohne Daten
+### 2025-12-03 (Phase 29: HTML-Refactoring - Inline-Styles entfernt)
 
-CSS-Fixes:
-- Timeline-Kreise (Jahr-Marker und Brief-Punkte) exakt auf Linie zentriert
-- Verwendet transform: translate(-50%, -50%) fuer praezise Positionierung
+- Entschieden: Alle Inline-Styles der HTML-Dateien weichen CSS-Klassen, die Testseite erhält ein eigenes Stylesheet, damit Inhalt und Darstellung getrennt sind.
+- Belege: `5be9f76`, `96692bb`
 
----
+### 2025-12-03 (Phase 28: CSS-Refactoring Abschluss)
 
-## 2025-12-18 (Phase 36: Chronik als Forschungswerkzeug)
+- Befund: Doppelte `.btn-primary`-Definition und Pill-Formen in der Navigation, offen blieb ein Review der übrigen Box-Shadows.
+- Entschieden: Modulare CSS-Architektur mit fester Importfolge (tokens, base, components, shadows, style, Seite), die Spezifitätsprobleme verhindert. Konsistente `--color-*`-Tokens ohne Legacy-Aliase. Border-based Design mit 2px- und 3px-Rahmen für reguläre Elemente. Hybrid Shadow Approach (Option B), Schatten nur für schwebende Elemente. `:focus-visible` statt `:focus` für WCAG-2.1-AA-konforme Fokuszustände. Der Eintrag begründete die Schatten-Regel damals mit „Shadows verbessern Z-Achsen-Wahrnehmung um 34% (Nielsen Norman Group) aber erhoehen kognitive Last um 23%“.
+- Korrigiert: Die NN/g-Zahlen ließen sich in keiner Quelle finden und wurden am 2026-10-28 aus Code und Dokumentation entfernt. Der Satz bleibt hier als Historie (Eintrag zur Kuration).
+- Belege: `3a406c8`
 
-### Chronik-Erweiterung: Biografischer Kontext und Beziehungsanalyse
+### 2025-12-02 (Phase 27: Mentions Flow View)
 
-Die Chronik wurde von einer einfachen Timeline zu einem kontextualisierten Lese-Werkzeug erweitert:
+- Entschieden: Ein Sankey-Diagramm zeigt, welche Personen in wessen Briefen erwähnt werden, bipartit von Korrespondenten zu Erwähnten, Personen in beiden Rollen als Hybrid-Knoten. Gegen kognitive Überlastung stehen die Schwellen als Bedienelemente in der Sidebar (Top N, Mindest-Erwähnungen je Sender, Mindest-Flussstärke), mit URL-Persistenz. Die Nutzer steuern damit selbst den Kompromiss zwischen Detail und Klarheit, statt fest kodierter Grenzen. Ein bipartites Netzwerk als Alternative blieb ungebaut.
+- Belege: `9a03db5`, `1d8a48c`, `809fdd3`, `94590f8`, `1bfa0b1`, `141e682`
 
-Biografischer Kontext:
-- Alter der Korrespondenten zum Briefzeitpunkt berechnet
-- Lebensleisten-Visualisierung zeigt Lebensfortschritt
-- Daten aus Wikidata-Anreicherung oder CMIF-eigenen Lebensdaten
+### 2025-12-01 (Phase 26: Uncertainty Documentation und HSA Update)
 
-Beziehungskontext:
-- Korrespondenz-Index trackt Sender-Empfaenger-Paare
-- Badge "Erster Brief" bei erstem Kontakt
-- Anzeige "Brief X von Y" bei etablierten Beziehungen
+- Geändert: Das Unsicherheitskonzept, heute [uncertainty-specification.md](uncertainty-specification.md), ist nach Datum, Person, Ort und Sonderfällen gegliedert, mit systematischen Testfällen in `data/test-uncertainty.xml`. Die vorprozessierten HSA-Daten wurden aktualisiert.
+- Belege: `f9758dd`
 
-Drei Layout-Optionen:
-- Karten: Detailliert mit Portraits, Lebensleisten, vollstaendigen Namen
-- Kompakt: Einzelne Zeile pro Brief, viele Briefe gleichzeitig sichtbar
-- Timeline: Sender links, Datum/Ort Mitte, Empfaenger rechts - zeigt Kommunikationsrichtung
+### 2025-12-01 (Phase 25: Wikidata Enrichment Visual Indicators)
 
-Neue Funktionen in explore.js:
-- buildCorrespondenceIndex() - Index ueber alle Korrespondenzen
-- getCorrespondenceContext() - Briefposition in Beziehung
-- getPersonBirthYear(), getPersonDeathYear() - Lebensdaten-Extraktion
-- calculateAge() - Alter zum Briefzeitpunkt
-- buildLifespanBar() - Lebensleisten-HTML
-- switchChronikLayout() - Layout-Umschaltung
+- Geändert: Angereicherte Personen tragen ein Badge mit Tooltip zur Datenquelle, die Anreicherung zeigt Fortschritt und Fehler mit Retry.
+- Belege: `541afe5`
 
-US-30, US-31, US-32 implementiert (32 User Stories gesamt).
+### 2025-12-01 (Phase 24: correspSearch Form Cleanup)
 
----
+- Entschieden: Das correspSearch-Suchformular auf der Startseite entfällt, weil es nicht vollständig funktionierte und direkte API-Anfragen an CORS scheiterten. URLs lassen sich weiter direkt eingeben, die Verknüpfung im Personen-Detail bleibt.
+- Geändert: Korrekturen am Wissenskorb (Synchronisation zwischen Tabs, Speicherquote, leerer Zustand).
+- Belege: `6a2d26c`
 
-## 2025-12-18 (Phase 35: Chronik-View implementiert)
+### 2025-12-01 (Phase 23: Wissenskorb WIP-Status)
 
-### Neuer View: Chronik - Vertikaler Zeitstrahl
+- Entschieden: Der Wissenskorb wird als „in Arbeit“ gekennzeichnet und seine Buttons im Explorer vorläufig entfernt, weil die Grundfunktion steht, die Visualisierungen aber unvollständig sind und Erwartungen klar kommuniziert werden sollen.
+- Belege: `0b23da7`, `8afe41e`
 
-Implementierung eines neuen Views zur chronologischen Darstellung aller Briefe:
+### 2025-12-01 (Phase 22: Mobile Responsiveness)
 
-Features:
-- Vertikaler Zeitstrahl von oben nach unten
-- Briefe gruppiert nach Jahren mit visuellen Jahr-Markern
-- Brief-Eintraege zeigen Absender, Empfaenger, Datum, Ort und Sprache
-- Klick auf Brief oeffnet Detail-Modal
-- Optionale Wikidata-Anreicherung fuer biografische Daten
+- Geändert: Hamburger-Menü unter 768px, Touch-Ziele von mindestens 44px und angepasste Views und Sidebar für kleine Bildschirme.
+- Belege: `0f158df`, `4f8d359`
 
-Anreicherung (on-demand):
-- Button "Mit Wikidata anreichern" in Header
-- Laedt Portraits von Wikimedia Commons
-- Zeigt Lebensdaten (Geburts-/Sterbejahr)
-- Zeigt erste Profession
-- Nutzt bestehende wikidata-enrichment.js API
-- Caching in sessionStorage
+### 2025-11-27 (Phase 21: Demo Dataset und Onboarding Tour)
 
-Technische Umsetzung:
-- renderChronik() in explore.js
-- chronik-view Container in explore.html
-- CSS-Styles in explore.css (.chronik-*)
-- Integration in switchView() und applyFilters()
+- Entschieden: Ein synthetischer Demo-Datensatz mit fiktiven Briefen, erzeugt mit Claude Opus 4.5, demonstriert alle Funktionen einschließlich der Unsicherheitsfälle. Die Beschreibung weist auf die KI-Erzeugung hin. Eine mehrstufige Tour startet über `?demo=true`.
+- Belege: `e473e8e`
 
-Zehnter View in explore.html (nach Mentions Flow).
+### 2025-11-27 (Phase 20: Network View Improvements)
 
----
+- Befund: Platzhalterjahre wie 9999 verzerrten die Zeitachse, und ein fester Mindestwert für gemeinsame Jahre funktionierte bei kleinen Korpora nicht.
+- Entschieden: Jahre außerhalb 1400–2100 werden gefiltert. Der Mindestwert passt sich der Zeitspanne an. Die Legende folgt dem gewählten Netzwerktyp. Knoten lassen sich nach Eintrittsjahr färben, um die Entwicklung des Netzwerks zu zeigen.
+- Belege: `739c914`, `2fef680`
 
-## 2025-12-18 (Phase 34: Compare-Feature entfernt)
+### 2025-11-27 (Phase 19: Timeline Improvements)
 
-### Entfernung der Datensatz-Vergleichsfunktion
+- Entschieden: Undatierte Briefe stehen in einem abgesetzten Balken rechts der Timeline. Die dominante Sprache erhält eine kräftige Farbe, alle anderen Pastelltöne. Ohne Sprachdaten zeichnet die Timeline einfarbige Balken und sagt das in der Legende.
+- Belege: `1acde42`
 
-Die compare.html Seite wurde vollstaendig entfernt:
+### 2025-11-27 (Phase 18: Quick Wins Refactoring)
 
-Geloeschte Dateien:
-- docs/compare.html
-- docs/css/compare.css
-- docs/js/compare.js
+- Geändert: Duplizierte Hilfsfunktionen liegen zentral in `utils.js`, Magic Numbers als Konstantengruppen in `constants.js`.
+- Belege: `a2bb732`
 
-Entfernte Referenzen:
-- Link "Datensaetze vergleichen" aus index.html
-- compare.html Sektion aus architecture.md
-- compare.js Modul-Dokumentation aus architecture.md
-- compare.css aus View-Specific Styles
-- US-23 (Datensatz-Vergleich) aus user-stories.md
+### 2025-11-27 (Phase 17: Themen-Filter Bugfix und Verbesserung)
 
-Begruendung:
-- Feature wurde selten genutzt
-- Fokussierung auf Kernfunktionalitaet
-- Reduzierung der Wartungslast
+- Befund: Der Themenfilter grenzte nicht ein, weil CMIF-Subjects `uri` statt `id` tragen.
+- Geändert: Alle Stellen lesen `s.uri || s.id || s.label`, und die Sidebar zeigt eine durchsuchbare Themenliste.
+- Belege: `f1f116d`
 
-User Stories neu nummeriert (27 statt 28 Stories).
+### 2025-11-27 (Phase 16: Sprachfarben fuer Kartenmarker)
 
----
+- Entschieden: Kartenmarker zeigen die dominante Briefsprache eines Ortes, Cluster bleiben einfarbig, ein Schalter wechselt zur einheitlichen Farbe.
+- Belege: `f1f116d`, `c038af3`
 
-## 2025-12-18 (Phase 33: teiHeader Metadaten und Landing Page Optimierung)
+### 2025-11-26 (Phase 15: Datensatz-Vergleich und Bug-Fixes)
 
-### Zwei-Tier Datensatz-Architektur
+- Entschieden: Eine eigene Seite vergleicht zwei CMIF-Datensätze nach gemeinsamen Personen und Orten über Normdaten-IDs (US-23, entfernt in Phase 34).
+- Korrigiert: Orte werden über `geonames_id` statt `id` verglichen.
+- Belege: `b791e52`, `93c446c`
 
-Einfuehrung einer klaren Trennung zwischen Standard-CMIF und erweiterten Datensaetzen:
+### 2025-11-26 (Phase 14: Design-Ueberarbeitung)
 
-Problem:
-- gams.uni-graz.at erlaubt keine CORS-Anfragen
-- correspSearch API liefert nur 9 Briefe (nicht das vollstaendige HSA)
-- HSA hat erweiterte Annotationen (mentionsSubject, mentionsPerson, mentionsPlace)
+- Entschieden: Das Design-System leitet seine Farben aus dem Logo ab, mit Rost-Rot als Primärfarbe, Creme und Manila als Flächen und Tinte als Rahmen, und arbeitet mit Rahmen statt Schatten. Veraltete und redundante Dokumente (`refactoring-plan.md`, `enrichment-concept.md`) wurden gelöscht.
+- Korrigiert: Der Eintrag nannte `#C65D3B` als PRIMARY_COLOR in `explore.js`. Die Angleichung an `#A64B3F` steht in `dbda53f` (Eintrag zur Vereinheitlichung).
+- Belege: `b79a95e`
 
-Loesung - Zwei Datensatz-Typen:
-1. Standard CMIF: Live-Parsing von XML (URL oder Upload)
-2. Erweiterte Datensaetze: Vorprozessierte JSON mit zusaetzlichen Annotationen
+### 2025-11-26 (Phase 13: Wikidata-Enrichment mit Konfigurationsdialog)
 
-Implementierung:
+- Entschieden: Die Personen-Anreicherung läuft über Wikidata SPARQL statt lobid.org, weil Wikidata GND und VIAF unterstützt, eine einheitliche Quelle für alle Personen ist und Bilder direkt von Wikimedia Commons liefert. Ein Konfigurationsdialog beim Laden bietet die Anreicherung vor der Visualisierung an und warnt bei großen Datensätzen.
+- Belege: `10364fe`
 
-upload.js:
-- Neues data-json Attribut fuer Karten
-- handleDatasetSelect() unterscheidet zwischen url und json
-- JSON wird direkt geladen und Config-Dialog uebersprungen
-- sourceInfo.type = 'preprocessed' fuer erweiterte Datensaetze
+### 2025-11-26 (Phase 12: GND-Enrichment - deprecated)
 
-index.html:
-- HSA Card mit data-json="data/hsa-letters.json"
-- Neues Badge "Erweitert" statt "Demo"
-- dataset-extended-info zeigt Features an
-- Details/Summary erklaert den Unterschied
-
-CSS (upload.css):
-- .dataset-card-extended mit secondary color
-- .dataset-badge-extended
-- .dataset-extended-info
-- .dataset-explanation mit details/summary
-
-Preprocessing:
-- build_hsa_data.py erstellt hsa-letters.json (16.7 MB)
-- 11.576 Briefe mit vollstaendigen Mentions
-- 82% Coordinate Coverage
-
-### Landing Page Bereinigung
-
-Entfernung ueberfluessiger Demo-Datensaetze und Optimierung der Startseite:
-
-Aenderungen:
-- Nur noch zwei Beispiel-Datensaetze: Feature-Demo (Tutorial) und Hugo Schuchardt Archiv (Demo)
-- Disclaimer geaendert von "Vibe-Coding Demo" zu "Promptotyping Demo"
-- Tooltip erklaert Promptotyping-Methodik mit Link zum Vault
-- API-Hint mit Link zu correspSearch fuer weitere CMIF-Datensaetze
-
-CSS (upload.css):
-- .tooltip-trigger und .tooltip-content fuer Promptotyping-Info
-- .api-hint fuer correspSearch-Verweis
-
-### teiHeader Metadaten-Extraktion
-
-Vollstaendige Extraktion und Anzeige der CMIF-Header-Metadaten:
-
-Parser-Erweiterungen (cmif-parser.js - fuer Standard CMIF):
-- extractMeta() erweitert fuer vollstaendigen teiHeader
-- editors: Array mit {name, email, ref} aus titleStmt
-- publishers: Array mit {name, url} - unterstuetzt mehrere Publisher
-- sourceReference: bibl-Text aus sourceDesc
-- sourceUrl: Link aus bibl/ref@target
-- licence: Text und URL aus publicationStmt
-- cmifUrl: idno[@type="url"] aus publicationStmt
-
-Python-Pipeline (build_hsa_data.py - fuer erweiterte JSON-Datensaetze):
-- extract_tei_header() extrahiert dieselben Felder
-- normalize_whitespace() bereinigt Zeilenumbrueche aus XML
-- Felder: editor, publisher, cmifUrl, licence, licenceTarget, bibl
-- meta.teiHeader im Output-JSON
-
-UI-Anzeige (nur im Overview):
-- Metadaten nur noch im Overview-View unter "Quelle" angezeigt
-- Sidebar-Metadaten entfernt (Redundanz vermeiden)
-- renderOverviewMetadata() unterstuetzt beide Formate:
-  - JSON-Format: dataMeta.teiHeader.editor, .publisher, .bibl, .cmifUrl, .licence
-  - Parser-Format: dataMeta.editors[], .publishers[], .sourceReference, .cmifUrl, .licence
-- Publisher mit Links wenn vorhanden
-- Source Reference als klickbarer Link wenn sourceUrl existiert
-
-Entfernte Elemente:
-- Sidebar-Metadaten komplett entfernt (HTML, CSS, JS)
-- updateDatasetMetadata() Funktion entfernt
-- DOM-Cache Getter fuer meta-* Elemente entfernt
-- CSS-Klassen: .dataset-meta, .dataset-meta-item, .meta-source-text, .licence-badge
-
-Technische Entscheidung:
-- Keine Redundanz zwischen Sidebar und Overview
-- Metadaten gehoeren zum Overview als Datensatz-Einstieg
-- Sidebar fokussiert auf Filter und Statistiken
-
----
-
-## 2025-12-09 (Phase 32: Vollstaendiges Entity Component Refactoring)
-
-### Topics und Places Views komplett vereinheitlicht
-
-Problem:
-- Topics und Places Views hatten identische HTML-Struktur aber separate CSS-Klassen
-- Topics Detail-Panel wurde nicht angezeigt (querySelector mit alter Klasse)
-- Inkonsistente Styling-Definitionen (topics-layout vs places-layout)
-- Duplizierter Code erschwert Wartung
-- Listen-Karten (.topic-card, .place-card) sahen unterschiedlich aus
-
-Loesung: Vollstaendige Shared Entity Component Architecture
-
-Neue CSS-Komponenten in components.css (Teil 1 - Layout):
-- .entity-split-layout: 2-Spalten Grid (1fr 1fr), responsive stacking bei 900px
-- .entity-list-panel: Flex-Container fuer Listen mit Scroll
-- .entity-detail-panel: Styled Panel mit Border und Padding
-- .entity-detail-empty: Zentrierter Platzhalter-Zustand
-- .entity-detail-header: Titel + Count Badge
-- .entity-detail-section: Gruppierung mit H5 Headings
-- .entity-detail-actions: Button-Leiste mit Border-Top
-
-Neue CSS-Komponenten in components.css (Teil 2 - Detail-Inhalte):
-- .entity-stat-row: Name + Count + Bar in einer Zeile
-- .entity-stat-name/count/bar: Flexible Statistik-Anzeige
-- .entity-mini-timeline: Balkendiagramm fuer Zeitverlaeufe
-- .entity-mini-timeline-bar: Einzelne Timeline-Balken
-- .entity-tags: Flexbox-Wrapper fuer Tags
-- .entity-tag: Klickbarer Tag mit Hover-Effekt
-
-Neue CSS-Komponenten in components.css (Teil 3 - Container und Karten):
-- .entity-container: Padding, Height, Flexbox fuer gesamten View
-- .entity-header: Titel + Beschreibung
-- .entity-card: Gemeinsame Karte fuer Listen-Elemente
-- .entity-card-info: Flex-Container fuer Karteninhalt
-- .entity-card-name: Titel mit Truncation
-- .entity-card-meta: Sekundaertext (grau, klein)
-- .entity-card-bar/bar-fill: Progress-Balken in Karten
-- .entity-card-count: Zaehler rechts
-
-HTML-Aenderungen (explore.html):
-- topics-container -> entity-container
-- places-container -> entity-container
-- topics-header -> entity-header
-- places-header -> entity-header
-- topics-info/places-info entfernt (p direktes Kind von entity-header)
-- Alle Layout-Klassen bereits in vorherigem Commit migriert
-
-JavaScript-Aenderungen (explore.js):
-- renderTopicsList(): topic-card -> entity-card
-- renderTopicsList(): topic-info -> entity-card-info
-- renderTopicsList(): topic-name -> entity-card-name
-- renderTopicsList(): topic-bar-container/bar -> entity-card-bar/bar-fill
-- renderTopicsList(): topic-count -> entity-card-count
-- renderPlacesList(): place-card -> entity-card
-- renderPlacesList(): place-info -> entity-card-info
-- renderPlacesList(): place-name -> entity-card-name
-- renderPlacesList(): place-meta -> entity-card-meta
-- renderPlacesList(): place-count -> entity-card-count
-- selectPlace(): Selektor auf entity-card[data-place-id] angepasst
-
-CSS-Bereinigung (explore.css):
-- Vollstaendig entfernt: .topics-container, .topics-header, .topics-info
-- Vollstaendig entfernt: .topic-card, .topic-info, .topic-name, .topic-bar-*, .topic-count
-- Vollstaendig entfernt: .places-container, .places-header, .places-info
-- Vollstaendig entfernt: .place-card, .place-info, .place-name, .place-meta, .place-count
-- Responsive .place-card Regel entfernt (nun in components.css)
-
-Responsive Design:
-- @media (max-width: 900px): Grid stackt zu einer Spalte
-- @media (max-width: 768px): entity-card padding reduziert
-- entity-list-panel: max-height 40vh auf Mobile
-- entity-detail-panel: min-height 300px auf Mobile
-
----
-
-## 2025-12-03 (Phase 30: Koordinaten-Anreicherung mit Wikidata SPARQL)
-
-### Adaptive Koordinaten-Aufloesung implementiert
-
-Vollstaendiges System zur Georeferenzierung von GeoNames-IDs via Wikidata SPARQL mit adaptivem Interface und benutzerkontrollierter Anreicherung.
-
-Problem:
-- CMIF-Daten enthalten oft nur GeoNames-IDs, keine Koordinaten
-- Statischer Cache (geonames_coordinates.json) unvollstaendig
-- Schoenbach-Dataset: 4 von 5 Orten ohne Koordinaten
-- Map View nicht nutzbar ohne Koordinaten
-
-Loesung: Adaptive Interface + dynamische Aufloesung
-
-Design-Entscheidung:
-- Map View versteckt sich automatisch wenn keine Koordinaten verfuegbar
-- Benutzer kann optional Koordinaten nachladen (wie Personen-Anreicherung)
-- Zwei-stufige Anreicherung: Koordinaten (0-50%) dann Personen (50-100%)
-
-Neue Datei: geonames-enrichment.js (255 Zeilen)
-- resolveGeoNamesCoordinates(): Batch-Aufloesung via Wikidata SPARQL
-- applyCoordinatesToData(): Wendet Koordinaten auf data.letters und data.indices.places an
-- analyzeCoordinateNeeds(): Analysiert welche Orte aufgeloest werden muessen
-- SPARQL Query: GeoNames-ID (P1566) zu Koordinaten (P625)
-- Batch-Verarbeitung: 50 IDs pro Request
-- Rate Limiting: 1.5s zwischen Requests
-- localStorage Cache mit 7-Tage TTL
-
-utils.js erweitert:
-- analyzeDataCapabilities(): Erkennt ob Daten Koordinaten, Personen, Datums, etc. enthalten
-- Basis fuer adaptive View-Sichtbarkeit
-
-index.html Anpassungen:
-- Koordinaten-Checkbox im Config-Modal (Zeile 177-186)
-- Progress-Header mit Spinner-Icon (Zeile 206-209)
-- Schoenbach-Dataset auf lokale Datei umgestellt (data/schoenbach.xml)
-
-upload.js Hauptaenderungen:
-- Import von geonames-enrichment.js und analyzeDataCapabilities()
-- showConfigDialog(): Zeigt Koordinaten-Stats an (Zeile 264-278)
-- handleConfigStart(): Zwei-stufige Anreicherung implementiert (Zeile 356-410)
-- Progress-Verwaltung verbessert mit classList-Management
-- Modal-Sichtbarkeit: hidden class + display style konsistent gesetzt
-
-explore.js Erweiterungen:
-- updateMissingCoordinatesBanner(): Info-Banner in Places View
-- handleResolveCoordinates(): Manueller Retry-Button fuer fehlende Koordinaten
-- Import von isInBasket() aus basket.js ergaenzt
-
-CSS-Anpassungen:
-- components.css: .info-banner Komponente (Zeile 314-356)
-- upload.css: .progress-header mit Spinner-Styling (Zeile 641-674)
-
-Bug-Fixes:
-- Modal nicht sichtbar: classList.remove('hidden') vor style.display ergaenzt
-- Progress nicht sichtbar: classList Management in showConfigDialog/hideConfigModal/handleConfigStart
-- CORS-Fehler besser erkannt: cmif-parser.js erkennt TypeError und 'Failed to fetch'
-- isInBasket import fehlte in explore.js
-
-Testing:
-- Schoenbach-Dataset lokal unter docs/data/schoenbach.xml
-- 4 GeoNames-IDs erfolgreich via Wikidata aufgeloest
-- Progress-Indicator (Spinner + Bar) sichtbar waehrend Anreicherung
-- Map View zeigt alle Orte mit Koordinaten
-
-Technische Details:
-- Wikidata SPARQL Endpoint: https://query.wikidata.org/sparql
-- User-Agent: CorrespExplorer/1.0
-- Batch Size: 50 (Wikidata Empfehlung)
-- Cache: localStorage mit Timestamp-basierter Expiration
-- Progress: 50% Koordinaten, 50% Personen
-- Adaptive UI: Views verstecken sich automatisch bei fehlenden Daten
-
----
-
-## 2025-12-03 (Phase 29: HTML-Refactoring - Inline-Styles entfernt)
-
-### Alle inline-styles aus HTML-Dateien entfernt
-
-64 inline style-Attribute komplett eliminiert, vollstaendige Trennung von Content und Presentation erreicht.
-
-Neue CSS-Klassen erstellt:
-
-Navigation:
-- .nav-brand-link: Styling fuer Navigation Brand-Links (style.css)
-- Entfernt inline-styles: color, text-decoration, display, align-items, gap
-
-Utilities (base.css):
-- .hidden: Display none fuer JavaScript-Toggle
-- .color-warning, .color-info, .color-error, .color-muted: Semantische Farben
-- .color-primary, .color-text-light: Zusaetzliche Color-Utilities
-
-Komponenten:
-- .wip-notice: Work-in-Progress Notice (wissenskorb.css)
-- .legend-network-sender/receiver/contemporary: Network-Legend (explore.css)
-- .mentions-flow-filter-info: Mentions-Filter-Info (explore.css)
-
-Neue Datei: test.css
-- 76 Zeilen inline-CSS aus test.html extrahiert
-- Konsistent mit Design-Token-System
-- Vollstaendige CSS-Import-Hierarchie
-
-Dateien modifiziert:
-- test.html: 76 inline-styles extrahiert
-- explore.html: 37 inline-styles entfernt
-- compare.html: 9 inline-styles entfernt
-- wissenskorb.html: 8 inline-styles entfernt
-- about.html: 4 inline-styles entfernt (Legend-Icons)
-- index.html: 3 inline-styles entfernt
-- vault.html: 2 inline-styles entfernt
-- navbar.html: 1 inline-style entfernt
-
-Ergebnis:
-- 0 inline-styles verbleiben (100% clean)
-- Komplette Separation of Concerns
-- Wiederverwendbare CSS-Klassen
-- Bessere CSS-Caching-Performance
-- Konsistent mit CLAUDE.md Guidelines
-
----
-
-## 2025-12-03 (Phase 28: CSS-Refactoring Abschluss)
-
-### CSS-Architektur vollstaendig refactored
-
-Comprehensive CSS refactoring abgeschlossen mit modularer Architektur und Border-based Design.
-
-Phase 1-6: Token-Cleanup und modulare Struktur
-
-Phase 1: Token-Cleanup
-- Legacy-Aliases aus tokens.css entfernt (--primary-color, --bg-body, --text-main)
-- Konsistente --color-* Namenskonvention durchgesetzt
-- Alle Dateien auf neue Token-Namen migriert
-- wissenskorb.css: Alle var(--bg-light) zu var(--color-bg-light)
-
-Phase 2: Shadow-Regeln zentralisiert
-- Neue Datei: shadows.css mit Hybrid Shadow Approach (Option B)
-- Dokumentiert erlaubte Shadows nur fuer floating/overlay elements
-- Modals: 0 8px 24px rgba(0, 0, 0, 0.2)
-- Dropdowns: 0 4px 12px rgba(0, 0, 0, 0.15)
-- Map popups: 0 2px 8px rgba(0, 0, 0, 0.15)
-- Wissenschaftliche Begruendung: Shadows verbessern Z-Achsen-Wahrnehmung um 34% (Nielsen Norman Group) aber erhoehen kognitive Last um 23%
-
-Phase 3: Accessibility implementiert
-- Neue Datei: base.css mit globalem CSS-Reset und :focus-visible
-- WCAG 2.1 AA konforme Fokus-States
-- Global: 3px outline mit 2px offset
-- Buttons: 3px outline mit 1px offset
-- Inputs: border-color + 3px rgba-Shadow
-
-Phase 4: Komponenten zentralisiert
-- components.css erweitert um vollstaendige Button-Definitionen
-- Border-based Design: 2px solid borders statt box-shadows
-- Button-Varianten: primary, secondary, reset, export
-- Modal-System: 3px borders fuer floating elements
-- Stat-Cards: Border-Hover statt Shadow-Hover
-
-Phase 5: HTML-Import-Struktur standardisiert
-- Alle 6 HTML-Seiten auf konsistente CSS-Reihenfolge aktualisiert
-- Import-Order: tokens → base → components → shadows → style → [page]
-- Verhindert Spezifitaets-Probleme durch richtige Kaskade
-
-Phase 6: design.md Aktualisierung
-- CSS-Architektur-Sektion hinzugefuegt (Section 0)
-- Verbesserungsbedarf-Sektion entfernt (war TODO-Liste, gehoert nicht in Spec)
-- :focus-visible Dokumentation erweitert (Section 9.2)
-- Hybrid Shadow Approach dokumentiert (Section 10)
-
-Navigation-Optimierung (Phase 7)
-
-Fehler gefunden: Pill-shaped buttons und inkonsistente Navigation
-- style.css Line 2150: Doppelte .btn-primary Definition mit 30px border-radius
-- style.css Line 218: .nav-link mit 20px border-radius und fehlenden borders
-
-Fixes:
-- .btn-primary Duplikat entfernt, auf components.css verwiesen
-- .nav-link auf Border-based Design umgestellt (2px borders, 8px radius)
-- Export/About/Vault Buttons rechts aligniert (margin-left: auto)
-- .view-switcher Token-Cleanup (2px borders, consistent tokens)
-
-Ergebnis:
-- Konsistente 8px border-radius in gesamter Navigation
-- Visuelle Trennung zwischen View-Buttons (links) und Meta-Buttons (rechts)
-- Border-based Design durchgaengig ohne Pill-Shapes
-
-CSS Context-Map erstellt
-
-Neue Datei: docs/css/CONTEXT-MAP.md
-- Vollstaendige Uebersicht aller 11 CSS-Dateien
-- Import-Hierarchie dokumentiert
-- Dateigroessen und Zweck jeder Datei
-- Token-Migrations-Status
-- Box-shadow Review-Liste (41 Instanzen identifiziert)
-- Design-Patterns dokumentiert (Border-based, Hybrid Shadow, Token Consistency)
-- Beziehungen zwischen Dateien (Datenfluss, Spezifitaet)
-
-Statistiken
-
-Dateien:
-- 11 CSS-Dateien insgesamt
-- 4 neue Dateien (base.css, components.css, shadows.css, CONTEXT-MAP.md)
-- 6 HTML-Dateien aktualisiert
-- 1 design.md aktualisiert
-
-Codegroesse:
-- tokens.css: Legacy-Code entfernt (~80 Zeilen)
-- base.css: 99 Zeilen neu
-- components.css: Erweitert auf 313 Zeilen
-- shadows.css: 62 Zeilen neu
-- style.css: Duplikate entfernt, Navigation optimiert
-
-Verbesserungen:
-- Token-Konsistenz: 100% --color-* Namenskonvention
-- Border-based Design: Durchgaengig 2px/3px solid borders
-- Accessibility: WCAG 2.1 AA konforme :focus-visible States
-- Shadow-Hygiene: Hybrid Approach dokumentiert und implementiert
-- Import-Reihenfolge: Standardisiert ueber alle HTML-Dateien
-
-Bekannte offene Punkte:
-- Box-shadow Review: 41 Instanzen in style.css, explore.css, wissenskorb.css, upload.css
-- Benoetigt Pruefung ob alle Shadows Hybrid-Regel folgen (nur floating elements)
-- Token-Audit fuer about.css, compare.css, vault.css, upload.css, explore.css
-
-Technische Entscheidungen:
-- Hybrid Shadow Approach (Option B): Shadows nur fuer floating/overlay elements
-- Border-based Design: Regular UI elements nutzen 2px solid borders
-- Modular CSS Architecture: 6-Layer-Import-Hierarchie
-- :focus-visible statt :focus: Moderne Accessibility ohne visual pollution
-
----
-
-## 2025-12-02 (Phase 27: Mentions Flow View)
-
-### Neue Visualisierung: Sankey-Diagramm fuer Erwaehnung-Fluesse
-
-8. View implementiert: Zeigt welche Personen in wessen Briefen erwahnt werden.
-
-Implementierung (Phase 1-4):
-
-Phase 1: Datenanalyse und Vorbereitung
-- Analyse des `mentionsPerson` Feldes im HSA-Datensatz
-- 17.413 Person-Mentions identifiziert
-- Datenstruktur: Sender → Erwahnte Person (mit Haufigkeit)
-- Hybrid-Nodes erkannt: Personen die sowohl Korrespondenten als auch Erwahnte sind
-
-Phase 2: Sankey-Grundfunktion
-- D3-Sankey Plugin 0.12.3 integriert
-- Bipartite Layout: Linke Spalte (Korrespondenten) → Rechte Spalte (Erwahnte)
-- buildSankeyData() Funktion mit Flow-Aggregation
-- Zoom und Pan Support
-
-Phase 3: Styling und Interaktivitat
-- Link-Gradients: Steel Blue → Amber/Green (je nach Hybrid-Status)
-- Node-Farben: Steel Blue (Korrespondenten), Amber (nur Erwahnte), Green (Hybrid)
-- Hybrid-Indicator: Link-Icon uber Hybrid-Nodes
-- Tooltip-System mit detaillierten Mention-Counts
-- Hover-Highlighting: Dimming unverbundener Elemente
-
-Phase 4: Filter-Controls
-- Drei Sidebar-Sliders fur Echtzeit-Parameter-Kontrolle
-  - Top N: 5-50 meist-erwahnte Personen (Standard: 20)
-  - Min Sender Mentions: 1-20 Erwahnung-Schwelle (Standard: 5)
-  - Min Flow Strength: 1-10 Verbindungs-Starke (Standard: 2)
-- View-spezifische Filter-Sichtbarkeit
-- URL-Parameter-Persistenz fur Sharing
-- Dynamischer Filter-Info-Text im View-Header
-
-Cognitive Overload Mitigation:
-- Filter-basierter Ansatz statt Hardcoding
-- Drei-Stufen-Filterung reduziert Node-Count dramatisch
-- Nutzer kontrollieren Detail-vs-Klarheit Tradeoff
-- Standard-Werte balancieren Komplexitat und Information
-
-Technische Details:
-
-Dateien:
-- explore.js: buildSankeyData(), renderMentionsFlow(), initMentionsFilterControls()
-- explore.html: Sidebar-Filter-Controls (3 Range-Sliders)
-- explore.css: Filter-Slider-Styles, Sankey-Interaktivitat
-- mentions-network-plan.md: Umfassende Implementierungs-Dokumentation
-
-State-Variablen:
-- mentionsTopN: 20 (Anzahl meist-erwahnter Personen)
-- mentionsMinSenderMentions: 5 (Minimum Erwahnung pro Korrespondent)
-- mentionsMinCount: 2 (Minimum Verbindungs-Starke)
-
-Statistiken (HSA-Dataset):
-- 17.413 Person-Mentions uber 11.576 Briefe
-- 846 potentielle Sender
-- Nach Filterung (20/5/2): ca. 50-60 Sender-Nodes, 20 Erwahnte-Nodes
-- Hybrid-Nodes: Personen die in beiden Spalten erscheinen
-
-Phase 5 (Optional, nicht implementiert):
-- Bipartite Network als Alternative zum Sankey
-- Toggle zwischen Sankey und Force-Directed Graph
-- Geplant fur zukunftige Erweiterung
-
-Commits:
-- 9a03db5: Phase 1-2 Grundfunktion
-- 1d8a48c: Cognitive Overload Reduktion
-- 809fdd3: Phase 3 Styling und Tooltips
-- 94590f8: Phase 4 Filter-Controls
-- 1bfa0b1: Dynamischer Filter-Info-Text
-
----
-
-## 2025-12-01 (Phase 26: Uncertainty Documentation und HSA Update)
-
-### Verbesserte Unsicherheits-Dokumentation
-
-Umfassende Ueberarbeitung der uncertainty-concept.md:
-
-Dokumentation:
-- Erweiterte CMIF Uncertainty Annotations
-- Strukturierung in 4 Test-Sektionen (Date, Person, Place, Special Cases)
-- 22 detaillierte Testfaelle im test-uncertainty.xml
-- UI Display Patterns fuer alle Unsicherheitstypen
-- HSA Dataset Analyse mit konkreten Zahlen
-
-Test-Dataset:
-- data/test-uncertainty.xml mit systematischen Testfaellen
-- Section A: Date Uncertainty (001-007)
-- Section B: Person Uncertainty (008-013)
-- Section C: Place Uncertainty (014-018)
-- Section D: Special Cases (019-022)
-
-### HSA-Daten Update
-
-Aktualisierung der vorprozessierten HSA-Daten:
-- Koordinaten-Cache optimiert
-- Statistiken aktualisiert
-- Datenqualitaet verbessert
-
----
-
-## 2025-12-01 (Phase 25: Wikidata Enrichment Visual Indicators)
-
-### Visuelle Anreicherungs-Indikatoren
-
-Wikidata-Anreicherung wird nun visuell gekennzeichnet:
-
-Features:
-- Badge-System fuer angereicherte Personen
-- Tooltip zeigt Datenquelle (Wikidata)
-- Loading-Spinner waehrend Enrichment
-- Fehlerbehandlung mit Retry-Option
-
-UI-Verbesserungen:
-- Konsistente Icon-Verwendung (Font Awesome)
-- Farbcodierung: Gruen fuer erfolgreich, Grau fuer fehlend
-- Progress-Bar im Config-Dialog
-- Session-Cache-Status sichtbar
-
-### Aenderungen
-
-wikidata-enrichment.js:
-- `enrichPersonsBatch()`: Progress-Callback erweitert
-- Fehler-Logging verbessert
-
-explore.js:
-- Person-Cards zeigen Enrichment-Badge
-- Tooltip mit Datenquelle
-
-explore.css:
-- `.enrichment-badge`: Visueller Indikator
-- `.enrichment-loading`: Loading-State
-
----
-
-## 2025-12-01 (Phase 24: correspSearch Form Cleanup)
-
-### Entfernung broken correspSearch Form
-
-Das correspSearch-Suchformular auf der Landing Page wurde entfernt:
-
-Grund:
-- Formular war nicht vollstaendig funktional
-- CORS-Probleme bei direkten API-Anfragen
-- Nutzer koennen weiterhin correspSearch-URLs direkt eingeben
-- correspSearch-Integration ueber Person-Detail bleibt erhalten
-
-Aenderungen:
-- index.html: correspSearch-Suchformular entfernt
-- upload.css: Formular-Styles entfernt
-- correspsearch-api.js: API-Modul bleibt fuer URL-Handling
-
-### Wissenskorb Bugfixes
-
-Diverse Korrekturen am Wissenskorb:
-
-Fixes:
-- Multi-Tab-Synchronisation repariert
-- LocalStorage-Quota-Handling verbessert
-- Empty-State korrekt angezeigt
-- Navigation-Links korrigiert
-
----
-
-## 2025-12-01 (Phase 23: Wissenskorb WIP-Status)
-
-### Work-in-Progress Notice
-
-Der Wissenskorb wird als "in Arbeit" gekennzeichnet:
-
-UI-Aenderungen:
-- Prominenter WIP-Hinweis auf wissenskorb.html
-- Basket-Buttons in explore.html vorlaeufig entfernt
-- About-Seite: Feature als experimentell markiert
-
-Begründung:
-- Grundfunktionalitaet vorhanden (Person-Liste, localStorage)
-- Visualisierungen (Timeline, Netzwerk, Karte) noch nicht vollstaendig
-- Nutzer-Erwartungen klar kommunizieren
-
-### Aenderungen
-
-wissenskorb.html:
-- WIP-Notice mit Icon und Erklaerungstext
-- Styling: Gelbe Warning-Box (#fff3cd)
-
-explore.html:
-- Basket-Toggle-Buttons auskommentiert
-- Link zu wissenskorb.html bleibt im Navbar
-
-about.html:
-- Wissenskorb als "experimentell" gekennzeichnet
-
----
-
-## 2025-12-01 (Phase 22: Mobile Responsiveness)
-
-### Navbar-Optimierung fuer Mobile
-
-Vollstaendige Ueberarbeitung der Navigation fuer kleine Bildschirme:
-
-Features:
-- Hamburger-Menue fuer mobile Geraete (< 768px)
-- Touch-optimierte Button-Groessen (44px Mindesthoehe)
-- Slide-in Animation fuer mobile Navigation
-- Overlay-Backdrop beim Oeffnen
-
-Breakpoints:
-- < 768px: Burger-Menue, Stack-Navigation
-- >= 768px: Horizontale Navigation wie bisher
-
-### Responsive View-Verbesserungen
-
-Alle Views wurden fuer mobile Geraete optimiert:
-
-Map View:
-- Touch-Gesten fuer Zoom/Pan
-- Groessere Marker (20px statt 15px)
-- Vereinfachte Legende
-
-Timeline View:
-- Horizontales Scrollen bei vielen Jahren
-- Groessere Touch-Targets fuer Balken
-- Detached Bin rechts positioniert
-
-Network View:
-- Zoom-Controls rechts unten
-- Touch-Drag fuer Knoten
-- Vereinfachte Controls-Sidebar
-
-Lists (Persons, Letters, Topics, Places):
-- Stack-Layout statt Grid
-- Groessere Click-Areas
-- Vereinfachte Suche (Icon statt voller Text)
-
-Sidebar:
-- Collapsible auf Mobile (Toggle-Button)
-- Full-Width bei < 768px wenn offen
-- Slide-Animation
-
-### Aenderungen
-
-style.css:
-- Media Queries fuer alle Breakpoints
-- `.navbar-mobile`, `.burger-menu`
-- Touch-Target Sizes (min 44px)
-
-explore.css:
-- `.view-container-mobile`
-- Responsive Grid-Layouts
-- Stack-Navigation fuer Filter
-
-explore.js:
-- Mobile-Detection
-- Touch-Event-Handler
-- Sidebar-Toggle-Logik
-
----
-
-## 2025-11-27 (Phase 21: Demo Dataset und Onboarding Tour)
-
-### Synthetisches Demo-Dataset
-
-Erstellung eines umfassenden Demo-Datensatzes zur Demonstration aller CorrespExplorer-Features:
-
-Datei: `docs/data/demo-showcase.xml`
-
-Inhalt:
-- 35 fiktive Briefe zwischen 7 europaeischen Gelehrten (1880-1920)
-- Generiert mit Claude Opus 4.5 zur Funktionsdemonstration
-- Personen: Schuchardt, Goethe, Humboldt, Saussure, Urquijo, Ascoli, Mueller
-- 5 Sprachen: Deutsch, Franzoesisch, Spanisch, Italienisch, Englisch
-- ~15 Themen (Sprachwissenschaft, Baskisch, Romanistik, etc.)
-- 10+ Staedte mit GeoNames-Koordinaten
-- Unsicherheitsfaelle: Jahr-only-Daten, Zeitraeume, cert="low", [NN], unbekannte Orte
-
-Landing Page:
-- Neue CSS-Klassen: `.dataset-card-featured`, `.dataset-badge`
-- Demo-Karte prominent oben positioniert
-- Badge "Demo" zeigt speziellen Status
-- Beschreibung weist auf AI-Generierung hin
-
-### Interaktive Onboarding-Tour
-
-9-stufige Tour fuer Demo-Datensatz-Nutzer:
-
-1. Willkommen - Uebersicht und Kontext
-2. Ansichten wechseln - View-Switcher Erklaerung
-3. Datensatz-Uebersicht - Statistiken in Sidebar
-4. Zeitraum filtern - Timeline-Slider
-5. Filter anwenden - Such- und Filterfunktionen
-6. Interaktive Karte - Map-Features und Legende
-7. Unsicherheiten visualisieren - Uncertainty-Indikatoren
-8. Wissenskorb - Bookmark-Funktion
-9. Abschluss - Hinweis auf weitere Ansichten
-
-Technische Implementierung:
-- Neues Modul: `docs/js/demo-tour.js`
-- URL-Parameter `?demo=true` aktiviert Tour
-- SessionStorage speichert Tour-Completion
-- CSS in `explore.css`: Tour-Backdrop, Steps, Navigation
-- Integration in `explore.js` via `checkAndStartDemoTour()`
-
-Styling:
-- Semi-transparenter Backdrop
-- Zentrierte Content-Karten mit Primary-Border
-- Progress-Dots zeigen Fortschritt
-- Skip/Prev/Next/Finish Buttons
-
-### Aenderungen
-
-upload.js:
-- `handleDatasetSelect()`: Liest `data-demo` Attribut
-- `sourceInfo` erweitert um `isDemo` Flag
-- Redirect zu `explore.html?demo=true` bei Demo-Dataset
-
-explore.js:
-- Import: `checkAndStartDemoTour` aus demo-tour.js
-- Aufruf in `init()` nach hideLoading()
-
-explore.html:
-- Demo-Tour HTML-Struktur eingefuegt (9 Steps)
-
-explore.css:
-- Demo-Tour Styles (~100 Zeilen)
-
-upload.css:
-- `.dataset-card-featured`: Volle Breite, hervorgehobener Rahmen
-- `.dataset-badge`: Positioniertes Label oben rechts
-
-index.html:
-- Demo-Karte mit `data-demo="true"` Attribut
-
----
-
-## 2025-11-27 (Phase 20: Network View Improvements)
-
-### Netzwerk-Analyse und Verbesserungen
-
-Nach Screenshot-Analyse verschiedener Datensaetze wurden mehrere Probleme identifiziert und behoben:
-
-1. Jahr-Validierung (9999-Problem)
-   - Problem: Unrealistische Jahre (z.B. 9999) verzerrten die Zeitachse
-   - Loesung: Filter fuer Jahre zwischen 1400 und 2100
-   - Betroffene Datensaetze: Einige mit Platzhalter-Daten
-
-2. Dynamische Netzwerk-Legende
-   - Vorher: Legende zeigte immer "Zeitgenossen-Netzwerk"
-   - Nachher: Legende aktualisiert sich je nach Auswahl (Zeitgenossen/Themen)
-   - Inkl. Farbanpassung: Blau fuer Zeitgenossen, Amber fuer Themen
-
-3. Dynamischer minYears-Default
-   - Problem: Fester Default von 3 Jahren funktioniert nicht bei kleinen Korpora
-   - Loesung: Automatische Anpassung basierend auf Zeitspanne
-   - <= 5 Jahre: minYears = 1
-   - <= 20 Jahre: minYears = 2
-   - Sonst: minYears = 3 (Standard)
-
-4. Slider statt Input fuer Threshold
-   - Range-Slider mit Live-Update (debounced 150ms)
-   - Aktuelle Wertanzeige neben Slider
-   - Separate Events: 'input' fuer Preview, 'change' fuer Final
-
-5. Farbe nach Eintrittsjahr (neues Feature)
-   - Neues Dropdown "Farbe" mit Optionen:
-     - "Nach Typ": Standard-Farbe (blau/amber)
-     - "Nach Eintrittsjahr": Sequentielle Farbskala (YlGnBu)
-   - Legende zeigt Gradient mit Jahresbereich
-   - Tooltip erweitert um "Erster Brief: [Jahr]"
-   - Nur bei Zeitgenossen-Netzwerk verfuegbar
-   - Hilft bei Analyse der Netzwerk-Evolution
-
-### Technische Aenderungen
-
-explore.js:
-- Neue Variable: `networkColorMode` ('type' | 'entry')
-- Neue Funktion: `getNodeColor(d)` fuer dynamische Knotenfarbe
-- `yearColorScale`: d3.scaleSequential(d3.interpolateYlGnBu)
-- `buildContemporariesNetwork()`: Trackt `firstYear`/`lastYear` pro Person
-- `updateNetworkThresholdLabel()`: Steuert Sichtbarkeit des Farb-Selects
-
-explore.html:
-- Threshold: `<input type="range">` statt `<input type="number">`
-- Neues Element: `<select id="network-color-mode">`
-- Map-Legende: "Sprache" statt "Dominante Sprache"
-
-explore.css:
-- `.network-slider-group`, `.network-slider`, `.slider-value`
-- `.legend-gradient`, `.legend-years`
-
----
-
-## 2025-11-27 (Phase 19: Timeline Improvements)
-
-### Detached Bin fuer undatierte Briefe
-
-Implementierung eines separaten Balkens rechts neben der Timeline fuer Briefe ohne Datum:
-- Stacked Segments wie Hauptbalken (Sprachverteilung)
-- Label "k.A." auf X-Achsen-Hoehe
-- Zaehler ueber dem Balken
-- Klick filtert auf undatierte Briefe
-- Schematischer Platzhalter (gestrichelte Umrandung + Checkmark) wenn alle Briefe datiert
-
-### Dynamische Sprachfarben
-
-Verbesserung der Farbpalette fuer Korpora mit vielen Sprachen:
-- `computeLanguageColors(letters)` berechnet Farben beim Laden
-- Dominante Sprache (meiste Briefe) bekommt kraeftige Farbe
-- Alle anderen Sprachen erhalten Pastelltoene
-- Neue Konstanten: `LANGUAGE_COLORS_STRONG`, `LANGUAGE_COLORS_PASTEL`
-
-### Adaptive Visualisierung ohne Sprachdaten
-
-Wenn ein Korpus keine Sprachmetadaten enthaelt:
-- Einfarbige Balken (--color-primary) statt Stacking
-- Legende zeigt "Keine Sprachdaten im Korpus"
-- Keine "Andere"-Kategorie mehr bei fehlenden Daten
-
-### Responsive Bar Width
-
-Balkenbreite passt sich dem Zeitraum an:
-- Bei <= 20 Jahren: Breitere Balken (bis 60px)
-- Bei groesseren Zeitraeumen: Standard-Breite
-
----
-
-## 2025-11-27 (Phase 18: Quick Wins Refactoring)
-
-### Entfernte Code-Duplikate
-
-1. `debounce()` in explore.js
-   - Vorher: Lokale Funktion (Zeilen 9-15)
-   - Nachher: Import von utils.js
-   - Betroffene Datei: explore.js
-
-2. `parseAuthorityRef()` und `parseGeoNamesRef()`
-   - Vorher: Identische Funktionen in cmif-parser.js und correspsearch-api.js
-   - Nachher: Zentral in utils.js, Import in beiden Dateien
-   - parseAuthorityRef unterstuetzt: VIAF, GND, LC, BNF
-   - parseGeoNamesRef extrahiert GeoNames-ID
-
-### Magic Numbers zentralisiert (constants.js)
-
-Neue Konstanten-Gruppen:
-
-```javascript
-MAP_DEFAULTS = {
-    clusterRadius: 40,
-    clusterMaxZoom: 12
-}
-
-NETWORK_DEFAULTS = {
-    minYears: 3,
-    maxNodes: 50,
-    minCooccurrence: 5,
-    maxYearsSlider: 50,
-    maxNodesSlider: 100
-}
-
-BASKET_LIMITS = {
-    maxPersons: 50,
-    maxLetters: 100,
-    maxPlaces: 50
-}
-
-API_DEFAULTS = {
-    correspSearchPageSize: 10
-}
-```
-
-### Betroffene Dateien
-
-- utils.js: +parseAuthorityRef, +parseGeoNamesRef
-- constants.js: +MAP_DEFAULTS, +NETWORK_DEFAULTS, +BASKET_LIMITS, +API_DEFAULTS
-- explore.js: Import debounce/Konstanten, entferne lokale debounce
-- cmif-parser.js: Import utils, entferne lokale Funktionen
-- correspsearch-api.js: Import utils/constants, entferne lokale Funktionen
-- basket.js: Import BASKET_LIMITS
-
-### Debouncing
-
-Alle Suchfelder hatten bereits Debouncing (200-300ms):
-- topics-quick-search (200ms)
-- person-search (300ms)
-- letter-search (300ms)
-- topic-search (300ms)
-- place-search (300ms)
-
----
-
-## 2025-11-27 (Phase 17: Themen-Filter Bugfix und Verbesserung)
-
-### Bugfix: Subject-Filter funktionierte nicht
-
-Problem: Der Themen-Filter grenzte die Briefe nicht ein.
-
-Ursache: CMIF-Subjects haben `uri` statt `id` als Identifier. Der Code verwendete `subject.id`, aber die Daten haben `subject.uri`.
-
-Betroffene Stellen (alle auf `s.uri || s.id || s.label` geaendert):
-- `applyFilters()`: Subject-Match Pruefung
-- `buildSubjectIndex()`: Subject-ID Ermittlung
-- `renderTopicsList()`: Filtered Topic Counts
-- `selectTopic()`: Filtered Topic Letters und Co-Occurrence
-
-### Verbesserung: Themen-Suche in Sidebar
-
-Der Quick-Filter in der Sidebar zeigt jetzt:
-- Suchfeld zum Filtern aller Themen
-- Top 15 Themen (statt nur Top 5)
-- Scrollbare Liste bei mehr als 15 Treffern
-- Info-Zeile bei weiteren Themen
-- Live-Suche mit Debounce (200ms)
-
-Neue CSS-Klassen in style.css:
-- `.topics-quick-search`: Suchfeld-Styling
-- `.topics-quick-list`: Scrollbare Liste (max-height: 280px)
-- `.topics-no-results`: Keine Treffer Anzeige
-- `.topics-more-info`: Hinweis auf weitere Themen
-
----
-
-## 2025-11-27 (Phase 16: Sprachfarben fuer Kartenmarker)
-
-### Implementiert: Farbcodierung nach dominanter Briefsprache
-
-Kartenmarker werden jetzt nach der dominanten Sprache der Briefe eines Ortes eingefaerbt.
-
-1. Datenberechnung (explore.js)
-   - `aggregateLettersByPlace()` berechnet neu:
-     - `languageCounts`: Anzahl Briefe pro Sprache am Ort
-     - `dominantLanguage`: Sprache mit meisten Briefen
-     - `dominantLanguageRatio`: Anteil der dominanten Sprache
-   - `placesToGeoJSON()` fuegt `dominant_language` und `language_color` zu Properties hinzu
-
-2. MapLibre Styling
-   - `getMapCircleColorExpression()`: Erstellt MapLibre match-Expression fuer Sprachfarben
-   - `updateMapColors()`: Aktualisiert Marker-Farben dynamisch
-   - Einzelmarker nutzen Sprachfarben, Cluster bleiben einheitlich (Rust-Red)
-
-3. UI-Elemente (explore.html, explore.css)
-   - Neuer Toggle-Button (Palette-Icon): Wechselt zwischen Sprachfarben und einheitlicher Farbe
-   - Legende zeigt verwendete Sprachen mit Farbcodes und Anzahl Orte
-   - Legende aktualisiert sich bei Filteraenderungen
-   - Legende wird bei einheitlichem Modus ausgeblendet
-
-4. Farbschema (aus constants.js)
-   - Deutsch: Blau (#1e40af)
-   - Franzoesisch: Rot (#dc2626)
-   - Italienisch: Gruen (#16a34a)
-   - Englisch: Lila (#9333ea)
-   - Spanisch: Orange (#ea580c)
-   - Andere: Rust-Red (#A64B3F)
-
-HSA-Beispiel zeigt geografische Sprachverteilung:
-- Graz, Wien, Berlin: Blau (deutsch-dominant)
-- Paris: Rot (franzoesisch-dominant)
-- Mailand: Gruen (italienisch-dominant)
-
----
-
-## 2025-11-26 (Phase 15: Datensatz-Vergleich und Bug-Fixes)
-
-### Implementiert: Datensatz-Vergleich (US-23)
-
-Neue dedizierte Seite zum Vergleichen zweier CMIF-Datensaetze:
-
-1. Neue Dateien
-   - compare.html: Vergleichsseite mit zwei Upload-Slots
-   - js/compare.js: Vergleichslogik und UI
-   - css/compare.css: Styling konsistent mit Design-System
-
-2. Features
-   - Zwei Datensaetze per Datei oder URL laden
-   - Gemeinsame Personen finden (basierend auf Authority-ID)
-   - Gemeinsame Orte finden (basierend auf GeoNames-ID)
-   - Unique-Listen: Nur in A, Nur in B
-   - Ueberschneidungs-Prozentsatz berechnen
-   - CSV-Export der Vergleichsergebnisse
-
-3. Bug-Fix: geonames_id statt id
-   - extractPlaces() verwendete falsches Feld
-   - Korrigiert: place.geonames_id statt place.id
-
-### Bug-Fixes
-
-1. cmifData is not defined
-   - Fehler in initTopicsQuickFilter()
-   - Fix: cmifData?.indices?.subjects zu dataIndices?.subjects
-
-2. Timeline Fallback-Farbe
-   - Balken ohne Sprachdaten waren blau statt Rust-Red
-   - Fix: LANGUAGE_COLORS.other auf #C65D3B geaendert
-
-3. 404 fuer geonames_coordinates.json
-   - Leere JSON-Datei erstellt um Fehler zu vermeiden
-
-### Dokumentation
-
-1. Promptotyping in about.html und README.md
-   - Christopher Pollin und Entwicklungsmethodik dokumentiert
-   - Links zu DHCraft und Promptotyping-Blog
-
-2. Demo-Datensaetze in demo-datasets.md
-   - 5 Test-URLs fuer verschiedene Szenarien dokumentiert
-
----
-
-## 2025-11-26 (Phase 14: Design-Ueberarbeitung)
-
-### Implementiert: Logo-basiertes Design-System
-
-Komplette Ueberarbeitung des visuellen Designs basierend auf dem Logo (logo-no-background.png).
-
-1. Farbpalette aus Logo abgeleitet (tokens.css)
-   - Primary: Rust-Red #A64B3F (Zahnrad aus Logo)
-   - Background: Cream #F5F3E8 (Papier-Ton)
-   - Cards: Manila #E8E4D4 (hellerer Beige)
-   - Border: Ink Black #222222 (2-3px fuer Tiefe)
-   - Border-Light: #D4D0C0 (fuer Listen-Cards)
-
-2. Border-basiertes Design (keine Shadows)
-   - Cards: 2px solid border-light (weicher fuer Listen)
-   - Modals: 3px solid border (staerker fuer Tiefe)
-   - Upload-Zone: 2px dashed border (sichtbar)
-   - Hover-States: border-color wechselt zu primary
-
-3. Karten-Hierarchie
-   - person-card, letter-card, topic-card, place-card: border-light
-   - Active-State: rgba(166, 75, 63, 0.05) statt altem Blau
-   - Modal-Content: border (3px Ink Black)
-
-4. Map-Marker und Legende
-   - PRIMARY_COLOR in explore.js: #C65D3B (Rust-Red)
-   - Legende-Punkt: #C65D3B (konsistent mit Map)
-
-5. Logo-Integration
-   - Landing-Page Header: logo-no-background.png
-   - Favicon: favicon.svg (Auge-Element)
-
-6. Link-Farben
-   - letter-meta Links: color-primary (Rust-Red)
-   - Konsistent mit Gesamt-Design
-
-7. Tooltips fuer abgeschnittene Namen
-   - person-name, topic-name, place-name: title-Attribut
-   - Zeigt vollen Namen beim Hover
-
-8. Dokumentation bereinigt
-   - Geloescht: refactoring-plan.md (veraltet, nie umgesetzt)
-   - Geloescht: enrichment-concept.md (redundant mit Journal Phase 13)
-
----
-
-## 2025-11-26 (Phase 13: Wikidata-Enrichment mit Konfigurationsdialog)
-
-### Implementiert: Wikidata SPARQL-Enrichment fuer Personen
-
-Komplette Neuimplementierung der Personen-Anreicherung mit Wikidata statt lobid.org. Unterstuetzt sowohl GND als auch VIAF Authority-IDs.
-
-1. Neue Datei: js/wikidata-enrichment.js
-   - `findWikidataQid(authority, authorityId)`: Findet QID via GND (P227) oder VIAF (P214)
-   - `fetchPersonData(qid)`: Laedt biografische Daten via SPARQL
-   - `enrichPerson(authority, authorityId)`: Hauptfunktion fuer einzelne Person
-   - `enrichPersonsBatch(persons, onProgress)`: Batch-Verarbeitung mit Fortschritt
-   - Session-Cache mit 7-Tage-Gültigkeit
-
-2. Angereicherte Daten von Wikidata
-   - Name und Beschreibung (itemLabel, itemDescription)
-   - Lebensdaten (P569, P570)
-   - Geburts-/Sterbeort (P19, P20)
-   - Portrait-Bild (P18) mit Wikimedia Commons Thumbnail
-   - Berufe (P106)
-   - Externe Links zu Wikipedia, Wikidata, GND, VIAF
-
-3. Konfigurationsdialog beim Datensatz-Laden
-   - Modal zeigt Statistiken: Briefe, Personen, Orte
-   - Checkbox "Personen anreichern" mit Anzahl enrichable Personen
-   - Warnung bei grossen Datensaetzen (> 50 Personen)
-   - Fortschrittsbalken waehrend Batch-Enrichment
-   - "Ueberspringen" oder "Starten" Buttons
-
-4. Technische Aenderungen
-   - upload.js: showConfigDialog(), handleConfigStart(), handleConfigSkip()
-   - Enriched Data wird in sessionStorage gespeichert ('person-enrichment')
-   - explore.js: Prueft zuerst sessionStorage vor Live-Wikidata-Anfrage
-   - Letter-Details jetzt inline expandierbar (kein Modal mehr)
-
-5. Vorteile gegenueber lobid.org
-   - Unterstuetzt GND und VIAF (nicht nur GND)
-   - Einheitliche Datenquelle fuer alle Personen
-   - Bilder direkt von Wikimedia Commons
-   - Batch-Verarbeitung vor Visualisierung
-
----
-
-## 2025-11-26 (Phase 12: GND-Enrichment - deprecated)
-
-Hinweis: Diese Phase wurde durch Phase 13 (Wikidata-Enrichment) ersetzt.
-
----
-
-## 2025-11-26 (Phase 11: Demo-Datensaetze und Dokumentation)
-
-### Demo-Datensaetze als Presets
-
-Implementierung von 5 externen CMIF-Datensaetzen als klickbare Presets auf der Landing-Page:
-
-1. Aenderungen in index.html
-   - 5 neue Dataset-Cards mit `data-url` Attributen
-   - Rollett-Korrespondenz (328 Briefe, Uni Graz)
-   - Humboldt-Spiker (156 Briefe, correspSearch)
-   - Hebel-Briefe (25 Briefe, TU Darmstadt)
-   - Humboldt-Duvinage (67 Briefe, correspSearch)
-   - Schoenbach-Briefe (5 Briefe, ACDH-OEAW)
-
-2. Aenderungen in upload.js
-   - `handleDatasetSelect()` erweitert um `data-url` Handling
-   - Klick auf Card laedt CMIF direkt via parseCMIF()
-
-3. Neue Dokumentation
-   - demo-datasets.md: Detaillierte Analyse aller Datensaetze
-   - enrichment-concept.md: GND-Anreicherung via lobid.org API
-
-### Analyse externer CMIF-Datensaetze
-
-Untersuchung von 5 externen CMIF-Dateien zur Verbesserung der Datenabdeckung:
-
-| Datensatz | URL | Briefe | Zeitraum | Sprache | Themen | GND | GeoNames |
-|-----------|-----|--------|----------|---------|--------|-----|----------|
-| Hebel 1939 | tueditions.ulb.tu-darmstadt.de | 25 | 1791-1826 | ja | nein | ja | ja |
-| Rollett | gams.uni-graz.at | 328 | 1877-1897 | nein | nein | ja | ja |
-| Humboldt-Spiker | correspsearch.net | 156 | 1827-1846 | nein | nein | ja | ja |
-| Humboldt-Duvinage | correspsearch.net | 67 | 1835-1857 | nein | nein | ja | ja |
-| Schoenbach | github.com/acdh-oeaw | 5 | 1888-1911 | nein | nein | ja | ja |
-
-### Erkenntnisse
-
-1. Datierungsunsicherheit
-   - Viele CMIF-Dateien nutzen `cert="low"` oder `evidence="conjecture"`
-   - Zeitbereiche statt exakter Daten (`notBefore`/`notAfter`)
-   - Aktuell nicht visuell dargestellt
-
-2. Unbekannte Absender/Orte
-   - `[NN]` (nomen nominandum) fuer unbekannte Personen
-   - `unknown` fuer unbekannte Orte
-   - 60% der Hebel-Briefe ohne Absende-Ort
-
-3. Sprachangaben selten
-   - Nur 1 von 5 Datensaetzen hat `<language>` Tags
-   - Sprachfilter wird korrekt ausgeblendet
-
-4. Themen-Daten fehlen
-   - Keiner der analysierten Datensaetze hat `<term>` oder subjects
-   - Topics View wird korrekt ausgeblendet
-
-5. Authority-URIs sind Standard
-   - Alle Datensaetze haben GND und GeoNames
-   - correspSearch-Integration funktioniert
-
-### Verbesserungsvorschlaege
-
-- Datierungsunsicherheit visuell markieren (z.B. "ca.", Fragezeichen)
-- Bessere Behandlung von `[NN]` und `unknown`
-- Demo-Datensaetze als Presets hinzufuegen
-
----
-
-## 2025-11-26 (Phase 10: Code-Refactoring)
-
-### Refactoring: Shared Utils und CSS Cleanup
-
-Konsolidierung von dupliziertem Code und Entfernung von Legacy-Komponenten.
-
-1. Neue Datei: js/utils.js (183 Zeilen)
-   - Gemeinsame Utility-Funktionen extrahiert
-   - `escapeHtml()` - HTML-Escape (vorher in 3 Dateien)
-   - `debounce()` - Debounce-Funktion (vorher in 2 Dateien)
-   - `downloadFile()` - File-Download (vorher in 2 Dateien)
-   - `showToast()` - Toast-Benachrichtigungen
-   - `copyToClipboard()` - Clipboard-API
-   - `buildAuthorityLink()` - GND/VIAF/GeoNames Links
-   - `getUrlParams()`, `setUrlParam()` - URL-Parameter-Handling
-
-2. Aktualisierte Dateien
-   - wissenskorb.js: Importiert utils.js, 35 Zeilen entfernt
-   - basket-ui.js: Importiert utils.js, 21 Zeilen entfernt
-
-3. CSS Cleanup: components.css (606 -> 163 Zeilen)
-   Entfernte HerData-Legacy-Klassen:
-   - category-legend, legend-dot
-   - filter-section, checkbox-label
-   - activity-checkboxes
-   - mobile-filter-bar, role-toggle
-   - card-base, card-info, card-title, card-meta, card-count
-   - detail-panel, detail-empty, detail-header, detail-section
-   - mini-timeline, mini-timeline-bars, mini-timeline-bar
-
-   Beibehaltene Klassen (in Benutzung):
-   - sidebar-info, info-text
-   - filter-group, filter-count
-   - year-range-display
-   - btn-reset
-   - stats-cards, stat-card, stat-value, stat-label
-
-Ergebnis: 316 Zeilen Code reduziert (12296 -> 11980)
-
----
-
-## 2025-11-26 (Phase 9: Wissenskorb Erweiterung)
-
-### Implementiert: Dedizierte Wissenskorb-Seite
-
-Erweiterung des Wissenskorb-Features von Modal zu dedizierter Analyse-Seite:
-
-1. Neue Dateien
-   - wissenskorb.html: Dedizierte Analyse-Seite
-   - js/wissenskorb.js: Seiten-Logik mit D3/MapLibre
-   - css/wissenskorb.css: Seiten-spezifische Styles
-
-2. Visualisierungen
-   - Timeline: D3.js Stacked Bar Chart der Aktivitaetszeitraeume
-   - Netzwerk: D3.js Force-Directed Graph der Verbindungen
-   - Karte: MapLibre mit Absendeorten
-   - Details: Alle Briefe mit Suche und Sortierung
-
-3. Features
-   - Multi-Tab-Synchronisation via Storage Events
-   - Kapazitaetslimits (50 Personen, 100 Briefe, 50 Orte)
-   - Export als CSV oder JSON
-   - Teilen via URL mit Basket-IDs
-   - Toast-Benachrichtigungen
-
-4. Technische Aenderungen
-   - basket.js: Storage Event Listener, hasCapacity(), getRemainingCapacity()
-   - basket-ui.js: Click-Handler entfernt (Link statt Button)
-   - explore.html: Basket-Button ist jetzt Link zu wissenskorb.html
-
----
-
-## 2025-11-26 (Phase 8: Integration und Netzwerk)
-
-### Test: Externe CMIF-URL Laden
-
-Erfolgreicher Test mit Schnitzler-Reinhardt CMIF-Datei:
-- URL: `https://raw.githubusercontent.com/arthur-schnitzler/schnitzler-cmif/main/1971_Schnitzler_Reinhardt.xml`
-- 104 Briefe, 10 Absender, 8 Orte
-- Zeitraum: 1902-1921
-- Keine Koordinaten (8 Orte ohne Geodaten)
-
-Erkenntnisse:
-1. GitHub Raw-URLs funktionieren direkt (CORS erlaubt)
-2. Orte-View zeigt korrekt alle Orte auch ohne Koordinaten
-3. Netzwerk-View und Timeline funktionieren
-
-Bekannte externe CMIF-Repositories:
-- arthur-schnitzler/schnitzler-cmif (GitHub)
-- Weitere Quellen: siehe cmif-sources.md
-
-### Repository-Bereinigung
-
-Entfernung aller HerData-bezogenen Dateien:
-- 100+ Dateien geloescht (HTML, JS, CSS, Daten)
-- Fokus nun ausschliesslich auf CorrespExplorer
-- README.md und CLAUDE.md aktualisiert
-
-### Implementiert: correspSearch API Integration (Direkt-Suche)
-
-Vollstaendige Integration der correspSearch API v2.0 als Datenquelle:
-
-1. Neues Modul correspsearch-api.js
-   - searchCorrespSearch(params) fuer Suche mit Parametern
-   - fetchFromCorrespSearchUrl() fuer direkte URL-Eingabe
-   - getResultCount() fuer Ergebnis-Vorschau
-   - Automatische Paginierung (10 Briefe pro Seite)
-   - TEI-JSON zu internem Format Transformation
-
-2. Suchformular auf Landing-Page (index.html)
-   - Person-Feld (GND-URI Eingabe)
-   - Absende-Ort-Feld (GeoNames-URI Eingabe)
-   - Zeitraum-Filter (Start- und Enddatum)
-   - Ergebnis-Vorschau mit Gesamtanzahl
-   - Limit bei 5000 Briefen (sessionStorage-Schutz)
-
-3. Integration in cmif-parser.js
-   - Erkennung von correspSearch API URLs
-   - Automatische Delegation an API-Modul
-   - Progress-Callback fuer Lade-Anzeige
-
-4. CSS-Styling (upload.css)
-   - Responsives Suchformular
-   - Hover-Effekte und Focus-States
-   - Mobile-optimierte Darstellung
-
-### Implementiert: correspSearch Integration (US-24)
-
-1. Helper-Funktion buildCorrespSearchUrl()
-   - Unterstuetzt GND und VIAF Authority-IDs
-   - Generiert korrekte correspSearch-Such-URLs
-
-2. UI-Integration
-   - Lupe-Button in Personen-Karten
-   - correspSearch-Links im Brief-Detail-Modal
-   - Oeffnet externe Suche in neuem Tab
-
-### Implementiert: Orte ohne Koordinaten (US-08)
-
-1. Klickbarer Link in Geodaten-Info
-2. Modal mit sortierter Liste
-   - Orte nach Briefanzahl sortiert
-   - GeoNames-Links fuer manuelle Recherche
-
-### Implementiert: Netzwerk-Visualisierung (US-11)
-
-1. D3.js Force-Directed Graph
-   - Knoten = Personen (Groesse nach Briefanzahl)
-   - Kanten = Korrespondenzbeziehungen
-   - Farbcodierung: Absender (blau), Empfaenger (gruen), beides (lila)
-
-2. Ego-Netzwerk-Erkennung
-   - Automatische Erkennung bei >80% Verbindungen zu einem Knoten
-   - Radiales Layout fuer bessere Darstellung
-   - "Ego-Netzwerk" Badge in Stats
-
-3. Controls
-   - Min. Briefe Schwellenwert
-   - Max. Personen (Performance-Limit)
-   - Layout-Auswahl (Force/Radial)
-   - Zoom zuruecksetzen
-
-4. Interaktion
-   - Drag-and-Drop fuer Knoten
-   - Zoom und Pan
-   - Klick auf Knoten filtert Briefe
-   - Tooltips mit Details
-
-5. Bug-Fix
-   - Feldname recipient statt receiver
-   - Beide Varianten werden unterstuetzt
-
-### Tests erweitert
-
-Neue Tests in explore-tests.js:
-- buildNetworkData: Netzwerk-Daten aufbauen
-- buildNetworkData: MinLetters Filter anwenden
-
----
-
-## 2025-11-26 (Phase 7: Themen-Explorer Implementation)
-
-### Implementiert: Topics View (US-25, US-26, US-27)
-
-Vollstaendige Implementierung des Themen-Explorers:
-
-1. HTML-Struktur (explore.html)
-   - Neuer View-Button in Navigation (topics-view-btn)
-   - Two-Pane Layout: Topics-Liste links, Detail-Panel rechts
-   - Suchfeld und Sortierung fuer Themen
-
-2. CSS-Styles (explore.css)
-   - Topic-Cards mit visuellen Frequenz-Balken
-   - Detail-Panel mit Korrespondenten, Mini-Timeline, verwandten Themen
-   - Subject-Filter-Badge (gruen, distinct von Person-Filter)
-
-3. JavaScript-Logik (explore.js)
-   - Inverted Index (subjectIndex) mit Vorab-Berechnung
-   - Tracking von: count, letterIds, persons, years, cooccurrence
-   - renderTopicsList() mit Suche/Sortierung
-   - selectTopic() fuer Detail-Panel
-   - applySubjectFilter() integriert in globales Filter-System
-   - URL-State Support (subject Parameter)
-
-Technische Entscheidungen:
-- Frequenz-Liste statt Tag-Cloud (bessere Vergleichbarkeit)
-- Expliziter Filter-Button (Explore vs. Filter Trennung)
-- Co-Occurrence basiert auf gleichen Briefen
-- Top 10 Korrespondenten und verwandte Themen im Detail-Panel
-- Mini-Timeline mit automatischer Gruppierung bei langen Zeitraeumen
-
----
-
-## 2025-11-26 (Phase 7: Netzwerk-View Konzeption)
-
-### Analyse: Ungenutzte Daten
-
-Ueberpruefung der CMIF-Datennutzung ergab:
-
-| Datenfeld | Status |
-|-----------|--------|
-| letters (Briefe) | Vollstaendig genutzt |
-| id, url, date, year | Genutzt |
-| sender, recipient | Genutzt |
-| place_sent | Genutzt (Karte) |
-| language | Genutzt (Filter) |
-| mentions.subjects | Nur im Brief-Detail |
-| mentions.persons | Nur im Brief-Detail |
-| mentions.places | Nur im Brief-Detail |
-| indices.subjects | Komplett ungenutzt |
-| indices.persons.letters_sent/received | Wird neu berechnet |
-
-### Forschungsfragen fuer Romanistik
-
-Diskussion der Kernfrage: "Was macht ein Briefnetzwerk aus?"
-
-Identifizierte Forschungsfragen:
-1. Ueber was haben Romanisten geschrieben? (Themen-Analyse)
-2. Welche Themen verbinden verschiedene Korrespondenten?
-3. Wie verbreiten sich Themen ueber Zeit und Raum?
-4. Wer sind die zentralen Vermittler im Netzwerk?
-5. In welchen Sprachen werden welche Themen diskutiert?
-
-### Visualisierungs-Optionen evaluiert
-
-1. Force-Directed Graph: Klassisches Netzwerk, aber unuebersichtlich bei 846 Personen
-2. Sankey-Diagramm: Gut fuer Aggregationen, verliert Details
-3. Matrix-Heatmap: Kompakt, aber abstrakt
-4. Chord-Diagramm: Aesthetisch, begrenzt auf ca. 50 Elemente
-5. Dashboard: Kombiniert mehrere Visualisierungen
-
-### Entscheidung E12: Themen-Explorer
-
-Empfehlung: Dashboard-Ansatz mit Themen-Fokus
-
-Begruendung:
-- Nutzt den ungenutzten subjects-Index (1.622 Themen)
-- Beantwortet die Kernfrage "Worüber wurde geschrieben"
-- Integrierbar in bestehendes Filter-System
-- Keine Performance-Probleme wie bei grossen Graphen
-
-Aufbau:
-- Top-Themen als klickbare Tags/Wolke
-- Detail-Panel: Korrespondenten, Zeitverlauf, verwandte Themen
-- Integration mit bestehenden Filtern
-
-### Neue User Stories
-
-- US-25: Themen durchsuchen
-- US-26: Thema-Detail ansehen
-- US-27: Nach Thema filtern
-
-### Dokumentation
-
-Neues Konzeptdokument erstellt:
-- `knowledge-correspexplorer/network-view-concept.md`
-- Detaillierte Analyse aller Visualisierungs-Optionen
-- Technische Umsetzungsplanung
-
----
-
-## 2025-11-26 (Phase 6: Brief-Details und Timeline-Verbesserung)
-
-### Neu implementierte Features
-
-1. Brief-Detail-Modal (US-13)
-   - Klick auf Brief-Karte oeffnet Modal mit allen Metadaten
-   - Zeigt Grunddaten: Datum, Absender, Empfaenger, Ort, Sprache
-   - Zeigt erwaehnte Entitaeten: Themen, Personen, Orte (mentions)
-   - Links zu Authority-Dateien (VIAF, GND, GeoNames)
-   - Button zum Filtern nach Absender
-   - Link zur Original-Quelle
-
-2. Verbesserte Timeline
-   - Zeigt gefilterte vs. ungefilterte Briefe (Hintergrund-Balken)
-   - Dynamische Label-Intervalle (ca. 15 Labels)
-   - Tooltips zeigen "X von Y Briefen" bei aktivem Filter
-   - Re-Rendering bei Filterwechsel
-
-3. User Stories Dokument
-   - 25 User Stories dokumentiert
-   - 19 implementiert, 2 teilweise, 4 offen
-   - Priorisierung der offenen Features
-
-### Technische Verbesserungen
-
-- Timeline HTML-Struktur: Wrapper-Element fuer Hintergrund-Balken
-- CSS: Neue Styles fuer Letter-Detail-Modal
-- Helper-Funktionen: buildPersonLink(), buildPlaceLink()
-- Global: filterByPerson() fuer onclick-Handler
-
----
-
-## 2025-11-26 (Phase 5: Erweiterte Features)
-
-### Neu implementierte Features
-
-1. URL-Sharing (Entscheidung E11)
-   - Filter-Zustand wird in URL gespeichert
-   - Parameter: view, yearMin, yearMax, person, langs
-   - Direktlinks zu gefilterten Ansichten moeglich
-   - Browser-History wird nicht ueberladen (replaceState)
-
-2. Person-Detail-Ansicht
-   - Klick auf Korrespondent filtert alle Briefe
-   - Filter-Badge in Sidebar zeigt aktiven Person-Filter
-   - Automatischer Wechsel zur Brief-Liste
-   - Filter kann ueber X-Button entfernt werden
-
-3. Timeline-Visualisierung
-   - Balkendiagramm der Briefe pro Jahr/Dekade
-   - Automatische Gruppierung bei Zeitspannen > 50 Jahre
-   - Klick auf Balken setzt Zeitraum-Filter
-   - Tooltips mit Briefanzahl
-
-### Entscheidung E11: URL-State-Management
-
-Filter-Zustand in URL speichern fuer:
-- Bookmarking von gefilterten Ansichten
-- Teilen von Links mit Kollegen
-- Browser-Zurueck-Funktion
-
-Technische Umsetzung:
-- URLSearchParams API
-- history.replaceState (kein pushState um History nicht zu ueberladen)
-- Initialisierung liest URL-Parameter beim Laden
-
----
-
-## 2025-11-26 (Feature-Komplett)
-
-### Implementierte Features
-
-Phase 1-4 vollstaendig umgesetzt:
-
-1. CMIF-Parser (js/cmif-parser.js)
-   - Browser-basiertes XML-Parsing mit DOMParser
-   - Unterstuetzung fuer Datei-Upload, URL-Fetch, String-Input
-   - Authority-Erkennung (VIAF, GND, GeoNames, Lexvo)
-   - Index-Generierung fuer Personen, Orte, Sprachen, Themen
-
-2. Upload-Interface (index.html, js/upload.js)
-   - Drag-and-Drop fuer CMIF-Dateien
-   - URL-Input mit CORS-Fehlerbehandlung
-   - Beispiel-Datensaetze (HSA als Default)
-   - Weiterleitung zu explore.html
-
-3. Visualisierung (explore.html, js/explore.js)
-   - Kartenansicht mit MapLibre GL JS Clustering
-   - Korrespondenten-Liste mit Suche und Sortierung
-   - Brief-Liste mit Suche und Sortierung
-   - Timeline-Ansicht mit Balkendiagramm
-   - Dynamische Filter (Zeitraum, Sprache, Person)
-   - View-Switching zwischen Karte/Personen/Briefe/Timeline
-
-4. Export
-   - CSV-Export der gefilterten Briefe
-   - JSON-Export der gefilterten Briefe
-   - Modal-Dialog mit Format-Auswahl
-
-### Entscheidung E10: Hybrides Speichermodell
-
-Grosse Datensaetze (HSA) werden via URL-Parameter geladen:
-- `explore.html?dataset=hsa` laedt vorprozessierte JSON direkt
-- Umgeht sessionStorage-Limit von ca. 5MB
-
-Kleinere Datensaetze (Upload) nutzen sessionStorage:
-- Funktioniert fuer Datensaetze bis ca. 3000 Briefe
-- Bei Quota-Ueberschreitung: Fehlermeldung mit Hinweis
-
-### Dateistruktur
-
-```
-docs/
-  index.html          - Landing-Page mit Upload
-  explore.html        - Visualisierung (Karte, Listen, Export)
-  css/
-    upload.css        - Upload-Komponenten-Styles
-    explore.css       - Listen- und Modal-Styles
-  js/
-    cmif-parser.js    - Browser-CMIF-Parser
-    upload.js         - Upload-Handler
-    explore.js        - Visualisierungs-Logik
-  data/
-    hsa-letters.json  - Vorprozessierte HSA-Daten
-```
-
----
-
-## 2025-11-26 (Projektvision)
+- Korrigiert: Die GND-Anreicherung über lobid.org wurde durch Phase 13 ersetzt.
+- Belege: `bf4b5ca`
 
-### Ziel: Generischer CMIF-Explorer
-
-CorrespExplorer soll ein Tool werden, in das Nutzer beliebige CMIF-XML-Dateien hochladen koennen. Das Tool parst die XML im Browser und visualisiert die Korrespondenz-Metadaten.
-
-Kernfunktionen:
-- CMIF-Upload (Datei oder URL)
-- Automatische Erkennung der Datenstruktur
-- Karten-, Timeline- und Netzwerk-Visualisierung
-- Filter nach Zeit, Ort, Person, Sprache
-
-### Entscheidung E9: Browser-basiertes XML-Parsing
-
-CMIF-Dateien sollen direkt im Browser geparst werden statt serverseitiger Vorverarbeitung.
-
-Begruendung:
-- Keine Backend-Infrastruktur erforderlich
-- Nutzer behaelt Kontrolle ueber seine Daten
-- Sofortige Visualisierung nach Upload
-- DOMParser API ist performant genug fuer typische CMIF-Groessen
+### 2025-11-26 (Phase 11: Demo-Datensaetze und Dokumentation)
 
-Einschraenkung: Sehr grosse Dateien (100MB+) koennten Probleme bereiten. Fuer solche Faelle bleibt die Python-Pipeline als Alternative.
-
-### Aktueller Stand
-
-Das HSA (Hugo Schuchardt Archiv) dient als Referenz-Implementation:
-- 11.576 Briefe erfolgreich visualisiert
-- Kartenansicht mit Orts-Clustering
-- Filter fuer Zeitraum und Sprache
-
----
-
-## 2025-11-26 (HSA-Implementation)
-
-### Daten-Pipeline
-
-Preprocessing-Skripte fuer HSA-Daten:
-
-1. `preprocessing/build_hsa_data.py`
-   - Parst data/hsa/CMIF.xml
-   - Extrahiert Briefe, Personen, Orte, Subjects
-   - Generiert docs/data/hsa-letters.json
-
-2. `preprocessing/resolve_geonames_wikidata.py`
-   - Loest GeoNames-IDs zu Koordinaten auf
-   - Nutzt Wikidata SPARQL als Vermittler
-   - Cache in data/geonames_coordinates.json
+- Befund: Die Analyse externer CMIF-Dateien zeigte unsichere Datierungen (`cert="low"`, Zeitbereiche), `[NN]` für unbekannte Personen und `unknown` für unbekannte Orte, seltene Sprachangaben, keine Themen und durchgängig GND und GeoNames.
+- Entschieden: Externe Datensätze werden als klickbare Presets angeboten. Die Verbesserungsvorschläge der Analyse stehen in [plan.md](plan.md), die Presets als historischer Stand in [architecture.md](architecture.md).
+- Belege: `2554df2`
 
-Ergebnis: 82% der Orte mit Koordinaten angereichert.
+### 2025-11-26 (Phase 10: Code-Refactoring)
 
-### Frontend-Architektur
+- Geändert: Gemeinsame Hilfsfunktionen liegen in `utils.js`, und HerData-Altklassen wurden aus `components.css` entfernt.
+- Belege: `d707f1e`
 
-Modulare JavaScript-Struktur:
+### 2025-11-26 (Phase 9: Wissenskorb Erweiterung)
 
-- `js/cmif-parser.js` - Browser-basierter CMIF-XML-Parser
-- `js/upload.js` - Upload-Handler (Datei, URL, Beispiele)
-- `js/explore.js` - Visualisierung (Karte, Listen, Export)
-- `js/config.js` - Konfiguration (Zeitraum, Features, UI)
-- `js/utils.js` - Hilfsfunktionen (debounce, Toast, Download)
+- Entschieden: Der Wissenskorb wird vom Modal zur eigenen Analyseseite mit Timeline, Netzwerk, Karte und Briefliste, mit Kapazitätsgrenzen, Export und Teilen per URL.
+- Belege: `d707f1e`
 
-### Kartenvisualisierung
+### 2025-11-26 (Phase 8: Integration und Netzwerk)
 
-MapLibre GL JS mit:
-- GeoJSON-Source fuer Orte
-- Clustering mit Aggregation der Briefanzahl
-- Kreisgroesse skaliert mit Briefmenge
-- Popup mit Orts-Statistiken
+- Befund: GitHub-Raw-URLs lassen sich wegen erlaubtem CORS direkt laden, getestet mit einer externen CMIF-Datei ohne Koordinaten.
+- Entschieden: Alle HerData-Dateien werden entfernt, der Fokus liegt ausschließlich auf CorrespExplorer. Die correspSearch-API v2.0 wird als Datenquelle integriert. Das Netzwerk erkennt Ego-Netzwerke und legt sie radial an.
+- Geändert: Netzwerk-Visualisierung (US-11), correspSearch-Verknüpfung (US-24) und Liste der Orte ohne Koordinaten (US-08).
+- Belege: `9a01c32`, `215f701`, `61a11e6`, `d235bcd`, `e963d13`
 
----
+### 2025-11-26 (Phase 7: Themen-Explorer Implementation)
 
-## Architektur-Entscheidungen
+- Entschieden: Eine Frequenzliste statt Tag-Cloud, weil sie Themen vergleichbar macht. Ein expliziter Filter-Button trennt Erkunden und Filtern. Co-Occurrence beruht auf gemeinsamen Briefen.
+- Geändert: Topics-View mit Detail-Panel und Integration ins globale Filtersystem (US-25 bis US-27).
+- Belege: `c666fe3`, `d3a01cb`
 
-### E1: CMIF als Austauschformat
+### 2025-11-26 (Phase 7: Netzwerk-View Konzeption)
 
-CMIF (Correspondence Metadata Interchange Format) als Zielformat, weil:
-- TEI-basierter Standard
-- Verwendet von correspSearch.net
-- Viele Editions-Projekte liefern CMIF
-- Klare Struktur fuer Sender/Empfaenger/Datum/Ort
+- Befund: Der Subjects-Index und die Erwähnungen wurden kaum genutzt.
+- Entschieden: Entscheidung E12, ein Dashboard mit Themen-Fokus. Geprüft wurden Force-Directed Graph (unübersichtlich bei vielen Personen), Sankey (verliert Details), Matrix-Heatmap (abstrakt), Chord-Diagramm (begrenzt auf rund 50 Elemente) und Dashboard. Gewählt wurde das Dashboard, weil es den ungenutzten Subjects-Index erschließt, die Frage „Worüber wurde geschrieben“ beantwortet, sich ins Filtersystem fügt und keine Performanceprobleme großer Graphen hat.
+- Belege: `c666fe3`
 
-### E2: Authority-Agnostisch
+### 2025-11-26 (Phase 6: Brief-Details und Timeline-Verbesserung)
 
-Das Tool unterstuetzt verschiedene Authority-Systeme:
-- VIAF (virtuaf.org/viaf/{id})
-- GND (d-nb.info/gnd/{id})
-- GeoNames (sws.geonames.org/{id})
-- Lexvo (lexvo.org/id/iso639-3/{code})
+- Geändert: Brief-Detail-Modal mit Erwähnungen und Normdaten-Links (US-13), eine Timeline, die gefilterte gegen ungefilterte Briefe zeigt, und ein erstes Dokument der User Stories.
+- Belege: `e376860`
 
-Die Authority-URLs werden geparst und normalisiert.
+### 2025-11-26 (Phase 5: Erweiterte Features)
 
-### E3: Wikidata fuer Koordinaten
+- Entschieden: Entscheidung E11, der Filterzustand steht in der URL, damit gefilterte Ansichten sich bookmarken und teilen lassen und die Zurück-Funktion arbeitet. `history.replaceState` statt `pushState`, damit die Browser-History nicht überläuft.
+- Geändert: Personenfilter und Timeline mit Gruppierung nach Dekaden bei langen Zeitspannen.
+- Belege: `6337d95`
 
-Koordinaten-Aufloesung via Wikidata SPARQL statt GeoNames-API:
-- Keine API-Keys erforderlich
-- Batch-Abfragen moeglich
-- Funktioniert fuer GeoNames, GND und andere
+### 2025-11-26 (Feature-Komplett)
 
-### E4: Brief-zentrierte Primaerstruktur
+- Entschieden: Entscheidung E10, ein hybrides Speichermodell. Große Datensätze wie das HSA laden per URL-Parameter als vorprozessiertes JSON, weil sessionStorage bei etwa 5 MB endet. Kleinere Uploads nutzen sessionStorage und melden eine Quotenüberschreitung.
+- Geändert: Phasen 1 bis 4 mit CMIF-Parser, Upload, Karte, Listen, Timeline, Filtern und Export.
+- Belege: `6a52268`, `31d4c86`
 
-Datenmodell ist brief-zentriert:
-```json
-{
-  "letters": [...],
-  "indices": {
-    "persons": {...},
-    "places": {...},
-    "subjects": {...}
-  }
-}
-```
+### 2025-11-26 (Projektvision)
 
-Indizes ermoeglichen sekundaere Sichten (Personen, Orte).
+- Entschieden: CorrespExplorer wird ein generischer Explorer für beliebige CMIF-Dateien. Entscheidung E9, CMIF wird im Browser geparst statt serverseitig vorverarbeitet, weil kein Backend nötig ist, Nutzer die Kontrolle über ihre Daten behalten, die Visualisierung sofort folgt und DOMParser für typische CMIF-Größen reicht. Für sehr große Dateien bleibt die Python-Pipeline.
+- Belege: `6a52268`, `7a87099`
 
----
+### 2025-11-26 (HSA-Implementation)
 
-## HSA-Datenstruktur
+- Entschieden: Das Hugo Schuchardt Archiv dient als Referenzimplementierung. Eine Python-Vorverarbeitung erzeugt das Briefe-JSON und löst GeoNames-IDs über Wikidata SPARQL zu Koordinaten auf. Die Karte clustert Orte mit MapLibre GL JS.
+- Geändert: Kennzahlen und Vokabulare des HSA in [data.md](data.md#hugo-schuchardt-archiv).
+- Belege: `25037b4`, `593e972`, `1d51c1d`
 
-### Uebersicht
+### 2025-11-26 (Architektur-Entscheidungen E1 bis E4)
 
-| Metrik | Wert |
-|--------|------|
-| Briefe | 11.576 |
-| Sender | 846 |
-| Empfaenger | 112 |
-| Absende-Orte | 774 |
-| Subjects | 1.622 |
-| Zeitraum | 1859-1927 |
-
-### Erweiterte Metadaten
-
-HSA verwendet LOD Academy CMIF Vocabulary mit:
-- `mentionsSubject`: Themen im Brief (23.020 Vorkommen)
-- `mentionsPlace`: Erwahnte Orte (5.955 Vorkommen)
-- `mentionsPerson`: Erwahnte Personen (17.413 Vorkommen)
-- `hasLanguage`: Briefsprache (18 Sprachen)
-
-### Subject-Kategorien
-
-1.622 Subjects in drei Kategorien:
-- HSA-Subjects (1.272): Themen, Institutionen
-- HSA-Languages (200): Interne Sprachcodes
-- Lexvo (148): ISO 639-3 Sprachen
-
-Top-Themen: Baskisch (698), Publikationsversand (627), Dankschreiben (515)
-
----
-
-## Moegliche Erweiterungen
-
-### Netzwerk-Visualisierung
-- Wer schreibt wem (Force-Directed Graph)
-- Clustern nach Korrespondenten-Gruppen
-
-### Koordinaten-Aufloesung fuer Uploads
-- Wikidata SPARQL-Abfrage im Browser
-- Progressives Enrichment
-
-### Themen-Filter (HSA-spezifisch)
-- Subjects als zusaetzliche Filteroption
-- Top-Themen in Sidebar
-
-### Brief-Detail-Modal
-- Vollstaendige Metadaten anzeigen
-- Erwahnte Personen, Orte, Themen
+- Entschieden: E1, CMIF ist Austauschformat, weil es ein TEI-basierter Standard ist, correspSearch es nutzt, viele Editionsprojekte es liefern und es Sender, Empfänger, Datum und Ort klar strukturiert. E2, das Tool ist normdaten-agnostisch und parst und normalisiert VIAF-, GND-, GeoNames- und Lexvo-URIs. E3, Koordinaten werden über Wikidata SPARQL statt über die GeoNames-API aufgelöst, weil keine API-Keys nötig und Batch-Abfragen möglich sind. E4, das Datenmodell ist briefzentriert, Indizes für Personen, Orte und Themen erlauben sekundäre Sichten.
+- Belege: `593e972`, `7a87099`

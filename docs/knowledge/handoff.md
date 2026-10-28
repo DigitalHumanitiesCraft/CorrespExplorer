@@ -14,7 +14,7 @@ updated: 2026-10-28
 
 # Handoff
 
-Diese Process Inbox führt ausschließlich offene Übergabepunkte. Prüfe vor der Nutzung die Quelle und das aktuelle Ziel. Integriere dauerhaften Inhalt in das zuständige Declarative oder Action Document, dokumentiere Gegenstand, Quelle, Ziel und Ergebnis oder Verwerfungsgrund knapp in `docs/knowledge/journal.md` und entferne den bearbeiteten Punkt anschließend vollständig.
+Diese Process Inbox führt ausschließlich offene Übergabepunkte. Prüfe vor der Nutzung die Quelle und das aktuelle Ziel. Integriere dauerhaften Inhalt in das zuständige Declarative oder Action Document, dokumentiere den Übergang knapp in einem Eintrag oben in `docs/knowledge/journal.md` und entferne den bearbeiteten Punkt anschließend vollständig.
 
 ## Offene Handoff-Punkte
 
