@@ -4,8 +4,8 @@
  * Principle: Shadows ONLY for floating/overlay elements that need z-axis separation.
  * All regular UI elements use border-based design for clarity and reduced visual noise.
  *
- * Scientific reasoning: Shadows improve perception of UI layers by 34% (Nielsen Norman Group)
- * but excessive shadows increase cognitive load by 23%. Use sparingly for maximum productivity.
+ * Rationale: shadows signal that an element sits above the page. On regular elements they
+ * add visual noise without conveying layering, so they are reserved for floating elements.
  */
 
 /* ==========================================

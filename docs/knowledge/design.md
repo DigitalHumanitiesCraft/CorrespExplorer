@@ -434,7 +434,7 @@ Implementiert in base.css.
 
 | Element | Regel | Begruendung |
 |---------|-------|-------------|
-| Box-Shadow | Nur fuer floating/overlay elements (Modals, Dropdowns, Tooltips, Map-Popups) | Shadows verbessern Z-Achsen-Wahrnehmung um 34% (Nielsen Norman Group), aber nur fuer schwebende Elemente |
+| Box-Shadow | Nur fuer floating/overlay elements (Modals, Dropdowns, Tooltips, Map-Popups) | Shadows zeigen an, dass ein Element ueber der Seite liegt. Auf regulaeren Elementen erzeugen sie visuelles Rauschen ohne Ebeneninformation |
 | Gradient-Fuellungen | Nur funktional (z.B. gemischte Rollen in Legende), nicht dekorativ | Gradients als visuelle Sprache, nicht als Dekoration |
 
 ### Verboten

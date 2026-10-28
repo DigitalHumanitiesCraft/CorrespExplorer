@@ -65,7 +65,7 @@ Allowed shadows (floating/overlay elements only):
 
 Forbidden: Cards, buttons, inputs use border-based design instead.
 
-Scientific reasoning: Shadows improve Z-axis perception by 34% (Nielsen Norman Group) but increase cognitive load by 23%. Use sparingly for floating elements only.
+Rationale: shadows signal that an element sits above the page. On regular elements they add visual noise without conveying layering, so they are reserved for floating elements.
 
 ### style.css (47658 bytes)
 Main layout file with navbar, sidebar, grid systems.
