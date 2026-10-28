@@ -37,7 +37,7 @@ Empfehlung: #map-view als Bezugsrahmen (position: relative) setzen und pruefen
 - Loesung: siehe JOURNAL.md, Phase 40
 
 ### 1. PRIMARY_COLOR Inkonsistenz
-- Behoben in: Phase 33 / 2025-12-18
+- Behoben in: Commit dbda53f / 2025-11-27 (bis zur Archivierung am 2025-12-18 hier weiter als offen gefuehrt)
 - Problem: explore.js verwendete #C65D3B statt #A64B3F
 - Loesung: explore.js verwendet nun korrekt #A64B3F
 
@@ -52,7 +52,7 @@ Empfehlung: #map-view als Bezugsrahmen (position: relative) setzen und pruefen
 - Loesung: constants.js ergaenzt
 
 ### 4. README.md Referenz
-- Behoben in: Phase 31 / 2025-12-09
+- Behoben in: Commit dbda53f / 2025-11-27
 - Problem: Verweis auf geloeschte refactoring-plan.md
 - Loesung: README.md aktualisiert
 
