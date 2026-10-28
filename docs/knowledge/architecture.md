@@ -66,6 +66,7 @@ URL-State: Filter werden in URL gespeichert (dataset, view, yearMin, yearMax, pe
 ### Data Processing
 
 - cmif-parser.js - Browser-XML-Parser fuer CMIF/TEI
+- correspsearch-api.js - correspSearch API v2.0, Laden ueber correspSearch-API-URLs
 
 ### Enrichment (optionale Datenanreicherung)
 

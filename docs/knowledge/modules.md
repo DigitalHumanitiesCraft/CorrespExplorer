@@ -304,6 +304,20 @@ Exports:
 - applyCoordinatesToData(data, coords) - Wendet Koordinaten an
 - analyzeCoordinateNeeds(data) - Analysiert fehlende Koordinaten
 
+### correspsearch-api.js
+
+correspSearch API v2.0 Integration.
+
+Funktion: Laden von correspSearch-API-URLs, die cmif-parser.js und upload.js weiterreichen. Automatische Paginierung, TEI-JSON Transformation, Retry-Logik.
+
+Imports: utils.js, constants.js
+
+Exports:
+- searchCorrespSearch(params) - Suche mit Parametern
+- fetchFromCorrespSearchUrl(url) - Direkter URL-Abruf
+- getResultCount(params) - Ergebnis-Vorschau
+- isCorrespSearchUrl(url) - URL-Pruefung
+
 ## Basket Modules
 
 ### basket.js

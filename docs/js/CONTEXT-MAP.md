@@ -21,6 +21,7 @@ Core (keine Dependencies)
 
 Data (Parsing und Laden)
 - cmif-parser.js - Browser-XML-Parser, TEI-JSON-Handler
+- correspsearch-api.js - correspSearch API v2.0, von cmif-parser.js und upload.js fuer correspSearch-API-URLs genutzt
 
 Enrichment (Datenanreicherung)
 - wikidata-enrichment.js - SPARQL fuer Bilder, Lebensdaten
