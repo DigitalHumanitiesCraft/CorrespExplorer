@@ -1,6 +1,27 @@
-# CorrespExplorer - Architecture
+---
+title: Architecture
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2025-11-26
+updated: 2026-10-28
+authors: [Christopher Pollin]
+template:
+  name: Vorlage Architecture
+  version: 0.4
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/architecture
+  alias: https://dhcraft.org/Promptotyping/#promptotyping-document-architecture
+related: [data, specification, design, testing]
+---
 
-Technische Architektur und Modulübersicht der Web-Applikation.
+# Architecture
+
+Technische Architektur und Modulübersicht der Web-Applikation. Datenformat und Quellen beschreibt [data.md](data.md), die Begründungen übergreifender Entscheidungen [specification.md](specification.md#entscheidungen).
 
 ## Systemuebersicht
 
@@ -35,6 +56,8 @@ Einstiegspunkt für alle Nutzer:
 - Beispiel-Datensaetze (HSA als Default)
 
 Nach erfolgreichem Upload/Auswahl: Weiterleitung zu explore.html
+
+Die Startseite bietet zwei Beispieldatensätze als Karten in `index.html` an. Die Feature-Demo (`data-url="data/demo-showcase.xml"`) läuft durch den Parser und startet die Onboarding-Tour, das HSA (`data-json="data/hsa-letters.json"`) wird vorprozessiert geladen. Phase 11 hatte die externen Testdatensätze aus [data.md](data.md#testdatensätze) als Karten mit `data-url` auf die Startseite gesetzt, die `handleDatasetSelect()` in `upload.js` über `parseCMIF()` lädt. Phase 33 reduzierte die Startseite auf die beiden Beispieldatensätze. Externe Dateien lädt man seither über das URL-Feld oder den Upload.
 
 ### explore.html - Visualisierung
 
@@ -676,6 +699,32 @@ Design System:
 - tokens.css: Von allen CSS-Dateien verwendet, keine Token-Duplikation
 - components.css: Shared Components über alle Views
 - Konsistente Verwendung von CSS Custom Properties
+
+## Zero-Build
+
+Das Projekt läuft direkt im Browser ohne Webpack, Babel oder andere Build-Werkzeuge. Dafür sprechen die niedrige Einstiegshürde für Beitragende, das Deployment als statische GitHub-Pages-Seite und schnelle Iteration. Dagegen stehen fehlendes Tree-Shaking und fehlende Minifizierung. Vorausgesetzt ist ES-Modul-Unterstützung im Browser. Für ein akademisches Open-Source-Werkzeug, dessen Zielgruppe aktuelle Browser nutzt, überwiegen die Vorteile.
+
+## Entwurfsmuster
+
+### ES-Module und Live Bindings
+
+ES-Modul-Exporte sind Live Bindings. Eine Neuzuweisung eines importierten Bindings scheitert, eine Mutation des exportierten Objekts gelingt. Weil die Sprachfarben erst nach dem Laden eines Korpus feststehen, exportiert `constants.js` ein `const`-Objekt, das `computeLanguageColors()` leert und neu befüllt.
+
+### URL-State
+
+Der Filterzustand steht in der URL, etwa `explore.html?dataset=hsa&yearMin=1900&yearMax=1920&person=123&langs=de,fr`. Das erlaubt Lesezeichen, Teilen und eine funktionierende Zurück-Navigation. `state-manager.js` serialisiert mit `toURLParams()` und `fromURLParams()` und schreibt mit `replaceState`, damit die Browser-Historie nicht mit jedem Filterschritt wächst.
+
+### Hybrides Speichermodell
+
+Hochgeladene Datensätze liegen in sessionStorage, dessen Limit je nach Browser bei etwa 5 bis 10 MB liegt. Bei Überschreitung erscheint eine Fehlermeldung mit Hinweis auf die Größe. Große vorprozessierte Datensätze wie das HSA werden über einen URL-Parameter per fetch geladen und umgehen das Limit.
+
+### Performance-Begründung
+
+Die Strategien unter [Performance-Strategien](#performance-strategien) antworten darauf, dass naives Rendering beim HSA-Datensatz zu langsam war. Gemessene Renderzeiten liegen nicht vor.
+
+### Monolithisches explore.js
+
+`explore.js` enthält alle Ansichten in einer Datei. Ursprünglich teilten die Ansichten so viel Zustand (gefilterte Briefe, Indizes, Zeitfilter), dass getrennte Module ein dichtes Importgeflecht erzeugt hätten. `state-manager.js` hat einen Teil des Zustands zentralisiert, eine weitere Modularisierung ist nicht umgesetzt ([plan.md](plan.md)). Nach vielen Phasen ist der Monolith schwerer aufzubrechen, als es ein frühes Refactoring gewesen wäre.
 
 ## Migration Status
 

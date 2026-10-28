@@ -1,6 +1,27 @@
-# Testing Strategy
+---
+title: Testing
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2025-12-03
+updated: 2026-10-28
+authors: [Christopher Pollin]
+template:
+  name: Vorlage Testing
+  version: 0.3
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/testing
+  alias: https://dhcraft.org/Promptotyping/#promptotyping-document-testing
+related: [architecture, data, uncertainty-specification, plan]
+---
 
-Kompakt, fokussiert, ohne externe Dependencies
+# Testing
+
+Die Tests laufen im Browser ohne externe Abhängigkeiten und prüfen Produktionscode mit kleinen CMIF-Fixture-Dateien. Geplante Erweiterungen wie CI stehen in [plan.md](plan.md).
 
 ## Philosophie
 
@@ -83,7 +104,6 @@ Beispiele:
 
 ## Test-Ausführung
 
-**Lokal (Development):**
 ```bash
 # Server starten
 python -m http.server 8000 --directory docs
@@ -95,14 +115,7 @@ http://localhost:8000/test.html
 http://localhost:8000/test.html?test=true
 ```
 
-**CI/CD (zukünftig):**
-```bash
-# Headless Browser (Playwright)
-npx playwright test
-
-# Node.js (für Logic-Tests)
-node --test js/tests/
-```
+Eine CI ist nicht eingerichtet.
 
 ## Best Practices
 
@@ -167,20 +180,20 @@ Die aktuelle Laufzeit zeigt test.html nach jedem Lauf.
 
 ## Debugging fehlgeschlagener Tests
 
-**1. Console-Output lesen:**
+### Console-Output lesen
 ```
 ✗ updateFilters: Temporal-Filter
   Expected 1, got 3
   at test-state-manager.js:42
 ```
 
-**2. Test isoliert ausführen:**
+### Test isoliert ausführen
 ```javascript
 const test = StateManagerTests.tests.find(t => t.name.includes('Temporal'));
 await test.run();
 ```
 
-**3. Breakpoint setzen:**
+### Breakpoint setzen
 ```javascript
 run() {
     debugger;  // Browser stoppt hier
@@ -189,7 +202,7 @@ run() {
 }
 ```
 
-**4. State inspizieren:**
+### State inspizieren
 ```javascript
 console.log('State:', state.filters);
 console.log('Filtered:', state.getFilteredLetters());
@@ -231,16 +244,16 @@ const suites = [
 
 ## Test-Maintenance
 
-**Wann Tests aktualisieren:**
+### Wann Tests aktualisieren
 - Bei API-Änderungen (Breaking Changes)
 - Bei Bug-Fixes (Regression-Test hinzufügen)
 - Bei Performance-Optimierungen (Benchmark aktualisieren)
 
-**Wann Tests löschen:**
+### Wann Tests löschen
 - Bei entfernten Features
 - Bei komplett refactorierten Modulen
 
-**Test-Review-Prozess:**
+### Test-Review-Prozess
 1. Alle Tests müssen grün sein vor Commit
 2. Neue Features brauchen Tests
 3. Bug-Fixes brauchen Regression-Test
@@ -248,8 +261,3 @@ const suites = [
 ## Metriken
 
 Eine Coverage-Messung ist nicht eingerichtet. Frueher hier genannte Coverage-Werte waren nicht gemessen und wurden entfernt.
-
-## Nächste Schritte
-
-1. Performance-Regression-Tests (Filter bei 10k+ Briefen)
-2. CI-Integration (GitHub Actions mit Playwright)

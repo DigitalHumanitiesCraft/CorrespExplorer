@@ -1,10 +1,24 @@
+---
+title: Uncertainty Specification
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: en
+created: 2025-11-27
+updated: 2025-12-01
+authors: [Christopher Pollin]
+related: [specification, data, design, architecture]
+---
+
 # Handling Data Uncertainty
 
 How CorrespExplorer handles incomplete or uncertain research data.
 
-Stand: 2025-11-27
-
-Related: [architecture.md](architecture.md), [CMIF-Data.md](CMIF-Data.md)
+Related: [specification.md](specification.md#adr-002-unsicherheit-sichtbar-machen), [data.md](data.md), [design.md](design.md#unsicherheits-indikatoren), [architecture.md](architecture.md)
 
 User documentation: [about.html](../about.html) (Section "Umgang mit Datenqualitaet")
 

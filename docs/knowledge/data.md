@@ -1,45 +1,104 @@
-# CMIF-Standard und Datenmodell
+---
+title: Daten
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2025-11-26
+updated: 2026-10-28
+authors: [Christopher Pollin]
+template:
+  name: Vorlage Datengrundlage
+  version: 0.3
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/data
+  alias: https://dhcraft.org/Promptotyping/#promptotyping-document-data
+knowledge-sources:
+  standards:
+    CMIF: https://github.com/TEI-Correspondence-SIG/CMIF
+    TEI correspDesc: https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-correspDesc.html
+  institutions:
+    correspSearch: https://correspsearch.net
+    Hugo Schuchardt Archiv: https://gams.uni-graz.at/context:hsa
+  vocabularies:
+    VIAF: https://viaf.org
+    GND: https://d-nb.info/gnd
+    GeoNames: https://www.geonames.org
+    Lexvo: http://lexvo.org
+related: [project, architecture, specification, uncertainty-specification]
+---
 
-## Correspondence Metadata Interchange Format
+# Daten
 
-CMIF ist ein TEI-basierter Standard der TEI Correspondence SIG für den Austausch von Korrespondenz-Metadaten.
+CorrespExplorer verarbeitet Korrespondenz-Metadaten im Correspondence Metadata Interchange Format (CMIF), die Nutzende als Datei oder URL einbringen. Das Repository bündelt dazu einen vorprozessierten Beispieldatensatz aus dem Hugo Schuchardt Archiv, einen synthetischen Tutorial-Datensatz und kleine Testdateien.
 
-Dokumentation: https://github.com/TEI-Correspondence-SIG/CMIF
+## Gegenstand
 
-## Kernstruktur
+Das Material beschreibt Briefe über ihre Metadaten, also Absender, Empfänger, Absendeort, Datum und in erweiterten Datensätzen erwähnte Personen, Orte, Themen und die Briefsprache. Brieftexte enthält es nicht, jeder Brief verweist auf seine Edition.
 
-```xml
-<TEI xmlns="http://www.tei-c.org/ns/1.0">
-  <teiHeader>
-    <fileDesc>
-      <titleStmt>
-        <title>Titel des Briefverzeichnisses</title>
-        <editor>Ansprechpartner</editor>
-      </titleStmt>
-      <publicationStmt>
-        <publisher>Herausgeber</publisher>
-        <availability>
-          <licence target="https://creativecommons.org/licenses/by/4.0/">
-            CC-BY 4.0
-          </licence>
-        </availability>
-        <date when="2024-01-01"/>
-        <idno type="URL">https://example.org/cmif.xml</idno>
-      </publicationStmt>
-      <sourceDesc>
-        <bibl xml:id="uuid" type="online">Bibliographische Angabe</bibl>
-      </sourceDesc>
-    </fileDesc>
-    <profileDesc>
-      <!-- correspDesc-Elemente hier -->
-    </profileDesc>
-  </teiHeader>
-</TEI>
-```
+## Quellen
 
-Der teiHeader enthält Metadaten über das Briefverzeichnis selbst. Das profileDesc-Element enthält alle correspDesc-Elemente, die die einzelnen Briefe beschreiben.
+### CMIF als Austauschformat
 
-## Brief-Element (correspDesc)
+CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch von Korrespondenz-Metadaten (Spezifikation https://github.com/TEI-Correspondence-SIG/CMIF, Beschreibung bei correspSearch https://correspsearch.net/index.xql?id=participate_cmi-format). Der Webservice correspSearch der Berlin-Brandenburgischen Akademie der Wissenschaften aggregiert CMIF-Dateien vieler Editionen. Das Werkzeug liest jede gültige CMIF-Datei, die Datenqualität hängt von der jeweiligen Edition ab.
+
+### Datensätze im Repository
+
+| Datei | Inhalt | Rolle |
+|---|---|---|
+| `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 | Tutorial-Datensatz der Startseite mit Onboarding-Tour |
+| `docs/data/hsa.xml` | CMIF-Export des Hugo Schuchardt Archivs | Quelle der Vorprozessierung |
+| `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes und teiHeader-Metadaten | Erweiterter Beispieldatensatz der Startseite |
+| `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs | Ergänzung von Orten ohne Koordinaten |
+| `docs/data/test-uncertainty.xml` | Synthetische Unsicherheitsfälle | Testdatei, siehe [Testdatensätze](#testdatensätze) |
+| `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs) | Testdatei der Sicherheits-Suite |
+| `docs/data/schoenbach.xml` | Lokale Kopie der Schönbach-Briefe | Kleiner Realdatensatz |
+
+### Hugo Schuchardt Archiv
+
+Das Hugo Schuchardt Archiv (HSA) der Universität Graz (https://gams.uni-graz.at/context:hsa) ist ein ego-zentriertes Netzwerk um den Sprachwissenschaftler Hugo Schuchardt mit Briefen an ihn und von ihm. Es nutzt das LOD Academy CMIF Vocabulary für die erweiterten Metadatentypen und VIAF als vorherrschendes Normdatensystem für Personen. Eigene kontrollierte Vokabulare für Themen und Sprachen ergänzen Lexvo-URIs. Die Rechte an den Daten liegen beim Archiv.
+
+Kennzahlen der gebündelten Datei, Stand der Vorprozessierung im Dezember 2025:
+
+| Metrik | Wert |
+|---|---|
+| Briefe | 11.576 |
+| Absender | 846 |
+| Empfänger | 112 |
+| Absendeorte | 774 |
+| Subjects | 1.622 |
+| Sprachen | 18 |
+| Zeitraum | 1859–1927 |
+
+| Subject-Kategorie | Anzahl | URI-Muster |
+|---|---|---|
+| HSA-Subjects | 1.272 | `gams.uni-graz.at/o:hsa.subjects#S.{id}` |
+| HSA-Languages | 200 | `gams.uni-graz.at/o:hsa.languages#L.{id}` |
+| Lexvo | 148 | `lexvo.org/id/iso639-3/{code}` |
+
+Die häufigsten Korrespondenten sind Leo Spitzer (447 Briefe, VIAF 46804188), Julio de Urquijo Ybarra (243, VIAF 18030027), Georges Lacombe (235, VIAF 34446283), Theodor Gartner (222, VIAF 59114592) und Edward Spencer Dodgson (181, VIAF 27433725). Die häufigsten Absendeorte sind Graz (2.371, GeoNames 2778067), Wien (855, 2761369), Paris (781, 2988507), Leipzig (247, 2879139) und Berlin (237, 2950159). Graz als Schuchardts Wirkungsort stellt rund ein Fünftel aller Briefe.
+
+### Externe CMIF-Quellen
+
+Diese Quellen wurden beim Aufbau des Werkzeugs als ladbar erfasst. Ob eine URL weiterhin antwortet, ist beim Laden zu prüfen.
+
+| Quelle | URL | Eigenschaften |
+|---|---|---|
+| Schnitzler-CMIF (GitHub) | https://github.com/arthur-schnitzler/schnitzler-cmif, Raw-Muster `https://raw.githubusercontent.com/arthur-schnitzler/schnitzler-cmif/main/{dateiname}.xml` | Getestet mit `1971_Schnitzler_Reinhardt.xml` (104 Briefe, 1902–1921), GND für Personen, Orte ohne GeoNames |
+| correspSearch Storage (GitHub) | https://github.com/correspSearch/csStorage, Raw-Muster `https://raw.githubusercontent.com/correspSearch/csStorage/dev/{ordner}/{datei}.xml` | CMIF-Dateien ohne eigenes Hosting, etwa avhumboldt, wvhumboldt, forster, hofmannsthal, droste-huelshoff, lasker-schueler, rilke, wieland, feuerbach, helmholtz. Beispiele `.../dev/avhumboldt/Spiker.xml`, `.../dev/rilke-kappus.xml` |
+| correspSearch API v2.0 | https://correspsearch.net/api/v2.0/tei-json.xql | Parameter `correspondent` (GND/VIAF-URI), `placeSender` (GeoNames-URI), `startdate`, `enddate`. Der Ladepfad im Werkzeug ist defekt, siehe [plan.md](plan.md#offene-befunde) |
+| Leibniz-Briefportal | https://leibniz-briefportal.de | CMIF-Export, GND für Personen |
+| Carl-Maria-von-Weber-Gesamtausgabe | https://weber-gesamtausgabe.de/cmif_v1.xml (empfohlen), `cmif_v2.xml` (CMIF-v2-Entwurf) | Umfangreicher Bestand, GND für Personen, CC BY 4.0 |
+| Edvard-Munch-Korrespondenz (NorKorr) | https://dataverse.no/api/access/datafile/191809, Datensatz https://dataverse.no/dataset.xhtml?persistentId=doi:10.18710/TAFUSV | Großer Datensatz aus der Edition eMunch.no, GeoNames für Orte, geeignet für Lasttests |
+
+## Modell
+
+### CMIF-Struktur
+
+Der `teiHeader` beschreibt das Briefverzeichnis selbst (`titleStmt` mit Titel und Editor, `publicationStmt` mit Publisher, Lizenz, Datum und `idno type="URL"`, `sourceDesc/bibl` mit bibliographischer Angabe). `profileDesc` enthält je Brief ein `correspDesc`.
 
 ```xml
 <correspDesc ref="https://example.org/letter/123" source="#uuid" key="123">
@@ -60,189 +119,109 @@ Der teiHeader enthält Metadaten über das Briefverzeichnis selbst. Das profileD
 </correspDesc>
 ```
 
-Jedes correspDesc-Element beschreibt einen Brief mit zwei correspAction-Elementen für Absender und Empfänger. Das optionale note-Element enthält erweiterte Metadaten.
+| Element und Attribut | Bedeutung |
+|---|---|
+| `correspDesc/@ref` | URL des Briefs in der Edition, etwa `https://gams.uni-graz.at/o:hsa.letter.654` |
+| `correspDesc/@key` | Briefnummer in der Edition |
+| `correspDesc/@source` | Verweis auf `bibl/@xml:id` im teiHeader |
+| `correspAction/@type` | `sent` oder `received`, ein Brief führt mindestens je eine Aktion |
+| `persName/@ref`, `placeName/@ref` | Normdaten-URI der Person oder des Orts |
+| `date/@when` | Datum mit Tag-, Monats- oder Jahrespräzision (`YYYY-MM-DD`, `YYYY-MM`, `YYYY`) |
+| `date/@from`, `date/@to` | Zeitraum |
+| `date/@notBefore`, `date/@notAfter` | Terminus post und ante quem |
+| `note/ref[@type="hasLanguage"]` | Briefsprache als ISO-Code oder Lexvo-URI |
+| `note/ref[@type="mentionsSubject"]` | Thema, `@target` verweist auf ein kontrolliertes Vokabular, der Textinhalt ist die Bezeichnung |
+| `note/ref[@type="mentionsPerson"]` | Erwähnte Person außerhalb von Absender und Empfänger |
+| `note/ref[@type="mentionsPlace"]` | Erwähnter Ort außerhalb der Absende- und Empfangsorte |
 
-## Attribute
+Unsicherheitsangaben (`cert`, `[NN]`, Regionen statt Orte) beschreibt [uncertainty-specification.md](uncertainty-specification.md).
 
-### correspDesc
+### Internes Datenmodell
 
-| Attribut | Beschreibung | Beispiel |
-|----------|--------------|----------|
-| @ref | URL des Briefs | https://gams.uni-graz.at/o:hsa.letter.654 |
-| @key | Brief-Nummer in der Edition | 654 |
-| @source | Verweis auf bibl/@xml:id | #uuid |
+Der Parser erzeugt Briefe als Hauptentitäten und Indizes für Personen, Orte, Sprachen und Themen, beschrieben in [architecture.md](architecture.md#datenmodell). Drei Eigenheiten der Parser-Ausgabe führten bei der Implementierung der Forschungspfade zu falschen Annahmen und sind deshalb festgehalten.
 
-Das ref-Attribut verlinkt zur Briefedition, key ist eine interne Kennung, source verweist auf die bibliographische Quelle im teiHeader.
+- Personen tragen `letter_count` als Summe aus `as_sender` und `as_recipient`. Ein Feld `letters_sent` gibt es nicht.
+- Themen tragen ihre Bezeichnung in `label`. Code, der `name` erwartet, greift auf `s.label || s.name` zurück.
+- CMIF speichert Sprachen oft als URI (`http://lexvo.org/id/iso639-3/deu`). `LANGUAGE_LABELS` in `constants.js` bildet sie auf lesbare Bezeichnungen ab.
 
-### correspAction
+## Normdaten und Anschlüsse
 
-| Attribut | Werte | Beschreibung |
-|----------|-------|--------------|
-| @type | sent, received | Sende- oder Empfangsaktion |
+Normdaten-URIs sind der primäre Schlüssel für Abgleich und Aggregation, Anzeigenamen dienen nur der Darstellung, weil Editionen denselben Namen verschieden schreiben (Entscheidung in [specification.md](specification.md#adr-001-normdaten-uris-als-primärer-schlüssel)).
 
-Jeder Brief benötigt mindestens zwei correspAction-Elemente: eines mit type="sent" für den Absender und eines mit type="received" für den Empfänger.
+| Entität | System | URL-Muster |
+|---|---|---|
+| Person | VIAF | `viaf.org/viaf/{id}` |
+| Person | GND der Deutschen Nationalbibliothek | `d-nb.info/gnd/{id}` |
+| Person | Library of Congress | `id.loc.gov/authorities/names/{id}` |
+| Person | Bibliothèque nationale de France | `data.bnf.fr/ark:/12148/{id}` |
+| Ort | GeoNames | `sws.geonames.org/{id}` |
+| Sprache | ISO 639-1 | `de`, `fr`, `en` |
+| Sprache | Lexvo | `lexvo.org/id/iso639-3/{code}` |
 
-### persName / placeName
+GeoNames liefert die Koordinaten für die Karte. Fehlen sie, löst `resolve_geonames_wikidata.py` in der Vorprozessierung und die Wikidata-Anreicherung im Browser Koordinaten auf. Für Personen mit VIAF- oder GND-URI holt die Wikidata-Anreicherung Porträts, Lebensdaten und Berufe.
 
-| Attribut | Beschreibung | Beispiel |
-|----------|--------------|----------|
-| @ref | Authority-URL | https://viaf.org/viaf/12345 |
+## Verzerrungen
 
-Das ref-Attribut verlinkt zu normierten Identifikatoren in Authority-Systemen wie VIAF oder GND für Personen und GeoNames für Orte.
+- Normdatenabdeckung: Personen und Orte ohne URI lassen sich nur über den Namen zusammenführen. Varianten derselben Person erscheinen dann getrennt.
+- Ego-zentrierte Bestände: Ein Nachlass wie das HSA zeigt das Netzwerk aus der Perspektive einer Person. Beziehungen zwischen anderen Korrespondenten fehlen strukturell.
+- Datierung: Unvollständige Daten werden einem Jahr zugeordnet, undatierte Briefe stehen außerhalb der Zeitachse (siehe [design.md](design.md#visualisierungslogik)).
 
-### date
+## Workflow
 
-| Attribut | Beschreibung | Format |
-|----------|--------------|--------|
-| @when | Exaktes Datum | YYYY-MM-DD, YYYY-MM, YYYY |
-| @from | Beginn Zeitraum | YYYY-MM-DD |
-| @to | Ende Zeitraum | YYYY-MM-DD |
-| @notBefore | Frühestens | YYYY-MM-DD |
-| @notAfter | Spätestens | YYYY-MM-DD |
+### Parsing im Browser
 
-Datumsangaben können präzise (when) oder unsicher sein (from/to für Zeiträume, notBefore/notAfter für ungefähre Datierungen). Die Formate erlauben Präzision auf Tag, Monat oder Jahr.
+`cmif-parser.js` parst hochgeladene oder per URL geladene Dateien mit `DOMParser`. Alle Elemente werden über den TEI-Namespace `http://www.tei-c.org/ns/1.0` mit `getElementsByTagNameNS` abgefragt, sonst bleiben sie unsichtbar. Für das Jahr prüft der Parser `when`, dann `from`, dann `notBefore` und nimmt die ersten vier Zeichen, ohne Datum ergibt sich `null`. `parseAuthorityRef()` erkennt VIAF, GND, LC, BNF, GeoNames und Lexvo per regulärem Ausdruck mit Capturing Group und gibt unbekannte URLs vollständig mit Typ `unknown` zurück. Jahre unter 1400 oder über 2100 werden in der Ansicht verworfen, weil Erfassungs- oder Parsingfehler wie 0 oder 20250 die Zeitachse sonst sprengen (`explore.js`).
 
-## Authority-Systeme
+### Vorprozessierung erweiterter Datensätze
 
-### Personen
+Erweiterte Datensätze wie das HSA werden in Python vorprozessiert (`preprocessing/build_hsa_data.py`), weil Größe und Quelle das Laden im Browser ausschließen. Der Ablauf steht in [architecture.md](architecture.md#datenfluss).
 
-| System | URL-Muster | Beispiel |
-|--------|------------|----------|
-| VIAF | viaf.org/viaf/{id} | https://viaf.org/viaf/261931943 |
-| GND | d-nb.info/gnd/{id} | https://d-nb.info/gnd/118540238 |
-| LC | id.loc.gov/authorities/names/{id} | n79021164 |
-| BNF | data.bnf.fr/ark:/12148/{id} | cb11905726z |
+### Laden externer CMIF-Dateien
 
-VIAF ist der internationale Personen-Identifier, GND wird von der Deutschen Nationalbibliothek gepflegt, LC von der Library of Congress, BNF von der Bibliothèque nationale de France.
+- GitHub-Raw-URLs (`https://raw.githubusercontent.com/{user}/{repo}/{branch}/{pfad}.xml`) erlauben CORS.
+- Bei einem CORS-Fehler die Datei herunterladen und per Drag-and-Drop hochladen.
+- Dateien über etwa 5 MB können das sessionStorage-Limit überschreiten, die Fehlermeldung nennt dann die Größe.
+- Orte ohne Koordinaten erscheinen in der Ortsansicht, aber nicht auf der Karte. Der Link „ohne Geodaten“ listet sie.
 
-### Orte
+## Testdatensätze
 
-| System | URL-Muster | Beispiel |
-|--------|------------|----------|
-| GeoNames | sws.geonames.org/{id} | http://sws.geonames.org/2988507 |
+Die Tests laden ausschließlich die lokalen Dateien `test-uncertainty.xml` und `test-hostile.xml` über `parseCMIF` ([testing.md](testing.md)). Die übrigen Datensätze dienten der manuellen Prüfung beim Aufbau.
 
-GeoNames ist das primäre System für geografische Identifikation und liefert Koordinaten für die Kartendarstellung.
+| ID | Name | Briefe | Zeitraum | Quelle |
+|---|---|---|---|---|
+| uncertainty | Uncertainty Test | 22 | 1900 | CorrespExplorer, `docs/data/test-uncertainty.xml` |
+| hebel | Hebel-Briefe | 25 | 1791–1826 | TU Darmstadt, https://tueditions.ulb.tu-darmstadt.de/g/pa000018-0077 |
+| rollett | Rollett-Korrespondenz | 328 | 1877–1897 | Universität Graz, https://gams.uni-graz.at/context:rollett/CMI |
+| humboldt-spiker | Humboldt-Spiker | 156 | 1827–1846 | correspSearch, https://correspsearch.net/storage/avhumboldt/Spiker.xml |
+| humboldt-duvinage | Humboldt-Duvinage | 67 | 1835–1857 | correspSearch, https://correspsearch.net/storage/avhumboldt/Duvinage.xml |
+| schoenbach | Schönbach-Briefe | 5 | 1888–1911 | ACDH-OEAW, https://raw.githubusercontent.com/acdh-oeaw/schoenbach/main/cmif_schoenbach.xml |
 
-### Sprachen
+### Datenabdeckung
 
-| System | URL-Muster | Beispiel |
-|--------|------------|----------|
-| ISO 639-1 | de, fr, en | de |
-| Lexvo | lexvo.org/id/iso639-3/{code} | http://lexvo.org/id/iso639-3/eus |
+| Merkmal | Uncertainty | Hebel | Rollett | H-Spiker | H-Duvinage | Schönbach |
+|---|---|---|---|---|---|---|
+| GND-IDs | teils | ja | ja | ja | ja | ja |
+| GeoNames | teils | ja | ja | ja | ja | ja |
+| Sprache | teils | ja | nein | nein | nein | nein |
+| Themen | nein | nein | nein | nein | nein | nein |
+| Exakte Daten | teils | teils | ja | teils | teils | ja |
+| Alle Orte bekannt | nein | nein | ja | ja | ja | ja |
+| Alle Personen bekannt | nein | ja | nein | ja | ja | ja |
 
-ISO 639-1 verwendet Zwei-Buchstaben-Codes, Lexvo bietet URIs für alle ISO-639-3-Sprachcodes inklusive historischer und kleiner Sprachen.
+### Eigenheiten je Datensatz
 
-## Erweiterte Metadaten (note)
+- Uncertainty Test: synthetisch, 22 Fälle in vier Sektionen (Datum 001–007, Person 008–013, Ort 014–018, Sonderfälle 019–022), darunter `cert="low"`, `[NN]`, Teilnamen, Personen ohne Normdaten und mit GND statt VIAF, Regionen, Organisation als Absender, kombinierte Unsicherheiten, Sprach- und Themenfelder. Die Fallliste führt [uncertainty-specification.md](uncertainty-specification.md#test-cases).
+- Hebel: ein großer Teil der Briefe ohne Absendeort, `cert="low"` und Zeitbereiche wie „Sommer 1799?“, einziger externer Datensatz mit Sprachangabe.
+- Rollett: größter der externen Testdatensätze, internationale Wissenschaftlerkorrespondenz, `[NN]` für unbekannte Absender, Konzentration auf 1896–1897.
+- Humboldt-Spiker: wechselnde Absendeorte, asymmetrische Korrespondenz, `cert="low"` mit `evidence="conjecture"`.
+- Humboldt-Duvinage: französische Datumsnotation, nur Berlin und Potsdam als Orte, Duplikat bei `key="4"`, viele Briefe ohne präzises Datum.
+- Schönbach: minimal, gute Verlinkung zu HTML-Editionen, Orte in Böhmen und der Steiermark.
 
-Einige CMIF-Dateien enthalten erweiterte Metadaten im note-Element mit ref-Elementen verschiedener Typen.
+### Prüfreihenfolge
 
-### hasLanguage
-
-```xml
-<ref type="hasLanguage" target="de"/>
-```
-
-Gibt die Sprache an, in der der Brief geschrieben ist. Kann ISO-Code oder Lexvo-URI sein.
-
-### mentionsSubject
-
-```xml
-<ref type="mentionsSubject" target="https://gams.uni-graz.at/o:hsa.subjects#S.4567">
-  Cercle d'Etudes Euskariennes
-</ref>
-```
-
-Themen, die im Brief behandelt werden. Der target verweist auf ein kontrolliertes Vokabular oder Thesaurus, der Textinhalt ist die menschenlesbare Bezeichnung.
-
-### mentionsPerson
-
-```xml
-<ref type="mentionsPerson" target="https://viaf.org/viaf/34446283">
-  Lacombe, Georges
-</ref>
-```
-
-Personen, die im Brief erwähnt werden, aber nicht Absender oder Empfänger sind. Nutzt dieselben Authority-Systeme wie persName.
-
-### mentionsPlace
-
-```xml
-<ref type="mentionsPlace" target="http://sws.geonames.org/2988507">
-  Paris
-</ref>
-```
-
-Orte, die im Brief erwähnt werden, aber nicht Absende- oder Empfangsort sind. Nutzt GeoNames-URIs.
-
-## Parsing-Logik
-
-### TEI-Namespace
-
-TEI-XML nutzt den Namespace http://www.tei-c.org/ns/1.0. Beim Parsing müssen alle Elemente mit diesem Namespace abgefragt werden, sonst werden sie nicht gefunden. Die Funktion getElementsByTagNameNS akzeptiert Namespace und Element-Name.
-
-### Datums-Normalisierung
-
-CMIF erlaubt verschiedene Datumsformate. Die Parsing-Logik prüft in dieser Reihenfolge: when für exakte Daten, from für Zeitraum-Beginn, notBefore für frühestmögliches Datum. Aus dem gefundenen Attribut wird das Jahr extrahiert durch substring der ersten vier Zeichen. Falls kein Datum vorhanden, wird null zurückgegeben.
-
-### Authority-ID Extraktion
-
-URLs in ref-Attributen müssen geparst werden, um Typ und ID zu extrahieren. VIAF-URLs enthalten "viaf.org/viaf/" gefolgt von Ziffern. GND-URLs enthalten "d-nb.info/gnd/" gefolgt von Ziffern. GeoNames-URLs enthalten "geonames.org/" gefolgt von Ziffern. Die Extraktion nutzt reguläre Ausdrücke mit Capturing Groups. Falls kein bekanntes Muster gefunden wird, wird die komplette URL als ID mit Typ "unknown" zurückgegeben.
-
-## HSA-Referenz-Beispiel
-
-Das Hugo Schuchardt Archiv zeigt die praktische Anwendung des CMIF-Standards mit umfangreichen Metadaten.
-
-### Statistik
-
-| Metrik | Wert |
-|--------|------|
-| Briefe | 11.576 |
-| Sender | 846 |
-| Empfänger | 112 |
-| Absende-Orte | 774 |
-| Subjects | 1.622 |
-| Zeitraum | 1859-1927 |
-
-### Besonderheiten
-
-Das HSA ist ein ego-zentriertes Netzwerk um Hugo Schuchardt mit bidirektionaler Korrespondenz. Briefe wurden sowohl an Schuchardt geschickt als auch von ihm versendet. Das Archiv nutzt das LOD Academy CMIF Vocabulary für Metadaten-Typen. VIAF ist das primäre Authority-System für 96 Prozent der Personen. Die Briefe wurden in 18 verschiedenen Sprachen verfasst.
-
-### Subject-Kategorien
-
-| Kategorie | Anzahl | URI-Muster |
-|-----------|--------|------------|
-| HSA-Subjects | 1.272 | gams.uni-graz.at/o:hsa.subjects#S.{id} |
-| HSA-Languages | 200 | gams.uni-graz.at/o:hsa.languages#L.{id} |
-| Lexvo | 148 | lexvo.org/id/iso639-3/{code} |
-
-Das HSA nutzt ein eigenes kontrolliertes Vokabular für Themen und Sprachen. 1.272 Subjects verwenden HSA-eigene URIs. 200 Sprach-Referenzen nutzen HSA-eigene URIs, zusätzlich 148 Referenzen auf Lexvo für standardisierte ISO-Codes.
-
-### Top-Korrespondenten
-
-| Person | Briefe | VIAF |
-|--------|--------|------|
-| Leo Spitzer | 447 | 46804188 |
-| Julio de Urquijo Ybarra | 243 | 18030027 |
-| Georges Lacombe | 235 | 34446283 |
-| Theodor Gartner | 222 | 59114592 |
-| Edward Spencer Dodgson | 181 | 27433725 |
-
-Diese fünf Personen machen 1.328 Briefe aus, was 11,5 Prozent des gesamten Korpus entspricht.
-
-### Top-Absende-Orte
-
-| Ort | Briefe | GeoNames |
-|-----|--------|----------|
-| Graz | 2.371 | 2778067 |
-| Wien | 855 | 2761369 |
-| Paris | 781 | 2988507 |
-| Leipzig | 247 | 2879139 |
-| Berlin | 237 | 2950159 |
-
-Diese fünf Orte machen 4.491 Briefe aus, was 38,8 Prozent des gesamten Korpus entspricht. Graz als Schuchardts Wirkungsort ist mit 20,5 Prozent der mit Abstand häufigste Absende-Ort.
-
-## Ressourcen
-
-- CMIF Spezifikation: https://github.com/TEI-Correspondence-SIG/CMIF
-- correspSearch API: https://correspsearch.net/api
-- TEI Guidelines correspDesc: https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-correspDesc.html
+1. Uncertainty, alle Unsicherheitsfälle systematisch
+2. Schönbach, minimal und schnell, alle Ansichten mit wenig Daten
+3. Hebel, Sprachfilter und viele fehlende Orte
+4. Humboldt-Spiker, mittlere Größe und Datierungsunsicherheit
+5. Humboldt-Duvinage, wenige Orte und fehlende Daten
+6. Rollett, Netzwerk mit vielen Knoten und `[NN]`-Behandlung

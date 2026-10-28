@@ -1,8 +1,27 @@
-# Design System - CorrespExplorer
+---
+title: Design
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2025-11-26
+updated: 2026-10-28
+authors: [Christopher Pollin]
+template:
+  name: Vorlage Design
+  version: 0.3
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/design
+  alias: https://dhcraft.org/Promptotyping/#promptotyping-document-design
+related: [specification, architecture, uncertainty-specification]
+---
 
-Stand: 2025-12-03
+# Design
 
-Technische Vorgaben fuer das UI-Design mit Fokus auf Forschungsdaten-Lesbarkeit und historischem Charakter.
+Technische Vorgaben fuer das UI-Design mit Fokus auf Forschungsdaten-Lesbarkeit und historischem Charakter. Die kanonischen Werte liegen in `docs/css/tokens.css`, die daraus abgeleiteten Handlungsregeln für Agenten in `CLAUDE.md`.
 
 ---
 
@@ -238,7 +257,7 @@ Keine box-shadow. Tiefe durch Border-Kontrast.
 
 ### 5.2 Buttons
 
-**Primary Button:**
+Primary Button:
 ```css
 .btn-primary {
     background: var(--color-primary);
@@ -254,7 +273,7 @@ Keine box-shadow. Tiefe durch Border-Kontrast.
 }
 ```
 
-**Secondary Button:**
+Secondary Button:
 ```css
 .btn-secondary {
     background: transparent;
@@ -447,3 +466,37 @@ Implementiert in base.css.
 | Icon-Fonts fuer Daten-Nodes | Unlesbar bei vielen Datenpunkten |
 | Rust Red als Hintergrund | Zu aggressiv fuer Arbeitsumgebung |
 | Animierte Daten-Updates | Ablenkend bei Analyse |
+
+---
+
+## Visualisierungslogik
+
+### Undatierte Briefe als abgesetzter Balken
+
+Briefe ohne Datum stehen in einem eigenen Balken rechts der Timeline und werden keinem Platzhalterjahr zugeordnet, das die Zeitachse verzerren würde. Die Trennung macht die Datenlage sichtbar. Ein Klick auf den Balken filtert auf die undatierten Briefe. Sind alle Briefe datiert, zeigt ein gestrichelter Platzhalter mit Häkchen diesen Zustand an. Die Timeline gruppiert dazu nach `datePrecision`.
+
+### Markierung nur an unsicheren Werten
+
+Exakte Daten bleiben ohne Markierung, damit gute Daten kein visuelles Rauschen erzeugen. Nur Unsicherheiten erhalten Farbe und Icon nach der Tabelle unter [Unsicherheits-Indikatoren](#unsicherheits-indikatoren). `formatters.js` liefert die CSS-Klassen aus `datePrecision`. Die Entscheidung steht in [specification.md](specification.md#adr-002-unsicherheit-sichtbar-machen).
+
+### Sprachfarben
+
+Bei Korpora mit vielen Sprachen werden gestapelte Balken mit lauter kräftigen Farben unlesbar. Deshalb erhält nur die dominante Sprache eine kräftige Farbe, die übrigen Pastelltöne (`computeLanguageColors()` sortiert nach Häufigkeit). Fehlen Sprachdaten ganz (`hasLanguageData` prüft, ob ein Brief `language.code` trägt), wären gestapelte Balken mit einer einzigen Kategorie irreführend. Die Balken bleiben dann einfarbig und die Legende nennt das Fehlen.
+
+### Netzwerk
+
+Die Mindestzahl gemeinsamer Jahre (`minYears`) für eine Kante richtet sich nach der Zeitspanne des Datensatzes, 1 bis zu fünf Jahren, 2 bis zu zwanzig Jahren, sonst 3. Kurze Zeiträume haben wenige Beziehungen und brauchen eine niedrige Schwelle, lange Zeiträume eine höhere, damit das Netzwerk lesbar bleibt. Alternativ färbt eine sequentielle Skala (D3 `interpolateYlGnBu`) jeden Korrespondenten nach dem Jahr seines ersten Briefs, eine Gradient-Legende zeigt den Jahresbereich. So werden frühe und späte Teilnehmer und die Entwicklung des Netzwerks sichtbar.
+
+## Interaktionsmuster
+
+### Transparente Datenlage
+
+Fehlende Daten werden ausdrücklich als „unbekannt“ markiert, Tooltips erklären die Symbole. Forschende brauchen diese Transparenz, um die Reichweite ihrer Schlüsse einzuschätzen.
+
+### Progressive Disclosure
+
+Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige Metadaten in Dialog oder Panel. Bei großen Datensätzen würde die gleichzeitige Anzeige aller Details überfordern.
+
+### Forschungspfade
+
+Jeder Schritt eines Pfads zeigt seine Aktion unter der Bezeichnung statt im Tooltip, weil Tooltips Hover verlangen und wesentliche Information verstecken. Die Pfadnummern stehen auf `var(--color-accent)`, nachdem weiße Ziffern auf hellem Grund unsichtbar waren. Texte über Lücken in Partnerdaten folgen [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten).

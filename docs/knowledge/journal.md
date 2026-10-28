@@ -1,3 +1,24 @@
+---
+title: Journal
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: active
+language: de
+created: 2025-11-26
+updated: 2026-10-28
+authors: [Christopher Pollin]
+template:
+  name: Vorlage Journal
+  version: 0.5
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/journal
+  alias: https://dhcraft.org/Promptotyping/#promptotyping-document-journal
+related: [project, specification, plan, handoff]
+---
+
 # Journal: CorrespExplorer
 
 Chronologisches Entwicklungsprotokoll mit detaillierten Implementierungsnotizen.
@@ -9,6 +30,7 @@ Entwicklungszeitraum: Oktober 2025 (HerData) bis Dezember 2025, Nacharbeiten 202
 ## Phasen-Uebersicht
 
 Aktuelle Phasen:
+- Vereinheitlichung nach Promptotyping-Vorlagen (Oktober 2026, ohne Phasennummer)
 - Kuration fuer die Promptotyping-Fallstudie (Oktober 2026, ohne Phasennummer)
 - Phase 40: Sicherheits-, Stabilitaets- und Tastatur-Fixes (Oktober 2026)
 - Phase 39: Activity Heatmap View
@@ -51,6 +73,23 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2026-10-28 Vereinheitlichung nach Promptotyping-Vorlagen
+
+Die Wissensbasis in `docs/knowledge/` folgt jetzt der Konvention für Promptotyping Documents und ihren Vorlagen. Der Stand davor ist Commit `29dfc15`, den das Paper zur Fallstudie zitiert. Er führte Journal, Context Map, die Liste bekannter Probleme und Themendokumente. Die Belegcommits der Fallstudie bleiben unverändert gültig, `91d965a` (Einführung der Context Map) und `39b86d4` (Entfernung ihrer Selbstbescheinigung) für die Episode der Context Map, `85da32f` für die entfernten unbelegten NN/g-Zahlen.
+
+- Umbenannt: `CONTEXT-MAP.md` zu `INDEX.md`, `JOURNAL.md` zu `journal.md`, `uncertainty-concept.md` zu `uncertainty-specification.md`. Die Paper-Dateien liegen in `research-artefacts/`.
+- `INDEX.md` nach Vorlage Index neu geschrieben. Wartungsabläufe gingen nach `CLAUDE.md`, Dokumentmatrix mit Stabilitätsangaben und die Konformitätsnotiz entfielen.
+- `user-stories.md` wurde zu `specification.md` mit Anforderungen, Stories, Funktionsumfang und Entscheidungen. Die Aussage „Alle 34 User Stories sind implementiert“ und die Status-Zeilen je Story wurden nicht übernommen, weil der Umsetzungsstand nie gegen den Code geprüft war und die Befunde 6 und 8 ihm widersprechen.
+- `cmif-standard.md`, `demo-datasets.md` und `cmif-sources.md` gingen in `data.md` auf. Die vorgeschlagenen Presets wurden als historischer Stand in `architecture.md` beschrieben, die Verbesserungsvorschläge der Datensatzanalyse in `plan.md` übernommen.
+- `learnings.md` wurde aufgeteilt, Parsing nach `data.md`, Zero-Build, Entwurfsmuster und `explore.js` nach `architecture.md`, Visualisierung und Interaktion nach `design.md`, übergreifende Entscheidungen als ADR-001 bis ADR-005 nach `specification.md`. Die unbelegte Angabe „unter 200 ms Renderzeit“ entfiel.
+- `KNOWN-ISSUES.md`: Die offenen Befunde 6 bis 8 stehen mit ihren Nummern in `plan.md`. Aus dem Archiv fehlten im Journal die folgenden Behebungen. PRIMARY_COLOR in `explore.js` von `#C65D3B` auf `#A64B3F` und der README-Verweis auf die gelöschte `refactoring-plan.md`, beide in `dbda53f` (2025-11-27). Sidebar-Breite über `var(--sidebar-width)` (`7657cd1`) und fehlende VIEWS-Konstante MENTIONS_FLOW (`c528d8c`), beide am 2025-12-09 als Phase 31 verzeichnet, die im Journal sonst fehlt. design.md mit tokens.css synchronisiert, als behoben vermerkt am 2025-12-18 (Phase 33).
+- `VAULT-RULES.md` ging in die Schreibregeln von `CLAUDE.md` auf. Neu sind `project.md`, `plan.md` und `handoff.md` mit dem offenen Punkt zum Branch `feature/research-dashboards`.
+- `docs/js/vault.js` entfernt YAML-Frontmatter vor dem Rendern und führt die neue Dokumentliste, alte Anker (`#user-stories`, `#learnings`, `#cmif-sources`, `#demo-datasets`, `#uncertainty`) leiten weiter.
+
+Prüfung: Browser-Test-Runner und `vault.html` für jeden Dokumentanker in headless Chrome, YAML-Parse aller Frontmatter.
 
 ---
 

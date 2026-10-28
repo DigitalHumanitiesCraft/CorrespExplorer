@@ -1,413 +1,411 @@
-# User Stories: CMIF Explorer
-
-Systematische Sammlung von Anwendungsfaellen fuer ein Tool zur Visualisierung von Korrespondenz-Metadaten im CMIF-Format.
-
-## Zielgruppen
-
-1. Forschende (Digital Humanities, Geschichtswissenschaft, Literaturwissenschaft)
-2. Archivar:innen und Bibliothekar:innen
-3. Editions-Projekte
-4. Interessierte Oeffentlichkeit
-
+---
+title: Specification
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2025-11-26
+updated: 2026-10-28
+authors: [Christopher Pollin]
+template:
+  name: Vorlage Specification
+  version: 0.3
+  url: https://dhcraft.org/Promptotyping/promptotyping-document/specification
+  alias: https://dhcraft.org/Promptotyping/#promptotyping-document-specification
+related: [project, data, architecture, design, uncertainty-specification, plan]
 ---
 
-## Daten-Import
+# Specification
 
-### US-01: CMIF-Datei hochladen
-Als Forschende moechte ich eine lokale CMIF-XML-Datei hochladen, um meine eigenen Korrespondenz-Daten zu visualisieren.
+Die Specification hält fest, was CorrespExplorer leisten soll und warum. Die Anforderungen und Stories ändern sich mit dem Funktionsumfang, die Entscheidungen wachsen monoton und werden bei Revision durch einen neuen Eintrag abgelöst. Die Behandlung unsicherer Daten ist in [uncertainty-specification.md](uncertainty-specification.md) spezialisiert.
 
-Akzeptanzkriterien:
-- Drag-and-Drop oder Datei-Dialog
+## Anforderungen
+
+### Funktionale Anforderungen
+
+Die funktionalen Anforderungen stehen als Akzeptanzkriterien bei den Stories im nächsten Abschnitt.
+
+### Nicht-funktionale Anforderungen
+
+- NFR-01: Die Anwendung läuft vollständig im Browser ohne Backend. Hochgeladene Dateien verlassen den Rechner nicht, URL-Importe laden direkt von der angegebenen Quelle. Maßstab: keine Serverkomponente im Repository, Auslieferung als statische Seite über GitHub Pages.
+- NFR-02: Kein Build-Schritt. Maßstab: `docs/` ist ohne Werkzeugkette lauffähig ([architecture.md](architecture.md#zero-build)).
+- NFR-03: Daten aus CMIF und Wikidata werden vor jeder Ausgabe in HTML escaped, Links nur mit `http` und `https` gesetzt. Maßstab: Suite `test-security.js` gegen `test-hostile.xml`.
+- NFR-04: Unsicherheit in den Daten bleibt sichtbar und wird nicht durch falsche Präzision überdeckt. Maßstab: [uncertainty-specification.md](uncertainty-specification.md).
+- NFR-05: Alle interaktiven Elemente sind per Tastatur bedienbar und haben einen sichtbaren Fokus. Maßstab: [design.md](design.md#9-accessibility).
+
+## Epics und User Stories
+
+Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Ihr Umsetzungsstand ist nicht systematisch gegen den Code geprüft. Bekannte Abweichungen führt [plan.md](plan.md#offene-befunde), etwa beim Laden über die correspSearch-API (US-02) und beim Personenfilter für Personen ohne Normdaten (US-10).
+
+### Datenimport
+
+#### US-01 CMIF-Datei hochladen
+
+Als Forschende möchte ich eine lokale CMIF-XML-Datei hochladen, um meine eigenen Korrespondenzdaten zu visualisieren.
+
+- Drag-and-Drop oder Dateidialog
 - Validierung des XML-Formats
-- Fehlermeldung bei ungueltigem Format
-- Status: IMPLEMENTIERT
+- Fehlermeldung bei ungültigem Format
 
-### US-02: CMIF von URL laden
-Als Forschende moechte ich eine CMIF-Datei von einer URL laden, um Daten aus Online-Repositorien zu nutzen.
+#### US-02 CMIF von URL laden
 
-Akzeptanzkriterien:
+Als Forschende möchte ich eine CMIF-Datei von einer URL laden, um Daten aus Online-Repositorien zu nutzen.
+
 - URL-Eingabefeld
 - CORS-Fehlerbehandlung mit Hinweis
-- Unterstuetzung von correspSearch-API
-- Status: IMPLEMENTIERT
+- Unterstützung der correspSearch-API
 
-### US-03: Beispiel-Datensatz erkunden
-Als neue Nutzerin moechte ich einen Beispiel-Datensatz laden, um die Funktionen des Tools kennenzulernen.
+#### US-03 Beispieldatensatz erkunden
 
-Akzeptanzkriterien:
-- Vorprozessierter HSA-Datensatz verfuegbar
-- Ein-Klick-Laden
-- Status: IMPLEMENTIERT
+Als neue Nutzerin möchte ich einen Beispieldatensatz laden, um die Funktionen des Werkzeugs kennenzulernen.
 
----
+- Vorprozessierter HSA-Datensatz verfügbar
+- Laden mit einem Klick
 
-## Ueberblick und Statistik
+### Überblick und Statistik
 
-### US-04: Datensatz-Statistiken sehen
-Als Forschende moechte ich auf einen Blick sehen, wie viele Briefe, Personen und Orte im Datensatz enthalten sind.
+#### US-04 Datensatz-Statistiken sehen
 
-Akzeptanzkriterien:
+Als Forschende möchte ich auf einen Blick sehen, wie viele Briefe, Personen und Orte der Datensatz enthält.
+
 - Statistik-Cards mit Kernzahlen
-- Zeitraum-Angabe (min-max Jahr)
-- Anzahl Orte mit/ohne Koordinaten
-- Status: IMPLEMENTIERT
+- Zeitraum (minimales und maximales Jahr)
+- Anzahl der Orte mit und ohne Koordinaten
 
-### US-05: Zeitliche Verteilung verstehen
-Als Forschende moechte ich die zeitliche Verteilung der Korrespondenz visualisiert sehen, um Hochphasen und Luecken zu erkennen.
+#### US-05 Zeitliche Verteilung verstehen
 
-Akzeptanzkriterien:
-- Timeline-Balkendiagramm
+Als Forschende möchte ich die zeitliche Verteilung der Korrespondenz sehen, um Hochphasen und Lücken zu erkennen.
+
+- Timeline als Balkendiagramm
 - Gruppierung nach Jahr oder Dekade
-- Interaktiver Zeitfilter durch Klick
-- Status: IMPLEMENTIERT
+- Zeitfilter per Klick
 
----
+#### US-27 Datensatz-Übersicht als Einstieg
 
-## Raeumliche Exploration
+Als Forschende möchte ich beim Laden eines Datensatzes eine Übersicht sehen, um Datenqualität und Struktur sofort einschätzen zu können.
 
-### US-06: Korrespondenz auf Karte sehen
-Als Forschende moechte ich die Absendeorte auf einer Karte sehen, um die raeumliche Verteilung zu verstehen.
+- Übersicht als Standardansicht beim Laden
+- Statistik-Cards für Briefe, Korrespondenten, Orte und Zeitraum
+- Balken für exakte Datierungen, identifizierte Personen und georeferenzierte Orte
+- Quellen-Metadaten aus dem teiHeader (Editor, Publisher, Lizenz)
+- Die fünf aktivsten Korrespondenten mit Briefanzahl
+- Sprachverteilung bei mehrsprachigen Datensätzen
+- Ansichtsempfehlungen auf Basis der Datenqualität
+- Schnellzugriff auf die anderen Ansichten
+- Sidebar ausgeblendet für volle Breite
 
-Akzeptanzkriterien:
-- Interaktive Karte mit Zoom/Pan
+### Räumliche Exploration
+
+#### US-06 Korrespondenz auf der Karte sehen
+
+Als Forschende möchte ich die Absendeorte auf einer Karte sehen, um die räumliche Verteilung zu verstehen.
+
+- Interaktive Karte mit Zoom und Pan
 - Clustering bei vielen Punkten
-- Kreisgroesse proportional zur Briefanzahl
-- Status: IMPLEMENTIERT
+- Kreisgröße proportional zur Briefanzahl
 
-### US-07: Orts-Details abrufen
-Als Forschende moechte ich auf einen Ort klicken, um zu sehen, wie viele Briefe von dort gesendet wurden und von wem.
+#### US-07 Orts-Details abrufen
 
-Akzeptanzkriterien:
+Als Forschende möchte ich auf einen Ort klicken, um zu sehen, wie viele Briefe von dort gesendet wurden und von wem.
+
 - Popup mit Ortsname
-- Anzahl Briefe
-- Liste der Absender (Top 5)
-- Status: IMPLEMENTIERT
+- Anzahl der Briefe
+- Die fünf häufigsten Absender
 
-### US-08: Fehlende Koordinaten erkennen
-Als Forschende moechte ich wissen, welche Orte keine Koordinaten haben, um die Datenqualitaet einschaetzen zu koennen.
+#### US-08 Fehlende Koordinaten erkennen
 
-Akzeptanzkriterien:
-- Anzeige "X Orte ohne Geodaten"
-- Liste der Orte ohne Koordinaten abrufbar
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich wissen, welche Orte keine Koordinaten haben, um die Datenqualität einschätzen zu können.
 
----
+- Anzeige der Orte ohne Geodaten
+- Liste dieser Orte abrufbar
 
-## Personen-Exploration
+### Personen
 
-### US-09: Korrespondenten durchsuchen
-Als Forschende moechte ich alle Korrespondenten durchsuchen und sortieren, um wichtige Kontakte zu identifizieren.
+#### US-09 Korrespondenten durchsuchen
 
-Akzeptanzkriterien:
-- Suchbare Liste aller Personen
-- Sortierung nach Briefanzahl, Name
-- Anzeige: gesendet/empfangen
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich alle Korrespondenten durchsuchen und sortieren, um wichtige Kontakte zu identifizieren.
 
-### US-10: Briefe einer Person filtern
-Als Forschende moechte ich alle Briefe einer bestimmten Person sehen, um deren Korrespondenz zu analysieren.
+- Durchsuchbare Liste aller Personen
+- Sortierung nach Briefanzahl und Name
+- Anzeige gesendet und empfangen
 
-Akzeptanzkriterien:
-- Klick auf Person filtert Briefe
-- Filter-Badge zeigt aktiven Filter
-- Filter kann entfernt werden
-- Status: IMPLEMENTIERT
+#### US-10 Briefe einer Person filtern
 
-### US-11: Korrespondenz-Netzwerk visualisieren
-Als Forschende moechte ich sehen, wer mit wem korrespondiert hat, um Netzwerke und Cluster zu erkennen.
+Als Forschende möchte ich alle Briefe einer bestimmten Person sehen, um deren Korrespondenz zu analysieren.
 
-Akzeptanzkriterien:
-- Force-Directed Graph (D3.js)
-- Knoten = Personen (Groesse nach Briefanzahl)
-- Kanten = Briefwechsel
-- Kantenstaerke = Anzahl Briefe
+- Klick auf eine Person filtert die Briefe
+- Filter-Badge zeigt den aktiven Filter
+- Filter lässt sich entfernen
+
+#### US-11 Korrespondenznetzwerk visualisieren
+
+Als Forschende möchte ich sehen, wer mit wem korrespondiert hat, um Netzwerke und Cluster zu erkennen.
+
+- Force-Directed Graph mit D3.js
+- Knoten sind Personen, Größe nach Briefanzahl
+- Kanten sind Briefwechsel, Stärke nach Briefanzahl
 - Zoom und Drag
-- Min. Briefe Filter
-- Klick auf Person filtert Briefe
-- Status: IMPLEMENTIERT
+- Filter nach Mindestzahl der Briefe
+- Klick auf eine Person filtert die Briefe
 
----
+### Briefe
 
-## Brief-Exploration
+#### US-12 Briefe durchsuchen
 
-### US-12: Briefe durchsuchen
-Als Forschende moechte ich alle Briefe durchsuchen und sortieren, um spezifische Korrespondenzen zu finden.
+Als Forschende möchte ich alle Briefe durchsuchen und sortieren, um bestimmte Korrespondenzen zu finden.
 
-Akzeptanzkriterien:
-- Suchbare Liste
-- Sortierung nach Datum, Absender
-- Anzeige: Sender, Empfaenger, Datum, Ort
-- Status: IMPLEMENTIERT
+- Durchsuchbare Liste
+- Sortierung nach Datum und Absender
+- Anzeige von Absender, Empfänger, Datum und Ort
 
-### US-13: Brief-Details ansehen
-Als Forschende moechte ich alle Metadaten eines Briefs sehen, einschliesslich erwaehnter Personen, Orte und Themen.
+#### US-13 Brief-Details ansehen
 
-Akzeptanzkriterien:
-- Modal oder Detail-Ansicht
-- Vollstaendige Metadaten
-- Links zu Authority-Dateien (VIAF, GND)
-- Erwaehnte Entitaeten (mentions)
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich alle Metadaten eines Briefs sehen, einschließlich erwähnter Personen, Orte und Themen.
 
-### US-14: Zur Quelle navigieren
-Als Forschende moechte ich von einem Brief zur Original-Edition navigieren, um den Volltext zu lesen.
+- Dialog oder Detailansicht
+- Vollständige Metadaten
+- Links zu Normdaten (VIAF, GND)
+- Erwähnte Entitäten
 
-Akzeptanzkriterien:
-- Link zur Quell-URL (wenn vorhanden)
-- Oeffnet in neuem Tab
-- Status: IMPLEMENTIERT
+#### US-14 Zur Quelle navigieren
 
----
+Als Forschende möchte ich von einem Brief zur Edition navigieren, um den Volltext zu lesen.
 
-## Filterung und Analyse
+- Link zur Quell-URL, sofern vorhanden
+- Öffnet in neuem Tab
 
-### US-15: Nach Zeitraum filtern
-Als Forschende moechte ich die Korrespondenz auf einen bestimmten Zeitraum einschraenken, um Phasen zu analysieren.
+### Filterung
 
-Akzeptanzkriterien:
-- Slider fuer Start- und Endjahr
-- Dynamische Aktualisierung aller Ansichten
-- Status: IMPLEMENTIERT
+#### US-15 Nach Zeitraum filtern
 
-### US-16: Nach Sprache filtern
-Als Forschende moechte ich nach Briefsprache filtern, um z.B. nur franzoesische Briefe zu sehen.
+Als Forschende möchte ich die Korrespondenz auf einen Zeitraum einschränken, um Phasen zu analysieren.
 
-Akzeptanzkriterien:
-- Checkboxen fuer verfuegbare Sprachen
-- Mehrfachauswahl moeglich
-- Anzahl Briefe pro Sprache angezeigt
-- Status: IMPLEMENTIERT
+- Slider für Start- und Endjahr
+- Alle Ansichten aktualisieren sich
 
-### US-17: Nach Thema filtern (HSA-spezifisch)
-Als Forschende moechte ich nach Themen filtern, um thematisch verwandte Briefe zu finden.
+#### US-16 Nach Sprache filtern
 
-Akzeptanzkriterien:
-- Subject-Tags auswaehlbar
-- Nur bei Datensaetzen mit mentionsSubject
-- Schnellfilter in Sidebar mit Top-5 Themen
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich nach Briefsprache filtern, um etwa nur französische Briefe zu sehen.
 
-### US-18: Filter kombinieren
-Als Forschende moechte ich mehrere Filter kombinieren, um komplexe Anfragen zu stellen.
+- Checkboxen für die vorhandenen Sprachen
+- Mehrfachauswahl
+- Briefanzahl je Sprache
 
-Akzeptanzkriterien:
+#### US-17 Nach Thema filtern in der Sidebar
+
+Als Forschende möchte ich nach Themen filtern, um thematisch verwandte Briefe zu finden.
+
+- Themen auswählbar
+- Nur bei Datensätzen mit `mentionsSubject`
+- Schnellfilter in der Sidebar mit den fünf häufigsten Themen
+
+#### US-18 Filter kombinieren
+
+Als Forschende möchte ich mehrere Filter kombinieren, um komplexe Anfragen zu stellen.
+
 - Alle Filter gleichzeitig anwendbar
-- UND-Verknuepfung
-- Status: IMPLEMENTIERT
+- UND-Verknüpfung
 
-### US-19: Filter zuruecksetzen
-Als Forschende moechte ich alle Filter mit einem Klick zuruecksetzen, um zur Gesamtansicht zurueckzukehren.
+#### US-19 Filter zurücksetzen
 
-Akzeptanzkriterien:
-- Reset-Button
-- Setzt alle Filter auf Standardwerte
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich alle Filter mit einem Klick zurücksetzen, um zur Gesamtansicht zurückzukehren.
 
----
+- Reset-Button setzt alle Filter auf ihre Standardwerte
 
-## Teilen und Export
+### Teilen und Export
 
-### US-20: Gefilterte Ansicht teilen
-Als Forschende moechte ich einen Link zu meiner gefilterten Ansicht teilen, um Kolleg:innen eine spezifische Auswahl zu zeigen.
+#### US-20 Gefilterte Ansicht teilen
 
-Akzeptanzkriterien:
-- Filter-State in URL codiert
-- Link kann kopiert und geteilt werden
-- Empfaenger sieht gleiche Ansicht
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich einen Link zu meiner gefilterten Ansicht teilen, um Kolleg:innen eine bestimmte Auswahl zu zeigen.
 
-### US-21: Daten als CSV exportieren
-Als Forschende moechte ich die (gefilterten) Briefe als CSV exportieren, um sie in Excel oder anderen Tools zu analysieren.
+- Filterzustand in der URL codiert
+- Empfänger sehen dieselbe Ansicht
 
-Akzeptanzkriterien:
+#### US-21 Als CSV exportieren
+
+Als Forschende möchte ich die gefilterten Briefe als CSV exportieren, um sie in Tabellenkalkulation oder anderen Werkzeugen zu analysieren.
+
 - Export der aktuell gefilterten Briefe
-- Spalten: ID, Datum, Sender, Empfaenger, Ort, Sprache
-- Status: IMPLEMENTIERT
+- Spalten ID, Datum, Absender, Empfänger, Ort, Sprache
 
-### US-22: Daten als JSON exportieren
-Als Entwicklerin moechte ich die Daten als JSON exportieren, um sie programmatisch weiterzuverarbeiten.
+#### US-22 Als JSON exportieren
 
-Akzeptanzkriterien:
-- Vollstaendige Datenstruktur
-- Indizes enthalten
-- Status: IMPLEMENTIERT
+Als Entwicklerin möchte ich die Daten als JSON exportieren, um sie programmatisch weiterzuverarbeiten.
 
----
+- Vollständige Datenstruktur mit Indizes
 
-## Integration
+#### US-23 Mit correspSearch verknüpfen
 
-### US-23: Mit correspSearch verknuepfen
-Als Forschende moechte ich von einer Person zu deren Profil bei correspSearch navigieren, um weitere Korrespondenzen zu finden.
+Als Forschende möchte ich von einer Person zu ihrer Suche bei correspSearch navigieren, um weitere Korrespondenzen zu finden.
 
-Akzeptanzkriterien:
-- Link zu correspSearch-Personensuche
-- Nutzt Authority-ID (GND, VIAF)
-- Status: IMPLEMENTIERT
+- Link zur correspSearch-Personensuche über die Normdaten-ID (GND, VIAF)
 
----
+### Themen
 
-## Themen-Exploration
+#### US-24 Themen durchsuchen
 
-### US-24: Themen durchsuchen
-Als Forschende moechte ich alle Themen des Datensatzes durchsuchen, um relevante Diskurse zu finden.
+Als Forschende möchte ich alle Themen des Datensatzes durchsuchen, um relevante Diskurse zu finden.
 
-Akzeptanzkriterien:
-- Liste oder Wolke der Top-Themen
-- Suchfeld fuer Themen
-- Anzeige der Briefanzahl pro Thema
-- Status: IMPLEMENTIERT
+- Liste der häufigsten Themen mit Suchfeld
+- Briefanzahl je Thema
 
-### US-25: Thema-Detail ansehen
-Als Forschende moechte ich zu einem Thema sehen, wer darueber geschrieben hat und wann.
+#### US-25 Thema im Detail ansehen
 
-Akzeptanzkriterien:
-- Liste der Korrespondenten mit Themen-Erwaehnung
-- Zeitliche Verteilung der Erwaehungen
-- Verwandte Themen (Co-Occurrence)
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich zu einem Thema sehen, wer darüber geschrieben hat und wann.
 
-### US-26: Nach Thema filtern
-Als Forschende moechte ich alle Briefe filtern, die ein bestimmtes Thema erwaehnen.
+- Korrespondenten mit Erwähnung des Themas
+- Zeitliche Verteilung der Erwähnungen
+- Verwandte Themen über Kookkurrenz
 
-Akzeptanzkriterien:
-- Klick auf Thema aktiviert Filter
-- Filter-Badge in Sidebar
-- Alle Views zeigen nur gefilterte Briefe
-- Status: IMPLEMENTIERT
+#### US-26 Nach Thema filtern in allen Ansichten
 
----
+Als Forschende möchte ich alle Briefe filtern, die ein bestimmtes Thema erwähnen.
 
-## Datensatz-Uebersicht
+- Klick auf ein Thema aktiviert den Filter
+- Filter-Badge in der Sidebar
+- Alle Ansichten zeigen nur die gefilterten Briefe
 
-### US-27: Datensatz-Uebersicht als Einstieg
-Als Forschende moechte ich beim Laden eines Datensatzes eine Uebersicht sehen, um die Datenqualitaet und Struktur sofort einschaetzen zu koennen.
+### Chronik
 
-Akzeptanzkriterien:
-- Dashboard als Default-View beim Laden
-- Statistik-Cards: Briefe, Korrespondenten, Orte, Zeitraum
-- Datenqualitaet-Balken: Exakte Datierungen, Identifizierte Personen, Georeferenzierte Orte
-- Quellen-Metadaten aus teiHeader (Editor, Publisher, Lizenz)
-- Top-5-Korrespondenten mit Briefanzahl
-- Sprachverteilung bei mehrsprachigen Datensaetzen
-- View-Empfehlungen basierend auf Datenqualitaet
-- Schnellzugriff-Buttons zu anderen Views
-- Sidebar ausgeblendet fuer volle Breite
-- Status: IMPLEMENTIERT
+#### US-28 Chronologische Briefansicht
 
----
+Als Forschende möchte ich alle Briefe auf einem vertikalen Zeitstrahl sehen, um den Verlauf der Korrespondenz nachzuvollziehen.
 
-## Chronik
+- Zeitstrahl von den ältesten zu den jüngsten Briefen
+- Gruppierung nach Jahren mit Jahresmarken
+- Jeder Brief zeigt Datum, Absender, Empfänger und Ort
+- Klick öffnet den Brief-Dialog
+- Nachladen in Blöcken bei großen Datensätzen
 
-### US-28: Chronologische Briefansicht
-Als Forschende moechte ich alle Briefe in einem vertikalen Zeitstrahl sehen, um den chronologischen Verlauf der Korrespondenz nachzuvollziehen.
+#### US-29 Biografische Anreicherung
 
-Akzeptanzkriterien:
-- Vertikaler Zeitstrahl von oben (aelteste) nach unten (neueste)
-- Briefe gruppiert nach Jahren mit visuellen Jahr-Markern
-- Jeder Brief zeigt Datum, Absender, Empfaenger und Ort
-- Klick auf Brief oeffnet Detail-Modal
-- Lazy Loading fuer grosse Datensaetze (100 Briefe pro Batch)
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich biografische Informationen zu den Korrespondenten sehen, um den historischen Kontext besser zu verstehen.
 
-### US-29: Biografische Anreicherung
-Als Forschende moechte ich biografische Informationen zu den Korrespondenten sehen, um den historischen Kontext besser zu verstehen.
+- Button „Mit Wikidata anreichern“ in der Chronik
+- Dialog mit Fortschrittsanzeige und Abbruchmöglichkeit
+- Porträts von Wikimedia Commons, Lebensdaten und Berufe
+- Anreicherung nur für Personen mit Normdaten (VIAF, GND)
 
-Akzeptanzkriterien:
-- Button "Mit Wikidata anreichern" in Chronik-View
-- Modal mit Fortschrittsanzeige waehrend der Anreicherung
-- Portraits von Wikimedia Commons
-- Lebensdaten (Geburts-/Sterbejahr)
-- Berufsbezeichnungen
-- Anreicherung nur fuer Personen mit Normdaten (VIAF, GND)
-- Abbrechen-Option waehrend der Anreicherung
-- Status: IMPLEMENTIERT
+#### US-30 Alter in der Chronik
 
-### US-30: Altersanzeige in Chronik
-Als Forschende moechte ich das Alter der Korrespondenten zum Zeitpunkt des Briefs sehen, um deren Lebensphasen zu verstehen.
+Als Forschende möchte ich das Alter der Korrespondenten zum Zeitpunkt des Briefs sehen, um ihre Lebensphasen einzuordnen.
 
-Akzeptanzkriterien:
-- Alter in Jahren neben Personenname angezeigt
-- Berechnung aus Geburtsjahr und Briefjahr
-- Datenquellen: Wikidata-Anreicherung oder CMIF-eigene Lebensdaten
-- Graceful degradation wenn keine Geburtsdaten vorhanden
-- Status: IMPLEMENTIERT
+- Alter neben dem Namen, berechnet aus Geburts- und Briefjahr
+- Quellen sind die Wikidata-Anreicherung oder Lebensdaten im CMIF
+- Ohne Geburtsdatum entfällt die Angabe
 
-### US-31: Beziehungskontext in Chronik
-Als Forschende moechte ich den Kontext einer Korrespondenzbeziehung sehen, um Briefwechsel besser einordnen zu koennen.
+#### US-31 Beziehungskontext in der Chronik
 
-Akzeptanzkriterien:
-- Badge "Erster Brief" bei erstem Kontakt zwischen zwei Personen
-- Anzeige "Brief X von Y" bei etablierten Beziehungen
-- Korrespondenz-Index wird automatisch aufgebaut
-- Richtungsabhaengig (Sender→Empfaenger)
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich den Kontext einer Korrespondenzbeziehung sehen, um Briefwechsel einordnen zu können.
 
-### US-32: Chronik-Layout-Umschaltung
-Als Forschende moechte ich zwischen verschiedenen Chronik-Layouts wechseln, um je nach Forschungsfrage die passende Darstellung zu waehlen.
+- Badge „Erster Brief“ beim ersten Kontakt zweier Personen
+- Anzeige „Brief X von Y“ bei etablierten Beziehungen
+- Richtungsabhängiger Korrespondenzindex
 
-Akzeptanzkriterien:
-- Drei Layout-Optionen: Karten (detailliert), Kompakt (Listenansicht), Timeline (Sender/Empfaenger getrennt)
-- Toggle-Buttons im Chronik-Header
-- Karten: Portraits, Lebensleisten, vollstaendige Namen
-- Kompakt: Einzelne Zeile pro Brief, viele Briefe sichtbar
-- Timeline: Sender links, Datum/Ort Mitte, Empfaenger rechts - zeigt Kommunikationsrichtung
-- Layout-Wechsel ohne Neuladen der Daten
-- Status: IMPLEMENTIERT
+#### US-32 Chronik-Layout umschalten
 
----
+Als Forschende möchte ich zwischen Chronik-Layouts wechseln, um je nach Forschungsfrage die passende Darstellung zu wählen.
 
-## Forschungspfade
+- Karten mit Porträts, Lebensleisten und vollständigen Namen
+- Kompakt mit einer Zeile je Brief
+- Timeline mit Absender links, Datum und Ort in der Mitte, Empfänger rechts
+- Wechsel ohne Neuladen der Daten
 
-### US-33: Methodisch geleitete Exploration
-Als Forschende moechte ich sehen, welche Forschungsfragen mit dem aktuellen Datensatz beantwortbar sind, um meine Analyse methodisch zu strukturieren.
+### Forschungspfade und Aktivität
 
-Akzeptanzkriterien:
-- Vier epistemische Kategorien: Deskriptiv, Analytisch, Interpretativ, Nicht beantwortbar
-- Jede Frage zeigt einen mehrstufigen Forschungspfad durch Views
-- Klickbare Pfad-Schritte navigieren zum entsprechenden View
-- Top-N Previews zeigen schnelle Antworten
-- "Nicht beantwortbar" zeigt fehlende Daten mit Anreicherungs-Hinweisen
-- Status: IMPLEMENTIERT
+#### US-33 Methodisch geleitete Exploration
 
----
+Als Forschende möchte ich sehen, welche Forschungsfragen mit dem aktuellen Datensatz beantwortbar sind, um meine Analyse methodisch zu strukturieren.
 
-## Aktivitaet
+- Vier epistemische Kategorien (deskriptiv, analytisch, interpretativ, nicht beantwortbar)
+- Jede Frage zeigt einen mehrstufigen Pfad durch die Ansichten, die Schritte navigieren zur Ansicht
+- Vorschauen mit schnellen Antworten
+- Nicht beantwortbare Fragen nennen die fehlenden Daten und Anreicherungsmöglichkeiten
 
-### US-34: Korrespondenz-Aktivitaet visualisieren
-Als Forschende moechte ich die zeitliche Verteilung der Korrespondenz als Kalender-Heatmap sehen, um Aktivitaetsphasen und Muster zu erkennen.
+#### US-34 Korrespondenzaktivität visualisieren
 
-Akzeptanzkriterien:
-- GitHub-Style Heatmap mit Wochentagen und Wochen
-- Farbintensitaet zeigt Briefanzahl pro Tag
-- Jahr-Auswahl fuer Fokus auf einzelne Jahre
-- Statistik-Karten mit Gesamtzahlen
-- Klick auf Tag zeigt Briefe in Detail-Panel
-- Reagiert auf aktive Filter (Person, Thema, Zeitraum)
-- Aktivster Tag nur fuer exakte Daten berechnet (keine Platzhalter)
-- Status: IMPLEMENTIERT
+Als Forschende möchte ich die Korrespondenz als Kalender-Heatmap sehen, um Aktivitätsphasen und Muster zu erkennen.
 
----
+- Heatmap mit Wochentagen und Wochen, Farbintensität nach Briefen je Tag
+- Jahresauswahl
+- Klick auf einen Tag zeigt dessen Briefe
+- Reagiert auf aktive Filter
+- Der aktivste Tag wird nur aus exakten Daten berechnet
 
-## Zusammenfassung: Implementierungs-Status
+## Funktionsumfang
 
-| Kategorie | Implementiert | Offen |
-|-----------|---------------|-------|
-| Daten-Import | 3 | 0 |
-| Ueberblick | 3 | 0 |
-| Raeumlich | 3 | 0 |
-| Personen | 3 | 0 |
-| Briefe | 3 | 0 |
-| Filter | 6 | 0 |
-| Teilen/Export | 3 | 0 |
-| Integration | 1 | 0 |
-| Themen | 3 | 0 |
-| Uebersicht | 1 | 0 |
-| Chronik | 5 | 0 |
-| Forschungspfade | 1 | 0 |
-| Aktivitaet | 1 | 0 |
-| **Gesamt** | **34** | **0** |
+Die Ansichten von `explore.html` und ihre Umsetzung beschreibt [architecture.md](architecture.md#ui-komponenten). Die Zuordnung zu den Stories:
 
-Stand: 2025-12-18
+| Ansicht | Stories |
+|---|---|
+| Übersicht | US-04, US-27 |
+| Karte | US-06, US-07, US-08 |
+| Korrespondenten | US-09, US-10, US-23 |
+| Briefe und Brief-Dialog | US-12, US-13, US-14 |
+| Timeline | US-05 |
+| Themen | US-17, US-24, US-25, US-26 |
+| Orte | US-07, US-08 |
+| Netzwerk | US-11 |
+| Chronik | US-28 bis US-32 |
+| Forschungspfade | US-33 |
+| Aktivität | US-34 |
+| Sidebar und Navigation | US-15 bis US-22 |
+| Startseite | US-01 bis US-03 |
 
-Alle 34 User Stories sind implementiert.
+## Entscheidungen
 
+Die Gründungsentscheidungen E1 bis E4 und E9 bis E12 (CMIF als Austauschformat, Normdaten-Agnostik, Wikidata für Koordinaten, briefzentrierte Struktur, Parsing im Browser, hybrides Speichermodell, URL-State, Themen-Explorer) stehen mit Kontext im [Journal](journal.md). Die folgenden Einträge halten übergreifende Entscheidungen fest, die mehrere Dokumente betreffen.
+
+### ADR-001 Normdaten-URIs als primärer Schlüssel
+
+Kontext. CMIF trägt zu Personen und Orten eine Normdaten-URI (`@ref`) und einen Anzeigenamen. Editionen schreiben denselben Namen verschieden.
+
+Wahl. Abgleich und Aggregation laufen über die URI, der Name dient nur der Anzeige. Fehlt die URI, wird auf den Namen zurückgegriffen.
+
+Begründung. VIAF-, GND- und GeoNames-URIs sind eindeutig und erlauben korrekte Aggregation über Schreibvarianten hinweg.
+
+Effekt. Die Unterstützung mehrerer Normdatensysteme beschreibt [data.md](data.md#normdaten-und-anschlüsse). Der Personenfilter vergleicht bisher nur die ID, sodass Personen ohne URI keine Briefe liefern ([plan.md](plan.md#offene-befunde)).
+
+### ADR-002 Unsicherheit sichtbar machen
+
+Kontext. Historische Korrespondenzdaten sind lückenhaft und unscharf datiert. Forschende ziehen aus einer Visualisierung Schlüsse über Zeit und Raum.
+
+Wahl. Unsicherheit wird erkannt, markiert und erklärt, nie korrigiert oder versteckt. Gute Daten bleiben ohne Markierung.
+
+Begründung. Verschwiegene Unsicherheit führt zu Fehlinterpretationen. Markierungen nur an unsicheren Werten halten das Bild ruhig.
+
+Effekt. Kategorien und Tests in [uncertainty-specification.md](uncertainty-specification.md), visuelle Umsetzung in [design.md](design.md#visualisierungslogik).
+
+### ADR-003 Ein zentraler Filterzustand
+
+Kontext. Alle Ansichten zeigen dieselbe gefilterte Briefmenge.
+
+Wahl. Der Filterzustand liegt zentral in `state-manager.js`, Indizes werden einmal berechnet und wiederverwendet, keine Ansicht hält eine eigene Kopie.
+
+Begründung. Doppelte Zustände führen zu Synchronisationsfehlern zwischen Ansichten.
+
+Effekt. Die Migration von `explore.js` auf den zentralen Zustand ist unvollständig ([architecture.md](architecture.md#migration-status)).
+
+### ADR-004 Epistemische Kategorien für Forschungsfragen
+
+Kontext. Die Forschungspfade-Ansicht schlägt Fragen an den Datensatz vor.
+
+Wahl. Fragen werden nach der Art der nötigen Erkenntnis eingeteilt in deskriptiv (direkt ablesbar), analytisch (Berechnung oder Aggregation), interpretativ (Kontext nötig) und nicht beantwortbar (Daten fehlen). `analyzeResearchQuestions()` ordnet nach Datenverfügbarkeit zu. Jede Frage führt einen Pfad aus Schritten mit Zielansicht, Bezeichnung und konkreter Aktion.
+
+Begründung. Die Kategorie macht den epistemischen Status einer Antwort sichtbar, bevor man sie sucht. Pfade zeigen, dass Fragen oft mehrere Ansichten brauchen.
+
+Effekt. Darstellung der Pfade in [design.md](design.md#interaktionsmuster).
+
+### ADR-005 Nicht wertende Sprache für Partnerdaten
+
+Kontext. CMIF-Daten stammen von Editionen und Forschungspartnern.
+
+Wahl. Die Oberfläche spricht von „Anreicherungspotential“ statt von „Datenqualität“ oder „Datenabdeckung“.
+
+Begründung. „Qualität“ bewertet die Arbeit der Partner, „Anreicherungspotential“ richtet den Blick auf Möglichkeiten.
+
+Effekt. Gilt für alle Texte, die Lücken in fremden Daten benennen.
