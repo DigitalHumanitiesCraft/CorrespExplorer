@@ -698,24 +698,22 @@ In Progress:
 
 Tests validieren die tatsächliche Datenverarbeitung mit real CMIF-XML Dateien. Kein Mock-Data um realitätsnahe Test-Coverage zu garantieren.
 
-Test-Suites:
-- test-cmif-parser.js: CMIF-XML zu JSON Parsing (14 Tests)
-- test-formatters.js: Datum, Person, Ort Formatierung (27 Tests)
-- test-aggregation.js: Indices-Erstellung, Daten-Aggregation (12 Tests)
-- test-state-manager.js: Filter-Logik, Caching, URL-State (11 Tests)
-- test-dom-cache.js: Element-Caching, Performance (10 Tests)
-- test-uncertainty.js: Uncertainty-Handling (zusätzliche Tests)
-- explore-tests.js: Legacy Exploratory Tests (416 Zeilen)
+Test-Suites (registriert in run-all-tests.js):
+- test-cmif-parser.js: CMIF-XML zu JSON Parsing
+- test-formatters.js: Datum, Person, Ort Formatierung
+- test-aggregation.js: Indices-Erstellung, Daten-Aggregation
+- test-security.js: Escaping, URL-Schemata, ?json=-Pfade
+- test-state-manager.js: Filter-Logik, Caching, URL-State
+- test-dom-cache.js: Element-Caching
 
-Total: 74+ Tests über 7 Suites
+Ausserhalb des Runners: test-uncertainty.js als Konsolen-Helfer fuer test-uncertainty.xml.
 
 Strategie:
-- Real CMIF data only (data/test-uncertainty.xml mit 22 repräsentativen Unsicherheits-Fällen)
-- No mock data or synthetic objects (alle Tests verwenden parseCMIF() mit echten Daten)
-- Business logic tests: ~90% - CMIF-Parser, Formatters, Aggregation, State-Manager, Uncertainty
-- Infrastructure tests: ~10% - DOM-Cache (keine CMIF-Daten benötigt)
+- Real CMIF data only (docs/data/test-uncertainty.xml, docs/data/test-hostile.xml), geladen ueber parseCMIF()
+- No mock data or synthetic objects
+- DOM-Cache-Tests benoetigen keine CMIF-Daten
 - Browser-based testing (no Node.js, läuft direkt in test.html)
-- All tests pass: 100%
+- Anzahl und Ergebnis der Tests zeigt test.html beim Lauf, Details in testing.md
 
 ## Browser-Kompatibilitaet
 

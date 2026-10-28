@@ -24,40 +24,34 @@ Warum?
 - Tests sollten wartbar sein
 
 Wichtige Regel: NIE Mock-Daten verwenden
-- Tests laden IMMER echte CMIF-XML Dateien (data/test-uncertainty.xml, data/demo-showcase.xml)
+- Tests laden IMMER echte CMIF-XML Dateien ueber parseCMIF (docs/data/test-uncertainty.xml, docs/data/test-hostile.xml)
 - Tests importieren IMMER echte Funktionen aus den Modulen (parseCMIF, aggregateLettersByPlace, formatDateWithPrecision)
 - Keine duplizierten Helper-Funktionen in Tests
 - Keine Mock-Objekte oder Stub-Daten
 - Wenn Tests fehlschlagen, liegt es an echtem Code mit echten Daten
 
-## Test-Pyramide
+## Test-Ebenen
 
-```
-         /\        E2E Tests (0)
-        /  \       - Zu aufwendig für Prototyp-Phase
-       /    \
-      /------\     Integration Tests (~30)
-     /        \    - Filter-Kombinationen
-    /          \   - Aggregation-Logik
-   /------------\  - Unsicherheits-Erkennung
-  /              \
- /----------------\ Unit Tests (19)
-                    - State-Manager (10)
-                    - DOM-Cache (9)
-```
+- Unit- und Integrationstests laufen im Browser-Test-Runner (docs/test.html)
+- E2E-Tests gibt es nicht
+- Visuelle Pruefung und Bedienung der Views erfolgen manuell oder in Agenten-Reviews
 
 ## Test-Abdeckung
 
+Die in run-all-tests.js registrierten Suites sind die Quelle der Wahrheit. Anzahl und Ergebnis zeigt test.html beim Lauf.
+
 Business Logic mit echten CMIF-Daten
-- cmif-parser.js: 13 Tests - XML→JSON Parsing, Unsicherheits-Erkennung
-- test-aggregation.js: 11 Tests - Indices-Erstellung, State-Manager Integration
-- formatters.js: 26 Tests - Formatierung mit echten Daten
-- state-manager.js: 10 Tests - Filter-Logik mit echten CMIF-Daten
+- test-cmif-parser.js - XML→JSON Parsing, Eingabevertrag, Unsicherheits-Erkennung
+- test-aggregation.js - Indices-Erstellung, State-Manager Integration
+- test-formatters.js - Formatierung mit echten Daten
+- test-security.js - Escaping, URL-Schemata und ?json=-Pfade gegen docs/data/test-hostile.xml
+- test-state-manager.js - Filter-Logik mit echten CMIF-Daten
 
 Infrastructure (ohne CMIF-Daten)
-- dom-cache.js: 9 Tests - Element-Caching, Performance
+- test-dom-cache.js - Element-Caching
 
-Verteilung: Ueberwiegende Mehrheit der Tests verwendet echte CMIF-Daten. Nur Infrastructure-Tests (DOM-Cache) benoetigen keine Daten.
+Nicht im Runner
+- test-uncertainty.js - Konsolen-Helfer, der ein mit parseCMIF geladenes test-uncertainty.xml prueft
 
 ## Test-Typen
 
@@ -153,15 +147,14 @@ export const MyTests = {
 
 ### Test-Daten
 
-```javascript
-// Gut: Minimale, fokussierte Test-Daten
-const testLetters = [
-    { id: '1', year: 1920, language: { code: 'de' } },
-    { id: '2', year: 1930, language: { code: 'fr' } }
-];
+Testdaten sind kleine, gezielt gebaute CMIF-XML-Dateien in docs/data/, die der Test ueber die Produktionsfunktion parseCMIF laedt. Ein neuer Fall wird als Brief in eine solche Datei aufgenommen (Unsicherheitsfaelle in test-uncertainty.xml, feindliche Eingaben in test-hostile.xml). Inline-Arrays mit Brief-Objekten im Test umgehen den Parser und sind deshalb ausgeschlossen. Der volle Produktionsdatensatz (hsa.xml) ist fuer schnelle, deterministische Tests zu gross.
 
-// Schlecht: Production-Daten (11.576 Briefe)
-const testLetters = productionData.letters;
+```javascript
+// Gut: echte Fixture-Datei durch echten Parser
+const data = await parseCMIF('data/test-uncertainty.xml');
+
+// Schlecht: Inline-Objekte, die die Parser-Logik umgehen
+const testLetters = [{ id: '1', year: 1920 }];
 ```
 
 ## Performance-Ziele
@@ -170,11 +163,7 @@ const testLetters = productionData.letters;
 - Einzelne Suite < 200ms
 - Einzelner Test < 20ms
 
-Aktuelle Performance (test.html):
-- State-Manager: ~50ms (10 Tests)
-- DOM-Cache: ~30ms (9 Tests)
-- Integration: ~100ms (30 Tests)
-- **Gesamt: ~180ms (57 Tests)**
+Die aktuelle Laufzeit zeigt test.html nach jedem Lauf.
 
 ## Debugging fehlgeschlagener Tests
 
@@ -258,17 +247,9 @@ const suites = [
 
 ## Metriken
 
-**Coverage-Ziele (langfristig):**
-- Core-Module (state-manager, dom-cache): 100%
-- Business-Logic (filter, aggregation): 80%
-- UI-Logic (rendering, interactions): 30%
-- Gesamt: 60%
-
-**Aktuelle Coverage: ~45%**
+Eine Coverage-Messung ist nicht eingerichtet. Frueher hier genannte Coverage-Werte waren nicht gemessen und wurden entfernt.
 
 ## Nächste Schritte
 
-1. Tests für cmif-parser.js (XML-Parsing-Edge-Cases)
-2. Tests für formatters.js (Datum/Person/Ort)
-3. Performance-Regression-Tests (Filter bei 10k+ Briefen)
-4. CI-Integration (GitHub Actions mit Playwright)
+1. Performance-Regression-Tests (Filter bei 10k+ Briefen)
+2. CI-Integration (GitHub Actions mit Playwright)
