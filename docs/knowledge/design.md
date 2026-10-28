@@ -441,7 +441,7 @@ Implementiert in base.css.
 
 | Element | Grund |
 |---------|-------|
-| Box-Shadow auf Cards/Buttons | Erhoeht kognitive Last um 23%, nutze Border-based Design |
+| Box-Shadow auf Cards/Buttons | Fuegt visuelles Gewicht ohne Informationsgehalt hinzu, nutze Border-based Design |
 | Halftone-Texturen auf Daten | Erschwert Lesbarkeit |
 | Dekorative Gradients | Zu modern fuer den Stil |
 | Icon-Fonts fuer Daten-Nodes | Unlesbar bei vielen Datenpunkten |
