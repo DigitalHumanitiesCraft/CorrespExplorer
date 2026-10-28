@@ -252,5 +252,5 @@ CSS specificity managed through proper import order prevents override issues.
 ## Related Documentation
 
 - docs/knowledge/design.md: Complete design system specification
-- docs/JOURNAL.md: Development history and decisions
-- docs/knowledge/CONTEXT-MAP.md: Overall project architecture
+- docs/knowledge/journal.md: Development history and decisions
+- docs/knowledge/architecture.md: Overall project architecture, entry via docs/knowledge/INDEX.md

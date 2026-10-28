@@ -30,7 +30,7 @@ Im Gegensatz zu "Human in the Loop" behaelt der Forschende die epistemische Auto
 
 ### Disposable Code
 
-Code ist Artefakt, nicht Source of Truth. Die Dokumentation (JOURNAL.md, architecture.md) enthaelt die eigentlichen Entscheidungen. Code kann jederzeit neu generiert werden, solange die Dokumentation korrekt ist.
+Code ist Artefakt, nicht Source of Truth. Die Dokumentation (journal.md, architecture.md) enthaelt die eigentlichen Entscheidungen. Code kann jederzeit neu generiert werden, solange die Dokumentation korrekt ist.
 
 ## Das Vier-Phasen-Modell
 
@@ -60,13 +60,13 @@ Kerndaten:
 - Hugo Schuchardt Archiv: 11.576 Briefe
 - Zehn Visualisierungs-Views
 - User Stories emergent entstanden, nicht vorab definiert
-- Vollstaendig dokumentierter Entwicklungsprozess (JOURNAL.md)
+- Vollstaendig dokumentierter Entwicklungsprozess (journal.md)
 
 Repository: https://github.com/chpollin/CorrespExplorer
 
-### Phasen-Rekonstruktion aus JOURNAL.md
+### Phasen-Rekonstruktion aus journal.md
 
-Das JOURNAL.md dokumentiert den Entwicklungsprozess in Phasen. Diese lassen sich dem Vier-Phasen-Modell zuordnen:
+Das journal.md dokumentiert den Entwicklungsprozess in Phasen. Diese lassen sich dem Vier-Phasen-Modell zuordnen:
 
 Preparation (Phasen 1-6):
 - HSA-Implementation und Daten-Pipeline
@@ -116,7 +116,7 @@ Promptotyping birgt spezifische Risiken:
 
 Sycophancy: Das LLM stimmt unkritisch zu. Gegenstrategie: Explizite Aufforderung zu Kritik, alternatives Prompting.
 
-Context Rot: Akkumulierte Fehlentscheidungen im langen Kontext. Gegenstrategie: Regelmaessige Context-Bereinigung, JOURNAL.md als externes Gedaechtnis.
+Context Rot: Akkumulierte Fehlentscheidungen im langen Kontext. Gegenstrategie: Regelmaessige Context-Bereinigung, journal.md als externes Gedaechtnis.
 
 Vibe Research: Intuition statt Methodik, "feels right" als Entscheidungsgrundlage. Gegenstrategie: Dokumentation aller Entscheidungen mit Begruendung.
 
@@ -137,7 +137,7 @@ Das LLM fungiert dabei als "epistemischer Partner" - es bringt Optionen ein, der
 
 Wenn Interface-Genese Forschung ist, dann:
 
-1. Muss der Entwicklungsprozess dokumentiert werden (nicht nur das Ergebnis). JOURNAL.md wird zum Forschungsoutput.
+1. Muss der Entwicklungsprozess dokumentiert werden (nicht nur das Ergebnis). journal.md wird zum Forschungsoutput.
 
 2. Sind Interface-Entscheidungen zitierbar und kritisierbar. "Warum diese Views und nicht andere?" wird zur legitimen Frage.
 
@@ -149,7 +149,7 @@ Wenn Interface-Genese Forschung ist, dann:
 
 Fuer die Digital Humanities bedeutet das:
 
-Dokumentationspflicht: JOURNAL.md als Teil der Forschungsoutputs. Der Prompt-Dialog gehoert zum Forschungsprozess.
+Dokumentationspflicht: journal.md als Teil der Forschungsoutputs. Der Prompt-Dialog gehoert zum Forschungsprozess.
 
 Transparenz: Welche Entscheidungen hat das LLM vorgeschlagen? Welche hat der Forschende verworfen? Welche Alternativen wurden nicht verfolgt?
 

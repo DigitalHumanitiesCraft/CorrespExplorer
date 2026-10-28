@@ -26,9 +26,9 @@ Live Demo: https://dhcraft.org/CorrespExplorer
 1. Lies zuerst diese Dateien in dieser Reihenfolge:
    - README.md (Projektuebersicht)
    - docs/knowledge/architecture.md (technische Architektur)
-   - docs/knowledge/user-stories.md (implementierte Features)
-   - docs/knowledge/JOURNAL.md (Entwicklungshistorie)
-   - docs/knowledge/paper/interface-genesis-as-research.md (Forschungsthese)
+   - docs/knowledge/specification.md (Anforderungen und User Stories)
+   - docs/knowledge/journal.md (Entwicklungshistorie)
+   - research-artefacts/interface-genesis-as-research.md (Forschungsthese)
 
 2. Erkunde das Repository:
    - docs/js/*.js (JavaScript-Module)
@@ -69,7 +69,7 @@ D. Forschungsrelevanz
 - Was fehlt fuer ernsthafte Forschungsarbeit?
 
 E. Promptotyping-Evaluation
-- Laesst sich aus JOURNAL.md das Vier-Phasen-Modell rekonstruieren?
+- Laesst sich aus journal.md das Vier-Phasen-Modell rekonstruieren?
 - Gibt es Anzeichen fuer Sycophancy im Entwicklungsprozess?
 - Gibt es Anzeichen fuer Context Rot?
 - Gibt es Anzeichen fuer Vibe Research (Entscheidungen ohne Begruendung)?
