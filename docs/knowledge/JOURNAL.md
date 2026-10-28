@@ -2,13 +2,14 @@
 
 Chronologisches Entwicklungsprotokoll mit detaillierten Implementierungsnotizen.
 
-Entwicklungszeitraum: November - Dezember 2025
+Entwicklungszeitraum: Oktober 2025 (HerData) bis Dezember 2025, Nacharbeiten 2026
 
 ---
 
 ## Phasen-Uebersicht
 
 Aktuelle Phasen:
+- Kuration fuer die Promptotyping-Fallstudie (Oktober 2026, ohne Phasennummer)
 - Phase 40: Sicherheits-, Stabilitaets- und Tastatur-Fixes (Oktober 2026)
 - Phase 39: Activity Heatmap View
 - Phase 38: Forschungspfade View
@@ -50,6 +51,20 @@ Gruendungsphasen (November 2025):
 - Feature-Komplett
 - Projektvision
 - HSA-Implementation
+
+---
+
+## 2026-10-28 (Kuration fuer die Promptotyping-Fallstudie)
+
+Das Repository dient als Fallstudie in einem Paper ueber Promptotyping. Die Kuration korrigiert Sachfehler und macht die Entstehung fuer externe Leser nachvollziehbar. Die historische Form der Wissensbasis bleibt erhalten. Keine Phasennummer, weil der unverschmolzene Branch feature/research-dashboards die Nummern 40 bis 46 bereits vergibt.
+
+- README: correspSearch-API nicht mehr als Feature gefuehrt, volatile Zahlen entfernt, neuer Abschnitt "How this was built" mit Herkunft aus HerData, Modellen laut Commit-Trailern, Verifikationspraxis und Verweisen auf dokumentierte Fehlerepisoden
+- Die Angaben "34 %" und "23 %" zu Shadows, Nielsen Norman Group zugeschrieben, liessen sich in keiner NN/g-Quelle finden und wurden aus shadows.css, design.md und css/CONTEXT-MAP.md entfernt. Der Eintrag in Phase 28 bleibt als Historie stehen
+- CONTEXT-MAP.md auf den tatsaechlichen Dateibestand gebracht (paper/, JOURNAL.md), Selbstbescheinigung "12/12 compliant, keine Redundanz" entfernt
+- explore-tests.js geloescht. Die Datei importierte kein Produktionsmodul, wurde von keiner Seite geladen und implementierte die geprueften Logiken inline auf Mock-Arrays nach. testing.md loest den Widerspruch zwischen Real-Data-Regel und Inline-Testdaten zugunsten kleiner CMIF-Fixture-Dateien auf, ungemessene Coverage- und Laufzeitwerte entfernt
+- KNOWN-ISSUES: Behebungsdatum von #1 und #4 auf Commit dbda53f (2025-11-27) korrigiert, neues Issue #8 zur defekten Paginierung des correspSearch-API-Pfads
+
+Pruefung: Browser-Test-Runner (test.html?test=true) in headless Chrome vor und nach der Loeschung ohne Fehlschlag.
 
 ---
 
