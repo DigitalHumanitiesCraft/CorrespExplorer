@@ -6,7 +6,7 @@ CorrespExplorer is a browser tool for exploring correspondence metadata in CMIF.
 
 ## Knowledge base
 
-The knowledge base lives in `docs/knowledge/` because GitHub Pages serves `docs/` and `vault.html` renders the documents from there. At every session start read `docs/knowledge/INDEX.md`, then `docs/knowledge/handoff.md`, then the documents relevant to the task. Consult `docs/knowledge/journal.md` when the origin or rationale of a change is needed.
+The knowledge base lives in `docs/knowledge/` because GitHub Pages serves `docs/` and `vault.html` renders the documents from there. At every session start, after this file, read `docs/knowledge/INDEX.md`, then `docs/knowledge/handoff.md` and `docs/knowledge/plan.md`, then the documents relevant to the task. Consult `docs/knowledge/journal.md` when the origin or rationale of a change is needed.
 
 | Task | Read first |
 |---|---|
@@ -33,7 +33,6 @@ The knowledge base lives in `docs/knowledge/` because GitHub Pages serves `docs/
 These rules keep documents compact and readable for people and for the model context, where every token counts.
 
 - No bold, no emojis, no exclamation marks for emphasis, no "estimated time" sections.
-- No line counts, code size metrics or file sizes, since files change constantly.
 - No box drawings or ASCII art. Describe data flow in prose or nested lists ("A leads to B, B produces C").
 - Code only where necessary, such as API signatures, key constants or critical patterns, never full implementations.
 - Clear `#` headings, bullet lists for parallel items, neutral and factual tone without superlatives, facts with sources, relative links between documents.
