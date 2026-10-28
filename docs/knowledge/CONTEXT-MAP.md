@@ -1,8 +1,8 @@
 # Knowledge Vault Context Map
 
-Übersicht der 12 Dokumentationsdateien mit Zweck, Beziehungen und Nutzungsrichtlinien.
+Übersicht der Dokumentationsdateien in docs/knowledge/ mit Zweck, Beziehungen und Nutzungsrichtlinien. Code-nahe Context Maps liegen in docs/js/CONTEXT-MAP.md, docs/js/tests/CONTEXT-MAP.md und docs/css/CONTEXT-MAP.md.
 
-Stand: 2025-12-18
+Stand: 2026-10-28 (Dateibestand gegen das Repository geprüft)
 
 ---
 
@@ -63,7 +63,7 @@ Stand: 2025-12-18
 - Abhaengigkeiten: architecture.md, demo-datasets.md
 - Nutzen: Real Data Only Rule, Test-Pyramid, Best Practices
 
-#### journal.md
+#### JOURNAL.md
 - Zweck: Chronologisches Development-Log mit Decisions und Commits
 - Zielgruppe: Entwickler (Evolution verstehen), Claude (Context)
 - Aenderungsrate: Kontinuierlich (nach jeder Phase)
@@ -100,6 +100,21 @@ Stand: 2025-12-18
 - Abhängigkeiten: cmif-standard.md
 - Nutzen: 85+ Files in csStorage, correspSearch API v2.0, GitHub Raw URLs
 
+#### CONTEXT-MAP.md
+- Zweck: Diese Übersicht über die Wissensdokumente
+- Änderungsrate: Bei neuen, gelöschten oder umgewidmeten Dokumenten
+
+### Paper (Reflexion)
+
+#### paper/interface-genesis-as-research.md
+- Zweck: Paper-Entwurf, der die Entwicklung von CorrespExplorer als Fallstudie für Promptotyping reflektiert
+- Zielgruppe: Forscher (Digital Humanities, Methodik)
+- Abhängigkeiten: JOURNAL.md, learnings.md
+
+#### paper/review-prompt.md
+- Zweck: Prompt für ein externes, kritisches LLM-Review des Repositorys
+- Zielgruppe: Reviewer-Instanz, Autoren
+
 ---
 
 ## Nutzungs-Workflows
@@ -110,13 +125,13 @@ Stand: 2025-12-18
 2. Prüfe learnings.md (Design-Rationale)
 3. Reviewe uncertainty-concept.md (bei Daten-Handling)
 4. Konsultiere testing.md (Test-Coverage)
-5. Update journal.md (Entscheidung dokumentieren)
+5. Update JOURNAL.md (Entscheidung dokumentieren)
 
 ### Bei neuen Features
 
 1. Definiere in user-stories.md
 2. Design in design.md (wenn visuell)
-3. Plan Implementation in journal.md
+3. Plan Implementation in JOURNAL.md
 4. Add Tests per testing.md Scope
 5. Dokumentiere in architecture.md
 
@@ -125,7 +140,7 @@ Stand: 2025-12-18
 1. Checke KNOWN-ISSUES.md (bekannte Probleme)
 2. Review learnings.md (Decision Rationale)
 3. Add Regression-Test per testing.md
-4. Update journal.md mit Fix-Details
+4. Update JOURNAL.md mit Fix-Details
 
 ### Bei Daten-Fragen
 
@@ -138,20 +153,25 @@ Stand: 2025-12-18
 
 ## Dokumenten-Matrix
 
-| Datei | Typ | Stabilität | Änderungsrate | Zuletzt |
-|-------|-----|------------|---------------|---------|
-| architecture.md | Architektur | Niedrig | Selten | 2025-12 |
-| cmif-sources.md | Referenz | Hoch | Oft | 2025-12 |
-| cmif-standard.md | Spezifikation | Sehr hoch | Nie | - |
-| demo-datasets.md | Referenz | Mittel | Selten | 2025-11 |
-| design.md | Spezifikation | Hoch | Selten | 2025-11 |
-| journal.md | Historie | Niedrig | Kontinuierlich | 2025-12 |
-| KNOWN-ISSUES.md | Wartung | Niedrig | Oft | 2025-12 |
-| learnings.md | Konzept | Hoch | Selten | 2025-12 |
-| testing.md | Prozess | Mittel | Oft | 2025-12 |
-| uncertainty-concept.md | Spezifikation | Sehr hoch | Selten | 2025-11 |
-| user-stories.md | Requirements | Sehr hoch | Selten | 2025-11 |
-| VAULT-RULES.md | Governance | Sehr hoch | Selten | 2025-11 |
+Das letzte Änderungsdatum einer Datei liefert `git log -1 -- <datei>`.
+
+| Datei | Typ | Stabilität | Änderungsrate |
+|-------|-----|------------|---------------|
+| architecture.md | Architektur | Niedrig | Selten |
+| cmif-sources.md | Referenz | Hoch | Oft |
+| cmif-standard.md | Spezifikation | Sehr hoch | Nie |
+| CONTEXT-MAP.md | Navigation | Mittel | Bei Dokumentänderungen |
+| demo-datasets.md | Referenz | Mittel | Selten |
+| design.md | Spezifikation | Hoch | Selten |
+| JOURNAL.md | Historie | Niedrig | Kontinuierlich |
+| KNOWN-ISSUES.md | Wartung | Niedrig | Oft |
+| learnings.md | Konzept | Hoch | Selten |
+| paper/interface-genesis-as-research.md | Paper-Entwurf | Mittel | Selten |
+| paper/review-prompt.md | Prompt | Hoch | Selten |
+| testing.md | Prozess | Mittel | Oft |
+| uncertainty-concept.md | Spezifikation | Sehr hoch | Selten |
+| user-stories.md | Requirements | Sehr hoch | Selten |
+| VAULT-RULES.md | Governance | Sehr hoch | Selten |
 
 ---
 
@@ -168,7 +188,7 @@ learnings.md ← Decision-Framework
 
 ### Operations-Layer
 testing.md ← Test-Writing
-journal.md ← Phase-Tracking
+JOURNAL.md ← Phase-Tracking
 KNOWN-ISSUES.md ← Maintenance
 
 ### Discovery-Layer
@@ -183,7 +203,7 @@ cmif-sources.md → Data-Loading
 ### Für Claude Context
 1. architecture.md - System-Übersicht
 2. learnings.md - Decision Rationale
-3. journal.md - Letzte Phasen
+3. JOURNAL.md - Letzte Phasen
 4. KNOWN-ISSUES.md - Aktuelle Probleme
 
 ### Für neue Entwickler
@@ -203,7 +223,7 @@ cmif-sources.md → Data-Loading
 ## Wartungs-Richtlinien
 
 ### Bei jedem Commit
-- journal.md aktualisieren mit Phase-Entry
+- JOURNAL.md aktualisieren mit Phase-Entry
 
 ### Bei Architektur-Änderungen
 - architecture.md aktualisieren
@@ -221,13 +241,9 @@ cmif-sources.md → Data-Loading
 
 ---
 
-## Qualitäts-Metriken
+## Regelkonformität
 
-Total: 12 Dateien
-
-Compliance: 12/12 VAULT-RULES compliant (100%)
-Coverage: Alle Aspekte dokumentiert (System, Process, Standards, History)
-Redundanz: Keine (jedes Doc hat unique Purpose)
+Die Einhaltung von VAULT-RULES.md wird nicht automatisch geprüft. Eine frühere Fassung dieser Datei bescheinigte sich volle Konformität und Redundanzfreiheit, während einzelne Dokumente gegen die Regeln verstießen (etwa Fettdruck in testing.md) und der Dateibestand nicht mehr stimmte. Aussagen über Konformität brauchen deshalb eine nachvollziehbare Prüfung.
 
 ---
 
@@ -236,15 +252,15 @@ Redundanz: Keine (jedes Doc hat unique Purpose)
 Wenn architecture.md aktualisiert wird:
 - Prüfe ob learnings.md neue Decision dokumentieren muss
 - Prüfe ob KNOWN-ISSUES.md neue Widersprüche auftreten
-- Update journal.md mit Change-Rationale
+- Update JOURNAL.md mit Change-Rationale
 
 Wenn neue Features kommen:
 - user-stories.md: Neue Story hinzufügen
 - architecture.md: Implementation dokumentieren
-- journal.md: Phase-Entry erstellen
+- JOURNAL.md: Phase-Entry erstellen
 - testing.md: Test-Coverage erweitern
 
 Wenn Issues gefunden werden:
 - KNOWN-ISSUES.md: Issue registrieren mit Severity
 - learnings.md: Wenn Decision falsch war, dokumentieren
-- journal.md: Discovery dokumentieren
+- JOURNAL.md: Discovery dokumentieren
