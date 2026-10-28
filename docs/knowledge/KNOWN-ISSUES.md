@@ -1,6 +1,6 @@
 # Known Issues and Inconsistencies
 
-Stand: 2026-10-02
+Stand: 2026-10-28
 
 ---
 
@@ -26,6 +26,20 @@ Problem:
 - .map-controls ist absolut positioniert, der Bezugsrahmen liegt oberhalb der Kartenansicht
 
 Empfehlung: #map-view als Bezugsrahmen (position: relative) setzen und pruefen
+
+## 8. correspSearch-API-URLs liefern keine Briefe
+
+Status: Offen
+Schweregrad: Mittel
+Auswirkung: Eine correspSearch-API-URL im URL-Feld der Startseite laedt einen leeren Datensatz
+
+Problem:
+- upload.js und cmif-parser.js leiten URLs mit correspsearch.net/api an fetchFromCorrespSearchUrl in correspsearch-api.js weiter
+- Die Paginierung beginnt mit x=0 und zaehlt x um die Seitengroesse hoch. Die API v2.0 nummeriert Seiten ab x=1 und antwortet auf x=0 mit einer leeren Seite, worauf die Schleife abbricht
+- Geprueft am 2026-10-28 mit Node gegen https://correspsearch.net/api/v2.0/tei-json.xql (CORS erlaubt, x=1 liefert Briefe, das Modul liefert 0 Briefe)
+- Das Suchformular wurde in Phase 24 entfernt, searchCorrespSearch und getResultCount sind in upload.js importiert, aber ungenutzt
+
+Empfehlung: Entscheiden, ob das Laden ueber die correspSearch-API erhalten bleibt. Falls ja, Paginierung auf Seitennummern ab 1 umstellen und eine Obergrenze fuer grosse Treffermengen setzen. Falls nein, den API-Pfad aus upload.js und cmif-parser.js entfernen
 
 ---
 
