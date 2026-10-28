@@ -6,12 +6,44 @@
 // Document definitions with metadata
 const VAULT_DOCUMENTS = [
     {
-        id: 'journal',
-        filename: 'JOURNAL.md',
-        title: 'Development Journal',
-        description: 'Chronologische Dokumentation des Entwicklungsprozesses',
-        icon: 'fa-book',
-        category: 'process'
+        id: 'index',
+        filename: 'INDEX.md',
+        title: 'Index',
+        description: 'Einstieg, Dokumentlandkarte und Begriffe',
+        icon: 'fa-compass',
+        category: 'overview'
+    },
+    {
+        id: 'project',
+        filename: 'project.md',
+        title: 'Project',
+        description: 'Projekt, Datengrundlage, Standards und Abgrenzungen',
+        icon: 'fa-circle-info',
+        category: 'overview'
+    },
+    {
+        id: 'data',
+        filename: 'data.md',
+        title: 'Daten',
+        description: 'CMIF-Modell, Datensaetze und externe Quellen',
+        icon: 'fa-database',
+        category: 'data'
+    },
+    {
+        id: 'specification',
+        filename: 'specification.md',
+        title: 'Specification',
+        description: 'Anforderungen, User Stories und Entscheidungen',
+        icon: 'fa-list-check',
+        category: 'requirements'
+    },
+    {
+        id: 'uncertainty-specification',
+        filename: 'uncertainty-specification.md',
+        title: 'Uncertainty Specification',
+        description: 'Umgang mit Datenqualitaet und Unsicherheit',
+        icon: 'fa-question-circle',
+        category: 'requirements'
     },
     {
         id: 'architecture',
@@ -22,94 +54,65 @@ const VAULT_DOCUMENTS = [
         category: 'technical'
     },
     {
-        id: 'user-stories',
-        filename: 'user-stories.md',
-        title: 'User Stories',
-        description: 'Anforderungen und Akzeptanzkriterien',
-        icon: 'fa-list-check',
-        category: 'requirements'
-    },
-    {
-        id: 'plan',
-        filename: 'plan.md',
-        title: 'Implementation Plan',
-        description: 'Roadmap und Umsetzungsstatus',
-        icon: 'fa-tasks',
-        category: 'process'
-    },
-    {
         id: 'design',
         filename: 'design.md',
-        title: 'Design System',
+        title: 'Design',
         description: 'Visuelle Gestaltung und UI-Komponenten',
         icon: 'fa-palette',
         category: 'technical'
     },
     {
-        id: 'learnings',
-        filename: 'learnings.md',
-        title: 'Learnings',
-        description: 'Design-Entscheidungen und Patterns',
-        icon: 'fa-lightbulb',
-        category: 'process'
-    },
-    {
-        id: 'cmif-data',
-        filename: 'CMIF-Data.md',
-        title: 'CMIF Data Format',
-        description: 'Datenformat und Struktur',
-        icon: 'fa-code',
+        id: 'testing',
+        filename: 'testing.md',
+        title: 'Testing',
+        description: 'Teststrategie und Testdaten',
+        icon: 'fa-vial',
         category: 'technical'
     },
     {
-        id: 'cmif-sources',
-        filename: 'cmif-sources.md',
-        title: 'CMIF Sources',
-        description: 'Verfuegbare CMIF-Repositorien und Quellen',
-        icon: 'fa-database',
-        category: 'data'
-    },
-    {
-        id: 'demo-datasets',
-        filename: 'demo-datasets.md',
-        title: 'Demo Datasets',
-        description: 'Analyse der Beispiel-Datensaetze',
-        icon: 'fa-table',
-        category: 'data'
-    },
-    {
-        id: 'uncertainty',
-        filename: 'uncertainty-concept.md',
-        title: 'Uncertainty Concept',
-        description: 'Umgang mit Datenqualitaet und Unsicherheit',
-        icon: 'fa-question-circle',
-        category: 'technical'
-    },
-    {
-        id: 'project-analysis',
-        filename: 'project-analysis.md',
-        title: 'Project Analysis',
-        description: 'Detaillierte Projektanalyse',
-        icon: 'fa-magnifying-glass-chart',
+        id: 'plan',
+        filename: 'plan.md',
+        title: 'Plan',
+        description: 'Offene Befunde und geplante Arbeit',
+        icon: 'fa-tasks',
         category: 'process'
     },
     {
-        id: 'mentions-network-plan',
-        filename: 'mentions-network-plan.md',
-        title: 'Mentions Network Plan',
-        description: 'Implementierungsplan fuer Mentions Network View',
-        icon: 'fa-diagram-project',
-        category: 'planning'
+        id: 'handoff',
+        filename: 'handoff.md',
+        title: 'Handoff',
+        description: 'Offene Uebergabepunkte',
+        icon: 'fa-inbox',
+        category: 'process'
+    },
+    {
+        id: 'journal',
+        filename: 'journal.md',
+        title: 'Journal',
+        description: 'Chronologische Dokumentation des Entwicklungsprozesses',
+        icon: 'fa-book',
+        category: 'process'
     }
 ];
 
+// Hash IDs of the document set before October 2026 (commit 29dfc15) keep working
+// because published links and the paper point to them.
+const DOCUMENT_ALIASES = {
+    'user-stories': 'specification',
+    'learnings': 'specification',
+    'cmif-sources': 'data',
+    'demo-datasets': 'data',
+    'uncertainty': 'uncertainty-specification',
+    'cmif-data': 'data'
+};
+
 // Category definitions
 const CATEGORIES = {
-    process: { title: 'Prozess', icon: 'fa-arrows-spin' },
-    technical: { title: 'Technik', icon: 'fa-gear' },
-    requirements: { title: 'Anforderungen', icon: 'fa-clipboard-list' },
+    overview: { title: 'Ueberblick', icon: 'fa-compass' },
     data: { title: 'Daten', icon: 'fa-database' },
-    planning: { title: 'Planung', icon: 'fa-map' }
+    requirements: { title: 'Anforderungen', icon: 'fa-clipboard-list' },
+    technical: { title: 'Technik', icon: 'fa-gear' },
+    process: { title: 'Prozess', icon: 'fa-arrows-spin' }
 };
 
 // State
@@ -117,32 +120,42 @@ let currentDoc = null;
 let docCache = new Map();
 
 /**
+ * Resolve a URL hash to a document, following aliases of retired document IDs.
+ * An alias hit rewrites the hash to the canonical ID without a history entry.
+ */
+function findDocument(hash) {
+    const id = DOCUMENT_ALIASES[hash] || hash;
+    const doc = VAULT_DOCUMENTS.find(d => d.id === id);
+    if (doc && id !== hash) {
+        history.replaceState(null, '', `#${id}`);
+    }
+    return doc;
+}
+
+/**
+ * Remove a leading YAML frontmatter block, which marked would render as text.
+ */
+function stripFrontmatter(markdown) {
+    return markdown.replace(/^﻿?---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+}
+
+/**
  * Initialize the vault
  */
 async function init() {
     renderDocumentList();
 
-    // Check URL hash for direct document link, otherwise load first doc
+    // Load the document named in the URL hash, otherwise the first document
     const hash = window.location.hash.slice(1);
-    if (hash) {
-        const doc = VAULT_DOCUMENTS.find(d => d.id === hash);
-        if (doc) {
-            await loadDocument(doc);
-        } else {
-            // Invalid hash, load first document
-            await loadDocument(VAULT_DOCUMENTS[0]);
-        }
-    } else {
-        // No hash, load first document by default
-        await loadDocument(VAULT_DOCUMENTS[0]);
-    }
+    const doc = (hash && findDocument(hash)) || VAULT_DOCUMENTS[0];
+    await loadDocument(doc);
 
     // Handle hash changes
     window.addEventListener('hashchange', async () => {
         const hash = window.location.hash.slice(1);
         if (hash) {
-            const doc = VAULT_DOCUMENTS.find(d => d.id === hash);
-            if (doc) {
+            const doc = findDocument(hash);
+            if (doc && doc !== currentDoc) {
                 await loadDocument(doc);
             }
         }
@@ -233,7 +246,7 @@ async function loadDocument(doc) {
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);
             }
-            content = await response.text();
+            content = stripFrontmatter(await response.text());
             docCache.set(doc.id, content);
         }
 
