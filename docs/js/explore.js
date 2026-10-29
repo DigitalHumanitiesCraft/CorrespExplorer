@@ -14,7 +14,7 @@ import {
     getBasketItems
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard } from './utils.js';
 import {
     formatDateWithPrecision,
     formatSingleDate,
@@ -411,12 +411,19 @@ async function init() {
         try {
             sessionStorage.setItem('correspData', JSON.stringify({
                 letters: state.getAllLetters(),
-                indices: state.getDataIndices(),
+                indices: state.getIndices(),
                 meta: state.getMeta()
             }));
+            sessionStorage.removeItem('correspDataSource');
         } catch (e) {
-            // sessionStorage may be full or unavailable
-            console.warn('Could not store data in sessionStorage for Wissenskorb');
+            // Large datasets exceed the sessionStorage quota; a ?json= dataset is reloaded by its path instead
+            sessionStorage.removeItem('correspData');
+            const jsonPath = new URLSearchParams(window.location.search).get('json');
+            if (isAllowedJsonPath(jsonPath)) {
+                sessionStorage.setItem('correspDataSource', JSON.stringify({ json: jsonPath }));
+            } else {
+                console.warn('Could not store data in sessionStorage for Wissenskorb', e);
+            }
         }
 
         // Apply initial view (use detected first available if map not available)
@@ -592,28 +599,28 @@ function updateQualityIcon(iconId, count, total, label) {
 
 // Build language filter checkboxes dynamically
 function buildLanguageFilter() {
-    const languages = dataIndices.languages || {};
-    const languageKeys = Object.keys(languages);
-
-    if (languageKeys.length === 0) {
-        return;
-    }
+    // Counted from the letters, because the index shape differs between parser
+    // ({label, letter_count}) and preprocessing (label string); every code gets a
+    // checkbox, so no language falls out of the allow-list of the state filter
+    const counts = {};
+    allLetters.forEach(letter => {
+        const code = letter.language?.code || 'None';
+        counts[code] = (counts[code] || 0) + 1;
+    });
+    if (Object.keys(counts).every(code => code === 'None')) return;
 
     const container = elements.languageCheckboxes;
     const filterGroup = elements.languageFilterGroup;
 
     if (!container || !filterGroup) return;
 
-    // Sort by letter count
-    languageKeys.sort((a, b) => languages[b].letter_count - languages[a].letter_count);
+    const languages = dataIndices.languages || {};
+    const languageKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
 
-    // Take top 10 languages
-    const topLanguages = languageKeys.slice(0, 10);
-
-    topLanguages.forEach(code => {
-        const lang = languages[code];
+    languageKeys.forEach(code => {
+        const indexLabel = typeof languages[code] === 'string' ? languages[code] : languages[code]?.label;
         // Use LANGUAGE_LABELS for display, fallback to data label or code
-        let displayLabel = LANGUAGE_LABELS[code] || lang.label || code;
+        let displayLabel = LANGUAGE_LABELS[code] || indexLabel || code;
         // Handle special cases - None means no language specified in source data
         const isNoLanguage = (displayLabel === 'None' || code === 'None');
         if (isNoLanguage) {
@@ -627,7 +634,7 @@ function buildLanguageFilter() {
         label.innerHTML = `
             <input type="checkbox" name="language" value="${escapeHtml(code)}" checked>
             <span>${escapeHtml(displayLabel)}</span>
-            <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${lang.letter_count})</span>
+            <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${counts[code]})</span>
         `;
         container.appendChild(label);
     });
@@ -961,7 +968,7 @@ function aggregateLettersByPlace(letters, placesIndex) {
         if (letter.year) places[placeId].years.add(letter.year);
         if (letter.sender?.name) {
             const senderName = letter.sender.name;
-            const senderId = letter.sender.authority || letter.sender.name;
+            const senderId = letter.sender.id || letter.sender.name;
             if (!places[placeId].senderCounts[senderName]) {
                 places[placeId].senderCounts[senderName] = { count: 0, id: senderId };
             }
@@ -1368,7 +1375,7 @@ function showPlacePopup(lngLat, props) {
 
     // Basket toggle state
     const placeId = props.id;
-    const inBasket = isInBasket('places', placeId);
+    const inBasket = basketIsInBasket('places', placeId);
 
     // Parse top senders from JSON - make them clickable
     let topSendersHtml = '';
@@ -1441,7 +1448,7 @@ function setupPopupEventHandlers(popup) {
             e.stopPropagation();
             const type = basketBtn.dataset.type;
             const id = basketBtn.dataset.id;
-            const nowInBasket = toggleBasketItem(type, id);
+            const nowInBasket = basketToggle(type, id);
             basketBtn.classList.toggle('in-basket', nowInBasket);
             basketBtn.title = nowInBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen';
         });
@@ -1554,6 +1561,7 @@ function initFilters() {
             }
             temporalFilter = null;
             selectedPersonId = null;
+            selectedPlaceFilter = null;
             setSelectedSubjectId(null);
 
             // Reset quality filters
@@ -1581,8 +1589,11 @@ function applyFilters() {
         filterUpdates.temporal = null;
     }
 
-    filterUpdates.languages = languageFilters.length > 0 ? languageFilters : [];
+    // All boxes checked means no language filter
+    const allLanguagesChecked = languageFilters.length === document.querySelectorAll('input[name="language"]').length;
+    filterUpdates.languages = allLanguagesChecked ? [] : languageFilters;
     filterUpdates.person = selectedPersonId || null;
+    filterUpdates.place = selectedPlaceFilter || null;
     filterUpdates.subject = getSelectedSubjectId() || null;
     filterUpdates.quality = { ...qualityFilter };
 
@@ -1645,7 +1656,7 @@ function clearPersonFilter() {
 
 // Update filter indicators on view buttons
 function updateFilterIndicators() {
-    const hasActiveFilter = selectedPersonId || getSelectedSubjectId() ||
+    const hasActiveFilter = selectedPersonId || selectedPlaceFilter || getSelectedSubjectId() ||
         qualityFilter.preciseDates || qualityFilter.knownPersons || qualityFilter.locatedPlaces;
 
     // Update letters button with filter indicator
@@ -1866,10 +1877,10 @@ function handlePlacesDataUpdated(coordinates) {
     detectAvailableViews();
     updateViewButtons();
 
-    // Reinitialize map if it's now available
-    if (availableViews.map?.available && map) {
-        initMap();
-        updateMap();
+    // Redraw the markers on the existing map; initMap would create a second map instance
+    if (availableViews.map?.available && map && mapInitialized) {
+        renderPlaceMarkers(placeAggregation);
+        updateMapLegend();
     }
 }
 
@@ -1955,6 +1966,7 @@ function updateUrlState() {
 
 // Variables for URL state
 let selectedPersonId = null;
+let selectedPlaceFilter = null;
 let initialLanguageFilter = null;
 
 // ===================
@@ -2305,7 +2317,7 @@ function renderOverviewResearchPaths() {
     }
 
     // Only show descriptive and analytical questions (not unanswerable)
-    const answerable = questions.filter(q => q.category !== 'unanswerable');
+    const answerable = questions.filter(q => q.category !== 'unavailable' && q.path?.length);
 
     // Limit to 4 paths for compact overview
     const MAX_PATHS = 4;
@@ -2896,7 +2908,7 @@ function renderLettersList() {
                     <div class="letter-header-actions">
                         <div class="letter-date ${dateClass}">${date}</div>
                         <button class="btn-letter-basket ${basketIsInBasket('letters', letter.id) ? 'in-basket' : ''}"
-                                data-letter-id="${letter.id || ''}"
+                                data-letter-id="${escapeHtml(letter.id || '')}"
                                 title="${basketIsInBasket('letters', letter.id) ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
                             <i class="fas fa-star"></i>
                         </button>
@@ -3528,25 +3540,11 @@ window.filterBySubject = function(subjectId) {
 // PLACES VIEW - Extracted to views/places-view.js
 // ===================
 
+// Goes through the state manager like the other filters, so every view and the reset button see it
 function applyPlaceFilter(placeId) {
     log.event(`Applying place filter: ${placeId}`);
-
-    // Filter letters by place
-    filteredLetters = allLetters.filter(letter =>
-        letter.place_sent?.geonames_id === placeId
-    );
-
-    // Update aggregation and UI
-    placeAggregation = aggregateLettersByPlace(filteredLetters, dataIndices.places || {});
-
-    if (map && map.loaded() && mapInitialized) {
-        renderPlaceMarkers(placeAggregation);
-        updateMapLegend();
-    }
-
-    updateFilterCounts();
-    updateUrlState();
-
+    selectedPlaceFilter = placeId;
+    applyFilters();
     log.event(`Filtered letters count: ${filteredLetters.length}`);
 }
 
@@ -3773,7 +3771,7 @@ function analyzeResearchQuestions() {
 
     // Persons - with Top 3 preview
     const persons = Object.values(dataIndices.persons || {});
-    const personsWithAuthority = persons.filter(p => p.viaf || p.gnd);
+    const personsWithAuthority = persons.filter(p => p.authority || p.viaf || p.gnd);
     if (persons.length > 0) {
         // Calculate total letters per person and get top 3
         // Use letter_count from parser (as_sender + as_recipient counts)
@@ -4525,8 +4523,8 @@ function addToBasketFromView() {
         case 'map':
             // Alle Orte aus gefilterten Briefen
             filteredLetters.forEach(l => {
-                if (l.place_sent?.id) {
-                    const result = basketAdd('places', l.place_sent.id);
+                if (l.place_sent?.geonames_id) {
+                    const result = basketAdd('places', l.place_sent.geonames_id);
                     if (result === true) addedCount++;
                 }
             });
@@ -4798,6 +4796,8 @@ function setupKnowledgePathHandlers() {
     // Initiales UI-Update
     updateSidebarBasketUI();
 }
+
+enableModalKeyboard();
 
 // role="button" elements get native button keyboard behaviour: Enter and Space trigger their click handler
 document.addEventListener('keydown', (e) => {

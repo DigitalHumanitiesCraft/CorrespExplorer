@@ -12,7 +12,7 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 
-import { debounce, escapeHtml, safeUrl, downloadFile, showToast } from './utils.js';
+import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath } from './utils.js';
 
 // State
 let dataIndices = {};
@@ -36,7 +36,7 @@ async function init() {
     loadBasketFromUrl();
 
     // Load data from sessionStorage
-    loadData();
+    await loadData();
 
     // Setup event listeners
     setupEventListeners();
@@ -91,21 +91,19 @@ function cacheElements() {
     elements.toastMessage = document.getElementById('toast-message');
 }
 
-function loadData() {
+async function loadData() {
     try {
-        const storedData = sessionStorage.getItem('correspData');
+        let storedData = sessionStorage.getItem('correspData');
+        // Datasets above the sessionStorage quota are handed over by their data/*.json path
+        const source = JSON.parse(sessionStorage.getItem('correspDataSource') || 'null');
+        if (!storedData && isAllowedJsonPath(source?.json)) {
+            const response = await fetch(source.json);
+            if (response.ok) storedData = await response.text();
+        }
         if (storedData) {
             const parsed = JSON.parse(storedData);
             allLetters = parsed.letters || [];
             dataIndices = parsed.indices || {};
-
-            // Debug: Log loaded data structure
-            console.group('Wissenskorb: Geladene Daten');
-            console.log('Briefe geladen:', allLetters.length);
-            console.log('Indices:', Object.keys(dataIndices));
-            if (dataIndices.persons) console.log('Personen-Index:', Object.keys(dataIndices.persons).length, 'Eintraege');
-            if (dataIndices.places) console.log('Orte-Index:', Object.keys(dataIndices.places).length, 'Eintraege');
-            console.groupEnd();
         } else {
             console.warn('Wissenskorb: Keine Daten in sessionStorage gefunden');
         }
@@ -227,11 +225,7 @@ function resolvePersons(personIds) {
             person = Object.values(personIndex).find(p => p.name === id);
         }
 
-        // Get letters for this person (check both id and authority)
-        const letters = allLetters.filter(l =>
-            l.sender?.id === id || l.recipient?.id === id ||
-            l.sender?.authority === id || l.recipient?.authority === id
-        );
+        const letters = allLetters.filter(l => personKey(l.sender) === id || personKey(l.recipient) === id);
 
         // Always add person if found in index OR has letters
         if (person || letters.length > 0) {
@@ -273,7 +267,7 @@ function resolvePlaces(placeIds) {
         if (place) {
             // Count letters from this place
             const letterCount = allLetters.filter(l =>
-                l.place_sent?.authority === id || l.place_sent?.name === id
+                placeKey(l.place_sent) === id || l.place_sent?.name === id
             ).length;
 
             places.push({
@@ -317,8 +311,8 @@ function countConnections(persons) {
 
     for (const person of persons) {
         for (const letter of person.letters) {
-            const senderId = letter.sender?.authority;
-            const recipientId = letter.recipient?.authority;
+            const senderId = personKey(letter.sender);
+            const recipientId = personKey(letter.recipient);
 
             if (senderId && recipientId && personIds.has(senderId) && personIds.has(recipientId)) {
                 connections++;
@@ -596,8 +590,8 @@ function renderNetwork(persons) {
 
     persons.forEach(person => {
         person.letters.forEach(letter => {
-            const senderId = letter.sender?.authority;
-            const recipientId = letter.recipient?.authority;
+            const senderId = personKey(letter.sender);
+            const recipientId = personKey(letter.recipient);
 
             if (senderId && recipientId && personIds.has(senderId) && personIds.has(recipientId)) {
                 const key = [senderId, recipientId].sort().join('|');
@@ -713,7 +707,7 @@ function renderMap(persons) {
 
     persons.forEach(person => {
         person.letters.forEach(letter => {
-            const placeId = letter.place_sent?.authority || letter.place_sent?.name;
+            const placeId = placeKey(letter.place_sent);
             if (placeId && !places.has(placeId)) {
                 const placeData = placesIndex[placeId];
                 if (placeData?.lat && placeData?.lon) {

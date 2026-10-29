@@ -22,13 +22,12 @@ export function initActivityView(deps) {
 /**
  * Builds index for activity heatmap
  * @param {Array} letters - Array of letter objects
- * @returns {Object} Index with byDate, byYear, byMonth, byWeekday, stats
+ * @returns {Object} Index with byDate, byYear, byMonth, stats
  */
 function buildActivityIndex(letters) {
     const byDate = new Map();      // "YYYY-MM-DD" -> {count, ids}
     const byYear = new Map();      // YYYY -> count
     const byMonth = new Map();     // "YYYY-MM" -> count
-    const byWeekday = [0, 0, 0, 0, 0, 0, 0]; // Mo-So counts
 
     let total = 0;
     let maxDay = { date: null, count: 0 };
@@ -41,10 +40,6 @@ function buildActivityIndex(letters) {
         const date = letter.date;  // "YYYY-MM-DD"
         const year = letter.year;
         const month = date.substring(0, 7);  // "YYYY-MM"
-
-        // Calculate weekday (0=Su in JS, we want 0=Mo)
-        const jsWeekday = new Date(date).getDay();
-        const weekday = jsWeekday === 0 ? 6 : jsWeekday - 1;
 
         // Aggregate by date
         if (!byDate.has(date)) {
@@ -59,9 +54,6 @@ function buildActivityIndex(letters) {
 
         // Aggregate by month
         byMonth.set(month, (byMonth.get(month) || 0) + 1);
-
-        // Aggregate by weekday
-        byWeekday[weekday]++;
 
         // Track max day (only day-precise dates, not placeholders like 1798-01-01)
         if (letter.datePrecision === 'day' && dateEntry.count > maxDay.count) {
@@ -87,7 +79,6 @@ function buildActivityIndex(letters) {
         byDate,
         byYear,
         byMonth,
-        byWeekday,
         total,
         maxDay,
         maxYear,
@@ -225,7 +216,8 @@ function renderActivityHeatmap() {
         }
 
         while (currentDate <= lastDay) {
-            const dateStr = currentDate.toISOString().substring(0, 10);
+            // Local calendar fields; toISOString would shift the day in time zones east of UTC
+            const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
             const data = byDate.get(dateStr);
             const count = data ? data.count : 0;
             const level = getActivityLevel(count, maxCount);

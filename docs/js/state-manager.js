@@ -1,6 +1,8 @@
 // State Manager - Zentrales State-Management für CorrespExplorer
 // Verwaltet globalen Anwendungszustand und benachrichtigt Subscriber bei Änderungen
 
+import { personKey, placeKey } from './utils.js';
+
 /**
  * AppState - Zentrale State-Verwaltung
  *
@@ -223,11 +225,10 @@ class AppState {
                 }
             }
 
-            // Person filter
+            // Person filter: persons without authority id are keyed by name, as in the person index
             if (this.filters.person) {
-                const senderId = letter.sender?.id;
-                const recipientId = letter.recipient?.id;
-                if (senderId !== this.filters.person && recipientId !== this.filters.person) {
+                if (personKey(letter.sender) !== this.filters.person &&
+                    personKey(letter.recipient) !== this.filters.person) {
                     return false;
                 }
             }
@@ -240,10 +241,10 @@ class AppState {
                 if (!hasSubject) return false;
             }
 
-            // Place filter
+            // Place filter: GeoNames id, or the name keys of places without id ("name:Wien" from the places view)
             if (this.filters.place) {
-                const placeId = letter.place_sent?.geonames_id;
-                if (placeId !== this.filters.place) {
+                const place = letter.place_sent;
+                if (!place || (placeKey(place) !== this.filters.place && `name:${place.name}` !== this.filters.place)) {
                     return false;
                 }
             }

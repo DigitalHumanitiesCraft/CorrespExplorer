@@ -408,7 +408,7 @@ async function handleResolveCoordinates() {
     const missingIds = JSON.parse(banner.dataset.missingIds || '[]');
 
     if (missingIds.length === 0) {
-        if (showToast) showToast('Keine Orte zum Aufloesen gefunden', 'info');
+        if (showToast) showToast('Keine Orte zum Aufloesen gefunden');
         return;
     }
 
@@ -435,11 +435,16 @@ async function handleResolveCoordinates() {
 
         applyCoordinatesToData(currentData, coordinates);
 
-        // Update sessionStorage with new coordinates
-        const storedData = JSON.parse(sessionStorage.getItem('cmif-data') || '{}');
-        storedData.letters = allLetters;
-        storedData.indices = dataIndices;
-        sessionStorage.setItem('cmif-data', JSON.stringify(storedData));
+        // Keep an uploaded dataset in sessionStorage current; a ?json= dataset is not stored there,
+        // and a quota error must not turn the successful resolution into a failure
+        const stored = sessionStorage.getItem('cmif-data');
+        if (stored) {
+            try {
+                sessionStorage.setItem('cmif-data', JSON.stringify({ ...JSON.parse(stored), letters: allLetters, indices: dataIndices }));
+            } catch (storageError) {
+                console.warn('Resolved coordinates not stored in sessionStorage', storageError);
+            }
+        }
 
         // Rebuild places index
         buildPlacesIndex();
@@ -451,14 +456,14 @@ async function handleResolveCoordinates() {
         }
 
         const resolvedCount = Object.keys(coordinates).length;
-        if (showToast) showToast(`${resolvedCount} Orte erfolgreich georeferenziert`, 'success');
+        if (showToast) showToast(`${resolvedCount} Orte erfolgreich georeferenziert`);
 
         // Update banner
         updateMissingCoordinatesBanner();
 
     } catch (error) {
         console.error('Failed to resolve coordinates:', error);
-        if (showToast) showToast(`Fehler beim Aufloesen: ${error.message}`, 'error');
+        if (showToast) showToast(`Fehler beim Aufloesen: ${error.message}`);
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-globe"></i> Koordinaten nachladen';
     }

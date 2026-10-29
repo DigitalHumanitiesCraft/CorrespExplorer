@@ -149,6 +149,55 @@ export function showToast(message, duration = 3000) {
     }, duration);
 }
 
+const DIALOG_SELECTOR = '.modal-overlay, .modal:not(.modal-overlay .modal)';
+
+function isShown(el) {
+    return el.getClientRects().length > 0;
+}
+
+/**
+ * Keyboard behaviour for every modal of a page: Escape closes the topmost open dialog through
+ * its close button, opening moves focus to that button, closing returns focus to the trigger.
+ * Works for static and generated modals, because the modules show them in different ways
+ * (style.display, the hidden class or a new element).
+ */
+export function enableModalKeyboard() {
+    let openDialog = null;
+    let returnFocus = null;
+
+    const sync = () => {
+        const dialogs = [...document.querySelectorAll(DIALOG_SELECTOR)].filter(isShown);
+        const top = dialogs[dialogs.length - 1] || null;
+        if (top === openDialog) return;
+        if (top) {
+            if (!openDialog) returnFocus = document.activeElement;
+            top.setAttribute('role', 'dialog');
+            top.setAttribute('aria-modal', 'true');
+            if (!top.contains(document.activeElement)) {
+                (top.querySelector('.modal-close') || top.querySelector('button, [href], [tabindex]'))?.focus();
+            }
+        } else if (returnFocus?.isConnected) {
+            returnFocus.focus();
+        }
+        openDialog = top;
+    };
+
+    new MutationObserver(sync).observe(document.body, {
+        subtree: true, childList: true, attributes: true, attributeFilter: ['style', 'class']
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape' || !openDialog) return;
+        const close = openDialog.querySelector('.modal-close');
+        if (close) {
+            close.click();
+        } else {
+            openDialog.style.display = 'none';
+        }
+        e.preventDefault();
+    });
+}
+
 /**
  * Copy text to clipboard
  * @param {string} text - Text to copy
@@ -296,6 +345,24 @@ export function classifyDate({ when, from, to, notBefore, notAfter, cert } = {})
         precision,
         certainty
     };
+}
+
+/**
+ * Key of a correspondent in the person index, filters and basket: authority id, else name
+ * @param {{id?: string, name?: string}|null} person
+ * @returns {string|null}
+ */
+export function personKey(person) {
+    return person?.id || person?.name || null;
+}
+
+/**
+ * Key of a place in the place index and basket: GeoNames id, else name
+ * @param {{geonames_id?: string, name?: string}|null} place
+ * @returns {string|null}
+ */
+export function placeKey(place) {
+    return place?.geonames_id || place?.name || null;
 }
 
 /**

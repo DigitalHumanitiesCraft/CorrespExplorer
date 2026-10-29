@@ -116,6 +116,47 @@ export const StateManagerTests = {
         },
 
         {
+            // Regression: persons without authority id are keyed by name in the person list (plan finding 6)
+            name: 'updateFilters: Person-Filter ohne Normdaten-ID filtert ueber den Namen',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+
+                const unidentified = data.letters.find(l => l.sender?.name && !l.sender.id)?.sender;
+                assert(unidentified, 'test-uncertainty.xml sollte einen Absender ohne ID enthalten');
+
+                state.updateFilters({ person: unidentified.name });
+                const filtered = state.getFilteredLetters();
+                assert(filtered.length > 0, `Sollte Briefe fuer ${unidentified.name} finden`);
+                filtered.forEach(letter => {
+                    const names = [letter.sender, letter.recipient].map(p => p?.id || p?.name);
+                    assert(names.includes(unidentified.name), `Brief ${letter.id} sollte ${unidentified.name} enthalten`);
+                });
+            }
+        },
+
+        {
+            // Regression: places without GeoNames id carry the key "name:<Ort>" in the places view
+            name: 'updateFilters: Ort-Filter mit und ohne GeoNames-ID',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+
+                const unlocated = data.letters.find(l => l.place_sent?.name && !l.place_sent.geonames_id).place_sent;
+                state.updateFilters({ place: `name:${unlocated.name}` });
+                let filtered = state.getFilteredLetters();
+                assert(filtered.length > 0 && filtered.every(l => l.place_sent?.name === unlocated.name),
+                    `Sollte nur Briefe aus ${unlocated.name} finden`);
+
+                const located = data.letters.find(l => l.place_sent?.geonames_id).place_sent;
+                state.updateFilters({ place: located.geonames_id });
+                filtered = state.getFilteredLetters();
+                assert(filtered.length > 0 && filtered.every(l => l.place_sent?.geonames_id === located.geonames_id),
+                    `Sollte nur Briefe aus GeoNames ${located.geonames_id} finden`);
+            }
+        },
+
+        {
             name: 'updateFilters: Kombinierte Filter mit echten Daten',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
