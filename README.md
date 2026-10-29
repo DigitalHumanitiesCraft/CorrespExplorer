@@ -60,7 +60,7 @@ Checking is layered. Verification runs the browser test runner `docs/test.html`,
 
 ## Licence and citation
 
-Code is licensed under the MIT License (see [LICENSE](LICENSE)). Documentation and knowledge documents are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0). Third-party research data is excluded from these terms; rights remain with their respective holders. The bundled example correspondence dataset (Hugo Schuchardt Archiv) remains with the archive.
+Code is licensed under the MIT License (see [LICENSE](LICENSE)). Documentation and knowledge documents are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0). Third-party research data is excluded from these terms and keeps the licence its publisher states in the CMIF teiHeader. The bundled Hugo Schuchardt Archiv export is licensed CC BY 4.0 by the Centre for Information Modelling, University of Graz, and the bundled Schönbach file is CC0. Details and open points are in [docs/knowledge/data.md](docs/knowledge/data.md#rechte-und-lizenzen).
 
 Citation metadata is in [CITATION.cff](CITATION.cff) and [codemeta.json](codemeta.json).
 

@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Datengrundlage
@@ -59,7 +59,7 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 
 ### Hugo Schuchardt Archiv
 
-Das Hugo Schuchardt Archiv (HSA) der Universität Graz (https://gams.uni-graz.at/context:hsa) ist ein ego-zentriertes Netzwerk um den Sprachwissenschaftler Hugo Schuchardt mit Briefen an ihn und von ihm. Es nutzt das LOD Academy CMIF Vocabulary für die erweiterten Metadatentypen und VIAF als vorherrschendes Normdatensystem für Personen. Eigene kontrollierte Vokabulare für Themen und Sprachen ergänzen Lexvo-URIs. Die Rechte an den Daten liegen beim Archiv.
+Das Hugo Schuchardt Archiv (HSA) der Universität Graz (https://gams.uni-graz.at/context:hsa) ist ein ego-zentriertes Netzwerk um den Sprachwissenschaftler Hugo Schuchardt mit Briefen an ihn und von ihm. Es nutzt das LOD Academy CMIF Vocabulary für die erweiterten Metadatentypen und VIAF als vorherrschendes Normdatensystem für Personen. Eigene kontrollierte Vokabulare für Themen und Sprachen ergänzen Lexvo-URIs. Die CMIF-Datei steht unter CC BY 4.0, siehe [Rechte und Lizenzen](#rechte-und-lizenzen).
 
 Kennzahlen der gebündelten Datei, Stand der Vorprozessierung im Dezember 2025:
 
@@ -93,6 +93,28 @@ Diese Quellen wurden beim Aufbau des Werkzeugs als ladbar erfasst. Ob eine URL w
 | Leibniz-Briefportal | https://leibniz-briefportal.de | CMIF-Export, GND für Personen |
 | Carl-Maria-von-Weber-Gesamtausgabe | https://weber-gesamtausgabe.de/cmif_v1.xml (empfohlen), `cmif_v2.xml` (CMIF-v2-Entwurf) | Umfangreicher Bestand, GND für Personen, CC BY 4.0 |
 | Edvard-Munch-Korrespondenz (NorKorr) | https://dataverse.no/api/access/datafile/191809, Datensatz https://dataverse.no/dataset.xhtml?persistentId=doi:10.18710/TAFUSV | Großer Datensatz aus der Edition eMunch.no, GeoNames für Orte, geeignet für Lasttests |
+
+## Rechte und Lizenzen
+
+Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY 4.0 (`README.md`). Forschungsdaten Dritter sind davon ausgenommen und behalten die Lizenz, die ihre Herausgeber angeben. Maßgeblich ist die Angabe in `publicationStmt/availability/licence` der jeweiligen CMIF-Datei. Stand der Prüfung 2026-10-29.
+
+| Datei | Herkunft | Lizenzangabe | Beleg |
+|---|---|---|---|
+| `docs/data/hsa.xml`, identisch `data/hsa/CMIF.xml` | CMIF-Export des Hugo Schuchardt Archivs, Publisher Zentrum für Informationsmodellierung der Universität Graz, Stand 2025-01-28 | CC BY 4.0 | `licence target="https://creativecommons.org/licenses/by/4.0/"` im teiHeader, Quelle https://gams.uni-graz.at/context:hsa/CMIF |
+| `docs/data/hsa-letters.json` | Mit `build_hsa_data.py` aus `data/hsa/CMIF.xml` abgeleitet | CC BY 4.0 der Quelle | `meta.teiHeader` übernimmt Publisher, Herausgabe, Lizenztext, Lizenz-URL und Bibliographie, die Übersicht zeigt den Lizenzlink |
+| `docs/data/schoenbach.xml` | Lokale Kopie des CMIF der Edition „Fünf Briefe aus dem Nachlass von Anton Emanuel Schönbach“ am ACDH-OEAW | CC0 | `licence target="https://creativecommons.org/publicdomain/zero/1.0/"` im teiHeader |
+| `docs/data/demo-showcase.xml`, `docs/data/test-uncertainty.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | teiHeader der Dateien |
+| `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | keine gültige Angabe, das `licence`-Element ist absichtlich feindliche Eingabe | teiHeader |
+| `data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata, per SPARQL über die GeoNames-ID (P1566) abgefragt | Wikidata-Daten stehen unter CC0 | `meta.source` der Datei |
+| `docs/data/geonames_coordinates.json` | Kleinere, abweichende Koordinatentabelle, von `upload.js` geladen | keine | Herkunft nicht dokumentiert, eingeführt mit Commit `e1a13cf` |
+
+Externe Quellen, die Nutzende zur Laufzeit laden, sind nicht im Repository gebündelt. Ihre Lizenz steht im teiHeader der geladenen Datei, die Übersicht zeigt sie an. Die correspSearch-API gibt ihre Ergebnisse laut API-Dokumentation (https://correspsearch.net/en/api.html, abgerufen 2026-10-29) unter CC BY 4.0 aus, die zu nennenden Datengeber stehen in `teiHeader//respStmt`.
+
+Offen sind drei Punkte.
+
+- CC BY 4.0 verlangt neben der Namensnennung einen Hinweis auf Änderungen. `hsa-letters.json` trägt mit `meta.generated` und `meta.source_file` nur implizit die Information, dass es sich um eine vorprozessierte Ableitung handelt, ein ausdrücklicher Änderungshinweis fehlt in Datei und Oberfläche. Ob die bisherige Anzeige genügt, entscheidet der Operator als Lizenznehmer, das datengebende Archiv muss dafür nicht gefragt werden.
+- Herkunft und damit Rechtsgrundlage von `docs/data/geonames_coordinates.json` sind nicht belegt. Die Klärung liegt beim Operator, weil die Datei im Projekt entstanden ist.
+- `test-hostile.xml` trägt als Eigenproduktion keine gültige Lizenzangabe. Ob für synthetische Testdateien die Dokumentationslizenz CC BY 4.0 gilt, legt der Operator fest.
 
 ## Modell
 
