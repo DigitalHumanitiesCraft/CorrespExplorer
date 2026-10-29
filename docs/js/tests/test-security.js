@@ -4,6 +4,7 @@
 import { parseCMIF } from '../cmif-parser.js';
 import { escapeHtml, safeUrl, buildAuthorityLink, isAllowedJsonPath } from '../utils.js';
 import { formatPersonName, formatPlaceName, formatDateWithPrecision } from '../formatters.js';
+import { assert } from './test-runner.js';
 
 const URL_KEYS = ['url', 'ref', 'cmifUrl', 'sourceUrl'];
 
@@ -116,9 +117,3 @@ export const SecurityTests = {
         }
     ]
 };
-
-function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message || 'Assertion failed');
-    }
-}

@@ -157,54 +157,10 @@ export async function runTests(suites) {
 }
 
 /**
- * Inline Test-Helpers
+ * Shared assertion of all suites: throws with the given message when the condition fails
  */
-export const assert = {
-    true(condition, message) {
-        if (!condition) {
-            throw new Error(message || 'Expected true, got false');
-        }
-    },
-
-    equal(actual, expected, message) {
-        if (actual !== expected) {
-            throw new Error(message || `Expected ${expected}, got ${actual}`);
-        }
-    },
-
-    notEqual(actual, unexpected, message) {
-        if (actual === unexpected) {
-            throw new Error(message || `Expected not ${unexpected}, got ${actual}`);
-        }
-    },
-
-    arrayLength(arr, length, message) {
-        if (arr.length !== length) {
-            throw new Error(message || `Expected length ${length}, got ${arr.length}`);
-        }
-    },
-
-    includes(arr, value, message) {
-        if (!arr.includes(value)) {
-            throw new Error(message || `Expected array to include ${value}`);
-        }
-    },
-
-    throws(fn, message) {
-        try {
-            fn();
-            throw new Error(message || 'Expected function to throw');
-        } catch (error) {
-            if (error.message === message || error.message === 'Expected function to throw') {
-                throw error;
-            }
-            // Function threw as expected
-        }
-    },
-
-    async(fn, message) {
-        if (typeof fn !== 'function' || fn.constructor.name !== 'AsyncFunction') {
-            throw new Error(message || 'Expected async function');
-        }
+export function assert(condition, message) {
+    if (!condition) {
+        throw new Error(message || 'Assertion failed');
     }
-};
+}

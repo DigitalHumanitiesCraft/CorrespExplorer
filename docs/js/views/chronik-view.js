@@ -1,7 +1,7 @@
 // Chronik View
 // Timeline display of letters with Wikidata enrichment support
 
-import { escapeHtml, safeUrl } from '../utils.js';
+import { escapeHtml, safeUrl, openModal, closeModal } from '../utils.js';
 import { formatDateWithPrecision, getPersonInitials } from '../formatters.js';
 import { enrichPerson, formatLifeDates } from '../wikidata-enrichment.js';
 import { elements } from '../dom-cache.js';
@@ -56,7 +56,6 @@ function setupChronikEventHandlers() {
     const startBtn = document.getElementById('enrichment-start-btn');
     const cancelBtn = document.getElementById('enrichment-cancel-btn');
     const closeBtn = document.getElementById('enrichment-close-btn');
-    const modal = document.getElementById('enrichment-modal');
 
     if (startBtn) {
         startBtn.addEventListener('click', async () => {
@@ -73,14 +72,6 @@ function setupChronikEventHandlers() {
     if (closeBtn) {
         closeBtn.addEventListener('click', () => {
             closeEnrichmentModal();
-        });
-    }
-
-    // Close modal on X or backdrop click
-    if (modal) {
-        modal.querySelector('.modal-close')?.addEventListener('click', closeEnrichmentModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeEnrichmentModal();
         });
     }
 }
@@ -702,8 +693,7 @@ function openEnrichmentModal() {
     document.getElementById('enrichment-cancel-btn').classList.add('hidden');
     document.getElementById('enrichment-close-btn').classList.add('hidden');
 
-    // Show modal
-    modal.classList.remove('hidden');
+    openModal(modal);
 }
 
 /**
@@ -711,7 +701,7 @@ function openEnrichmentModal() {
  */
 function closeEnrichmentModal() {
     const modal = document.getElementById('enrichment-modal');
-    if (modal) modal.classList.add('hidden');
+    if (modal) closeModal(modal);
 }
 
 /**

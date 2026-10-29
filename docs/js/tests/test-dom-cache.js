@@ -2,6 +2,7 @@
 // Fokussiert auf Caching-Logik und Element-Zugriff
 
 import { elements, initDOMCache } from '../dom-cache.js';
+import { assert } from './test-runner.js';
 
 export const DOMCacheTests = {
     name: 'DOM Cache',
@@ -214,10 +215,3 @@ export const DOMCacheTests = {
         }
     ]
 };
-
-// Helper function
-function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message || 'Assertion failed');
-    }
-}

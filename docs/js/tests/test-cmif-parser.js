@@ -2,6 +2,7 @@
 // Tests XML→JSON parsing with REAL CMIF data
 
 import { parseCMIF } from '../cmif-parser.js';
+import { assert } from './test-runner.js';
 
 export const CMIFParserTests = {
     name: 'CMIF Parser',
@@ -237,9 +238,3 @@ export const CMIFParserTests = {
         }
     ]
 };
-
-function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message || 'Assertion failed');
-    }
-}

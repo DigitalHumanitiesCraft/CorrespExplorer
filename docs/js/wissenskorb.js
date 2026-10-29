@@ -87,8 +87,6 @@ function cacheElements() {
     elements.detailsList = document.getElementById('details-list');
     elements.detailsSearch = document.getElementById('details-search');
     elements.detailsSort = document.getElementById('details-sort');
-    elements.toast = document.getElementById('toast');
-    elements.toastMessage = document.getElementById('toast-message');
 }
 
 async function loadData() {

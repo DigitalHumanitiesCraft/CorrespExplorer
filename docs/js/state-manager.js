@@ -28,8 +28,8 @@ class AppState {
 
         // Filter state
         this.filters = {
-            temporal: null,              // { min: number, max: number }
-            languages: [],               // Array of language codes
+            temporal: null,              // { min, max } or { undated: true }
+            languages: null,             // null = no filter, array = allowed codes (empty = none)
             person: null,                // Person ID
             subject: null,               // Subject URI
             place: null,                 // Place GeoNames ID
@@ -170,7 +170,7 @@ class AppState {
     resetFilters() {
         this.filters = {
             temporal: null,
-            languages: [],
+            languages: null,
             person: null,
             subject: null,
             place: null,
@@ -208,65 +208,63 @@ class AppState {
         }
 
         // Apply all filters
-        this._filteredLetters = this.data.letters.filter(letter => {
-            // Temporal filter
-            if (this.filters.temporal) {
+        this._filteredLetters = this.filterLetters(this.filters);
+
+        this._filtersDirty = false;
+        return this._filteredLetters;
+    }
+
+    /**
+     * Letters matching an arbitrary filter set, uncached. The sidebar uses it to count
+     * languages under all other active filters.
+     * @param {Object} filters - Same shape as this.filters
+     * @returns {Array} Matching letters
+     */
+    filterLetters(filters) {
+        return this.data.letters.filter(letter => {
+            if (filters.temporal?.undated) {
+                if (letter.year) return false;
+            } else if (filters.temporal) {
                 if (!letter.year) return false;
-                if (letter.year < this.filters.temporal.min || letter.year > this.filters.temporal.max) {
+                if (letter.year < filters.temporal.min || letter.year > filters.temporal.max) {
                     return false;
                 }
             }
 
-            // Language filter
-            if (this.filters.languages.length > 0) {
+            if (filters.languages) {
                 const langCode = letter.language?.code || 'None';
-                if (!this.filters.languages.includes(langCode)) {
+                if (!filters.languages.includes(langCode)) {
                     return false;
                 }
             }
 
-            // Person filter: persons without authority id are keyed by name, as in the person index
-            if (this.filters.person) {
-                if (personKey(letter.sender) !== this.filters.person &&
-                    personKey(letter.recipient) !== this.filters.person) {
+            if (filters.person) {
+                if (personKey(letter.sender) !== filters.person &&
+                    personKey(letter.recipient) !== filters.person) {
                     return false;
                 }
             }
 
-            // Subject filter
-            if (this.filters.subject) {
+            if (filters.subject) {
                 const hasSubject = letter.mentions?.subjects?.some(s =>
-                    (s.uri || s.id || s.label) === this.filters.subject
+                    (s.uri || s.id || s.label) === filters.subject
                 );
                 if (!hasSubject) return false;
             }
 
-            // Place filter: GeoNames id, or the name keys of places without id ("name:Wien" from the places view)
-            if (this.filters.place) {
+            if (filters.place) {
                 const place = letter.place_sent;
-                if (!place || (placeKey(place) !== this.filters.place && `name:${place.name}` !== this.filters.place)) {
+                if (!place || (placeKey(place) !== filters.place && `name:${place.name}` !== filters.place)) {
                     return false;
                 }
             }
 
-            // Quality filters
-            if (this.filters.quality.preciseDates) {
-                if (letter.datePrecision !== 'day') return false;
-            }
-
-            if (this.filters.quality.knownPersons) {
-                if (!letter.sender?.id || !letter.recipient?.id) return false;
-            }
-
-            if (this.filters.quality.locatedPlaces) {
-                if (!letter.place_sent?.lat || !letter.place_sent?.lon) return false;
-            }
+            if (filters.quality?.preciseDates && letter.datePrecision !== 'day') return false;
+            if (filters.quality?.knownPersons && (!letter.sender?.id || !letter.recipient?.id)) return false;
+            if (filters.quality?.locatedPlaces && (!letter.place_sent?.lat || !letter.place_sent?.lon)) return false;
 
             return true;
         });
-
-        this._filtersDirty = false;
-        return this._filteredLetters;
     }
 
     /**
@@ -314,13 +312,15 @@ class AppState {
         }
 
         // Temporal filter
-        if (this.filters.temporal) {
+        if (this.filters.temporal?.undated) {
+            params.set('undated', '1');
+        } else if (this.filters.temporal) {
             params.set('yearMin', this.filters.temporal.min);
             params.set('yearMax', this.filters.temporal.max);
         }
 
         // Language filter
-        if (this.filters.languages.length > 0) {
+        if (this.filters.languages) {
             params.set('langs', this.filters.languages.join(','));
         }
 
@@ -358,7 +358,9 @@ class AppState {
         // Temporal filter
         const yearMin = params.get('yearMin');
         const yearMax = params.get('yearMax');
-        if (yearMin && yearMax) {
+        if (params.get('undated') === '1') {
+            updates.temporal = { undated: true };
+        } else if (yearMin && yearMax) {
             updates.temporal = {
                 min: parseInt(yearMin),
                 max: parseInt(yearMax)
@@ -366,9 +368,9 @@ class AppState {
         }
 
         // Language filter
-        const langs = params.get('langs');
-        if (langs) {
-            updates.languages = langs.split(',');
+        if (params.has('langs')) {
+            const langs = params.get('langs');
+            updates.languages = langs ? langs.split(',') : [];
         }
 
         // Person filter

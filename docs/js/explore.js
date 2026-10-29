@@ -14,7 +14,7 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard, downloadFile, csvCell } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, csvCell } from './utils.js';
 import {
     formatDateWithPrecision,
     formatPersonName,
@@ -258,7 +258,8 @@ async function init() {
             switchView,
             basketIsInBasket,
             basketAdd,
-            showToast
+            showToast,
+            showUndatedLetters
         });
         // Initialize extracted topics view with dependencies
         initTopicsView({
@@ -347,6 +348,11 @@ async function init() {
 
         // Apply initial view (use detected first available if map not available)
         switchView(currentView);
+
+        // Time range and languages from the URL
+        if (temporalFilter || initialLanguageFilter) {
+            applyFilters();
+        }
 
         // Apply person filter from URL
         if (selectedPersonId) {
@@ -527,7 +533,7 @@ function buildLanguageFilter() {
             label.title = tooltip;
         }
         label.innerHTML = `
-            <input type="checkbox" name="language" value="${escapeHtml(code)}" checked>
+            <input type="checkbox" name="language" value="${escapeHtml(code)}"${!initialLanguageFilter || initialLanguageFilter.includes(code) ? ' checked' : ''}>
             <span>${escapeHtml(displayLabel)}</span>
             <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${counts[code]})</span>
         `;
@@ -1278,8 +1284,9 @@ function initFilters() {
 
     // Year range slider
     if (typeof noUiSlider !== 'undefined' && dateRange.min < dateRange.max) {
+        const urlRange = temporalFilter && !temporalFilter.undated;
         noUiSlider.create(yearRangeSlider, {
-            start: [dateRange.min, dateRange.max],
+            start: urlRange ? [temporalFilter.start, temporalFilter.end] : [dateRange.min, dateRange.max],
             connect: true,
             step: 1,
             range: { 'min': dateRange.min, 'max': dateRange.max },
@@ -1289,20 +1296,18 @@ function initFilters() {
             }
         });
 
+        // 'update' fires on binding and while dragging, 'set' only for committed values
+        // (release, keyboard, set()); binding the filter to 'update' reset a URL filter at load
         yearRangeSlider.noUiSlider.on('update', (values) => {
+            if (yearRangeText) yearRangeText.textContent = `${parseInt(values[0])} - ${parseInt(values[1])}`;
+        });
+        yearRangeSlider.noUiSlider.on('set', (values) => {
             const startYear = parseInt(values[0]);
             const endYear = parseInt(values[1]);
-            if (yearRangeText) {
-                yearRangeText.textContent = `${startYear} - ${endYear}`;
-            }
             const isDefaultRange = startYear === dateRange.min && endYear === dateRange.max;
             temporalFilter = isDefaultRange ? null : { start: startYear, end: endYear };
             debouncedApply();
         });
-
-        if (yearRangeText) {
-            yearRangeText.textContent = `${dateRange.min} - ${dateRange.max}`;
-        }
     } else if (yearRangeText) {
         yearRangeText.textContent = `${dateRange.min} - ${dateRange.max}`;
     }
@@ -1366,15 +1371,20 @@ function applyFilters() {
     // Update state with current filters (will trigger getFilteredLetters cache invalidation)
     const filterUpdates = {};
 
-    if (temporalFilter) {
+    if (temporalFilter?.undated) {
+        filterUpdates.temporal = { undated: true };
+    } else if (temporalFilter) {
         filterUpdates.temporal = { min: temporalFilter.start, max: temporalFilter.end };
     } else {
         filterUpdates.temporal = null;
     }
+    if (temporalFilter?.undated && elements.yearRangeText) {
+        elements.yearRangeText.textContent = 'Nur Briefe ohne Datum';
+    }
 
-    // All boxes checked means no language filter
+    // All boxes checked (or none present) means no language filter, none checked means no letters
     const allLanguagesChecked = languageFilters.length === document.querySelectorAll('input[name="language"]').length;
-    filterUpdates.languages = allLanguagesChecked ? [] : languageFilters;
+    filterUpdates.languages = allLanguagesChecked ? null : languageFilters;
     filterUpdates.person = selectedPersonId || null;
     filterUpdates.place = selectedPlaceFilter || null;
     filterUpdates.subject = getSelectedSubjectId() || null;
@@ -1419,6 +1429,13 @@ function applyFilters() {
     } else if (currentView === 'mentions-flow') {
         renderMentionsFlowView();
     }
+}
+
+// Undated letters have no place on the year slider, so they get their own temporal filter
+function showUndatedLetters() {
+    temporalFilter = { undated: true };
+    applyFilters();
+    switchView('letters');
 }
 
 // Apply person filter
@@ -1528,68 +1545,18 @@ function updatePersonFilterDisplay() {
     }
 }
 
-// Update filter counts based on current filters (excluding language filter)
+// Language counts under all other active filters, so each checkbox shows what selecting it would add
 function updateFilterCounts() {
-    // Get current filter state excluding language
-    const yearRange = getYearRangeValues();
-    const personFilters = selectedPersonId ? [selectedPersonId] : [];
-    const topicFilters = getSelectedSubjectId() ? [getSelectedSubjectId()] : [];
-
-    // Filter letters without language constraint to show potential counts
-    const lettersWithoutLanguageFilter = allLetters.filter(letter => {
-        // Year filter
-        if (yearRange) {
-            const year = letter.year;
-            if (!year || year < yearRange[0] || year > yearRange[1]) return false;
-        }
-
-        // Person filter
-        if (personFilters.length > 0) {
-            const senderId = letter.sender?.id || letter.sender?.name;
-            const recipientId = letter.recipient?.id || letter.recipient?.name;
-            if (!personFilters.includes(senderId) && !personFilters.includes(recipientId)) return false;
-        }
-
-        // Topic filter
-        if (topicFilters.length > 0) {
-            const subjects = letter.mentions?.subjects || [];
-            const hasSubject = subjects.some(s =>
-                topicFilters.includes(s.id) || topicFilters.includes(s.label) || topicFilters.includes(s.uri)
-            );
-            if (!hasSubject) return false;
-        }
-
-        return true;
-    });
-
-    // Count letters per language in the filtered set
     const languageCounts = {};
-    lettersWithoutLanguageFilter.forEach(letter => {
-        if (letter.language?.code) {
-            languageCounts[letter.language.code] = (languageCounts[letter.language.code] || 0) + 1;
-        }
+    state.filterLetters({ ...state.filters, languages: null }).forEach(letter => {
+        const code = letter.language?.code || 'None';
+        languageCounts[code] = (languageCounts[code] || 0) + 1;
     });
 
-    // Update all language count displays
-    const allLanguageCheckboxes = document.querySelectorAll('input[name="language"]');
-    allLanguageCheckboxes.forEach(cb => {
-        const code = cb.value;
-        const el = document.getElementById(`count-lang-${code}`);
-        if (el) {
-            const count = languageCounts[code] || 0;
-            el.textContent = `(${count})`;
-        }
+    document.querySelectorAll('input[name="language"]').forEach(cb => {
+        const el = document.getElementById(`count-lang-${cb.value}`);
+        if (el) el.textContent = `(${languageCounts[cb.value] || 0})`;
     });
-}
-
-// Get year range values from slider
-function getYearRangeValues() {
-    const slider = elements.yearRangeSlider;
-    if (slider && slider.noUiSlider) {
-        const values = slider.noUiSlider.get();
-        return [parseInt(values[0]), parseInt(values[1])];
-    }
-    return null;
 }
 
 function getCheckedValues(name) {
@@ -1611,44 +1578,6 @@ function showError(message) {
     setTimeout(() => {
         window.location.href = 'index.html';
     }, 2000);
-}
-
-/**
- * Shows a toast notification
- * @param {string} message - Message to display
- * @param {number} duration - Duration in ms (default 3000)
- */
-function showToast(message, duration = 3000) {
-    // Remove existing toast
-    const existing = document.querySelector('.toast-notification');
-    if (existing) existing.remove();
-
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.innerHTML = `
-        <span class="toast-message">${escapeHtml(message)}</span>
-        <button class="toast-close"><i class="fas fa-times"></i></button>
-    `;
-
-    document.body.appendChild(toast);
-
-    // Close button
-    toast.querySelector('.toast-close').addEventListener('click', () => {
-        toast.classList.add('toast-hide');
-        setTimeout(() => toast.remove(), 300);
-    });
-
-    // Show with animation
-    requestAnimationFrame(() => {
-        toast.classList.add('toast-show');
-    });
-
-    // Auto-hide
-    setTimeout(() => {
-        toast.classList.add('toast-hide');
-        setTimeout(() => toast.remove(), 300);
-    }, duration);
 }
 
 /**
@@ -1685,7 +1614,9 @@ function initUrlState() {
     // Year range
     const yearMin = urlParams.get('yearMin');
     const yearMax = urlParams.get('yearMax');
-    if (yearMin && yearMax) {
+    if (urlParams.get('undated') === '1') {
+        temporalFilter = { undated: true };
+    } else if (yearMin && yearMax) {
         temporalFilter = {
             start: parseInt(yearMin),
             end: parseInt(yearMax)
@@ -1705,9 +1636,9 @@ function initUrlState() {
     }
 
     // Languages
-    const langs = urlParams.get('langs');
-    if (langs) {
-        initialLanguageFilter = langs.split(',');
+    if (urlParams.has('langs')) {
+        const langs = urlParams.get('langs');
+        initialLanguageFilter = langs ? langs.split(',') : [];
     }
 
     // Quality filters
@@ -1777,6 +1708,7 @@ function switchView(view) {
 
     currentView = view;
     state.ui.currentView = view;
+    updateUrlState();
 
     // Update buttons
     document.querySelectorAll('.view-btn').forEach(btn => {
@@ -1943,9 +1875,9 @@ function renderOverview() {
     const placeQuality = places.length > 0 ? Math.round((geoPlaces / places.length) * 100) : 0;
 
     // Update quality chips
-    updateQualityChip('quality-chip-dates', dateQuality, `${dateQuality}% Datiert`);
-    updateQualityChip('quality-chip-persons', personQuality, `${personQuality}% Identifiziert`);
-    updateQualityChip('quality-chip-places', placeQuality, `${placeQuality}% Georeferenziert`);
+    updateQualityChip('quality-chip-dates', `${dateQuality}% Datiert`);
+    updateQualityChip('quality-chip-persons', `${personQuality}% Identifiziert`);
+    updateQualityChip('quality-chip-places', `${placeQuality}% Georeferenziert`);
 
     // Setup entry point buttons
     setupEntryPointButtons();
@@ -1976,25 +1908,12 @@ function renderOverview() {
 }
 
 /**
- * Update a quality chip with percentage and class
+ * Write the label of a data-situation chip. The chips stay neutral, without a
+ * traffic-light colour, because they describe partner data without rating it (ADR-005).
  */
-function updateQualityChip(chipId, percentage, label) {
-    const chip = document.getElementById(chipId);
-    if (!chip) return;
-
-    const spanEl = chip.querySelector('span');
-    if (spanEl) {
-        spanEl.textContent = label;
-    }
-
-    chip.classList.remove('high', 'medium', 'low');
-    if (percentage >= 70) {
-        chip.classList.add('high');
-    } else if (percentage >= 40) {
-        chip.classList.add('medium');
-    } else {
-        chip.classList.add('low');
-    }
+function updateQualityChip(chipId, label) {
+    const spanEl = document.getElementById(chipId)?.querySelector('span');
+    if (spanEl) spanEl.textContent = label;
 }
 
 /**
@@ -2691,20 +2610,15 @@ function showLetterDetail(letterId) {
         });
     }
 
-    // Show modal
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-
-    // Setup close handlers
-    const closeBtn = modal.querySelector('.modal-close');
-    closeBtn.onclick = () => modal.style.display = 'none';
-    modal.onclick = (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    };
+    openModal(modal);
 }
 
-// Show person detail modal with Wikidata enrichment (supports GND and VIAF)
-async function showPersonDetail(personId) {
+// Counts opened person dialogs, so a Wikidata answer for an earlier person is dropped
+let personDetailRequest = 0;
+
+// Show person detail modal. Wikidata is queried only on an explicit click (finding 10),
+// enrichment already consented to during upload is read from sessionStorage.
+function showPersonDetail(personId) {
     // Find person in index (dataIndices.persons is keyed by authority ID like VIAF)
     let person = dataIndices.persons?.[personId];
     if (!person) {
@@ -2715,65 +2629,54 @@ async function showPersonDetail(personId) {
     }
     if (!person) return;
 
-    // Normalize property names (HSA uses letters_sent/letters_received, dynamic uses sent/received)
-    const sentCount = person.letters_sent ?? person.sent ?? 0;
-    const receivedCount = person.letters_received ?? person.received ?? 0;
+    const modal = elements.getById('person-modal');
+    const title = elements.getById('person-modal-title');
+    const body = elements.getById('person-modal-body');
+    if (!modal || !body) return;
 
     // Normalize authority and id (HSA uses 'viaf' property, others use 'id' + 'authority')
     const authorityId = person.viaf || person.id;
     const authority = person.authority || (person.viaf ? 'viaf' : null);
+    const canEnrich = Boolean(authority && authorityId && ['gnd', 'viaf'].includes(authority));
 
-    const modal = elements.getById('person-modal');
-    const title = elements.getById('person-modal-title');
-    const body = elements.getById('person-modal-body');
-
-    if (!modal || !body) return;
-
-    // Set title
-    title.textContent = person.name;
-
-    // Check if we can enrich from Wikidata (supports GND and VIAF)
-    const canEnrich = authority && authorityId && ['gnd', 'viaf'].includes(authority);
-
-    // Show loading state if we're fetching Wikidata
-    if (canEnrich) {
-        body.innerHTML = `
-            <div class="person-detail-loading">
-                <i class="fas fa-spinner fa-spin"></i> Lade Daten von Wikidata...
-            </div>
-        `;
-    }
-
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-
-    // Setup close handlers
-    const closeBtn = modal.querySelector('.modal-close');
-    closeBtn.onclick = () => modal.style.display = 'none';
-    modal.onclick = (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    };
-
-    // First check if we have pre-cached enrichment from upload process
-    let enriched = null;
+    let cached = null;
     if (canEnrich) {
         try {
-            const cachedEnrichment = sessionStorage.getItem('person-enrichment');
-            if (cachedEnrichment) {
-                const enrichmentData = JSON.parse(cachedEnrichment);
-                enriched = enrichmentData[authorityId];
-            }
+            cached = JSON.parse(sessionStorage.getItem('person-enrichment') || '{}')[authorityId] || null;
         } catch {
-            // Cache read failed, will fetch live
-        }
-
-        // If not in pre-cache, fetch live from Wikidata
-        if (!enriched) {
-            enriched = await enrichPerson(authority, authorityId);
+            // Unreadable cache: the dialog offers the explicit Wikidata request instead
         }
     }
 
-    // Build content
+    const request = ++personDetailRequest;
+    const detail = { person, personId, authority, authorityId, canEnrich, modal, body, request };
+    title.textContent = person.name;
+    renderPersonDetail(detail, cached);
+    openModal(modal);
+}
+
+async function loadPersonEnrichment(detail, button) {
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Daten von Wikidata...';
+    let enriched = null;
+    try {
+        enriched = await enrichPerson(detail.authority, detail.authorityId);
+    } catch (error) {
+        console.warn('Wikidata request failed:', error);
+    }
+    if (detail.request !== personDetailRequest) return;
+    if (enriched) {
+        renderPersonDetail(detail, enriched);
+    } else {
+        button.outerHTML = '<p class="person-enrich-status" tabindex="-1">Kein Wikidata-Eintrag gefunden.</p>';
+    }
+    // The clicked button is gone after re-rendering; keep keyboard focus inside the dialog
+    (detail.body.querySelector('.person-enrich-status') || detail.modal.querySelector('.modal-close'))?.focus();
+}
+
+function renderPersonDetail(detail, enriched) {
+    const { person, personId, authority, authorityId, canEnrich, modal, body } = detail;
+
     let html = '<div class="person-detail">';
 
     // Header with avatar/image and basic info
@@ -2811,6 +2714,10 @@ async function showPersonDetail(personId) {
         if (enriched.professions?.length > 0) {
             html += `<div class="person-professions"><i class="fas fa-briefcase"></i> ${escapeHtml(enriched.professions.slice(0, 3).join(', '))}</div>`;
         }
+    } else if (canEnrich) {
+        html += `<button type="button" class="btn btn-secondary person-enrich-btn">
+            <i class="fas fa-cloud-download-alt"></i> Lebensdaten von Wikidata laden
+        </button>`;
     }
     html += '</div></div>';
 
@@ -2866,8 +2773,11 @@ async function showPersonDetail(personId) {
     html += '</div></div>';
 
     body.innerHTML = html;
+    body.querySelector('.person-enrich-btn')?.addEventListener('click', (e) => {
+        loadPersonEnrichment(detail, e.currentTarget);
+    });
     body.querySelector('.btn-filter-person').addEventListener('click', (e) => {
-        modal.style.display = 'none';
+        closeModal(modal);
         filterByPerson(e.currentTarget.dataset.personId);
     });
 
@@ -2958,7 +2868,7 @@ function buildPlaceLink(place, compact = false) {
 
 function filterByPerson(personId) {
     const modal = elements.getById('letter-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) closeModal(modal);
 
     applyPersonFilter(personId);
     switchView('letters');
@@ -3034,7 +2944,6 @@ function applyPlaceFilter(placeId) {
 function initExport() {
     const exportBtn = elements.exportBtn;
     const modal = elements.exportModal;
-    const closeBtn = modal?.querySelector('.modal-close');
     const exportOptions = modal?.querySelectorAll('.export-option');
 
     if (exportBtn && modal) {
@@ -3043,25 +2952,14 @@ function initExport() {
             if (info) {
                 info.textContent = `${filteredLetters.length} Briefe werden exportiert`;
             }
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-        });
-
-        closeBtn?.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
+            openModal(modal);
         });
 
         exportOptions?.forEach(option => {
             option.addEventListener('click', () => {
                 const format = option.dataset.format;
                 exportData(format);
-                modal.style.display = 'none';
+                closeModal(modal);
             });
         });
     }

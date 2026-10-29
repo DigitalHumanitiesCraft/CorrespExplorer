@@ -17,6 +17,7 @@ let switchView = null;
 let basketIsInBasket = null;
 let basketAdd = null;
 let showToast = null;
+let showUndatedLetters = null;
 
 /**
  * Initialize timeline view with external dependencies
@@ -31,6 +32,7 @@ export function initTimelineView(deps) {
     basketIsInBasket = deps.basketIsInBasket;
     basketAdd = deps.basketAdd;
     showToast = deps.showToast;
+    showUndatedLetters = deps.showUndatedLetters;
 
     // Setup stack mode toggle
     const stackToggle = elements.getById('timeline-stack-toggle');
@@ -72,7 +74,7 @@ export function renderTimeline() {
 
     if (allYearsSorted.length === 0 && undatedLetters.length === 0) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfuegbar</p></div>';
-        if (undatedBin) undatedBin.style.display = 'none';
+        undatedBin?.classList.add('hidden');
         return;
     }
 
@@ -209,7 +211,7 @@ export function renderTimeline() {
     }
 
     // Render undated letters bin
-    renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount, minYear);
+    renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount);
 
     // Update total
     if (totalEl) {
@@ -225,7 +227,7 @@ export function renderTimeline() {
     renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLanguageData, totalImprecise);
 
     // Add click handlers
-    setupTimelineClickHandlers(container, minYear);
+    setupTimelineClickHandlers(container);
 
     timelineRendered = true;
 }
@@ -233,13 +235,15 @@ export function renderTimeline() {
 /**
  * Render the undated letters bin
  */
-function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount, minYear) {
+function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount) {
     if (!undatedBin) return;
 
     if (undatedLetters.length > 0) {
-        undatedBin.style.display = 'flex';
-        undatedBin.classList.remove('all-dated');
+        undatedBin.classList.remove('hidden', 'all-dated');
         undatedBin.style.cursor = 'pointer';
+        undatedBin.setAttribute('role', 'button');
+        undatedBin.tabIndex = 0;
+        undatedBin.setAttribute('aria-label', `${undatedLetters.length} Briefe ohne Datum anzeigen`);
         const undatedHeight = Math.max(4, (undatedLetters.length / maxCount) * 100);
         const binBar = undatedBin.querySelector('.undated-bin-bar');
         const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
@@ -277,19 +281,15 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
             binTooltip.style.top = `${e.clientY - binTooltip.offsetHeight - 10}px`;
         });
 
-        // Click handler for undated bin
-        undatedBin.onclick = () => {
-            const slider = elements.yearRangeSlider;
-            if (slider && slider.noUiSlider) {
-                slider.noUiSlider.set([minYear - 1, minYear - 1]);
-            }
-            applyFilters();
-            switchView('letters');
-        };
+        // A year range cannot express "no date": the slider clamps values below its minimum
+        undatedBin.onclick = () => showUndatedLetters();
     } else {
         // Show schematic placeholder when all letters are dated
-        undatedBin.style.display = 'flex';
+        undatedBin.classList.remove('hidden');
         undatedBin.classList.add('all-dated');
+        undatedBin.removeAttribute('role');
+        undatedBin.removeAttribute('tabindex');
+        undatedBin.removeAttribute('aria-label');
         const binBar = undatedBin.querySelector('.undated-bin-bar');
         const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
         const binLabel = undatedBin.querySelector('.undated-bin-label');
@@ -339,7 +339,7 @@ function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLang
 /**
  * Setup click handlers for timeline bars
  */
-function setupTimelineClickHandlers(container, minYear) {
+function setupTimelineClickHandlers(container) {
     const filteredLetters = getFilteredLetters();
 
     // Click handlers for segments (language + year filter)
@@ -358,10 +358,13 @@ function setupTimelineClickHandlers(container, minYear) {
                 slider.noUiSlider.set([year, year]);
             }
 
-            // Set language filter
-            document.querySelectorAll('input[name="language"]').forEach(cb => {
-                cb.checked = (cb.value === lang);
-            });
+            // '_total' stands for all languages when the filtered letters carry no language
+            // code; unchecking every box would then empty the result
+            if (lang !== '_total') {
+                document.querySelectorAll('input[name="language"]').forEach(cb => {
+                    cb.checked = (cb.value === lang);
+                });
+            }
 
             applyFilters();
             switchView('letters');

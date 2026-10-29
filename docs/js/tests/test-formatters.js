@@ -2,6 +2,7 @@
 // Tests formatting functions with REAL data from cmif-parser
 
 import { parseCMIF } from '../cmif-parser.js';
+import { assert } from './test-runner.js';
 import {
     formatSingleDate,
     formatDateWithPrecision,
@@ -294,9 +295,3 @@ export const FormattersTests = {
         }
     ]
 };
-
-function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message || 'Assertion failed');
-    }
-}

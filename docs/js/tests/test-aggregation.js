@@ -6,6 +6,7 @@
 import { parseCMIF } from '../cmif-parser.js';
 import { state } from '../state-manager.js';
 import { countIdentifiedPersons } from '../utils.js';
+import { assert } from './test-runner.js';
 
 export const AggregationTests = {
     name: 'Data Aggregation',
@@ -229,9 +230,3 @@ export const AggregationTests = {
         }
     ]
 };
-
-function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message || 'Assertion failed');
-    }
-}

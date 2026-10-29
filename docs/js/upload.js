@@ -5,7 +5,7 @@ import { parseCMIF, enrichWithCoordinates } from './cmif-parser.js';
 import { isCorrespSearchUrl } from './correspsearch-api.js';
 import { enrichPersonsBatch, countEnrichable } from './wikidata-enrichment.js';
 import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
-import { analyzeDataCapabilities } from './utils.js';
+import { analyzeDataCapabilities, openModal, closeModal } from './utils.js';
 
 // DOM Elements
 let uploadZone, fileInput, urlInput, urlSubmit;
@@ -333,14 +333,12 @@ async function showConfigDialog(data, sourceInfo) {
 
     console.log('Opening modal...');
     // Show modal
-    configModal.classList.remove('hidden');
-    configModal.style.display = 'flex';
+    openModal(configModal);
     console.log('Modal should be visible now. configModal:', configModal);
 }
 
 function hideConfigModal() {
-    configModal.classList.add('hidden');
-    configModal.style.display = 'none';
+    closeModal(configModal);
 
     // Reset progress section
     const progressSection = document.getElementById('config-progress');

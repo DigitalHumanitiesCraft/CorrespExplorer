@@ -272,21 +272,6 @@
     font-size: 10px;
 }
 
-.quality-chip.high {
-    border-color: var(--color-success);
-    color: var(--color-success);
-}
-
-.quality-chip.medium {
-    border-color: var(--color-warning);
-    color: var(--color-warning);
-}
-
-.quality-chip.low {
-    border-color: var(--color-error);
-    color: var(--color-error);
-}
-
 /* Tutorial Start Button */
 .tutorial-start-btn {
     display: inline-flex;
@@ -444,24 +429,6 @@
     margin: 0 0 var(--space-sm) 0;
 }
 
-.quality-compact {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-}
-
-.quality-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
-.quality-row span:last-child {
-    font-weight: 500;
-    color: var(--color-text);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .entry-point-grid {
@@ -493,63 +460,6 @@
 
 .overview-section h3 i {
     color: var(--color-primary);
-}
-
-/* Quality Grid */
-.quality-grid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-}
-
-.quality-item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-}
-
-.quality-bar-container {
-    height: 8px;
-    background: var(--color-border-light);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-}
-
-.quality-bar {
-    height: 100%;
-    background: var(--color-primary);
-    border-radius: var(--radius-sm);
-    transition: width var(--transition-base);
-    width: 0%;
-}
-
-.quality-bar.high {
-    background: var(--color-success, #22c55e);
-}
-
-.quality-bar.medium {
-    background: var(--color-warning, #f59e0b);
-}
-
-.quality-bar.low {
-    background: var(--color-danger, #ef4444);
-}
-
-.quality-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.quality-label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text);
-}
-
-.quality-value {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--color-text-light);
 }
 
 /* View Recommendations */
@@ -4833,48 +4743,6 @@
     flex-shrink: 0;
 }
 
-/* Coverage indicator */
-.question-coverage {
-    width: 60px;
-    height: 24px;
-    background: var(--color-border-light);
-    border-radius: var(--radius-sm);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.question-coverage-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    border-radius: var(--radius-sm);
-    transition: width 0.3s ease;
-}
-
-.question-coverage.high .question-coverage-bar {
-    background: var(--color-success-light);
-}
-
-.question-coverage.medium .question-coverage-bar {
-    background: var(--color-warning-light);
-}
-
-.question-coverage.low .question-coverage-bar {
-    background: var(--color-error-light);
-}
-
-.question-coverage span {
-    position: relative;
-    z-index: 1;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--color-text);
-}
-
 .question-action {
     width: 24px;
     height: 24px;
@@ -6047,51 +5915,3 @@
     }
 }
 
-/* ============================================
-   TOAST NOTIFICATIONS
-   ============================================ */
-
-.toast-notification {
-    position: fixed;
-    bottom: 100px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--color-text);
-    color: white;
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.toast-notification.toast-show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
-
-.toast-notification.toast-hide {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px);
-}
-
-.toast-message {
-    font-size: var(--font-size-sm);
-}
-
-.toast-close {
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-    padding: var(--space-xs);
-    transition: color 0.15s;
-}
-
-.toast-close:hover {
-    color: white;
-}

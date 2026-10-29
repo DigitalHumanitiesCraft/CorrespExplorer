@@ -3,6 +3,7 @@
 
 import { parseCMIF } from '../cmif-parser.js';
 import { state } from '../state-manager.js';
+import { assert } from './test-runner.js';
 
 export const StateManagerTests = {
     name: 'State Manager',
@@ -15,15 +16,7 @@ export const StateManagerTests = {
             meta: {},
             placeAggregation: {}
         };
-        state.filters = {
-            temporal: null,
-            languages: [],
-            person: null,
-            subject: null,
-            place: null,
-            quality: { preciseDates: false, knownPersons: false, locatedPlaces: false }
-        };
-        state._filtersDirty = true;
+        state.resetFilters();
     },
 
     tests: [
@@ -265,7 +258,7 @@ export const StateManagerTests = {
                 state.resetFilters();
 
                 assert(state.filters.temporal === null, 'Temporal sollte null sein');
-                assert(state.filters.languages.length === 0, 'Languages sollte leer sein');
+                assert(state.filters.languages === null, 'Languages sollte ohne Filter (null) sein');
                 assert(state.filters.person === null, 'Person sollte null sein');
                 assert(state.filters.subject === null, 'Subject sollte null sein');
                 assert(state.filters.place === null, 'Place sollte null sein');
@@ -349,13 +342,71 @@ export const StateManagerTests = {
                     assert(state.filters.person === personIds[0], 'Person sollte importiert sein');
                 }
             }
+        },
+
+        {
+            name: 'updateFilters: Leere Sprachauswahl liefert keine Briefe, null keinen Filter',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+
+                state.updateFilters({ languages: [] });
+                assert(state.getFilteredLetters().length === 0, `Ohne gewaehlte Sprache sollte kein Brief bleiben, blieben ${state.getFilteredLetters().length}`);
+
+                state.updateFilters({ languages: null });
+                assert(state.getFilteredLetters().length === data.letters.length, 'Ohne Sprachfilter sollten alle Briefe bleiben');
+            }
+        },
+
+        {
+            name: 'updateFilters: Temporal-Filter undated liefert genau die Briefe ohne Jahr',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+                const undated = data.letters.filter(l => !l.year);
+                assert(undated.length > 0, 'Fixture sollte undatierte Briefe enthalten');
+
+                state.updateFilters({ temporal: { undated: true } });
+                const filtered = state.getFilteredLetters();
+
+                assert(filtered.length === undated.length, `Sollte ${undated.length} undatierte Briefe finden, fand ${filtered.length}`);
+                assert(filtered.every(l => !l.year), 'Alle Treffer sollten ohne Jahr sein');
+            }
+        },
+
+        {
+            name: 'URL-Parameter: undated und leere Sprachauswahl ueberstehen den Rundweg',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+
+                state.updateFilters({ temporal: { undated: true }, languages: [] });
+                const params = state.toURLParams();
+                assert(params.get('undated') === '1', 'undated sollte als Parameter erscheinen');
+                assert(params.has('langs') && params.get('langs') === '', 'Leere Sprachauswahl sollte als leeres langs erscheinen');
+
+                state.resetFilters();
+                state.fromURLParams(params);
+                assert(state.filters.temporal?.undated === true, 'undated sollte importiert sein');
+                assert(Array.isArray(state.filters.languages) && state.filters.languages.length === 0, 'Leere Sprachauswahl sollte importiert sein');
+            }
+        },
+
+        {
+            name: 'filterLetters: Zaehlt unter anderen Filtern ohne den Cache zu aendern',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+                const langCodes = Object.keys(data.indices.languages);
+                assert(langCodes.length > 0, 'Fixture sollte Sprachen enthalten');
+
+                state.updateFilters({ languages: [langCodes[0]] });
+                const cached = state.getFilteredLetters();
+                const withoutLanguage = state.filterLetters({ ...state.filters, languages: null });
+
+                assert(withoutLanguage.length === data.letters.length, 'Ohne Sprachfilter sollten alle Briefe zaehlen');
+                assert(state.getFilteredLetters() === cached, 'Der Cache der gefilterten Briefe sollte unberuehrt bleiben');
+            }
         }
     ]
 };
-
-// Helper function
-function assert(condition, message) {
-    if (!condition) {
-        throw new Error(message || 'Assertion failed');
-    }
-}

@@ -124,35 +124,48 @@ export function extractYear(dateStr) {
 }
 
 /**
- * Show toast notification
+ * Show a toast notification, replacing any toast still on screen.
  * @param {string} message - Message to show
  * @param {number} duration - Duration in ms (default 3000)
  */
 export function showToast(message, duration = 3000) {
-    let toast = document.getElementById('toast');
+    document.querySelector('.toast-notification')?.remove();
 
-    // Create toast if not exists
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'toast';
-        toast.className = 'toast';
-        toast.innerHTML = '<i class="fas fa-check-circle"></i><span id="toast-message"></span>';
-        document.body.appendChild(toast);
-    }
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.setAttribute('role', 'status');
+    toast.innerHTML = `
+        <span class="toast-message">${escapeHtml(message)}</span>
+        <button type="button" class="toast-close" aria-label="Meldung schliessen"><i class="fas fa-times"></i></button>
+    `;
+    document.body.appendChild(toast);
 
-    const messageEl = toast.querySelector('#toast-message') || toast.querySelector('span');
-    if (messageEl) {
-        messageEl.textContent = message;
-    }
-
-    toast.style.display = 'flex';
-
-    setTimeout(() => {
-        toast.style.display = 'none';
-    }, duration);
+    const hide = () => {
+        toast.classList.add('toast-hide');
+        setTimeout(() => toast.remove(), 300);
+    };
+    toast.querySelector('.toast-close').addEventListener('click', hide);
+    requestAnimationFrame(() => toast.classList.add('toast-show'));
+    setTimeout(hide, duration);
 }
 
-const DIALOG_SELECTOR = '.modal-overlay, .modal:not(.modal-overlay .modal)';
+/**
+ * Show a modal. The close button and a click on the backdrop close it; keyboard
+ * behaviour comes from enableModalKeyboard. The hidden class is the only visibility switch.
+ */
+export function openModal(modal) {
+    modal.style.removeProperty('display');
+    modal.classList.remove('hidden');
+    const closeBtn = modal.querySelector('.modal-close');
+    if (closeBtn) closeBtn.onclick = () => closeModal(modal);
+    modal.onclick = (e) => { if (e.target === modal) closeModal(modal); };
+}
+
+export function closeModal(modal) {
+    modal.classList.add('hidden');
+}
+
+const DIALOG_SELECTOR ='.modal-overlay, .modal:not(.modal-overlay .modal)';
 
 function isShown(el) {
     return el.getClientRects().length > 0;
@@ -195,7 +208,7 @@ export function enableModalKeyboard() {
         if (close) {
             close.click();
         } else {
-            openDialog.style.display = 'none';
+            closeModal(openDialog);
         }
         e.preventDefault();
     });

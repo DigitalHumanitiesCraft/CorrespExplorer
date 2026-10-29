@@ -1,7 +1,7 @@
 // Mentions Flow View
 // Sankey diagram showing person mention relationships
 
-import { escapeHtml } from '../utils.js';
+import { escapeHtml, openModal, closeModal } from '../utils.js';
 import { elements } from '../dom-cache.js';
 
 // Module state
@@ -663,10 +663,8 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
         document.body.appendChild(modal);
         modal.addEventListener('click', (e) => {
             const item = e.target.closest('[data-letter-id]');
-            if (e.target === modal || e.target.closest('.modal-close')) {
-                modal.style.display = 'none';
-            } else if (item) {
-                modal.style.display = 'none';
+            if (item) {
+                closeModal(modal);
                 showLetterDetail(item.dataset.letterId);
             }
         });
@@ -696,5 +694,5 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
         body.innerHTML += `<div style="padding:12px;color:var(--color-text-light);text-align:center;">... und ${relevantLetters.length - 50} weitere Briefe</div>`;
     }
 
-    modal.style.display = 'flex';
+    openModal(modal);
 }
