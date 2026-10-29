@@ -9,8 +9,10 @@ import {
     toggleBasketItem as basketToggle,
     getBasketCounts,
     clearBasket as basketClear,
+    addLettersToBasket,
     onBasketChange,
     initBasket,
+    datasetKey,
     loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
@@ -256,9 +258,6 @@ async function init() {
             getAllLetters: () => allLetters,
             applyFilters,
             switchView,
-            basketIsInBasket,
-            basketAdd,
-            showToast,
             showUndatedLetters
         });
         // Initialize extracted topics view with dependencies
@@ -275,9 +274,6 @@ async function init() {
             getDataIndices: () => dataIndices,
             applyPlaceFilter,
             switchView,
-            basketAdd,
-            basketIsInBasket,
-            showToast,
             onDataUpdated: handlePlacesDataUpdated,
             log
         });
@@ -319,8 +315,10 @@ async function init() {
             showLetterDetail
         });
         initExport();
-        // Basket from localStorage, then items shared via ?basket_* URL parameters
-        initBasket();
+        // Basket of this dataset from localStorage, then items shared via ?basket_* URL parameters
+        currentDatasetKey = datasetKey(data.sourceInfo);
+        sessionStorage.setItem('correspDatasetKey', currentDatasetKey);
+        initBasket(currentDatasetKey);
         loadBasketFromUrl();
 
         // Setup Knowledge Path handlers and load existing session
@@ -2217,19 +2215,7 @@ function renderPersonsList() {
                              (l.recipient?.id || l.recipient?.name) === personId)
                 .map(l => l.id);
 
-            let addedCount = 0;
-            personLetterIds.forEach(id => {
-                if (!basketIsInBasket('letters', id)) {
-                    basketAdd('letters', id);
-                    addedCount++;
-                }
-            });
-
-            if (addedCount > 0) {
-                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
-            } else {
-                showToast('Alle Briefe bereits im Korb');
-            }
+            showToast(addLettersToBasket(personLetterIds));
         });
     });
 }
@@ -2786,19 +2772,7 @@ function renderPersonDetail(detail, enriched) {
     if (personBasketBtn) {
         personBasketBtn.addEventListener('click', () => {
             const letterIds = JSON.parse(personBasketBtn.dataset.letterIds);
-            let addedCount = 0;
-            letterIds.forEach(id => {
-                if (!basketIsInBasket('letters', id)) {
-                    basketAdd('letters', id);
-                    addedCount++;
-                }
-            });
-
-            if (addedCount > 0) {
-                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
-            } else {
-                showToast('Alle Briefe bereits im Korb');
-            }
+            showToast(addLettersToBasket(letterIds));
         });
     }
 }
@@ -3388,6 +3362,7 @@ function analyzeResearchQuestions() {
 // Wissenspfad (knowledge path)
 
 let knowledgePath = null;
+let currentDatasetKey = null;
 
 /**
  * Startet einen neuen Wissenspfad
@@ -3401,6 +3376,7 @@ function startKnowledgePath(question) {
 
     knowledgePath = {
         active: true,
+        dataset: currentDatasetKey,
         questionId: `kp-${Date.now()}`,
         question: question.question,
         category: question.category,
@@ -3437,7 +3413,8 @@ function loadKnowledgePath() {
     if (saved) {
         try {
             knowledgePath = JSON.parse(saved);
-            if (knowledgePath && knowledgePath.active) {
+            // A path started on another dataset refers to its persons and places
+            if (knowledgePath?.active && knowledgePath.dataset === currentDatasetKey) {
                 showKnowledgePathUI();
                 return true;
             }

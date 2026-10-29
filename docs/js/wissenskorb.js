@@ -31,8 +31,8 @@ async function init() {
     // Cache DOM elements
     cacheElements();
 
-    // Initialize basket
-    initBasket();
+    // Basket of the dataset the explorer handed over
+    initBasket(sessionStorage.getItem('correspDatasetKey'));
     loadBasketFromUrl();
 
     // Load data from sessionStorage
@@ -40,9 +40,6 @@ async function init() {
 
     // Setup event listeners
     setupEventListeners();
-
-    // Setup Storage Events for multi-tab sync
-    setupStorageSync();
 
     // Listen for basket changes
     onBasketChange(handleBasketChange);
@@ -150,15 +147,6 @@ function switchItemType(type) {
     });
 }
 
-function setupStorageSync() {
-    // Listen for storage changes from other tabs
-    window.addEventListener('storage', (e) => {
-        if (e.key === 'correspexplorer-basket') {
-            render();
-        }
-    });
-}
-
 function handleBasketChange(counts) {
     render();
 }
@@ -198,8 +186,11 @@ function render() {
     const letters = resolveLetters(letterIds);
     const places = resolvePlaces(placeIds);
 
+    // One analysed letter set per render, shared by stats and all visualisations
+    const analysis = buildAnalysis(persons, letters, places);
+
     // Update stats
-    updateStats(persons, letters, places);
+    updateStats(analysis);
 
     // Render all lists
     renderPersonList(persons);
@@ -207,7 +198,7 @@ function render() {
     renderPlaceList(places);
 
     // Render current visualization
-    renderCurrentViz(persons);
+    renderCurrentViz(analysis);
 }
 
 function resolvePersons(personIds) {
@@ -281,44 +272,84 @@ function resolvePlaces(placeIds) {
     return places;
 }
 
-function updateStats(persons, letters = [], places = []) {
-    // Total letters (unique)
-    const allLetterIds = new Set();
-    persons.forEach(p => p.letters.forEach(l => allLetterIds.add(l.id)));
-    elements.statLetters.textContent = allLetterIds.size;
-
-    // Years active
-    const allYears = new Set();
-    persons.forEach(p => p.years.forEach(y => allYears.add(y)));
-    elements.statYears.textContent = allYears.size > 0 ?
-        `${Math.min(...allYears)}-${Math.max(...allYears)}` : '0';
-
-    // Unique places
-    const allPlaces = new Set();
-    persons.forEach(p => p.places.forEach(pl => allPlaces.add(pl)));
-    elements.statPlaces.textContent = allPlaces.size;
-
-    // Connections between persons
-    const connections = countConnections(persons);
-    elements.statConnections.textContent = connections;
+// The analysed letters are the union of the basket letters, all letters of basket persons and
+// all letters sent from basket places. The network is built once here because the stats count
+// its links.
+function buildAnalysis(persons, basketLetters, places) {
+    const byId = new Map();
+    basketLetters.forEach(l => byId.set(l.id, l));
+    persons.forEach(p => p.letters.forEach(l => byId.set(l.id, l)));
+    const placeIds = new Set(places.map(p => p.id));
+    if (placeIds.size > 0) {
+        allLetters.forEach(l => {
+            if (placeIds.has(placeKey(l.place_sent)) || placeIds.has(l.place_sent?.name)) {
+                byId.set(l.id, l);
+            }
+        });
+    }
+    return {
+        persons,
+        letters: [...byId.values()],
+        network: buildNetwork(persons, basketLetters)
+    };
 }
 
-function countConnections(persons) {
-    const personIds = new Set(persons.map(p => p.id));
-    let connections = 0;
+// Nodes are the basket persons plus the correspondents of explicitly basketed letters. Letters
+// reached only through a basket place add no nodes, since a large place would flood the graph.
+function buildNetwork(persons, basketLetters) {
+    const nodeMap = new Map(persons.map(p => [p.id, {
+        id: p.id,
+        name: p.name,
+        letterCount: p.letter_count
+    }]));
+    const addCorrespondent = (person) => {
+        const id = personKey(person);
+        if (!id) return;
+        if (!nodeMap.has(id)) nodeMap.set(id, { id, name: person.name || id, letterCount: 0, extra: true });
+    };
+    basketLetters.forEach(l => {
+        addCorrespondent(l.sender);
+        addCorrespondent(l.recipient);
+    });
 
-    for (const person of persons) {
-        for (const letter of person.letters) {
-            const senderId = personKey(letter.sender);
-            const recipientId = personKey(letter.recipient);
+    const networkLetters = new Map();
+    basketLetters.forEach(l => networkLetters.set(l.id, l));
+    persons.forEach(p => p.letters.forEach(l => networkLetters.set(l.id, l)));
 
-            if (senderId && recipientId && personIds.has(senderId) && personIds.has(recipientId)) {
-                connections++;
-            }
-        }
-    }
+    // Basket persons carry their index count, added correspondents only the letters seen here
+    networkLetters.forEach(l => {
+        [personKey(l.sender), personKey(l.recipient)].forEach(id => {
+            if (nodeMap.get(id)?.extra) nodeMap.get(id).letterCount++;
+        });
+    });
 
-    return Math.floor(connections / 2); // Each connection counted twice
+    const linkMap = new Map();
+    networkLetters.forEach(letter => {
+        const senderId = personKey(letter.sender);
+        const recipientId = personKey(letter.recipient);
+        if (!senderId || !recipientId || senderId === recipientId) return;
+        if (!nodeMap.has(senderId) || !nodeMap.has(recipientId)) return;
+        const [source, target] = [senderId, recipientId].sort();
+        const key = JSON.stringify([source, target]);
+        if (!linkMap.has(key)) linkMap.set(key, { source, target, count: 0 });
+        linkMap.get(key).count++;
+    });
+
+    return { nodes: [...nodeMap.values()], links: [...linkMap.values()] };
+}
+
+function updateStats(analysis) {
+    const { letters, network } = analysis;
+    elements.statLetters.textContent = letters.length;
+
+    const years = letters.map(l => l.year).filter(y => y);
+    elements.statYears.textContent = years.length > 0 ?
+        `${Math.min(...years)}-${Math.max(...years)}` : '0';
+
+    const placeNames = new Set(letters.map(l => l.place_sent?.name).filter(n => n));
+    elements.statPlaces.textContent = placeNames.size;
+
+    elements.statConnections.textContent = network.links.length;
 }
 
 function renderPersonList(persons) {
@@ -423,21 +454,22 @@ function switchViz(vizId) {
     });
 
     // Render the visualization
-    const personIds = getBasketItems('persons');
-    const persons = resolvePersons(personIds);
-    renderCurrentViz(persons);
+    const persons = resolvePersons(getBasketItems('persons'));
+    const letters = resolveLetters(getBasketItems('letters'));
+    const places = resolvePlaces(getBasketItems('places'));
+    renderCurrentViz(buildAnalysis(persons, letters, places));
 }
 
-function renderCurrentViz(persons) {
+function renderCurrentViz(analysis) {
     switch (currentViz) {
         case 'timeline':
-            renderTimeline(persons);
+            renderTimeline(analysis);
             break;
         case 'network':
-            renderNetwork(persons);
+            renderNetwork(analysis);
             break;
         case 'map':
-            renderMap(persons);
+            renderMap(analysis);
             break;
         case 'details':
             renderDetails();
@@ -446,26 +478,31 @@ function renderCurrentViz(persons) {
 }
 
 // Timeline Visualization
-function renderTimeline(persons) {
+const EXTRA_SERIES_ID = '__basket_extra__';
+
+function renderTimeline(analysis) {
     const container = elements.timelineChart;
-    if (!container || persons.length === 0) return;
+    if (!container) return;
 
     // Clear previous
     container.innerHTML = '';
 
-    // Collect all years with person activity
-    const yearData = new Map();
+    // One series per basket person, plus the analysed letters that belong to none of them
+    const series = analysis.persons.map(p => ({ id: p.id, name: p.name, letters: p.letters }));
+    const covered = new Set(analysis.persons.flatMap(p => p.letters.map(l => l.id)));
+    const extra = analysis.letters.filter(l => !covered.has(l.id));
+    if (extra.length > 0) {
+        series.push({ id: EXTRA_SERIES_ID, name: 'Weitere Briefe im Korb', letters: extra });
+    }
 
-    persons.forEach(person => {
-        person.years.forEach(year => {
-            if (!yearData.has(year)) {
-                yearData.set(year, []);
-            }
-            yearData.get(year).push({
-                name: person.name,
-                id: person.id,
-                count: person.letters.filter(l => l.year === year).length
-            });
+    // Letter counts per year and series
+    const yearData = new Map();
+    series.forEach(s => {
+        s.letters.forEach(l => {
+            if (!l.year) return;
+            if (!yearData.has(l.year)) yearData.set(l.year, new Map());
+            const counts = yearData.get(l.year);
+            counts.set(s.id, (counts.get(s.id) || 0) + 1);
         });
     });
 
@@ -496,8 +533,8 @@ function renderTimeline(persons) {
         .domain([minYear, maxYear])
         .range([0, width]);
 
-    const maxCount = Math.max(...[...yearData.values()].map(arr =>
-        arr.reduce((sum, p) => sum + p.count, 0)
+    const maxCount = Math.max(...[...yearData.values()].map(counts =>
+        [...counts.values()].reduce((sum, c) => sum + c, 0)
     ));
 
     const y = d3.scaleLinear()
@@ -511,16 +548,14 @@ function renderTimeline(persons) {
     // Create stacked data
     const stackData = sortedYears.map(year => {
         const entry = { year };
-        const yearPersons = yearData.get(year) || [];
-        persons.forEach((p, i) => {
-            const personData = yearPersons.find(yp => yp.id === p.id);
-            entry[p.id] = personData ? personData.count : 0;
+        series.forEach(s => {
+            entry[s.id] = yearData.get(year).get(s.id) || 0;
         });
         return entry;
     });
 
     const stack = d3.stack()
-        .keys(persons.map(p => p.id));
+        .keys(series.map(s => s.id));
 
     const stackedData = stack(stackData);
 
@@ -553,55 +588,30 @@ function renderTimeline(persons) {
         .call(d3.axisLeft(y).ticks(5));
 
     // Render legend
-    renderTimelineLegend(persons, colorScale);
+    renderTimelineLegend(series, colorScale);
 }
 
-function renderTimelineLegend(persons, colorScale) {
+function renderTimelineLegend(series, colorScale) {
     const legend = elements.timelineLegend;
     if (!legend) return;
 
-    legend.innerHTML = persons.map((person, i) => `
+    legend.innerHTML = series.map((item, i) => `
         <span class="legend-item">
             <span class="legend-color" style="background: ${colorScale(i)};"></span>
-            ${escapeHtml(person.name)}
+            ${escapeHtml(item.name)}
         </span>
     `).join('');
 }
 
 // Network Visualization
-function renderNetwork(persons) {
+function renderNetwork(analysis) {
     const container = elements.networkChart;
-    if (!container || persons.length === 0) return;
+    if (!container) return;
 
     // Clear previous
     container.innerHTML = '';
 
-    // Build nodes and links
-    const personIds = new Set(persons.map(p => p.id));
-    const nodes = persons.map(p => ({
-        id: p.id,
-        name: p.name,
-        letterCount: p.letter_count
-    }));
-
-    const linkMap = new Map();
-
-    persons.forEach(person => {
-        person.letters.forEach(letter => {
-            const senderId = personKey(letter.sender);
-            const recipientId = personKey(letter.recipient);
-
-            if (senderId && recipientId && personIds.has(senderId) && personIds.has(recipientId)) {
-                const key = [senderId, recipientId].sort().join('|');
-                linkMap.set(key, (linkMap.get(key) || 0) + 1);
-            }
-        });
-    });
-
-    const links = [...linkMap.entries()].map(([key, count]) => {
-        const [source, target] = key.split('|');
-        return { source, target, count };
-    });
+    const { nodes, links } = analysis.network;
 
     if (links.length === 0) {
         container.innerHTML = '<div class="viz-empty">Keine Verbindungen zwischen den Personen</div>';
@@ -695,40 +705,29 @@ function renderNetwork(persons) {
 }
 
 // Map Visualization
-function renderMap(persons) {
+function renderMap(analysis) {
     const container = elements.basketMap;
-    if (!container || persons.length === 0) return;
+    if (!container) return;
 
-    // Collect all places with coordinates
-    const places = new Map();
-    const placesIndex = dataIndices.places || {};
-
-    persons.forEach(person => {
-        person.letters.forEach(letter => {
-            const placeId = placeKey(letter.place_sent);
-            if (placeId && !places.has(placeId)) {
-                const placeData = placesIndex[placeId];
-                if (placeData?.lat && placeData?.lon) {
-                    places.set(placeId, {
-                        name: placeData.name || placeId,
-                        lat: placeData.lat,
-                        lon: placeData.lon,
-                        count: 1
-                    });
-                } else {
-                    places.set(placeId, {
-                        ...places.get(placeId) || {},
-                        count: (places.get(placeId)?.count || 0) + 1
-                    });
-                }
-            } else if (placeId && places.has(placeId)) {
-                places.get(placeId).count++;
-            }
-        });
+    // Letters per sending place of the analysed set, kept where the place index has coordinates
+    const counts = new Map();
+    analysis.letters.forEach(letter => {
+        const placeId = placeKey(letter.place_sent);
+        if (placeId) counts.set(placeId, (counts.get(placeId) || 0) + 1);
     });
-
-    // Filter places with coordinates
-    const validPlaces = [...places.values()].filter(p => p.lat && p.lon);
+    const placesIndex = dataIndices.places || {};
+    const validPlaces = [];
+    counts.forEach((count, placeId) => {
+        const placeData = placesIndex[placeId];
+        if (placeData?.lat && placeData?.lon) {
+            validPlaces.push({
+                name: placeData.name || placeId,
+                lat: placeData.lat,
+                lon: placeData.lon,
+                count
+            });
+        }
+    });
 
     if (validPlaces.length === 0) {
         container.innerHTML = '<div class="viz-empty">Keine Orte mit Koordinaten verfuegbar</div>';

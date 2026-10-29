@@ -1,7 +1,8 @@
 // Places View
 // Place browsing, filtering and coordinate resolution
 
-import { escapeHtml, debounce } from '../utils.js';
+import { escapeHtml, debounce, showToast } from '../utils.js';
+import { addLettersToBasket } from '../basket.js';
 import { getPlacePrecisionClass } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { LANGUAGE_COLORS, LANGUAGE_LABELS } from '../constants.js';
@@ -18,9 +19,6 @@ let getAllLetters = null;
 let getDataIndices = null;
 let applyPlaceFilter = null;
 let switchView = null;
-let basketAdd = null;
-let basketIsInBasket = null;
-let showToast = null;
 let log = null;
 
 // Callbacks for data updates
@@ -35,9 +33,6 @@ export function initPlacesView(deps) {
     getDataIndices = deps.getDataIndices;
     applyPlaceFilter = deps.applyPlaceFilter;
     switchView = deps.switchView;
-    basketAdd = deps.basketAdd;
-    basketIsInBasket = deps.basketIsInBasket;
-    showToast = deps.showToast;
     onDataUpdated = deps.onDataUpdated;
     log = deps.log || { init: () => {}, event: () => {} };
 
@@ -76,22 +71,10 @@ export function initPlacesView(deps) {
     if (addBasketBtn) {
         addBasketBtn.addEventListener('click', () => {
             const letterIdsJson = addBasketBtn.dataset.letterIds;
-            if (!letterIdsJson || !basketAdd || !basketIsInBasket) return;
+            if (!letterIdsJson) return;
 
             const letterIds = JSON.parse(letterIdsJson);
-            let addedCount = 0;
-            letterIds.forEach(id => {
-                if (!basketIsInBasket('letters', id)) {
-                    basketAdd('letters', id);
-                    addedCount++;
-                }
-            });
-
-            if (addedCount > 0 && showToast) {
-                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
-            } else if (showToast) {
-                showToast('Alle Briefe bereits im Korb');
-            }
+            showToast(addLettersToBasket(letterIds));
         });
     }
 
@@ -408,7 +391,7 @@ async function handleResolveCoordinates() {
     const missingIds = JSON.parse(banner.dataset.missingIds || '[]');
 
     if (missingIds.length === 0) {
-        if (showToast) showToast('Keine Orte zum Aufloesen gefunden');
+        showToast('Keine Orte zum Aufloesen gefunden');
         return;
     }
 
@@ -456,14 +439,14 @@ async function handleResolveCoordinates() {
         }
 
         const resolvedCount = Object.keys(coordinates).length;
-        if (showToast) showToast(`${resolvedCount} Orte erfolgreich georeferenziert`);
+        showToast(`${resolvedCount} Orte erfolgreich georeferenziert`);
 
         // Update banner
         updateMissingCoordinatesBanner();
 
     } catch (error) {
         console.error('Failed to resolve coordinates:', error);
-        if (showToast) showToast(`Fehler beim Aufloesen: ${error.message}`);
+        showToast(`Fehler beim Aufloesen: ${error.message}`);
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-globe"></i> Koordinaten nachladen';
     }

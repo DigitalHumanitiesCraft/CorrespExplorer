@@ -3,7 +3,9 @@
 
 import { BASKET_LIMITS } from './constants.js';
 
-const STORAGE_KEY = 'correspexplorer-basket';
+// One basket per dataset: IDs of another dataset would point at the wrong or no letters
+const STORAGE_PREFIX = 'correspexplorer-basket';
+let storageKey = STORAGE_PREFIX;
 
 // Capacity limits
 const MAX_PERSONS = BASKET_LIMITS.maxPersons;
@@ -24,11 +26,23 @@ const listeners = [];
 let storageListenerInitialized = false;
 
 /**
- * Initialize basket from localStorage
+ * Identifies the loaded dataset by its source (json path, file name or URL)
+ * @param {Object} sourceInfo - { type, source } as written by upload.js and explore.js
+ * @returns {string}
  */
-export function initBasket() {
+export function datasetKey(sourceInfo) {
+    return sourceInfo?.source ? `${sourceInfo.type || 'data'}:${sourceInfo.source}` : 'unknown';
+}
+
+/**
+ * Initialize the basket of one dataset from localStorage
+ * @param {string} dataset - Key from datasetKey()
+ */
+export function initBasket(dataset) {
+    storageKey = `${STORAGE_PREFIX}:${dataset || 'unknown'}`;
+    basket = { letters: [], persons: [], places: [] };
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = localStorage.getItem(storageKey);
         if (stored) {
             const parsed = JSON.parse(stored);
             basket = {
@@ -55,7 +69,7 @@ export function initBasket() {
  * Handle storage events from other tabs
  */
 function handleStorageEvent(e) {
-    if (e.key === STORAGE_KEY) {
+    if (e.key === storageKey) {
         try {
             const parsed = JSON.parse(e.newValue || '{}');
             basket = {
@@ -75,7 +89,7 @@ function handleStorageEvent(e) {
  */
 function saveBasket() {
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(basket));
+        localStorage.setItem(storageKey, JSON.stringify(basket));
     } catch (e) {
         console.warn('Could not save basket to localStorage:', e);
     }
@@ -125,6 +139,26 @@ export function addToBasket(type, id) {
     basket[type].push(id);
     saveBasket();
     return true;
+}
+
+/**
+ * Add several letters and describe the outcome for a toast. Letters beyond the capacity
+ * limit are named, so the message never reports letters the basket did not take.
+ * @param {string[]} ids - Letter IDs
+ * @returns {string} Message for showToast
+ */
+export function addLettersToBasket(ids) {
+    let added = 0;
+    let rejected = 0;
+    ids.forEach(id => {
+        const result = addToBasket('letters', id);
+        if (result === true) added++;
+        else if (result === 'full') rejected++;
+    });
+    if (rejected > 0) {
+        return `${added} Briefe zum Korb hinzugefuegt, ${rejected} nicht: Korb voll (hoechstens ${MAX_LETTERS} Briefe)`;
+    }
+    return added > 0 ? `${added} Briefe zum Korb hinzugefuegt` : 'Alle Briefe bereits im Korb';
 }
 
 /**

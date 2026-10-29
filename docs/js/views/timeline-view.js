@@ -3,7 +3,8 @@
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS } from '../constants.js';
 import { elements } from '../dom-cache.js';
-import { escapeHtml } from '../utils.js';
+import { escapeHtml, showToast } from '../utils.js';
+import { addLettersToBasket } from '../basket.js';
 
 // Module state
 let timelineRendered = false;
@@ -14,9 +15,6 @@ let getFilteredLetters = null;
 let getAllLetters = null;
 let applyFilters = null;
 let switchView = null;
-let basketIsInBasket = null;
-let basketAdd = null;
-let showToast = null;
 let showUndatedLetters = null;
 
 /**
@@ -29,9 +27,6 @@ export function initTimelineView(deps) {
     getAllLetters = deps.getAllLetters;
     applyFilters = deps.applyFilters;
     switchView = deps.switchView;
-    basketIsInBasket = deps.basketIsInBasket;
-    basketAdd = deps.basketAdd;
-    showToast = deps.showToast;
     showUndatedLetters = deps.showUndatedLetters;
 
     // Setup stack mode toggle
@@ -381,18 +376,7 @@ function setupTimelineClickHandlers(container) {
             // Shift+Click: Add all letters of this year to basket
             if (e.shiftKey) {
                 const yearLetters = filteredLetters.filter(l => l.year === year);
-                let addedCount = 0;
-                yearLetters.forEach(l => {
-                    if (!basketIsInBasket('letters', l.id)) {
-                        basketAdd('letters', l.id);
-                        addedCount++;
-                    }
-                });
-                if (addedCount > 0) {
-                    showToast(`${addedCount} Briefe aus ${year} zum Korb hinzugefuegt`);
-                } else if (yearLetters.length > 0) {
-                    showToast(`Alle ${yearLetters.length} Briefe aus ${year} bereits im Korb`);
-                }
+                showToast(addLettersToBasket(yearLetters.map(l => l.id)));
                 return;
             }
 
