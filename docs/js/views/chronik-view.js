@@ -1,24 +1,28 @@
 // Chronik View
 // Timeline display of letters with Wikidata enrichment support
 
-import { escapeHtml, safeUrl, openModal, closeModal } from '../utils.js';
+import { escapeHtml, safeUrl, openModal, closeModal, personKey } from '../utils.js';
 import { formatDateWithPrecision, getPersonInitials } from '../formatters.js';
 import { enrichPerson, formatLifeDates } from '../wikidata-enrichment.js';
 import { elements } from '../dom-cache.js';
+import { state } from '../state-manager.js';
 
 // Module state
 let chronikEnriched = false;
 let chronikEnrichmentData = new Map();
 let chronikSortedLetters = [];
 let chronikRenderedCount = 0;
-let chronikScrollHandler = null;
+let chronikLastYear;            // year of the last rendered entry, for the year markers across batches
+let chronikObserver = null;     // loads the next batch when the sentinel at the end becomes visible
 let chronikCorrespondenceIndex = null;
+let chronikIndexSource = null;  // letter array the correspondence index was built from
 let chronikLayout = 'cards'; // 'cards' | 'compact' | 'timeline'
 let chronikEnrichmentCancelled = false;
 const CHRONIK_BATCH_SIZE = 100;
 
 // External dependencies - injected via init
 let getFilteredLetters = null;
+let getAllLetters = null;
 let showLetterDetail = null;
 
 /**
@@ -27,6 +31,9 @@ let showLetterDetail = null;
  */
 export function initChronikView(deps) {
     getFilteredLetters = deps.getFilteredLetters;
+    // The position in a correspondence ("Erster Brief", "3. von 12") is a property of the whole
+    // dataset, not of the current filter
+    getAllLetters = deps.getAllLetters || (() => state.getAllLetters());
     showLetterDetail = deps.showLetterDetail;
 
     setupChronikEventHandlers();
@@ -36,8 +43,11 @@ export function initChronikView(deps) {
  * Setup event handlers for chronik view
  */
 function setupChronikEventHandlers() {
-    // Layout toggle buttons
+    // Layout toggle buttons: icon-only, so the title becomes the accessible name
     document.querySelectorAll('.chronik-layout-btn').forEach(btn => {
+        if (!btn.getAttribute('aria-label') && btn.title) btn.setAttribute('aria-label', btn.title);
+        btn.querySelectorAll('i').forEach(i => i.setAttribute('aria-hidden', 'true'));
+        btn.setAttribute('aria-pressed', String(btn.dataset.layout === chronikLayout));
         btn.addEventListener('click', () => {
             const layout = btn.dataset.layout;
             if (layout) switchChronikLayout(layout);
@@ -86,8 +96,8 @@ function buildCorrespondenceIndex(letters) {
     const index = new Map();
 
     for (const letter of letters) {
-        const senderId = letter.sender?.id || letter.sender?.name;
-        const recipientId = letter.recipient?.id || letter.recipient?.name;
+        const senderId = personKey(letter.sender);
+        const recipientId = personKey(letter.recipient);
 
         if (!senderId || !recipientId) continue;
 
@@ -130,8 +140,8 @@ function buildCorrespondenceIndex(letters) {
 function getCorrespondenceContext(letter) {
     if (!chronikCorrespondenceIndex) return null;
 
-    const senderId = letter.sender?.id || letter.sender?.name;
-    const recipientId = letter.recipient?.id || letter.recipient?.name;
+    const senderId = personKey(letter.sender);
+    const recipientId = personKey(letter.recipient);
 
     if (!senderId || !recipientId) return null;
 
@@ -348,6 +358,7 @@ export function renderChronik() {
     if (!container) return;
 
     const letters = getFilteredLetters();
+    chronikObserver?.disconnect();
 
     if (!letters || letters.length === 0) {
         container.innerHTML = '<div class="chronik-empty">Keine Briefe im ausgewaehlten Zeitraum</div>';
@@ -356,49 +367,65 @@ export function renderChronik() {
         return;
     }
 
-    // Build correspondence index for context
-    chronikCorrespondenceIndex = buildCorrespondenceIndex(letters);
+    // Built from all letters once per dataset, so a filter does not make a later letter the "first"
+    const allLetters = getAllLetters();
+    if (chronikIndexSource !== allLetters) {
+        chronikCorrespondenceIndex = buildCorrespondenceIndex(allLetters);
+        chronikIndexSource = allLetters;
+    }
 
-    // Sort letters by date (oldest first)
+    // Sort letters by date (oldest first), undated at the end
     chronikSortedLetters = [...letters].sort((a, b) => {
         const dateA = a.date || '9999';
         const dateB = b.date || '9999';
         return dateA.localeCompare(dateB);
     });
 
-    // Reset container
     container.innerHTML = '';
     chronikRenderedCount = 0;
+    chronikLastYear = undefined;
 
-    // Render first batch
-    renderChronikBatch(container);
+    // The sentinel follows the last entry. An IntersectionObserver works whichever ancestor
+    // scrolls (#chronik-view scrolls, not #chronik-timeline)
+    const sentinel = document.createElement('div');
+    sentinel.className = 'chronik-sentinel';
+    sentinel.setAttribute('aria-hidden', 'true');
+    container.appendChild(sentinel);
 
-    // Setup infinite scroll
-    if (chronikScrollHandler) {
-        container.removeEventListener('scroll', chronikScrollHandler);
-    }
+    renderChronikBatch(container, sentinel);
 
-    chronikScrollHandler = () => {
-        const scrollTop = container.scrollTop;
-        const scrollHeight = container.scrollHeight;
-        const clientHeight = container.clientHeight;
+    chronikObserver = new IntersectionObserver((entries) => {
+        if (!entries.some(e => e.isIntersecting)) return;
+        renderChronikBatch(container, sentinel);
+        // Observe anew, so a sentinel that stays visible after a short batch fires again
+        chronikObserver.unobserve(sentinel);
+        if (chronikRenderedCount < chronikSortedLetters.length) chronikObserver.observe(sentinel);
+    });
+    chronikObserver.observe(sentinel);
 
-        // Load more when scrolled near bottom
-        if (scrollTop + clientHeight >= scrollHeight - 200) {
-            renderChronikBatch(container);
-        }
-    };
-
-    container.addEventListener('scroll', chronikScrollHandler);
-
-    // Update enrichment UI
     updateChronikEnrichmentUI();
 }
 
 /**
- * Render a batch of letters
+ * Year marker between entries (US-28). Letters without a year get one marker "Datum unbekannt".
  */
-function renderChronikBatch(container) {
+function renderYearMarker(year) {
+    const marker = document.createElement('div');
+    marker.className = 'chronik-year-marker';
+    // The view header is h2, so the year markers form the next level
+    marker.setAttribute('role', 'heading');
+    marker.setAttribute('aria-level', '3');
+    const label = document.createElement('span');
+    label.className = 'chronik-year-label';
+    label.textContent = year ? String(year) : 'Datum unbekannt';
+    marker.appendChild(label);
+    return marker;
+}
+
+/**
+ * Render the next batch of letters before the sentinel
+ */
+function renderChronikBatch(container, sentinel) {
     const endIndex = Math.min(chronikRenderedCount + CHRONIK_BATCH_SIZE, chronikSortedLetters.length);
 
     if (chronikRenderedCount >= chronikSortedLetters.length) return;
@@ -407,10 +434,14 @@ function renderChronikBatch(container) {
 
     for (let i = chronikRenderedCount; i < endIndex; i++) {
         const letter = chronikSortedLetters[i];
-        const entryHtml = renderChronikEntry(letter);
+        const year = letter.year || null;
+        if (year !== chronikLastYear) {
+            fragment.appendChild(renderYearMarker(year));
+            chronikLastYear = year;
+        }
 
         const wrapper = document.createElement('div');
-        wrapper.innerHTML = entryHtml;
+        wrapper.innerHTML = renderChronikEntry(letter);
         const entry = wrapper.firstElementChild;
 
         if (entry) {
@@ -421,7 +452,7 @@ function renderChronikBatch(container) {
         }
     }
 
-    container.appendChild(fragment);
+    container.insertBefore(fragment, sentinel);
     chronikRenderedCount = endIndex;
 }
 
@@ -629,9 +660,9 @@ function renderChronikEntryTimeline(letter) {
 function switchChronikLayout(layout) {
     chronikLayout = layout;
 
-    // Update toggle buttons
     document.querySelectorAll('.chronik-layout-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.layout === layout);
+        btn.setAttribute('aria-pressed', String(btn.dataset.layout === layout));
     });
 
     // Update timeline class for CSS

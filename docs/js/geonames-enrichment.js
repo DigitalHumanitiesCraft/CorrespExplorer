@@ -33,9 +33,10 @@ async function sparqlQuery(query) {
  * Resolve GeoNames IDs to coordinates via Wikidata in batches
  * @param {Array<string>} geonamesIds - Array of GeoNames IDs
  * @param {Function} onProgress - Progress callback (loaded, total)
+ * @param {AbortSignal} [signal] - Stops before the next batch, e.g. when the upload dialog is closed
  * @returns {Promise<Object>} Map of geonamesId -> {lat, lon, name}
  */
-export async function resolveGeoNamesCoordinates(geonamesIds, onProgress = null) {
+export async function resolveGeoNamesCoordinates(geonamesIds, onProgress = null, signal = null) {
     const results = {};
     const total = geonamesIds.length;
     let processed = 0;
@@ -59,6 +60,7 @@ export async function resolveGeoNamesCoordinates(geonamesIds, onProgress = null)
 
     // Process uncached IDs in batches
     for (let i = 0; i < uncachedIds.length; i += BATCH_SIZE) {
+        if (signal?.aborted) break;
         const batch = uncachedIds.slice(i, i + BATCH_SIZE);
 
         const batchResults = await resolveBatch(batch);
@@ -137,8 +139,6 @@ async function resolveBatch(geonamesIds) {
  * @returns {Object} Enriched data
  */
 export function applyCoordinatesToData(data, coordinates) {
-    let enrichedCount = 0;
-
     // Enrich letters
     for (const letter of data.letters) {
         if (letter.place_sent?.geonames_id) {
@@ -146,7 +146,6 @@ export function applyCoordinatesToData(data, coordinates) {
             if (coords && !letter.place_sent.lat) {
                 letter.place_sent.lat = coords.lat;
                 letter.place_sent.lon = coords.lon;
-                enrichedCount++;
             }
         }
     }
@@ -157,11 +156,8 @@ export function applyCoordinatesToData(data, coordinates) {
         if (coords && !place.lat) {
             place.lat = coords.lat;
             place.lon = coords.lon;
-            enrichedCount++;
         }
     }
-
-    console.log(`Enriched ${enrichedCount} places with coordinates`);
 
     return data;
 }
@@ -216,7 +212,6 @@ function loadCache() {
             const maxAge = CACHE_TTL_DAYS * 24 * 60 * 60 * 1000;
 
             if (age > maxAge) {
-                console.log('GeoNames cache expired, clearing');
                 localStorage.removeItem(CACHE_KEY);
                 return {};
             }

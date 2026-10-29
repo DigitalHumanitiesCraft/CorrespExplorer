@@ -29,7 +29,7 @@ Ein Zielbild für eine nächste Ausbaustufe ist nicht festgelegt. Als Fixpunkt g
 
 ## Offene Befunde
 
-Die Nummern stammen aus dem früheren Dokument der bekannten Probleme und laufen weiter. Die behobenen Befunde 1 bis 11 und die Review-Befunde stehen im Journal, 6 bis 8 und 9 bis 11 in den Einträgen vom 2026-10-29. Zurzeit ist kein Befund offen.
+Die Nummern stammen aus dem früheren Dokument der bekannten Probleme und laufen weiter. Die behobenen Befunde 1 bis 11 und die Review-Befunde stehen im Journal, 6 bis 8 und 9 bis 11 in den Einträgen vom 2026-10-29. Die Befunde der Prüfung vom 2026-10-29 durch Subagenten (Funktion, Seiten, Barrierefreiheit, Gestaltung, Code und Dokumentation) sind behoben und im Journal festgehalten, was davon offen blieb, steht unter [Vorhaben](#vorhaben). Zurzeit ist kein Befund offen.
 
 ### 8. correspSearch-API-URLs liefern keine Briefe
 
@@ -40,8 +40,36 @@ Behoben am 2026-10-29 (`b80eff0`). Der Lader setzt `x` als Seitennummer ab 1, fo
 ### Tests und Prüfung
 
 - CI mit Headless-Browser, etwa ein GitHub-Actions-Lauf von `test.html?test=true` mit Playwright
-- Regressionstests für `csvCell` und die Transformation der correspSearch-Antwort, sobald ein Fixture dafür im Repository liegt
+- Regressionstest für den Formelschutz von `csvCell`, sobald eine Fixture-Datei einen Wert mit führendem `=`, `+`, `-` oder `@` trägt. Das Verdoppeln von Anführungszeichen prüft die Suite Basket seit 2026-10-29
+- Regressionstests für die Transformation der correspSearch-Antwort, sobald ein Fixture dafür im Repository liegt
+- Parser-Test für Erwähnungen (`mentionsPerson`, `mentionsPlace`, `mentionsSubject`) an einer Fixture-Datei. Bisher prüft nur die Suite Research Paths an `demo-showcase.xml`, dass Erwähnungen ankommen
 - Performance-Regressionstests für Filter auf großen Datensätzen
+
+### Barrierefreiheit und Bedienung
+
+Offen aus der Prüfung nach WCAG 2.2 AA vom 2026-10-29.
+
+- Die Zellen der Aktivitäts-Heatmap sind 12 x 12px groß (`.activity-cell` in `explore.css`) und unterschreiten die Zielgröße von 24 x 24px ([design.md](design.md#9-accessibility))
+- Die Sprachsegmente der Zeitleiste und die Verbindungen im Erwähnungsfluss sind nur mit der Maus erreichbar. Jahresbalken, Netzwerkknoten und die Seitenknoten des Erwähnungsflusses haben inzwischen einen Tastaturweg
+
+### Oberfläche und Texte
+
+- Die Legende der Zeitleiste kündigt eine Schraffur für den Anteil unscharfer Daten an ([design.md](design.md#unsicherheits-indikatoren)), die Zeitleiste rendert `.timeline-uncertainty-overlay` aber nicht
+- Die Kopfbereiche der Ansichten sind uneinheitlich aufgebaut, eine gemeinsame Komponente `.view-header` fehlt. Die Überschriftenebene ist seit 2026-10-29 einheitlich `h2`, Größe, Abstände und Zusatzelemente (Untertitel, Steuerung, Hinweis „Experimentell“) setzt jede Ansicht weiter selbst. Eine kleine gemeinsame Regel reicht dafür nicht, weil die Kopfbereiche zwischen 16px und 32px groß sind und verschiedene Kinder tragen. Zu entscheiden ist eine einheitliche Gestaltung ([design.md](design.md#3-typografie))
+- Die Kartenmarker sind Teil der MapLibre-Fläche und nicht einzeln per Tastatur erreichbar, die Ortsansicht bietet dieselben Orte als Liste
+
+### Lücken der Stories
+
+Beim Abgleich der Stories mit dem Code am 2026-10-29 ([specification.md](specification.md#epics-und-user-stories)) blieben diese Kriterien ohne Umsetzung.
+
+- US-05: Gruppierung der Timeline nach Dekade
+- US-11: Netzwerk aus dem Briefwechsel selbst (Kante zwischen Absender und Empfänger, Stärke nach Briefanzahl) und Filter nach Mindestzahl der Briefe. Die Zeitgenossen-Kanten zeigen gemeinsame aktive Jahre
+- US-22: JSON-Export mit vollständiger Datenstruktur, Indizes und Erwähnungen
+- US-27: Die fünf aktivsten Korrespondenten, die Sprachverteilung und Ansichtsempfehlungen in der Übersicht. Zu entscheiden ist, ob sie zurückkehren oder aus der Story entfallen
+
+### Daten
+
+- Die Briefe von `hsa-letters.json` tragen kein Feld `precision` bei Absender, Empfänger und Absendeort. Personen- und Ortsmarkierungen bleiben beim HSA deshalb leer, auch für die 576 Briefe aus „Unbekannt“ ([uncertainty-specification.md](uncertainty-specification.md#hsa-dataset-analysis)). `build_hsa_data.py` könnte die Präzision wie der Parser klassifizieren
 
 ### Vorschläge aus der Datensatzanalyse
 
@@ -54,6 +82,7 @@ Die Analyse externer CMIF-Dateien vom November 2025 ([data.md](data.md#testdaten
 ## Offene Entscheidungen und Abhängigkeiten
 
 - Der Branch `feature/research-dashboards` und die übrigen Branches bleiben bestehen, ihr Aufräumen liegt beim Operator. Das Journal des Branchs vergab die Phasennummern 40 bis 46, die sich mit Phase 40 auf main überschneiden. Der Merge übernahm sie nicht als Überschriften ([journal.md](journal.md)).
+- Der Explorer schreibt die URL mit `replaceState`, der Zurück-Knopf verlässt ihn deshalb, statt Filterschritte zurückzunehmen ([architecture.md](architecture.md#entwurfsmuster)). Ob Filterschritte mit `pushState` in die Browser-Historie gehen sollen, entscheidet der Operator.
 
 ## Abweichungen
 

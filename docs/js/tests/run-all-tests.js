@@ -1,5 +1,5 @@
 // Main Test Entry Point
-// Führt alle Test-Suites aus
+// Registers and runs every test suite
 
 import { runTests } from './test-runner.js';
 import { CMIFParserTests } from './test-cmif-parser.js';
@@ -8,44 +8,37 @@ import { FormattersTests } from './test-formatters.js';
 import { StateManagerTests } from './test-state-manager.js';
 import { DOMCacheTests } from './test-dom-cache.js';
 import { SecurityTests } from './test-security.js';
+import { BasketTests } from './test-basket.js';
+import { ResearchPathTests } from './test-research-paths.js';
 
 /**
- * Führe alle Tests aus
+ * Run all registered suites
  */
 export async function runAllTests() {
     console.log('Starting CorrespExplorer Test Suite...\n');
 
     const suites = [
-        // Business Logic (CMIF-Datenverarbeitung)
+        // Business logic (CMIF data processing)
         CMIFParserTests,
         AggregationTests,
         FormattersTests,
         SecurityTests,
+        ResearchPathTests,
 
         // Infrastructure (State Management)
         StateManagerTests,
-        DOMCacheTests
+        DOMCacheTests,
+        BasketTests
     ];
 
     const results = await runTests(suites);
 
-    // Return results für programmatischen Zugriff
+    // Results for programmatic callers such as the test page
     return results;
 }
 
-// Auto-run wenn als Modul geladen
+// test.html owns the single run trigger (Run button and ?test=true), so the suites never run
+// twice against the shared state singleton
 if (typeof window !== 'undefined') {
     window.runAllTests = runAllTests;
-
-    // Auto-run wenn ?test=true in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('test') === 'true') {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(() => runAllTests(), 500);
-            });
-        } else {
-            setTimeout(() => runAllTests(), 500);
-        }
-    }
 }

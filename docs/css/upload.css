@@ -1,5 +1,4 @@
 /* Upload Component Styles */
-@import url('tokens.css');
 
 /* Landing Page Layout */
 .landing-container {
@@ -22,15 +21,16 @@
 .disclaimer {
     margin-top: var(--space-lg);
     padding: var(--space-md);
-    background: var(--color-warning-light, #fef3c7);
-    border: 1px solid var(--color-warning, #f59e0b);
+    background: var(--color-warning-light);
+    border: 1px solid var(--color-warning);
     border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
     text-align: left;
 }
 
+/* The primary colour reaches only 4.29:1 on --color-warning-light; the dark variant meets AA */
 .disclaimer a {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     text-decoration: underline;
 }
 
@@ -39,8 +39,8 @@
     position: relative;
     cursor: help;
     font-weight: 600;
-    color: var(--color-primary);
-    border-bottom: 1px dotted var(--color-primary);
+    color: var(--color-primary-dark);
+    border-bottom: 1px dotted var(--color-primary-dark);
 }
 
 .tooltip-trigger i {
@@ -66,7 +66,6 @@
     color: var(--color-text);
     text-align: left;
     line-height: var(--line-height-base);
-    box-shadow: var(--shadow-md);
     z-index: 100;
     transition: opacity var(--transition-fast), visibility var(--transition-fast);
     margin-bottom: var(--space-sm);
@@ -125,6 +124,10 @@
     width: 100%;
     height: auto;
     margin-bottom: var(--space-lg);
+}
+
+.landing-title {
+    margin: 0;
 }
 
 .landing-header p {
@@ -255,15 +258,14 @@
 }
 
 .url-input:focus {
-    outline: none;
     border-color: var(--color-primary);
 }
 
 .url-submit-btn {
-    background: var(--color-secondary);
+    background: var(--color-primary);
     color: white;
     padding: var(--space-md) var(--space-xl);
-    border: 2px solid var(--color-secondary);
+    border: 2px solid var(--color-primary-dark);
     border-radius: var(--radius-md);
     font-weight: 600;
     cursor: pointer;
@@ -272,8 +274,7 @@
 }
 
 .url-submit-btn:hover {
-    background: transparent;
-    color: var(--color-secondary);
+    background: var(--color-primary-dark);
 }
 
 .url-submit-btn:disabled {
@@ -328,14 +329,13 @@
 /* Featured Dataset Card (Demo) */
 .dataset-card-featured {
     border-color: var(--color-primary);
-    background: linear-gradient(135deg, var(--color-bg-light) 0%, rgba(139, 69, 19, 0.05) 100%);
+    background: var(--color-bg-light);
     position: relative;
 }
 
 .dataset-card-featured:hover {
     border-color: var(--color-primary-dark);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
 }
 
 .dataset-badge {
@@ -354,7 +354,7 @@
 
 .dataset-card h4 {
     font-size: var(--font-size-md);
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     margin-bottom: var(--space-sm);
     padding-right: 5rem;
 }
@@ -384,9 +384,8 @@
 }
 
 .dataset-card-extended:hover {
-    border-color: var(--color-secondary-dark, #4a7c59);
+    border-color: var(--color-primary);
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
 }
 
 .dataset-badge-extended {
@@ -397,58 +396,6 @@
 }
 
 /* Badge Info Icon with Tooltip */
-.badge-info-icon {
-    position: relative;
-    cursor: help;
-    opacity: 0.8;
-    font-size: 0.85em;
-}
-
-.badge-info-icon:hover {
-    opacity: 1;
-}
-
-.badge-info-icon::after {
-    content: attr(title);
-    position: absolute;
-    bottom: calc(100% + 8px);
-    right: 0;
-    width: 280px;
-    padding: var(--space-sm) var(--space-md);
-    background: var(--color-bg);
-    border: 2px solid var(--color-secondary);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-xs);
-    font-weight: normal;
-    color: var(--color-text);
-    text-transform: none;
-    letter-spacing: normal;
-    line-height: var(--line-height-base);
-    box-shadow: var(--shadow-md);
-    z-index: 100;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--transition-fast), visibility var(--transition-fast);
-    pointer-events: none;
-}
-
-.badge-info-icon::before {
-    content: '';
-    position: absolute;
-    bottom: calc(100% + 2px);
-    right: 8px;
-    border: 6px solid transparent;
-    border-top-color: var(--color-secondary);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--transition-fast), visibility var(--transition-fast);
-}
-
-.badge-info-icon:hover::after,
-.badge-info-icon:hover::before {
-    opacity: 1;
-    visibility: visible;
-}
 
 .dataset-extended-info {
     margin-top: var(--space-md);
@@ -517,7 +464,7 @@
 }
 
 .api-hint a {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     text-decoration: underline;
 }
 
@@ -558,7 +505,7 @@
 /* Error State */
 .error-message {
     display: none;
-    background: rgba(155, 34, 38, 0.1);
+    background: var(--color-error-light);
     border: 1px solid var(--color-error);
     border-radius: var(--radius-md);
     padding: var(--space-lg);
@@ -572,38 +519,8 @@
     display: block;
 }
 
-/* Navigation Links */
-.about-link-container {
-    margin-top: var(--space-xl);
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    gap: var(--space-xl);
-    flex-wrap: wrap;
-}
-
-.about-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    color: var(--color-secondary);
-    text-decoration: none;
-    font-size: var(--font-size-sm);
-    transition: color var(--transition-fast);
-    padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-light);
-}
-
-.about-link:hover {
-    color: var(--color-primary);
-    border-color: var(--color-primary);
-    background: white;
-}
-
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .landing-container {
         padding: var(--space-lg);
     }
@@ -636,7 +553,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--color-backdrop);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -775,6 +692,12 @@
     border-color: var(--color-primary-dark);
 }
 
+/* The native checkbox is invisible, so its focus ring is drawn on the custom box */
+.config-checkbox input:focus-visible ~ .checkmark {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 .config-checkbox input:checked ~ .checkmark::after {
     content: '\f00c';
     font-family: 'Font Awesome 6 Free';
@@ -800,7 +723,7 @@
 
 /* Config Warning */
 .config-warning {
-    background: rgba(230, 126, 34, 0.1);
+    background: var(--color-warning-light);
     border: 1px solid var(--color-accent);
     border-radius: var(--radius-md);
     padding: var(--space-md);
@@ -818,40 +741,6 @@
     display: flex;
     gap: var(--space-md);
     justify-content: flex-end;
-}
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-md) var(--space-lg);
-    border: none;
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-base);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.btn-primary {
-    background: var(--color-primary);
-    color: white;
-    border: 2px solid var(--color-primary-dark);
-}
-
-.btn-primary:hover {
-    background: var(--color-primary-dark);
-}
-
-.btn-secondary {
-    background: transparent;
-    color: var(--color-primary);
-    border: 2px solid var(--color-primary);
-}
-
-.btn-secondary:hover {
-    background: var(--color-primary);
-    color: white;
 }
 
 /* Config Progress */

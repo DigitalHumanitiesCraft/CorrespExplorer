@@ -1,15 +1,16 @@
-// Test Suite: State Manager
-// Tests Filter-Logik mit REAL CMIF data
+// Test suite: state manager
+// Filter logic and URL state on real CMIF fixtures
 
 import { parseCMIF } from '../cmif-parser.js';
 import { state } from '../state-manager.js';
+import { placeKey } from '../utils.js';
 import { assert } from './test-runner.js';
 
 export const StateManagerTests = {
     name: 'State Manager',
 
     setup() {
-        // Reset state before each test
+        // Each test starts from empty data and no filters
         state.data = {
             letters: [],
             indices: { persons: {}, places: {}, subjects: {}, languages: {} },
@@ -129,23 +130,29 @@ export const StateManagerTests = {
         },
 
         {
-            // Regression: places without GeoNames id carry the key "name:<Ort>" in the places view
-            name: 'updateFilters: Ort-Filter mit und ohne GeoNames-ID',
+            // Regression: the places view, the place index of the parser and the filter share placeKey,
+            // so a place selected anywhere matches the same letters (ADR-001)
+            name: 'updateFilters: Ort-Filter ueber placeKey mit und ohne GeoNames-ID',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
 
                 const unlocated = data.letters.find(l => l.place_sent?.name && !l.place_sent.geonames_id).place_sent;
-                state.updateFilters({ place: `name:${unlocated.name}` });
-                let filtered = state.getFilteredLetters();
-                assert(filtered.length > 0 && filtered.every(l => l.place_sent?.name === unlocated.name),
-                    `Sollte nur Briefe aus ${unlocated.name} finden`);
-
                 const located = data.letters.find(l => l.place_sent?.geonames_id).place_sent;
-                state.updateFilters({ place: located.geonames_id });
-                filtered = state.getFilteredLetters();
-                assert(filtered.length > 0 && filtered.every(l => l.place_sent?.geonames_id === located.geonames_id),
-                    `Sollte nur Briefe aus GeoNames ${located.geonames_id} finden`);
+
+                for (const place of [unlocated, located]) {
+                    const key = placeKey(place);
+                    assert(data.indices.places[key], `Ortsindex sollte den Schluessel ${key} fuehren`);
+
+                    state.updateFilters({ place: key });
+                    const filtered = state.getFilteredLetters();
+                    const expected = data.letters.filter(l => placeKey(l.place_sent) === key);
+                    assert(filtered.length > 0 && filtered.length === expected.length,
+                        `Filter ${key} sollte ${expected.length} Briefe finden, fand ${filtered.length}`);
+                    assert(filtered.length === data.indices.places[key].letter_count,
+                        `Briefzahl des Ortsindex fuer ${key} sollte zum Filter passen`);
+                }
+                assert(placeKey(located) === located.geonames_id, 'Ein Ort mit GeoNames-ID sollte ueber die ID filtern');
             }
         },
 
@@ -220,16 +227,16 @@ export const StateManagerTests = {
 
                 state.updateFilters({ temporal: { min: minYear, max: midYear } });
 
-                // Erster Aufruf
+                // First call fills the cache
                 const result1 = state.getFilteredLetters();
 
-                // Zweiter Aufruf (should be cached - same reference)
+                // Second call returns the cached array
                 const result2 = state.getFilteredLetters();
 
                 assert(result1.length === result2.length, 'Beide Aufrufe sollten gleich viele Briefe liefern');
                 assert(result1 === result2, 'Zweiter Aufruf sollte gecachtes Array zurückgeben (same reference)');
 
-                // Filter ändern sollte Cache invalidieren
+                // A filter change invalidates the cache
                 state.updateFilters({ temporal: { min: minYear, max: maxYear } });
                 const result3 = state.getFilteredLetters();
                 assert(result3 !== result1, 'Nach Filter-Änderung sollte neues Array erstellt werden');
@@ -389,6 +396,83 @@ export const StateManagerTests = {
                 state.fromURLParams(params);
                 assert(state.filters.temporal?.undated === true, 'undated sollte importiert sein');
                 assert(Array.isArray(state.filters.languages) && state.filters.languages.length === 0, 'Leere Sprachauswahl sollte importiert sein');
+            }
+        },
+
+        {
+            name: 'URL-Parameter: Alle Filter ueberstehen den Rundweg toURLParams und fromURLParams',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+
+                const letter = data.letters.find(l => l.year && l.language?.code && l.mentions?.subjects?.length && l.place_sent);
+                assert(letter, 'test-uncertainty.xml sollte einen datierten Brief mit Sprache, Thema und Ort enthalten');
+                const subject = letter.mentions.subjects[0];
+
+                state.updateUI({ currentView: 'letters' });
+                state.updateFilters({
+                    temporal: { min: letter.year, max: letter.year },
+                    languages: [letter.language.code],
+                    person: letter.sender.id || letter.sender.name,
+                    subject: subject.uri || subject.id || subject.label,
+                    place: placeKey(letter.place_sent),
+                    quality: { preciseDates: true, knownPersons: true }
+                });
+                const lettersBefore = state.getFilteredLetters().map(l => l.id);
+                assert(lettersBefore.includes(letter.id), `Brief ${letter.id} sollte alle gesetzten Filter erfuellen`);
+
+                // parseCMIF alone resolves no coordinates, so located only takes part in the parameter round trip
+                state.updateFilters({ quality: { locatedPlaces: true } });
+                const before = JSON.stringify(state.filters);
+                const params = state.toURLParams();
+                assert(params.get('precise') === '1' && params.get('known') === '1' && params.get('located') === '1',
+                    'Qualitaetsfilter sollten als precise, known und located erscheinen');
+
+                state.resetFilters();
+                state.updateUI({ currentView: 'overview' });
+                state.fromURLParams(new URLSearchParams(params.toString()));
+
+                assert(JSON.stringify(state.filters) === before, `Filter nach dem Rundweg ${JSON.stringify(state.filters)} statt ${before}`);
+                assert(state.ui.currentView === 'letters', 'Ansicht sollte erhalten bleiben');
+
+                state.updateFilters({ quality: { locatedPlaces: false } });
+                assert(JSON.stringify(state.getFilteredLetters().map(l => l.id)) === JSON.stringify(lettersBefore),
+                    'Die gefilterten Briefe sollten nach dem Rundweg dieselben sein');
+            }
+        },
+
+        {
+            // Regression: links from before ADR-001 wrote place=name:<Ort> for places without GeoNames id
+            name: 'fromURLParams: Alter Ortsparameter name:<Ort> fuehrt zum Schluessel nach placeKey',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+
+                const unlocated = data.letters.find(l => l.place_sent?.name && !l.place_sent.geonames_id).place_sent;
+                const key = placeKey(unlocated);
+                state.fromURLParams(new URLSearchParams({ place: `name:${unlocated.name}` }));
+
+                assert(state.filters.place === key, `Ort-Filter ${state.filters.place} statt ${key}`);
+                assert(state.getFilteredLetters().length === data.indices.places[key].letter_count,
+                    'Der alte Link sollte dieselben Briefe zeigen wie der Ortsindex');
+            }
+        },
+
+        {
+            name: 'fromURLParams: Filter ohne Parameter werden zurueckgesetzt',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+
+                const personIds = Object.keys(data.indices.persons);
+                state.updateFilters({ person: personIds[0], languages: [], quality: { preciseDates: true } });
+                state.fromURLParams(new URLSearchParams('yearMin=abc&yearMax=1900'));
+
+                assert(state.filters.person === null, 'Person ohne Parameter sollte zurueckgesetzt sein');
+                assert(state.filters.languages === null, 'Sprachen ohne langs sollten ohne Filter sein');
+                assert(state.filters.temporal === null, 'Ein nicht numerisches Jahr sollte keinen Zeitfilter setzen');
+                assert(state.filters.quality.preciseDates === false, 'Qualitaetsfilter ohne Parameter sollte aus sein');
+                assert(state.getFilteredLetters().length === data.letters.length, 'Ohne Filter sollten alle Briefe bleiben');
             }
         },
 

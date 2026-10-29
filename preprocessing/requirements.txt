@@ -1,0 +1,2 @@
+# Python dependencies of the preprocessing scripts (build_hsa_data.py, analyze_hsa_cmif.py)
+lxml==6.1.3

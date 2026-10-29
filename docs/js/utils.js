@@ -51,7 +51,7 @@ export function safeUrl(url) {
 export function externalLink(url, text) {
     const href = safeUrl(url);
     return href
-        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(text)}</a>`
+        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`
         : escapeHtml(text);
 }
 
@@ -97,33 +97,6 @@ export function downloadFile(content, filename, mimeType) {
 }
 
 /**
- * Format date for display
- * @param {string} dateStr - Date string
- * @returns {string} - Formatted date
- */
-export function formatDate(dateStr) {
-    if (!dateStr) return 'o.D.';
-    try {
-        const date = new Date(dateStr);
-        if (isNaN(date.getTime())) return dateStr;
-        return date.toLocaleDateString('de-DE');
-    } catch {
-        return dateStr;
-    }
-}
-
-/**
- * Extract year from date string
- * @param {string} dateStr - Date string (YYYY-MM-DD or YYYY)
- * @returns {number|null} - Year or null
- */
-export function extractYear(dateStr) {
-    if (!dateStr) return null;
-    const match = dateStr.match(/(\d{4})/);
-    return match ? parseInt(match[1], 10) : null;
-}
-
-/**
  * Show a toast notification, replacing any toast still on screen.
  * @param {string} message - Message to show
  * @param {number} duration - Duration in ms (default 3000)
@@ -165,17 +138,55 @@ export function closeModal(modal) {
     modal.classList.add('hidden');
 }
 
-const DIALOG_SELECTOR ='.modal-overlay, .modal:not(.modal-overlay .modal)';
+const DIALOG_SELECTOR = '.modal-overlay, .modal:not(.modal-overlay .modal)';
+const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
 
 function isShown(el) {
     return el.getClientRects().length > 0;
 }
 
 /**
- * Keyboard behaviour for every modal of a page: Escape closes the topmost open dialog through
- * its close button, opening moves focus to that button, closing returns focus to the trigger.
- * Works for static and generated modals, because the modules show them in different ways
- * (style.display, the hidden class or a new element).
+ * Keep Tab and Shift+Tab inside a container: focus wraps from the last shown focusable element
+ * to the first and back, and enters the container when it was outside. Shared by the modals and
+ * the demo tour.
+ * @param {KeyboardEvent} e - keydown event with key Tab
+ * @param {HTMLElement} container
+ */
+export function trapTabKey(e, container) {
+    const focusable = [...container.querySelectorAll(FOCUSABLE_SELECTOR)].filter(isShown);
+    if (focusable.length === 0) {
+        e.preventDefault();
+        return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const inside = container.contains(document.activeElement);
+    if (e.shiftKey && (!inside || document.activeElement === first)) {
+        last.focus();
+        e.preventDefault();
+    } else if (!e.shiftKey && (!inside || document.activeElement === last)) {
+        first.focus();
+        e.preventDefault();
+    }
+}
+
+let dialogHeadingCount = 0;
+
+// A dialog without an accessible name is named by its first heading
+function labelDialog(dialog) {
+    if (dialog.hasAttribute('aria-labelledby') || dialog.hasAttribute('aria-label')) return;
+    const heading = dialog.querySelector('h1, h2, h3, h4');
+    if (!heading) return;
+    if (!heading.id) heading.id = `dialog-heading-${++dialogHeadingCount}`;
+    dialog.setAttribute('aria-labelledby', heading.id);
+}
+
+/**
+ * Keyboard behaviour for every modal of a page. Opening moves focus into the topmost dialog
+ * (its close button first), Tab and Shift+Tab wrap inside it, Escape closes it through its
+ * close button, and closing returns focus to the element that had it before. A MutationObserver
+ * detects opening and closing, so static modals (hidden class) and generated ones (new element,
+ * style.display in older modules) behave alike.
  */
 export function enableModalKeyboard() {
     let openDialog = null;
@@ -189,8 +200,9 @@ export function enableModalKeyboard() {
             if (!openDialog) returnFocus = document.activeElement;
             top.setAttribute('role', 'dialog');
             top.setAttribute('aria-modal', 'true');
+            labelDialog(top);
             if (!top.contains(document.activeElement)) {
-                (top.querySelector('.modal-close') || top.querySelector('button, [href], [tabindex]'))?.focus();
+                (top.querySelector('.modal-close') || top.querySelector(FOCUSABLE_SELECTOR))?.focus();
             }
         } else if (returnFocus?.isConnected) {
             returnFocus.focus();
@@ -198,19 +210,32 @@ export function enableModalKeyboard() {
         openDialog = top;
     };
 
-    new MutationObserver(sync).observe(document.body, {
+    // Only records that touch a dialog run sync: sync measures layout (isShown), and every filter
+    // step re-renders large lists and sidebar classes, which would otherwise force a reflow each time
+    const touchesDialog = (record) => {
+        if (record.type === 'attributes') return record.target.matches?.(DIALOG_SELECTOR) || false;
+        return [...record.addedNodes, ...record.removedNodes].some(node =>
+            node.nodeType === Node.ELEMENT_NODE && (node.matches(DIALOG_SELECTOR) || node.querySelector(DIALOG_SELECTOR)));
+    };
+    new MutationObserver((records) => {
+        if (records.some(touchesDialog)) sync();
+    }).observe(document.body, {
         subtree: true, childList: true, attributes: true, attributeFilter: ['style', 'class']
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key !== 'Escape' || !openDialog) return;
-        const close = openDialog.querySelector('.modal-close');
-        if (close) {
-            close.click();
-        } else {
-            closeModal(openDialog);
+        if (!openDialog) return;
+        if (e.key === 'Escape') {
+            const close = openDialog.querySelector('.modal-close');
+            if (close) {
+                close.click();
+            } else {
+                closeModal(openDialog);
+            }
+            e.preventDefault();
+        } else if (e.key === 'Tab') {
+            trapTabKey(e, openDialog);
         }
-        e.preventDefault();
     });
 }
 
@@ -234,7 +259,7 @@ export function buildAuthorityLink(authorityUri) {
         label = 'Wikidata';
     }
 
-    return `<a href="${escapeHtml(authorityUri)}" target="_blank" class="authority-link" title="${label}">${label}</a>`;
+    return `<a href="${escapeHtml(authorityUri)}" target="_blank" rel="noopener noreferrer" class="authority-link" title="${label}">${label}</a>`;
 }
 
 /**
@@ -246,7 +271,8 @@ export function parseAuthorityRef(url) {
     if (!url) return null;
 
     // VIAF
-    const viafMatch = url.match(/viaf\.org\/viaf\/(\d+)/);
+    // CMIF files write both viaf.org/viaf/{id} and the short form viaf.org/{id}
+    const viafMatch = url.match(/viaf\.org\/(?:viaf\/)?(\d+)/);
     if (viafMatch) return { type: 'viaf', id: viafMatch[1] };
 
     // GND
@@ -331,6 +357,47 @@ export function placeKey(place) {
     return place?.geonames_id || place?.name || null;
 }
 
+// Names a source writes for an unknown place, such as the HSA placeholder "Unbekannt"
+const UNKNOWN_PLACE_PATTERNS = [
+    /^Unbekannt$/i,
+    /^Unknown$/i,
+    /^\[?\?\]?$/
+];
+
+/**
+ * Whether a place name is a placeholder for an unknown place
+ * @param {string|null} name
+ * @returns {boolean}
+ */
+export function isUnknownPlaceName(name) {
+    const trimmed = (name || '').trim();
+    return UNKNOWN_PLACE_PATTERNS.some(p => p.test(trimmed));
+}
+
+/**
+ * Whether a sending place counts as a place: it has a GeoNames id, or a name that is no
+ * placeholder for an unknown place. Place counts in the sidebar, overview and comparison use it,
+ * so the HSA letters from "Unbekannt" do not add a place.
+ * @param {{geonames_id?: string, name?: string}|null} place
+ * @returns {boolean}
+ */
+export function isKnownPlace(place) {
+    if (place?.geonames_id) return true;
+    return Boolean(place?.name) && !isUnknownPlaceName(place.name);
+}
+
+/**
+ * Authority system and id of a person from a letter, an index entry or a mention. The parser
+ * and correspSearch store `id` and `authority`, the preprocessed HSA index stores `viaf`.
+ * @param {{id?: string, authority?: string, viaf?: string}|null} person
+ * @returns {{authority: string, id: string}|null} - null without both system and id
+ */
+export function personAuthority(person) {
+    const id = person?.viaf || person?.id || null;
+    const authority = person?.authority || (person?.viaf ? 'viaf' : null);
+    return id && authority ? { authority, id } : null;
+}
+
 /**
  * Letter ID without the URL prefix of the edition
  * @param {string|null} id
@@ -357,7 +424,7 @@ export function buildIndices(letters) {
     const countPerson = (person, role) => {
         const key = personKey(person);
         if (!key) return;
-        persons[key] ??= { name: person.name, authority: person.authority, letter_count: 0, as_sender: 0, as_recipient: 0 };
+        persons[key] ??= { name: person.name, id: person.id || null, authority: person.authority || null, letter_count: 0, as_sender: 0, as_recipient: 0 };
         persons[key].letter_count++;
         persons[key][role]++;
     };
@@ -368,7 +435,7 @@ export function buildIndices(letters) {
 
         const placeId = placeKey(letter.place_sent);
         if (placeId) {
-            places[placeId] ??= { name: letter.place_sent.name, lat: letter.place_sent.lat, lon: letter.place_sent.lon, letter_count: 0 };
+            places[placeId] ??= { name: letter.place_sent.name, geonames_id: letter.place_sent.geonames_id || null, lat: letter.place_sent.lat, lon: letter.place_sent.lon, letter_count: 0 };
             places[placeId].letter_count++;
         }
 
@@ -407,63 +474,4 @@ export function countIdentifiedPersons(letters) {
         }
     }
     return { identified: identified.size, total: all.size };
-}
-
-/**
- * Analyze dataset capabilities to determine which views are available
- * @param {Object} data - Parsed CMIF data
- * @returns {Object} Capabilities analysis
- */
-export function analyzeDataCapabilities(data) {
-    const capabilities = {
-        hasPersons: false,
-        hasDates: false,
-        hasPlaces: false,
-        hasCoordinates: false,
-        hasSubjects: false,
-        hasMentions: false,
-        placeStats: {
-            total: 0,
-            withCoordinates: 0,
-            withGeoNamesId: 0,
-            needsResolution: 0
-        }
-    };
-
-    if (!data || !data.letters) {
-        return capabilities;
-    }
-
-    // Check persons
-    capabilities.hasPersons = data.indices?.persons && Object.keys(data.indices.persons).length > 0;
-
-    // Check dates
-    capabilities.hasDates = data.letters.some(l => l.year !== null && l.year !== undefined);
-
-    // Check places
-    if (data.indices?.places) {
-        const places = Object.values(data.indices.places);
-        capabilities.hasPlaces = places.length > 0;
-        capabilities.placeStats.total = places.length;
-
-        for (const place of places) {
-            if (place.lat && place.lon) {
-                capabilities.placeStats.withCoordinates++;
-                capabilities.hasCoordinates = true;
-            } else if (place.geonames_id) {
-                capabilities.placeStats.withGeoNamesId++;
-                capabilities.placeStats.needsResolution++;
-            }
-        }
-    }
-
-    // Check subjects
-    capabilities.hasSubjects = data.indices?.subjects && Object.keys(data.indices.subjects).length > 0;
-
-    // Check mentions
-    capabilities.hasMentions = data.letters.some(l =>
-        l.mentions?.persons && l.mentions.persons.length > 0
-    );
-
-    return capabilities;
 }

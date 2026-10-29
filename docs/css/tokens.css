@@ -1,6 +1,6 @@
 /* CorrespExplorer Design Tokens
  * Canonical design system values
- * All CSS files must import and use these tokens
+ * Every stylesheet uses these tokens; pages link this file first
  *
  * Design derived from logo.jpg - Retro style with rust red accent
  */
@@ -27,17 +27,34 @@
 
     /* Functional Colors */
     --color-success: #2d6a4f;        /* Forest Green */
-    --color-info: #0077b6;           /* Academic Blue */
-    --color-warning: #9b6b00;        /* Dark Gold */
+    --color-info: #005a87;           /* Academic Blue, 6.7:1 on --color-bg */
+    --color-warning: #7a5400;        /* Dark Gold, 6.1:1 on --color-bg */
     --color-error: #9b2226;          /* Dark Red */
 
-    /* Role Colors (Map/Network) - design.md Section 6.1.1 */
+    /* Light tints for hover and status backgrounds, mixed from the base colours */
+    --color-primary-light: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg));
+    --color-success-light: color-mix(in srgb, var(--color-success) 12%, var(--color-bg));
+    --color-info-light: color-mix(in srgb, var(--color-info) 12%, var(--color-bg));
+    --color-warning-light: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg));
+    --color-error-light: color-mix(in srgb, var(--color-error) 12%, var(--color-bg));
+
+    /* Sequential scale for counts (activity heatmap), from --color-bg to --color-primary */
+    --color-scale-1: color-mix(in srgb, var(--color-primary) 25%, var(--color-bg));
+    --color-scale-2: color-mix(in srgb, var(--color-primary) 50%, var(--color-bg));
+    --color-scale-3: color-mix(in srgb, var(--color-primary) 75%, var(--color-bg));
+    --color-scale-4: var(--color-primary);
+
+    /* Backdrops */
+    --color-backdrop: rgba(0, 0, 0, 0.5); /* Behind dialogs and the mobile menu */
+    --color-overlay: rgba(0, 0, 0, 0.7);  /* Behind the demo tour */
+
+    /* Role Colors (Map/Network) - design.md Section 2, Datenvisualisierung */
     --color-role-sender: #2c5f8d;    /* Steel Blue - Absenderin */
     --color-role-mentioned: #6c757d; /* Medium Gray - Erwähnt */
     --color-role-both: #2d6a4f;      /* Forest Green - Beide */
     --color-role-indirect: #adb5bd;  /* Light Gray - Indirekt (SNDB only) */
 
-    /* Badge Colors - design.md Section 6.1.1 */
+    /* Badge Colors */
     --color-badge-gnd: #2d6a4f;      /* Green text */
     --color-badge-gnd-bg: #d8f3dc;   /* Light green background */
     --color-badge-sndb: #9b6b00;     /* Gold text */
@@ -69,7 +86,7 @@
     --font-base: 'Lato', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
-    /* Font Sizes - design.md Section 6.1 (12/14/16/20/24/32) */
+    /* Font Sizes - design.md Section 3 */
     --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-base: 14px;
@@ -88,7 +105,7 @@
      * SPACING
      * ======================================== */
 
-    /* Spacing Scale - design.md Section 6.1 (4/8/12/16/24/32) */
+    /* Spacing Scale - design.md Section 4 */
     --space-xs: 4px;
     --space-sm: 8px;
     --space-md: 12px;
@@ -128,9 +145,13 @@
     --radius-md: 8px;
     --radius-lg: 16px;
     --radius-xl: 24px;
+    --radius-full: 9999px;           /* Pills and circular badges */
 
-    /* Shadows - ONLY for floating/overlay elements (see shadows.css) */
+    /* Shadows - only for floating elements, used only in shadows.css */
     /* Regular UI elements use border-based design */
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.15);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
 
     /* Border-based depth */
     --border-card: 2px solid var(--color-border);
@@ -167,11 +188,6 @@
 }
 
 /* Uncertainty marker with tooltip (used in HTML, not ::after) */
-.uncertainty-marker {
-    color: var(--color-warning);
-    font-size: 0.9em;
-    cursor: help;
-}
 
 .date-unknown {
     color: var(--color-text-muted);
@@ -188,11 +204,6 @@
     color: var(--color-text-muted);
 }
 
-.person-named {
-    /* No special styling - name present but no authority */
-    opacity: 0.85;
-}
-
 .person-unknown .person-avatar,
 .person-partial .person-avatar {
     background: var(--color-bg-light);
@@ -207,8 +218,8 @@
 }
 
 .place-region .region-hint {
-    font-size: 0.8em;
-    opacity: 0.7;
+    /* No opacity: on card backgrounds the faded hint fell below 4.5:1 */
+    font-size: var(--font-size-xs);
 }
 
 .place-unknown {
@@ -219,30 +230,6 @@
 .place-unknown i {
     color: var(--color-warning);
     margin-left: 4px;
-}
-
-/* Uncertainty Indicator Badge */
-.uncertainty-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: 2px 6px;
-    font-size: var(--font-size-xs);
-    border-radius: var(--radius-sm);
-    background: var(--color-bg-light);
-    color: var(--color-text-muted);
-    border: 1px solid var(--color-border-light);
-}
-
-.uncertainty-badge--warning {
-    background: #fff3cd;
-    color: var(--color-warning);
-    border-color: var(--color-warning);
-}
-
-/* Stats Sub-info (for sidebar statistics) - deprecated, use icons */
-.stats-subinfo {
-    display: none;
 }
 
 /* Stats Quality Icon (shows uncertainty with tooltip) */
@@ -268,25 +255,25 @@
  * ======================================== */
 
 /*
-IMPORTANT: All CSS files must import these tokens at the top:
-@import url('tokens.css');
+Every page links tokens.css first (load order in css/CONTEXT-MAP.md), so no stylesheet imports it.
 
 DO NOT redefine these variables in other files.
 DO NOT use hard-coded values where tokens exist.
 
-Color Contrast Requirements (WCAG AA):
-- Text on white: Use --color-text (#2d3748) - 12.6:1 ratio ✓
-- Links on white: Use --color-secondary (#2c5f8d) - 4.8:1 ratio ✓
-- All functional colors meet WCAG AA minimum
+Colour contrast (WCAG AA), measured against --color-bg (#F5F3E8):
+- --color-text (#222222) 14.3:1
+- --color-secondary (#2C5282) 7.2:1, links
+- --color-primary (#A64B3F) 5.1:1, on --color-bg-light only 4.45:1, use --color-primary-dark there
+- --color-warning and --color-info are dark enough for text on --color-bg and --color-bg-light
 
 Spacing Convention:
 - Use --space-* tokens exclusively
-- Never hard-code px values for spacing
 - Consistent spacing creates visual rhythm
 
 Breakpoint Usage:
-@media (max-width: var(--breakpoint-md)) { ... }
-@media (min-width: var(--breakpoint-lg)) { ... }
+Custom properties do not work inside media queries, so queries repeat the values:
+@media (max-width: 767px) { ... }   below --breakpoint-md
+@media (max-width: 1024px) { ... }  up to --breakpoint-lg
 
 Design Authority:
 These tokens are derived from knowledge/design.md

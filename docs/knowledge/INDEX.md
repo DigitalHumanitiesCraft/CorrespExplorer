@@ -22,7 +22,7 @@ related: [project, data, specification, architecture, design, testing, plan, han
 
 # Index
 
-Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents, die am Werkzeug arbeiten. Sie liegt abweichend von der Konvention unter `docs/knowledge/` statt `knowledge/`, weil GitHub Pages den Ordner `docs/` ausliefert und die Seite `vault.html` die Dokumente von dort lädt. Die Arbeitsregeln für Agenten stehen in `CLAUDE.md` im Repository-Root, Code-nahe Übersichten in `docs/js/CONTEXT-MAP.md`, `docs/js/tests/CONTEXT-MAP.md` und `docs/css/CONTEXT-MAP.md`.
+Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents, die am Werkzeug arbeiten. Sie liegt abweichend von der Konvention unter `docs/knowledge/` statt `knowledge/`, weil GitHub Pages den Ordner `docs/` ausliefert und die Seite `vault.html` die Dokumente von dort lädt. Die Arbeitsregeln für Agenten stehen in `CLAUDE.md` im Repository-Root, Code-nahe Übersichten in `docs/js/CONTEXT-MAP.md`, `docs/js/views/CONTEXT-MAP.md`, `docs/js/tests/CONTEXT-MAP.md` und `docs/css/CONTEXT-MAP.md`.
 
 Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index, die übrigen Dokumente erben sie.
 
@@ -50,7 +50,7 @@ Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index,
 
 ## Lesepfade
 
-- Sessionstart: `CLAUDE.md`, dann [INDEX.md](INDEX.md), [handoff.md](handoff.md), [project.md](project.md) und das aufgabenrelevante Dokument.
+- Sessionstart: `CLAUDE.md`, dann [INDEX.md](INDEX.md), [handoff.md](handoff.md), [plan.md](plan.md) und die aufgabenrelevanten Dokumente nach der Tabelle in `CLAUDE.md`. [journal.md](journal.md) bei Bedarf für Herkunft und Begründung einer Änderung.
 - Code-Änderung: [architecture.md](architecture.md), `docs/js/CONTEXT-MAP.md`, [testing.md](testing.md), bei Datenbezug [data.md](data.md) und [uncertainty-specification.md](uncertainty-specification.md).
 - Neue Funktion: [specification.md](specification.md), [design.md](design.md), dann [architecture.md](architecture.md).
 - Fehlerbehebung: [plan.md](plan.md#offene-befunde), dann [journal.md](journal.md) für den Entstehungskontext.
@@ -87,12 +87,12 @@ Verwendet in [specification.md](specification.md#adr-004-epistemische-kategorien
 
 ### Wissenskorb
 
-Sammlung ausgewählter Briefe, Personen und Orte, im localStorage gehalten, über Tabs synchronisiert und auf einer eigenen Analyseseite ausgewertet (`wissenskorb.html`). In Oberfläche und Commits heißt er auch Datenkorb.
+Sammlung ausgewählter Briefe, Personen und Orte eines Datensatzes, im localStorage gehalten, über Tabs synchronisiert, per Link teilbar und auf einer eigenen Analyseseite ausgewertet (`wissenskorb.html`). In Oberfläche und Commits heißt er auch Datenkorb.
+
+Verwendet in [architecture.md](architecture.md#datenfluss), [`wissenskorb.html`](architecture.md#seiten).
 
 ### Wissenspfad
 
 Ein gestarteter Forschungspfad, den eine Leiste Schritt für Schritt durch die Ansichten führt, während der Wissenskorb die Auswahl sammelt.
 
 Verwendet in [specification.md](specification.md#us-35-geführte-exploration-mit-wissenskorb), [design.md](design.md#wissenspfade).
-
-Verwendet in [architecture.md](architecture.md#datenfluss), [`wissenskorb.html`](architecture.md#seiten).

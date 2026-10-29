@@ -89,23 +89,20 @@ async function findWikidataQid(authority, authorityId) {
         } LIMIT 1
     `;
 
-    try {
-        const result = await querySparql(query);
-        const bindings = result?.results?.bindings || [];
+    // A failed request propagates, so callers can tell an unreachable Wikidata from a missing
+    // entry; only an answered query is cached
+    const result = await querySparql(query);
+    const bindings = result?.results?.bindings || [];
 
-        if (bindings.length > 0) {
-            const itemUri = bindings[0].item?.value;
-            const qid = itemUri?.match(/Q\d+$/)?.[0] || null;
-            setCache(cacheKey, { qid });
-            return qid;
-        }
-
-        setCache(cacheKey, { qid: null });
-        return null;
-    } catch (error) {
-        console.warn(`Failed to find QID for ${authority}:${authorityId}:`, error.message);
-        return null;
+    if (bindings.length > 0) {
+        const itemUri = bindings[0].item?.value;
+        const qid = itemUri?.match(/Q\d+$/)?.[0] || null;
+        setCache(cacheKey, { qid });
+        return qid;
     }
+
+    setCache(cacheKey, { qid: null });
+    return null;
 }
 
 /**
@@ -153,47 +150,43 @@ async function fetchPersonData(qid) {
         LIMIT 10
     `;
 
-    try {
-        const result = await querySparql(query);
-        const bindings = result?.results?.bindings || [];
+    // As in findWikidataQid, a failed request propagates instead of reading as not found
+    const result = await querySparql(query);
+    const bindings = result?.results?.bindings || [];
 
-        if (bindings.length === 0) {
-            setCache(cacheKey, { notFound: true });
-            return null;
-        }
-
-        // Aggregate occupations from multiple rows
-        const occupations = [...new Set(
-            bindings
-                .map(b => b.occupationLabel?.value)
-                .filter(Boolean)
-        )];
-
-        const first = bindings[0];
-        const enriched = {
-            qid,
-            name: first.itemLabel?.value || null,
-            description: first.itemDescription?.value || null,
-            birthDate: formatDate(first.birthDate?.value),
-            deathDate: formatDate(first.deathDate?.value),
-            birthPlace: first.birthPlaceLabel?.value || null,
-            deathPlace: first.deathPlaceLabel?.value || null,
-            image: first.image?.value || null,
-            thumbnail: first.image?.value ? getThumbnailUrl(first.image.value) : null,
-            gender: first.genderLabel?.value || null,
-            professions: occupations.slice(0, 5),
-            gndId: first.gnd?.value || null,
-            viafId: first.viaf?.value || null,
-            wikipediaUrl: first.articleDe?.value || first.articleEn?.value || null,
-            wikidataUrl: `https://www.wikidata.org/wiki/${qid}`
-        };
-
-        setCache(cacheKey, enriched);
-        return enriched;
-    } catch (error) {
-        console.warn(`Failed to fetch data for ${qid}:`, error.message);
+    if (bindings.length === 0) {
+        setCache(cacheKey, { notFound: true });
         return null;
     }
+
+    // Aggregate occupations from multiple rows
+    const occupations = [...new Set(
+        bindings
+            .map(b => b.occupationLabel?.value)
+            .filter(Boolean)
+    )];
+
+    const first = bindings[0];
+    const enriched = {
+        qid,
+        name: first.itemLabel?.value || null,
+        description: first.itemDescription?.value || null,
+        birthDate: formatDate(first.birthDate?.value),
+        deathDate: formatDate(first.deathDate?.value),
+        birthPlace: first.birthPlaceLabel?.value || null,
+        deathPlace: first.deathPlaceLabel?.value || null,
+        image: first.image?.value || null,
+        thumbnail: first.image?.value ? getThumbnailUrl(first.image.value) : null,
+        gender: first.genderLabel?.value || null,
+        professions: occupations.slice(0, 5),
+        gndId: first.gnd?.value || null,
+        viafId: first.viaf?.value || null,
+        wikipediaUrl: first.articleDe?.value || first.articleEn?.value || null,
+        wikidataUrl: `https://www.wikidata.org/wiki/${qid}`
+    };
+
+    setCache(cacheKey, enriched);
+    return enriched;
 }
 
 /**
@@ -231,7 +224,8 @@ function getThumbnailUrl(imageUrl, width = 200) {
  * Enrich a single person from their authority ID
  * @param {string} authority - Authority type (viaf, gnd, etc.)
  * @param {string} authorityId - The authority ID
- * @returns {Promise<Object|null>} Enriched data or null
+ * @returns {Promise<Object|null>} Enriched data, or null when Wikidata has no entry
+ * @throws {Error} When Wikidata cannot be reached or answers with an HTTP error
  */
 export async function enrichPerson(authority, authorityId) {
     if (!authority || !authorityId) return null;
@@ -248,13 +242,15 @@ export async function enrichPerson(authority, authorityId) {
  * Batch enrich multiple persons
  * @param {Array} persons - Array of {name, authority, authorityId} objects
  * @param {Function} onProgress - Progress callback (current, total, person)
+ * @param {AbortSignal} [signal] - Stops before the next person, e.g. when the upload dialog is closed
  * @returns {Promise<Map>} Map of authorityId -> enriched data
  */
-export async function enrichPersonsBatch(persons, onProgress) {
+export async function enrichPersonsBatch(persons, onProgress, signal = null) {
     const results = new Map();
     const enrichable = persons.filter(p => p.authority && p.authorityId);
 
     for (let i = 0; i < enrichable.length; i++) {
+        if (signal?.aborted) break;
         const person = enrichable[i];
 
         if (onProgress) {
@@ -329,33 +325,17 @@ export function buildExternalLinks(enriched) {
     const links = [];
 
     if (enriched.qid) {
-        links.push(`<a href="${escapeHtml(safeUrl(enriched.wikidataUrl))}" target="_blank" rel="noopener" title="Wikidata">Wikidata</a>`);
+        links.push(`<a href="${escapeHtml(safeUrl(enriched.wikidataUrl))}" target="_blank" rel="noopener noreferrer" title="Wikidata">Wikidata</a>`);
     }
     if (enriched.gndId) {
-        links.push(`<a href="https://d-nb.info/gnd/${encodeURIComponent(enriched.gndId)}" target="_blank" rel="noopener" title="GND">GND</a>`);
+        links.push(`<a href="https://d-nb.info/gnd/${encodeURIComponent(enriched.gndId)}" target="_blank" rel="noopener noreferrer" title="GND">GND</a>`);
     }
     if (enriched.viafId) {
-        links.push(`<a href="https://viaf.org/viaf/${encodeURIComponent(enriched.viafId)}" target="_blank" rel="noopener" title="VIAF">VIAF</a>`);
+        links.push(`<a href="https://viaf.org/viaf/${encodeURIComponent(enriched.viafId)}" target="_blank" rel="noopener noreferrer" title="VIAF">VIAF</a>`);
     }
     if (enriched.wikipediaUrl) {
-        links.push(`<a href="${escapeHtml(safeUrl(enriched.wikipediaUrl))}" target="_blank" rel="noopener" title="Wikipedia">Wikipedia</a>`);
+        links.push(`<a href="${escapeHtml(safeUrl(enriched.wikipediaUrl))}" target="_blank" rel="noopener noreferrer" title="Wikipedia">Wikipedia</a>`);
     }
 
     return links.join(' | ');
-}
-
-/**
- * Count persons with enrichable authority IDs
- */
-export function countEnrichable(persons) {
-    if (!Array.isArray(persons)) {
-        // If it's an object (like dataIndices.persons), convert to array
-        persons = Object.values(persons || {});
-    }
-
-    return persons.filter(p => {
-        const authority = p.authority || (p.viaf ? 'viaf' : null);
-        const authorityId = p.viaf || p.id || p.authorityId;
-        return authority && authorityId;
-    }).length;
 }

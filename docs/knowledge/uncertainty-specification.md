@@ -20,7 +20,7 @@ How CorrespExplorer handles incomplete or uncertain research data.
 
 Related: [specification.md](specification.md#adr-002-unsicherheit-sichtbar-machen), [data.md](data.md), [design.md](design.md#unsicherheits-indikatoren), [architecture.md](architecture.md)
 
-User documentation: [about.html](../about.html) (Section "Umgang mit Datenqualitaet")
+User documentation: [about.html](../about.html) (section "Umgang mit Unsicherheit")
 
 Test file: [data/test-uncertainty.xml](../data/test-uncertainty.xml) (23 test cases)
 
@@ -53,17 +53,22 @@ The CMIF standard supports several ways to express uncertainty:
 
 ### HSA Dataset Analysis
 
-The Hugo Schuchardt Archive CMIF uses only implicit uncertainty:
+The Hugo Schuchardt Archive CMIF uses only implicit uncertainty. Counts from `docs/data/hsa-letters.json` (11,576 letters, preprocessing of 2026-10-29), computed on 2026-10-29:
 
-| Feature | Used | Not Used |
-|---------|------|----------|
-| `when` attribute | Yes | - |
-| Incomplete dates (YYYY, YYYY-MM) | Yes (~280 cases) | - |
-| `from`/`to` ranges | - | Not used |
-| `notBefore`/`notAfter` | - | Not used |
-| `cert` attribute | - | Not used |
-| `Unbekannt` places | Yes (~50 cases) | - |
-| `[NN]` persons | Few cases | - |
+| Feature | Used | Count |
+|---------|------|-------|
+| `when` attribute | Yes | 11,272 letters with a date |
+| Incomplete dates (YYYY-MM, YYYY) | Yes | 281 letters (115 month, 166 year) |
+| No date | Yes | 304 letters |
+| `from`/`to` ranges | No | 0 |
+| `notBefore`/`notAfter` | No | 0 |
+| `cert` attribute | No | 0 |
+| `Unbekannt` as place of sending, without GeoNames ID | Yes | 576 letters |
+| Places with GeoNames ID but without coordinates | Yes | 139 of 774 places, 708 letters |
+| `[NN]` in correspondents | No | 0; in `hsa.xml` three mentions of two persons carry `[NN]` |
+| Correspondents without authority ID | Yes | 179 of 1,031 persons (by `personKey`), 524 letters as sender |
+
+The preprocessed letters carry `datePrecision` and `dateCertainty`, but no `precision` on `sender`, `recipient` and `place_sent`. Person and place markers therefore stay empty for the HSA dataset, including the 576 letters from `Unbekannt`; the same file uploaded as CMIF is classified by the parser. This gap is listed in [plan.md](plan.md#vorhaben).
 
 ---
 
@@ -71,116 +76,44 @@ The Hugo Schuchardt Archive CMIF uses only implicit uncertainty:
 
 ### 1. Date Precision
 
+`classifyDate()` in `utils.js` classifies a TEI date for the CMIF parser and the correspSearch loader. The primary date is `when`, else `from`, else `notBefore`; `dateTo` is `to` or `notAfter`; the year is the first four characters of the primary date.
+
 | Level | Detection | HSA Count |
 |-------|-----------|-----------|
-| day | `YYYY-MM-DD` format | ~11,300 |
-| month | `YYYY-MM` format | 115 |
-| year | `YYYY` format | 166 |
-| range | `from`/`to` or `notBefore`/`notAfter` present | 0 |
-| uncertain | `cert="low"` | 0 |
-| unknown | No date element | Few |
+| day | `when` as `YYYY-MM-DD` | 10,991 |
+| month | `when` as `YYYY-MM` | 115 |
+| year | `when` as `YYYY` | 166 |
+| range | `from` and `to`, or `notBefore` or `notAfter` | 0 |
+| unknown | No date attribute | 304 |
 
-```javascript
-function extractDateInfo(dateEl) {
-    if (!dateEl) return { date: null, year: null, precision: 'unknown', certainty: 'high' };
-
-    const when = dateEl.getAttribute('when');
-    const from = dateEl.getAttribute('from');
-    const to = dateEl.getAttribute('to');
-    const notBefore = dateEl.getAttribute('notBefore');
-    const notAfter = dateEl.getAttribute('notAfter');
-    const cert = dateEl.getAttribute('cert') || 'high';
-
-    // Determine primary date string
-    const dateStr = when || from || notBefore;
-    const year = dateStr ? parseInt(dateStr.substring(0, 4), 10) : null;
-
-    // Determine precision
-    let precision = 'unknown';
-    if (from && to) {
-        precision = 'range';
-    } else if (notBefore || notAfter) {
-        precision = 'range';
-    } else if (when) {
-        if (when.length === 10) precision = 'day';
-        else if (when.length === 7) precision = 'month';
-        else if (when.length === 4) precision = 'year';
-    }
-
-    return {
-        date: dateStr,
-        dateTo: to || notAfter || null,
-        year: isNaN(year) ? null : year,
-        precision,
-        certainty: cert
-    };
-}
-```
+Certainty is read from `cert` (default `high`) independently of the precision level. HSA: 11,576 `high`, 0 `low`.
 
 ### 2. Place Precision
 
+`getPlacePrecision()` in `cmif-parser.js` classifies the place of sending. Coordinates are a separate question: the map shows a place only with `lat` and `lon`.
+
 | Level | Detection | HSA Count |
 |-------|-----------|-----------|
-| exact | Has GeoNames ref with coordinates | ~729 |
-| region | Name present, no GeoNames | ~45 |
-| unknown | `Unbekannt` or missing | ~50 |
+| exact | GeoNames ID present | 11,000 letters at 774 places |
+| region | Name without GeoNames ID | 0 |
+| unknown | Name `Unbekannt`, `Unknown`, `?`, `[?]` or no name | 576 letters |
 
-```javascript
-function analyzePlacePrecision(place) {
-    if (!place) return { precision: 'unknown', hasCoordinates: false };
-
-    const name = place.name?.toLowerCase();
-    if (!name || name === 'unbekannt' || name === 'unknown') {
-        return { precision: 'unknown', hasCoordinates: false };
-    }
-
-    const hasCoordinates = place.lat != null && place.lon != null;
-    return {
-        precision: hasCoordinates ? 'exact' : 'region',
-        hasCoordinates
-    };
-}
-```
+Of the 774 HSA places with GeoNames ID, 635 carry coordinates and 139 do not (`meta.places_with_coordinates`, `meta.places_without_coordinates`, coverage 82.0 %).
 
 ### 3. Person Identification
 
-| Level | Detection | HSA Count |
-|-------|-----------|-----------|
-| identified | Has authority ref (VIAF, GND) | ~830 |
-| named | Name present, no authority | ~16 |
-| partial | Contains `[NN]` in name | Few |
-| unknown | `[NN]`, `Unbekannt`, `Unknown` | ~100 |
+`getPersonPrecision()` in `cmif-parser.js` classifies sender and recipient. Unknown patterns (`UNKNOWN_PERSON_PATTERNS`):
 
 ```javascript
-const UNKNOWN_PATTERNS = [
-    /^\[NN\]$/i,
-    /^N\.?N\.?$/i,
-    /^Unbekannt$/i,
-    /^Unknown$/i,
-    /^\?\?\?$/
-];
-
-function analyzePersonPrecision(person) {
-    if (!person || !person.name) {
-        return { precision: 'unknown', hasAuthority: false };
-    }
-
-    const name = person.name.trim();
-
-    if (UNKNOWN_PATTERNS.some(p => p.test(name))) {
-        return { precision: 'unknown', hasAuthority: false };
-    }
-
-    if (/\[NN\]|\[N\.N\.\]|\[\?\]/.test(name)) {
-        return { precision: 'partial', hasAuthority: !!person.authority };
-    }
-
-    return {
-        precision: person.authority ? 'identified' : 'named',
-        hasAuthority: !!person.authority
-    };
-}
+[/^\[NN\]$/i, /^N\.?N\.?$/i, /^Unbekannt$/i, /^Unknown$/i, /^\?\?\?$/]
 ```
+
+| Level | Detection | HSA Count (persons by `personKey`) |
+|-------|-----------|-----------|
+| unknown | No name, or a name matching the unknown patterns | 0 |
+| partial | Name contains `[NN]`, `[N.N.]` or `[?]` | 0 |
+| identified | Authority reference recognised by `parseAuthorityRef()` | 852 |
+| named | Name without authority reference; also organisations (`orgName`) | 179 |
 
 ---
 
@@ -188,42 +121,35 @@ function analyzePersonPrecision(person) {
 
 ### Date Display
 
-| Precision | Display | CSS Class |
-|-----------|---------|-----------|
-| day | "15. Jun 1900" | - |
-| month | "Jun 1900" | `.date-imprecise` |
-| year | "ca. 1900" | `.date-imprecise` |
-| range | "Jun 1900 - Dec 1900" | `.date-range` |
-| uncertain | "15. Jun 1900 (?)" | `.date-uncertain` |
-| unknown | "Datum unbekannt" | `.date-unknown` |
+`formatDateWithPrecision()` in `formatters.js` writes the date, `getDatePrecisionClass()` adds the CSS class. Month names are German abbreviations (`Jan`, `Feb`, `Maer`, `Apr`, `Mai`, `Jun`, `Jul`, `Aug`, `Sep`, `Okt`, `Nov`, `Dez`).
 
-```css
-.date-imprecise { color: var(--color-text-muted); }
-.date-range { color: var(--color-text-muted); }
-.date-uncertain::after { content: " (?)"; color: var(--color-warning); }
-.date-unknown { color: var(--color-text-muted); font-style: italic; }
-```
+| Precision | Display | Icon (title) | CSS Class |
+|-----------|---------|--------------|-----------|
+| day | "15.6.1900" | - | - |
+| month | "Jun 1900" | `fa-calendar-alt` ("Nur Monat bekannt") | `.date-imprecise` |
+| year | "1900" | `fa-calendar-alt` ("Nur Jahr bekannt") | `.date-imprecise` |
+| range | "1.6.1900 – 30.6.1900" | `fa-arrows-alt-h` ("Zeitraum (notBefore/notAfter)") | `.date-range` |
+| uncertain (`cert="low"`) | date as for its precision, e.g. "15.6.1900" | `fa-question-circle` ("Unsichere Datierung (cert=low)"), replaces the other icons | `.date-uncertain` |
+| unknown | "unbekannt" | `fa-question` ("Datum unbekannt") | `.date-unknown` |
+
+A range without `dateTo` shows the single date without icon. Colours of icons and classes come from tokens, see [design.md](design.md#unsicherheits-indikatoren); the classes are defined in `tokens.css` and `explore.css`.
 
 ### Map Display
 
-Do not fake coordinates. Show regions in separate list:
-
-```
-Karte: 729 Orte mit Koordinaten
-Ohne Koordinaten: 45 Orte
-  - Steiermark (23 Briefe)
-  - Deutschland (12 Briefe)
-  - [unbekannt] (10 Briefe)
-```
+Do not fake coordinates. Places without coordinates appear in the places view, not on the map; a notice in the places view names their number and offers the resolution through Wikidata on click. HSA, 2026-10-29: 635 of 774 places with GeoNames ID on the map, 139 without coordinates, plus `Unbekannt` (576 letters) without GeoNames ID.
 
 ### Person Display
+
+`formatPersonName()` and `getPersonInitials()` in `formatters.js`:
 
 | Precision | Display | Avatar |
 |-----------|---------|--------|
 | identified | "Hugo Schuchardt" | "HS" |
-| named | "Max Mustermann" | "MM" (no badge) |
-| partial | "Rozario, [?] de" | "R?" |
-| unknown | "[Unbekannt]" | "?" |
+| named | "Max Mustermann" in `.person-named` | "MM" (no badge) |
+| partial | "Rozario, [NN] de" in `.person-partial` | "R?" |
+| unknown | name in brackets, e.g. "[[NN]]" or "[Unbekannt]", in `.person-unknown`; without name "[Unbekannt]" | "?" |
+
+`formatPlaceName()` adds a question mark icon ("Unbekannter Ort") to unknown places and the hint "(Region)" to region places.
 
 ---
 
@@ -231,7 +157,6 @@ Ohne Koordinaten: 45 Orte
 
 ```html
 <div class="filter-group" id="quality-filter-group">
-    <h4>Datenqualitaet</h4>
     <label><input type="checkbox" id="filter-precise-dates" /> Nur exakte Datierungen</label>
     <label><input type="checkbox" id="filter-known-persons" /> Nur identifizierte Personen</label>
     <label><input type="checkbox" id="filter-located-places" /> Nur lokalisierte Orte</label>
@@ -246,43 +171,39 @@ Default: Show all data including uncertain entries.
 
 ## Statistics Display
 
-Extend sidebar stats:
+The sidebar shows letters, senders and places with an icon whose tooltip names the uncertain share (`updateUncertaintyStats()` in `explore.js`). The icon is hidden when the share is zero or `meta.uncertainty` has no entry for it.
 
-```
-Briefe: 11.576
-  - davon mit ungenauem Datum: 281 (2.4%)
+- Letters: month, year, range and unknown dates together, "{n} mit ungenauem Datum ({p}%)"
+- Senders: unknown, partial and missing senders, "{n} unbekannt/unvollstaendig ({p}%)"
+- Places: region, unknown and missing places, "{n} ohne Koordinaten ({p}%)"
 
-Absender: 846
-  - davon unbekannt: 12 (1.4%)
-
-Orte: 774
-  - davon ohne Koordinaten: 45 (5.8%)
-```
+HSA, from `meta.uncertainty` of `hsa-letters.json` on 2026-10-29: 585 of 11,576 letters with imprecise or missing date (5.1 %: 115 month, 166 year, 304 unknown). The preprocessing writes no sender or place statistics, so the two other icons stay hidden for the HSA. Sidebar and overview count persons and places alike from the letters with `summarizeCorpus()`: 1,031 persons (senders and recipients by `personKey`) and 774 places (by `placeKey`, without the placeholder "Unbekannt", see `isKnownPlace()`). The quality icon of the persons card still counts senders.
 
 ---
 
 ## Export Format
 
-CSV columns: `Datum_Praezision`, `Datum_Sicherheit`, `Sender_Praezision`, `Ort_Praezision`
+`export.js` defines one column set for CSV and JSON (`LETTER_EXPORT_COLUMNS`). The uncertainty columns are `date_precision`, `date_certainty`, `sender_precision`, `recipient_precision` and `place_precision`; `date_to` carries the end of a range.
 
-JSON example:
+JSON example (one element of the exported array, case 005 of `test-uncertainty.xml`):
 ```json
 {
-  "id": "test-005",
+  "id": "005",
   "date": "1900-01-01",
-  "dateTo": "1900-12-31",
-  "precision": "range",
-  "certainty": "high",
-  "sender": {
-    "name": "Hugo Schuchardt",
-    "precision": "identified"
-  },
-  "place_sent": {
-    "name": "Graz",
-    "precision": "exact"
-  }
+  "date_to": "1900-12-31",
+  "year": 1900,
+  "date_precision": "range",
+  "date_certainty": "high",
+  "sender_name": "Hugo Schuchardt",
+  "sender_id": "261931943",
+  "sender_precision": "identified",
+  "place_name": "Graz",
+  "place_geonames": "2778067",
+  "place_precision": "exact"
 }
 ```
+
+The example omits the remaining columns (`recipient_name`, `recipient_id`, `recipient_precision`, `language`, `url`).
 
 ---
 
@@ -294,13 +215,13 @@ The file `data/test-uncertainty.xml` contains 23 cases organized in 4 sections:
 
 | Case | Description | Expected Display |
 |------|-------------|------------------|
-| 001 | Complete data (baseline) | "15. Jun 1900" |
-| 002 | Year-month only (YYYY-MM) | "Jun 1900" with .date-imprecise |
-| 003 | Year only (YYYY) | "ca. 1900" with .date-imprecise |
-| 004 | Date range with from/to | "1. Jun - 30. Jun 1900" with .date-range |
-| 005 | Date with notBefore/notAfter | "1. Jan - 31. Dez 1900" with .date-range |
-| 006 | Date with cert="low" | "15. Jun 1900" + question mark icon |
-| 007 | No date at all | "Datum unbekannt" with .date-unknown |
+| 001 | Complete data (baseline) | "15.6.1900" |
+| 002 | Year-month only (YYYY-MM) | "Jun 1900" with calendar icon, .date-imprecise |
+| 003 | Year only (YYYY) | "1900" with calendar icon, .date-imprecise |
+| 004 | Date range with from/to | "1.6.1900 – 30.6.1900" with .date-range |
+| 005 | Date with notBefore/notAfter | "1.1.1900 – 31.12.1900" with .date-range |
+| 006 | Date with cert="low" | "15.6.1900" with question mark icon, .date-uncertain |
+| 007 | No date at all | "unbekannt" with .date-unknown |
 
 ### Section B: Person Uncertainty (Cases 008-013)
 
@@ -343,7 +264,7 @@ The file `data/test-uncertainty.xml` contains 23 cases organized in 4 sections:
 | Unknown persons in network? | Merge into single node | Shows attribution gaps |
 | Regions on map? | Separate list | No fake precision |
 | Default filter state? | Show all | Researchers decide |
-| cert="low" display? | Add (?) suffix | Clear visual marker |
+| cert="low" display? | Question mark icon before the date | Clear visual marker |
 
 ---
 

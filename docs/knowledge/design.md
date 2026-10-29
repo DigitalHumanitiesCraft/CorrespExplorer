@@ -38,16 +38,17 @@ Das CSS ist modular organisiert:
 | style.css | Layout (Navbar, Sidebar, Grid) | 5 (Layout) |
 | [page].css | Seitenspezifische Styles | 6 (Seiten) |
 
-Alle HTML-Seiten importieren CSS in dieser Reihenfolge:
+Alle HTML-Seiten binden CSS in dieser Reihenfolge ein:
 ```html
-<!-- Core CSS -->
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/shadows.css">
-<!-- Page-specific CSS -->
+<link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/[page].css">
 ```
+
+Kein Stylesheet importiert `tokens.css` oder `components.css` erneut, `style.css` importiert nur die Schriften. `components.css` ist die einzige Quelle für `.btn`, `.btn-primary`, `.btn-secondary` und die Dialoggrundform (`.modal-overlay`, `.modal-content`, `.modal-header`, `.modal-body`).
 
 ---
 
@@ -84,6 +85,13 @@ Alle HTML-Seiten importieren CSS in dieser Reihenfolge:
 | Accent | `--color-accent` | `#A64B3F` | Gleich wie Primary (Logo-Farbe) |
 | Secondary | `--color-secondary` | `#2C5282` | Steel Blue - Links, Network Sender |
 | Success | `--color-success` | `#2d6a4f` | Forest Green - Erfolg-Meldungen |
+| Warning | `--color-warning` | `#7a5400` | Dunkelgold - Hinweise, Korb-Stern, unvollständiges Datum |
+| Info | `--color-info` | `#005a87` | Akademisches Blau - Hinweisleisten |
+| Error | `--color-error` | `#9b2226` | Dunkelrot - Fehler, unsichere Datierung |
+
+Warning und Info wurden am 2026-10-29 abgedunkelt (vorher `#9b6b00` mit 4.2:1 und `#0077b6` mit 4.37:1 auf `--color-bg`), damit sie als Text auf `--color-bg` und `--color-bg-light` AA erreichen.
+
+Helle Tönungen für Hover und Statusflächen werden mit `color-mix()` aus den Grundfarben gemischt (12 % Farbe auf `--color-bg`): `--color-primary-light`, `--color-success-light`, `--color-info-light`, `--color-warning-light`, `--color-error-light`. Hintergründe hinter Dialogen und dem mobilen Menü nutzen `--color-backdrop` (Schwarz 50 %), hinter der Demo-Tour `--color-overlay` (Schwarz 70 %).
 
 ### Logo-Assets
 
@@ -99,10 +107,17 @@ Alle HTML-Seiten importieren CSS in dieser Reihenfolge:
 | Map Land | `#E8E4D4` | Landmassen |
 | Map Water | `#B8D4E8` | Wasser/Ozeane |
 | Map Points | `#A64B3F` | Brieforte (Cluster) - --color-primary |
-| Network Sender | `#2c5f8d` | Absender-Knoten - --color-role-sender |
-| Network Both | `#2d6a4f` | Beides - --color-role-both (Forest Green) |
+| Netzwerk Personen | `--color-role-sender` | Knoten im Modus Zeitgenossen |
+| Netzwerk Themen | `--color-warning` | Knoten im Modus Themen |
+| Netzwerk Kanten | `--color-text-light`, hervorgehoben `--color-text` | Linien, Knotenrand `--color-bg` |
+| Erwähnungsfluss | `--color-role-sender`, `--color-primary`, `--color-role-mentioned` | Absender links, Mitte, erwähnte Personen rechts |
 | Timeline Bar | `#A64B3F` | Balken - --color-primary |
 | Timeline Inactive | `#D4D0C0` | Hintergrund-Balken |
+| Aktivitäts-Heatmap | `--color-bg-light`, `--color-scale-1` bis `--color-scale-4` | Sequentielle Skala von leer bis `--color-primary` |
+
+#### Aktivitäts-Heatmap
+
+Die Heatmap nutzt eine sequentielle Skala aus der Primärfarbe statt der früheren GitHub-Grüntöne, die außerhalb der Palette lagen. Stufe 0 (kein Brief) ist `--color-bg-light`, die Stufen 1 bis 3 mischen `--color-primary` zu 25, 50 und 75 % auf `--color-bg`, Stufe 4 ist `--color-primary`. Die Tokens liegen in `tokens.css`, die Klassen `.activity-level-0` bis `.activity-level-4` in `explore.css`.
 
 ### Unsicherheits-Indikatoren
 
@@ -111,17 +126,17 @@ Konsistente visuelle Sprache fuer Datenqualitaet ueber alle Views hinweg.
 | Typ | Farbe | Icon | CSS-Klasse | Verwendung |
 |-----|-------|------|------------|------------|
 | Exaktes Datum | -- | -- | -- | Keine Markierung noetig |
-| Nur Jahr/Monat | `#f59e0b` (Amber) | `fa-calendar-alt` | `.date-precision-icon` | Briefliste, Tooltip |
-| Zeitraum | `#2C5282` (Blau) | `fa-arrows-alt-h` | `.date-range-icon` | Briefliste: "1.1. – 31.12.1900" |
-| Unsichere Datierung | `#ef4444` (Rot) | `fa-question-circle` | `.date-uncertain-icon` | cert="low" Attribut |
-| Datum unbekannt | `#555555` (Grau) | `fa-question` | `.date-unknown` | Kein Datum vorhanden |
-| Timeline-Schraffur | Diagonale Streifen | -- | `.timeline-uncertainty-overlay` | Anteil unscharfer Daten im Jahr |
+| Nur Jahr/Monat | `--color-warning` (Dunkelgold) | `fa-calendar-alt` | `.date-precision-icon` | Briefliste, Tooltip |
+| Zeitraum | `--color-secondary` (Blau) | `fa-arrows-alt-h` | `.date-range-icon` | Briefliste: "1.1. – 31.12.1900" |
+| Unsichere Datierung | `--color-error` (Dunkelrot) | `fa-question-circle` | `.date-uncertain-icon` | cert="low" Attribut |
+| Datum unbekannt | `--color-text-light` (Grau) | `fa-question` | `.date-unknown` | Kein Datum vorhanden |
+| Timeline-Schraffur | Diagonale Streifen | -- | `.timeline-uncertainty-overlay` | Anteil unscharfer Daten im Jahr. Die Klasse steht in `explore.css`, die Zeitleiste rendert sie zurzeit nicht ([plan.md](plan.md#vorhaben)) |
 
 #### Icon-Bedeutung
 
 | Symbol | Bedeutung | Tooltip-Text |
 |--------|-----------|--------------|
-| Kalender (orange) | Datum unvollstaendig | "Nur Jahr/Monat bekannt" |
+| Kalender (dunkelgold) | Datum unvollstaendig | "Nur Jahr/Monat bekannt" |
 | Doppelpfeil (blau) | Zeitraum | "Zeitraum: Brief wurde zwischen diesen Daten verfasst" |
 | Fragezeichen (rot) | Unsichere Angabe | "Unsichere Datierung (cert=low)" |
 | Schraffierte Balken | Anteil unscharf | "[n] Briefe mit unscharfem Datum" |
@@ -130,7 +145,7 @@ Konsistente visuelle Sprache fuer Datenqualitaet ueber alle Views hinweg.
 
 - Exakte Daten erhalten keine Markierung (kein visuelles Rauschen)
 - Icons stehen immer vor dem Datumswert
-- Farben sind konsistent: Orange = unvollstaendig, Blau = Zeitraum, Rot = unsicher
+- Farben sind konsistent: Dunkelgold = unvollstaendig, Blau = Zeitraum, Rot = unsicher. Die früheren Werte Amber `#f59e0b` (1.9:1 auf `--color-bg`) und Rot `#ef4444` erreichten den für Symbole nötigen Kontrast von 3:1 nicht. Die Legende auf `about.html` nutzt dieselben Tokens über `.color-warning`, `.color-info`, `.color-error`, `.color-muted` in `base.css`
 - Tooltips erklaeren die Bedeutung bei Hover
 - Timeline-Legende zeigt Anzahl der betroffenen Briefe
 
@@ -162,7 +177,7 @@ Die Funktion `computeLanguageColors(letters)` berechnet die Farben beim Laden de
 | Latein | `la` | `#57534e` (Grau) |
 | Ungarisch | `hu` | `#be185d` (Pink) |
 | Niederlaendisch | `nl` | `#d97706` (Amber) |
-| Ohne Angabe | `None` | `#78716c` (Grau) |
+| Ohne Angabe | `_none` (`NO_LANGUAGE`) | `#78716c` (Grau) |
 
 #### Farbpalette (Pastell)
 
@@ -202,6 +217,10 @@ Kartenmarker werden nach dominanter Briefsprache des Ortes eingefaerbt. Toggle-B
 | Body Text | Sans | 1rem | 400 | `line-height: 1.6` |
 | Data Values | Mono | 0.875rem | 500 | Zahlen, IDs, Daten |
 | Labels/Captions | Sans | 0.75rem | 600 | `text-transform: uppercase` |
+
+Keine Schrift unterschreitet `--font-size-xs`, auch nicht in Zählern, Badges und Icons kleiner Kreise.
+
+Überschriften folgen der Dokumentgliederung: `h1` (visuell versteckt) für die Seite, `h2` für den Kopf jeder Ansicht des Explorers, darunter `h3` und `h4` in den Detailbereichen. Größe und Abstand setzen die Regeln der jeweiligen Kopfbereiche, nicht die Ebene.
 | Buttons | Sans | 0.875rem | 600 | `letter-spacing: 0.02em` |
 
 ---
@@ -231,6 +250,7 @@ Kartenmarker werden nach dominanter Briefsprache des Ortes eingefaerbt. Toggle-B
     --radius-md: 8px;      /* Cards, Buttons */
     --radius-lg: 16px;     /* Modals, grosse Container */
     --radius-xl: 24px;     /* Sehr grosse Elemente */
+    --radius-full: 9999px; /* Pills, Chips, runde Badges */
 }
 ```
 
@@ -277,7 +297,7 @@ Secondary Button:
 ```css
 .btn-secondary {
     background: transparent;
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     border: 2px solid var(--color-primary);
     border-radius: var(--radius-md);
 }
@@ -299,17 +319,20 @@ input, select {
     font-family: var(--font-mono);
 }
 
-input:focus {
+input:focus-visible {
     border-color: var(--color-primary);
-    outline: none;
+    outline: 3px solid var(--color-primary);
+    outline-offset: 1px;
 }
 ```
+
+Der Text des Secondary Buttons steht in `--color-primary-dark`, weil `--color-primary` auf `--color-bg-light` (Steuerleisten, Kartenflächen) nur 4.45:1 erreicht. Eingaben behalten den sichtbaren Fokusrahmen, kein Seiten-CSS setzt `outline: none` auf `:focus`.
 
 ### 5.4 Modals
 
 ```css
-.modal-backdrop {
-    background: rgba(0, 0, 0, 0.5);
+.modal-overlay {
+    background: var(--color-backdrop);
 }
 
 .modal-content {
@@ -320,9 +343,13 @@ input:focus {
 }
 ```
 
-Dicke Border (3px) statt box-shadow fuer Tiefe.
+Dicke Border (3px) für die Kontur, dazu der Schatten aus `shadows.css`, weil der Dialog über der Seite schwebt.
 
-Escape schließt den obersten offenen Dialog über seinen Schließen-Knopf. Beim Öffnen springt der Fokus auf diesen Knopf, beim Schließen zurück auf das auslösende Element. Die Dialoge tragen `role="dialog"` und `aria-modal`. Umgesetzt für alle Seiten mit `enableModalKeyboard()` in `utils.js`.
+Escape schließt den obersten offenen Dialog über seinen Schließen-Knopf. Beim Öffnen springt der Fokus auf diesen Knopf, beim Schließen zurück auf das auslösende Element. Die Dialoge tragen `role="dialog"` und `aria-modal`. Umgesetzt für alle Seiten mit `enableModalKeyboard()` in `utils.js`. Die Demo-Tour verhält sich ebenso: Der Fokus liegt auf dem Hauptknopf des aktiven Schritts, Tab bleibt im Schritt, Escape beendet die Tour. Die mobile Sidebar schließt mit Escape und gibt den Fokus an ihren Schalter zurück.
+
+Toasts liegen über den Dialogen, damit eine Meldung aus einem Dialog sichtbar und schließbar bleibt. Die Demo-Tour hebt ihr Zielelement mit Rahmen und abdunkelndem Schatten hervor, das Element bleibt dabei unter dem Tour-Dialog und nimmt keine Klicks an, damit „Weiter“ immer erreichbar ist. Ein Ziel außerhalb des Bildschirms wird nicht hervorgehoben.
+
+Karten-Popups lassen rechts im Kopf Platz für den Schließen-Knopf von MapLibre (`padding-right` an `.popup-header`), damit der Stern zum Korb klickbar bleibt.
 
 ---
 
@@ -360,8 +387,10 @@ Escape schließt den obersten offenen Dialog über seinen Schließen-Knopf. Beim
 
 ## 7. Responsive Breakpoints
 
+Media Queries können keine Custom Properties auswerten, sie wiederholen daher die Werte. Abfragen für Telefone lauten `max-width: 767px`, damit genau 768px das Tablet-Layout erhält, die Tablet-Abfrage lautet `max-width: 1024px`, der Dokumenten-Viewer stapelt bis `max-width: 1023px`. Eine Ausnahme ist `max-width: 1600px` in `components.css` für das zweispaltige Entitäten-Layout, das sich nach der verbleibenden Inhaltsbreite neben der Sidebar richtet.
+
 ```css
-/* Mobile first - tokens.css */
+/* Werte in tokens.css */
 :root {
     --breakpoint-sm: 480px;   /* Small phones */
     --breakpoint-md: 768px;   /* Tablets */
@@ -376,10 +405,11 @@ Escape schließt den obersten offenen Dialog über seinen Schließen-Knopf. Beim
 
 | Breakpoint | Sidebar | Main Content |
 |------------|---------|--------------|
-| < 768px | Außerhalb des Bildschirms, ein Filter-Schalter in der Navigation öffnet sie (`#sidebar-toggle`, `aria-expanded`) | volle Breite, Ansichtswechsel als scrollbare Icon-Leiste, Datensatztitel ausgeblendet |
+| < 768px | Außerhalb des Bildschirms, höchstens 85 % der Bildschirmbreite, ein Filter-Schalter in der Navigation öffnet sie (`#sidebar-toggle`, `aria-expanded`) | volle Breite, Ansichtswechsel als scrollbare Icon-Leiste, Datensatztitel ausgeblendet |
+| 768px bis 1199px | wie unten | Navigationslinks nur mit Icon (Text für Screenreader erhalten), Datensatztitel höchstens 12rem mit Auslassungspunkten |
 | >= 768px | 380px (var(--sidebar-width)), 240px bis 1024px | Flex Fill |
 
-Breite Darstellungen (Timeline, Aktivitäts-Heatmap, Erwähnungsfluss) scrollen in ihrem eigenen Container, die Seite selbst bleibt auf 390px ohne horizontalen Überlauf (geprüft 2026-10-29 mit Playwright).
+Ein langer Datensatztitel in der Navigation wird mit Auslassungspunkten gekürzt (höchstens 20rem, vollständig im Tooltip) und gibt zuerst Platz ab, damit der Ansichtswechsel bedienbar bleibt. Der Wissenskorb stapelt Liste und Auswertung bis 1024px, die Liste nimmt dann die volle Breite. Breite Darstellungen (Timeline, Aktivitäts-Heatmap, Erwähnungsfluss) scrollen in ihrem eigenen Container, die Seite selbst bleibt auf 390px ohne horizontalen Überlauf (geprüft 2026-10-29 mit Playwright).
 
 ---
 
@@ -415,9 +445,15 @@ Erlaubt:
 
 | Kombination | Ratio | Status |
 |-------------|-------|--------|
-| Text auf BG Main | 11.5:1 | Pass (AAA) |
-| Primary auf White | 7.2:1 | Pass (AAA) |
-| Accent auf White | 4.8:1 | Pass (AA) |
+| Text auf BG Main | 14.3:1 | Pass (AAA) |
+| Primary auf BG Main | 5.1:1 | Pass (AA) |
+| Primary auf BG Card | 4.45:1 | Fail, dort `--color-primary-dark` (5.86:1), etwa Links in `.info-box`, `.link-list` und `.feature-item` der About-Seite |
+| Primary auf Warning-Light | 4.3:1 | Fail, dort `--color-primary-dark` (5.65:1), etwa Hinweisfeld und Tooltip-Auslöser der Startseite |
+| Secondary auf BG Main | 7.2:1 | Pass (AAA) |
+| Warning auf BG Main / BG Card | 6.1:1 / 5.3:1 | Pass (AA) |
+| Info auf BG Main / BG Card | 6.7:1 / 5.9:1 | Pass (AA) |
+
+Werte berechnet nach der WCAG-Formel für relative Leuchtdichte am 2026-10-29. Links im Fließtext des Dokumenten-Viewers sind unterstrichen, weil `--color-secondary` sich vom Fließtext nur mit 2:1 abhebt.
 
 ### Fokus-States (WCAG 2.1 AA)
 
@@ -437,17 +473,17 @@ button:focus-visible,
     outline-offset: 1px;
 }
 
-/* Special focus for inputs (inside border) */
+/* Inputs keep the outline and additionally mark their border */
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-    outline: none;
+    outline: 3px solid var(--color-primary);
+    outline-offset: 1px;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(166, 75, 63, 0.1);
 }
 ```
 
-Implementiert in base.css.
+Implementiert in base.css. Der vorherige Fokus der Eingaben (Schatten mit 10 % Deckkraft) erreichte nur 1.15:1 und wurde am 2026-10-29 ersetzt. Ergänzend: versteckte Checkboxen zeichnen den Fokus auf ihrem sichtbaren Kästchen (`.config-checkbox input:focus-visible ~ .checkmark`), die Kartenfläche zeigt ihn innen (`.maplibregl-canvas:focus-visible`), SVG-Knoten in Netzwerk und Erwähnungsfluss als Kontur (`stroke`), die Tooltips der Ansichtsknöpfe erscheinen auch bei Tastaturfokus. `base.css` stellt `.visually-hidden` für Statusmeldungen und unsichtbare Überschriften und `.skip-link` für den Sprunglink bereit. Interaktive Elemente sind mindestens 24 x 24px groß und schrumpfen in Flex-Zeilen nicht (`flex-shrink: 0`). Ausnahme sind bisher die Zellen der Aktivitäts-Heatmap mit 12 x 12px ([plan.md](plan.md#vorhaben)).
 
 ---
 
@@ -457,7 +493,7 @@ Implementiert in base.css.
 
 | Element | Regel | Begruendung |
 |---------|-------|-------------|
-| Box-Shadow | Nur fuer floating/overlay elements (Modals, Dropdowns, Tooltips, Map-Popups) | Shadows zeigen an, dass ein Element ueber der Seite liegt. Auf regulaeren Elementen erzeugen sie visuelles Rauschen ohne Ebeneninformation |
+| Box-Shadow | Nur fuer schwebende Elemente (Dialoge, Demo-Tour, Toasts, Dropdowns, Tooltips, Map-Popups und Kartensteuerung, mobile Sidebar), gesetzt ausschließlich in `shadows.css` mit `--shadow-sm`, `--shadow-md`, `--shadow-lg` | Shadows zeigen an, dass ein Element ueber der Seite liegt. Auf regulaeren Elementen erzeugen sie visuelles Rauschen ohne Ebeneninformation. Andere Stylesheets setzen höchstens `box-shadow: none` |
 | Gradient-Fuellungen | Nur funktional (z.B. gemischte Rollen in Legende), nicht dekorativ | Gradients als visuelle Sprache, nicht als Dekoration |
 
 ### Verboten
@@ -511,4 +547,4 @@ Ein gestarteter Forschungspfad erscheint als Leiste unter der Navigation mit Fra
 
 ### Forschungspfade
 
-Jeder Schritt eines Pfads zeigt seine Aktion unter der Bezeichnung statt im Tooltip, weil Tooltips Hover verlangen und wesentliche Information verstecken. Die Pfadnummern stehen auf `var(--color-accent)`, nachdem weiße Ziffern auf hellem Grund unsichtbar waren. Texte über Lücken in Partnerdaten folgen [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten).
+Jeder Schritt eines Pfads zeigt seine Aktion unter der Bezeichnung statt im Tooltip, weil Tooltips Hover verlangen und wesentliche Information verstecken. Die Pfadnummern stehen auf `var(--color-accent)`, nachdem weiße Ziffern auf hellem Grund unsichtbar waren. Texte über Lücken in Partnerdaten folgen [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Fragen, die der Datensatz nicht beantworten kann, stehen deshalb nicht als gesperrte Karten zwischen den Pfaden, sondern im aufklappbaren Abschnitt „Anreicherungspotential“ (`details.questions-enrichment`) mit der fehlenden Angabe und dem CMIF-Element, das sie ergänzen würde.

@@ -7,8 +7,7 @@ import { escapeHtml, showToast } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
 
 // Module state
-let timelineRendered = false;
-let timelineStackMode = 'language'; // 'language' or 'correspondent'
+let undatedBinBound = false;  // the undated bin is static markup, its listeners are bound once
 
 // External dependencies - injected via init
 let getFilteredLetters = null;
@@ -28,15 +27,6 @@ export function initTimelineView(deps) {
     applyFilters = deps.applyFilters;
     switchView = deps.switchView;
     showUndatedLetters = deps.showUndatedLetters;
-
-    // Setup stack mode toggle
-    const stackToggle = elements.getById('timeline-stack-toggle');
-    if (stackToggle) {
-        stackToggle.addEventListener('change', (e) => {
-            timelineStackMode = e.target.value;
-            renderTimeline();
-        });
-    }
 }
 
 /**
@@ -172,8 +162,10 @@ export function renderTimeline() {
             });
         }
 
+        // Each year is a button for keyboard users; a roving tab stop keeps it one Tab for the chart
+        const barLabel = `${y}: ${data.total} Briefe${hasImprecise ? `, ${data.imprecise} mit unscharfem Datum` : ''}`;
         bars.push(`
-            <div class="timeline-bar-wrapper ${hasImprecise ? 'has-imprecise' : ''}" data-year="${y}" data-year-end="${y}" data-imprecise="${data.imprecise}">
+            <div class="timeline-bar-wrapper ${hasImprecise ? 'has-imprecise' : ''}" role="button" tabindex="-1" aria-label="${barLabel}" data-year="${y}" data-year-end="${y}" data-imprecise="${data.imprecise}">
                 <div class="timeline-stacked-bar" style="height: ${totalHeight}%">
                     ${segments}
                 </div>
@@ -184,6 +176,8 @@ export function renderTimeline() {
     }
 
     container.innerHTML = bars.join('');
+    container.setAttribute('role', 'group');
+    container.setAttribute('aria-label', 'Briefe pro Jahr. Pfeiltasten wechseln das Jahr, Enter filtert auf das Jahr, Umschalt und Enter legt seine Briefe in den Korb');
 
     // Add Y-axis gridlines
     renderTimelineGridlines(container, maxCount);
@@ -223,8 +217,6 @@ export function renderTimeline() {
 
     // Add click handlers
     setupTimelineClickHandlers(container);
-
-    timelineRendered = true;
 }
 
 /**
@@ -238,7 +230,8 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
         undatedBin.style.cursor = 'pointer';
         undatedBin.setAttribute('role', 'button');
         undatedBin.tabIndex = 0;
-        undatedBin.setAttribute('aria-label', `${undatedLetters.length} Briefe ohne Datum anzeigen`);
+        // The accessible name starts with the visible text (count, then "k.A."), WCAG 2.5.3
+        undatedBin.setAttribute('aria-label', `${undatedLetters.length} k.A., Briefe ohne Datum anzeigen`);
         const undatedHeight = Math.max(4, (undatedLetters.length / maxCount) * 100);
         const binBar = undatedBin.querySelector('.undated-bin-bar');
         const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
@@ -270,11 +263,13 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
         if (binCount) binCount.textContent = undatedLetters.length;
         if (binLabel) binLabel.textContent = 'k.A.';
 
-        // Tooltip positioning
-        undatedBin.addEventListener('mousemove', (e) => {
-            binTooltip.style.left = `${e.clientX}px`;
-            binTooltip.style.top = `${e.clientY - binTooltip.offsetHeight - 10}px`;
-        });
+        if (!undatedBinBound) {
+            undatedBinBound = true;
+            undatedBin.addEventListener('mousemove', (e) => {
+                binTooltip.style.left = `${e.clientX}px`;
+                binTooltip.style.top = `${e.clientY - binTooltip.offsetHeight - 10}px`;
+            });
+        }
 
         // A year range cannot express "no date": the slider clamps values below its minimum
         undatedBin.onclick = () => showUndatedLetters();
@@ -367,30 +362,32 @@ function setupTimelineClickHandlers(container) {
     });
 
     // Click on bar wrapper (not segment) filters by year only
-    container.querySelectorAll('.timeline-bar-wrapper').forEach(wrapper => {
+    const wrappers = [...container.querySelectorAll('.timeline-bar-wrapper')];
+    const activateYear = (wrapper, toBasket) => {
+        const year = parseInt(wrapper.dataset.year, 10);
+
+        // Shift: add all letters of this year to the basket
+        if (toBasket) {
+            const yearLetters = filteredLetters.filter(l => l.year === year);
+            showToast(addLettersToBasket(yearLetters.map(l => l.id)));
+            return;
+        }
+
+        const slider = elements.yearRangeSlider;
+        if (slider && slider.noUiSlider) {
+            slider.noUiSlider.set([year, year]);
+        }
+
+        applyFilters();
+        switchView('letters');
+    };
+
+    wrappers.forEach(wrapper => {
         wrapper.addEventListener('click', (e) => {
             if (e.target.classList.contains('timeline-stack-segment')) return;
-
-            const year = parseInt(wrapper.dataset.year);
-
-            // Shift+Click: Add all letters of this year to basket
-            if (e.shiftKey) {
-                const yearLetters = filteredLetters.filter(l => l.year === year);
-                showToast(addLettersToBasket(yearLetters.map(l => l.id)));
-                return;
-            }
-
-            // Normal click: Update year slider
-            const slider = elements.yearRangeSlider;
-            if (slider && slider.noUiSlider) {
-                slider.noUiSlider.set([year, year]);
-            }
-
-            applyFilters();
-            switchView('letters');
+            activateYear(wrapper, e.shiftKey);
         });
 
-        // Tooltip positioning
         const tooltip = wrapper.querySelector('.timeline-bar-tooltip');
         if (tooltip) {
             wrapper.addEventListener('mousemove', (e) => {
@@ -399,6 +396,29 @@ function setupTimelineClickHandlers(container) {
             });
         }
     });
+
+    // Roving tab stop: the first year with letters, arrows move between years
+    const start = wrappers.find(w => w.querySelector('.timeline-stack-segment')) || wrappers[0];
+    if (start) start.tabIndex = 0;
+    container.onkeydown = (e) => {
+        const wrapper = e.target.closest?.('.timeline-bar-wrapper');
+        if (!wrapper) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+            // Handled here instead of the global role="button" handler, which drops the Shift key
+            e.preventDefault();
+            e.stopPropagation();
+            activateYear(wrapper, e.shiftKey);
+            return;
+        }
+        const index = wrappers.indexOf(wrapper);
+        const targets = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: wrappers.length - 1 };
+        if (!(e.key in targets)) return;
+        e.preventDefault();
+        const next = wrappers[Math.max(0, Math.min(wrappers.length - 1, targets[e.key]))];
+        wrapper.tabIndex = -1;
+        next.tabIndex = 0;
+        next.focus();
+    };
 }
 
 /**

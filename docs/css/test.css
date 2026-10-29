@@ -57,7 +57,7 @@
 }
 
 .test-summary.pass {
-    border-left: 4px solid #16a34a;
+    border-left: 4px solid var(--color-success);
 }
 
 .test-summary.fail {

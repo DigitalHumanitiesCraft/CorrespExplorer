@@ -17,14 +17,14 @@
     <link rel="stylesheet" href="css/test.css">
 </head>
 <body>
-    <nav class="nav-top">
+    <nav class="nav-top" aria-label="Hauptnavigation">
         <a href="index.html">Home</a>
         <a href="about.html">About</a>
         <a href="vault.html">Vault</a>
         <a href="test.html">Tests</a>
     </nav>
 
-    <div class="test-container">
+    <main class="test-container">
         <h1>Test Suite</h1>
         <p>Automated tests for CMIF data processing</p>
 
@@ -33,10 +33,10 @@
             <button class="test-btn" id="clear-output">Clear</button>
         </div>
 
-        <div id="test-summary" class="test-summary"></div>
+        <div id="test-summary" class="test-summary" role="status"></div>
 
-        <div class="test-output" id="test-output">Click "Run Tests" to start...</div>
-    </div>
+        <div class="test-output" id="test-output" tabindex="0" role="region" aria-label="Testausgabe">Click "Run Tests" to start...</div>
+    </main>
 
     <script type="module">
         import { runAllTests } from './js/tests/run-all-tests.js';
@@ -65,8 +65,7 @@
         document.getElementById('run-tests').addEventListener('click', async () => {
             outputBuffer = '';
             outputEl.textContent = 'Running tests...\n';
-            summaryEl.style.display = 'none';
-            summaryEl.classList.remove('pass', 'fail');
+            summaryEl.classList.remove('visible', 'pass', 'fail');
 
             try {
                 const results = await runAllTests();
@@ -84,12 +83,9 @@
             summaryEl.classList.remove('visible');
         });
 
-        // Auto-run if ?test=true
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('test') === 'true') {
-            window.addEventListener('DOMContentLoaded', () => {
-                setTimeout(() => document.getElementById('run-tests').click(), 500);
-            });
+        // ?test=true starts the same single run as the button; run-all-tests.js no longer auto-runs
+        if (new URLSearchParams(window.location.search).get('test') === 'true') {
+            document.getElementById('run-tests').click();
         }
     </script>
 </body>

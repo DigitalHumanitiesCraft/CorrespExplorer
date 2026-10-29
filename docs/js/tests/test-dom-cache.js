@@ -179,8 +179,11 @@ export const DOMCacheTests = {
                 elements.clearCache();
                 initDOMCache();
 
-                // Sollte ohne Fehler durchlaufen
-                assert(true, 'initDOMCache sollte ohne Fehler durchlaufen');
+                // A preloaded element stays cached after it leaves the DOM
+                sidebar.remove();
+                navbar.remove();
+                assert(elements.sidebar === sidebar, 'initDOMCache sollte die Sidebar vorab im Cache halten');
+                elements.clearCache();
             }
         },
 

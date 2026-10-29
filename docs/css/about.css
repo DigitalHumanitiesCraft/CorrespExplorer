@@ -14,20 +14,6 @@
     border-bottom: 1px solid var(--color-border);
 }
 
-.back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    color: var(--color-primary);
-    text-decoration: none;
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-md);
-}
-
-.back-link:hover {
-    text-decoration: underline;
-}
-
 .about-header h1 {
     margin: 0;
     font-size: var(--font-size-2xl);
@@ -56,25 +42,32 @@
     margin: 0 0 var(--space-md) 0;
 }
 
-.about-section a {
+.about-section a:not(.btn) {
     color: var(--color-primary);
     text-decoration: none;
 }
 
-.about-section a:hover {
+.about-section a:not(.btn):hover {
     text-decoration: underline;
+}
+
+/* On --color-bg-light the primary colour reaches only 4.45:1; the dark variant meets AA (tokens.css) */
+.about-section .info-box a:not(.btn),
+.about-section .link-list a:not(.btn),
+.about-section .feature-item a:not(.btn) {
+    color: var(--color-primary-dark);
 }
 
 /* Info Box */
 .info-box {
-    background: var(--color-surface);
+    background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--space-lg);
     margin: var(--space-md) 0;
 }
 
-.info-box h4 {
+.info-box h3 {
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-base);
     color: var(--color-text);
@@ -103,7 +96,7 @@
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-sm) var(--space-md);
-    background: var(--color-surface);
+    background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
@@ -123,7 +116,7 @@
 }
 
 .feature-item {
-    background: var(--color-surface);
+    background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--space-lg);
@@ -136,7 +129,7 @@
     margin-bottom: var(--space-sm);
 }
 
-.feature-item h4 {
+.feature-item h3 {
     margin: 0 0 var(--space-xs) 0;
     font-size: var(--font-size-base);
     color: var(--color-text);
@@ -213,9 +206,19 @@
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 767px) {
     .about-container {
         padding: var(--space-lg);
+    }
+
+    /* Let the legend table reflow at 320px instead of scrolling the page */
+    .legend-table td:nth-child(2) {
+        white-space: normal;
+    }
+
+    .legend-table td {
+        padding: var(--space-xs) var(--space-sm);
+        overflow-wrap: anywhere;
     }
 
     .about-header h1 {
@@ -225,4 +228,9 @@
     .feature-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.about-section .btn {
+    display: inline-block;
+    margin-top: var(--space-sm);
 }

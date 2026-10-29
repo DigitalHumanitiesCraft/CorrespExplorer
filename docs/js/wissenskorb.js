@@ -1,5 +1,5 @@
 // Wissenskorb Page Module
-// Dedicated page for analyzing collected persons from the basket
+// Dedicated page for analysing the letters, persons and places collected in the basket
 
 import {
     initBasket,
@@ -9,17 +9,26 @@ import {
     clearBasket,
     onBasketChange,
     generateBasketUrl,
-    loadBasketFromUrl
+    loadBasketFromUrl,
+    getSharedBasketDataset
 } from './basket.js';
 
-import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath, csvCell } from './utils.js';
+import { BASKET_LIMITS } from './constants.js';
+import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath } from './utils.js';
+import { lettersToCsv, letterExportRow } from './export.js';
+import { readTokens } from './views/view-support.js';
 
 // State
 let dataIndices = {};
 let allLetters = [];
 let currentViz = 'timeline';
-let currentItemType = 'persons';
 let map = null;
+let mapMarkers = [];
+let networkSimulation = null;
+
+// The details list renders this many letters at once; the rest is named as a count
+const DETAILS_LIMIT = 100;
+const PREPROCESSED_PREFIX = 'preprocessed:';
 
 // DOM Elements
 const elements = {};
@@ -31,12 +40,24 @@ async function init() {
     // Cache DOM elements
     cacheElements();
 
-    // Basket of the dataset the explorer handed over
-    initBasket(sessionStorage.getItem('correspDatasetKey'));
+    // Basket of the dataset the explorer handed over. A shared link names its own dataset; a
+    // preprocessed data/*.json dataset can be loaded here directly, so the link also works in a
+    // fresh browser. For any other dataset loadBasketFromUrl explains which dataset to load.
+    let dataset = sessionStorage.getItem('correspDatasetKey');
+    let sharedJsonPath = null;
+    const sharedDataset = getSharedBasketDataset();
+    if (sharedDataset && sharedDataset !== dataset && sharedDataset.startsWith(PREPROCESSED_PREFIX)) {
+        const path = sharedDataset.slice(PREPROCESSED_PREFIX.length);
+        if (isAllowedJsonPath(path)) {
+            dataset = sharedDataset;
+            sharedJsonPath = path;
+        }
+    }
+    initBasket(dataset);
     loadBasketFromUrl();
 
-    // Load data from sessionStorage
-    await loadData();
+    const jsonPath = await loadData(sharedJsonPath);
+    linkBackToExplorer(jsonPath);
 
     // Setup event listeners
     setupEventListeners();
@@ -67,8 +88,8 @@ function cacheElements() {
     elements.lettersListCount = document.getElementById('letters-list-count');
     elements.placesListCount = document.getElementById('places-list-count');
 
-    // Nav count (legacy)
-    elements.personCount = document.getElementById('person-count');
+    // Nav count of all entries
+    elements.totalCount = document.getElementById('basket-total-count');
 
     // Stats
     elements.statLetters = document.getElementById('stat-letters');
@@ -81,17 +102,23 @@ function cacheElements() {
     elements.timelineLegend = document.getElementById('timeline-legend');
     elements.networkChart = document.getElementById('network-chart');
     elements.basketMap = document.getElementById('basket-map');
+    elements.basketMapEmpty = document.getElementById('basket-map-empty');
     elements.detailsList = document.getElementById('details-list');
     elements.detailsSearch = document.getElementById('details-search');
     elements.detailsSort = document.getElementById('details-sort');
 }
 
-async function loadData() {
+// Returns the data/*.json path the dataset came from, or null for an upload
+async function loadData(sharedJsonPath = null) {
+    let jsonPath = null;
     try {
-        let storedData = sessionStorage.getItem('correspData');
+        let storedData = sharedJsonPath ? null : sessionStorage.getItem('correspData');
         // Datasets above the sessionStorage quota are handed over by their data/*.json path
-        const source = JSON.parse(sessionStorage.getItem('correspDataSource') || 'null');
+        const source = sharedJsonPath
+            ? { json: sharedJsonPath }
+            : JSON.parse(sessionStorage.getItem('correspDataSource') || 'null');
         if (!storedData && isAllowedJsonPath(source?.json)) {
+            jsonPath = source.json;
             const response = await fetch(source.json);
             if (response.ok) storedData = await response.text();
         }
@@ -105,6 +132,15 @@ async function loadData() {
     } catch (e) {
         console.error('Wissenskorb: Fehler beim Laden der Daten', e);
     }
+    return jsonPath;
+}
+
+// A plain explore.html would open the last upload of this tab instead of a ?json= dataset, so the
+// links back name the dataset path. Uploads live in sessionStorage and need no parameter.
+function linkBackToExplorer(jsonPath) {
+    if (!isAllowedJsonPath(jsonPath)) return;
+    const href = `explore.html?json=${encodeURIComponent(jsonPath)}`;
+    document.querySelectorAll('a.explorer-link').forEach(link => { link.href = href; });
 }
 
 function setupEventListeners() {
@@ -129,16 +165,17 @@ function setupEventListeners() {
     });
 
     // Details search and sort
-    elements.detailsSearch?.addEventListener('input', debounce(renderDetails, 300));
-    elements.detailsSort?.addEventListener('change', renderDetails);
+    // Wrapped, because renderDetails takes the analysis as its first parameter, not the event
+    elements.detailsSearch?.addEventListener('input', debounce(() => renderDetails(), 300));
+    elements.detailsSort?.addEventListener('change', () => renderDetails());
 }
 
 function switchItemType(type) {
-    currentItemType = type;
-
-    // Update tab active state
+    // aria-pressed exposes the selected list to assistive technology, the class styles it
     document.querySelectorAll('.item-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.type === type);
+        const active = tab.dataset.type === type;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-pressed', String(active));
     });
 
     // Update list container visibility
@@ -147,8 +184,16 @@ function switchItemType(type) {
     });
 }
 
-function handleBasketChange(counts) {
+function handleBasketChange() {
     render();
+}
+
+// One analysed letter set, shared by stats, visualisations, details and export
+function currentAnalysis() {
+    const persons = resolvePersons(getBasketItems('persons'));
+    const letters = resolveLetters(getBasketItems('letters'));
+    const places = resolvePlaces(getBasketItems('places'));
+    return { ...buildAnalysis(persons, letters, places), basketLetters: letters, places };
 }
 
 function render() {
@@ -160,42 +205,29 @@ function render() {
     if (elements.tabPlacesCount) elements.tabPlacesCount.textContent = counts.places;
 
     // Update list counts
-    if (elements.personsListCount) elements.personsListCount.textContent = `${counts.persons} / 50`;
-    if (elements.lettersListCount) elements.lettersListCount.textContent = `${counts.letters} / 100`;
-    if (elements.placesListCount) elements.placesListCount.textContent = `${counts.places} / 50`;
+    if (elements.personsListCount) elements.personsListCount.textContent = `${counts.persons} / ${BASKET_LIMITS.maxPersons}`;
+    if (elements.lettersListCount) elements.lettersListCount.textContent = `${counts.letters} / ${BASKET_LIMITS.maxLetters}`;
+    if (elements.placesListCount) elements.placesListCount.textContent = `${counts.places} / ${BASKET_LIMITS.maxPlaces}`;
 
-    // Legacy nav count
-    if (elements.personCount) elements.personCount.textContent = counts.persons;
+    if (elements.totalCount) elements.totalCount.textContent = counts.total;
 
-    // Show empty state or content
+    // The hidden class is the only visibility switch (display:none !important in base.css)
+    elements.emptyState.classList.toggle('hidden', counts.total > 0);
+    elements.content.classList.toggle('hidden', counts.total === 0);
     if (counts.total === 0) {
-        elements.emptyState.style.display = 'flex';
-        elements.content.style.display = 'none';
+        stopNetwork();
         return;
     }
 
-    elements.emptyState.style.display = 'none';
-    elements.content.style.display = 'flex';
-
-    // Resolve all item types
-    const personIds = getBasketItems('persons');
-    const letterIds = getBasketItems('letters');
-    const placeIds = getBasketItems('places');
-
-    const persons = resolvePersons(personIds);
-    const letters = resolveLetters(letterIds);
-    const places = resolvePlaces(placeIds);
-
-    // One analysed letter set per render, shared by stats and all visualisations
-    const analysis = buildAnalysis(persons, letters, places);
+    const analysis = currentAnalysis();
 
     // Update stats
     updateStats(analysis);
 
     // Render all lists
-    renderPersonList(persons);
-    renderLetterList(letters);
-    renderPlaceList(places);
+    renderPersonList(analysis.persons);
+    renderLetterList(analysis.basketLetters);
+    renderPlaceList(analysis.places);
 
     // Render current visualization
     renderCurrentViz(analysis);
@@ -342,9 +374,12 @@ function updateStats(analysis) {
     const { letters, network } = analysis;
     elements.statLetters.textContent = letters.length;
 
+    // Without any dated letter the span is unknown, not zero years
     const years = letters.map(l => l.year).filter(y => y);
-    elements.statYears.textContent = years.length > 0 ?
-        `${Math.min(...years)}-${Math.max(...years)}` : '0';
+    const minYear = years.length > 0 ? Math.min(...years) : null;
+    const maxYear = years.length > 0 ? Math.max(...years) : null;
+    elements.statYears.textContent = minYear === null ? 'unbekannt'
+        : (minYear === maxYear ? String(minYear) : `${minYear}-${maxYear}`);
 
     const placeNames = new Set(letters.map(l => l.place_sent?.name).filter(n => n));
     elements.statPlaces.textContent = placeNames.size;
@@ -366,8 +401,8 @@ function renderPersonList(persons) {
                 <div class="item-row-name">${escapeHtml(person.name)}</div>
                 <div class="item-row-meta">${person.letter_count} Briefe</div>
             </div>
-            <button class="item-remove-btn" data-type="persons" data-id="${escapeHtml(person.id)}" title="Entfernen">
-                <i class="fas fa-times"></i>
+            <button type="button" class="item-remove-btn" data-type="persons" data-id="${escapeHtml(person.id)}" title="Entfernen" aria-label="${escapeHtml(person.name)} aus dem Korb entfernen">
+                <i class="fas fa-times" aria-hidden="true"></i>
             </button>
         </div>
     `).join('');
@@ -388,7 +423,7 @@ function renderLetterList(letters) {
             <div class="item-row-content">
                 <div class="item-row-name">
                     ${escapeHtml(letter.sender?.name || 'Unbekannt')}
-                    <i class="fas fa-arrow-right item-row-arrow"></i>
+                    <i class="fas fa-arrow-right item-row-arrow" role="img" aria-label="an"></i>
                     ${escapeHtml(letter.recipient?.name || 'Unbekannt')}
                 </div>
                 <div class="item-row-meta">
@@ -396,8 +431,8 @@ function renderLetterList(letters) {
                     ${letter.place_sent?.name ? ` - ${escapeHtml(letter.place_sent.name)}` : ''}
                 </div>
             </div>
-            <button class="item-remove-btn" data-type="letters" data-id="${escapeHtml(letter.id)}" title="Entfernen">
-                <i class="fas fa-times"></i>
+            <button type="button" class="item-remove-btn" data-type="letters" data-id="${escapeHtml(letter.id)}" title="Entfernen" aria-label="Brief ${escapeHtml(letter.sender?.name || 'Unbekannt')} an ${escapeHtml(letter.recipient?.name || 'Unbekannt')}, ${escapeHtml(letter.date || 'ohne Datum')}, aus dem Korb entfernen">
+                <i class="fas fa-times" aria-hidden="true"></i>
             </button>
         </div>
     `).join('');
@@ -417,13 +452,13 @@ function renderPlaceList(places) {
         <div class="item-row" data-id="${escapeHtml(place.id)}">
             <div class="item-row-content">
                 <div class="item-row-name">
-                    <i class="fas fa-map-marker-alt item-row-icon"></i>
+                    <i class="fas fa-map-marker-alt item-row-icon" aria-hidden="true"></i>
                     ${escapeHtml(place.name)}
                 </div>
                 <div class="item-row-meta">${place.letterCount} Briefe</div>
             </div>
-            <button class="item-remove-btn" data-type="places" data-id="${escapeHtml(place.id)}" title="Entfernen">
-                <i class="fas fa-times"></i>
+            <button type="button" class="item-remove-btn" data-type="places" data-id="${escapeHtml(place.id)}" title="Entfernen" aria-label="${escapeHtml(place.name)} aus dem Korb entfernen">
+                <i class="fas fa-times" aria-hidden="true"></i>
             </button>
         </div>
     `).join('');
@@ -443,9 +478,10 @@ function setupRemoveButtons(container) {
 function switchViz(vizId) {
     currentViz = vizId;
 
-    // Update tabs
     document.querySelectorAll('.viz-tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.viz === vizId);
+        const active = tab.dataset.viz === vizId;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-pressed', String(active));
     });
 
     // Update panels
@@ -453,11 +489,8 @@ function switchViz(vizId) {
         panel.classList.toggle('active', panel.id === `viz-${vizId}`);
     });
 
-    // Render the visualization
-    const persons = resolvePersons(getBasketItems('persons'));
-    const letters = resolveLetters(getBasketItems('letters'));
-    const places = resolvePlaces(getBasketItems('places'));
-    renderCurrentViz(buildAnalysis(persons, letters, places));
+    if (vizId !== 'network') stopNetwork();
+    renderCurrentViz(currentAnalysis());
 }
 
 function renderCurrentViz(analysis) {
@@ -472,7 +505,7 @@ function renderCurrentViz(analysis) {
             renderMap(analysis);
             break;
         case 'details':
-            renderDetails();
+            renderDetails(analysis);
             break;
     }
 }
@@ -521,10 +554,14 @@ function renderTimeline(analysis) {
     const width = container.clientWidth - margin.left - margin.right;
     const height = 300 - margin.top - margin.bottom;
 
+    const datedCount = [...yearData.values()].reduce((sum, counts) =>
+        sum + [...counts.values()].reduce((s, c) => s + c, 0), 0);
     const svg = d3.select(container)
         .append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
+        .attr('role', 'img')
+        .attr('aria-label', `Balkendiagramm: ${datedCount} datierte Briefe je Jahr von ${minYear} bis ${maxYear}, gestapelt nach ${series.length} Reihen`)
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -608,7 +645,8 @@ function renderNetwork(analysis) {
     const container = elements.networkChart;
     if (!container) return;
 
-    // Clear previous
+    // A running simulation of the previous render would keep ticking on detached nodes
+    stopNetwork();
     container.innerHTML = '';
 
     const { nodes, links } = analysis.network;
@@ -621,16 +659,24 @@ function renderNetwork(analysis) {
     // D3 Force Layout
     const width = container.clientWidth;
     const height = 400;
+    // D3 attributes take values, not var(), so the colours come from tokens.css at render time
+    const tokens = readTokens({
+        link: '--color-text-light', node: '--color-primary', ring: '--color-bg',
+        labelSize: '--font-size-xs', label: '--color-text'
+    });
 
     const svg = d3.select(container)
         .append('svg')
         .attr('width', width)
-        .attr('height', height);
+        .attr('height', height)
+        .attr('role', 'img')
+        .attr('aria-label', `Netzwerk: ${nodes.length} Personen, ${links.length} Verbindungen`);
 
     const simulation = d3.forceSimulation(nodes)
         .force('link', d3.forceLink(links).id(d => d.id).distance(100))
         .force('charge', d3.forceManyBody().strength(-300))
         .force('center', d3.forceCenter(width / 2, height / 2));
+    networkSimulation = simulation;
 
     // Draw links
     const link = svg.append('g')
@@ -638,7 +684,7 @@ function renderNetwork(analysis) {
         .data(links)
         .enter()
         .append('line')
-        .attr('stroke', '#999')
+        .attr('stroke', tokens.link)
         .attr('stroke-opacity', 0.6)
         .attr('stroke-width', d => Math.sqrt(d.count));
 
@@ -649,8 +695,8 @@ function renderNetwork(analysis) {
         .enter()
         .append('circle')
         .attr('r', d => Math.max(8, Math.sqrt(d.letterCount) * 2))
-        .attr('fill', '#3b82f6')
-        .attr('stroke', '#fff')
+        .attr('fill', tokens.node)
+        .attr('stroke', tokens.ring)
         .attr('stroke-width', 2)
         .call(drag(simulation));
 
@@ -661,7 +707,8 @@ function renderNetwork(analysis) {
         .enter()
         .append('text')
         .text(d => d.name)
-        .attr('font-size', '10px')
+        .attr('font-size', tokens.labelSize)
+        .attr('fill', tokens.label)
         .attr('dx', 12)
         .attr('dy', 4);
 
@@ -704,9 +751,19 @@ function renderNetwork(analysis) {
     }
 }
 
+function stopNetwork() {
+    networkSimulation?.stop();
+    networkSimulation = null;
+}
+
 // Map Visualization
+const MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
+// Without an error event a hanging style request would leave an empty canvas for good
+const MAP_STYLE_TIMEOUT_MS = 8000;
+
 function renderMap(analysis) {
     const container = elements.basketMap;
+    const emptyEl = elements.basketMapEmpty;
     if (!container) return;
 
     // Letters per sending place of the analysed set, kept where the place index has coordinates
@@ -729,40 +786,63 @@ function renderMap(analysis) {
         }
     });
 
-    if (validPlaces.length === 0) {
-        container.innerHTML = '<div class="viz-empty">Keine Orte mit Koordinaten verfuegbar</div>';
+    // The map canvas stays in place; an empty set only swaps it for the message
+    const empty = validPlaces.length === 0;
+    container.classList.toggle('hidden', empty);
+    emptyEl?.classList.toggle('hidden', !empty);
+    if (empty) {
+        clearMapMarkers();
         return;
     }
 
-    // Initialize or update map
     if (!map) {
-        map = new maplibregl.Map({
-            container: 'basket-map',
-            style: 'https://tiles.openfreemap.org/styles/positron',
-            center: [10, 50],
-            zoom: 4
-        });
-
-        map.addControl(new maplibregl.NavigationControl(), 'top-right');
+        map = createMap();
+    } else {
+        // The container may have been hidden while the panel was inactive
+        map.resize();
     }
 
-    // Wait for map to load
-    map.on('load', () => {
-        addMapMarkers(validPlaces);
+    // Markers are DOM elements and need no loaded style, so they are placed at once
+    addMapMarkers(validPlaces);
+}
+
+function createMap() {
+    const instance = new maplibregl.Map({
+        container: elements.basketMap,
+        style: MAP_STYLE_URL,
+        center: [10, 50],
+        zoom: 4
     });
+    instance.addControl(new maplibregl.NavigationControl(), 'top-right');
 
-    if (map.loaded()) {
-        addMapMarkers(validPlaces);
-    }
+    // Same fallback as initMap in explore.js: a plain background keeps the markers usable
+    let fallback = false;
+    const useFallbackStyle = () => {
+        if (fallback || instance.isStyleLoaded()) return;
+        fallback = true;
+        instance.setStyle({
+            version: 8,
+            sources: {},
+            layers: [{ id: 'background', type: 'background', paint: { 'background-color': readTokens({ bg: '--color-bg-light' }).bg } }]
+        });
+        showToast('Grundkarte nicht erreichbar, Orte werden ohne Kartenhintergrund gezeigt');
+    };
+    instance.on('error', useFallbackStyle);
+    const timer = setTimeout(useFallbackStyle, MAP_STYLE_TIMEOUT_MS);
+    instance.once('load', () => clearTimeout(timer));
+    return instance;
+}
+
+function clearMapMarkers() {
+    mapMarkers.forEach(marker => marker.remove());
+    mapMarkers = [];
 }
 
 function addMapMarkers(places) {
-    // Remove existing markers
-    const existingMarkers = document.querySelectorAll('.maplibregl-marker');
-    existingMarkers.forEach(m => m.remove());
+    clearMapMarkers();
 
-    // Add markers
     const bounds = new maplibregl.LngLatBounds();
+    const { fill, ring } = readTokens({ fill: '--color-primary', ring: '--color-bg' });
 
     places.forEach(place => {
         const el = document.createElement('div');
@@ -770,48 +850,37 @@ function addMapMarkers(places) {
         el.style.width = `${Math.max(12, Math.sqrt(place.count) * 6)}px`;
         el.style.height = el.style.width;
         el.style.borderRadius = '50%';
-        el.style.background = '#3b82f6';
-        el.style.border = '2px solid white';
+        el.style.background = fill;
+        el.style.border = `2px solid ${ring}`;
         el.style.cursor = 'pointer';
 
-        new maplibregl.Marker(el)
+        const marker = new maplibregl.Marker({ element: el })
             .setLngLat([place.lon, place.lat])
             .setPopup(new maplibregl.Popup().setHTML(`
                 <strong>${escapeHtml(place.name)}</strong><br>
                 ${place.count} Briefe
             `))
             .addTo(map);
+        mapMarkers.push(marker);
 
         bounds.extend([place.lon, place.lat]);
     });
 
     if (places.length > 1) {
         map.fitBounds(bounds, { padding: 50 });
-    } else if (places.length === 1) {
+    } else {
         map.setCenter([places[0].lon, places[0].lat]);
         map.setZoom(6);
     }
 }
 
 // Details Visualization
-function renderDetails() {
+// Lists the analysed union (architecture.md, Datenfluss step 5), not only the persons' letters
+function renderDetails(analysis = currentAnalysis()) {
     const container = elements.detailsList;
     if (!container) return;
 
-    const personIds = getBasketItems('persons');
-    const persons = resolvePersons(personIds);
-
-    // Collect all letters
-    const letterSet = new Map();
-    persons.forEach(person => {
-        person.letters.forEach(letter => {
-            if (!letterSet.has(letter.id)) {
-                letterSet.set(letter.id, letter);
-            }
-        });
-    });
-
-    let letters = [...letterSet.values()];
+    let letters = [...analysis.letters];
 
     // Apply search filter
     const searchTerm = elements.detailsSearch?.value?.toLowerCase() || '';
@@ -844,23 +913,23 @@ function renderDetails() {
         return;
     }
 
-    container.innerHTML = letters.slice(0, 100).map(letter => `
+    container.innerHTML = letters.slice(0, DETAILS_LIMIT).map(letter => `
         <div class="details-item">
             <div class="details-date">${escapeHtml(letter.date || 'o.D.')}</div>
             <div class="details-content">
                 <div class="details-correspondents">
                     ${escapeHtml(letter.sender?.name || 'Unbekannt')}
-                    <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-arrow-right" role="img" aria-label="an"></i>
                     ${escapeHtml(letter.recipient?.name || 'Unbekannt')}
                 </div>
-                ${letter.place_sent?.name ? `<div class="details-place"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(letter.place_sent.name)}</div>` : ''}
+                ${letter.place_sent?.name ? `<div class="details-place"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${escapeHtml(letter.place_sent.name)}</div>` : ''}
             </div>
-            ${safeUrl(letter.url) ? `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" class="details-link" title="Zum Brief"><i class="fas fa-external-link-alt"></i></a>` : ''}
+            ${safeUrl(letter.url) ? `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer" class="details-link" title="Zum Brief" aria-label="Brief in der Edition oeffnen (neues Fenster)"><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>` : ''}
         </div>
     `).join('');
 
-    if (letters.length > 100) {
-        container.innerHTML += `<div class="details-more">... und ${letters.length - 100} weitere Briefe</div>`;
+    if (letters.length > DETAILS_LIMIT) {
+        container.innerHTML += `<div class="details-more">... und ${letters.length - DETAILS_LIMIT} weitere Briefe</div>`;
     }
 }
 
@@ -895,46 +964,22 @@ function handleClear() {
 }
 
 // Export functionality
+// Exports the same analysed union the page shows: basket letters plus the letters of its
+// persons and places
 function exportData(format) {
-    const personIds = getBasketItems('persons');
-    const persons = resolvePersons(personIds);
+    const analysis = currentAnalysis();
+    const { persons, places, letters } = analysis;
 
-    if (persons.length === 0) {
+    if (letters.length === 0 && persons.length === 0 && places.length === 0) {
         showToast('Keine Daten zum Exportieren');
         return;
     }
 
-    // Collect all unique letters
-    const letterSet = new Map();
-    persons.forEach(person => {
-        person.letters.forEach(letter => {
-            if (!letterSet.has(letter.id)) {
-                letterSet.set(letter.id, letter);
-            }
-        });
-    });
-
-    const letters = [...letterSet.values()];
-
     let content, filename, mimeType;
 
+    // Letters use the columns of the explorer export (export.js), so both files read alike
     if (format === 'csv') {
-        const lines = [
-            'ID,Datum,Absender,Empfaenger,Ort,URL'
-        ];
-
-        letters.forEach(letter => {
-            lines.push([
-                letter.id || '',
-                letter.date || '',
-                letter.sender?.name || '',
-                letter.recipient?.name || '',
-                letter.place_sent?.name || '',
-                letter.url || ''
-            ].map(csvCell).join(','));
-        });
-
-        content = lines.join('\n');
+        content = lettersToCsv(letters);
         filename = 'wissenskorb.csv';
         mimeType = 'text/csv;charset=utf-8;';
     } else {
@@ -946,7 +991,9 @@ function exportData(format) {
                 years: p.years,
                 places: p.places
             })),
-            letters: letters
+            places: places.map(p => ({ id: p.id, name: p.name, lat: p.lat, lon: p.lon, letter_count: p.letterCount })),
+            basket_letters: analysis.basketLetters.map(l => l.id),
+            letters: letters.map(letterExportRow)
         }, null, 2);
         filename = 'wissenskorb.json';
         mimeType = 'application/json';
@@ -955,5 +1002,3 @@ function exportData(format) {
     downloadFile(content, filename, mimeType);
     showToast(`Export als ${format.toUpperCase()} gestartet`);
 }
-
-// Note: escapeHtml, debounce, downloadFile, showToast imported from utils.js

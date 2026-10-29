@@ -1,12 +1,14 @@
 // Topics View
 // Subject/Topic browsing and filtering
 
-import { escapeHtml, debounce } from '../utils.js';
+import { escapeHtml, debounce, personKey } from '../utils.js';
 import { elements } from '../dom-cache.js';
 
 // Module state
 let subjectIndex = {};
-let selectedSubjectId = null;
+// Topic shown in the detail panel. Kept apart from the filter, so that viewing a topic does not
+// turn into a filter on the next applyFilters
+let detailTopicId = null;
 let topicsSearchTerm = '';
 let topicsSortOrder = 'count-desc';
 
@@ -50,11 +52,18 @@ export function initTopicsView(deps) {
     const filterBtn = elements.getById('topic-filter-btn');
     if (filterBtn) {
         filterBtn.addEventListener('click', () => {
-            if (selectedSubjectId && applySubjectFilter) {
-                applySubjectFilter(selectedSubjectId);
+            if (detailTopicId && applySubjectFilter) {
+                applySubjectFilter(detailTopicId);
             }
         });
     }
+}
+
+/**
+ * Key of a subject, the same expression the state manager filters with
+ */
+function subjectKey(subject) {
+    return subject.uri || subject.id || subject.label;
 }
 
 /**
@@ -69,12 +78,11 @@ function buildSubjectIndex() {
 
         const letterSubjects = letter.mentions.subjects;
         const senderName = letter.sender?.name || 'Unbekannt';
-        const senderId = letter.sender?.id || letter.sender?.name;
+        const senderId = personKey(letter.sender);
         const year = letter.year;
 
         letterSubjects.forEach(subject => {
-            // Use uri as primary identifier, fallback to id, then label
-            const subjectId = subject.uri || subject.id || subject.label;
+            const subjectId = subjectKey(subject);
             const subjectLabel = subject.label;
 
             if (!subjectIndex[subjectId]) {
@@ -107,7 +115,7 @@ function buildSubjectIndex() {
 
             // Track co-occurrence with other subjects in same letter
             letterSubjects.forEach(otherSubject => {
-                const otherId = otherSubject.uri || otherSubject.id || otherSubject.label;
+                const otherId = subjectKey(otherSubject);
                 if (otherId !== subjectId) {
                     subjectIndex[subjectId].cooccurrence[otherId] =
                         (subjectIndex[subjectId].cooccurrence[otherId] || 0) + 1;
@@ -133,7 +141,7 @@ export function renderTopicsList() {
     filteredLetters.forEach(letter => {
         if (!letter.mentions?.subjects) return;
         letter.mentions.subjects.forEach(subject => {
-            const subjectId = subject.uri || subject.id || subject.label;
+            const subjectId = subjectKey(subject);
             if (!filteredTopicCounts[subjectId]) {
                 filteredTopicCounts[subjectId] = 0;
             }
@@ -176,15 +184,16 @@ export function renderTopicsList() {
                 <p>Keine Themen gefunden</p>
             </div>
         `;
+        if (detailTopicId) clearTopicDetail();
         return;
     }
 
     container.innerHTML = topics.map(topic => {
         const barWidth = (topic.filteredCount / maxCount) * 100;
-        const isActive = selectedSubjectId === topic.id;
+        const isActive = detailTopicId === topic.id;
 
         return `
-            <div class="entity-card ${isActive ? 'active' : ''}" role="button" tabindex="0" data-id="${escapeHtml(topic.id)}">
+            <div class="entity-card ${isActive ? 'active' : ''}" role="button" tabindex="0" aria-pressed="${isActive}" data-id="${escapeHtml(topic.id)}">
                 <div class="entity-card-info">
                     <div class="entity-card-name" title="${escapeHtml(topic.label)}">${escapeHtml(topic.label)}</div>
                     <div class="entity-card-bar">
@@ -199,30 +208,55 @@ export function renderTopicsList() {
     // Add click handlers
     container.querySelectorAll('.entity-card').forEach(card => {
         card.addEventListener('click', () => {
-            const topicId = card.dataset.id;
-            selectTopic(topicId);
-
-            // Update active state
-            container.querySelectorAll('.entity-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
+            selectTopic(card.dataset.id);
         });
     });
+
+    // The open detail follows the filter like the list
+    if (detailTopicId) {
+        if (filteredTopicCounts[detailTopicId]) {
+            selectTopic(detailTopicId);
+        } else {
+            clearTopicDetail();
+        }
+    }
+}
+
+/**
+ * Mark the topic of the detail panel in the list
+ */
+function markActiveTopic(topicId) {
+    elements.topicsList?.querySelectorAll('.entity-card').forEach(c => {
+        const active = c.dataset.id === topicId;
+        c.classList.toggle('active', active);
+        c.setAttribute('aria-pressed', String(active));
+    });
+}
+
+/**
+ * Close the detail when its topic has no letters under the current filter
+ */
+function clearTopicDetail() {
+    detailTopicId = null;
+    elements.getById('topic-detail-empty')?.classList.remove('hidden');
+    elements.getById('topic-detail-content')?.classList.add('hidden');
 }
 
 /**
  * Select a topic and show its details
  */
 function selectTopic(topicId) {
-    selectedSubjectId = topicId;
     const topic = subjectIndex[topicId];
     if (!topic) return;
+    detailTopicId = topicId;
+    markActiveTopic(topicId);
 
     const filteredLetters = getFilteredLetters();
 
     // Calculate filtered data for this topic
     const filteredTopicLetters = filteredLetters.filter(letter => {
         const subjects = letter.mentions?.subjects || [];
-        return subjects.some(s => (s.uri || s.id || s.label) === topicId);
+        return subjects.some(s => subjectKey(s) === topicId);
     });
 
     const filteredCount = filteredTopicLetters.length;
@@ -230,7 +264,7 @@ function selectTopic(topicId) {
     // Build filtered correspondents
     const filteredPersons = {};
     filteredTopicLetters.forEach(letter => {
-        const senderId = letter.sender?.id || letter.sender?.name;
+        const senderId = personKey(letter.sender);
         const senderName = letter.sender?.name || 'Unbekannt';
         if (senderId) {
             if (!filteredPersons[senderId]) {
@@ -253,7 +287,7 @@ function selectTopic(topicId) {
     filteredTopicLetters.forEach(letter => {
         const subjects = letter.mentions?.subjects || [];
         subjects.forEach(s => {
-            const otherId = s.uri || s.id || s.label;
+            const otherId = subjectKey(s);
             if (otherId !== topicId) {
                 filteredCooccurrence[otherId] = (filteredCooccurrence[otherId] || 0) + 1;
             }
@@ -304,7 +338,7 @@ function selectTopic(topicId) {
         }).join('');
 
         if (persons.length === 0) {
-            correspondents.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Korrespondenten</p>';
+            correspondents.innerHTML = '<p class="no-data">Keine Korrespondenten</p>';
         }
     }
 
@@ -346,7 +380,7 @@ function selectTopic(topicId) {
                 return `<div class="entity-mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
             }).join('');
         } else {
-            timeline.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Jahresdaten</p>';
+            timeline.innerHTML = '<p class="no-data">Keine Jahresdaten</p>';
         }
     }
 
@@ -372,19 +406,11 @@ function selectTopic(topicId) {
 
         // Add click handlers to related tags
         related.querySelectorAll('.entity-tag').forEach(tag => {
-            tag.addEventListener('click', () => {
-                const relatedId = tag.dataset.id;
-                selectTopic(relatedId);
-                // Update list selection
-                const container = elements.topicsList;
-                container?.querySelectorAll('.entity-card').forEach(c => {
-                    c.classList.toggle('active', c.dataset.id === relatedId);
-                });
-            });
+            tag.addEventListener('click', () => selectTopic(tag.dataset.id));
         });
 
         if (relatedTopics.length === 0) {
-            related.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine verwandten Themen</p>';
+            related.innerHTML = '<p class="no-data">Keine verwandten Themen</p>';
         }
     }
 }
@@ -394,18 +420,4 @@ function selectTopic(topicId) {
  */
 export function getSubjectIndex() {
     return subjectIndex;
-}
-
-/**
- * Get the currently selected subject ID
- */
-export function getSelectedSubjectId() {
-    return selectedSubjectId;
-}
-
-/**
- * Set the selected subject ID (for external control)
- */
-export function setSelectedSubjectId(id) {
-    selectedSubjectId = id;
 }

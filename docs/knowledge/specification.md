@@ -39,7 +39,7 @@ Die funktionalen Anforderungen stehen als Akzeptanzkriterien bei den Stories im 
 
 ## Epics und User Stories
 
-Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Ihr Umsetzungsstand ist nicht systematisch gegen den Code geprüft. Bekannte Abweichungen führt [plan.md](plan.md#offene-befunde).
+Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Am 2026-10-29 wurden die Stories US-05, US-11, US-17, US-20 bis US-22, US-27, US-28, US-33, US-35 und US-36 gegen den Code abgeglichen. Wo der Code bewusst anders arbeitet, beschreibt die Story das umgesetzte Verhalten, wo ein Kriterium fehlt, ist es als Lücke markiert und als Vorhaben in [plan.md](plan.md#vorhaben) geführt. Die übrigen Stories sind nicht systematisch geprüft.
 
 ### Datenimport
 
@@ -80,23 +80,22 @@ Als Forschende möchte ich auf einen Blick sehen, wie viele Briefe, Personen und
 
 Als Forschende möchte ich die zeitliche Verteilung der Korrespondenz sehen, um Hochphasen und Lücken zu erkennen.
 
-- Timeline als Balkendiagramm
-- Gruppierung nach Jahr oder Dekade
-- Zeitfilter per Klick
+- Timeline als Balkendiagramm je Jahr, gestapelt nach Sprache, undatierte Briefe in einem eigenen Balken
+- Zeitfilter per Klick oder Enter auf einen Jahresbalken
+- Lücke: Eine Gruppierung nach Dekade gibt es nicht
 
 #### US-27 Datensatz-Übersicht als Einstieg
 
 Als Forschende möchte ich beim Laden eines Datensatzes eine Übersicht sehen, um Datenqualität und Struktur sofort einschätzen zu können.
 
 - Übersicht als Standardansicht beim Laden
-- Statistik-Cards für Briefe, Korrespondenten, Orte und Zeitraum
-- Balken für exakte Datierungen, identifizierte Personen und georeferenzierte Orte
-- Quellen-Metadaten aus dem teiHeader (Editor, Publisher, Lizenz)
-- Die fünf aktivsten Korrespondenten mit Briefanzahl
-- Sprachverteilung bei mehrsprachigen Datensätzen
-- Ansichtsempfehlungen auf Basis der Datenqualität
-- Schnellzugriff auf die anderen Ansichten
+- Kennzahlen für Briefe, Zeitraum, Personen und Orte, Personen und Orte aus den Briefen gezählt (`personKey`, `placeKey`)
+- Drei neutrale Chips mit den Anteilen datierter Briefe, identifizierter Personen und georeferenzierter Orte, ohne Ampelfarben ([ADR-005](#adr-005-nicht-wertende-sprache-für-partnerdaten))
+- Quellen-Metadaten aus dem teiHeader (Publisher, Lizenz mit Änderungsvermerk, Link zur CMIF-Datei)
+- Einstiegspunkte zu Karte, Netzwerk, Timeline, Briefen, Chronik und Aktivität
+- Bis zu vier Forschungspfade ([US-33](#us-33-methodisch-geleitete-exploration))
 - Sidebar ausgeblendet für volle Breite
+- Lücke: Die fünf aktivsten Korrespondenten, die Sprachverteilung und Ansichtsempfehlungen auf Basis der Datenlage zeigt die Übersicht nicht
 
 ### Räumliche Exploration
 
@@ -145,12 +144,11 @@ Als Forschende möchte ich alle Briefe einer bestimmten Person sehen, um deren K
 
 Als Forschende möchte ich sehen, wer mit wem korrespondiert hat, um Netzwerke und Cluster zu erkennen.
 
-- Force-Directed Graph mit D3.js
-- Knoten sind Personen, Größe nach Briefanzahl
-- Kanten sind Briefwechsel, Stärke nach Briefanzahl
-- Zoom und Drag
-- Filter nach Mindestzahl der Briefe
-- Klick auf eine Person filtert die Briefe
+- Force-Directed Graph mit D3.js, Zoom und Drag
+- Modus Zeitgenossen: Knoten sind Absender, Größe nach Briefanzahl, eine Kante verbindet zwei Absender, die in mindestens so vielen gleichen Jahren Briefe schrieben, wie der Regler vorgibt ([design.md](design.md#netzwerk)), dazu eine Obergrenze der Knoten
+- Modus Themen: Themen als Knoten, Kanten nach gemeinsamen Briefen
+- Klick oder Enter auf einen Knoten filtert die Briefe
+- Lücke: Kanten aus dem Briefwechsel selbst (Absender zu Empfänger, Stärke nach Briefanzahl) und ein Filter nach Mindestzahl der Briefe gibt es nicht. Die Kanten der Zeitgenossen zeigen gleichzeitige Aktivität, nicht Korrespondenz
 
 ### Briefe
 
@@ -201,7 +199,7 @@ Als Forschende möchte ich nach Themen filtern, um thematisch verwandte Briefe z
 
 - Themen auswählbar
 - Nur bei Datensätzen mit `mentionsSubject`
-- Schnellfilter in der Sidebar mit den fünf häufigsten Themen
+- Schnellfilter in der Sidebar mit den häufigsten Themen und Suchfeld
 
 #### US-18 Filter kombinieren
 
@@ -222,21 +220,24 @@ Als Forschende möchte ich alle Filter mit einem Klick zurücksetzen, um zur Ges
 
 Als Forschende möchte ich einen Link zu meiner gefilterten Ansicht teilen, um Kolleg:innen eine bestimmte Auswahl zu zeigen.
 
-- Filterzustand in der URL codiert
-- Empfänger sehen dieselbe Ansicht
+- Ansicht und alle Filter (Zeitraum oder undatiert, Sprachen, Person, Ort, Thema, Qualität) stehen in der URL, ein fehlender Parameter bedeutet keinen Filter
+- Bei vorprozessierten Datensätzen (`?json=`) sehen Empfänger dieselbe Ansicht mit denselben Briefen
+- Bei hochgeladenen Dateien trägt der Link nur Ansicht und Filter, der Datensatz liegt im Tab der Absenderin. Empfänger ohne diesen Upload landen auf der Startseite
+- Die URL wird mit `replaceState` geschrieben, der Zurück-Knopf nimmt keine Filterschritte zurück
 
 #### US-21 Als CSV exportieren
 
 Als Forschende möchte ich die gefilterten Briefe als CSV exportieren, um sie in Tabellenkalkulation oder anderen Werkzeugen zu analysieren.
 
-- Export der aktuell gefilterten Briefe
-- Spalten ID, Datum, Absender, Empfänger, Ort, Sprache
+- Export der aktuell gefilterten Briefe, die Exportoptionen sind bei null Briefen deaktiviert
+- Spalten `id`, `date`, `date_to`, `year`, `date_precision`, `date_certainty`, `sender_name`, `sender_id`, `sender_precision`, `recipient_name`, `recipient_id`, `recipient_precision`, `place_name`, `place_geonames`, `place_precision`, `language`, `url` (`LETTER_EXPORT_COLUMNS` in `export.js`)
 
 #### US-22 Als JSON exportieren
 
 Als Entwicklerin möchte ich die Daten als JSON exportieren, um sie programmatisch weiterzuverarbeiten.
 
-- Vollständige Datenstruktur mit Indizes
+- Export der gefilterten Briefe als JSON-Liste mit denselben Feldern wie der CSV-Export (`lettersToJson()` in `export.js`)
+- Lücke: Eine vollständige Datenstruktur mit Indizes und Erwähnungen exportiert der Explorer nicht
 
 #### US-23 Mit correspSearch verknüpfen
 
@@ -275,11 +276,11 @@ Als Forschende möchte ich alle Briefe filtern, die ein bestimmtes Thema erwähn
 
 Als Forschende möchte ich alle Briefe auf einem vertikalen Zeitstrahl sehen, um den Verlauf der Korrespondenz nachzuvollziehen.
 
-- Zeitstrahl von den ältesten zu den jüngsten Briefen
+- Zeitstrahl von den ältesten zu den jüngsten Briefen, undatierte Briefe am Ende unter der Marke „Datum unbekannt“
 - Gruppierung nach Jahren mit Jahresmarken
 - Jeder Brief zeigt Datum, Absender, Empfänger und Ort
 - Klick öffnet den Brief-Dialog
-- Nachladen in Blöcken bei großen Datensätzen
+- Nachladen in Blöcken von 100 Briefen, sobald das Ende der Liste sichtbar wird
 
 #### US-29 Biografische Anreicherung
 
@@ -322,9 +323,9 @@ Als Forschende möchte ich zwischen Chronik-Layouts wechseln, um je nach Forschu
 Als Forschende möchte ich sehen, welche Forschungsfragen mit dem aktuellen Datensatz beantwortbar sind, um meine Analyse methodisch zu strukturieren.
 
 - Vier epistemische Kategorien (deskriptiv, analytisch, interpretativ, nicht beantwortbar)
-- Jede Frage zeigt einen mehrstufigen Pfad durch die Ansichten, die Schritte navigieren zur Ansicht
-- Vorschauen mit schnellen Antworten
-- Nicht beantwortbare Fragen nennen die fehlenden Daten und Anreicherungsmöglichkeiten
+- Jede beantwortbare Frage zeigt eine Beschreibung, eine Vorschau mit schnellen Antworten aus den Briefen und einen mehrstufigen Pfad. Jeder Schritt ist ein Knopf mit Bezeichnung und Aktion, der zur Ansicht führt
+- Die Übersicht zeigt bis zu vier Pfade, die übrigen auf Klick
+- Nicht beantwortbare Fragen stehen im aufklappbaren Abschnitt „Anreicherungspotential“ und nennen die fehlenden Daten und das CMIF-Element, das sie beantwortbar machte ([ADR-005](#adr-005-nicht-wertende-sprache-für-partnerdaten))
 
 #### US-34 Korrespondenzaktivität visualisieren
 
@@ -344,17 +345,18 @@ Als Forschende möchte ich von einer Forschungsfrage geleitet durch die Ansichte
 
 - Ein Klick auf einen Forschungspfad der Übersicht startet einen Wissenspfad
 - Eine Leiste zeigt Frage, Schritte und aktuelle Position, mit Zurück, Weiter und Beenden
-- Der Wissenskorb in der Sidebar sammelt die Auswahl der aktuellen Ansicht
-- Der Korb bleibt in localStorage über Browser-Neustarts erhalten und synchronisiert sich zwischen Tabs
+- Der Wissenskorb in der Sidebar sammelt die Auswahl der aktuellen Ansicht, Personen und Orte über `personKey` und `placeKey` auch ohne Normdaten-ID
+- Der Korb gilt je Datensatz, bleibt in localStorage über Browser-Neustarts erhalten und synchronisiert sich zwischen Tabs
 - Die Navigation zeigt die Zahl der gesammelten Einträge und führt zur Analyseseite `wissenskorb.html`
+- Die Analyseseite erzeugt einen Link zum Teilen des Korbs mit Datensatzschlüssel. Beim Öffnen wird der geteilte Korb mit dem vorhandenen zusammengeführt, die Korbgrenzen gelten. Ein Korb eines anderen Datensatzes wird nicht übernommen, ein Hinweis nennt den Datensatz. Gehört er zu einem vorprozessierten Datensatz, lädt die Analyseseite dessen Datei selbst
 
 #### US-36 Kontextuelle Korb-Aktionen
 
 Als Forschende möchte ich aus jeder Detailansicht Einträge in den Korb legen, um ohne Seitenwechsel zu sammeln.
 
-- Brief-Dialog mit Umschalter für den einzelnen Brief
-- Personen-Dialog und Orts-Detail legen alle Briefe der Person oder des Orts in den Korb
-- Eine Rückmeldung nennt die Zahl der hinzugefügten Einträge, bereits gesammelte Einträge sind markiert
+- Brief-Dialog, Briefliste und Kartenpopup mit Umschalter für den einzelnen Brief
+- Personen-Dialog, Personenliste, Orts-Detail und Jahresbalken der Timeline legen alle Briefe der Person, des Orts oder des Jahrs in den Korb
+- Eine Rückmeldung nennt die Zahl der hinzugefügten Einträge und, bei vollem Korb, die abgewiesenen. Ein Umschalter wird nur markiert, wenn der Korb den Eintrag aufgenommen hat, bereits gesammelte Einträge sind markiert, im Brief-Dialog über die Beschriftung „Im Korb“, sonst mit `aria-pressed`
 
 ### Vergleich
 

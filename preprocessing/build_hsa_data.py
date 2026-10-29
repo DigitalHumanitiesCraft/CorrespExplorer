@@ -25,7 +25,8 @@ def extract_id_from_uri(uri: str) -> tuple:
 
     # VIAF
     if 'viaf.org' in uri:
-        match = re.search(r'viaf/(\d+)', uri)
+        # The HSA source writes both viaf.org/viaf/{id} and viaf.org/{id}
+        match = re.search(r'viaf\.org/(?:viaf/)?(\d+)', uri)
         return (match.group(1), 'viaf') if match else (None, 'viaf')
 
     # GeoNames

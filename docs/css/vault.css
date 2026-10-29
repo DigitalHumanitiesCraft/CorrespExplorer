@@ -96,7 +96,7 @@
 }
 
 .doc-category-title {
-    font-size: 10px;
+    font-size: var(--font-size-xs);
     font-weight: 600;
     color: var(--color-text-light);
     text-transform: uppercase;
@@ -160,7 +160,7 @@
 
 .doc-meta-item i {
     color: var(--color-primary);
-    font-size: 10px;
+    font-size: var(--font-size-xs);
 }
 
 /* Markdown Content */
@@ -214,7 +214,7 @@
 
 .markdown-body a {
     color: var(--color-secondary);
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 .markdown-body a:hover {
@@ -295,7 +295,7 @@
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 1023px) {
     .vault-main {
         grid-template-columns: 1fr;
     }
@@ -310,7 +310,7 @@
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
     .vault-main {
         padding: var(--space-sm);
     }

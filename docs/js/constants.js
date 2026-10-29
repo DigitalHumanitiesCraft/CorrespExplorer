@@ -1,75 +1,68 @@
-// Zentrale Konstanten fuer CorrespExplorer
+// Shared constants of CorrespExplorer
 
 // Language code of letters without a language. The former sentinel 'None' collided with the
 // HSA source, which writes target="None" for Ladin (data.md, Hugo Schuchardt Archiv)
 export const NO_LANGUAGE = '_none';
 
-// Basis-Sprachfarben (kraeftig) - fuer dominante Sprache
+// Strong language colours, for the dominant language of a corpus
 export const LANGUAGE_COLORS_STRONG = {
-    'de': '#1e40af', // Deutsch - primaer blau
-    'fr': '#dc2626', // Franzoesisch - rot
-    'it': '#16a34a', // Italienisch - gruen
-    'en': '#7c3aed', // Englisch - lila
-    'es': '#ea580c', // Spanisch - orange
-    'pt': '#0891b2', // Portugiesisch - cyan
-    'la': '#57534e', // Latein - grau
-    'hu': '#be185d', // Ungarisch - pink
-    'nl': '#d97706', // Niederlaendisch - amber
-    'cy': '#4f46e5', // Walisisch - indigo
-    'oc': '#0d9488', // Okzitanisch - teal
-    [NO_LANGUAGE]: '#78716c', // Ohne Angabe - grau
-    'other': '#78716c' // Andere - grau
+    'de': '#1e40af', // German
+    'fr': '#dc2626', // French
+    'it': '#16a34a', // Italian
+    'en': '#7c3aed', // English
+    'es': '#ea580c', // Spanish
+    'pt': '#0891b2', // Portuguese
+    'la': '#57534e', // Latin
+    'hu': '#be185d', // Hungarian
+    'nl': '#d97706', // Dutch
+    'cy': '#4f46e5', // Welsh
+    'oc': '#0d9488', // Occitan
+    [NO_LANGUAGE]: '#78716c', // no language
+    'other': '#78716c'
 };
 
-// Pastell-Sprachfarben (dezent) - fuer sekundaere Sprachen
+// Pastel language colours, for all other languages
 export const LANGUAGE_COLORS_PASTEL = {
-    'de': '#93c5fd', // Deutsch - helles blau
-    'fr': '#fca5a5', // Franzoesisch - helles rot
-    'it': '#86efac', // Italienisch - helles gruen
-    'en': '#c4b5fd', // Englisch - helles lila
-    'es': '#fdba74', // Spanisch - helles orange
-    'pt': '#a5f3fc', // Portugiesisch - helles cyan
-    'la': '#d6d3d1', // Latein - helles grau
-    'hu': '#f9a8d4', // Ungarisch - helles pink
-    'nl': '#fcd34d', // Niederlaendisch - helles amber
-    'cy': '#a5b4fc', // Walisisch - helles indigo
-    'oc': '#99f6e4', // Okzitanisch - helles teal
-    [NO_LANGUAGE]: '#d6d3d1', // Ohne Angabe - helles grau
-    'other': '#d6d3d1' // Andere - helles grau
+    'de': '#93c5fd', // German
+    'fr': '#fca5a5', // French
+    'it': '#86efac', // Italian
+    'en': '#c4b5fd', // English
+    'es': '#fdba74', // Spanish
+    'pt': '#a5f3fc', // Portuguese
+    'la': '#d6d3d1', // Latin
+    'hu': '#f9a8d4', // Hungarian
+    'nl': '#fcd34d', // Dutch
+    'cy': '#a5b4fc', // Welsh
+    'oc': '#99f6e4', // Occitan
+    [NO_LANGUAGE]: '#d6d3d1', // no language
+    'other': '#d6d3d1'
 };
 
-// Dynamische Farbzuweisung basierend auf Sprachverteilung
-// Wird beim Laden des Datensatzes berechnet
+// Live binding filled by computeLanguageColors() when a dataset is loaded
 export const LANGUAGE_COLORS = { ...LANGUAGE_COLORS_STRONG };
 
-// Berechnet dynamische Farben basierend auf Briefverteilung
+// Colours by letter count: many languages in strong colours make stacked bars unreadable
 export function computeLanguageColors(letters) {
-    // Zaehle Briefe pro Sprache
     const langCounts = {};
     letters.forEach(letter => {
         const lang = letter.language?.code || NO_LANGUAGE;
         langCounts[lang] = (langCounts[lang] || 0) + 1;
     });
 
-    // Sortiere nach Haeufigkeit
     const sorted = Object.entries(langCounts).sort((a, b) => b[1] - a[1]);
 
-    // Loesche alte Eintraege
     Object.keys(LANGUAGE_COLORS).forEach(key => delete LANGUAGE_COLORS[key]);
 
-    // Dominante Sprache (Top 1) bekommt kraeftige Farbe
-    // Alle anderen bekommen Pastelltoene
-    sorted.forEach(([lang, count], index) => {
+    // The most frequent language gets its strong colour, all others a pastel tone
+    sorted.forEach(([lang], index) => {
         if (index === 0) {
-            // Dominante Sprache - kraeftig
             LANGUAGE_COLORS[lang] = LANGUAGE_COLORS_STRONG[lang] || LANGUAGE_COLORS_STRONG.other;
         } else {
-            // Sekundaere Sprachen - pastell
             LANGUAGE_COLORS[lang] = LANGUAGE_COLORS_PASTEL[lang] || LANGUAGE_COLORS_PASTEL.other;
         }
     });
 
-    // Fallbacks fuer nicht vorhandene Sprachen
+    // Fallbacks for codes outside the corpus
     LANGUAGE_COLORS.other = LANGUAGE_COLORS_PASTEL.other;
     if (!LANGUAGE_COLORS[NO_LANGUAGE]) {
         LANGUAGE_COLORS[NO_LANGUAGE] = LANGUAGE_COLORS_PASTEL[NO_LANGUAGE];
@@ -78,7 +71,6 @@ export function computeLanguageColors(letters) {
     return LANGUAGE_COLORS;
 }
 
-// Sprachnamen fuer Anzeige
 // The one label table for parser and views, ISO 639-1 and the ISO 639-3 codes of Lexvo URIs
 export const LANGUAGE_LABELS = {
     'de': 'Deutsch',
@@ -132,76 +124,35 @@ export function languageLabel(code) {
     return LANGUAGE_LABELS[code] || dataLanguageLabels[code] || code;
 }
 
-// UI-Defaults
-export const UI_DEFAULTS = {
-    debounceDelay: 300,
-    minBarHeight: 4,
-    maxTopSenders: 5,
-    maxTopLanguages: 10,
-    timelineLabelInterval: 15
-};
+// The twelve views of explore.html in navigation order; URL parameter view= accepts only these
+export const VIEWS = [
+    'overview', 'map', 'persons', 'letters', 'timeline', 'topics', 'places',
+    'network', 'mentions-flow', 'chronik', 'activity', 'comparison'
+];
 
-// Sortier-Optionen
-export const SORT_OPTIONS = {
-    persons: {
-        'letters-desc': { field: 'letterCount', dir: 'desc' },
-        'letters-asc': { field: 'letterCount', dir: 'asc' },
-        'name-asc': { field: 'name', dir: 'asc' },
-        'name-desc': { field: 'name', dir: 'desc' }
-    },
-    letters: {
-        'date-desc': { field: 'year', dir: 'desc' },
-        'date-asc': { field: 'year', dir: 'asc' },
-        'sender-asc': { field: 'senderName', dir: 'asc' }
-    },
-    topics: {
-        'count-desc': { field: 'letterCount', dir: 'desc' },
-        'count-asc': { field: 'letterCount', dir: 'asc' },
-        'name-asc': { field: 'label', dir: 'asc' }
-    },
-    places: {
-        'count-desc': { field: 'filteredCount', dir: 'desc' },
-        'count-asc': { field: 'filteredCount', dir: 'asc' },
-        'name-asc': { field: 'name', dir: 'asc' },
-        'name-desc': { field: 'name', dir: 'desc' }
-    }
-};
-
-// View-Namen
-export const VIEWS = {
-    MAP: 'map',
-    PERSONS: 'persons',
-    LETTERS: 'letters',
-    TIMELINE: 'timeline',
-    TOPICS: 'topics',
-    PLACES: 'places',
-    NETWORK: 'network',
-    MENTIONS_FLOW: 'mentions-flow'
-};
-
-// Map-Konfiguration
+// Map defaults
 export const MAP_DEFAULTS = {
     clusterRadius: 40,
     clusterMaxZoom: 12
 };
 
-// Netzwerk-Konfiguration
+// Network defaults
 export const NETWORK_DEFAULTS = {
-    minYears: 3,          // Minimum gemeinsame Jahre fuer Zeitgenossen
-    maxNodes: 50,         // Maximale Knotenanzahl
-    minCooccurrence: 5,   // Minimum Kookkurrenz fuer Themen
-    maxYearsSlider: 50,   // Max-Wert fuer Jahre-Slider
-    maxNodesSlider: 100   // Max-Wert fuer Knoten-Slider
+    minYears: 3,          // shared active years for contemporaries
+    maxNodes: 50,
+    minCooccurrence: 5,   // shared letters for topic co-occurrence
+    maxYearsSlider: 50,
+    maxNodesSlider: 100
 };
 
-// Warenkorb-Limits
+// Basket capacity per type
 export const BASKET_LIMITS = {
     maxPersons: 50,
     maxLetters: 100,
     maxPlaces: 50
 };
 
-// API-Konfiguration
+// API defaults
 export const API_DEFAULTS = {
     // Upper bound for one correspSearch API URL; the API pages its results, so large queries stop here
     correspSearchMaxLetters: 1000

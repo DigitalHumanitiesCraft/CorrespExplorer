@@ -118,6 +118,10 @@ const CATEGORIES = {
 // State
 let currentDoc = null;
 let docCache = new Map();
+// Section to scroll to once the document named by the next hash change has rendered
+let pendingSection = null;
+// Increments per load, so a slower earlier fetch cannot overwrite a later document
+let loadSequence = 0;
 
 /**
  * Resolve a URL hash to a document, following aliases of retired document IDs.
@@ -140,6 +144,7 @@ function stripFrontmatter(markdown) {
 }
 
 const REPOSITORY_BLOB = 'https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/docs/knowledge/';
+const REPOSITORY_DOCS_PATH = '/DigitalHumanitiesCraft/CorrespExplorer/blob/main/docs/';
 
 /**
  * GitHub-style heading slug, so anchors written for the repository also work here
@@ -149,8 +154,52 @@ function slugify(text) {
 }
 
 function scrollToSection(section) {
-    const target = section && document.getElementById(decodeURIComponent(section));
-    if (target) target.scrollIntoView();
+    if (!section) return;
+    let id = section;
+    try {
+        id = decodeURIComponent(section);
+    } catch {
+        // A malformed escape is looked up as written
+    }
+    document.getElementById(id)?.scrollIntoView();
+}
+
+/**
+ * Show a document and optionally one of its sections. Only the hash change loads, so a click
+ * renders the document once and the scroll is not undone by a second render.
+ */
+function openDocument(doc, section = null) {
+    if (currentDoc === doc && window.location.hash.slice(1) === doc.id) {
+        scrollToSection(section);
+        return;
+    }
+    pendingSection = section;
+    if (window.location.hash.slice(1) === doc.id) {
+        showDocument(doc);
+    } else {
+        window.location.hash = doc.id;
+    }
+}
+
+async function showDocument(doc) {
+    const section = pendingSection;
+    pendingSection = null;
+    if (await loadDocument(doc)) scrollToSection(section);
+}
+
+/**
+ * Pages and data files that GitHub Pages serves from docs/ open live; everything else, such as
+ * code or Markdown outside the knowledge base, opens in the repository
+ */
+function resolveRelativeLink(href) {
+    const target = new URL(href, REPOSITORY_BLOB);
+    if (target.pathname.startsWith(REPOSITORY_DOCS_PATH)) {
+        const sitePath = target.pathname.slice(REPOSITORY_DOCS_PATH.length);
+        if (/\.html$/i.test(sitePath) || sitePath.startsWith('data/')) {
+            return { href: sitePath + target.hash, external: false };
+        }
+    }
+    return { href: target.href, external: true };
 }
 
 /**
@@ -159,8 +208,14 @@ function scrollToSection(section) {
  * other relative paths point to the file in the repository.
  */
 function wireDocumentLinks(container) {
+    // GitHub numbers repeated slugs (-1, -2), and links in the documents rely on that
+    const used = new Map();
     container.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(h => {
-        if (!h.id) h.id = slugify(h.textContent);
+        if (h.id) return;
+        const base = slugify(h.textContent);
+        const n = used.get(base) || 0;
+        used.set(base, n + 1);
+        h.id = n === 0 ? base : `${base}-${n}`;
     });
 
     container.querySelectorAll('a[href]').forEach(link => {
@@ -179,16 +234,17 @@ function wireDocumentLinks(container) {
         const doc = VAULT_DOCUMENTS.find(d => d.filename === path.replace(/^\.\//, ''));
         if (doc) {
             link.setAttribute('href', `#${doc.id}`);
-            link.addEventListener('click', async (e) => {
+            link.addEventListener('click', (e) => {
                 e.preventDefault();
-                window.location.hash = doc.id;
-                await loadDocument(doc);
-                scrollToSection(section);
+                openDocument(doc, section);
             });
         } else {
-            link.setAttribute('href', new URL(href, REPOSITORY_BLOB).href);
-            link.setAttribute('target', '_blank');
-            link.setAttribute('rel', 'noopener');
+            const resolved = resolveRelativeLink(href);
+            link.setAttribute('href', resolved.href);
+            if (resolved.external) {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            }
         }
     });
 }
@@ -204,15 +260,11 @@ async function init() {
     const doc = (hash && findDocument(hash)) || VAULT_DOCUMENTS[0];
     await loadDocument(doc);
 
-    // Handle hash changes
-    window.addEventListener('hashchange', async () => {
+    // The single place where navigation loads a document (sidebar, links, back and forward)
+    window.addEventListener('hashchange', () => {
         const hash = window.location.hash.slice(1);
-        if (hash) {
-            const doc = findDocument(hash);
-            if (doc && doc !== currentDoc) {
-                await loadDocument(doc);
-            }
-        }
+        const doc = hash && findDocument(hash);
+        if (doc) showDocument(doc);
     });
 }
 
@@ -241,11 +293,11 @@ function renderDocumentList() {
         html += `
             <div class="doc-category${isFirst ? ' first' : ''}">
                 <div class="doc-category-title">
-                    <i class="fas ${category.icon}"></i> ${category.title}
+                    <i class="fas ${category.icon}" aria-hidden="true"></i> ${category.title}
                 </div>
                 ${docs.map(doc => `
                     <a href="#${doc.id}" class="doc-item" data-doc-id="${doc.id}" title="${doc.description}">
-                        <i class="fas ${doc.icon}"></i>
+                        <i class="fas ${doc.icon}" aria-hidden="true"></i>
                         <span>${doc.title}</span>
                     </a>
                 `).join('')}
@@ -258,28 +310,32 @@ function renderDocumentList() {
 
     // Add click handlers
     docList.querySelectorAll('.doc-item').forEach(item => {
-        item.addEventListener('click', async (e) => {
+        item.addEventListener('click', (e) => {
             e.preventDefault();
-            const docId = item.dataset.docId;
-            const doc = VAULT_DOCUMENTS.find(d => d.id === docId);
-            if (doc) {
-                window.location.hash = doc.id;
-                await loadDocument(doc);
-            }
+            const doc = VAULT_DOCUMENTS.find(d => d.id === item.dataset.docId);
+            if (doc) openDocument(doc);
         });
     });
 }
 
 /**
  * Load and render a document
+ * @returns {Promise<boolean>} true if this call rendered the document
  */
 async function loadDocument(doc) {
     const contentEl = document.getElementById('vault-content');
-    if (!contentEl) return;
+    if (!contentEl) return false;
+    const sequence = ++loadSequence;
 
     // Update active state in sidebar
     document.querySelectorAll('.doc-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.docId === doc.id);
+        const active = item.dataset.docId === doc.id;
+        item.classList.toggle('active', active);
+        if (active) {
+            item.setAttribute('aria-current', 'page');
+        } else {
+            item.removeAttribute('aria-current');
+        }
     });
 
     // Show loading state
@@ -303,6 +359,7 @@ async function loadDocument(doc) {
             content = stripFrontmatter(await response.text());
             docCache.set(doc.id, content);
         }
+        if (sequence !== loadSequence) return false;
 
         // Count lines for stats
         const lineCount = content.split('\n').length;
@@ -313,16 +370,16 @@ async function loadDocument(doc) {
         // Render document
         contentEl.innerHTML = `
             <div class="doc-header">
-                <h1><i class="fas ${doc.icon}"></i> ${doc.title}</h1>
+                <h1><i class="fas ${doc.icon}" aria-hidden="true"></i> <span class="doc-header-title">${doc.title}</span></h1>
                 <div class="doc-meta">
                     <span class="doc-meta-item">
-                        <i class="fas fa-file"></i> ${doc.filename}
+                        <i class="fas fa-file" aria-hidden="true"></i> ${doc.filename}
                     </span>
                     <span class="doc-meta-item">
-                        <i class="fas fa-align-left"></i> ${lineCount} Zeilen
+                        <i class="fas fa-align-left" aria-hidden="true"></i> ${lineCount} Zeilen
                     </span>
                     <span class="doc-meta-item">
-                        <i class="fas fa-folder"></i> ${CATEGORIES[doc.category]?.title || doc.category}
+                        <i class="fas fa-folder" aria-hidden="true"></i> ${CATEGORIES[doc.category]?.title || doc.category}
                     </span>
                 </div>
             </div>
@@ -331,21 +388,39 @@ async function loadDocument(doc) {
             </div>
         `;
 
-        wireDocumentLinks(contentEl.querySelector('.markdown-body'));
+        const body = contentEl.querySelector('.markdown-body');
+        promoteDocumentTitle(contentEl.querySelector('.doc-header h1'), body);
+        wireDocumentLinks(body);
         currentDoc = doc;
 
         // Scroll to top
         contentEl.scrollTop = 0;
+        return true;
 
     } catch (error) {
+        if (sequence !== loadSequence) return false;
         console.error('Error loading document:', error);
         contentEl.innerHTML = `
             <div class="content-placeholder">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Fehler beim Laden des Dokuments: ${error.message}</p>
+                <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                <p></p>
             </div>
         `;
+        contentEl.querySelector('.content-placeholder p').textContent = `Fehler beim Laden des Dokuments: ${error.message}`;
+        return false;
     }
+}
+
+/**
+ * Every knowledge document opens with its own # title. It becomes the text of the header h1,
+ * so the page has a single h1 and anchors to the title still resolve.
+ */
+function promoteDocumentTitle(headerHeading, body) {
+    const first = body?.firstElementChild;
+    if (!headerHeading || first?.tagName !== 'H1') return;
+    headerHeading.querySelector('.doc-header-title').textContent = first.textContent;
+    headerHeading.id = slugify(first.textContent);
+    first.remove();
 }
 
 // Initialize on DOM ready

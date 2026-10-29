@@ -32,6 +32,12 @@ export function isCorrespSearchUrl(url) {
 export async function fetchFromCorrespSearchUrl(url, onProgress = null) {
     const urlObj = new URL(url);
 
+    // The paging and the transform read the TEI-JSON structure; an XML endpoint would fail later
+    // with an unrelated JSON error, so it is named here
+    if (/tei-xml\.xql$/i.test(urlObj.pathname)) {
+        throw new Error('Diese correspSearch-URL liefert TEI-XML. CorrespExplorer liest die correspSearch-API im JSON-Format: Bitte ersetzen Sie "tei-xml.xql" durch "tei-json.xql" und laden Sie erneut.');
+    }
+
     if (urlObj.searchParams.has('x')) {
         const data = await fetchPage(urlObj.toString());
         return transformToInternalFormat(extractLettersFromResponse(data), {});
@@ -67,9 +73,14 @@ export async function fetchFromCorrespSearchUrl(url, onProgress = null) {
 async function fetchPage(url) {
     const response = await fetchWithRetry(url);
     if (!response.ok) {
-        throw new Error(`correspSearch API error: ${response.status}`);
+        throw new Error(`correspSearch-API antwortet mit Fehler ${response.status}. Bitte pruefen Sie die Parameter der URL.`);
     }
-    return response.json();
+    try {
+        return await response.json();
+    } catch (error) {
+        console.error('correspSearch response is not JSON:', error);
+        throw new Error('Die Antwort der correspSearch-API ist kein JSON. Bitte verwenden Sie eine URL auf tei-json.xql.');
+    }
 }
 
 /**
@@ -103,7 +114,11 @@ async function fetchWithRetry(url, retries = 3) {
             });
             return response;
         } catch (error) {
-            if (i === retries - 1) throw error;
+            if (i === retries - 1) {
+                // fetch rejects without detail on network and CORS failures (US-02 asks for a hint)
+                console.error('correspSearch request failed:', error);
+                throw new Error(`correspSearch ist nicht erreichbar (${new URL(url).hostname}). Moeglich sind eine fehlende Netzwerkverbindung, eine voruebergehende Stoerung des Dienstes oder eine vom Browser blockierte Anfrage (CORS). Bitte versuchen Sie es spaeter erneut oder laden Sie das Ergebnis als Datei herunter und verwenden Sie den Datei-Upload.`);
+            }
             await new Promise(r => setTimeout(r, 1000 * (i + 1)));
         }
     }

@@ -2,14 +2,17 @@
 // Side-by-side comparison of persons, periods, or places
 
 import { languageLabel } from '../constants.js';
-import { debounce, escapeHtml, personKey } from '../utils.js';
+import { debounce, escapeHtml, personKey, placeKey, isKnownPlace } from '../utils.js';
+import { formatDateWithPrecision } from '../formatters.js';
 import { elements } from '../dom-cache.js';
+import { bindCombobox } from './view-support.js';
 
 // Module state
 let comparisonMode = 'persons';  // 'persons', 'periods', 'places'
 let comparisonA = null;
 let comparisonB = null;
 let comparisonData = null;
+let comparisonAutocompleteReady = false;
 
 // External dependencies - injected via init
 let getFilteredLetters = null;
@@ -48,6 +51,18 @@ function personIndexEntries(dataIndices) {
 }
 
 /**
+ * Places of the index with their key. The key is the index key (placeKey), the same the place
+ * filter of the state manager compares with; parser entries carry no geonames_id field.
+ */
+function placeIndexEntries(dataIndices) {
+    return Object.entries(dataIndices.places || {}).map(([key, p]) => ({
+        id: key,
+        name: p.name || key,
+        count: p.letter_count || 0
+    }));
+}
+
+/**
  * Builds comparison data for two elements
  */
 function buildComparisonData(mode, itemA, itemB) {
@@ -67,12 +82,8 @@ function buildComparisonData(mode, itemA, itemB) {
             l.year >= itemB.from && l.year <= itemB.to
         );
     } else if (mode === 'places') {
-        lettersA = letters.filter(l =>
-            l.place_sent?.geonames_id === itemA.id || l.place_sent?.name === itemA.id
-        );
-        lettersB = letters.filter(l =>
-            l.place_sent?.geonames_id === itemB.id || l.place_sent?.name === itemB.id
-        );
+        lettersA = letters.filter(l => placeKey(l.place_sent) === itemA.id);
+        lettersB = letters.filter(l => placeKey(l.place_sent) === itemB.id);
     }
 
     const metricsA = calculateComparisonMetrics(lettersA);
@@ -103,11 +114,11 @@ function calculateComparisonMetrics(letters) {
         ? { min: Math.min(...years), max: Math.max(...years) }
         : null;
 
-    // Top places
+    // Top places; a placeholder for an unknown place is no place (isKnownPlace)
     const placeCounts = new Map();
     for (const letter of letters) {
-        if (letter.place_sent?.name) {
-            const key = letter.place_sent.geonames_id || letter.place_sent.name;
+        if (letter.place_sent?.name && isKnownPlace(letter.place_sent)) {
+            const key = placeKey(letter.place_sent);
             const entry = placeCounts.get(key) || { name: letter.place_sent.name, count: 0 };
             entry.count++;
             placeCounts.set(key, entry);
@@ -134,13 +145,13 @@ function calculateComparisonMetrics(letters) {
     const personCounts = new Map();
     for (const letter of letters) {
         if (letter.sender?.name) {
-            const key = letter.sender.id || letter.sender.name;
+            const key = personKey(letter.sender);
             const entry = personCounts.get(key) || { name: letter.sender.name, count: 0 };
             entry.count++;
             personCounts.set(key, entry);
         }
         if (letter.recipient?.name) {
-            const key = letter.recipient.id || letter.recipient.name;
+            const key = personKey(letter.recipient);
             const entry = personCounts.get(key) || { name: letter.recipient.name, count: 0 };
             entry.count++;
             personCounts.set(key, entry);
@@ -234,8 +245,11 @@ export function renderComparison() {
 
     setupComparisonModeSelector();
     renderComparisonQuickSelect();
-    setupComparisonAutocomplete('a');
-    setupComparisonAutocomplete('b');
+    if (!comparisonAutocompleteReady) {
+        setupComparisonAutocomplete('a');
+        setupComparisonAutocomplete('b');
+        comparisonAutocompleteReady = true;
+    }
 
     if (comparisonA && comparisonB) {
         renderComparisonResults();
@@ -250,13 +264,17 @@ export function renderComparison() {
  */
 function setupComparisonModeSelector() {
     const buttons = document.querySelectorAll('.comparison-mode-btn');
+    const markActive = (active) => buttons.forEach(b => {
+        b.classList.toggle('active', b === active);
+        b.setAttribute('aria-pressed', String(b === active));
+    });
     buttons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === comparisonMode);
+        if (btn.dataset.mode === comparisonMode) markActive(btn);
         btn.onclick = () => {
             comparisonMode = btn.dataset.mode;
             comparisonA = null;
             comparisonB = null;
-            buttons.forEach(b => b.classList.toggle('active', b === btn));
+            markActive(btn);
             renderComparisonQuickSelect();
             document.getElementById('comparison-results')?.classList.add('hidden');
             document.getElementById('comparison-placeholder')?.classList.remove('hidden');
@@ -293,10 +311,9 @@ function renderComparisonQuickSelect() {
             { id: `${mid+1}-${max}`, name: `${mid+1}-${max}`, from: mid+1, to: max }
         ];
     } else if (comparisonMode === 'places') {
-        const places = Object.values(dataIndices.places || {})
-            .sort((a, b) => b.letter_count - a.letter_count)
+        items = placeIndexEntries(dataIndices)
+            .sort((a, b) => b.count - a.count)
             .slice(0, 10);
-        items = places.map(p => ({ id: p.geonames_id || p.name, name: p.name }));
     }
 
     const renderQuickButtons = (container, exclude) => {
@@ -571,21 +588,20 @@ function showCommonLettersModal(letterIds) {
     let html = `
         <div class="modal-header">
             <h3>Gemeinsame Briefe (${letters.length})</h3>
-            <button class="modal-close" id="common-letters-modal-close">&times;</button>
+            <button class="modal-close" id="common-letters-modal-close" aria-label="Schliessen">&times;</button>
         </div>
         <div class="modal-body">
             <div class="common-letters-list">
     `;
 
     for (const letter of letters.slice(0, 50)) {
-        const date = letter.date || 'Undatiert';
         const sender = letter.sender?.name || 'Unbekannt';
         const recipient = letter.recipient?.name || 'Unbekannt';
         const place = letter.place_sent?.name || '';
 
         html += `
             <div class="common-letter-item" role="button" tabindex="0" data-letter-id="${escapeHtml(letter.id)}">
-                <span class="common-letter-date">${escapeHtml(date)}</span>
+                <span class="common-letter-date">${formatDateWithPrecision(letter)}</span>
                 <span class="common-letter-sender">${escapeHtml(sender)}</span>
                 <i class="fas fa-arrow-right"></i>
                 <span class="common-letter-recipient">${escapeHtml(recipient)}</span>
@@ -633,66 +649,34 @@ function showCommonLettersModal(letterIds) {
 }
 
 /**
- * Initializes autocomplete for comparison search
+ * Initializes the search field of one side as combobox; bound once, reads mode and index on each search
  */
 function setupComparisonAutocomplete(side) {
     const input = document.getElementById(`comparison-input-${side}`);
     const dropdown = document.getElementById(`comparison-dropdown-${side}`);
     if (!input || !dropdown) return;
 
-    // Remove old listeners by cloning
-    const newInput = input.cloneNode(true);
-    input.parentNode.replaceChild(newInput, input);
-
-    const dataIndices = getIndices();
+    input.setAttribute('aria-label', `Auswahl ${side.toUpperCase()} suchen`);
+    const combobox = bindCombobox(input, dropdown, {
+        onSelect: item => selectComparisonItem(side, { id: item.id, name: item.name })
+    });
 
     const debouncedSearch = debounce((query) => {
-        const dd = document.getElementById(`comparison-dropdown-${side}`);
-        if (query.length < 2) {
-            dd.classList.add('hidden');
+        if (query.length < 2 || comparisonMode === 'periods') {
+            combobox.hide();
             return;
         }
 
-        let results = [];
+        const dataIndices = getIndices();
         const lowerQuery = query.toLowerCase();
+        const entries = comparisonMode === 'persons' ? personIndexEntries(dataIndices) : placeIndexEntries(dataIndices);
+        const results = entries
+            .filter(e => e.name && e.name.toLowerCase().includes(lowerQuery))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 10);
 
-        if (comparisonMode === 'persons') {
-            results = personIndexEntries(dataIndices)
-                .filter(p => p.name.toLowerCase().includes(lowerQuery))
-                .sort((a, b) => b.count - a.count)
-                .slice(0, 10);
-        } else if (comparisonMode === 'places') {
-            results = Object.values(dataIndices.places || {})
-                .filter(p => p.name.toLowerCase().includes(lowerQuery))
-                .sort((a, b) => b.letter_count - a.letter_count)
-                .slice(0, 10)
-                .map(p => ({ id: p.geonames_id || p.name, name: p.name }));
-        }
-
-        if (results.length > 0) {
-            dd.innerHTML = results.map(r =>
-                `<div class="autocomplete-item" data-id="${escapeHtml(r.id)}" data-name="${escapeHtml(r.name)}">
-                    ${escapeHtml(r.name)}
-                </div>`
-            ).join('');
-            dd.classList.remove('hidden');
-
-            dd.querySelectorAll('.autocomplete-item').forEach(item => {
-                item.onclick = () => {
-                    selectComparisonItem(side, {
-                        id: item.dataset.id,
-                        name: item.dataset.name
-                    });
-                    dd.classList.add('hidden');
-                };
-            });
-        } else {
-            dd.classList.add('hidden');
-        }
+        combobox.show(results);
     }, 200);
 
-    newInput.addEventListener('input', () => debouncedSearch(newInput.value));
-    newInput.addEventListener('blur', () => {
-        setTimeout(() => document.getElementById(`comparison-dropdown-${side}`)?.classList.add('hidden'), 200);
-    });
+    input.addEventListener('input', () => debouncedSearch(input.value));
 }
