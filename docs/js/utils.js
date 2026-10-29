@@ -264,6 +264,41 @@ export function parseGeoNamesRef(url) {
 }
 
 /**
+ * Classify a TEI date by its attributes, shared by the CMIF parser and the correspSearch loader.
+ * Precision levels: day, month, year, range, unknown. Certainty comes from @cert (default high).
+ * @param {{when?: string, from?: string, to?: string, notBefore?: string, notAfter?: string, cert?: string}} attrs
+ * @returns {{date: string|null, dateTo: string|null, year: number|null, precision: string, certainty: string}}
+ */
+export function classifyDate({ when, from, to, notBefore, notAfter, cert } = {}) {
+    const certainty = cert || 'high';
+    const dateStr = when || from || notBefore;
+    const dateToStr = to || notAfter || null;
+
+    if (!dateStr && !dateToStr) {
+        return { date: null, dateTo: null, year: null, precision: 'unknown', certainty };
+    }
+
+    const year = dateStr ? parseInt(dateStr.substring(0, 4), 10) : null;
+
+    let precision = 'unknown';
+    if ((from && to) || notBefore || notAfter) {
+        precision = 'range';
+    } else if (when) {
+        if (when.length === 10) precision = 'day';       // YYYY-MM-DD
+        else if (when.length === 7) precision = 'month'; // YYYY-MM
+        else if (when.length === 4) precision = 'year';  // YYYY
+    }
+
+    return {
+        date: dateStr || dateToStr,
+        dateTo: dateToStr,
+        year: Number.isNaN(year) ? null : year,
+        precision,
+        certainty
+    };
+}
+
+/**
  * Count distinct correspondents (senders and recipients) and those with an authority reference.
  * Parser and preprocessing store the bare authority id (e.g. "18030027") in `id` and the
  * system in `authority`, so a present `id` marks identification, not a URL prefix.

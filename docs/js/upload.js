@@ -2,7 +2,7 @@
 // Parses CMIF-XML and stores data for visualization
 
 import { parseCMIF, enrichWithCoordinates } from './cmif-parser.js';
-import { isCorrespSearchUrl, searchCorrespSearch, getResultCount } from './correspsearch-api.js';
+import { isCorrespSearchUrl } from './correspsearch-api.js';
 import { enrichPersonsBatch, countEnrichable } from './wikidata-enrichment.js';
 import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
 import { analyzeDataCapabilities } from './utils.js';
@@ -151,12 +151,10 @@ async function handleUrlSubmit() {
     if (isCorrespSearchUrl(url)) {
         showLoading('Lade von correspSearch API...');
         try {
-            const data = await parseCMIF(url, (loaded, total) => {
-                if (total) {
-                    updateLoadingText(`Lade Briefe... ${loaded}${total > loaded ? '+' : ''}`);
-                } else {
-                    updateLoadingText(`Lade Briefe... ${loaded}+`);
-                }
+            const data = await parseCMIF(url, (loaded, totalHits) => {
+                updateLoadingText(totalHits
+                    ? `Lade Briefe... ${loaded} von ${totalHits}`
+                    : `Lade Briefe... ${loaded}`);
             });
             await showConfigDialog(data, { type: 'correspsearch', source: url });
         } catch (error) {
@@ -272,7 +270,10 @@ async function showConfigDialog(data, sourceInfo) {
     const enrichableCount = countEnrichablePersons(data.letters || []);
 
     // Update modal content
-    document.getElementById('config-letters-count').textContent = letterCount.toLocaleString('de-DE');
+    // A correspSearch query above the letter cap loads only its first pages
+    document.getElementById('config-letters-count').textContent = data.meta?.truncated && data.meta.total_hits
+        ? `${letterCount.toLocaleString('de-DE')} von ${data.meta.total_hits.toLocaleString('de-DE')}`
+        : letterCount.toLocaleString('de-DE');
     document.getElementById('config-persons-count').textContent = personCount.toLocaleString('de-DE');
     document.getElementById('config-places-count').textContent = placeCount.toLocaleString('de-DE');
 

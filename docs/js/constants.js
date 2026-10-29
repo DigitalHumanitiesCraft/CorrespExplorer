@@ -162,5 +162,6 @@ export const BASKET_LIMITS = {
 
 // API-Konfiguration
 export const API_DEFAULTS = {
-    correspSearchPageSize: 10  // correspSearch API Ergebnisse pro Seite
+    // Upper bound for one correspSearch API URL; the API pages its results, so large queries stop here
+    correspSearchMaxLetters: 1000
 };

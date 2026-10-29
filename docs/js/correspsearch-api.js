@@ -1,11 +1,9 @@
 // correspSearch API Integration
-// Handles fetching and transforming data from the correspSearch API v2.0
+// Loads correspSearch API v2.0 TEI-JSON URLs (https://correspsearch.net/en/api.html) and
+// transforms the result into the internal format of cmif-parser.js
 
-import { parseAuthorityRef, parseGeoNamesRef } from './utils.js';
+import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate } from './utils.js';
 import { API_DEFAULTS } from './constants.js';
-
-const CORRESPSEARCH_API_BASE = 'https://correspsearch.net/api/v2.0/tei-json.xql';
-const MAX_RESULTS_PER_PAGE = API_DEFAULTS.correspSearchPageSize;
 
 /**
  * Check if a URL is a correspSearch API URL
@@ -13,163 +11,78 @@ const MAX_RESULTS_PER_PAGE = API_DEFAULTS.correspSearchPageSize;
  * @returns {boolean}
  */
 export function isCorrespSearchUrl(url) {
-    return url && url.includes('correspsearch.net/api');
+    return Boolean(url) && url.includes('correspsearch.net/api');
 }
 
 /**
- * Search correspSearch API with given parameters
- * @param {Object} params - Search parameters
- * @param {string} [params.correspondent] - Person URI (GND/VIAF)
- * @param {string} [params.place] - Place URI (GeoNames)
- * @param {string} [params.placeSender] - Sender place URI
- * @param {string} [params.startdate] - Start date (YYYY-MM-DD)
- * @param {string} [params.enddate] - End date (YYYY-MM-DD)
- * @param {boolean} [params.available] - Only with digitized version
- * @param {Function} [onProgress] - Progress callback (loaded, total)
+ * Load letters from a correspSearch API URL.
+ * The API pages its results with x = 1..n. A URL that already carries x loads only that page;
+ * otherwise pages are followed while notesStmt/relatedItem names a next page, up to
+ * API_DEFAULTS.correspSearchMaxLetters letters. The page size is not assumed, because the
+ * documentation (100) and the observed responses (10) differ.
+ * @param {string} url - Full API URL
+ * @param {Function} [onProgress] - Progress callback (loaded, totalHits)
  * @returns {Promise<Object>} Parsed data in internal format
  */
-export async function searchCorrespSearch(params, onProgress = null) {
+export async function fetchFromCorrespSearchUrl(url, onProgress = null) {
+    const urlObj = new URL(url);
+
+    if (urlObj.searchParams.has('x')) {
+        const data = await fetchPage(urlObj.toString());
+        return transformToInternalFormat(extractLettersFromResponse(data), {});
+    }
+
+    const maxLetters = API_DEFAULTS.correspSearchMaxLetters;
     const allLetters = [];
-    let offset = 0;
-    let hasMore = true;
-    let totalEstimate = null;
+    let totalHits = null;
+    let truncated = false;
 
-    while (hasMore) {
-        const url = buildApiUrl(params, offset);
-        const response = await fetchWithRetry(url);
-
-        if (!response.ok) {
-            throw new Error(`correspSearch API error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        // Handle different response formats
+    for (let page = 1; ; page++) {
+        urlObj.searchParams.set('x', String(page));
+        const data = await fetchPage(urlObj.toString());
         const letters = extractLettersFromResponse(data);
         allLetters.push(...letters);
+        totalHits ??= parseTotalHits(data);
 
-        // Check pagination
-        hasMore = data.teiHeader?.profileDesc?.correspDesc?.length === MAX_RESULTS_PER_PAGE ||
-                  data.more === true ||
-                  (Array.isArray(data) && data.length === MAX_RESULTS_PER_PAGE);
+        if (onProgress) onProgress(allLetters.length, totalHits);
 
-        if (hasMore) {
-            offset += MAX_RESULTS_PER_PAGE;
-
-            // Estimate total for progress
-            if (!totalEstimate && letters.length === MAX_RESULTS_PER_PAGE) {
-                totalEstimate = offset + MAX_RESULTS_PER_PAGE * 2; // Rough estimate
-            }
-
-            if (onProgress) {
-                onProgress(allLetters.length, totalEstimate || allLetters.length + 100);
-            }
-        }
-
-        // Safety limit to prevent infinite loops
-        if (offset > 10000) {
-            console.warn('correspSearch: Reached safety limit of 10000 results');
+        if (letters.length === 0 || !hasNextPage(data)) break;
+        if (allLetters.length >= maxLetters) {
+            truncated = true;
             break;
         }
     }
 
-    if (onProgress) {
-        onProgress(allLetters.length, allLetters.length);
-    }
+    const result = transformToInternalFormat(allLetters, {});
+    result.meta.total_hits = totalHits;
+    result.meta.truncated = truncated;
+    return result;
+}
 
-    return transformToInternalFormat(allLetters, params);
+async function fetchPage(url) {
+    const response = await fetchWithRetry(url);
+    if (!response.ok) {
+        throw new Error(`correspSearch API error: ${response.status}`);
+    }
+    return response.json();
 }
 
 /**
- * Fetch a single page from correspSearch API URL
- * @param {string} url - Full API URL
- * @param {Function} [onProgress] - Progress callback
- * @returns {Promise<Object>} Parsed data in internal format
+ * Read the hit count from notesStmt/note ("1-10 of 87 hits")
  */
-export async function fetchFromCorrespSearchUrl(url, onProgress = null) {
-    // Extract base URL and check for pagination parameter
-    const urlObj = new URL(url);
-    const hasOffset = urlObj.searchParams.has('x');
-
-    if (hasOffset) {
-        // Single page request
-        const response = await fetchWithRetry(url);
-        if (!response.ok) {
-            throw new Error(`correspSearch API error: ${response.status}`);
-        }
-        const data = await response.json();
-        const letters = extractLettersFromResponse(data);
-        return transformToInternalFormat(letters, {});
-    }
-
-    // Fetch all pages
-    const allLetters = [];
-    let offset = 0;
-    let hasMore = true;
-
-    while (hasMore) {
-        urlObj.searchParams.set('x', offset.toString());
-        const pageUrl = urlObj.toString();
-
-        const response = await fetchWithRetry(pageUrl);
-        if (!response.ok) {
-            throw new Error(`correspSearch API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const letters = extractLettersFromResponse(data);
-        allLetters.push(...letters);
-
-        hasMore = letters.length === MAX_RESULTS_PER_PAGE;
-
-        if (hasMore) {
-            offset += MAX_RESULTS_PER_PAGE;
-            if (onProgress) {
-                onProgress(allLetters.length, null);
-            }
-        }
-
-        if (offset > 10000) break;
-    }
-
-    if (onProgress) {
-        onProgress(allLetters.length, allLetters.length);
-    }
-
-    return transformToInternalFormat(allLetters, {});
+function parseTotalHits(data) {
+    const note = data?.teiHeader?.fileDesc?.notesStmt?.note;
+    const match = typeof note === 'string' ? note.match(/of\s+(\d+)\s+hits/i) : null;
+    return match ? parseInt(match[1], 10) : null;
 }
 
 /**
- * Build API URL from parameters
+ * The API names the following page in notesStmt/relatedItem[@type="next"]
  */
-function buildApiUrl(params, offset = 0) {
-    const url = new URL(CORRESPSEARCH_API_BASE);
-
-    if (params.correspondent) {
-        url.searchParams.set('correspondent', params.correspondent);
-    }
-    if (params.place) {
-        url.searchParams.set('place', params.place);
-    }
-    if (params.placeSender) {
-        url.searchParams.set('placeSender', params.placeSender);
-    }
-    if (params.startdate) {
-        url.searchParams.set('startdate', params.startdate);
-    }
-    if (params.enddate) {
-        url.searchParams.set('enddate', params.enddate);
-    }
-    if (params.available) {
-        url.searchParams.set('available', 'online');
-    }
-
-    // Pagination: x=2 means page 2, x=3 means page 3, etc.
-    if (offset > 0) {
-        url.searchParams.set('x', (offset / MAX_RESULTS_PER_PAGE + 1).toString());
-    }
-
-    return url.toString();
+function hasNextPage(data) {
+    const related = data?.teiHeader?.fileDesc?.notesStmt?.relatedItem;
+    const items = Array.isArray(related) ? related : (related ? [related] : []);
+    return items.some(item => item?.type === 'next');
 }
 
 /**
@@ -224,7 +137,7 @@ function extractLettersFromResponse(data) {
  * Transform correspSearch letters to internal format
  */
 function transformToInternalFormat(csLetters, searchParams) {
-    const letters = csLetters.map(transformLetter).filter(l => l !== null);
+    const letters = csLetters.map((csLetter, index) => transformLetter(csLetter, index)).filter(l => l !== null);
     const indices = buildIndices(letters);
     const meta = buildMeta(letters, searchParams);
 
@@ -234,7 +147,7 @@ function transformToInternalFormat(csLetters, searchParams) {
 /**
  * Transform a single correspSearch letter to internal format
  */
-function transformLetter(csLetter) {
+function transformLetter(csLetter, index) {
     if (!csLetter) return null;
 
     // Handle different field naming conventions
@@ -246,8 +159,9 @@ function transformLetter(csLetter) {
                      csLetter.received ||
                      { persName: csLetter.receiver || csLetter.addressee };
 
-    const id = csLetter.ref || csLetter.key || csLetter.id || `cs-${Math.random().toString(36).substr(2, 9)}`;
-    const url = csLetter.ref || null;
+    // Fallback id from result position, so ids stay stable across reloads and URL state
+    const id = csLetter.ref || csLetter.key || csLetter.id || `cs-${index + 1}`;
+    const url = safeUrl(csLetter.ref) || null;
 
     // Extract sender
     const senderData = extractPersonFromAction(sent);
@@ -265,7 +179,10 @@ function transformLetter(csLetter) {
         id: cleanId(id),
         url,
         date: dateData.date,
+        dateTo: dateData.dateTo,
         year: dateData.year,
+        datePrecision: dateData.precision,
+        dateCertainty: dateData.certainty,
         sender: senderData,
         recipient: recipientData,
         place_sent: placeData,
@@ -361,36 +278,23 @@ function extractPlaceFromAction(action) {
 }
 
 /**
- * Extract date from correspAction or letter
+ * Extract date from correspAction or letter, with the precision rules of the CMIF parser
  */
 function extractDateFromAction(action, letter) {
     let dateObj = action?.date || letter?.date;
+    if (Array.isArray(dateObj)) dateObj = dateObj[0];
+    if (!dateObj) return classifyDate({});
 
-    if (!dateObj) return { date: null, year: null };
+    if (typeof dateObj === 'string') return classifyDate({ when: dateObj });
 
-    let dateStr;
-
-    // Handle array format (correspSearch returns date as array)
-    if (Array.isArray(dateObj)) {
-        const firstDate = dateObj[0];
-        if (firstDate) {
-            dateStr = firstDate.when || firstDate.from || firstDate.notBefore || firstDate.notAfter;
-        }
-    } else if (typeof dateObj === 'string') {
-        dateStr = dateObj;
-    } else {
-        dateStr = dateObj.when || dateObj.from || dateObj.notBefore || dateObj.notAfter ||
-                  dateObj['@when'] || dateObj['@from'] || dateObj['@notBefore'];
-    }
-
-    if (!dateStr) return { date: null, year: null };
-
-    const year = parseInt(dateStr.substring(0, 4), 10);
-
-    return {
-        date: dateStr,
-        year: isNaN(year) ? null : year
-    };
+    return classifyDate({
+        when: dateObj.when || dateObj['@when'],
+        from: dateObj.from || dateObj['@from'],
+        to: dateObj.to || dateObj['@to'],
+        notBefore: dateObj.notBefore || dateObj['@notBefore'],
+        notAfter: dateObj.notAfter || dateObj['@notAfter'],
+        cert: dateObj.cert || dateObj['@cert']
+    });
 }
 
 /**
@@ -490,42 +394,5 @@ function buildMeta(letters, searchParams) {
             max: years.length > 0 ? Math.max(...years) : null
         },
         generated: new Date().toISOString()
-    };
-}
-
-/**
- * Get count of results for a query (first page only)
- * @param {Object} params - Search parameters
- * @returns {Promise<{count: number, hasMore: boolean, totalHits: number|null}>}
- */
-export async function getResultCount(params) {
-    const url = buildApiUrl(params, 0);
-    const response = await fetchWithRetry(url);
-
-    if (!response.ok) {
-        throw new Error(`correspSearch API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const letters = extractLettersFromResponse(data);
-
-    // Try to extract total count from notesStmt (e.g., "1-10 of 200000 hits")
-    let totalHits = null;
-    const note = data.teiHeader?.fileDesc?.notesStmt?.note;
-    if (note && typeof note === 'string') {
-        const match = note.match(/of\s+(\d+)\s+hits/i);
-        if (match) {
-            totalHits = parseInt(match[1], 10);
-        }
-    }
-
-    // Check for next page link
-    const hasMore = data.teiHeader?.fileDesc?.notesStmt?.relatedItem?.type === 'next' ||
-                    letters.length === MAX_RESULTS_PER_PAGE;
-
-    return {
-        count: letters.length,
-        hasMore,
-        totalHits
     };
 }

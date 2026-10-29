@@ -3,7 +3,7 @@
 // Also handles correspSearch API responses (TEI-JSON format)
 
 import { isCorrespSearchUrl, fetchFromCorrespSearchUrl } from './correspsearch-api.js';
-import { parseAuthorityRef, parseGeoNamesRef, safeUrl } from './utils.js';
+import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate } from './utils.js';
 
 const TEI_NS = 'http://www.tei-c.org/ns/1.0';
 
@@ -274,47 +274,17 @@ function extractPlace(action) {
  * Certainty levels: high, medium, low (from @cert attribute)
  */
 function extractDate(action) {
-    if (!action) return { date: null, dateTo: null, year: null, precision: 'unknown', certainty: 'high' };
+    const dateEl = action?.getElementsByTagNameNS(TEI_NS, 'date')[0];
+    if (!dateEl) return classifyDate({});
 
-    const dateEl = action.getElementsByTagNameNS(TEI_NS, 'date')[0];
-    if (!dateEl) return { date: null, dateTo: null, year: null, precision: 'unknown', certainty: 'high' };
-
-    const when = dateEl.getAttribute('when');
-    const from = dateEl.getAttribute('from');
-    const to = dateEl.getAttribute('to');
-    const notBefore = dateEl.getAttribute('notBefore');
-    const notAfter = dateEl.getAttribute('notAfter');
-    const cert = dateEl.getAttribute('cert') || 'high';
-
-    // Determine primary date string
-    const dateStr = when || from || notBefore;
-    const dateToStr = to || notAfter || null;
-
-    if (!dateStr && !dateToStr) {
-        return { date: null, dateTo: null, year: null, precision: 'unknown', certainty: cert };
-    }
-
-    const year = dateStr ? parseInt(dateStr.substring(0, 4), 10) : null;
-
-    // Determine precision based on attributes and format
-    let precision = 'unknown';
-    if (from && to) {
-        precision = 'range';
-    } else if (notBefore || notAfter) {
-        precision = 'range';
-    } else if (when) {
-        if (when.length === 10) precision = 'day';       // YYYY-MM-DD
-        else if (when.length === 7) precision = 'month'; // YYYY-MM
-        else if (when.length === 4) precision = 'year';  // YYYY
-    }
-
-    return {
-        date: dateStr || dateToStr,
-        dateTo: dateToStr,
-        year: isNaN(year) ? null : year,
-        precision,
-        certainty: cert
-    };
+    return classifyDate({
+        when: dateEl.getAttribute('when'),
+        from: dateEl.getAttribute('from'),
+        to: dateEl.getAttribute('to'),
+        notBefore: dateEl.getAttribute('notBefore'),
+        notAfter: dateEl.getAttribute('notAfter'),
+        cert: dateEl.getAttribute('cert')
+    });
 }
 
 /**
