@@ -9,7 +9,7 @@ method:
 status: draft
 language: en
 created: 2025-11-27
-updated: 2025-12-01
+updated: 2026-10-29
 authors: [Christopher Pollin]
 related: [specification, data, design, architecture]
 ---
@@ -22,7 +22,7 @@ Related: [specification.md](specification.md#adr-002-unsicherheit-sichtbar-mache
 
 User documentation: [about.html](../about.html) (Section "Umgang mit Datenqualitaet")
 
-Test file: [data/test-uncertainty.xml](../data/test-uncertainty.xml) (22 test cases)
+Test file: [data/test-uncertainty.xml](../data/test-uncertainty.xml) (23 test cases)
 
 ---
 
@@ -288,7 +288,7 @@ JSON example:
 
 ## Test Cases
 
-The file `data/test-uncertainty.xml` contains 22 cases organized in 4 sections:
+The file `data/test-uncertainty.xml` contains 23 cases organized in 4 sections:
 
 ### Section A: Date Uncertainty (Cases 001-007)
 
@@ -323,7 +323,7 @@ The file `data/test-uncertainty.xml` contains 22 cases organized in 4 sections:
 | 017 | No place at all | Empty or "-" |
 | 018 | Place with GeoNames | Normal display, map marker |
 
-### Section D: Special Cases (Cases 019-022)
+### Section D: Special Cases (Cases 019-023)
 
 | Case | Description | Expected Display |
 |------|-------------|------------------|
@@ -331,6 +331,7 @@ The file `data/test-uncertainty.xml` contains 22 cases organized in 4 sections:
 | 020 | Multiple uncertainties | All indicators visible |
 | 021 | Letter with language (fr) | Language filter shows "Franzoesisch" |
 | 022 | Letter with subjects | Topics visible in Topics view |
+| 023 | Language target "None" with label Ladinisch, as in the HSA source | Shown as "Ladinisch", not counted as a letter without language |
 
 ---
 

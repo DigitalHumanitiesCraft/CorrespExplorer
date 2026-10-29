@@ -477,7 +477,7 @@ Implementiert in base.css.
 
 ### Undatierte Briefe als abgesetzter Balken
 
-Briefe ohne Datum stehen in einem eigenen Balken rechts der Timeline und werden keinem Platzhalterjahr zugeordnet, das die Zeitachse verzerren würde. Die Trennung macht die Datenlage sichtbar. Ein Klick auf den Balken filtert auf die undatierten Briefe. Sind alle Briefe datiert, zeigt ein gestrichelter Platzhalter mit Häkchen diesen Zustand an. Die Timeline gruppiert dazu nach `datePrecision`.
+Briefe ohne Datum stehen in einem eigenen Balken rechts der Timeline und werden keinem Platzhalterjahr zugeordnet, das die Zeitachse verzerren würde. Die Trennung macht die Datenlage sichtbar. Ein Klick oder Enter auf den Balken (`role="button"`) filtert auf die undatierten Briefe, unter dem Jahresregler steht dann „Nur Briefe ohne Datum“. Sind alle Briefe datiert, zeigt ein gestrichelter Platzhalter mit Häkchen diesen Zustand an. Die Timeline gruppiert dazu nach `datePrecision`.
 
 ### Markierung nur an unsicheren Werten
 
@@ -503,7 +503,7 @@ Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige
 
 ### Startansicht und Navigation
 
-Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe, Bezeichnung und Kurzbeschreibung stehen im Tooltip und im zugänglichen Namen. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips färben nach Schwellen von 70 und 40 Prozent grün, gelb und rot. Ob diese Ampel mit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten) vereinbar ist, ist offen ([plan.md](plan.md#offene-entscheidungen-und-abhängigkeiten)).
+Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe, Bezeichnung und Kurzbeschreibung stehen im Tooltip und im zugänglichen Namen. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen.
 
 ### Wissenspfade
 

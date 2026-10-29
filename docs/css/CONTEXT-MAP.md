@@ -8,7 +8,7 @@ Die Seiten laden zuerst die Bibliotheks-Stylesheets aus `../vendor/` (Font Aweso
 
 1. tokens.css - Design-Tokens (`--color-*`, `--space-*`, `--font-*`, `--radius-*`, Layoutmaße, Übergänge)
 2. base.css - Reset, globale Elemente, `:focus-visible`
-3. components.css - wiederverwendbare Komponenten (Buttons, Karten, Dialoge, Sidebar-Abschnitte, Zoom-Steuerung des Sankey)
+3. components.css - wiederverwendbare Komponenten (Buttons, Karten, Dialoge, Toast aller Seiten, Sidebar-Abschnitte, Zoom-Steuerung des Sankey)
 4. shadows.css - Schatten nur für schwebende Elemente
 5. style.css - Navigation, Sidebar, Layout, Responsive-Regeln, importiert `../vendor/fonts/fonts.css`
 6. Seiten-CSS: explore.css, upload.css, about.css, vault.css, wissenskorb.css, test.css
@@ -28,4 +28,4 @@ Alle sechs Seiten laden diese Reihenfolge vollständig (geprüft am 2026-10-29).
 
 - Reguläre Elemente (Karten, Buttons, Eingaben) tragen Rahmen. Schatten bleiben Dialogen, Dropdowns, Tooltips, Karten-Popups, Kartensteuerung und Toasts vorbehalten. Einzelne Schatten in style.css, explore.css, upload.css und wissenskorb.css sind gegen diese Regel noch nicht geprüft.
 - Unter 768px liegt die Sidebar außerhalb des Bildschirms (`.sidebar.open` blendet sie ein), der Ansichtswechsel wird zur scrollbaren Icon-Leiste.
-- `.hidden` in base.css blendet mit `!important` aus und überstimmt Anzeigeregeln der Seiten-CSS.
+- `.hidden` in base.css blendet mit `!important` aus und überstimmt Anzeigeregeln der Seiten-CSS. Dialoge öffnen und schließen deshalb nur über diese Klasse (`openModal`, `closeModal` in utils.js), nie über `style.display`.

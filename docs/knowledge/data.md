@@ -52,7 +52,7 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 | `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 mit allen Erwähnungstypen des CMIF-v2-Entwurfs (Themen, Personen, Orte, Organisationen, Werke) und Sprachangaben | Tutorial-Datensatz der Startseite mit Onboarding-Tour |
 | `docs/data/hsa.xml` | CMIF-Export des Hugo Schuchardt Archivs | Quelle der Vorprozessierung |
 | `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes, teiHeader-Metadaten und Änderungsvermerk `meta.modifications` | Erweiterter Beispieldatensatz der Startseite |
-| `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs, teils falsch zugeordnet (siehe [Rechte und Lizenzen](#rechte-und-lizenzen)) | Ergänzung von Orten ohne Koordinaten beim Upload |
+| `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs aus Wikidata, für Genf aus GeoNames (siehe [Herkunft](#herkunft-von-docsdatageonames_coordinatesjson)) | Ergänzung von Orten ohne Koordinaten beim Upload |
 | `docs/data/test-uncertainty.xml` | Synthetische Unsicherheitsfälle | Testdatei, siehe [Testdatensätze](#testdatensätze) |
 | `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs) | Testdatei der Sicherheits-Suite |
 | `docs/data/schoenbach.xml` | Lokale Kopie der Schönbach-Briefe | Kleiner Realdatensatz |
@@ -81,7 +81,7 @@ Kennzahlen der gebündelten Datei, Stand der Vorprozessierung im Dezember 2025:
 
 Die häufigsten Korrespondenten sind Leo Spitzer (447 Briefe, VIAF 46804188), Julio de Urquijo Ybarra (243, VIAF 18030027), Georges Lacombe (235, VIAF 34446283), Theodor Gartner (222, VIAF 59114592) und Edward Spencer Dodgson (181, VIAF 27433725). Die häufigsten Absendeorte sind Graz (2.371, GeoNames 2778067), Wien (855, 2761369), Paris (781, 2988507), Leipzig (247, 2879139) und Berlin (237, 2950159). Graz als Schuchardts Wirkungsort stellt rund ein Fünftel aller Briefe.
 
-Im Sprachindex der Datei steht der Code `None` für die Bezeichnung „Ladinisch“. Die Oberfläche zeigt `None` als „Ohne Angabe“, weil der Parser `None` für Briefe ohne Sprachangabe vergibt. Die Doppeldeutigkeit stammt aus der Vorprozessierung (geprüft am 2026-10-29 in `indices.languages`).
+Die CMIF-Datei des HSA schreibt für Ladinisch `target="None"` mit dem Text „Ladinisch“ (`data/hsa/CMIF.xml`, zwei Briefe), die Vorprozessierung übernimmt den Code unverändert nach `indices.languages`. Bis zum 2026-10-29 nutzte die Oberfläche denselben String `None` für Briefe ohne Sprachangabe und zeigte Ladinisch deshalb als „Ohne Angabe“. Seither tragen Briefe ohne Sprache den internen Code `NO_LANGUAGE` (`_none`, `constants.js`), und `languageLabel()` zeigt für `None` die Bezeichnung aus den Daten. Der Quellwert selbst bleibt unverändert.
 
 ### Externe CMIF-Quellen
 
@@ -108,13 +108,21 @@ Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY
 | `docs/data/demo-showcase.xml`, `docs/data/test-uncertainty.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | teiHeader der Dateien |
 | `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 wie die übrigen synthetischen Dateien | Diese Tabelle. Das `licence`-Element der Datei bleibt absichtlich feindliche Eingabe der Sicherheits-Suite und trägt deshalb keine gültige Angabe |
 | `data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata, per SPARQL über die GeoNames-ID (P1566) abgefragt | Wikidata-Daten stehen unter CC0 | `meta.source` der Datei |
-| `docs/data/geonames_coordinates.json` | Im Projekt angelegte Koordinatentabelle, von `upload.js` geladen | keine | Siehe die Herkunftsprüfung unten |
+| `docs/data/geonames_coordinates.json` | Mit `resolve_geonames_wikidata.py --served` aus `data/geonames_coordinates.json` abgeleitet, ergänzt um die GeoNames-IDs der gebündelten CMIF-Dateien, von `upload.js` geladen | Wikidata CC0, der Eintrag für Genf (2660646) aus GeoNames unter CC BY 4.0 | `meta` der Datei, Feld `source: "geonames"` am Eintrag |
 
 Externe Quellen, die Nutzende zur Laufzeit laden, sind nicht im Repository gebündelt. Ihre Lizenz steht im teiHeader der geladenen Datei, die Übersicht zeigt sie an. Die correspSearch-API gibt ihre Ergebnisse laut API-Dokumentation (https://correspsearch.net/en/api.html, abgerufen 2026-10-29) unter CC BY 4.0 aus, die zu nennenden Datengeber stehen in `teiHeader//respStmt`.
 
 ### Herkunft von docs/data/geonames_coordinates.json
 
-Die Datei entstand mit Commit `e1a13cf` (2025-11-26) als leeres Objekt. Commit `d2bc2eb` (2025-11-27, in einer Coding-Agent-Session) füllte sie mit 58 europäischen Städten. Weder Commit noch Skript nennen eine Quelle, und keine Pipeline im Repository erzeugt die Datei. Ein Abgleich jeder ID mit dem GeoNames-RDF-Dienst (`https://sws.geonames.org/{id}/about.rdf`, am 2026-10-29) ergab 31 Einträge mit identischen Koordinaten und 14 mit Abweichungen unter 0,05 Grad. 13 Einträge ordnen einer GeoNames-ID Namen und Koordinaten einer anderen Stadt zu, etwa ID 2660646 (GeoNames: Genf) mit Namen und Koordinaten von Bern oder ID 3164603 (GeoNames: Venedig) mit denen von Turin. Die Übereinstimmung der übrigen Werte mit GeoNames spricht vermutlich dafür, dass die Tabelle aus GeoNames-Werten zusammengestellt wurde, die Vertauschungen sprechen gegen einen maschinellen Abruf. Die Werte sind deshalb nicht belegt und teils falsch. Der Tutorial-Datensatz ist betroffen, weil er Genf mit ID 2660646 führt und `upload.js` Genf dadurch bei Bern verortet. Die Datei bleibt unverändert, die Entscheidung steht in [plan.md](plan.md#9-statische-koordinatentabelle-ordnet-ids-falsch-zu).
+Bis zum 2026-10-29 lag hier eine Handtabelle mit 58 europäischen Städten aus Commit `d2bc2eb` (2025-11-27) ohne Quellenangabe. Ein Abgleich mit dem GeoNames-RDF-Dienst (`https://sws.geonames.org/{id}/about.rdf`) ergab 13 Einträge, die einer GeoNames-ID Namen und Koordinaten einer anderen Stadt zuordneten, etwa Genf (2660646) mit den Werten von Bern. Der Tutorial-Datensatz zeigte Genf deshalb bei Bern (Befund 9).
+
+Auf Entscheidung des Operators ersetzt die Wikidata-Tabelle der Vorprozessierung die Handtabelle. `python preprocessing/resolve_geonames_wikidata.py --served` schreibt `docs/data/geonames_coordinates.json` im Format `{meta, coordinates}`.
+
+- Alle Einträge von `data/geonames_coordinates.json` gehen unverändert über. Sie stammen aus Wikidata, Koordinate P625 des Objekts mit der GeoNames-ID P1566.
+- IDs der gebündelten CMIF-Dateien in `docs/data/` außer `hsa.xml`, die der Tabelle fehlen, löst das Skript ebenso über Wikidata auf (Döbling 2600996, Zdislavice 3061643, Blansko 3079273).
+- Genf (2660646) ist bei Wikidata mit einer anderen GeoNames-ID verknüpft (7285902). Für solche IDs liest das Skript Koordinaten und Namen aus dem GeoNames-RDF-Dienst und markiert den Eintrag mit `source: "geonames"`. `meta.added_for_bundled_cmif` nennt die ergänzten IDs.
+
+Geprüft am 2026-10-29: Jeder Eintrag der neuen Tabelle wurde mit dem GeoNames-RDF-Datensatz seiner ID verglichen. Alle Namen bezeichnen denselben Ort. Siedlungen liegen bis auf eine Ausnahme unter 10 km von der GeoNames-Koordinate entfernt, Lagos (2332459) mit 42 km, weil das Wikidata-Objekt den Bundesstaat Lagos meint. Größere Abstände betreffen Länder, Regionen und Gewässer, deren Mittelpunkt bei Wikidata und GeoNames verschieden gesetzt ist. Zwei IDs antworteten beim Lauf nicht und wurden einzeln nachgeprüft (Burgdorf, Riva del Garda). Im Tutorial-Datensatz liegt Genf seither bei 46,20 N 6,15 O.
 
 ### Entschieden am 2026-10-29
 
@@ -169,7 +177,7 @@ Der Parser erzeugt Briefe als Hauptentitäten und Indizes für Personen, Orte, S
 
 - Personen tragen `letter_count` als Summe aus `as_sender` und `as_recipient`. Ein Feld `letters_sent` gibt es nicht.
 - Themen tragen ihre Bezeichnung in `label`. Code, der `name` erwartet, greift auf `s.label || s.name` zurück.
-- CMIF speichert Sprachen oft als URI (`http://lexvo.org/id/iso639-3/deu`). `LANGUAGE_LABELS` in `constants.js` bildet sie auf lesbare Bezeichnungen ab.
+- CMIF speichert Sprachen oft als URI (`http://lexvo.org/id/iso639-3/deu`). `LANGUAGE_LABELS` in `constants.js` ist die einzige Bezeichnungstabelle für Parser und Ansichten, für Codes außerhalb der Tabelle gilt die Bezeichnung aus den Daten (`languageLabel()`), beim Parsen der Text des `ref`-Elements.
 
 ## Normdaten und Anschlüsse
 
@@ -216,7 +224,7 @@ Die Tests laden ausschließlich die lokalen Dateien `test-uncertainty.xml` und `
 
 | ID | Name | Briefe | Zeitraum | Quelle |
 |---|---|---|---|---|
-| uncertainty | Uncertainty Test | 22 | 1900 | CorrespExplorer, `docs/data/test-uncertainty.xml` |
+| uncertainty | Uncertainty Test | 23 | 1900 | CorrespExplorer, `docs/data/test-uncertainty.xml` |
 | hebel | Hebel-Briefe | 25 | 1791–1826 | TU Darmstadt, https://tueditions.ulb.tu-darmstadt.de/g/pa000018-0077 |
 | rollett | Rollett-Korrespondenz | 328 | 1877–1897 | Universität Graz, https://gams.uni-graz.at/context:rollett/CMI |
 | humboldt-spiker | Humboldt-Spiker | 156 | 1827–1846 | correspSearch, https://correspsearch.net/storage/avhumboldt/Spiker.xml |
@@ -237,7 +245,7 @@ Die Tests laden ausschließlich die lokalen Dateien `test-uncertainty.xml` und `
 
 ### Eigenheiten je Datensatz
 
-- Uncertainty Test: synthetisch, 22 Fälle in vier Sektionen (Datum 001–007, Person 008–013, Ort 014–018, Sonderfälle 019–022), darunter `cert="low"`, `[NN]`, Teilnamen, Personen ohne Normdaten und mit GND statt VIAF, Regionen, Organisation als Absender, kombinierte Unsicherheiten, Sprach- und Themenfelder. Die Fallliste führt [uncertainty-specification.md](uncertainty-specification.md#test-cases).
+- Uncertainty Test: synthetisch, 23 Fälle in vier Sektionen (Datum 001–007, Person 008–013, Ort 014–018, Sonderfälle 019–023), darunter `cert="low"`, `[NN]`, Teilnamen, Personen ohne Normdaten und mit GND statt VIAF, Regionen, Organisation als Absender, kombinierte Unsicherheiten, Sprach- und Themenfelder. Die Fallliste führt [uncertainty-specification.md](uncertainty-specification.md#test-cases).
 - Hebel: ein großer Teil der Briefe ohne Absendeort, `cert="low"` und Zeitbereiche wie „Sommer 1799?“, einziger externer Datensatz mit Sprachangabe.
 - Rollett: größter der externen Testdatensätze, internationale Wissenschaftlerkorrespondenz, `[NN]` für unbekannte Absender, Konzentration auf 1896–1897.
 - Humboldt-Spiker: wechselnde Absendeorte, asymmetrische Korrespondenz, `cert="low"` mit `evidence="conjecture"`.

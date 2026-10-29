@@ -97,7 +97,7 @@ Beispiele:
 Fokus: Bekannte Bugs sollten nicht wiederkehren
 
 Beispiele:
-- Unsicherheits-Erkennung (22 Testfälle aus test-uncertainty.xml)
+- Unsicherheits-Erkennung (die Fälle aus test-uncertainty.xml, Liste in [uncertainty-specification.md](uncertainty-specification.md#test-cases))
 - Edge-Cases (leere Daten, fehlende Felder)
 
 ## Test-Ausführung
@@ -130,6 +130,16 @@ Die Ansichten prüft ein Durchlauf mit Python-Playwright in Chrome (`channel="ch
 
 Externe Dienste mit Personenbezug (Wikidata) wurden im Durchlauf blockiert.
 
+Ein zweiter Durchlauf am selben Tag prüfte die Behebung der Befunde 9 bis 11 mit denselben Mitteln:
+
+- Tutorial-Datensatz über die Startseite: Genf (2660646) liegt bei 46,20 N 6,15 O
+- Personen-Dialog: keine Anfrage an Wikidata beim Öffnen, Schaltfläche „Lebensdaten von Wikidata laden“, eine verzögerte Antwort für eine zuvor geöffnete Person erscheint nicht im Dialog der nächsten, Fokus bleibt im Dialog, Escape schließt
+- Zeitleiste des HSA: Balken der undatierten Briefe sichtbar und per Enter bedienbar, führt zu den undatierten Briefen mit `undated=1` in der URL, das übersteht ein Neuladen. Ein `_total`-Segment lässt die Sprachauswahl stehen
+- Alle Sprachen abgewählt ergibt „Keine Briefe gefunden“ und `langs=` in der URL, `yearMin`, `yearMax` und `langs` aus der URL stehen nach dem Laden in Regler und Checkboxen
+- Korb und Wissenspfad nach Wechsel zum Tutorial-Datensatz leer, nach Rückkehr zum HSA wieder da, Toast mit Hinweis auf die Korbgrenze
+- Korbseite mit nur Briefen, nur einem Ort und nur einer Person: Kennzahlen, Zeitleiste, Karte und Netzwerk zeigen die Briefmenge des Korbs (alle drei Fälle durch einen Subagenten, der Korb aus Briefen und der Korb mit Graz zusätzlich im Hauptlauf, Graz mit 2.371 Briefen wie in data.md)
+- alle zwölf Ansichten mit HSA und Tutorial-Datensatz ohne Seitenfehler, „Ladinisch“ in Sprachfilter und Legende der Zeitleiste, neutrale Qualitäts-Chips, Startansicht bei 390px ohne horizontalen Überlauf
+
 ## Best Practices
 
 ### Test-Benennung
@@ -145,6 +155,8 @@ Externe Dienste mit Personenbezug (Wikidata) wurden im Durchlauf blockiert.
 ```
 
 ### Assertions
+
+Alle Suites importieren `assert(condition, message)` aus `test-runner.js` und definieren keine eigene Fassung.
 
 ```javascript
 // Gut: Spezifische Fehlermeldung
@@ -228,13 +240,16 @@ console.log('Filtered:', state.getFilteredLetters());
 1. Datei erstellen: `js/tests/test-mymodule.js`
 
 ```javascript
+import { assert } from './test-runner.js';
+
 export const MyModuleTests = {
     name: 'My Module',
     tests: [
         {
             name: 'Test description',
-            run() {
-                assert.equal(1 + 1, 2);
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                assert(data.letters.length > 0, 'Fixture sollte Briefe enthalten');
             }
         }
     ]

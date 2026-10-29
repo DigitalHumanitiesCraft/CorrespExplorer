@@ -441,4 +441,14 @@ Wahl. Die Oberfläche spricht von „Anreicherungspotential“ statt von „Date
 
 Begründung. „Qualität“ bewertet die Arbeit der Partner, „Anreicherungspotential“ richtet den Blick auf Möglichkeiten.
 
-Effekt. Gilt für alle Texte, die Lücken in fremden Daten benennen.
+Effekt. Gilt für alle Texte, die Lücken in fremden Daten benennen, und für ihre Gestaltung. Die Qualitäts-Chips der Startansicht zeigen Anteile ohne Ampelfarben (Entscheidung des Operators vom 2026-10-29, [design.md](design.md#startansicht-und-navigation)).
+
+### ADR-006 Externe Dienste nur auf ausdrückliche Aktion
+
+Kontext. Wikidata-Anfragen übermitteln die Normdaten-ID einer historischen Person an einen fremden Dienst. Chronik und Upload fragten erst auf Klick, der Personen-Dialog beim Öffnen.
+
+Wahl. Jede Anfrage an Wikidata oder GeoNames startet erst auf eine ausdrückliche Aktion der Nutzenden. Der Personen-Dialog zeigt vorhandene Anreicherung aus dem Upload und sonst eine Schaltfläche „Lebensdaten von Wikidata laden“ (Entscheidung des Operators vom 2026-10-29).
+
+Begründung. Nutzende sollen sehen und bestimmen, wann Daten das Werkzeug verlassen. Eine einheitliche Regel ist leichter zu prüfen als Ausnahmen je Ansicht.
+
+Effekt. Gilt für Personen-Dialog, Chronik, Orte und Upload. Eine Antwort für eine zuvor geöffnete Person wird verworfen, wenn inzwischen eine andere im Dialog steht (`personDetailRequest` in `explore.js`).

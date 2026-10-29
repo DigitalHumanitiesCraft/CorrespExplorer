@@ -48,17 +48,17 @@ Alle Bibliotheken liegen versioniert in `docs/vendor/`, jeweils mit ihrer Lizenz
 | Font Awesome Free | 6.4.0 | Icons (nur woff2-Schriften) | Icons CC BY 4.0, Schriften OFL 1.1, Code MIT |
 | Inter, Lato, Merriweather | Google-Fonts-Stand vom 2026-10-29 | Schriften, Untermengen latin und latin-ext | OFL 1.1 |
 
-Extern bleibt allein die Grundkarte von OpenFreeMap. Ist sie nicht erreichbar, setzt `initMap()` einen leeren Hintergrundstil, damit die Ortsmarker sichtbar bleiben. Wikidata, GeoNames über Wikidata und correspSearch werden nur auf Aktion der Nutzenden abgefragt, die Personendetails fragen Wikidata beim Öffnen ab.
+Extern bleibt allein die Grundkarte von OpenFreeMap. Ist sie nicht erreichbar, setzt `initMap()` einen leeren Hintergrundstil, damit die Ortsmarker sichtbar bleiben. Wikidata, GeoNames über Wikidata und correspSearch werden nur auf Aktion der Nutzenden abgefragt, auch im Personen-Dialog ([ADR-006](specification.md#adr-006-externe-dienste-nur-auf-ausdrückliche-aktion)).
 
 ## Module
 
 Die Module stehen in `docs/js/`, die ausgelagerten Ansichten in `docs/js/views/`.
 
-- Daten: `cmif-parser.js` parst CMIF-XML zur internen Struktur, `correspsearch-api.js` lädt correspSearch-API-URLs, `state-manager.js` hält Daten und Filterlogik, `formatters.js` formatiert Datum, Person und Ort mit Unsicherheitsanzeige.
-- Gemeinsame Helfer in `utils.js`: Escaping (`escapeHtml`, `safeUrl`, `externalLink`, `isAllowedJsonPath`), Schlüssel (`personKey`, `placeKey`), Datumsklassifikation (`classifyDate`), Qualitätszählung (`countIdentifiedPersons`), CSV (`csvCell`), Modal-Tastatur (`enableModalKeyboard`), Toast und Download.
-- Infrastruktur: `dom-cache.js`, `constants.js`.
+- Daten: `cmif-parser.js` parst CMIF-XML zur internen Struktur, `correspsearch-api.js` lädt correspSearch-API-URLs, beide bilden die Indizes mit `buildIndices()` aus `utils.js`. `state-manager.js` hält Daten und Filterlogik, `formatters.js` formatiert Datum, Person und Ort mit Unsicherheitsanzeige.
+- Gemeinsame Helfer in `utils.js`: Escaping (`escapeHtml`, `safeUrl`, `externalLink`, `isAllowedJsonPath`), Schlüssel (`personKey`, `placeKey`, `cleanId`), Indizes (`buildIndices`), Datumsklassifikation (`classifyDate`), Qualitätszählung (`countIdentifiedPersons`), CSV (`csvCell`), Dialoge (`openModal`, `closeModal`, `enableModalKeyboard`), der eine Toast aller Seiten (`showToast`) und Download.
+- Infrastruktur: `dom-cache.js`, `constants.js` mit der einen Sprachbezeichnungstabelle (`LANGUAGE_LABELS`, `languageLabel()`) und dem Code `NO_LANGUAGE` für Briefe ohne Sprache.
 - Anreicherung: `wikidata-enrichment.js` für Personen, `geonames-enrichment.js` für Koordinaten über Wikidata.
-- Korb: `basket.js` mit localStorage, Tab-Synchronisation und URL-Teilen.
+- Korb: `basket.js` mit einem Korb je Datensatz in localStorage, `addLettersToBasket()`, Tab-Synchronisation und URL-Teilen.
 - Seiten: `upload.js`, `explore.js`, `wissenskorb.js`, `vault.js`, `demo-tour.js`.
 - Ansichten in `views/`: Zeitleiste, Aktivität, Chronik, Vergleich, Netzwerk, Erwähnungsfluss, Themen, Orte.
 
@@ -67,17 +67,17 @@ Die Module stehen in `docs/js/`, die ausgelagerten Ansichten in `docs/js/views/`
 ## Datenfluss
 
 1. Erweiterter Datensatz: `preprocessing/build_hsa_data.py` erzeugt aus der CMIF-Datei des Hugo Schuchardt Archivs `docs/data/hsa-letters.json` mit Indizes, teiHeader-Metadaten, Koordinaten aus Wikidata und dem Änderungsvermerk `meta.modifications`. `explore.html?json=data/hsa-letters.json` lädt die Datei direkt, `?json=` akzeptiert nur relative Pfade unter `data/` mit Endung `.json`.
-2. Upload: `upload.js` übergibt Datei oder URL an `parseCMIF()`, ergänzt Koordinaten aus `docs/data/geonames_coordinates.json` und optional aus Wikidata, speichert das Ergebnis in sessionStorage und leitet zu `explore.html` weiter.
+2. Upload: `upload.js` übergibt Datei oder URL an `parseCMIF()`, ergänzt Koordinaten aus `docs/data/geonames_coordinates.json` (Wikidata-Tabelle, Herkunft in [data.md](data.md#herkunft-von-docsdatageonames_coordinatesjson)) und optional aus Wikidata, speichert das Ergebnis in sessionStorage und leitet zu `explore.html` weiter.
 3. correspSearch: URLs der API v2.0 (Host `correspsearch.net`, Pfad `/api/`) gehen an `fetchFromCorrespSearchUrl()`. Ohne Parameter `x` folgt der Lader den Seiten ab `x=1`, solange `notesStmt/relatedItem` eine nächste Seite nennt, höchstens bis `API_DEFAULTS.correspSearchMaxLetters`. Mit `x` lädt er genau diese Seite.
-4. Filter: `applyFilters()` schreibt Zeitraum, Sprachen, Person, Ort, Thema und Qualitätsfilter in den state-manager und liest die gefilterten Briefe zurück. Personen ohne Normdaten-ID und Orte ohne GeoNames-ID werden über ihren Namen gefiltert (`personKey`, `placeKey`). Sind alle Sprachen angehakt, gilt kein Sprachfilter.
-5. Datenkorb: Ansichten legen Briefe, Personen und Orte über `basket.js` in localStorage ab. Der Explorer übergibt den Datensatz in sessionStorage (`correspData`). Übersteigt er das Kontingent, übergibt er bei `?json=`-Datensätzen nur den Pfad (`correspDataSource`), und `wissenskorb.js` lädt die Datei selbst.
+4. Filter: `applyFilters()` schreibt Zeitraum, Sprachen, Person, Ort, Thema und Qualitätsfilter in den state-manager und liest die gefilterten Briefe zurück. Personen ohne Normdaten-ID und Orte ohne GeoNames-ID werden über ihren Namen gefiltert (`personKey`, `placeKey`). Sind alle Sprachen angehakt, gilt kein Sprachfilter (`languages: null`), ist keine angehakt, bleibt kein Brief. Der Balken der undatierten Briefe setzt den Zeitfilter `{ undated: true }` (URL `undated=1`), weil der Jahresregler Werte außerhalb seines Bereichs begrenzt. Der Regler schreibt den Filter nur bei abgeschlossener Eingabe (Ereignis `set`), damit `yearMin` und `yearMax` aus der URL beim Laden stehen bleiben.
+5. Datenkorb: Ansichten legen Briefe, Personen und Orte über `basket.js` in localStorage ab, unter einem Schlüssel je Datensatz (`datasetKey(sourceInfo)`, also json-Pfad, Dateiname oder URL). Der Wissenspfad in sessionStorage trägt denselben Schlüssel und wird bei anderem Datensatz nicht geladen. Der Explorer übergibt Datensatz und Schlüssel in sessionStorage (`correspData`, `correspDatasetKey`). Die Analyseseite wertet die Vereinigung aus Briefen des Korbs, allen Briefen seiner Personen und allen Briefen von seinen Orten aus. Übersteigt er das Kontingent, übergibt er bei `?json=`-Datensätzen nur den Pfad (`correspDataSource`), und `wissenskorb.js` lädt die Datei selbst.
 6. Tests: `test.html` lädt `run-all-tests.js`, die Suites lesen echte Fixture-Dateien über `parseCMIF()` ([testing.md](testing.md)).
 
 ## Datenmodell
 
 Ein Brief trägt `id`, `url`, `date`, `dateTo`, `year`, `datePrecision` (day, month, year, range, unknown), `dateCertainty`, `sender` und `recipient` (`name`, `id`, `authority`, `precision`), `place_sent` (`name`, `geonames_id`, `lat`, `lon`, `precision`), `language` (`code`, `label`) und `mentions` (`subjects`, `persons`, `places`, bei CMIF v2 zusätzlich `orgs` und `bibls`).
 
-Die Indizes unterscheiden sich zwischen Parser und Vorprozessierung. Der Parser schreibt Sprachen als `{label, letter_count}` und Personen mit `letter_count`, die HSA-Datei Sprachen als Bezeichnungs-String und Personen mit `letters_sent` und `letters_received`. Code, der Zählungen braucht, rechnet sie deshalb aus den Briefen (Sprachfilter, Qualitätsanzeige).
+Die Indizes unterscheiden sich zwischen Parser und Vorprozessierung. Parser und correspSearch-Lader schlüsseln Personen und Orte mit `personKey` und `placeKey`, also auch ohne Normdaten-ID über den Namen. Sie schreiben Sprachen als `{label, letter_count}` und Personen mit `letter_count`, die HSA-Datei Sprachen als Bezeichnungs-String und Personen mit `letters_sent` und `letters_received`. Code, der Zählungen braucht, rechnet sie deshalb aus den Briefen (Sprachfilter, Qualitätsanzeige).
 
 ## Ansichten
 
