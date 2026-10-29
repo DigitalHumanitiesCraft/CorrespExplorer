@@ -139,6 +139,60 @@ function stripFrontmatter(markdown) {
     return markdown.replace(/^﻿?---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
 }
 
+const REPOSITORY_BLOB = 'https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/docs/knowledge/';
+
+/**
+ * GitHub-style heading slug, so anchors written for the repository also work here
+ */
+function slugify(text) {
+    return text.trim().toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
+}
+
+function scrollToSection(section) {
+    const target = section && document.getElementById(decodeURIComponent(section));
+    if (target) target.scrollIntoView();
+}
+
+/**
+ * Give headings ids and route the relative links of a rendered document: links to another
+ * knowledge document open it in the vault (with its section), in-page anchors scroll,
+ * other relative paths point to the file in the repository.
+ */
+function wireDocumentLinks(container) {
+    container.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(h => {
+        if (!h.id) h.id = slugify(h.textContent);
+    });
+
+    container.querySelectorAll('a[href]').forEach(link => {
+        const href = link.getAttribute('href');
+        if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return;
+
+        if (href.startsWith('#')) {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                scrollToSection(href.slice(1));
+            });
+            return;
+        }
+
+        const [path, section] = href.split('#');
+        const doc = VAULT_DOCUMENTS.find(d => d.filename === path.replace(/^\.\//, ''));
+        if (doc) {
+            link.setAttribute('href', `#${doc.id}`);
+            link.addEventListener('click', async (e) => {
+                e.preventDefault();
+                window.location.hash = doc.id;
+                await loadDocument(doc);
+                scrollToSection(section);
+            });
+        } else {
+            link.setAttribute('href', new URL(href, REPOSITORY_BLOB).href);
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener');
+        }
+    });
+}
+
 /**
  * Initialize the vault
  */
@@ -277,6 +331,7 @@ async function loadDocument(doc) {
             </div>
         `;
 
+        wireDocumentLinks(contentEl.querySelector('.markdown-body'));
         currentDoc = doc;
 
         // Scroll to top

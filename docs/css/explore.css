@@ -5096,6 +5096,9 @@
    ============================================ */
 
 .activity-container {
+    /* auto margins stop the flex stretch; without a width the heatmap widens the container past narrow viewports */
+    width: 100%;
+    box-sizing: border-box;
     padding: var(--space-lg);
     max-width: 1400px;
     margin: 0 auto;

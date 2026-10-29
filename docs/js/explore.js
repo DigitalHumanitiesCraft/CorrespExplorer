@@ -1036,7 +1036,22 @@ function initMap() {
         zoom: 4
     });
 
-    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+    // top-left, because the layer and colour buttons (.map-controls) sit top-right
+    map.addControl(new maplibregl.NavigationControl(), 'top-left');
+
+    // Fallback without the basemap service: a plain background keeps the place markers usable
+    let usingFallbackStyle = false;
+    map.on('error', () => {
+        if (mapInitialized || usingFallbackStyle || map.isStyleLoaded()) return;
+        usingFallbackStyle = true;
+        const background = getComputedStyle(document.documentElement).getPropertyValue('--color-bg-light').trim() || '#f5f0e8';
+        map.setStyle({
+            version: 8,
+            sources: {},
+            layers: [{ id: 'background', type: 'background', paint: { 'background-color': background } }]
+        });
+        showToast('Grundkarte nicht erreichbar, Orte werden ohne Kartenhintergrund gezeigt');
+    });
 
     map.on('load', () => {
         renderPlaceMarkers(placeAggregation);
@@ -2017,7 +2032,11 @@ function switchView(view) {
     // On other views: show sidebar with stats and filters
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'activity' || view === 'comparison');
+        const noSidebar = view === 'overview' || view === 'chronik' || view === 'activity' || view === 'comparison';
+        sidebar.classList.toggle('hidden', noSidebar);
+        setSidebarOpen(false);
+        const toggle = document.getElementById('sidebar-toggle');
+        toggle?.classList.toggle('hidden', noSidebar);
     }
 
     // Update sidebar legend for current view
@@ -4798,6 +4817,20 @@ function setupKnowledgePathHandlers() {
 }
 
 enableModalKeyboard();
+
+// Narrow screens: the sidebar with dataset summary and filters is off-canvas and opened by this toggle
+function setSidebarOpen(open) {
+    document.querySelector('.sidebar')?.classList.toggle('open', open);
+    const toggle = document.getElementById('sidebar-toggle');
+    if (toggle) {
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Filter ausblenden' : 'Filter anzeigen');
+    }
+}
+
+document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+    setSidebarOpen(!document.querySelector('.sidebar')?.classList.contains('open'));
+});
 
 // role="button" elements get native button keyboard behaviour: Enter and Space trigger their click handler
 document.addEventListener('keydown', (e) => {

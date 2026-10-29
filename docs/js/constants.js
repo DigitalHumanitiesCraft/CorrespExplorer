@@ -87,6 +87,12 @@ export const LANGUAGE_LABELS = {
     'nl': 'Niederlaendisch',
     'cy': 'Walisisch',
     'oc': 'Okzitanisch',
+    'eu': 'Baskisch',
+    'ca': 'Katalanisch',
+    'ro': 'Rumaenisch',
+    'da': 'Daenisch',
+    'eo': 'Esperanto',
+    'pap': 'Papiamentu',
     'None': 'Ohne Angabe',
     'other': 'Andere'
 };
