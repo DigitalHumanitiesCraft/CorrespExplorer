@@ -11,7 +11,12 @@ import { API_DEFAULTS } from './constants.js';
  * @returns {boolean}
  */
 export function isCorrespSearchUrl(url) {
-    return Boolean(url) && url.includes('correspsearch.net/api');
+    try {
+        const { protocol, hostname, pathname } = new URL(url);
+        return /^https?:$/.test(protocol) && /(^|\.)correspsearch\.net$/i.test(hostname) && pathname.startsWith('/api/');
+    } catch {
+        return false;
+    }
 }
 
 /**

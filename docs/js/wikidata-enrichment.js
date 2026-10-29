@@ -76,7 +76,8 @@ async function querySparql(query) {
  */
 async function findWikidataQid(authority, authorityId) {
     const property = AUTHORITY_PROPERTIES[authority?.toLowerCase()];
-    if (!property || !authorityId) return null;
+    // The id comes from CMIF and is interpolated into the SPARQL string literal below
+    if (!property || !/^[\w-]+$/.test(String(authorityId ?? ''))) return null;
 
     const cacheKey = `qid-${authority}-${authorityId}`;
     const cached = getCached(cacheKey);

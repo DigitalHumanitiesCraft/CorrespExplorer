@@ -12,7 +12,7 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 
-import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath } from './utils.js';
+import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath, csvCell } from './utils.js';
 
 // State
 let dataIndices = {};
@@ -934,7 +934,7 @@ function exportData(format) {
                 letter.recipient?.name || '',
                 letter.place_sent?.name || '',
                 letter.url || ''
-            ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(','));
+            ].map(csvCell).join(','));
         });
 
         content = lines.join('\n');

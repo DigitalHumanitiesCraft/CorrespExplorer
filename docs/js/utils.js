@@ -67,6 +67,18 @@ export function isAllowedJsonPath(path) {
 }
 
 /**
+ * Quote a value as a CSV cell. A leading =, +, - or @ gets an apostrophe, so spreadsheet
+ * programs do not evaluate names or places from CMIF as formulas.
+ * @param {*} value
+ * @returns {string}
+ */
+export function csvCell(value) {
+    let text = value === null || value === undefined ? '' : String(value);
+    if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+    return `"${text.replace(/"/g, '""')}"`;
+}
+
+/**
  * Download file helper
  * @param {string} content - File content
  * @param {string} filename - Name for downloaded file
