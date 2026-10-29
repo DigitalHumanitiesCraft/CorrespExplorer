@@ -9,15 +9,23 @@ Wikidata enthält:
 - P214: VIAF ID
 
 Output: data/geonames_coordinates.json
+
+With --served the script writes docs/data/geonames_coordinates.json, the
+table upload.js loads: every entry of data/geonames_coordinates.json plus the
+GeoNames IDs of the bundled CMIF files in docs/data/ that it lacks, resolved
+via Wikidata and, where Wikidata links the place to a different GeoNames ID
+(Geneva, 2660646), via the GeoNames RDF service of that ID. It replaces an
+unsourced hand-made table with swapped IDs (plan.md, finding 9).
 """
 
 import json
+import re
+import sys
 import time
 from pathlib import Path
-from urllib.request import urlopen, Request
-from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
-
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 WIKIDATA_SPARQL_ENDPOINT = "https://query.wikidata.org/sparql"
 
@@ -115,8 +123,92 @@ def load_hsa_places(hsa_json_path: Path) -> list:
     return list(geonames_ids)
 
 
+GEONAMES_REF = re.compile(r'<placeName\b[^>]*\bref="https?://(?:sws\.|www\.)?geonames\.org/(\d+)')
+GEONAMES_RDF = 'https://sws.geonames.org/{}/about.rdf'
+RDF_FIELDS = {
+    'lat': re.compile(r'<wgs84_pos:lat>([-\d.]+)<'),
+    'lon': re.compile(r'<wgs84_pos:long>([-\d.]+)<'),
+    'name': re.compile(r'<gn:name>([^<]+)<'),
+}
+
+
+def resolve_via_geonames(geonames_id: str) -> dict | None:
+    """Reads coordinates and name of one ID from the GeoNames RDF service.
+
+    Fallback for IDs that no Wikidata item carries in P1566. Returns None
+    and logs when the service fails or the record lacks coordinates.
+    """
+    request = Request(GEONAMES_RDF.format(geonames_id))
+    request.add_header('User-Agent', USER_AGENT)
+    try:
+        with urlopen(request, timeout=30) as response:
+            rdf = response.read().decode('utf-8')
+    except (HTTPError, URLError) as e:
+        print(f"GeoNames {geonames_id}: {e}")
+        return None
+    found = {key: pattern.search(rdf) for key, pattern in RDF_FIELDS.items()}
+    if not (found['lat'] and found['lon']):
+        print(f"GeoNames {geonames_id}: no coordinates in RDF")
+        return None
+    return {
+        'lat': float(found['lat'].group(1)),
+        'lon': float(found['lon'].group(1)),
+        'label_en': found['name'].group(1) if found['name'] else None,
+        'label_de': None,
+        'source': 'geonames',
+    }
+
+
+def build_served_table(base_dir: Path) -> None:
+    """Writes docs/data/geonames_coordinates.json for the upload path.
+
+    Keeps every entry of data/geonames_coordinates.json unchanged and adds
+    coordinates only for IDs of the bundled CMIF files that the table lacks,
+    first via Wikidata, then via GeoNames. hsa.xml is skipped because its IDs
+    fed the table already. Exits non-zero if an ID stays unresolved.
+    """
+    source_file = base_dir / 'data' / 'geonames_coordinates.json'
+    served_file = base_dir / 'docs' / 'data' / 'geonames_coordinates.json'
+    with open(source_file, encoding='utf-8') as f:
+        coordinates = json.load(f)['coordinates']
+
+    bundled_ids = set()
+    for xml_file in sorted((base_dir / 'docs' / 'data').glob('*.xml')):
+        if xml_file.name != 'hsa.xml':
+            bundled_ids.update(GEONAMES_REF.findall(xml_file.read_text(encoding='utf-8')))
+    missing = sorted(bundled_ids - coordinates.keys())
+    print(f"Bundled CMIF files: {len(bundled_ids)} GeoNames IDs, {len(missing)} not in {source_file.name}")
+
+    added = batch_resolve_geonames(missing) if missing else {}
+    for geonames_id in sorted(set(missing) - added.keys()):
+        entry = resolve_via_geonames(geonames_id)
+        if entry:
+            added[geonames_id] = entry
+    coordinates.update(added)
+    unresolved = sorted(set(missing) - added.keys())
+
+    output = {
+        'meta': {
+            'source': 'Wikidata SPARQL (P625 via GeoNames ID P1566); '
+            'entries with source "geonames" from sws.geonames.org',
+            'derived_from': 'data/geonames_coordinates.json',
+            'added_for_bundled_cmif': sorted(added),
+        },
+        'coordinates': coordinates,
+    }
+    with open(served_file, 'w', encoding='utf-8') as f:
+        json.dump(output, f, ensure_ascii=False, indent=2)
+    print(f"Output: {served_file} ({len(coordinates)} entries)")
+    if unresolved:
+        print(f"Unresolved: {unresolved}")
+        sys.exit(1)
+
+
 def main():
     base_dir = Path(__file__).parent.parent
+    if '--served' in sys.argv[1:]:
+        build_served_table(base_dir)
+        return
     hsa_json = base_dir / 'docs' / 'data' / 'hsa-letters.json'
     output_file = base_dir / 'data' / 'geonames_coordinates.json'
 

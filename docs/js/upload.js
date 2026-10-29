@@ -245,12 +245,12 @@ async function showConfigDialog(data, sourceInfo) {
     pendingData = data;
     pendingSourceInfo = sourceInfo;
 
-    // Try to enrich with cached coordinates first
+    // Coordinates from the prebuilt Wikidata/GeoNames table (data.md, Rechte und Lizenzen)
     try {
         const coordsResponse = await fetch('data/geonames_coordinates.json');
         if (coordsResponse.ok) {
-            const coordsCache = await coordsResponse.json();
-            enrichWithCoordinates(pendingData, coordsCache);
+            const { coordinates } = await coordsResponse.json();
+            enrichWithCoordinates(pendingData, coordinates);
             console.log('Static coordinates enriched');
         }
     } catch (error) {
