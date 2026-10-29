@@ -6,6 +6,7 @@
 import { parseCMIF } from '../cmif-parser.js';
 import { state } from '../state-manager.js';
 import { countIdentifiedPersons } from '../utils.js';
+import { NO_LANGUAGE, registerLanguageLabels, languageLabel } from '../constants.js';
 import { assert } from './test-runner.js';
 
 export const AggregationTests = {
@@ -226,6 +227,28 @@ export const AggregationTests = {
 
                 assert(identified > 0, `Should count persons with authority id, got ${identified}`);
                 assert(identified < total, `Fixture has persons without authority id, got ${identified}/${total}`);
+            }
+        },
+
+        {
+            name: 'Sprachcode "None" der Quelle bleibt eine Sprache mit eigenem Label (Fall 023)',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const ladin = data.letters.find(l => l.id.endsWith('023'));
+                assert(ladin?.language?.code === 'None', `Code sollte None sein, ist ${ladin?.language?.code}`);
+                assert(ladin.language.label === 'Ladinisch', `Label sollte aus dem ref-Text kommen, ist ${ladin.language.label}`);
+
+                registerLanguageLabels(data.letters);
+                assert(languageLabel('None') === 'Ladinisch', `Anzeige sollte Ladinisch sein, ist ${languageLabel('None')}`);
+                assert(languageLabel(NO_LANGUAGE) === 'Ohne Angabe', 'Briefe ohne Sprache heissen Ohne Angabe');
+
+                state.setData(data);
+                state.resetFilters();
+                state.updateFilters({ languages: [NO_LANGUAGE] });
+                const withoutLanguage = state.getFilteredLetters();
+                assert(withoutLanguage.length > 0, 'Fixture sollte Briefe ohne Sprache enthalten');
+                assert(!withoutLanguage.includes(ladin), 'Der Brief mit Code None darf nicht als ohne Sprache gelten');
+                state.resetFilters();
             }
         }
     ]

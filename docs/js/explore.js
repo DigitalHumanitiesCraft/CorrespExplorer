@@ -1,7 +1,7 @@
 // Explore View - Generic CMIF visualization
 // Displays data from sessionStorage (uploaded/loaded via upload.js)
 
-import { LANGUAGE_COLORS, LANGUAGE_LABELS, MAP_DEFAULTS, computeLanguageColors } from './constants.js';
+import { LANGUAGE_COLORS, MAP_DEFAULTS, NO_LANGUAGE, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
 import {
     isInBasket as basketIsInBasket,
     addToBasket as basketAdd,
@@ -209,6 +209,7 @@ async function init() {
 
         // Compute dynamic language colors based on data distribution
         computeLanguageColors(allLetters);
+        registerLanguageLabels(allLetters);
 
         // Calculate date range from data (filter unrealistic years)
         const years = allLetters.map(l => l.year).filter(y =>
@@ -503,29 +504,21 @@ function buildLanguageFilter() {
     // checkbox, so no language falls out of the allow-list of the state filter
     const counts = {};
     allLetters.forEach(letter => {
-        const code = letter.language?.code || 'None';
+        const code = letter.language?.code || NO_LANGUAGE;
         counts[code] = (counts[code] || 0) + 1;
     });
-    if (Object.keys(counts).every(code => code === 'None')) return;
+    if (Object.keys(counts).every(code => code === NO_LANGUAGE)) return;
 
     const container = elements.languageCheckboxes;
     const filterGroup = elements.languageFilterGroup;
 
     if (!container || !filterGroup) return;
 
-    const languages = dataIndices.languages || {};
     const languageKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
 
     languageKeys.forEach(code => {
-        const indexLabel = typeof languages[code] === 'string' ? languages[code] : languages[code]?.label;
-        // Use LANGUAGE_LABELS for display, fallback to data label or code
-        let displayLabel = LANGUAGE_LABELS[code] || indexLabel || code;
-        // Handle special cases - None means no language specified in source data
-        const isNoLanguage = (displayLabel === 'None' || code === 'None');
-        if (isNoLanguage) {
-            displayLabel = 'Ohne Angabe';
-        }
-        const tooltip = isNoLanguage ? 'Keine Sprachzuordnung in den Quelldaten' : '';
+        const displayLabel = languageLabel(code);
+        const tooltip = code === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten' : '';
         const label = document.createElement('label');
         if (tooltip) {
             label.title = tooltip;
@@ -1022,7 +1015,7 @@ function getMapCircleColorExpression() {
     }
 
     // Build dynamic match expression based on available languages
-    const defaultColor = LANGUAGE_COLORS['other'] || LANGUAGE_COLORS['None'] || '#78716c';
+    const defaultColor = LANGUAGE_COLORS['other'] || LANGUAGE_COLORS[NO_LANGUAGE] || '#78716c';
     const matchExpr = ['match', ['get', 'dominant_language']];
 
     // Add only defined language colors (skip undefined values)
@@ -1098,7 +1091,7 @@ function updateMapLegend() {
     let html = '';
     for (const [lang, counts] of sortedLangs) {
         const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS['other'];
-        const label = LANGUAGE_LABELS[lang] || lang;
+        const label = languageLabel(lang);
         html += `
             <div class="map-legend-item">
                 <span class="map-legend-color" style="background-color: ${color}"></span>
@@ -1547,7 +1540,7 @@ function updatePersonFilterDisplay() {
 function updateFilterCounts() {
     const languageCounts = {};
     state.filterLetters({ ...state.filters, languages: null }).forEach(letter => {
-        const code = letter.language?.code || 'None';
+        const code = letter.language?.code || NO_LANGUAGE;
         languageCounts[code] = (languageCounts[code] || 0) + 1;
     });
 
@@ -3086,8 +3079,7 @@ function analyzeResearchQuestions() {
             question: 'In welchen Sprachen wurde korrespondiert?',
             description: `${languages.length} Sprachen im Korpus`,
             preview: topLangs.map(([lang, count]) => {
-                // Use LANGUAGE_LABELS for display, fallback to short code
-                const label = LANGUAGE_LABELS[lang] || (lang.length > 10 ? lang.substring(0, 10) + '...' : lang);
+                const label = languageLabel(lang);
                 return `${label} (${count})`;
             }),
             view: 'timeline',

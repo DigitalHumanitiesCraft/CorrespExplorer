@@ -1,7 +1,7 @@
 // Timeline View
 // Stacked bar chart showing temporal distribution of correspondence
 
-import { LANGUAGE_COLORS, LANGUAGE_LABELS } from '../constants.js';
+import { LANGUAGE_COLORS, NO_LANGUAGE, languageLabel } from '../constants.js';
 import { elements } from '../dom-cache.js';
 import { escapeHtml, showToast } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
@@ -87,13 +87,13 @@ export function renderTimeline() {
     }
 
     // Check if we have actual language data (not just None/other)
-    const hasLanguageData = lettersToUse.some(l => l.language?.code && l.language.code !== 'None');
+    const hasLanguageData = lettersToUse.some(l => l.language?.code);
 
     // Count letters per year per language, tracking date precision
     datedLetters.forEach(letter => {
         const year = letter.year;
         // If no language data in corpus, use a single category
-        const lang = hasLanguageData ? (letter.language?.code || 'None') : '_total';
+        const lang = hasLanguageData ? (letter.language?.code || NO_LANGUAGE) : '_total';
         const langKey = hasLanguageData ? (LANGUAGE_COLORS[lang] ? lang : 'other') : '_total';
         const isImprecise = letter.datePrecision === 'range' ||
                            letter.datePrecision === 'year' ||
@@ -113,7 +113,7 @@ export function renderTimeline() {
     // Count undated letters by language
     const undatedByLang = {};
     undatedLetters.forEach(letter => {
-        const lang = hasLanguageData ? (letter.language?.code || 'None') : '_total';
+        const lang = hasLanguageData ? (letter.language?.code || NO_LANGUAGE) : '_total';
         const langKey = hasLanguageData ? (LANGUAGE_COLORS[lang] ? lang : 'other') : '_total';
         undatedByLang[langKey] = (undatedByLang[langKey] || 0) + 1;
         languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
@@ -165,7 +165,7 @@ export function renderTimeline() {
                     currentBottom += segmentPct;
                     // Only add language breakdown to tooltip if we have language data
                     if (lang !== '_total') {
-                        const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
+                        const langLabel = languageLabel(lang);
                         tooltipParts.push(`${escapeHtml(langLabel)}: ${count}`);
                     }
                 }
@@ -255,7 +255,7 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
                 const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
                 undatedSegments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
                 currentBottom += segmentHeight;
-                const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
+                const langLabel = languageLabel(lang);
                 tooltipParts.push(`${escapeHtml(langLabel)}: ${count}`);
             }
         });
@@ -316,8 +316,8 @@ function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLang
             .map(lang => {
                 const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
                 const count = languageTotals[lang];
-                const label = LANGUAGE_LABELS[lang] || lang.toUpperCase();
-                const tooltip = (lang === 'None') ? 'Keine Sprachzuordnung in den Quelldaten' : '';
+                const label = languageLabel(lang);
+                const tooltip = (lang === NO_LANGUAGE) ? 'Keine Sprachzuordnung in den Quelldaten' : '';
                 return `<span class="timeline-legend-item"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count})</span>`;
             });
     } else {

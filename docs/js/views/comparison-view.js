@@ -1,7 +1,7 @@
 // Comparison View
 // Side-by-side comparison of persons, periods, or places
 
-import { LANGUAGE_LABELS } from '../constants.js';
+import { languageLabel } from '../constants.js';
 import { debounce, escapeHtml, personKey } from '../utils.js';
 import { elements } from '../dom-cache.js';
 
@@ -439,7 +439,7 @@ function renderComparisonMetrics(side, metrics, letterCount) {
                 <span class="metric-label">Sprachen</span>
                 <ul>
                     ${langEntries.sort((a, b) => b[1] - a[1]).slice(0, 5).map(([code, count]) =>
-                        `<li>${escapeHtml(LANGUAGE_LABELS[code] || code)} <span class="metric-count">(${count})</span></li>`
+                        `<li>${escapeHtml(languageLabel(code))} <span class="metric-count">(${count})</span></li>`
                     ).join('')}
                 </ul>
             </div>

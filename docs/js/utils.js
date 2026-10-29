@@ -332,6 +332,63 @@ export function placeKey(place) {
 }
 
 /**
+ * Letter ID without the URL prefix of the edition
+ * @param {string|null} id
+ * @returns {string|null}
+ */
+export function cleanId(id) {
+    if (!id) return null;
+    const match = id.match(/[#/]([^#/]+)$/);
+    return match ? match[1] : id;
+}
+
+/**
+ * Person, place, language and subject indices of a letter list, shared by the CMIF parser and
+ * the correspSearch loader. Persons and places are keyed with personKey and placeKey (ADR-001).
+ * @param {Array} letters
+ * @returns {{persons: Object, places: Object, subjects: Object, languages: Object}}
+ */
+export function buildIndices(letters) {
+    const persons = {};
+    const places = {};
+    const subjects = {};
+    const languages = {};
+
+    const countPerson = (person, role) => {
+        const key = personKey(person);
+        if (!key) return;
+        persons[key] ??= { name: person.name, authority: person.authority, letter_count: 0, as_sender: 0, as_recipient: 0 };
+        persons[key].letter_count++;
+        persons[key][role]++;
+    };
+
+    for (const letter of letters) {
+        countPerson(letter.sender, 'as_sender');
+        countPerson(letter.recipient, 'as_recipient');
+
+        const placeId = placeKey(letter.place_sent);
+        if (placeId) {
+            places[placeId] ??= { name: letter.place_sent.name, lat: letter.place_sent.lat, lon: letter.place_sent.lon, letter_count: 0 };
+            places[placeId].letter_count++;
+        }
+
+        const code = letter.language?.code;
+        if (code) {
+            languages[code] ??= { code, label: letter.language.label, letter_count: 0 };
+            languages[code].letter_count++;
+        }
+
+        for (const subject of letter.mentions?.subjects || []) {
+            const key = subject.uri || subject.label;
+            subjects[key] ??= { label: subject.label, uri: subject.uri, category: subject.category, letter_count: 0 };
+            subjects[key].letter_count++;
+        }
+    }
+
+    return { persons, places, subjects, languages };
+}
+
+/**
  * Count distinct correspondents (senders and recipients) and those with an authority reference.
  * Parser and preprocessing store the bare authority id (e.g. "18030027") in `id` and the
  * system in `authority`, so a present `id` marks identification, not a URL prefix.

@@ -5,7 +5,7 @@ import { escapeHtml, debounce, showToast } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
 import { getPlacePrecisionClass } from '../formatters.js';
 import { elements } from '../dom-cache.js';
-import { LANGUAGE_COLORS, LANGUAGE_LABELS } from '../constants.js';
+import { LANGUAGE_COLORS, languageLabel } from '../constants.js';
 
 // Module state
 let placesIndex = {};
@@ -315,7 +315,7 @@ function selectPlace(placeId) {
             .sort((a, b) => b[1] - a[1]);
 
         languagesContainer.innerHTML = langEntries.map(([code, count]) => {
-            const label = LANGUAGE_LABELS[code] || code.toUpperCase();
+            const label = languageLabel(code);
             const color = LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other;
             return `<span class="entity-tag" style="border-left: 3px solid ${color}">${escapeHtml(label)} (${count})</span>`;
         }).join('');

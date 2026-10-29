@@ -2,6 +2,7 @@
 // Verwaltet globalen Anwendungszustand und benachrichtigt Subscriber bei Änderungen
 
 import { personKey, placeKey } from './utils.js';
+import { NO_LANGUAGE } from './constants.js';
 
 /**
  * AppState - Zentrale State-Verwaltung
@@ -232,7 +233,7 @@ class AppState {
             }
 
             if (filters.languages) {
-                const langCode = letter.language?.code || 'None';
+                const langCode = letter.language?.code || NO_LANGUAGE;
                 if (!filters.languages.includes(langCode)) {
                     return false;
                 }

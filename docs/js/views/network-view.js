@@ -189,8 +189,7 @@ function updateNetworkThresholdLabel() {
  * Build contemporaries network: persons who correspond in the same years
  */
 function buildContemporariesNetwork(letters, minYears, maxNodes) {
-    // Group letters by year and person
-    const yearPersons = new Map();
+    // Years and letter counts per sender
     const personInfo = new Map();
 
     letters.forEach(letter => {
@@ -216,29 +215,55 @@ function buildContemporariesNetwork(letters, minYears, maxNodes) {
         info.letterCount++;
         info.firstYear = Math.min(info.firstYear, year);
         info.lastYear = Math.max(info.lastYear, year);
-
-        // Track year -> persons
-        if (!yearPersons.has(year)) {
-            yearPersons.set(year, new Set());
-        }
-        yearPersons.get(year).add(senderId);
     });
 
-    // Calculate shared years between person pairs
-    const edges = new Map();
-    const persons = Array.from(personInfo.values());
+    // Pair comparison over year bitmasks: comparing Sets pair by pair took seconds with a few
+    // thousand senders. Only persons active in at least minYears years can have an edge.
+    const persons = Array.from(personInfo.values()).filter(p => p.years.size >= minYears);
+    const firstYear = Math.min(...persons.map(p => p.firstYear));
+    const words = persons.length > 0 ? Math.ceil((Math.max(...persons.map(p => p.lastYear)) - firstYear + 1) / 32) : 0;
+    persons.forEach(p => {
+        p.mask = new Uint32Array(words);
+        p.years.forEach(y => { p.mask[(y - firstYear) >> 5] |= 1 << ((y - firstYear) & 31); });
+    });
+    const shared = (a, b) => {
+        let count = 0;
+        for (let w = 0; w < words; w++) {
+            let v = a.mask[w] & b.mask[w];
+            while (v) { v &= v - 1; count++; }
+        }
+        return count;
+    };
 
+    // First pass counts edges and marks persons with at least one edge, without building edges
+    let totalConnections = 0;
+    const active = new Set();
     for (let i = 0; i < persons.length; i++) {
         for (let j = i + 1; j < persons.length; j++) {
-            const p1 = persons[i];
-            const p2 = persons[j];
+            if (shared(persons[i], persons[j]) >= minYears) {
+                totalConnections++;
+                active.add(persons[i]);
+                active.add(persons[j]);
+            }
+        }
+    }
 
-            // Count shared years
+    // Shown are the persons with an edge, at most maxNodes of them by letter count
+    // Keep the index order before the stable sort, so ties resolve as before
+    let shownPersons = persons.filter(p => active.has(p));
+    if (shownPersons.length > maxNodes) {
+        shownPersons.sort((a, b) => b.letterCount - a.letterCount);
+        shownPersons = shownPersons.slice(0, maxNodes);
+    }
+
+    const filteredEdges = [];
+    for (let i = 0; i < shownPersons.length; i++) {
+        for (let j = i + 1; j < shownPersons.length; j++) {
+            const p1 = shownPersons[i];
+            const p2 = shownPersons[j];
             const sharedYears = [...p1.years].filter(y => p2.years.has(y));
-
             if (sharedYears.length >= minYears) {
-                const edgeKey = [p1.id, p2.id].sort().join('|');
-                edges.set(edgeKey, {
+                filteredEdges.push({
                     source: p1.id,
                     target: p2.id,
                     sourceName: p1.name,
@@ -249,38 +274,16 @@ function buildContemporariesNetwork(letters, minYears, maxNodes) {
             }
         }
     }
-
-    // Sort edges and limit nodes
-    let filteredEdges = Array.from(edges.values());
     filteredEdges.sort((a, b) => b.sharedYears - a.sharedYears);
 
-    // Get active nodes
-    const activeNodeIds = new Set();
-    filteredEdges.forEach(e => {
-        activeNodeIds.add(e.source);
-        activeNodeIds.add(e.target);
-    });
-
-    let nodes = persons
-        .filter(p => activeNodeIds.has(p.id))
-        .map(p => ({
-            id: p.id,
-            name: p.name,
-            total: p.letterCount,
-            yearsActive: p.years.size,
-            firstYear: p.firstYear,
-            lastYear: p.lastYear
-        }));
-
-    // Limit to top nodes by letter count
-    if (nodes.length > maxNodes) {
-        nodes.sort((a, b) => b.total - a.total);
-        const topNodeIds = new Set(nodes.slice(0, maxNodes).map(n => n.id));
-        nodes = nodes.filter(n => topNodeIds.has(n.id));
-        filteredEdges = filteredEdges.filter(e =>
-            topNodeIds.has(e.source) && topNodeIds.has(e.target)
-        );
-    }
+    const nodes = shownPersons.map(p => ({
+        id: p.id,
+        name: p.name,
+        total: p.letterCount,
+        yearsActive: p.years.size,
+        firstYear: p.firstYear,
+        lastYear: p.lastYear
+    }));
 
     return {
         nodes,
@@ -288,7 +291,7 @@ function buildContemporariesNetwork(letters, minYears, maxNodes) {
         networkType: 'contemporaries',
         stats: {
             totalPersons: personInfo.size,
-            totalConnections: edges.size,
+            totalConnections,
             displayedPersons: nodes.length,
             displayedConnections: filteredEdges.length
         }

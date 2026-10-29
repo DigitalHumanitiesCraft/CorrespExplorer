@@ -1,5 +1,9 @@
 // Zentrale Konstanten fuer CorrespExplorer
 
+// Language code of letters without a language. The former sentinel 'None' collided with the
+// HSA source, which writes target="None" for Ladin (data.md, Hugo Schuchardt Archiv)
+export const NO_LANGUAGE = '_none';
+
 // Basis-Sprachfarben (kraeftig) - fuer dominante Sprache
 export const LANGUAGE_COLORS_STRONG = {
     'de': '#1e40af', // Deutsch - primaer blau
@@ -13,7 +17,7 @@ export const LANGUAGE_COLORS_STRONG = {
     'nl': '#d97706', // Niederlaendisch - amber
     'cy': '#4f46e5', // Walisisch - indigo
     'oc': '#0d9488', // Okzitanisch - teal
-    'None': '#78716c', // Ohne Angabe - grau
+    [NO_LANGUAGE]: '#78716c', // Ohne Angabe - grau
     'other': '#78716c' // Andere - grau
 };
 
@@ -30,7 +34,7 @@ export const LANGUAGE_COLORS_PASTEL = {
     'nl': '#fcd34d', // Niederlaendisch - helles amber
     'cy': '#a5b4fc', // Walisisch - helles indigo
     'oc': '#99f6e4', // Okzitanisch - helles teal
-    'None': '#d6d3d1', // Ohne Angabe - helles grau
+    [NO_LANGUAGE]: '#d6d3d1', // Ohne Angabe - helles grau
     'other': '#d6d3d1' // Andere - helles grau
 };
 
@@ -43,7 +47,7 @@ export function computeLanguageColors(letters) {
     // Zaehle Briefe pro Sprache
     const langCounts = {};
     letters.forEach(letter => {
-        const lang = letter.language?.code || 'None';
+        const lang = letter.language?.code || NO_LANGUAGE;
         langCounts[lang] = (langCounts[lang] || 0) + 1;
     });
 
@@ -67,35 +71,66 @@ export function computeLanguageColors(letters) {
 
     // Fallbacks fuer nicht vorhandene Sprachen
     LANGUAGE_COLORS.other = LANGUAGE_COLORS_PASTEL.other;
-    if (!LANGUAGE_COLORS.None) {
-        LANGUAGE_COLORS.None = LANGUAGE_COLORS_PASTEL.None;
+    if (!LANGUAGE_COLORS[NO_LANGUAGE]) {
+        LANGUAGE_COLORS[NO_LANGUAGE] = LANGUAGE_COLORS_PASTEL[NO_LANGUAGE];
     }
 
     return LANGUAGE_COLORS;
 }
 
 // Sprachnamen fuer Anzeige
+// The one label table for parser and views, ISO 639-1 and the ISO 639-3 codes of Lexvo URIs
 export const LANGUAGE_LABELS = {
     'de': 'Deutsch',
+    'deu': 'Deutsch',
     'fr': 'Franzoesisch',
+    'fra': 'Franzoesisch',
     'it': 'Italienisch',
+    'ita': 'Italienisch',
     'en': 'Englisch',
+    'eng': 'Englisch',
     'es': 'Spanisch',
+    'spa': 'Spanisch',
     'pt': 'Portugiesisch',
+    'por': 'Portugiesisch',
     'la': 'Latein',
+    'lat': 'Latein',
     'hu': 'Ungarisch',
+    'hun': 'Ungarisch',
     'nl': 'Niederlaendisch',
+    'nld': 'Niederlaendisch',
     'cy': 'Walisisch',
     'oc': 'Okzitanisch',
     'eu': 'Baskisch',
+    'eus': 'Baskisch',
     'ca': 'Katalanisch',
+    'cat': 'Katalanisch',
     'ro': 'Rumaenisch',
+    'ron': 'Rumaenisch',
     'da': 'Daenisch',
     'eo': 'Esperanto',
     'pap': 'Papiamentu',
-    'None': 'Ohne Angabe',
+    [NO_LANGUAGE]: 'Ohne Angabe',
     'other': 'Andere'
 };
+
+// Labels the loaded data carries for codes outside the table, such as HSA's "None" for Ladin
+const dataLanguageLabels = {};
+
+export function registerLanguageLabels(letters) {
+    Object.keys(dataLanguageLabels).forEach(key => delete dataLanguageLabels[key]);
+    letters.forEach(letter => {
+        const { code, label } = letter.language || {};
+        if (code && label && !dataLanguageLabels[code]) dataLanguageLabels[code] = label;
+    });
+}
+
+/**
+ * Display label of a language code: table first, then the label from the data, then the code
+ */
+export function languageLabel(code) {
+    return LANGUAGE_LABELS[code] || dataLanguageLabels[code] || code;
+}
 
 // UI-Defaults
 export const UI_DEFAULTS = {

@@ -3,7 +3,8 @@
 // Also handles correspSearch API responses (TEI-JSON format)
 
 import { isCorrespSearchUrl, fetchFromCorrespSearchUrl } from './correspsearch-api.js';
-import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate } from './utils.js';
+import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate, cleanId, buildIndices } from './utils.js';
+import { LANGUAGE_LABELS } from './constants.js';
 
 const TEI_NS = 'http://www.tei-c.org/ns/1.0';
 
@@ -299,9 +300,10 @@ function extractLanguage(note) {
         if (type.includes('hasLanguage')) {
             const target = ref.getAttribute('target');
             const code = extractLanguageCode(target);
+            // The edition's own label (ref text) names codes outside the shared table
             return {
                 code,
-                label: getLanguageLabel(code)
+                label: LANGUAGE_LABELS[code] || ref.textContent.trim() || code
             };
         }
     }
@@ -398,140 +400,6 @@ function categorizeSubject(uri) {
     if (uri.includes('hsa.languages')) return 'hsa_language';
 
     return 'other';
-}
-
-/**
- * Get language label from code
- */
-function getLanguageLabel(code) {
-    const labels = {
-        'de': 'Deutsch',
-        'deu': 'Deutsch',
-        'fr': 'Franzoesisch',
-        'fra': 'Franzoesisch',
-        'en': 'Englisch',
-        'eng': 'Englisch',
-        'it': 'Italienisch',
-        'ita': 'Italienisch',
-        'es': 'Spanisch',
-        'spa': 'Spanisch',
-        'pt': 'Portugiesisch',
-        'por': 'Portugiesisch',
-        'nl': 'Niederlaendisch',
-        'nld': 'Niederlaendisch',
-        'eu': 'Baskisch',
-        'eus': 'Baskisch',
-        'la': 'Latein',
-        'lat': 'Latein',
-        'hu': 'Ungarisch',
-        'hun': 'Ungarisch',
-        'ro': 'Rumaenisch',
-        'ron': 'Rumaenisch',
-        'ca': 'Katalanisch',
-        'cat': 'Katalanisch'
-    };
-
-    return labels[code] || code;
-}
-
-/**
- * Clean letter ID (remove URL prefix if present)
- */
-function cleanId(id) {
-    if (!id) return null;
-
-    // Extract ID from URL
-    const match = id.match(/[#/]([^#/]+)$/);
-    if (match) return match[1];
-
-    return id;
-}
-
-/**
- * Build indices from letters array
- */
-function buildIndices(letters) {
-    const persons = {};
-    const places = {};
-    const subjects = {};
-    const languages = {};
-
-    for (const letter of letters) {
-        // Index sender
-        if (letter.sender?.id) {
-            const key = letter.sender.id;
-            if (!persons[key]) {
-                persons[key] = {
-                    name: letter.sender.name,
-                    authority: letter.sender.authority,
-                    letter_count: 0,
-                    as_sender: 0,
-                    as_recipient: 0
-                };
-            }
-            persons[key].letter_count++;
-            persons[key].as_sender++;
-        }
-
-        // Index recipient
-        if (letter.recipient?.id) {
-            const key = letter.recipient.id;
-            if (!persons[key]) {
-                persons[key] = {
-                    name: letter.recipient.name,
-                    authority: letter.recipient.authority,
-                    letter_count: 0,
-                    as_sender: 0,
-                    as_recipient: 0
-                };
-            }
-            persons[key].letter_count++;
-            persons[key].as_recipient++;
-        }
-
-        // Index place
-        if (letter.place_sent?.geonames_id) {
-            const key = letter.place_sent.geonames_id;
-            if (!places[key]) {
-                places[key] = {
-                    name: letter.place_sent.name,
-                    lat: letter.place_sent.lat,
-                    lon: letter.place_sent.lon,
-                    letter_count: 0
-                };
-            }
-            places[key].letter_count++;
-        }
-
-        // Index language
-        if (letter.language?.code) {
-            const key = letter.language.code;
-            if (!languages[key]) {
-                languages[key] = {
-                    code: key,
-                    label: letter.language.label,
-                    letter_count: 0
-                };
-            }
-            languages[key].letter_count++;
-        }
-
-        // Index subjects
-        for (const subject of letter.mentions?.subjects || []) {
-            const key = subject.uri || subject.label;
-            if (!subjects[key]) {
-                subjects[key] = {
-                    label: subject.label,
-                    uri: subject.uri,
-                    category: subject.category,
-                    letter_count: 0
-                };
-            }
-            subjects[key].letter_count++;
-        }
-    }
-
-    return { persons, places, subjects, languages };
 }
 
 /**

@@ -2,7 +2,7 @@
 // Loads correspSearch API v2.0 TEI-JSON URLs (https://correspsearch.net/en/api.html) and
 // transforms the result into the internal format of cmif-parser.js
 
-import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate } from './utils.js';
+import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate, cleanId, buildIndices } from './utils.js';
 import { API_DEFAULTS } from './constants.js';
 
 /**
@@ -300,76 +300,6 @@ function extractDateFromAction(action, letter) {
         notAfter: dateObj.notAfter || dateObj['@notAfter'],
         cert: dateObj.cert || dateObj['@cert']
     });
-}
-
-/**
- * Clean letter ID
- */
-function cleanId(id) {
-    if (!id) return null;
-    const match = id.match(/[#/]([^#/]+)$/);
-    if (match) return match[1];
-    return id;
-}
-
-/**
- * Build indices from letters
- */
-function buildIndices(letters) {
-    const persons = {};
-    const places = {};
-    const languages = {};
-    const subjects = {};
-
-    for (const letter of letters) {
-        // Index sender
-        if (letter.sender?.name) {
-            const key = letter.sender.id || letter.sender.name;
-            if (!persons[key]) {
-                persons[key] = {
-                    name: letter.sender.name,
-                    authority: letter.sender.authority,
-                    letter_count: 0,
-                    as_sender: 0,
-                    as_recipient: 0
-                };
-            }
-            persons[key].letter_count++;
-            persons[key].as_sender++;
-        }
-
-        // Index recipient
-        if (letter.recipient?.name) {
-            const key = letter.recipient.id || letter.recipient.name;
-            if (!persons[key]) {
-                persons[key] = {
-                    name: letter.recipient.name,
-                    authority: letter.recipient.authority,
-                    letter_count: 0,
-                    as_sender: 0,
-                    as_recipient: 0
-                };
-            }
-            persons[key].letter_count++;
-            persons[key].as_recipient++;
-        }
-
-        // Index place
-        if (letter.place_sent?.name) {
-            const key = letter.place_sent.geonames_id || letter.place_sent.name;
-            if (!places[key]) {
-                places[key] = {
-                    name: letter.place_sent.name,
-                    lat: letter.place_sent.lat,
-                    lon: letter.place_sent.lon,
-                    letter_count: 0
-                };
-            }
-            places[key].letter_count++;
-        }
-    }
-
-    return { persons, places, subjects, languages };
 }
 
 /**
