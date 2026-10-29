@@ -2,7 +2,7 @@
 // Side-by-side comparison of persons, periods, or places
 
 import { LANGUAGE_LABELS } from '../constants.js';
-import { debounce, escapeHtml } from '../utils.js';
+import { debounce, escapeHtml, personKey } from '../utils.js';
 import { elements } from '../dom-cache.js';
 
 // Module state
@@ -37,6 +37,17 @@ export function initComparisonView(deps) {
 }
 
 /**
+ * Persons of the index with their key and letter count; parser and preprocessing name the counts differently
+ */
+function personIndexEntries(dataIndices) {
+    return Object.entries(dataIndices.persons || {}).map(([key, p]) => ({
+        id: key,
+        name: p.name,
+        count: p.letter_count ?? ((p.letters_sent || 0) + (p.letters_received || 0))
+    }));
+}
+
+/**
  * Builds comparison data for two elements
  */
 function buildComparisonData(mode, itemA, itemB) {
@@ -46,12 +57,8 @@ function buildComparisonData(mode, itemA, itemB) {
     let lettersB = [];
 
     if (mode === 'persons') {
-        lettersA = letters.filter(l =>
-            l.sender?.id === itemA.id || l.recipient?.id === itemA.id
-        );
-        lettersB = letters.filter(l =>
-            l.sender?.id === itemB.id || l.recipient?.id === itemB.id
-        );
+        lettersA = letters.filter(l => personKey(l.sender) === itemA.id || personKey(l.recipient) === itemA.id);
+        lettersB = letters.filter(l => personKey(l.sender) === itemB.id || personKey(l.recipient) === itemB.id);
     } else if (mode === 'periods') {
         lettersA = letters.filter(l =>
             l.year >= itemA.from && l.year <= itemA.to
@@ -273,10 +280,9 @@ function renderComparisonQuickSelect() {
     let items = [];
 
     if (comparisonMode === 'persons') {
-        const persons = Object.values(dataIndices.persons || {})
-            .sort((a, b) => b.letter_count - a.letter_count)
+        items = personIndexEntries(dataIndices)
+            .sort((a, b) => b.count - a.count)
             .slice(0, 10);
-        items = persons.map(p => ({ id: p.id, name: p.name }));
     } else if (comparisonMode === 'periods') {
         const meta = getMeta();
         const min = meta.date_range?.min || 1850;
@@ -470,7 +476,7 @@ function showComparisonLetters(side) {
         applyPlaceFilter(item.id);
     } else if (comparisonMode === 'periods') {
         // For periods, set the year range slider
-        const slider = elements.getById('year-slider');
+        const slider = elements.getById('year-range-slider');
         if (slider && slider.noUiSlider) {
             slider.noUiSlider.set([item.from, item.to]);
         }
@@ -651,11 +657,10 @@ function setupComparisonAutocomplete(side) {
         const lowerQuery = query.toLowerCase();
 
         if (comparisonMode === 'persons') {
-            results = Object.values(dataIndices.persons || {})
+            results = personIndexEntries(dataIndices)
                 .filter(p => p.name.toLowerCase().includes(lowerQuery))
-                .sort((a, b) => b.letter_count - a.letter_count)
-                .slice(0, 10)
-                .map(p => ({ id: p.id, name: p.name }));
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10);
         } else if (comparisonMode === 'places') {
             results = Object.values(dataIndices.places || {})
                 .filter(p => p.name.toLowerCase().includes(lowerQuery))

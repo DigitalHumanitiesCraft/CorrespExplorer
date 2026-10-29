@@ -163,9 +163,13 @@ function highlightTarget(stepNumber) {
 /**
  * Setup event listeners for tour navigation
  */
+// startTour can run again from the tutorial button; the delegated listeners are bound once
+let tourListenersBound = false;
+
 function setupTourListeners() {
     const tourElement = document.getElementById('demo-tour');
-    if (!tourElement) return;
+    if (!tourElement || tourListenersBound) return;
+    tourListenersBound = true;
 
     // Use event delegation
     tourElement.addEventListener('click', (e) => {

@@ -308,7 +308,7 @@ function buildTopicsNetwork(letters, minCooccurrence, maxNodes) {
 
         // Track topic info
         subjects.forEach(s => {
-            const sid = s.id || s.label;
+            const sid = s.uri || s.id || s.label;
             if (!sid) return;
             if (!topicInfo.has(sid)) {
                 topicInfo.set(sid, {
@@ -323,8 +323,8 @@ function buildTopicsNetwork(letters, minCooccurrence, maxNodes) {
         // Track co-occurrences
         for (let i = 0; i < subjects.length; i++) {
             for (let j = i + 1; j < subjects.length; j++) {
-                const s1 = subjects[i].id || subjects[i].label;
-                const s2 = subjects[j].id || subjects[j].label;
+                const s1 = subjects[i].uri || subjects[i].id || subjects[i].label;
+                const s2 = subjects[j].uri || subjects[j].id || subjects[j].label;
                 if (!s1 || !s2) continue;
 
                 const edgeKey = [s1, s2].sort().join('|');

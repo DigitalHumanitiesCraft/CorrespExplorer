@@ -122,6 +122,14 @@ function detectAvailableViews() {
             available: mentionedPersonsIndex.size > 0,
             reason: mentionedPersonsIndex.size > 0 ? null : 'Keine Mentions-Daten im Datensatz'
         },
+        chronik: {
+            available: hasLetters,
+            reason: hasLetters ? null : 'Keine Briefe vorhanden'
+        },
+        activity: {
+            available: hasYears,
+            reason: hasYears ? null : 'Keine Datums-Angaben vorhanden'
+        },
         comparison: {
             available: hasPersons || hasPlaces,
             reason: (hasPersons || hasPlaces) ? null : 'Keine Personen oder Orte zum Vergleichen'
@@ -1407,6 +1415,10 @@ function applyFilters() {
         renderPlacesListView();
     } else if (currentView === 'chronik') {
         renderChronikView();
+    } else if (currentView === 'network') {
+        renderNetworkView();
+    } else if (currentView === 'mentions-flow') {
+        renderMentionsFlowView();
     }
 }
 
@@ -1667,7 +1679,7 @@ function initUrlState() {
 
     // View
     const view = urlParams.get('view');
-    if (view && ['overview', 'map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'].includes(view)) {
+    if (view && ['overview', 'map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow', 'chronik', 'activity', 'comparison'].includes(view)) {
         currentView = view;
     }
 
@@ -1715,14 +1727,14 @@ function initUrlState() {
 function updateUrlState() {
     const urlParams = new URLSearchParams(window.location.search);
 
-    // Preserve dataset parameter
-    const dataset = urlParams.get('dataset');
-
     // Get URL params from state-manager
     const newParams = state.toURLParams();
 
-    // Re-add dataset parameter (not part of state)
-    if (dataset) newParams.set('dataset', dataset);
+    // Keep the parameters that select the dataset, so a reload or shared link still loads it
+    for (const key of ['dataset', 'json', 'demo']) {
+        const value = urlParams.get(key);
+        if (value) newParams.set(key, value);
+    }
 
     // Add quality filter parameters (custom to this app, not in base state)
     if (qualityFilter.preciseDates) newParams.set('precise', '1');

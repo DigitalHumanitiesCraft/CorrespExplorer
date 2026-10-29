@@ -153,10 +153,9 @@ export function toggleBasketItem(type, id) {
     if (isInBasket(type, id)) {
         removeFromBasket(type, id);
         return false;
-    } else {
-        addToBasket(type, id);
-        return true;
     }
+    // 'full' (capacity reached) leaves the item outside the basket
+    return addToBasket(type, id) === true;
 }
 
 /**
