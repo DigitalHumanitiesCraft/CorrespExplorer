@@ -3,7 +3,7 @@
 @import url('components.css');
 
 /* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Lato:wght@300;400;700&family=Merriweather:wght@400;700&display=swap');
+@import url('../vendor/fonts/fonts.css');
 
 /* Reset */
 * {
@@ -377,6 +377,11 @@ button, .btn {
     display: flex;
     flex: 1;
     overflow: hidden;
+}
+
+/* Opens the off-canvas sidebar on narrow screens, see the mobile media query */
+.sidebar-toggle {
+    display: none;
 }
 
 /* Sidebar */
@@ -897,6 +902,15 @@ button, .btn {
 
     .sidebar.open {
         left: 0;
+    }
+
+    /* Only the back arrow stays, so the view switcher keeps room for its buttons */
+    .nav-brand .brand-text {
+        display: none;
+    }
+
+    .sidebar-toggle {
+        display: flex;
     }
 
     .main-content {

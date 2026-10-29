@@ -8,13 +8,13 @@
     <link rel="icon" type="image/png" href="assets/logo-no-background-no-text.png">
 
     <!-- MapLibre GL JS CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+    <link rel="stylesheet" href="vendor/maplibre-gl/maplibre-gl.css" />
 
     <!-- noUiSlider CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.css" />
+    <link rel="stylesheet" href="vendor/nouislider/nouislider.min.css" />
 
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="vendor/fontawesome/css/all.min.css">
 
     <!-- Core CSS -->
     <link rel="stylesheet" href="css/tokens.css">
@@ -85,6 +85,9 @@
             </button>
         </div>
         <div class="nav-links">
+            <button id="sidebar-toggle" class="nav-link sidebar-toggle" aria-controls="explore-sidebar" aria-expanded="false" aria-label="Filter anzeigen" title="Filter">
+                <i class="fas fa-sliders-h"></i>
+            </button>
             <a href="wissenskorb.html" class="nav-link basket-nav-link" title="Wissenskorb" id="basket-nav-link">
                 <i class="fas fa-star"></i>
                 <span class="nav-link-text">Korb</span>
@@ -133,7 +136,7 @@
     <div class="container">
         <div class="content-wrapper">
             <!-- Sidebar -->
-            <aside class="sidebar" role="complementary" aria-label="Datensatz und Filter">
+            <aside class="sidebar" id="explore-sidebar" role="complementary" aria-label="Datensatz und Filter">
 
                 <!-- ========================================
                      SECTION 1: DATENSATZ (Kontext zuerst)
@@ -1085,10 +1088,10 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-    <script src="https://unpkg.com/nouislider@15.7.1/dist/nouislider.min.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <script src="vendor/maplibre-gl/maplibre-gl.js"></script>
+    <script src="vendor/nouislider/nouislider.min.js"></script>
+    <script src="vendor/d3/d3.v7.min.js"></script>
+    <script src="vendor/d3-sankey/d3-sankey.min.js"></script>
     <script src="js/explore.js" type="module"></script>
 </body>
 </html>
