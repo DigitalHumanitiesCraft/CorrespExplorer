@@ -43,6 +43,19 @@ export function safeUrl(url) {
 }
 
 /**
+ * Build an external link from dataset values; falls back to escaped text for non-http(s) URLs
+ * @param {string} url - URL from CMIF or loaded JSON
+ * @param {string} text - Link text from CMIF or loaded JSON
+ * @returns {string} - HTML
+ */
+export function externalLink(url, text) {
+    const href = safeUrl(url);
+    return href
+        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(text)}</a>`
+        : escapeHtml(text);
+}
+
+/**
  * Check a ?json= parameter: only same-origin relative paths to .json files under data/
  * @param {string} path - Value of the json URL parameter
  * @returns {boolean}

@@ -3,9 +3,18 @@
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS, computeLanguageColors } from './constants.js';
 import { initBasketUI } from './basket-ui.js';
-import { isInBasket } from './basket.js';
+import {
+    isInBasket as basketIsInBasket,
+    addToBasket as basketAdd,
+    removeFromBasket as basketRemove,
+    toggleBasketItem as basketToggle,
+    getBasketCounts,
+    clearBasket as basketClear,
+    onBasketChange,
+    getBasketItems
+} from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, isAllowedJsonPath, countIdentifiedPersons } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons } from './utils.js';
 import {
     formatDateWithPrecision,
     formatSingleDate,
@@ -16,50 +25,46 @@ import {
     getPlacePrecisionClass,
     getPersonInitials
 } from './formatters.js';
-import { checkAndStartDemoTour } from './demo-tour.js';
+import { checkAndStartDemoTour, startTour } from './demo-tour.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
+// Extracted views
+import { initTimelineView, renderTimeline as renderTimelineView, resetTimelineRendered } from './views/timeline-view.js';
+import { initActivityView, renderActivity as renderActivityView } from './views/activity-view.js';
+import { initComparisonView, renderComparison as renderComparisonView } from './views/comparison-view.js';
+import { initChronikView, renderChronik as renderChronikView, resetChronikState } from './views/chronik-view.js';
+import { initNetworkView as initNetworkViewModule, renderNetwork as renderNetworkView, resetNetworkZoom } from './views/network-view.js';
+import { initMentionsView, renderMentionsFlow as renderMentionsFlowView, resetMentionsPerson } from './views/mentions-view.js';
+import { initTopicsView, renderTopicsList as renderTopicsListView, getSubjectIndex, getSelectedSubjectId, setSelectedSubjectId, rebuildSubjectIndex, resetTopicsState } from './views/topics-view.js';
+import { initPlacesView, renderPlacesList as renderPlacesListView, getPlacesIndex, getSelectedPlaceId, setSelectedPlaceId, rebuildPlacesIndex, resetPlacesState, updateMissingCoordinatesBanner } from './views/places-view.js';
 
 const IS_PRODUCTION = true;
 
-// DEPRECATED: Moved to state-manager.js
-// These variables are kept temporarily for backward compatibility
-// TODO: Remove after full migration
-let map;  // Still used directly, not in state
-let allLetters = [];  // Use: state.getAllLetters()
-let filteredLetters = [];  // Use: state.getFilteredLetters()
-let placeAggregation = {};  // Use: state.getPlaceAggregation()
-let dataIndices = {};  // Use: state.getIndices()
-let dataMeta = {};  // Use: state.getMeta()
-let temporalFilter = null;  // Use: state.filters.temporal
-let dateRange = { min: 1800, max: 2000 };  // Use: state.ui.dateRange
+// Map instance (not in state - MapLibre manages its own state)
+let map;
 
-// Quality filter state - Use: state.filters.quality
-let qualityFilter = {
-    preciseDates: false,
-    knownPersons: false,
-    locatedPlaces: false
-};
+// DEPRECATED: Legacy variables for backward compatibility
+// TODO: Migrate remaining usages to state-manager.js
+let allLetters = [];       // Use: state.getAllLetters()
+let filteredLetters = [];  // Use: state.getFilteredLetters()
+let placeAggregation = {}; // Use: state.getPlaceAggregation()
+let dataIndices = {};      // Use: state.getDataIndices()
+let temporalFilter = null; // Use: state.filters.temporal
+let dateRange = { min: 1800, max: 2000 }; // Use: state.ui.dateRange
+let qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
 
 // Track state
 let handlersSetup = false;
 let mapInitialized = false;  // Use: state.mapInitialized
 
-// Topics view state - Use: state.ui.*
-let subjectIndex = {};
-let selectedSubjectId = null;  // Use: state.ui.selectedTopicId
-let topicsSearchTerm = '';  // Use: state.ui.topicsSearchTerm
-let topicsSortOrder = 'count-desc';  // Use: state.ui.topicsSortOrder
+// Topics view state - now in views/topics-view.js
+// Access via getSubjectIndex(), getSelectedSubjectId()
 
-// Places view state - Use: state.ui.*
-let placesIndex = {};
-let selectedPlaceId = null;  // Use: state.ui.selectedPlaceId
-let placesSearchTerm = '';  // Use: state.ui.placesSearchTerm
-let placesSortOrder = 'count-desc';  // Use: state.ui.placesSortOrder
+// Places view state - now in views/places-view.js
+// Access via getPlacesIndex(), getSelectedPlaceId()
 
-// Mentions Flow view state - Use: state.ui.*
-let mentionedPersonsIndex = new Map();
-let selectedMentionsPerson = null;  // Currently selected person for mentions view
+// Mentions Flow view state
+let mentionedPersonsIndex = new Map();  // Used for detectAvailableViews
 
 // Logging utility
 const log = {
@@ -124,6 +129,10 @@ function detectAvailableViews() {
         'mentions-flow': {
             available: mentionedPersonsIndex.size > 0,
             reason: mentionedPersonsIndex.size > 0 ? null : 'Keine Mentions-Daten im Datensatz'
+        },
+        comparison: {
+            available: hasPersons || hasPlaces,
+            reason: (hasPersons || hasPlaces) ? null : 'Keine Personen oder Orte zum Vergleichen'
         }
     };
 
@@ -271,7 +280,6 @@ async function init() {
         allLetters = data.letters || [];
         filteredLetters = allLetters;
         dataIndices = data.indices || {};
-        dataMeta = data.meta || {};
 
         log.init('State Manager initialized with data');
 
@@ -323,22 +331,88 @@ async function init() {
         initViewSwitcher();
         initPersonsView();
         initLettersView();
-        initTimeline();
-        initTopicsView();
-        initPlacesView();
-        initNetworkView();
-        initMentionsFlowView();
-        initChronikView();
+        // Initialize extracted timeline view with dependencies
+        initTimelineView({
+            getFilteredLetters: () => filteredLetters,
+            getAllLetters: () => allLetters,
+            applyFilters,
+            switchView,
+            basketIsInBasket,
+            basketAdd,
+            showToast
+        });
+        // Initialize extracted topics view with dependencies
+        initTopicsView({
+            getFilteredLetters: () => filteredLetters,
+            getAllLetters: () => allLetters,
+            applySubjectFilter,
+            log
+        });
+        // Initialize extracted places view with dependencies
+        initPlacesView({
+            getFilteredLetters: () => filteredLetters,
+            getAllLetters: () => allLetters,
+            getDataIndices: () => dataIndices,
+            applyPlaceFilter,
+            switchView,
+            basketAdd,
+            basketIsInBasket,
+            showToast,
+            onDataUpdated: handlePlacesDataUpdated,
+            log
+        });
+        // Initialize extracted network view with dependencies
+        initNetworkViewModule({
+            getFilteredLetters: () => state.getFilteredLetters(),
+            getAllLetters: () => allLetters,
+            getDateRange: () => dateRange,
+            applyPersonFilter,
+            applySubjectFilter,
+            switchView,
+            log
+        });
+        // Initialize extracted mentions view with dependencies
+        initMentionsView({
+            getFilteredLetters: () => state.getFilteredLetters(),
+            showLetterDetail,
+            log
+        });
+        // Initialize extracted chronik view with dependencies
+        initChronikView({
+            getFilteredLetters: () => state.getFilteredLetters(),
+            showLetterDetail,
+            state
+        });
+        // Initialize extracted activity view with dependencies
+        initActivityView({
+            getFilteredLetters: () => state.getFilteredLetters(),
+            showLetterDetail
+        });
+        // Initialize extracted comparison view with dependencies
+        initComparisonView({
+            getFilteredLetters: () => state.getFilteredLetters(),
+            getIndices: () => dataIndices,
+            getMeta: () => state.getMeta(),
+            applyPersonFilter,
+            applyPlaceFilter,
+            applyFilters,
+            switchView,
+            showLetterDetail
+        });
         initExport();
         initMissingPlacesModal();
         initBasketUI(dataIndices, allLetters);
 
+        // Setup Knowledge Path handlers and load existing session
+        setupKnowledgePathHandlers();
+        loadKnowledgePath();
+
         // Store data in sessionStorage for wissenskorb.js
         try {
             sessionStorage.setItem('correspData', JSON.stringify({
-                letters: allLetters,
-                indices: dataIndices,
-                meta: dataMeta
+                letters: state.getAllLetters(),
+                indices: state.getDataIndices(),
+                meta: state.getMeta()
             }));
         } catch (e) {
             // sessionStorage may be full or unavailable
@@ -354,8 +428,8 @@ async function init() {
         }
 
         // Apply subject filter from URL
-        if (selectedSubjectId) {
-            applySubjectFilter(selectedSubjectId);
+        if (getSelectedSubjectId()) {
+            applySubjectFilter(getSelectedSubjectId());
         }
 
         hideLoading();
@@ -630,8 +704,9 @@ function renderTopicsQuickFilter(searchTerm) {
         return;
     }
 
+    const currentSubjectId = getSelectedSubjectId();
     container.innerHTML = toShow.map(topic => {
-        const isActive = selectedSubjectId === topic.id;
+        const isActive = currentSubjectId === topic.id;
         return `
             <div class="topic-quick-item ${isActive ? 'active' : ''}" data-topic-id="${escapeHtml(topic.id)}" title="${escapeHtml(topic.label)}">
                 <span class="topic-label">${escapeHtml(topic.label)}</span>
@@ -672,9 +747,10 @@ function updateTopicsQuickFilterState() {
     const container = elements.topicsQuickFilter;
     if (!container) return;
 
+    const currentSubjectId = getSelectedSubjectId();
     container.querySelectorAll('.topic-quick-item').forEach(item => {
         const topicId = item.dataset.topicId;
-        if (selectedSubjectId === topicId) {
+        if (currentSubjectId === topicId) {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
@@ -1478,7 +1554,7 @@ function initFilters() {
             }
             temporalFilter = null;
             selectedPersonId = null;
-            selectedSubjectId = null;
+            setSelectedSubjectId(null);
 
             // Reset quality filters
             qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
@@ -1507,7 +1583,7 @@ function applyFilters() {
 
     filterUpdates.languages = languageFilters.length > 0 ? languageFilters : [];
     filterUpdates.person = selectedPersonId || null;
-    filterUpdates.subject = selectedSubjectId || null;
+    filterUpdates.subject = getSelectedSubjectId() || null;
     filterUpdates.quality = { ...qualityFilter };
 
     state.updateFilters(filterUpdates);
@@ -1534,17 +1610,17 @@ function applyFilters() {
 
     // Re-render active view
     if (currentView === 'topics') {
-        renderTopicsList();
+        renderTopicsListView();
     } else if (currentView === 'timeline') {
-        renderTimeline();
+        renderTimelineView();
     } else if (currentView === 'persons') {
         renderPersonsList();
     } else if (currentView === 'letters') {
         renderLettersList();
     } else if (currentView === 'places') {
-        renderPlacesList();
+        renderPlacesListView();
     } else if (currentView === 'chronik') {
-        renderChronik();
+        renderChronikView();
     }
 }
 
@@ -1569,7 +1645,7 @@ function clearPersonFilter() {
 
 // Update filter indicators on view buttons
 function updateFilterIndicators() {
-    const hasActiveFilter = selectedPersonId || selectedSubjectId ||
+    const hasActiveFilter = selectedPersonId || getSelectedSubjectId() ||
         qualityFilter.preciseDates || qualityFilter.knownPersons || qualityFilter.locatedPlaces;
 
     // Update letters button with filter indicator
@@ -1660,7 +1736,7 @@ function updateFilterCounts() {
     // Get current filter state excluding language
     const yearRange = getYearRangeValues();
     const personFilters = selectedPersonId ? [selectedPersonId] : [];
-    const topicFilters = selectedSubjectId ? [selectedSubjectId] : [];
+    const topicFilters = getSelectedSubjectId() ? [getSelectedSubjectId()] : [];
 
     // Filter letters without language constraint to show potential counts
     const lettersWithoutLanguageFilter = allLetters.filter(letter => {
@@ -1740,6 +1816,63 @@ function showError(message) {
     }, 2000);
 }
 
+/**
+ * Shows a toast notification
+ * @param {string} message - Message to display
+ * @param {number} duration - Duration in ms (default 3000)
+ */
+function showToast(message, duration = 3000) {
+    // Remove existing toast
+    const existing = document.querySelector('.toast-notification');
+    if (existing) existing.remove();
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `
+        <span class="toast-message">${escapeHtml(message)}</span>
+        <button class="toast-close"><i class="fas fa-times"></i></button>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Close button
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+        toast.classList.add('toast-hide');
+        setTimeout(() => toast.remove(), 300);
+    });
+
+    // Show with animation
+    requestAnimationFrame(() => {
+        toast.classList.add('toast-show');
+    });
+
+    // Auto-hide
+    setTimeout(() => {
+        toast.classList.add('toast-hide');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
+
+/**
+ * Callback for places view when coordinates are resolved
+ * Updates map and view state
+ */
+function handlePlacesDataUpdated(coordinates) {
+    // Rebuild place aggregation
+    placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
+
+    // Update views
+    detectAvailableViews();
+    updateViewButtons();
+
+    // Reinitialize map if it's now available
+    if (availableViews.map?.available && map) {
+        initMap();
+        updateMap();
+    }
+}
+
 // ===================
 // URL STATE MANAGEMENT
 // ===================
@@ -1773,7 +1906,7 @@ function initUrlState() {
     // Subject filter
     const subject = urlParams.get('subject');
     if (subject) {
-        selectedSubjectId = subject;
+        setSelectedSubjectId(subject);
     }
 
     // Languages
@@ -1843,6 +1976,11 @@ function initViewSwitcher() {
 }
 
 function switchView(view) {
+    // Redirect deprecated 'questions' view to 'overview' (Forschungspfade now in Start-View)
+    if (view === 'questions') {
+        view = 'overview';
+    }
+
     currentView = view;
     state.ui.currentView = view;
 
@@ -1863,11 +2001,11 @@ function switchView(view) {
         viewElement.classList.add('active');
     }
 
-    // On overview, chronik, questions, and activity: hide entire sidebar for full-width content
+    // On overview, chronik, activity, and comparison: hide entire sidebar for full-width content
     // On other views: show sidebar with stats and filters
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'questions' || view === 'activity');
+        sidebar.classList.toggle('hidden', view === 'overview' || view === 'chronik' || view === 'activity' || view === 'comparison');
     }
 
     // Update sidebar legend for current view
@@ -1885,21 +2023,21 @@ function switchView(view) {
         renderLettersList();
     } else if (view === 'timeline') {
         // Always re-render timeline when switching to it (to reflect filters)
-        renderTimeline();
+        renderTimelineView();
     } else if (view === 'topics') {
-        renderTopicsList();
+        renderTopicsListView();
     } else if (view === 'places') {
-        renderPlacesList();
+        renderPlacesListView();
     } else if (view === 'network') {
-        renderNetwork();
+        renderNetworkView();
     } else if (view === 'mentions-flow') {
-        renderMentionsFlow();
+        renderMentionsFlowView();
     } else if (view === 'chronik') {
-        renderChronik();
-    } else if (view === 'questions') {
-        renderResearchQuestions();
+        renderChronikView();
     } else if (view === 'activity') {
-        renderActivity();
+        renderActivityView();
+    } else if (view === 'comparison') {
+        renderComparisonView();
     } else if (view === 'map' && map) {
         map.resize();
     }
@@ -1969,28 +2107,69 @@ function initPersonsView() {
  * Render the Overview view with statistics and recommendations
  */
 function renderOverview() {
-    if (!dataMeta) return;
+    const meta = state.getMeta();
+    if (!meta) return;
+    const totalLetters = allLetters.length;
 
-    const meta = dataMeta;
-
-    // Update title and subtitle
+    // Update title
     const titleEl = document.getElementById('overview-title');
-    const subtitleEl = document.getElementById('overview-subtitle');
     if (titleEl) {
-        titleEl.textContent = meta.title || 'Datensatz-Übersicht';
+        titleEl.textContent = meta.title || 'Datensatz';
     }
-    if (subtitleEl && meta.date_range) {
-        const minYear = meta.date_range.min;
-        const maxYear = meta.date_range.max;
-        if (minYear && maxYear) {
-            subtitleEl.textContent = `Korrespondenz von ${minYear} bis ${maxYear}`;
+
+    // Update inline stats: Briefe | Zeitraum | Personen | Orte
+    const statsInlineEl = document.getElementById('overview-stats-inline');
+    if (statsInlineEl) {
+        const minYear = meta.date_range?.min;
+        const maxYear = meta.date_range?.max;
+        const personCount = Object.keys(dataIndices.persons || {}).length;
+        const placeCount = Object.keys(dataIndices.places || {}).length;
+
+        statsInlineEl.innerHTML = `
+            <span class="stat-item"><i class="fas fa-envelope"></i> <span class="stat-value">${totalLetters.toLocaleString('de-DE')}</span> Briefe</span>
+            ${minYear && maxYear ? `<span class="stat-item"><i class="fas fa-calendar"></i> <span class="stat-value">${minYear}–${maxYear}</span></span>` : ''}
+            <span class="stat-item"><i class="fas fa-users"></i> <span class="stat-value">${personCount.toLocaleString('de-DE')}</span> Personen</span>
+            <span class="stat-item"><i class="fas fa-map-marker-alt"></i> <span class="stat-value">${placeCount.toLocaleString('de-DE')}</span> Orte</span>
+        `;
+    }
+
+    // Update source info: Quelle | Lizenz
+    const sourceInlineEl = document.getElementById('overview-source-inline');
+    if (sourceInlineEl) {
+        const parts = [];
+
+        // Check for JSON format (teiHeader) vs cmif-parser format
+        const teiHeader = meta.teiHeader || {};
+        const hasJsonFormat = Object.keys(teiHeader).length > 0;
+
+        // Source/Publisher
+        const publisherValue = hasJsonFormat
+            ? teiHeader.publisher
+            : (meta.publishers?.map(p => p.name).join(', ') || null);
+        if (publisherValue) {
+            parts.push(escapeHtml(publisherValue));
         }
+
+        // Licence
+        if (hasJsonFormat && teiHeader.licence) {
+            parts.push(externalLink(teiHeader.licenceTarget, teiHeader.licence));
+        } else if (meta.licence?.text) {
+            parts.push(externalLink(meta.licence.url, meta.licence.text));
+        }
+
+        // CMIF URL
+        const cmifUrl = safeUrl(hasJsonFormat ? teiHeader.cmifUrl : meta.cmifUrl);
+        if (cmifUrl) {
+            parts.push(externalLink(cmifUrl, 'CMIF'));
+        }
+
+        sourceInlineEl.innerHTML = parts.length > 0
+            ? parts.join(' <span class="source-sep">|</span> ')
+            : '';
     }
 
     // Calculate quality metrics from the letters, since parser and preprocessing
     // name their uncertainty summaries differently
-    const totalLetters = allLetters.length;
-
     // Date quality (day precision, as in the header quality icons)
     const preciseDates = allLetters.filter(l => l.datePrecision === 'day').length;
     const dateQuality = totalLetters > 0 ? Math.round((preciseDates / totalLetters) * 100) : 0;
@@ -2004,25 +2183,78 @@ function renderOverview() {
     const geoPlaces = places.filter(p => p.lat && p.lon).length;
     const placeQuality = places.length > 0 ? Math.round((geoPlaces / places.length) * 100) : 0;
 
-    // Update quality bars
-    updateQualityBar('quality-bar-dates', 'quality-dates', dateQuality, preciseDates, totalLetters);
-    updateQualityBar('quality-bar-persons', 'quality-persons', personQuality, persons.identified, persons.total);
-    updateQualityBar('quality-bar-places', 'quality-places', placeQuality, geoPlaces, places.length);
+    // Update quality chips
+    updateQualityChip('quality-chip-dates', dateQuality, `${dateQuality}% Datiert`);
+    updateQualityChip('quality-chip-persons', personQuality, `${personQuality}% Identifiziert`);
+    updateQualityChip('quality-chip-places', placeQuality, `${placeQuality}% Georeferenziert`);
 
-    // Generate view recommendations
-    renderViewRecommendations(dateQuality, personQuality, placeQuality);
+    // Setup entry point buttons
+    setupEntryPointButtons();
 
-    // Render metadata section
-    renderOverviewMetadata();
+    // Show/hide tutorial button based on dataset
+    const tutorialBtn = document.getElementById('start-tutorial-btn');
+    if (tutorialBtn) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isDemo = urlParams.get('demo') === 'true';
+        if (isDemo) {
+            tutorialBtn.classList.remove('hidden');
+            // Setup click handler (once)
+            if (!tutorialBtn.dataset.listenerAdded) {
+                tutorialBtn.addEventListener('click', () => {
+                    // Clear the "completed" flag so tour can restart
+                    sessionStorage.removeItem('ce-demo-tour-completed');
+                    startTour();
+                });
+                tutorialBtn.dataset.listenerAdded = 'true';
+            }
+        } else {
+            tutorialBtn.classList.add('hidden');
+        }
+    }
 
-    // Render top correspondents
-    renderTopCorrespondents();
+    // Render research paths in overview (limited)
+    renderOverviewResearchPaths();
+}
 
-    // Render language distribution
-    renderLanguageDistribution();
+/**
+ * Update a quality chip with percentage and class
+ */
+function updateQualityChip(chipId, percentage, label) {
+    const chip = document.getElementById(chipId);
+    if (!chip) return;
 
-    // Setup quick access buttons
-    setupQuickAccessButtons();
+    const spanEl = chip.querySelector('span');
+    if (spanEl) {
+        spanEl.textContent = label;
+    }
+
+    chip.classList.remove('high', 'medium', 'low');
+    if (percentage >= 70) {
+        chip.classList.add('high');
+    } else if (percentage >= 40) {
+        chip.classList.add('medium');
+    } else {
+        chip.classList.add('low');
+    }
+}
+
+/**
+ * Setup entry point button click handlers (called once on init)
+ */
+let entryPointsInitialized = false;
+function setupEntryPointButtons() {
+    if (entryPointsInitialized) return;
+    entryPointsInitialized = true;
+
+    document.querySelectorAll('.entry-point-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.target;
+            if (target) {
+                switchView(target);
+                updateUrlState();
+            }
+        });
+    });
 }
 
 /**
@@ -2050,85 +2282,116 @@ function updateQualityBar(barId, valueId, percentage, count, total) {
 }
 
 /**
- * Render view recommendations based on data quality
+ * Render research paths in the Overview view
+ * Uses the same analyzeResearchQuestions() function as the questions view
+ * Limited to 4 paths with "show all" button
  */
-function renderViewRecommendations(dateQuality, personQuality, placeQuality) {
-    const container = document.getElementById('view-recommendations');
+function renderOverviewResearchPaths() {
+    const container = document.getElementById('overview-questions-grid');
+    const showAllBtn = document.getElementById('show-all-paths-btn');
     if (!container) return;
 
-    const recommendations = [];
+    const questions = analyzeResearchQuestions();
 
-    // Determine best views based on data quality
-    if (placeQuality >= 50) {
-        recommendations.push({
-            view: 'map',
-            icon: 'fa-map',
-            title: 'Kartenansicht',
-            reason: `${placeQuality}% der Orte sind georeferenziert`,
-            recommended: placeQuality >= 70
-        });
-    }
-
-    if (personQuality >= 30) {
-        recommendations.push({
-            view: 'network',
-            icon: 'fa-project-diagram',
-            title: 'Netzwerk-Ansicht',
-            reason: `${personQuality}% der Personen sind identifiziert`,
-            recommended: personQuality >= 60
-        });
-    }
-
-    // Timeline is always useful with dated letters
-    if (dateQuality >= 30) {
-        recommendations.push({
-            view: 'timeline',
-            icon: 'fa-chart-line',
-            title: 'Timeline',
-            reason: `${dateQuality}% der Briefe haben exakte Datierungen`,
-            recommended: dateQuality >= 70
-        });
-    }
-
-    // Persons view is always available
-    recommendations.push({
-        view: 'persons',
-        icon: 'fa-users',
-        title: 'Korrespondenten',
-        reason: 'Alle Absender und Empfänger auflisten',
-        recommended: false
-    });
-
-    // Letters view is always available
-    recommendations.push({
-        view: 'letters',
-        icon: 'fa-envelope',
-        title: 'Briefliste',
-        reason: 'Alle Briefe durchsuchen und filtern',
-        recommended: false
-    });
-
-    // Sort: recommended first
-    recommendations.sort((a, b) => (b.recommended ? 1 : 0) - (a.recommended ? 1 : 0));
-
-    // Render
-    container.innerHTML = recommendations.map(rec => `
-        <div class="view-recommendation ${rec.recommended ? 'recommended' : ''}" data-view="${rec.view}">
-            <div class="rec-icon"><i class="fas ${rec.icon}"></i></div>
-            <div class="rec-content">
-                <div class="rec-title">${rec.title}</div>
-                <div class="rec-reason">${rec.reason}</div>
+    if (questions.length === 0) {
+        container.innerHTML = `
+            <div class="questions-empty">
+                <i class="fas fa-question-circle"></i>
+                <p>Keine Forschungspfade verfuegbar.</p>
             </div>
-            ${rec.recommended ? '<span class="rec-badge">Empfohlen</span>' : ''}
+        `;
+        if (showAllBtn) showAllBtn.classList.add('hidden');
+        return;
+    }
+
+    // Only show descriptive and analytical questions (not unanswerable)
+    const answerable = questions.filter(q => q.category !== 'unanswerable');
+
+    // Limit to 4 paths for compact overview
+    const MAX_PATHS = 4;
+    const displayPaths = answerable.slice(0, MAX_PATHS);
+    const hasMore = answerable.length > MAX_PATHS;
+
+    // Show/hide "show all" button
+    if (showAllBtn) {
+        if (hasMore) {
+            showAllBtn.classList.remove('hidden');
+            showAllBtn.innerHTML = `<i class="fas fa-list"></i> Alle ${answerable.length} Pfade anzeigen`;
+            showAllBtn.onclick = () => {
+                renderResearchPathCards(container, answerable, questions);
+                showAllBtn.classList.add('hidden');
+            };
+        } else {
+            showAllBtn.classList.add('hidden');
+        }
+    }
+
+    // Render limited cards
+    renderResearchPathCards(container, displayPaths, questions);
+}
+
+/**
+ * Render research path cards (shared by limited and expanded view)
+ */
+function renderResearchPathCards(container, paths, allQuestions) {
+    container.innerHTML = paths.map(q => `
+        <div class="question-card question-${escapeHtml(q.category)}" role="button" tabindex="0" data-question-id="${escapeHtml(q.id)}">
+            <div class="question-icon">
+                <i class="fas ${q.icon || 'fa-question'}"></i>
+            </div>
+            <div class="question-content">
+                <div class="question-text">${escapeHtml(q.question)}</div>
+                <div class="question-path">
+                    ${q.path.map((step, i) => `
+                        <span class="path-step" data-view="${escapeHtml(step.view)}" data-step="${i}">
+                            <span class="path-step-num">${i + 1}</span>
+                            <span class="path-step-label">${escapeHtml(step.label)}</span>
+                        </span>
+                        ${i < q.path.length - 1 ? '<span class="path-arrow"><i class="fas fa-chevron-right"></i></span>' : ''}
+                    `).join('')}
+                </div>
+            </div>
+            <button class="question-start-btn" title="Wissenspfad starten">
+                <i class="fas fa-play"></i>
+            </button>
         </div>
     `).join('');
 
-    // Add click handlers
-    container.querySelectorAll('.view-recommendation').forEach(el => {
-        el.addEventListener('click', () => {
-            const view = el.dataset.view;
-            switchView(view);
-            updateUrlState();
+    // Add click handlers for path steps
+    container.querySelectorAll('.path-step').forEach(step => {
+        step.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const view = step.dataset.view;
+            if (view) {
+                switchView(view);
+                updateUrlState();
+            }
+        });
+    });
+
+    // Add click handler for start button - starts knowledge path
+    container.querySelectorAll('.question-start-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = btn.closest('.question-card');
+            const questionId = card?.dataset.questionId;
+            if (questionId) {
+                const question = allQuestions.find(q => q.id === questionId);
+                if (question && typeof startKnowledgePath === 'function') {
+                    startKnowledgePath(question);
+                }
+            }
+        });
+    });
+
+    // Card click also starts knowledge path
+    container.querySelectorAll('.question-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const questionId = card.dataset.questionId;
+            const question = allQuestions.find(q => q.id === questionId);
+            if (question && typeof startKnowledgePath === 'function') {
+                startKnowledgePath(question);
+            }
         });
     });
 }
@@ -2154,12 +2417,13 @@ function setupQuickAccessButtons() {
  */
 function renderOverviewMetadata() {
     const container = document.getElementById('overview-metadata');
-    if (!container || !dataMeta) return;
+    const meta = state.getMeta();
+    if (!container || !meta) return;
 
     const items = [];
 
     // Check for JSON format (teiHeader object) vs cmif-parser format (direct properties)
-    const teiHeader = dataMeta.teiHeader || {};
+    const teiHeader = meta.teiHeader || {};
     const hasJsonFormat = Object.keys(teiHeader).length > 0;
 
     // Values are HTML; every text and URL from the dataset passes through here
@@ -2170,7 +2434,7 @@ function renderOverviewMetadata() {
     // Editor - JSON: teiHeader.editor (string), Parser: editors (array)
     const editorValue = escapeHtml(hasJsonFormat
         ? teiHeader.editor
-        : (dataMeta.editors?.map(e => e.name).join(', ') || null));
+        : (meta.editors?.map(e => e.name).join(', ') || null));
     if (editorValue) {
         items.push({
             icon: 'fa-user-edit',
@@ -2182,7 +2446,7 @@ function renderOverviewMetadata() {
     // Publisher - JSON: teiHeader.publisher (string), Parser: publishers (array)
     const publisherValue = hasJsonFormat
         ? escapeHtml(teiHeader.publisher)
-        : (dataMeta.publishers?.map(p => link(p.url, p.name)).join(', ') || null);
+        : (meta.publishers?.map(p => link(p.url, p.name)).join(', ') || null);
     if (publisherValue) {
         items.push({
             icon: 'fa-building',
@@ -2194,7 +2458,7 @@ function renderOverviewMetadata() {
     // Source (bibl) - JSON: teiHeader.bibl, Parser: sourceReference/sourceUrl
     const sourceValue = hasJsonFormat
         ? escapeHtml(teiHeader.bibl)
-        : (dataMeta.sourceReference ? link(dataMeta.sourceUrl, dataMeta.sourceReference) : null);
+        : (meta.sourceReference ? link(meta.sourceUrl, meta.sourceReference) : null);
     if (sourceValue) {
         items.push({
             icon: 'fa-quote-left',
@@ -2204,7 +2468,7 @@ function renderOverviewMetadata() {
     }
 
     // CMIF URL - both formats use cmifUrl
-    const cmifUrl = safeUrl(hasJsonFormat ? teiHeader.cmifUrl : dataMeta.cmifUrl);
+    const cmifUrl = safeUrl(hasJsonFormat ? teiHeader.cmifUrl : meta.cmifUrl);
     if (cmifUrl) {
         items.push({
             icon: 'fa-link',
@@ -2217,8 +2481,8 @@ function renderOverviewMetadata() {
     let licenceText = null;
     if (hasJsonFormat && teiHeader.licence) {
         licenceText = link(teiHeader.licenceTarget, teiHeader.licence);
-    } else if (dataMeta.licence?.text) {
-        licenceText = link(dataMeta.licence.url, dataMeta.licence.text);
+    } else if (meta.licence?.text) {
+        licenceText = link(meta.licence.url, meta.licence.text);
     }
     if (licenceText) {
         items.push({
@@ -2460,6 +2724,10 @@ function renderPersonsList() {
                     </div>
                 </div>
                 <div class="person-actions">
+                    <button class="btn-person-basket" data-person-id="${escapeHtml(personKey)}"
+                            title="${total} Briefe zum Korb hinzufuegen">
+                        <i class="fas fa-star"></i>
+                    </button>
                     ${person.id ? `
                         <button class="btn-person-info" data-person-id="${escapeHtml(personKey)}"
                                 title="Person-Details anzeigen">
@@ -2498,6 +2766,35 @@ function renderPersonsList() {
             const personId = btn.dataset.personId;
             if (personId) {
                 showPersonDetail(personId);
+            }
+        });
+    });
+
+    // Add click handlers for person basket buttons
+    container.querySelectorAll('.btn-person-basket').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const personId = btn.dataset.personId;
+            if (!personId) return;
+
+            // Find all letters where this person is sender or recipient
+            const personLetterIds = filteredLetters
+                .filter(l => (l.sender?.id || l.sender?.name) === personId ||
+                             (l.recipient?.id || l.recipient?.name) === personId)
+                .map(l => l.id);
+
+            let addedCount = 0;
+            personLetterIds.forEach(id => {
+                if (!basketIsInBasket('letters', id)) {
+                    basketAdd('letters', id);
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
+            } else {
+                showToast('Alle Briefe bereits im Korb');
             }
         });
     });
@@ -2598,6 +2895,11 @@ function renderLettersList() {
                     </div>
                     <div class="letter-header-actions">
                         <div class="letter-date ${dateClass}">${date}</div>
+                        <button class="btn-letter-basket ${basketIsInBasket('letters', letter.id) ? 'in-basket' : ''}"
+                                data-letter-id="${letter.id || ''}"
+                                title="${basketIsInBasket('letters', letter.id) ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
+                            <i class="fas fa-star"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="letter-meta">
@@ -2628,6 +2930,28 @@ function renderLettersList() {
             if (e.target.closest('a') || e.target.closest('.basket-toggle') || e.target.closest('button')) return;
 
             toggleLetterExpand(card);
+        });
+    });
+
+    // Add click handlers for letter basket buttons
+    container.querySelectorAll('.btn-letter-basket').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const letterId = btn.dataset.letterId;
+            if (!letterId) return;
+
+            const isInBasket = basketIsInBasket('letters', letterId);
+            if (isInBasket) {
+                basketRemove('letters', letterId);
+                btn.classList.remove('in-basket');
+                btn.title = 'Zum Korb hinzufuegen';
+                showToast('Brief aus Korb entfernt');
+            } else {
+                basketAdd('letters', letterId);
+                btn.classList.add('in-basket');
+                btn.title = 'Aus Korb entfernen';
+                showToast('Brief zum Korb hinzugefuegt');
+            }
         });
     });
 }
@@ -2810,6 +3134,11 @@ function showLetterDetail(letterId) {
             <i class="fas fa-external-link-alt"></i> Zur Quelle
         </a>`;
     }
+    // Add to basket button
+    const inBasket = basketIsInBasket('letters', letter.id);
+    html += `<button class="btn btn-basket ${inBasket ? 'in-basket' : ''}" data-letter-id="${escapeHtml(letter.id)}">
+        <i class="fas fa-star"></i> ${inBasket ? 'Im Korb' : 'Zum Korb'}
+    </button>`;
     html += `<button class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(letter.sender?.id || letter.sender?.name)}">
         <i class="fas fa-filter"></i> Briefe von ${escapeHtml(letter.sender?.name || 'Absender')}
     </button>`;
@@ -2839,6 +3168,17 @@ function showLetterDetail(letterId) {
     body.querySelector('.btn-filter-person').addEventListener('click', (e) => {
         filterByPerson(e.currentTarget.dataset.personId);
     });
+
+    // Setup basket button handler
+    const basketBtn = body.querySelector('.btn-basket[data-letter-id]');
+    if (basketBtn) {
+        basketBtn.addEventListener('click', () => {
+            const letterId = basketBtn.dataset.letterId;
+            const nowInBasket = basketToggle('letters', letterId);
+            basketBtn.classList.toggle('in-basket', nowInBasket);
+            basketBtn.innerHTML = `<i class="fas fa-star"></i> ${nowInBasket ? 'Im Korb' : 'Zum Korb'}`;
+        });
+    }
 
     // Show modal
     modal.classList.remove('hidden');
@@ -2985,6 +3325,14 @@ async function showPersonDetail(personId) {
         html += '</div></div>';
     }
 
+    // Calculate letter count for this person
+    const personLetterIds = allLetters.filter(l =>
+        l.sender?.id === personId || l.sender?.viaf === personId ||
+        l.recipient?.id === personId || l.recipient?.viaf === personId ||
+        l.sender?.name === person.name || l.recipient?.name === person.name
+    ).map(l => l.id);
+    const totalLetters = personLetterIds.length;
+
     // Action buttons
     html += '<div class="person-detail-actions">';
 
@@ -2994,6 +3342,11 @@ async function showPersonDetail(personId) {
             <i class="fas fa-search"></i> Bei correspSearch suchen
         </a>`;
     }
+
+    // Add to basket button
+    html += `<button class="btn btn-basket" id="person-add-basket-btn" data-letter-ids="${escapeHtml(JSON.stringify(personLetterIds))}">
+        <i class="fas fa-star"></i> ${totalLetters} Briefe zum Korb
+    </button>`;
 
     html += `<button class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(personId)}">
         <i class="fas fa-filter"></i> Briefe filtern
@@ -3006,6 +3359,27 @@ async function showPersonDetail(personId) {
         modal.style.display = 'none';
         filterByPerson(e.currentTarget.dataset.personId);
     });
+
+    // Setup basket button handler
+    const personBasketBtn = document.getElementById('person-add-basket-btn');
+    if (personBasketBtn) {
+        personBasketBtn.addEventListener('click', () => {
+            const letterIds = JSON.parse(personBasketBtn.dataset.letterIds);
+            let addedCount = 0;
+            letterIds.forEach(id => {
+                if (!basketIsInBasket('letters', id)) {
+                    basketAdd('letters', id);
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                showToast(`${addedCount} Briefe zum Korb hinzugefuegt`);
+            } else {
+                showToast('Alle Briefe bereits im Korb');
+            }
+        });
+    }
 }
 
 // Helper to build correspSearch URL for a person
@@ -3081,786 +3455,17 @@ function filterByPerson(personId) {
 }
 
 // ===================
-// TIMELINE
+// TIMELINE VIEW - Extracted to views/timeline-view.js
 // ===================
 
-let timelineRendered = false;
-let timelineStackMode = 'language'; // 'language' or 'correspondent'
-
-// LANGUAGE_COLORS and LANGUAGE_LABELS imported from constants.js
-
-function initTimeline() {
-    // Setup stack mode toggle
-    const stackToggle = elements.getById('timeline-stack-toggle');
-    if (stackToggle) {
-        stackToggle.addEventListener('change', (e) => {
-            timelineStackMode = e.target.value;
-            renderTimeline();
-        });
-    }
-}
-
-function renderTimeline() {
-    const container = elements.timelineChart;
-    const totalEl = elements.getById('timeline-total');
-    const legendEl = elements.getById('timeline-stack-legend');
-    const undatedBin = elements.getById('timeline-undated-bin');
-    if (!container) return;
-
-    // Use filtered letters
-    const lettersToUse = filteredLetters;
-    const isFiltered = filteredLetters.length < allLetters.length;
-
-    // Separate dated and undated letters
-    const datedLetters = lettersToUse.filter(l => l.year);
-    const undatedLetters = lettersToUse.filter(l => !l.year);
-
-    // Get all years from all letters for consistent x-axis
-    const allYearsSet = new Set();
-    allLetters.forEach(letter => {
-        if (letter.year) allYearsSet.add(letter.year);
-    });
-    const allYearsSorted = Array.from(allYearsSet).sort((a, b) => a - b);
-
-    if (allYearsSorted.length === 0 && undatedLetters.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfuegbar</p></div>';
-        if (undatedBin) undatedBin.style.display = 'none';
-        return;
-    }
-
-    const minYear = allYearsSorted[0] || 0;
-    const maxYear = allYearsSorted[allYearsSorted.length - 1] || 0;
-
-    // Build stacked data by year and language, tracking uncertainty
-    const yearData = {};
-    const languageTotals = {};
-    let totalImprecise = 0;
-
-    // Initialize all years
-    for (let y = minYear; y <= maxYear; y++) {
-        yearData[y] = { total: 0, imprecise: 0, languages: {} };
-    }
-
-    // Check if we have actual language data (not just None/other)
-    const hasLanguageData = lettersToUse.some(l => l.language?.code && l.language.code !== 'None');
-
-    // Count letters per year per language, tracking date precision
-    datedLetters.forEach(letter => {
-        const year = letter.year;
-        // If no language data in corpus, use a single category
-        const lang = hasLanguageData ? (letter.language?.code || 'None') : '_total';
-        const langKey = hasLanguageData ? (LANGUAGE_COLORS[lang] ? lang : 'other') : '_total';
-        const isImprecise = letter.datePrecision === 'range' ||
-                           letter.datePrecision === 'year' ||
-                           letter.datePrecision === 'month' ||
-                           letter.dateCertainty === 'low';
-
-        yearData[year].total++;
-        yearData[year].languages[langKey] = (yearData[year].languages[langKey] || 0) + 1;
-        languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
-
-        if (isImprecise) {
-            yearData[year].imprecise++;
-            totalImprecise++;
-        }
-    });
-
-    // Count undated letters by language
-    const undatedByLang = {};
-    undatedLetters.forEach(letter => {
-        const lang = hasLanguageData ? (letter.language?.code || 'None') : '_total';
-        const langKey = hasLanguageData ? (LANGUAGE_COLORS[lang] ? lang : 'other') : '_total';
-        undatedByLang[langKey] = (undatedByLang[langKey] || 0) + 1;
-        languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
-    });
-
-    // Find max for scaling (include undated count)
-    let maxCount = undatedLetters.length;
-    for (let y = minYear; y <= maxYear; y++) {
-        if (yearData[y].total > maxCount) maxCount = yearData[y].total;
-    }
-    if (maxCount === 0) maxCount = 1;
-
-    // Sort languages by total count for consistent stacking order
-    const sortedLanguages = Object.entries(languageTotals)
-        .sort((a, b) => b[1] - a[1])
-        .map(([lang]) => lang);
-
-    // Calculate label interval - show roughly 15 labels
-    const yearSpan = maxYear - minYear + 1;
-    const labelInterval = Math.max(1, Math.ceil(yearSpan / 15));
-
-    // Render stacked bars
-    const bars = [];
-    for (let y = minYear; y <= maxYear; y++) {
-        const data = yearData[y];
-        const totalHeight = data.total > 0 ? Math.max(4, (data.total / maxCount) * 100) : 0;
-        const showLabel = (y - minYear) % labelInterval === 0 || y === maxYear;
-        const hasImprecise = data.imprecise > 0;
-
-        // Build stacked segments
-        let segments = '';
-        let tooltipParts = [`${y}: ${data.total} Briefe`];
-
-        // Add imprecise info to tooltip
-        if (hasImprecise) {
-            tooltipParts.push(`<span class="tooltip-imprecise">${data.imprecise} mit unscharfem Datum</span>`);
-        }
-
-        if (data.total > 0) {
-            let currentBottom = 0;
-            sortedLanguages.forEach(lang => {
-                const count = data.languages[lang] || 0;
-                if (count > 0) {
-                    // Segment height as percentage of the stacked bar (not the container)
-                    const segmentPct = (count / data.total) * 100;
-                    // Use primary color for _total (no language data), otherwise language color
-                    const color = lang === '_total' ? 'var(--color-primary)' : (LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other);
-                    segments += `<div class="timeline-stack-segment" style="height: ${segmentPct}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
-                    currentBottom += segmentPct;
-                    // Only add language breakdown to tooltip if we have language data
-                    if (lang !== '_total') {
-                        const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
-                        tooltipParts.push(`${escapeHtml(langLabel)}: ${count}`);
-                    }
-                }
-            });
-        }
-
-        bars.push(`
-            <div class="timeline-bar-wrapper ${hasImprecise ? 'has-imprecise' : ''}" data-year="${y}" data-year-end="${y}" data-imprecise="${data.imprecise}">
-                <div class="timeline-stacked-bar" style="height: ${totalHeight}%">
-                    ${segments}
-                </div>
-                <div class="timeline-bar-tooltip">${tooltipParts.join('<br>')}</div>
-                ${showLabel ? `<span class="timeline-bar-label">${y}</span>` : ''}
-            </div>
-        `);
-    }
-
-    container.innerHTML = bars.join('');
-
-    // Add Y-axis gridlines
-    renderTimelineGridlines(container, maxCount);
-
-    // Responsive bar width based on year span
-    const barWrappers = container.querySelectorAll('.timeline-bar-wrapper');
-    if (yearSpan > 0 && yearSpan <= 20) {
-        // Wider bars for narrow time ranges
-        const maxWidth = Math.min(60, Math.max(20, Math.floor(800 / yearSpan)));
-        barWrappers.forEach(w => {
-            w.style.maxWidth = `${maxWidth}px`;
-            w.style.minWidth = `${Math.max(12, maxWidth - 10)}px`;
-        });
-    } else {
-        // Reset to default for large ranges
-        barWrappers.forEach(w => {
-            w.style.maxWidth = '';
-            w.style.minWidth = '';
-        });
-    }
-
-    // Render undated letters bin
-    if (undatedBin) {
-        if (undatedLetters.length > 0) {
-            undatedBin.style.display = 'flex';
-            undatedBin.classList.remove('all-dated');
-            undatedBin.style.cursor = 'pointer';
-            const undatedHeight = Math.max(4, (undatedLetters.length / maxCount) * 100);
-            const binBar = undatedBin.querySelector('.undated-bin-bar');
-            const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
-
-            // Build stacked segments for undated bin
-            let undatedSegments = '';
-            let currentBottom = 0;
-            let tooltipParts = [`Ohne Datum: ${undatedLetters.length} Briefe`];
-
-            sortedLanguages.forEach(lang => {
-                const count = undatedByLang[lang] || 0;
-                if (count > 0) {
-                    const segmentHeight = (count / undatedLetters.length) * 100;
-                    const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
-                    undatedSegments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
-                    currentBottom += segmentHeight;
-                    const langLabel = LANGUAGE_LABELS[lang] || lang.toUpperCase();
-                    tooltipParts.push(`${escapeHtml(langLabel)}: ${count}`);
-                }
-            });
-
-            binBar.style.height = `${undatedHeight}%`;
-            binBar.innerHTML = undatedSegments;
-            binTooltip.innerHTML = tooltipParts.join('<br>');
-
-            // Set count above bar and label below (on axis level)
-            const binCount = undatedBin.querySelector('.undated-bin-count');
-            const binLabel = undatedBin.querySelector('.undated-bin-label');
-            if (binCount) {
-                binCount.textContent = undatedLetters.length;
-            }
-            if (binLabel) {
-                binLabel.textContent = 'k.A.';
-            }
-
-            // Tooltip positioning
-            undatedBin.addEventListener('mousemove', (e) => {
-                binTooltip.style.left = `${e.clientX}px`;
-                binTooltip.style.top = `${e.clientY - binTooltip.offsetHeight - 10}px`;
-            });
-
-            // Click handler for undated bin
-            undatedBin.onclick = () => {
-                // Filter to show only undated letters
-                // Set year filter to impossible range to exclude all dated
-                const slider = elements.yearRangeSlider;
-                if (slider && slider.noUiSlider) {
-                    // Set to min-1 to exclude all dated letters
-                    slider.noUiSlider.set([minYear - 1, minYear - 1]);
-                }
-                applyFilters();
-                switchView('letters');
-            };
-        } else {
-            // Show schematic placeholder when all letters are dated
-            undatedBin.style.display = 'flex';
-            undatedBin.classList.add('all-dated');
-            const binBar = undatedBin.querySelector('.undated-bin-bar');
-            const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
-            const binLabel = undatedBin.querySelector('.undated-bin-label');
-            const binCount = undatedBin.querySelector('.undated-bin-count');
-
-            if (binBar) {
-                binBar.innerHTML = '';
-                binBar.style.height = '0';
-            }
-            if (binCount) {
-                binCount.innerHTML = '<i class="fas fa-check"></i>';
-            }
-            if (binLabel) {
-                binLabel.textContent = 'k.A.';
-            }
-            if (binTooltip) {
-                binTooltip.textContent = 'Alle Briefe datiert';
-            }
-            undatedBin.onclick = null;
-            undatedBin.style.cursor = 'default';
-        }
-    }
-
-    // Update total
-    if (totalEl) {
-        const totalCount = lettersToUse.length;
-        const undatedInfo = undatedLetters.length > 0 ? ` + ${undatedLetters.length} ohne Datum` : '';
-        if (isFiltered) {
-            totalEl.textContent = `${datedLetters.length.toLocaleString('de-DE')} von ${allLetters.filter(l => l.year).length.toLocaleString('de-DE')} Briefen (${minYear}-${maxYear})${undatedInfo}`;
-        } else {
-            totalEl.textContent = `${datedLetters.length.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}${undatedInfo}`;
-        }
-    }
-
-    // Render legend
-    if (legendEl) {
-        let legendItems = [];
-
-        if (hasLanguageData) {
-            // Show language breakdown
-            legendItems = sortedLanguages
-                .filter(lang => languageTotals[lang] > 0 && lang !== '_total')
-                .map(lang => {
-                    const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
-                    const count = languageTotals[lang];
-                    const label = LANGUAGE_LABELS[lang] || lang.toUpperCase();
-                    const tooltip = (lang === 'None') ? 'Keine Sprachzuordnung in den Quelldaten' : '';
-                    return `<span class="timeline-legend-item"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count})</span>`;
-                });
-        } else {
-            // No language data - show info message
-            legendItems.push(`<span class="timeline-legend-item timeline-legend-info" title="Dieses Korpus enthaelt keine Sprachmetadaten"><i class="fas fa-info-circle"></i> Keine Sprachdaten im Korpus</span>`);
-        }
-
-        // Add uncertainty indicator to legend if there are imprecise dates
-        if (totalImprecise > 0) {
-            legendItems.push(`<span class="timeline-legend-item timeline-legend-uncertainty" title="Briefe mit unvollstaendigem oder unsicherem Datum"><span class="timeline-legend-hatched"></span>Unscharfes Datum (${totalImprecise})</span>`);
-        }
-
-        legendEl.innerHTML = legendItems.join('');
-    }
-
-    // Add click handlers for segments (language + year filter)
-    container.querySelectorAll('.timeline-stack-segment').forEach(segment => {
-        segment.style.cursor = 'pointer';
-        segment.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent wrapper click
-
-            const wrapper = segment.closest('.timeline-bar-wrapper');
-            const year = parseInt(wrapper.dataset.year);
-            const lang = segment.dataset.lang;
-
-            // Set year filter
-            const slider = elements.yearRangeSlider;
-            if (slider && slider.noUiSlider) {
-                slider.noUiSlider.set([year, year]);
-            }
-
-            // Set language filter - uncheck all, then check only this language
-            document.querySelectorAll('input[name="language"]').forEach(cb => {
-                cb.checked = (cb.value === lang);
-            });
-
-            // Apply filters and switch to letters view
-            applyFilters();
-            switchView('letters');
-        });
-    });
-
-    // Click on bar wrapper (not segment) filters by year only
-    container.querySelectorAll('.timeline-bar-wrapper').forEach(wrapper => {
-        wrapper.addEventListener('click', (e) => {
-            // Only handle if click was not on a segment
-            if (e.target.classList.contains('timeline-stack-segment')) return;
-
-            const year = parseInt(wrapper.dataset.year);
-
-            // Update year slider to single year
-            const slider = elements.yearRangeSlider;
-            if (slider && slider.noUiSlider) {
-                slider.noUiSlider.set([year, year]);
-            }
-
-            // Apply filters and switch to letters view
-            applyFilters();
-            switchView('letters');
-        });
-
-        // Tooltip positioning on mouse move
-        const tooltip = wrapper.querySelector('.timeline-bar-tooltip');
-        if (tooltip) {
-            wrapper.addEventListener('mousemove', (e) => {
-                tooltip.style.left = `${e.clientX}px`;
-                tooltip.style.top = `${e.clientY - tooltip.offsetHeight - 10}px`;
-            });
-        }
-    });
-
-    timelineRendered = true;
-}
-
-/**
- * Render Y-axis gridlines for timeline
- * @param {HTMLElement} container - Timeline chart container
- * @param {number} maxCount - Maximum letter count (for scaling)
- */
-function renderTimelineGridlines(container, maxCount) {
-    // Remove existing gridlines
-    container.querySelectorAll('.timeline-gridline, .timeline-y-axis').forEach(el => el.remove());
-
-    if (maxCount <= 1) return;
-
-    // Calculate nice round numbers for gridlines (aim for 3-5 lines)
-    const gridlineCount = 4;
-    const rawStep = maxCount / gridlineCount;
-
-    // Round to nice numbers (1, 2, 5, 10, 20, 50, 100, etc.)
-    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
-    const normalized = rawStep / magnitude;
-    let niceStep;
-    if (normalized <= 1) niceStep = magnitude;
-    else if (normalized <= 2) niceStep = 2 * magnitude;
-    else if (normalized <= 5) niceStep = 5 * magnitude;
-    else niceStep = 10 * magnitude;
-
-    // Ensure at least step of 1
-    niceStep = Math.max(1, niceStep);
-
-    // Create Y-axis container
-    const yAxis = document.createElement('div');
-    yAxis.className = 'timeline-y-axis';
-
-    // Generate gridlines at nice intervals
-    // Position uses percentage matching the bar height calculation
-    for (let value = niceStep; value < maxCount; value += niceStep) {
-        // Same calculation as bar height: (value / maxCount) * 100
-        const percentage = (value / maxCount) * 100;
-
-        // Gridline - positioned inside yAxis container
-        const gridline = document.createElement('div');
-        gridline.className = 'timeline-gridline';
-        gridline.style.bottom = `${percentage}%`;
-
-        // Label
-        const label = document.createElement('span');
-        label.className = 'timeline-gridline-label';
-        label.textContent = value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value;
-        label.style.bottom = `${percentage}%`;
-
-        yAxis.appendChild(gridline);
-        yAxis.appendChild(label);
-    }
-
-    container.insertBefore(yAxis, container.firstChild);
-}
-
 // ===================
-// TOPICS VIEW
+// TOPICS VIEW - Extracted to views/topics-view.js
 // ===================
 
-function initTopicsView() {
-    // Build subject index from letters
-    buildSubjectIndex();
-
-    // Note: Topics button visibility is now handled by updateViewButtons()
-
-    // Setup search and sort
-    const searchInput = elements.getById('topic-search');
-    const sortSelect = elements.getById('topic-sort');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce((e) => {
-            topicsSearchTerm = e.target.value.toLowerCase();
-            renderTopicsList();
-        }, 300));
-    }
-
-    if (sortSelect) {
-        sortSelect.addEventListener('change', (e) => {
-            topicsSortOrder = e.target.value;
-            renderTopicsList();
-        });
-    }
-
-    // Setup filter button
-    const filterBtn = elements.getById('topic-filter-btn');
-    if (filterBtn) {
-        filterBtn.addEventListener('click', () => {
-            if (selectedSubjectId) {
-                applySubjectFilter(selectedSubjectId);
-            }
-        });
-    }
-}
-
-// Build inverted index for subjects
-function buildSubjectIndex() {
-    subjectIndex = {};
-
-    allLetters.forEach(letter => {
-        if (!letter.mentions?.subjects) return;
-
-        const letterSubjects = letter.mentions.subjects;
-        const senderName = letter.sender?.name || 'Unbekannt';
-        const senderId = letter.sender?.id || letter.sender?.name;
-        const year = letter.year;
-
-        letterSubjects.forEach(subject => {
-            // Use uri as primary identifier, fallback to id, then label
-            const subjectId = subject.uri || subject.id || subject.label;
-            const subjectLabel = subject.label;
-
-            if (!subjectIndex[subjectId]) {
-                subjectIndex[subjectId] = {
-                    id: subjectId,
-                    label: subjectLabel,
-                    count: 0,
-                    letterIds: [],
-                    persons: {},
-                    years: {},
-                    cooccurrence: {}
-                };
-            }
-
-            subjectIndex[subjectId].count++;
-            subjectIndex[subjectId].letterIds.push(letter.id);
-
-            // Track persons
-            if (senderId) {
-                if (!subjectIndex[subjectId].persons[senderId]) {
-                    subjectIndex[subjectId].persons[senderId] = { name: senderName, count: 0 };
-                }
-                subjectIndex[subjectId].persons[senderId].count++;
-            }
-
-            // Track years
-            if (year) {
-                subjectIndex[subjectId].years[year] = (subjectIndex[subjectId].years[year] || 0) + 1;
-            }
-
-            // Track co-occurrence with other subjects in same letter
-            letterSubjects.forEach(otherSubject => {
-                const otherId = otherSubject.uri || otherSubject.id || otherSubject.label;
-                if (otherId !== subjectId) {
-                    subjectIndex[subjectId].cooccurrence[otherId] =
-                        (subjectIndex[subjectId].cooccurrence[otherId] || 0) + 1;
-                }
-            });
-        });
-    });
-
-    log.init(`Subject index built: ${Object.keys(subjectIndex).length} subjects`);
-}
-
-function renderTopicsList() {
-    const container = elements.topicsList;
-    if (!container) return;
-
-    // Build dynamic topic counts based on filtered letters
-    const filteredTopicCounts = {};
-    filteredLetters.forEach(letter => {
-        if (!letter.mentions?.subjects) return;
-        letter.mentions.subjects.forEach(subject => {
-            const subjectId = subject.uri || subject.id || subject.label;
-            if (!filteredTopicCounts[subjectId]) {
-                filteredTopicCounts[subjectId] = 0;
-            }
-            filteredTopicCounts[subjectId]++;
-        });
-    });
-
-    // Create topics array with filtered counts
-    let topics = Object.values(subjectIndex)
-        .map(topic => ({
-            ...topic,
-            filteredCount: filteredTopicCounts[topic.id] || 0
-        }))
-        .filter(t => t.filteredCount > 0); // Only show topics with matches in filtered letters
-
-    // Filter by search
-    if (topicsSearchTerm) {
-        topics = topics.filter(t =>
-            t.label.toLowerCase().includes(topicsSearchTerm)
-        );
-    }
-
-    // Sort (use filteredCount instead of count)
-    topics.sort((a, b) => {
-        switch (topicsSortOrder) {
-            case 'count-desc': return b.filteredCount - a.filteredCount;
-            case 'count-asc': return a.filteredCount - b.filteredCount;
-            case 'name-asc': return a.label.localeCompare(b.label);
-            default: return 0;
-        }
-    });
-
-    // Find max count for bar scaling (use filteredCount)
-    const maxCount = topics.length > 0 ? Math.max(...topics.map(t => t.filteredCount)) : 1;
-
-    if (topics.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-tags"></i>
-                <p>Keine Themen gefunden</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = topics.map(topic => {
-        const barWidth = (topic.filteredCount / maxCount) * 100;
-        const isActive = selectedSubjectId === topic.id;
-
-        return `
-            <div class="entity-card ${isActive ? 'active' : ''}" data-id="${escapeHtml(topic.id)}">
-                <div class="entity-card-info">
-                    <div class="entity-card-name" title="${escapeHtml(topic.label)}">${escapeHtml(topic.label)}</div>
-                    <div class="entity-card-bar">
-                        <div class="entity-card-bar-fill" style="width: ${barWidth}%"></div>
-                    </div>
-                </div>
-                <div class="entity-card-count">${topic.filteredCount}</div>
-            </div>
-        `;
-    }).join('');
-
-    // Add click handlers
-    container.querySelectorAll('.entity-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const topicId = card.dataset.id;
-            selectTopic(topicId);
-
-            // Update active state
-            container.querySelectorAll('.entity-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-        });
-    });
-}
-
-function selectTopic(topicId) {
-    selectedSubjectId = topicId;
-    const topic = subjectIndex[topicId];
-    if (!topic) return;
-
-    // Calculate filtered data for this topic
-    const filteredTopicLetters = filteredLetters.filter(letter => {
-        const subjects = letter.mentions?.subjects || [];
-        return subjects.some(s => (s.uri || s.id || s.label) === topicId);
-    });
-
-    const filteredCount = filteredTopicLetters.length;
-
-    // Build filtered correspondents
-    const filteredPersons = {};
-    filteredTopicLetters.forEach(letter => {
-        const senderId = letter.sender?.id || letter.sender?.name;
-        const senderName = letter.sender?.name || 'Unbekannt';
-        if (senderId) {
-            if (!filteredPersons[senderId]) {
-                filteredPersons[senderId] = { name: senderName, count: 0 };
-            }
-            filteredPersons[senderId].count++;
-        }
-    });
-
-    // Build filtered years
-    const filteredYears = {};
-    filteredTopicLetters.forEach(letter => {
-        if (letter.year) {
-            filteredYears[letter.year] = (filteredYears[letter.year] || 0) + 1;
-        }
-    });
-
-    // Build filtered cooccurrence
-    const filteredCooccurrence = {};
-    filteredTopicLetters.forEach(letter => {
-        const subjects = letter.mentions?.subjects || [];
-        subjects.forEach(s => {
-            const otherId = s.uri || s.id || s.label;
-            if (otherId !== topicId) {
-                filteredCooccurrence[otherId] = (filteredCooccurrence[otherId] || 0) + 1;
-            }
-        });
-    });
-
-    const emptyState = elements.getById('topic-detail-empty');
-    const content = elements.getById('topic-detail-content');
-    const title = elements.getById('topic-detail-title');
-    const count = elements.getById('topic-detail-count');
-    const correspondents = elements.getById('topic-correspondents');
-    const timeline = elements.getById('topic-timeline');
-    const related = elements.getById('topic-related');
-    const filterBtn = elements.getById('topic-filter-btn');
-
-    if (emptyState) emptyState.classList.add('hidden');
-    if (content) content.classList.remove('hidden');
-
-    // Title and count (show filtered count)
-    if (title) title.textContent = topic.label;
-    if (count) count.textContent = `${filteredCount} Briefe`;
-
-    // Update filter button text
-    if (filterBtn) {
-        filterBtn.innerHTML = `<i class="fas fa-filter"></i> ${filteredCount} Briefe filtern`;
-    }
-
-    // Correspondents (top 10, from filtered data)
-    if (correspondents) {
-        const persons = Object.entries(filteredPersons)
-            .map(([id, data]) => ({ id, ...data }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 10);
-
-        const maxPersonCount = persons.length > 0 ? persons[0].count : 1;
-
-        correspondents.innerHTML = persons.map(person => {
-            const barWidth = (person.count / maxPersonCount) * 100;
-            return `
-                <div class="entity-stat-row">
-                    <span class="entity-stat-name">${escapeHtml(person.name)}</span>
-                    <span class="entity-stat-count">${person.count}</span>
-                    <div class="entity-stat-bar">
-                        <div class="entity-stat-bar-fill" style="width: ${barWidth}%"></div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-
-        if (persons.length === 0) {
-            correspondents.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Korrespondenten</p>';
-        }
-    }
-
-    // Mini timeline (from filtered data)
-    if (timeline) {
-        const years = Object.entries(filteredYears)
-            .map(([year, count]) => ({ year: parseInt(year), count }))
-            .sort((a, b) => a.year - b.year);
-
-        if (years.length > 0) {
-            const minYear = years[0].year;
-            const maxYear = years[years.length - 1].year;
-            const maxYearCount = Math.max(...years.map(y => y.count));
-
-            // Fill gaps
-            const allYears = [];
-            for (let y = minYear; y <= maxYear; y++) {
-                const found = years.find(yr => yr.year === y);
-                allYears.push({ year: y, count: found ? found.count : 0 });
-            }
-
-            // Limit to ~30 bars max
-            let displayYears = allYears;
-            if (allYears.length > 30) {
-                // Group by 5-year periods
-                const grouped = {};
-                allYears.forEach(y => {
-                    const period = Math.floor(y.year / 5) * 5;
-                    grouped[period] = (grouped[period] || 0) + y.count;
-                });
-                displayYears = Object.entries(grouped)
-                    .map(([year, count]) => ({ year: parseInt(year), count }))
-                    .sort((a, b) => a.year - b.year);
-            }
-
-            const displayMax = Math.max(...displayYears.map(y => y.count));
-
-            timeline.innerHTML = displayYears.map(y => {
-                const height = y.count > 0 ? Math.max(4, (y.count / displayMax) * 100) : 0;
-                return `<div class="entity-mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
-            }).join('');
-        } else {
-            timeline.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine Jahresdaten</p>';
-        }
-    }
-
-    // Related topics (co-occurrence from filtered data)
-    if (related) {
-        const relatedTopics = Object.entries(filteredCooccurrence)
-            .map(([id, count]) => {
-                const relatedTopic = subjectIndex[id];
-                return {
-                    id,
-                    label: relatedTopic?.label || id,
-                    count
-                };
-            })
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 10);
-
-        related.innerHTML = relatedTopics.map(rt => `
-            <span class="entity-tag" data-id="${escapeHtml(rt.id)}">
-                ${escapeHtml(rt.label)} (${rt.count})
-            </span>
-        `).join('');
-
-        // Add click handlers to related tags
-        related.querySelectorAll('.entity-tag').forEach(tag => {
-            tag.addEventListener('click', () => {
-                const relatedId = tag.dataset.id;
-                selectTopic(relatedId);
-                // Update list selection
-                const container = elements.topicsList;
-                container?.querySelectorAll('.entity-card').forEach(c => {
-                    c.classList.toggle('active', c.dataset.id === relatedId);
-                });
-            });
-        });
-
-        if (relatedTopics.length === 0) {
-            related.innerHTML = '<p style="color: var(--color-text-light); font-size: var(--font-size-sm);">Keine verwandten Themen</p>';
-        }
-    }
-}
 
 // Apply subject filter (stays on current view, updates map/data)
 function applySubjectFilter(subjectId) {
-    selectedSubjectId = subjectId;
+    setSelectedSubjectId(subjectId);
     applyFilters();
     updateSubjectFilterDisplay();
     updateTopicsQuickFilterState();
@@ -3870,7 +3475,7 @@ function applySubjectFilter(subjectId) {
 
 // Clear subject filter
 function clearSubjectFilter() {
-    selectedSubjectId = null;
+    setSelectedSubjectId(null);
     applyFilters();
     updateSubjectFilterDisplay();
     updateTopicsQuickFilterState();
@@ -3880,6 +3485,8 @@ function clearSubjectFilter() {
 // Update subject filter display in sidebar
 function updateSubjectFilterDisplay() {
     let filterDisplay = elements.getById('subject-filter-display');
+    const subjectIndex = getSubjectIndex();
+    const selectedSubjectId = getSelectedSubjectId();
 
     if (selectedSubjectId && subjectIndex[selectedSubjectId]) {
         const topic = subjectIndex[selectedSubjectId];
@@ -3918,272 +3525,8 @@ window.filterBySubject = function(subjectId) {
 };
 
 // ===================
-// PLACES VIEW
+// PLACES VIEW - Extracted to views/places-view.js
 // ===================
-
-function initPlacesView() {
-    buildPlacesIndex();
-
-    const searchInput = elements.getById('place-search');
-    const sortSelect = elements.getById('place-sort');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce((e) => {
-            placesSearchTerm = e.target.value.toLowerCase();
-            renderPlacesList();
-        }, 300));
-    }
-
-    if (sortSelect) {
-        sortSelect.addEventListener('change', (e) => {
-            placesSortOrder = e.target.value;
-            renderPlacesList();
-        });
-    }
-
-    // Filter button
-    const filterBtn = elements.getById('place-filter-btn');
-    if (filterBtn) {
-        filterBtn.addEventListener('click', () => {
-            if (selectedPlaceId) {
-                applyPlaceFilter(selectedPlaceId);
-                switchView('letters');
-            }
-        });
-    }
-
-    // Resolve coordinates button
-    const resolveBtn = elements.getById('resolve-coords-btn');
-    if (resolveBtn) {
-        resolveBtn.addEventListener('click', handleResolveCoordinates);
-    }
-
-    // Update missing coordinates banner
-    updateMissingCoordinatesBanner();
-
-    log.init(`Places view initialized: ${Object.keys(placesIndex).length} places`);
-}
-
-function buildPlacesIndex() {
-    placesIndex = {};
-
-    allLetters.forEach(letter => {
-        if (!letter.place_sent?.name) return;
-
-        // Use geonames_id if available, otherwise create ID from name
-        const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
-        const hasCoordinates = letter.place_sent.lat != null && letter.place_sent.lon != null;
-        const precision = letter.place_sent.precision || (hasCoordinates ? 'exact' : 'region');
-
-        if (!placesIndex[placeId]) {
-            placesIndex[placeId] = {
-                id: placeId,
-                name: letter.place_sent.name,
-                lat: letter.place_sent.lat,
-                lon: letter.place_sent.lon,
-                precision: precision,
-                hasCoordinates: hasCoordinates,
-                letterCount: 0,
-                letters: [],
-                senders: {},
-                languages: {},
-                years: []
-            };
-        }
-
-        placesIndex[placeId].letterCount++;
-        placesIndex[placeId].letters.push(letter.id);
-        if (letter.year) placesIndex[placeId].years.push(letter.year);
-
-        if (letter.sender?.name) {
-            const senderName = letter.sender.name;
-            placesIndex[placeId].senders[senderName] = (placesIndex[placeId].senders[senderName] || 0) + 1;
-        }
-
-        if (letter.language?.code) {
-            const langCode = letter.language.code;
-            placesIndex[placeId].languages[langCode] = (placesIndex[placeId].languages[langCode] || 0) + 1;
-        }
-    });
-
-    // Calculate top senders and year range for each place
-    Object.values(placesIndex).forEach(place => {
-        place.topSenders = Object.entries(place.senders)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([name, count]) => ({ name, count }));
-        place.senderCount = Object.keys(place.senders).length;
-        place.yearMin = place.years.length > 0 ? Math.min(...place.years) : null;
-        place.yearMax = place.years.length > 0 ? Math.max(...place.years) : null;
-    });
-}
-
-function renderPlacesList() {
-    const container = elements.placesList;
-    if (!container) return;
-
-    // Get places filtered by current filters
-    const filteredPlaceIds = new Set();
-    filteredLetters.forEach(letter => {
-        if (letter.place_sent?.name) {
-            const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
-            filteredPlaceIds.add(placeId);
-        }
-    });
-
-    // Count letters per place in filtered set
-    const filteredPlaceCounts = {};
-    filteredLetters.forEach(letter => {
-        if (letter.place_sent?.name) {
-            const placeId = letter.place_sent.geonames_id || `name:${letter.place_sent.name}`;
-            filteredPlaceCounts[placeId] = (filteredPlaceCounts[placeId] || 0) + 1;
-        }
-    });
-
-    let places = Object.values(placesIndex)
-        .filter(place => filteredPlaceIds.has(place.id))
-        .map(place => ({
-            ...place,
-            filteredCount: filteredPlaceCounts[place.id] || 0
-        }));
-
-    // Apply search filter
-    if (placesSearchTerm) {
-        places = places.filter(place =>
-            place.name.toLowerCase().includes(placesSearchTerm)
-        );
-    }
-
-    // Apply sort
-    switch (placesSortOrder) {
-        case 'count-desc':
-            places.sort((a, b) => b.filteredCount - a.filteredCount);
-            break;
-        case 'count-asc':
-            places.sort((a, b) => a.filteredCount - b.filteredCount);
-            break;
-        case 'name-asc':
-            places.sort((a, b) => a.name.localeCompare(b.name, 'de'));
-            break;
-        case 'name-desc':
-            places.sort((a, b) => b.name.localeCompare(a.name, 'de'));
-            break;
-    }
-
-    // Render list with precision indicators
-    container.innerHTML = places.map(place => {
-        const isActive = selectedPlaceId === place.id;
-        const yearRange = place.yearMin && place.yearMax
-            ? `${place.yearMin}-${place.yearMax}`
-            : '';
-        const precisionClass = getPlacePrecisionClass(place.precision);
-        const noCoordIcon = !place.hasCoordinates ? '<i class="fas fa-question-circle" title="Ohne Koordinaten"></i> ' : '';
-        return `
-            <div class="entity-card ${isActive ? 'active' : ''} ${precisionClass}" data-place-id="${escapeHtml(place.id)}">
-                <div class="entity-card-info">
-                    <div class="entity-card-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
-                    <div class="entity-card-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
-                </div>
-                <div class="entity-card-count">${place.filteredCount}</div>
-            </div>
-        `;
-    }).join('');
-
-    // Add click handlers
-    container.querySelectorAll('.entity-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            const placeId = card.dataset.placeId;
-            selectPlace(placeId);
-        });
-    });
-}
-
-function selectPlace(placeId) {
-    selectedPlaceId = placeId;
-    const place = placesIndex[placeId];
-
-    if (!place) return;
-
-    // Update active state in list
-    document.querySelectorAll('.entity-card[data-place-id]').forEach(card => {
-        card.classList.toggle('active', card.dataset.placeId === placeId);
-    });
-
-    // Show detail panel
-    const emptyState = elements.getById('place-detail-empty');
-    const content = elements.getById('place-detail-content');
-
-    if (emptyState) emptyState.classList.add('hidden');
-    if (content) content.classList.remove('hidden');
-
-    // Calculate filtered count for this place
-    const filteredCount = filteredLetters.filter(l => {
-        if (!l.place_sent?.name) return false;
-        const letterPlaceId = l.place_sent.geonames_id || `name:${l.place_sent.name}`;
-        return letterPlaceId === placeId;
-    }).length;
-
-    // Update title and count
-    elements.getById('place-detail-title').textContent = place.name;
-    elements.getById('place-detail-count').textContent = `${filteredCount} Briefe`;
-
-    // Render top senders
-    const sendersContainer = elements.getById('place-top-senders');
-    if (sendersContainer) {
-        const maxCount = place.topSenders.length > 0 ? place.topSenders[0].count : 1;
-        sendersContainer.innerHTML = place.topSenders.map(s => {
-            const barWidth = (s.count / maxCount) * 100;
-            return `<div class="entity-stat-row">
-                <span class="entity-stat-name">${escapeHtml(s.name)}</span>
-                <span class="entity-stat-count">${s.count}</span>
-                <div class="entity-stat-bar">
-                    <div class="entity-stat-bar-fill" style="width: ${barWidth}%"></div>
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    // Render mini timeline
-    const timelineContainer = elements.getById('place-timeline');
-    if (timelineContainer && place.yearMin && place.yearMax) {
-        const yearCounts = {};
-        place.years.forEach(year => {
-            yearCounts[year] = (yearCounts[year] || 0) + 1;
-        });
-
-        const maxCount = Math.max(...Object.values(yearCounts));
-        const years = [];
-        for (let y = place.yearMin; y <= place.yearMax; y++) {
-            years.push({ year: y, count: yearCounts[y] || 0 });
-        }
-
-        timelineContainer.innerHTML = years.map(y => {
-            const height = y.count > 0 ? Math.max(4, (y.count / maxCount) * 100) : 0;
-            return `<div class="entity-mini-timeline-bar" style="height: ${height}%" title="${y.year}: ${y.count}"></div>`;
-        }).join('');
-    } else if (timelineContainer) {
-        timelineContainer.innerHTML = '<p class="no-data">Keine Zeitdaten</p>';
-    }
-
-    // Render languages
-    const languagesContainer = elements.getById('place-languages');
-    if (languagesContainer) {
-        const langEntries = Object.entries(place.languages)
-            .sort((a, b) => b[1] - a[1]);
-
-        languagesContainer.innerHTML = langEntries.map(([code, count]) => {
-            const label = LANGUAGE_LABELS[code] || code.toUpperCase();
-            const color = LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other;
-            return `<span class="entity-tag" style="border-left: 3px solid ${color}">${escapeHtml(label)} (${count})</span>`;
-        }).join('');
-    }
-
-    // Update GeoNames link
-    const geonamesLink = elements.getById('place-geonames-link');
-    if (geonamesLink) {
-        geonamesLink.href = `https://www.geonames.org/${placeId}`;
-    }
-}
 
 function applyPlaceFilter(placeId) {
     log.event(`Applying place filter: ${placeId}`);
@@ -4207,104 +3550,7 @@ function applyPlaceFilter(placeId) {
     log.event(`Filtered letters count: ${filteredLetters.length}`);
 }
 
-// Update missing coordinates banner in Places View
-function updateMissingCoordinatesBanner() {
-    const banner = elements.getById('places-missing-coords-banner');
-    const countSpan = elements.getById('places-missing-count');
-
-    if (!banner || !countSpan) return;
-
-    // Count places without coordinates that have GeoNames IDs
-    let missingCount = 0;
-    const missingIds = [];
-
-    Object.values(placesIndex).forEach(place => {
-        if (!place.lat && place.geonames_id) {
-            missingCount++;
-            missingIds.push(place.geonames_id);
-        }
-    });
-
-    if (missingCount > 0) {
-        countSpan.textContent = missingCount;
-        banner.classList.remove('hidden');
-        banner.dataset.missingIds = JSON.stringify(missingIds);
-    } else {
-        banner.classList.add('hidden');
-    }
-}
-
-// Handle coordinate resolution button click
-async function handleResolveCoordinates() {
-    const banner = elements.getById('places-missing-coords-banner');
-    const btn = elements.getById('resolve-coords-btn');
-
-    if (!banner || !btn) return;
-
-    const missingIds = JSON.parse(banner.dataset.missingIds || '[]');
-
-    if (missingIds.length === 0) {
-        showToast('Keine Orte zum Auflösen gefunden', 'info');
-        return;
-    }
-
-    // Disable button and show loading state
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Koordinaten...';
-
-    try {
-        // Dynamically import the geonames enrichment module
-        const { resolveGeoNamesCoordinates, applyCoordinatesToData } = await import('./geonames-enrichment.js');
-
-        // Resolve coordinates
-        const coordinates = await resolveGeoNamesCoordinates(missingIds, (loaded, total) => {
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loaded}/${total}`;
-        });
-
-        // Apply coordinates to current data
-        const currentData = {
-            letters: allLetters,
-            indices: dataIndices
-        };
-
-        applyCoordinatesToData(currentData, coordinates);
-
-        // Update sessionStorage with new coordinates
-        const storedData = JSON.parse(sessionStorage.getItem('cmif-data') || '{}');
-        storedData.letters = allLetters;
-        storedData.indices = dataIndices;
-        sessionStorage.setItem('cmif-data', JSON.stringify(storedData));
-
-        // Rebuild place aggregation
-        placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
-
-        // Rebuild places index
-        buildPlacesIndex();
-        renderPlacesList();
-
-        // Update views
-        detectAvailableViews();
-        updateViewButtons();
-
-        // Reinitialize map if it's now available
-        if (availableViews.map?.available && map) {
-            initMap();
-            updateMap();
-        }
-
-        const resolvedCount = Object.keys(coordinates).length;
-        showToast(`${resolvedCount} Orte erfolgreich georeferenziert`, 'success');
-
-        // Update banner
-        updateMissingCoordinatesBanner();
-
-    } catch (error) {
-        console.error('Failed to resolve coordinates:', error);
-        showToast(`Fehler beim Auflösen: ${error.message}`, 'error');
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-globe"></i> Koordinaten nachladen';
-    }
-}
+// updateMissingCoordinatesBanner and handleResolveCoordinates - now in views/places-view.js
 
 // ===================
 // EXPORT
@@ -4399,689 +3645,8 @@ function downloadFile(content, filename, mimeType) {
 }
 
 // ===================
-// NETWORK VIEW
+// NETWORK VIEW - Extracted to views/network-view.js
 // ===================
-
-let networkType = 'contemporaries'; // 'contemporaries', 'topics', 'correspondence'
-let networkMinYears = NETWORK_DEFAULTS.minYears;
-let networkMinCooccurrence = NETWORK_DEFAULTS.minCooccurrence;
-let networkMaxNodes = NETWORK_DEFAULTS.maxNodes;
-let networkColorMode = 'type'; // 'type' or 'entry' (entry year)
-let networkHideEgo = false; // Hide the ego node (most connected person)
-let networkSimulation = null;
-let networkSvg = null;
-let networkZoom = null;
-
-function initNetworkView() {
-    const typeSelect = elements.getById('network-type');
-    const thresholdInput = elements.getById('network-threshold');
-    const maxNodesInput = elements.getById('network-max-nodes');
-    const resetZoomBtn = elements.networkResetZoom;
-
-    // Calculate dynamic default for minYears based on dataset timespan
-    const timespan = dateRange.max - dateRange.min;
-    if (timespan <= 5) {
-        networkMinYears = 1;
-    } else if (timespan <= 20) {
-        networkMinYears = 2;
-    } else {
-        networkMinYears = NETWORK_DEFAULTS.minYears;
-    }
-
-    // Check if topics are available and update UI
-    updateNetworkTypeOptions();
-
-    if (typeSelect) {
-        typeSelect.addEventListener('change', (e) => {
-            networkType = e.target.value;
-            updateNetworkThresholdLabel();
-            renderNetwork();
-        });
-    }
-
-    if (thresholdInput) {
-        const thresholdValue = elements.getById('network-threshold-value');
-        // Debounced render for slider
-        const debouncedRender = debounce(() => renderNetwork(), 150);
-
-        thresholdInput.addEventListener('input', (e) => {
-            const val = parseInt(e.target.value) || 1;
-            // Update display value immediately
-            if (thresholdValue) thresholdValue.textContent = val;
-            if (networkType === 'contemporaries') {
-                networkMinYears = val;
-            } else if (networkType === 'topics') {
-                networkMinCooccurrence = val;
-            }
-            // Debounced render while sliding
-            debouncedRender();
-        });
-
-        // Also handle change for final value
-        thresholdInput.addEventListener('change', (e) => {
-            renderNetwork();
-        });
-    }
-
-    if (maxNodesInput) {
-        maxNodesInput.addEventListener('change', (e) => {
-            networkMaxNodes = parseInt(e.target.value) || NETWORK_DEFAULTS.maxNodes;
-            renderNetwork();
-        });
-    }
-
-    if (resetZoomBtn) {
-        resetZoomBtn.addEventListener('click', resetNetworkZoom);
-    }
-
-    // Color mode select
-    const colorModeSelect = elements.getById('network-color-mode');
-    if (colorModeSelect) {
-        colorModeSelect.addEventListener('change', (e) => {
-            networkColorMode = e.target.value;
-            renderNetwork();
-        });
-    }
-
-    // Hide ego checkbox
-    const hideEgoCheckbox = elements.getById('network-hide-ego');
-    if (hideEgoCheckbox) {
-        hideEgoCheckbox.addEventListener('change', (e) => {
-            networkHideEgo = e.target.checked;
-            renderNetwork();
-        });
-    }
-
-    log.init('Network view initialized');
-}
-
-function updateNetworkTypeOptions() {
-    const typeSelect = elements.getById('network-type');
-    if (!typeSelect) return;
-
-    // Check if we have subjects data
-    const hasSubjects = allLetters.some(l =>
-        l.mentions?.subjects && l.mentions.subjects.length > 0
-    );
-
-    // Update options
-    typeSelect.innerHTML = `
-        <option value="contemporaries">Zeitgenossen</option>
-        ${hasSubjects ? '<option value="topics">Themen-Netzwerk</option>' : ''}
-    `;
-
-    updateNetworkThresholdLabel();
-}
-
-function updateNetworkThresholdLabel() {
-    const label = elements.getById('network-threshold-label');
-    const input = elements.getById('network-threshold');
-    const valueDisplay = elements.getById('network-threshold-value');
-    const colorGroup = elements.getById('network-color-group');
-
-    if (!label || !input) return;
-
-    if (networkType === 'contemporaries') {
-        label.textContent = 'Min. gemeinsame Jahre:';
-        input.value = networkMinYears;
-        input.min = 1;
-        input.max = NETWORK_DEFAULTS.maxYearsSlider;
-        if (valueDisplay) valueDisplay.textContent = networkMinYears;
-        // Show color mode selector for contemporaries
-        if (colorGroup) colorGroup.style.display = '';
-    } else if (networkType === 'topics') {
-        label.textContent = 'Min. Co-Occurrence:';
-        input.value = networkMinCooccurrence;
-        input.min = 1;
-        input.max = NETWORK_DEFAULTS.maxNodesSlider;
-        if (valueDisplay) valueDisplay.textContent = networkMinCooccurrence;
-        // Hide color mode selector for topics (entry year not applicable)
-        if (colorGroup) colorGroup.style.display = 'none';
-        // Reset to type color mode when switching to topics
-        networkColorMode = 'type';
-        const colorSelect = elements.getById('network-color-mode');
-        if (colorSelect) colorSelect.value = 'type';
-    }
-}
-
-// Build contemporaries network: persons who correspond in the same years
-function buildContemporariesNetwork(letters, minYears = NETWORK_DEFAULTS.minYears, maxNodes = NETWORK_DEFAULTS.maxNodes) {
-    // Group letters by year and person
-    const yearPersons = new Map();
-    const personInfo = new Map();
-
-    letters.forEach(letter => {
-        const year = letter.year;
-        const senderId = letter.sender?.id || letter.sender?.name;
-        const senderName = letter.sender?.name;
-
-        if (!year || !senderId || !senderName) return;
-
-        // Track person info
-        if (!personInfo.has(senderId)) {
-            personInfo.set(senderId, {
-                id: senderId,
-                name: senderName,
-                years: new Set(),
-                letterCount: 0,
-                firstYear: year,
-                lastYear: year
-            });
-        }
-        const info = personInfo.get(senderId);
-        info.years.add(year);
-        info.letterCount++;
-        info.firstYear = Math.min(info.firstYear, year);
-        info.lastYear = Math.max(info.lastYear, year);
-
-        // Track year -> persons
-        if (!yearPersons.has(year)) {
-            yearPersons.set(year, new Set());
-        }
-        yearPersons.get(year).add(senderId);
-    });
-
-    // Calculate shared years between person pairs
-    const edges = new Map();
-    const persons = Array.from(personInfo.values());
-
-    for (let i = 0; i < persons.length; i++) {
-        for (let j = i + 1; j < persons.length; j++) {
-            const p1 = persons[i];
-            const p2 = persons[j];
-
-            // Count shared years
-            const sharedYears = [...p1.years].filter(y => p2.years.has(y));
-
-            if (sharedYears.length >= minYears) {
-                const edgeKey = [p1.id, p2.id].sort().join('|');
-                edges.set(edgeKey, {
-                    source: p1.id,
-                    target: p2.id,
-                    sourceName: p1.name,
-                    targetName: p2.name,
-                    sharedYears: sharedYears.length,
-                    yearRange: [Math.min(...sharedYears), Math.max(...sharedYears)]
-                });
-            }
-        }
-    }
-
-    // Sort edges and limit nodes
-    let filteredEdges = Array.from(edges.values());
-    filteredEdges.sort((a, b) => b.sharedYears - a.sharedYears);
-
-    // Get active nodes
-    const activeNodeIds = new Set();
-    filteredEdges.forEach(e => {
-        activeNodeIds.add(e.source);
-        activeNodeIds.add(e.target);
-    });
-
-    let nodes = persons
-        .filter(p => activeNodeIds.has(p.id))
-        .map(p => ({
-            id: p.id,
-            name: p.name,
-            total: p.letterCount,
-            yearsActive: p.years.size,
-            firstYear: p.firstYear,
-            lastYear: p.lastYear
-        }));
-
-    // Limit to top nodes by letter count
-    if (nodes.length > maxNodes) {
-        nodes.sort((a, b) => b.total - a.total);
-        const topNodeIds = new Set(nodes.slice(0, maxNodes).map(n => n.id));
-        nodes = nodes.filter(n => topNodeIds.has(n.id));
-        filteredEdges = filteredEdges.filter(e =>
-            topNodeIds.has(e.source) && topNodeIds.has(e.target)
-        );
-    }
-
-    return {
-        nodes,
-        links: filteredEdges,
-        networkType: 'contemporaries',
-        stats: {
-            totalPersons: personInfo.size,
-            totalConnections: edges.size,
-            displayedPersons: nodes.length,
-            displayedConnections: filteredEdges.length
-        }
-    };
-}
-
-// Build topic co-occurrence network
-function buildTopicsNetwork(letters, minCooccurrence = NETWORK_DEFAULTS.minCooccurrence, maxNodes = NETWORK_DEFAULTS.maxNodes) {
-    const topicInfo = new Map();
-    const cooccurrence = new Map();
-
-    letters.forEach(letter => {
-        const subjects = letter.mentions?.subjects || [];
-        if (subjects.length < 2) return;
-
-        // Track topic info
-        subjects.forEach(s => {
-            const sid = s.id || s.label;
-            if (!sid) return;
-            if (!topicInfo.has(sid)) {
-                topicInfo.set(sid, {
-                    id: sid,
-                    label: s.label || sid,
-                    letterCount: 0
-                });
-            }
-            topicInfo.get(sid).letterCount++;
-        });
-
-        // Track co-occurrences
-        for (let i = 0; i < subjects.length; i++) {
-            for (let j = i + 1; j < subjects.length; j++) {
-                const s1 = subjects[i].id || subjects[i].label;
-                const s2 = subjects[j].id || subjects[j].label;
-                if (!s1 || !s2) continue;
-
-                const edgeKey = [s1, s2].sort().join('|');
-                if (!cooccurrence.has(edgeKey)) {
-                    cooccurrence.set(edgeKey, {
-                        source: s1,
-                        target: s2,
-                        sourceName: subjects[i].label || s1,
-                        targetName: subjects[j].label || s2,
-                        count: 0
-                    });
-                }
-                cooccurrence.get(edgeKey).count++;
-            }
-        }
-    });
-
-    // Filter by minimum co-occurrence
-    let filteredEdges = Array.from(cooccurrence.values())
-        .filter(e => e.count >= minCooccurrence);
-    filteredEdges.sort((a, b) => b.count - a.count);
-
-    // Get active topics
-    const activeTopicIds = new Set();
-    filteredEdges.forEach(e => {
-        activeTopicIds.add(e.source);
-        activeTopicIds.add(e.target);
-    });
-
-    let nodes = Array.from(topicInfo.values())
-        .filter(t => activeTopicIds.has(t.id))
-        .map(t => ({
-            id: t.id,
-            name: t.label,
-            total: t.letterCount
-        }));
-
-    // Limit to top nodes
-    if (nodes.length > maxNodes) {
-        nodes.sort((a, b) => b.total - a.total);
-        const topNodeIds = new Set(nodes.slice(0, maxNodes).map(n => n.id));
-        nodes = nodes.filter(n => topNodeIds.has(n.id));
-        filteredEdges = filteredEdges.filter(e =>
-            topNodeIds.has(e.source) && topNodeIds.has(e.target)
-        );
-    }
-
-    return {
-        nodes,
-        links: filteredEdges,
-        networkType: 'topics',
-        stats: {
-            totalTopics: topicInfo.size,
-            totalConnections: cooccurrence.size,
-            displayedTopics: nodes.length,
-            displayedConnections: filteredEdges.length
-        }
-    };
-}
-
-function renderNetwork() {
-    const container = elements.getById('network-graph');
-    if (!container) return;
-
-    // Build network data based on selected type
-    let data;
-    if (networkType === 'topics') {
-        data = buildTopicsNetwork(filteredLetters, networkMinCooccurrence, networkMaxNodes);
-    } else {
-        data = buildContemporariesNetwork(filteredLetters, networkMinYears, networkMaxNodes);
-    }
-
-    // Filter out ego node if requested (node with most connections)
-    let egoNodeId = null;
-    if (networkHideEgo && data.nodes.length > 0) {
-        // Count connections per node
-        const connectionCount = new Map();
-        data.nodes.forEach(n => connectionCount.set(n.id, 0));
-        data.links.forEach(l => {
-            connectionCount.set(l.source, (connectionCount.get(l.source) || 0) + 1);
-            connectionCount.set(l.target, (connectionCount.get(l.target) || 0) + 1);
-        });
-
-        // Find ego (most connected node)
-        let maxConnections = 0;
-        connectionCount.forEach((count, id) => {
-            if (count > maxConnections) {
-                maxConnections = count;
-                egoNodeId = id;
-            }
-        });
-
-        // Remove ego node and its edges
-        if (egoNodeId) {
-            data.nodes = data.nodes.filter(n => n.id !== egoNodeId);
-            data.links = data.links.filter(l =>
-                l.source !== egoNodeId && l.target !== egoNodeId
-            );
-        }
-    }
-
-    // Color scale for entry year mode (contemporaries only) - calculated early for legend
-    let yearColorScale = null;
-    let minYear = null;
-    let maxYear = null;
-    if (networkColorMode === 'entry' && networkType === 'contemporaries') {
-        const years = data.nodes.map(n => n.firstYear).filter(y => y != null);
-        if (years.length > 0) {
-            minYear = Math.min(...years);
-            maxYear = Math.max(...years);
-            // Use a sequential color scale from yellow (early) to dark blue (late)
-            yearColorScale = d3.scaleSequential(d3.interpolateYlGnBu)
-                .domain([minYear, maxYear]);
-        }
-    }
-
-    // Update stats display
-    const nodeCount = elements.getById('network-node-count');
-    const edgeCount = elements.getById('network-edge-count');
-    const coverageDiv = elements.getById('network-coverage');
-    const infoText = elements.getById('network-info-text');
-
-    if (nodeCount) nodeCount.textContent = data.nodes.length;
-    if (edgeCount) edgeCount.textContent = data.links.length;
-
-    // Update info text based on network type
-    if (infoText) {
-        if (networkType === 'topics') {
-            infoText.textContent = 'Themen die gemeinsam in Briefen erwaehnt werden';
-        } else {
-            infoText.textContent = 'Korrespondenten die in denselben Jahren aktiv sind';
-        }
-    }
-
-    // Update network legend based on type and color mode
-    const legendDiv = elements.getById('network-legend');
-    if (legendDiv) {
-        const label = networkType === 'topics' ? 'Themen-Netzwerk' : 'Zeitgenossen-Netzwerk';
-        const sizeHint = networkType === 'topics'
-            ? 'Groesse = Anzahl Briefe'
-            : 'Groesse = Briefmenge';
-
-        // Check if entry year coloring is active
-        if (networkColorMode === 'entry' && networkType === 'contemporaries' && minYear && maxYear) {
-            legendDiv.innerHTML = `
-                <div class="legend-item">
-                    <span class="legend-gradient" style="background: linear-gradient(to right, ${yearColorScale(minYear)}, ${yearColorScale((minYear + maxYear) / 2)}, ${yearColorScale(maxYear)});"></span>
-                    <span class="legend-years">${minYear} - ${maxYear}</span>
-                </div>
-                <div class="legend-size-hint"><i class="fas fa-circle"></i> ${sizeHint}</div>
-                <div class="legend-hint">Farbe = Eintrittsjahr | Hover zeigt Verbindungen</div>
-            `;
-        } else {
-            const color = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
-            legendDiv.innerHTML = `
-                <div class="legend-item">
-                    <span class="legend-circle" style="background: ${color};"></span> ${label}
-                </div>
-                <div class="legend-size-hint"><i class="fas fa-circle"></i> ${sizeHint}</div>
-                <div class="legend-hint">Klick filtert Briefe | Hover zeigt Verbindungen</div>
-            `;
-        }
-    }
-
-    // Update coverage info
-    if (coverageDiv) {
-        if (networkType === 'topics') {
-            const pct = data.stats.totalTopics > 0
-                ? Math.round((data.stats.displayedTopics / data.stats.totalTopics) * 100) : 0;
-            coverageDiv.innerHTML = `
-                <span class="coverage-info">
-                    Anzeige: ${data.stats.displayedTopics} von ${data.stats.totalTopics} Themen (${pct}%)
-                    | ${data.stats.displayedConnections} von ${data.stats.totalConnections} Verbindungen
-                </span>
-            `;
-        } else {
-            const pct = data.stats.totalPersons > 0
-                ? Math.round((data.stats.displayedPersons / data.stats.totalPersons) * 100) : 0;
-            coverageDiv.innerHTML = `
-                <span class="coverage-info">
-                    Anzeige: ${data.stats.displayedPersons} von ${data.stats.totalPersons} Personen (${pct}%)
-                    | ${data.stats.displayedConnections} von ${data.stats.totalConnections} Verbindungen
-                </span>
-            `;
-        }
-    }
-
-    // Clear previous
-    container.innerHTML = '';
-
-    if (data.nodes.length === 0) {
-        const thresholdText = networkType === 'topics'
-            ? `mindestens ${networkMinCooccurrence} gemeinsamen Erwaehungen`
-            : `mindestens ${networkMinYears} gemeinsamen Jahren`;
-        container.innerHTML = `
-            <div class="network-empty">
-                <i class="fas fa-project-diagram"></i>
-                <p>Keine Verbindungen mit ${thresholdText} gefunden.</p>
-                <p>Versuchen Sie, den Schwellenwert zu reduzieren.</p>
-            </div>
-        `;
-        return;
-    }
-
-    const width = container.clientWidth || 800;
-    const height = container.clientHeight || 600;
-
-    // Create SVG
-    networkSvg = d3.select(container)
-        .append('svg')
-        .attr('width', '100%')
-        .attr('height', '100%')
-        .attr('viewBox', [0, 0, width, height]);
-
-    // Create container for zoom
-    const g = networkSvg.append('g');
-
-    // Setup zoom
-    networkZoom = d3.zoom()
-        .scaleExtent([0.1, 4])
-        .on('zoom', (event) => {
-            g.attr('transform', event.transform);
-        });
-
-    networkSvg.call(networkZoom);
-
-    // Calculate node sizes
-    const maxTotal = Math.max(...data.nodes.map(n => n.total));
-    const nodeScale = d3.scaleSqrt()
-        .domain([1, maxTotal])
-        .range([8, 35]);
-
-    // Calculate edge widths based on network type
-    const edgeValueFn = networkType === 'topics'
-        ? d => d.count
-        : d => d.sharedYears;
-    const maxEdgeValue = Math.max(...data.links.map(edgeValueFn));
-    const minEdgeValue = networkType === 'topics' ? networkMinCooccurrence : networkMinYears;
-    const edgeScale = d3.scaleLinear()
-        .domain([minEdgeValue, maxEdgeValue])
-        .range([1, 8]);
-
-    // Color for network types
-    const typeColor = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
-
-    // Node color function (uses yearColorScale defined earlier if in entry mode)
-    const getNodeColor = (d) => {
-        if (yearColorScale && d.firstYear != null) {
-            return yearColorScale(d.firstYear);
-        }
-        return typeColor;
-    };
-
-    // Create simulation
-    networkSimulation = d3.forceSimulation(data.nodes)
-        .force('link', d3.forceLink(data.links)
-            .id(d => d.id)
-            .distance(80))
-        .force('charge', d3.forceManyBody().strength(-200))
-        .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(d => nodeScale(d.total) + 5));
-
-    // Dynamic edge opacity based on number of links (more links = more transparent)
-    const baseOpacity = data.links.length > 300 ? 0.15 :
-                        data.links.length > 100 ? 0.3 :
-                        data.links.length > 50 ? 0.4 : 0.5;
-
-    // Draw edges
-    const link = g.append('g')
-        .attr('class', 'links')
-        .selectAll('line')
-        .data(data.links)
-        .join('line')
-        .attr('stroke', '#999')
-        .attr('stroke-opacity', baseOpacity)
-        .attr('stroke-width', d => edgeScale(edgeValueFn(d)));
-
-    // Draw nodes
-    const node = g.append('g')
-        .attr('class', 'nodes')
-        .selectAll('g')
-        .data(data.nodes)
-        .join('g')
-        .attr('class', 'node')
-        .call(d3.drag()
-            .on('start', dragstarted)
-            .on('drag', dragged)
-            .on('end', dragended));
-
-    // Node circles
-    node.append('circle')
-        .attr('r', d => nodeScale(d.total))
-        .attr('fill', d => getNodeColor(d))
-        .attr('stroke', '#fff')
-        .attr('stroke-width', 2);
-
-    // Node labels (only for larger nodes)
-    node.filter(d => d.total > maxTotal * 0.15)
-        .append('text')
-        .text(d => d.name.length > 20 ? d.name.substring(0, 20) + '...' : d.name)
-        .attr('x', d => nodeScale(d.total) + 5)
-        .attr('y', 4)
-        .attr('font-size', '11px')
-        .attr('fill', '#333');
-
-    // Tooltips
-    if (networkType === 'topics') {
-        node.append('title')
-            .text(d => `${d.name}\n${d.total} Briefe`);
-        link.append('title')
-            .text(d => `${d.sourceName} + ${d.targetName}\n${d.count}x gemeinsam erwaehnt`);
-    } else {
-        node.append('title')
-            .text(d => {
-                let text = `${d.name}\n${d.total} Briefe\n${d.yearsActive} Jahre aktiv`;
-                if (d.firstYear) text += `\nErster Brief: ${d.firstYear}`;
-                return text;
-            });
-        link.append('title')
-            .text(d => `${d.sourceName} & ${d.targetName}\n${d.sharedYears} gemeinsame Jahre\n(${d.yearRange[0]}-${d.yearRange[1]})`);
-    }
-
-    // Click handler
-    node.on('click', (event, d) => {
-        event.stopPropagation();
-        if (networkType === 'topics') {
-            applySubjectFilter(d.id);
-        } else {
-            applyPersonFilter(d.id);
-        }
-        switchView('letters');
-    });
-
-    // Hover highlight - show only connected edges and dim others
-    node.on('mouseenter', (event, d) => {
-        // Find connected node IDs
-        const connectedIds = new Set();
-        connectedIds.add(d.id);
-        data.links.forEach(l => {
-            if (l.source.id === d.id) connectedIds.add(l.target.id);
-            if (l.target.id === d.id) connectedIds.add(l.source.id);
-        });
-
-        // Highlight connected edges, dim others
-        link.attr('stroke-opacity', l =>
-            (l.source.id === d.id || l.target.id === d.id) ? 0.8 : baseOpacity * 0.2
-        ).attr('stroke', l =>
-            (l.source.id === d.id || l.target.id === d.id) ? '#666' : '#999'
-        );
-
-        // Dim unconnected nodes
-        node.select('circle').attr('opacity', n =>
-            connectedIds.has(n.id) ? 1 : 0.3
-        );
-        node.select('text').attr('opacity', n =>
-            connectedIds.has(n.id) ? 1 : 0.3
-        );
-    });
-
-    node.on('mouseleave', () => {
-        // Reset all edges
-        link.attr('stroke-opacity', baseOpacity)
-            .attr('stroke', '#999');
-        // Reset all nodes
-        node.select('circle').attr('opacity', 1);
-        node.select('text').attr('opacity', 1);
-    });
-
-    // Update positions on simulation tick
-    networkSimulation.on('tick', () => {
-        link
-            .attr('x1', d => d.source.x)
-            .attr('y1', d => d.source.y)
-            .attr('x2', d => d.target.x)
-            .attr('y2', d => d.target.y);
-
-        node.attr('transform', d => `translate(${d.x},${d.y})`);
-    });
-
-    function dragstarted(event, d) {
-        if (!event.active) networkSimulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-
-    function dragged(event, d) {
-        d.fx = event.x;
-        d.fy = event.y;
-    }
-
-    function dragended(event, d) {
-        if (!event.active) networkSimulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    }
-}
-
-function resetNetworkZoom() {
-    if (networkSvg && networkZoom) {
-        networkSvg.transition().duration(500).call(networkZoom.transform, d3.zoomIdentity);
-    }
-}
 
 // ===================
 // MISSING PLACES MODAL
@@ -5182,1602 +3747,13 @@ function showMissingPlacesModal() {
     modal.style.display = 'flex';
 }
 
-// ============================================
-// Mentions Flow View
-// ============================================
-
-function initMentionsFlowView() {
-    log.init('Initializing Mentions Flow View');
-
-    // Initialize autocomplete for person selection
-    initMentionsPersonAutocomplete();
-}
-
-function initMentionsPersonAutocomplete() {
-    const input = elements.getById('mentions-person-search');
-    const dropdown = elements.getById('mentions-person-dropdown');
-    if (!input || !dropdown) return;
-
-    let highlightedIndex = -1;
-    let currentResults = [];
-
-    // Build persons list for autocomplete
-    function getPersonsWithMentions() {
-        const personsMap = new Map();
-
-        filteredLetters.forEach(letter => {
-            // Count how many times each person is mentioned
-            const mentions = letter.mentions?.persons || [];
-            mentions.forEach(person => {
-                const id = person.id || person.name;
-                const name = person.name || id;
-                if (!personsMap.has(id)) {
-                    personsMap.set(id, { id, name, mentionCount: 0 });
-                }
-                personsMap.get(id).mentionCount++;
-            });
-
-            // Also count correspondents who mention others
-            const senderId = letter.sender?.id;
-            const senderName = letter.sender?.name;
-            if (senderId && mentions.length > 0) {
-                if (!personsMap.has(senderId)) {
-                    personsMap.set(senderId, { id: senderId, name: senderName, mentionCount: 0 });
-                }
-            }
-        });
-
-        // Filter out entries with 0 mentions and sort by count
-        return Array.from(personsMap.values())
-            .filter(p => p.mentionCount > 0)
-            .sort((a, b) => b.mentionCount - a.mentionCount);
-    }
-
-    function renderDropdown(results) {
-        currentResults = results;
-        highlightedIndex = -1;
-
-        if (results.length === 0) {
-            dropdown.innerHTML = '<div class="autocomplete-empty">Keine Treffer</div>';
-            dropdown.classList.remove('hidden');
-            return;
-        }
-
-        // Show all results - scrollable dropdown handles large lists
-        dropdown.innerHTML = results.map((person, i) => `
-            <div class="autocomplete-item" data-index="${i}" data-id="${escapeHtml(person.id)}">
-                <span class="autocomplete-item-name">${escapeHtml(person.name)}</span>
-                <span class="autocomplete-item-count">${person.mentionCount}</span>
-            </div>
-        `).join('');
-
-        dropdown.classList.remove('hidden');
-    }
-
-    function selectPerson(person) {
-        selectedMentionsPerson = person;
-        input.value = person.name;
-        dropdown.classList.add('hidden');
-
-        // Update selected person display
-        const selectedDisplay = elements.getById('mentions-flow-selected-person');
-        if (selectedDisplay) {
-            selectedDisplay.innerHTML = `<strong>${escapeHtml(person.name)}</strong> - ${person.mentionCount} Erwaehnungen`;
-        }
-
-        // Render the flow for this person
-        renderMentionsFlowForPerson(person);
-    }
-
-    // Input event - filter as user types
-    input.addEventListener('input', () => {
-        const query = input.value.toLowerCase().trim();
-        if (query.length < 1) {
-            // Show all alphabetically when empty
-            const allPersons = getPersonsWithMentions();
-            const sorted = allPersons.sort((a, b) => a.name.localeCompare(b.name, 'de'));
-            renderDropdown(sorted);
-            return;
-        }
-
-        const allPersons = getPersonsWithMentions();
-        // Split query into words for multi-word search
-        const queryWords = query.split(/\s+/);
-        const filtered = allPersons.filter(p => {
-            const nameLower = p.name.toLowerCase();
-            // All query words must be found in the name
-            return queryWords.every(word => nameLower.includes(word));
-        });
-
-        // Sort filtered results: exact matches first, then by mention count
-        filtered.sort((a, b) => {
-            const aStartsWith = a.name.toLowerCase().startsWith(query);
-            const bStartsWith = b.name.toLowerCase().startsWith(query);
-            if (aStartsWith && !bStartsWith) return -1;
-            if (!aStartsWith && bStartsWith) return 1;
-            return b.mentionCount - a.mentionCount;
-        });
-
-        renderDropdown(filtered);
-    });
-
-    // Focus - show all persons alphabetically sorted
-    input.addEventListener('focus', () => {
-        const allPersons = getPersonsWithMentions();
-        // Sort alphabetically by name
-        const sorted = allPersons.sort((a, b) => a.name.localeCompare(b.name, 'de'));
-        renderDropdown(sorted);
-    });
-
-    // Click outside - close dropdown
-    document.addEventListener('click', (e) => {
-        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
-
-    // Keyboard navigation
-    input.addEventListener('keydown', (e) => {
-        if (dropdown.classList.contains('hidden')) return;
-
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            highlightedIndex = Math.min(highlightedIndex + 1, currentResults.length - 1);
-            updateHighlight();
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            highlightedIndex = Math.max(highlightedIndex - 1, 0);
-            updateHighlight();
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            if (highlightedIndex >= 0 && currentResults[highlightedIndex]) {
-                selectPerson(currentResults[highlightedIndex]);
-            }
-        } else if (e.key === 'Escape') {
-            dropdown.classList.add('hidden');
-        }
-    });
-
-    function updateHighlight() {
-        dropdown.querySelectorAll('.autocomplete-item').forEach((item, i) => {
-            item.classList.toggle('highlighted', i === highlightedIndex);
-        });
-    }
-
-    // Click on dropdown item
-    dropdown.addEventListener('click', (e) => {
-        const item = e.target.closest('.autocomplete-item');
-        if (item) {
-            const index = parseInt(item.dataset.index);
-            if (currentResults[index]) {
-                selectPerson(currentResults[index]);
-            }
-        }
-    });
-}
-
-function createTooltip() {
-    const tooltip = document.createElement('div');
-    tooltip.id = 'mentions-tooltip';
-    tooltip.style.position = 'absolute';
-    tooltip.style.display = 'none';
-    tooltip.style.background = 'var(--color-background-elevated)';
-    tooltip.style.border = '1px solid var(--color-border)';
-    tooltip.style.borderRadius = '4px';
-    tooltip.style.padding = '8px 12px';
-    tooltip.style.fontSize = '13px';
-    tooltip.style.lineHeight = '1.5';
-    tooltip.style.pointerEvents = 'none';
-    tooltip.style.zIndex = '10000';
-    tooltip.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-    document.body.appendChild(tooltip);
-    return tooltip;
-}
-
-function renderMentionsFlow() {
-    const placeholder = elements.mentionsFlowPlaceholder;
-
-    // If no person selected, auto-select the most mentioned person
-    if (!selectedMentionsPerson) {
-        const personsMap = new Map();
-        filteredLetters.forEach(letter => {
-            const mentions = letter.mentions?.persons || [];
-            mentions.forEach(person => {
-                const id = person.id || person.name;
-                const name = person.name || id;
-                if (!personsMap.has(id)) {
-                    personsMap.set(id, { id, name, mentionCount: 0 });
-                }
-                personsMap.get(id).mentionCount++;
-            });
-        });
-
-        const sortedPersons = Array.from(personsMap.values())
-            .sort((a, b) => b.mentionCount - a.mentionCount);
-
-        if (sortedPersons.length > 0) {
-            selectedMentionsPerson = sortedPersons[0];
-            // Update input field and ensure dropdown is closed
-            const input = elements.getById('mentions-person-search');
-            const dropdown = elements.getById('mentions-person-dropdown');
-            if (input) {
-                input.value = selectedMentionsPerson.name;
-            }
-            if (dropdown) {
-                dropdown.classList.add('hidden');
-            }
-        }
-    }
-
-    if (placeholder) {
-        if (!selectedMentionsPerson) {
-            placeholder.style.display = 'flex';
-            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Personen mit Erwahnungen im Datensatz</p>';
-        } else {
-            renderMentionsFlowForPerson(selectedMentionsPerson);
-        }
-    }
-}
-
-function renderMentionsFlowForPerson(person) {
-    const container = elements.getById('mentions-flow-graph');
-    const placeholder = elements.mentionsFlowPlaceholder;
-
-    if (!container) return;
-
-    // Clear previous
-    container.innerHTML = '';
-
-    // Build data for this specific person
-    // Two scenarios:
-    // 1. Person is a correspondent (sender) - show who they mention
-    // 2. Person is mentioned - show who mentions them
-
-    const mentionedByPerson = [];  // Person mentions these people
-    const personMentionedBy = [];  // These people mention the person
-
-    filteredLetters.forEach(letter => {
-        const senderId = letter.sender?.id;
-        const senderName = letter.sender?.name || 'Unbekannt';
-        const mentions = letter.mentions?.persons || [];
-
-        // Check if this person is the sender - show who they mention
-        if (senderId === person.id) {
-            mentions.forEach(m => {
-                const mentionId = m.id || m.name;
-                // Skip self-references
-                if (mentionId === person.id) return;
-
-                const existingIdx = mentionedByPerson.findIndex(x => x.id === mentionId);
-                if (existingIdx >= 0) {
-                    mentionedByPerson[existingIdx].count++;
-                } else {
-                    mentionedByPerson.push({
-                        id: mentionId,
-                        name: m.name || m.id,
-                        count: 1
-                    });
-                }
-            });
-        }
-
-        // Check if this person is mentioned in the letter
-        const isMentioned = mentions.some(m => (m.id || m.name) === person.id);
-        // Skip if sender is the same person (self-reference)
-        if (isMentioned && senderId && senderId !== person.id) {
-            const existingIdx = personMentionedBy.findIndex(x => x.id === senderId);
-            if (existingIdx >= 0) {
-                personMentionedBy[existingIdx].count++;
-            } else {
-                personMentionedBy.push({
-                    id: senderId,
-                    name: senderName,
-                    count: 1
-                });
-            }
-        }
-    });
-
-    // Sort by count
-    mentionedByPerson.sort((a, b) => b.count - a.count);
-    personMentionedBy.sort((a, b) => b.count - a.count);
-
-    if (mentionedByPerson.length === 0 && personMentionedBy.length === 0) {
-        placeholder.style.display = 'flex';
-        placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Mentions-Daten fuer diese Person</p>';
-        return;
-    }
-
-    placeholder.style.display = 'none';
-
-    // Build simple Sankey: Left = who mentions person, Center = person, Right = who person mentions
-    const nodes = [];
-    const links = [];
-    const nodeIndexMap = new Map();
-
-    // Add "mentioned by" nodes on the left
-    personMentionedBy.slice(0, 15).forEach(p => {
-        const idx = nodes.length;
-        nodeIndexMap.set('left-' + p.id, idx);
-        nodes.push({ name: p.name, id: p.id, column: 0 });
-    });
-
-    // Add central person
-    const centerIdx = nodes.length;
-    nodeIndexMap.set('center-' + person.id, centerIdx);
-    nodes.push({ name: person.name, id: person.id, column: 1, isCenter: true });
-
-    // Add "mentions" nodes on the right
-    mentionedByPerson.slice(0, 15).forEach(p => {
-        const idx = nodes.length;
-        nodeIndexMap.set('right-' + p.id, idx);
-        nodes.push({ name: p.name, id: p.id, column: 2 });
-    });
-
-    // Create links from left to center
-    personMentionedBy.slice(0, 15).forEach(p => {
-        links.push({
-            source: nodeIndexMap.get('left-' + p.id),
-            target: centerIdx,
-            value: p.count
-        });
-    });
-
-    // Create links from center to right
-    mentionedByPerson.slice(0, 15).forEach(p => {
-        links.push({
-            source: centerIdx,
-            target: nodeIndexMap.get('right-' + p.id),
-            value: p.count
-        });
-    });
-
-    if (nodes.length < 2 || links.length === 0) {
-        placeholder.style.display = 'flex';
-        placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Zu wenig Daten fuer Visualisierung</p>';
-        return;
-    }
-
-    // Render Sankey with zoom/pan
-    const width = container.clientWidth || 900;
-    const height = Math.max(400, nodes.length * 30);
-    const headerHeight = 40; // Space for column labels
-
-    const svg = d3.select(container)
-        .append('svg')
-        .attr('width', width)
-        .attr('height', height + headerHeight)
-        .style('cursor', 'grab');
-
-    // Column labels (outside zoom group, always visible)
-    const labelGroup = svg.append('g')
-        .attr('class', 'column-labels');
-
-    // Determine which columns have data
-    const hasLeftColumn = personMentionedBy.length > 0;
-    const hasRightColumn = mentionedByPerson.length > 0;
-
-    // Left column: People who mention the selected person (only show if data exists)
-    if (hasLeftColumn) {
-        labelGroup.append('text')
-            .attr('x', 20)
-            .attr('y', 20)
-            .attr('text-anchor', 'start')
-            .style('font-size', '11px')
-            .style('font-weight', '600')
-            .style('fill', '#2c5f8d')
-            .text('ERWAEHNT VON');
-
-        labelGroup.append('text')
-            .attr('x', 20)
-            .attr('y', 32)
-            .attr('text-anchor', 'start')
-            .style('font-size', '9px')
-            .style('fill', 'var(--color-text-light)')
-            .text('(diese Absender erwaehnen die Person)');
-    }
-
-    // Center: Selected person
-    labelGroup.append('text')
-        .attr('x', width / 2)
-        .attr('y', 26)
-        .attr('text-anchor', 'middle')
-        .style('font-size', '11px')
-        .style('font-weight', '600')
-        .style('fill', PRIMARY_COLOR)
-        .text('PERSON');
-
-    // Right column: People mentioned by the selected person (only show if data exists)
-    if (hasRightColumn) {
-        labelGroup.append('text')
-            .attr('x', width - 20)
-            .attr('y', 20)
-            .attr('text-anchor', 'end')
-            .style('font-size', '11px')
-            .style('font-weight', '600')
-            .style('fill', '#f59e0b')
-            .text('ERWAEHNT');
-
-        labelGroup.append('text')
-            .attr('x', width - 20)
-            .attr('y', 32)
-            .attr('text-anchor', 'end')
-            .style('font-size', '9px')
-            .style('fill', 'var(--color-text-light)')
-            .text('(von der Person in Briefen erwaehnt)');
-    }
-
-    // Zoomable content group
-    const g = svg.append('g')
-        .attr('transform', `translate(0, ${headerHeight})`);
-
-    // Sankey generator
-    const sankeyGenerator = d3.sankey()
-        .nodeWidth(20)
-        .nodePadding(10)
-        .extent([[80, 10], [width - 80, height - 10]]);
-
-    const { nodes: layoutNodes, links: layoutLinks } = sankeyGenerator({
-        nodes: nodes.map(d => Object.assign({}, d)),
-        links: links.map(d => Object.assign({}, d))
-    });
-
-    // Gradients
-    const defs = svg.append('defs');
-    layoutLinks.forEach((link, i) => {
-        const gradient = defs.append('linearGradient')
-            .attr('id', `person-link-gradient-${i}`)
-            .attr('gradientUnits', 'userSpaceOnUse')
-            .attr('x1', link.source.x1)
-            .attr('x2', link.target.x0);
-
-        const sourceColor = link.source.isCenter ? PRIMARY_COLOR : '#2c5f8d';
-        const targetColor = link.target.isCenter ? PRIMARY_COLOR : '#f59e0b';
-
-        gradient.append('stop').attr('offset', '0%').attr('stop-color', sourceColor);
-        gradient.append('stop').attr('offset', '100%').attr('stop-color', targetColor);
-    });
-
-    // Create tooltip
-    let tooltip = document.getElementById('sankey-tooltip');
-    if (!tooltip) {
-        tooltip = document.createElement('div');
-        tooltip.id = 'sankey-tooltip';
-        tooltip.style.cssText = 'position:fixed;display:none;background:#fff;border:2px solid var(--color-border);border-radius:4px;padding:8px 12px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:1000;pointer-events:none;max-width:300px;';
-        document.body.appendChild(tooltip);
-    }
-
-    // Links with hover and click
-    const linkGroup = g.append('g');
-    const linkPaths = linkGroup.selectAll('path')
-        .data(layoutLinks)
-        .join('path')
-        .attr('d', d3.sankeyLinkHorizontal())
-        .attr('stroke', (d, i) => `url(#person-link-gradient-${i})`)
-        .attr('stroke-width', d => Math.max(2, d.width))
-        .attr('fill', 'none')
-        .attr('opacity', 0.6)
-        .style('cursor', 'pointer')
-        .on('mouseover', function(event, d) {
-            d3.select(this).attr('opacity', 0.9);
-            const sourceName = d.source.name;
-            const targetName = d.target.name;
-            const isLeftToCenter = d.source.column === 0;
-            const text = isLeftToCenter
-                ? `<strong>${escapeHtml(sourceName)}</strong> erwaehnt <strong>${escapeHtml(targetName)}</strong> in ${d.value} Brief(en)`
-                : `<strong>${escapeHtml(sourceName)}</strong> erwaehnt <strong>${escapeHtml(targetName)}</strong> in ${d.value} Brief(en)`;
-            tooltip.innerHTML = text;
-            tooltip.style.display = 'block';
-        })
-        .on('mousemove', function(event) {
-            tooltip.style.left = (event.clientX + 10) + 'px';
-            tooltip.style.top = (event.clientY - 10) + 'px';
-        })
-        .on('mouseout', function() {
-            d3.select(this).attr('opacity', 0.6);
-            tooltip.style.display = 'none';
-        })
-        .on('click', function(event, d) {
-            event.stopPropagation();
-            // Show letters where source mentions target
-            const senderId = d.source.column === 0 ? d.source.id : (d.source.isCenter ? person.id : null);
-            const mentionedId = d.target.column === 2 ? d.target.id : (d.target.isCenter ? person.id : null);
-            if (senderId && mentionedId) {
-                showMentionLetters(senderId, mentionedId, d.source.name, d.target.name);
-            }
-        });
-
-    // Nodes with click to navigate
-    const node = g.append('g')
-        .selectAll('g')
-        .data(layoutNodes)
-        .join('g')
-        .attr('class', d => d.isCenter ? 'sankey-node sankey-node-center' : 'sankey-node sankey-node-clickable')
-        .style('cursor', d => d.isCenter ? 'default' : 'pointer')
-        .on('click', function(event, d) {
-            if (d.isCenter) return; // Don't navigate to self
-            event.stopPropagation();
-            // Navigate to this person
-            const newPerson = { id: d.id, name: d.name, mentionCount: d.value || 0 };
-            selectedMentionsPerson = newPerson;
-            const input = elements.getById('mentions-person-search');
-            if (input) input.value = d.name;
-            renderMentionsFlowForPerson(newPerson);
-        })
-        .on('mouseover', function(event, d) {
-            if (d.isCenter) return;
-            // Visual hover feedback: brighten rect and underline text
-            d3.select(this).select('rect')
-                .transition().duration(150)
-                .attr('opacity', 0.7)
-                .attr('stroke', 'var(--color-text)')
-                .attr('stroke-width', 2);
-            d3.select(this).select('text')
-                .transition().duration(150)
-                .style('text-decoration', 'underline')
-                .style('fill', 'var(--color-primary)');
-            tooltip.innerHTML = `<strong>${escapeHtml(d.name)}</strong><br>Klicken um zu dieser Person zu wechseln`;
-            tooltip.style.display = 'block';
-            tooltip.style.left = (event.clientX + 10) + 'px';
-            tooltip.style.top = (event.clientY - 10) + 'px';
-        })
-        .on('mousemove', function(event) {
-            tooltip.style.left = (event.clientX + 10) + 'px';
-            tooltip.style.top = (event.clientY - 10) + 'px';
-        })
-        .on('mouseout', function(event, d) {
-            if (d.isCenter) return;
-            // Reset visual feedback
-            d3.select(this).select('rect')
-                .transition().duration(150)
-                .attr('opacity', 1)
-                .attr('stroke', 'none')
-                .attr('stroke-width', 0);
-            d3.select(this).select('text')
-                .transition().duration(150)
-                .style('text-decoration', 'none')
-                .style('fill', 'var(--color-text)');
-            tooltip.style.display = 'none';
-        });
-
-    node.append('rect')
-        .attr('x', d => d.x0)
-        .attr('y', d => d.y0)
-        .attr('height', d => Math.max(4, d.y1 - d.y0))
-        .attr('width', sankeyGenerator.nodeWidth())
-        .attr('fill', d => d.isCenter ? PRIMARY_COLOR : (d.column === 0 ? '#2c5f8d' : '#f59e0b'))
-        .attr('rx', 3);
-
-    // Labels
-    node.append('text')
-        .attr('x', d => d.column === 0 ? d.x0 - 8 : (d.column === 2 ? d.x1 + 8 : d.x0 + 10))
-        .attr('y', d => (d.y1 + d.y0) / 2)
-        .attr('dy', '0.35em')
-        .attr('text-anchor', d => d.column === 0 ? 'end' : 'start')
-        .text(d => d.name.length > 25 ? d.name.substring(0, 25) + '...' : d.name)
-        .style('font-size', d => d.isCenter ? '14px' : '12px')
-        .style('font-weight', d => d.isCenter ? '700' : 'normal')
-        .style('fill', 'var(--color-text)')
-        .style('pointer-events', 'none');
-
-    // Add zoom behavior
-    const zoom = d3.zoom()
-        .scaleExtent([0.5, 3])
-        .on('zoom', (event) => {
-            g.attr('transform', `translate(${event.transform.x}, ${event.transform.y + headerHeight}) scale(${event.transform.k})`);
-            svg.style('cursor', event.transform.k > 1 ? 'move' : 'grab');
-        });
-
-    svg.call(zoom);
-
-    // Add zoom controls
-    const controlsDiv = document.createElement('div');
-    controlsDiv.className = 'sankey-zoom-controls';
-    controlsDiv.innerHTML = `
-        <button class="map-control-btn" id="sankey-zoom-in" title="Vergroessern"><i class="fas fa-plus"></i></button>
-        <button class="map-control-btn" id="sankey-zoom-out" title="Verkleinern"><i class="fas fa-minus"></i></button>
-        <button class="map-control-btn" id="sankey-zoom-reset" title="Zuruecksetzen"><i class="fas fa-compress-arrows-alt"></i></button>
-    `;
-    container.style.position = 'relative';
-    container.appendChild(controlsDiv);
-
-    // Zoom control handlers
-    document.getElementById('sankey-zoom-in')?.addEventListener('click', () => {
-        svg.transition().call(zoom.scaleBy, 1.3);
-    });
-    document.getElementById('sankey-zoom-out')?.addEventListener('click', () => {
-        svg.transition().call(zoom.scaleBy, 0.7);
-    });
-    document.getElementById('sankey-zoom-reset')?.addEventListener('click', () => {
-        svg.transition().call(zoom.transform, d3.zoomIdentity);
-    });
-
-    log.render(`Rendered person flow: ${layoutNodes.length} nodes, ${layoutLinks.length} links`);
-}
-
-// Show modal with letters where sender mentions mentionedPerson
-function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
-    // Find all letters where sender mentions the person
-    const relevantLetters = filteredLetters.filter(letter => {
-        const letterSenderId = letter.sender?.id;
-        const mentions = letter.mentions?.persons || [];
-        const mentionIds = mentions.map(m => m.id || m.name);
-        return letterSenderId === senderId && mentionIds.includes(mentionedId);
-    });
-
-    if (relevantLetters.length === 0) {
-        return;
-    }
-
-    // Create modal
-    let modal = document.getElementById('mention-letters-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'mention-letters-modal';
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-            <div class="modal-content" style="max-width:700px;max-height:80vh;overflow-y:auto;">
-                <div class="modal-header">
-                    <h3 id="mention-modal-title"></h3>
-                    <button class="modal-close" aria-label="Schliessen">&times;</button>
-                </div>
-                <div class="modal-body" id="mention-modal-body"></div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        modal.addEventListener('click', (e) => {
-            const item = e.target.closest('[data-letter-id]');
-            if (e.target === modal || e.target.closest('.modal-close')) {
-                modal.style.display = 'none';
-            } else if (item) {
-                modal.style.display = 'none';
-                showLetterDetail(item.dataset.letterId);
-            }
-        });
-    }
-
-    // Populate modal
-    document.getElementById('mention-modal-title').textContent =
-        `${senderName} erwaehnt ${mentionedName} (${relevantLetters.length} Briefe)`;
-
-    const body = document.getElementById('mention-modal-body');
-    body.innerHTML = relevantLetters.slice(0, 50).map(letter => {
-        const date = letter.date || 'Datum unbekannt';
-        const recipient = letter.recipient?.name || 'Unbekannt';
-        const place = letter.place_sent?.name || '';
-        return `
-            <div style="padding:12px;border-bottom:1px solid var(--color-border-light);cursor:pointer;"
-                 data-letter-id="${escapeHtml(letter.id)}">
-                <div style="font-weight:600;color:var(--color-text);">${escapeHtml(date)}</div>
-                <div style="font-size:13px;color:var(--color-text-light);">
-                    An: ${escapeHtml(recipient)}${place ? ' | ' + escapeHtml(place) : ''}
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    if (relevantLetters.length > 50) {
-        body.innerHTML += `<div style="padding:12px;color:var(--color-text-light);text-align:center;">... und ${relevantLetters.length - 50} weitere Briefe</div>`;
-    }
-
-    modal.style.display = 'flex';
-}
-
 // ===================
-// CHRONIK VIEW
+// MENTIONS FLOW VIEW - Extracted to views/mentions-view.js
 // ===================
 
-// Chronik view state
-let chronikEnriched = false;
-let chronikEnrichmentData = new Map();
-let chronikSortedLetters = [];
-let chronikRenderedCount = 0;
-let chronikScrollHandler = null;
-let chronikCorrespondenceIndex = null;
-let chronikLayout = 'cards'; // 'cards' | 'compact' | 'timeline'
-const CHRONIK_BATCH_SIZE = 100;
-
-/**
- * Build correspondence index for relationship context
- * Maps sender→recipient pairs to their letter history
- * @param {Array} letters - Array of letter objects
- * @returns {Map} Index mapping "senderId→recipientId" to correspondence data
- */
-function buildCorrespondenceIndex(letters) {
-    const index = new Map();
-
-    for (const letter of letters) {
-        const senderId = letter.sender?.id || letter.sender?.name;
-        const recipientId = letter.recipient?.id || letter.recipient?.name;
-
-        if (!senderId || !recipientId) continue;
-
-        const key = `${senderId}→${recipientId}`;
-
-        if (!index.has(key)) {
-            index.set(key, {
-                letters: [],
-                totalCount: 0
-            });
-        }
-
-        const entry = index.get(key);
-        entry.letters.push({
-            id: letter.id,
-            year: letter.year,
-            date: letter.date
-        });
-        entry.totalCount++;
-    }
-
-    // Sort letters chronologically within each correspondence
-    for (const entry of index.values()) {
-        entry.letters.sort((a, b) => {
-            const dateA = a.date || '9999';
-            const dateB = b.date || '9999';
-            return dateA.localeCompare(dateB);
-        });
-        entry.firstLetterId = entry.letters[0]?.id;
-    }
-
-    return index;
-}
-
-/**
- * Get correspondence context for a letter
- * @param {Object} letter - Letter object
- * @returns {Object} Context with isFirstLetter, letterNumber, totalLetters
- */
-function getCorrespondenceContext(letter) {
-    if (!chronikCorrespondenceIndex) return null;
-
-    const senderId = letter.sender?.id || letter.sender?.name;
-    const recipientId = letter.recipient?.id || letter.recipient?.name;
-
-    if (!senderId || !recipientId) return null;
-
-    const key = `${senderId}→${recipientId}`;
-    const entry = chronikCorrespondenceIndex.get(key);
-
-    if (!entry) return null;
-
-    // Find position of this letter in the correspondence
-    const letterIndex = entry.letters.findIndex(l => l.id === letter.id);
-
-    return {
-        isFirstLetter: letter.id === entry.firstLetterId,
-        letterNumber: letterIndex + 1,
-        totalLetters: entry.totalCount,
-        direction: 'sent'
-    };
-}
-
-/**
- * Extract birth year from person data (CMIF or Wikidata enrichment)
- * @param {Object} person - Person object from letter
- * @param {Object} enrichment - Wikidata enrichment data (optional)
- * @returns {number|null} Birth year or null
- */
-function getPersonBirthYear(person, enrichment) {
-    // Priority 1: Wikidata enrichment
-    if (enrichment?.birthDate) {
-        const match = enrichment.birthDate.match(/^(-?\d{4})/);
-        if (match) return parseInt(match[1], 10);
-    }
-
-    // Priority 2: CMIF data (if present)
-    if (person?.birthDate) {
-        const match = person.birthDate.match(/^(-?\d{4})/);
-        if (match) return parseInt(match[1], 10);
-    }
-
-    return null;
-}
-
-/**
- * Extract death year from person data (CMIF or Wikidata enrichment)
- * @param {Object} person - Person object from letter
- * @param {Object} enrichment - Wikidata enrichment data (optional)
- * @returns {number|null} Death year or null
- */
-function getPersonDeathYear(person, enrichment) {
-    // Priority 1: Wikidata enrichment
-    if (enrichment?.deathDate) {
-        const match = enrichment.deathDate.match(/^(-?\d{4})/);
-        if (match) return parseInt(match[1], 10);
-    }
-
-    // Priority 2: CMIF data (if present)
-    if (person?.deathDate) {
-        const match = person.deathDate.match(/^(-?\d{4})/);
-        if (match) return parseInt(match[1], 10);
-    }
-
-    return null;
-}
-
-/**
- * Calculate age at time of letter
- * @param {number} birthYear - Birth year
- * @param {Object} letter - Letter object with date/year
- * @returns {number|null} Age or null
- */
-function calculateAge(birthYear, letter) {
-    if (!birthYear) return null;
-
-    const letterYear = letter.year || (letter.date ? parseInt(letter.date.substring(0, 4), 10) : null);
-    if (!letterYear) return null;
-
-    return letterYear - birthYear;
-}
-
-/**
- * Build lifespan bar HTML showing where in life the person is at letter time
- * @param {number} birthYear - Birth year
- * @param {number} deathYear - Death year (or null if still alive/unknown)
- * @param {number} age - Age at time of letter
- * @returns {string} HTML for lifespan bar
- */
-function buildLifespanBar(birthYear, deathYear, age) {
-    if (!birthYear || !age || age < 0) return '';
-
-    // Calculate total lifespan (use death year or estimate 85 if unknown)
-    const totalYears = deathYear ? (deathYear - birthYear) : 85;
-    const percentage = Math.min(100, Math.round((age / totalYears) * 100));
-
-    const tooltip = deathYear
-        ? `${birthYear}-${deathYear} (${totalYears} Jahre)`
-        : `*${birthYear}`;
-
-    return `
-        <div class="chronik-lifespan" title="${tooltip}">
-            <div class="chronik-lifespan-bar">
-                <div class="chronik-lifespan-progress" style="width: ${percentage}%"></div>
-            </div>
-            <span class="chronik-lifespan-age">${age}</span>
-        </div>
-    `;
-}
-
-/**
- * Initialize Chronik view event handlers
- */
-function initChronikView() {
-    // Layout toggle buttons
-    document.querySelectorAll('.chronik-layout-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const layout = btn.dataset.layout;
-            if (layout) switchChronikLayout(layout);
-        });
-    });
-
-    // Open modal button
-    const enrichBtn = document.getElementById('chronik-enrich-btn');
-    if (enrichBtn) {
-        enrichBtn.addEventListener('click', () => {
-            openEnrichmentModal();
-        });
-    }
-
-    // Modal buttons
-    const startBtn = document.getElementById('enrichment-start-btn');
-    const cancelBtn = document.getElementById('enrichment-cancel-btn');
-    const closeBtn = document.getElementById('enrichment-close-btn');
-    const modal = document.getElementById('enrichment-modal');
-
-    if (startBtn) {
-        startBtn.addEventListener('click', async () => {
-            await runEnrichment();
-        });
-    }
-
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', () => {
-            chronikEnrichmentCancelled = true;
-        });
-    }
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            closeEnrichmentModal();
-        });
-    }
-
-    // Close modal on X or backdrop click
-    if (modal) {
-        modal.querySelector('.modal-close')?.addEventListener('click', closeEnrichmentModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeEnrichmentModal();
-        });
-    }
-}
-
-let chronikEnrichmentCancelled = false;
-
-/**
- * Open the enrichment modal
- */
-function openEnrichmentModal() {
-    const modal = document.getElementById('enrichment-modal');
-    if (!modal) return;
-
-    // Count enrichable persons
-    const letters = state.getFilteredLetters();
-    const personsToEnrich = new Map();
-
-    letters.forEach(letter => {
-        [letter.sender, letter.recipient].forEach(person => {
-            if (!person) return;
-            const authority = person.authority || (person.viaf ? 'viaf' : (person.gnd ? 'gnd' : null));
-            const authorityId = person.viaf || person.gnd || person.id;
-            if (authority && authorityId && !personsToEnrich.has(authorityId)) {
-                personsToEnrich.set(authorityId, { name: person.name, authority, authorityId });
-            }
-        });
-    });
-
-    // Update count
-    document.getElementById('enrichment-person-count').textContent = personsToEnrich.size;
-
-    // Reset modal state
-    document.getElementById('enrichment-info').classList.remove('hidden');
-    document.getElementById('enrichment-progress').classList.add('hidden');
-    document.getElementById('enrichment-done').classList.add('hidden');
-    document.getElementById('enrichment-start-btn').classList.remove('hidden');
-    document.getElementById('enrichment-cancel-btn').classList.add('hidden');
-    document.getElementById('enrichment-close-btn').classList.add('hidden');
-
-    // Show modal
-    modal.classList.remove('hidden');
-}
-
-/**
- * Close the enrichment modal
- */
-function closeEnrichmentModal() {
-    const modal = document.getElementById('enrichment-modal');
-    if (modal) modal.classList.add('hidden');
-}
-
-/**
- * Run the enrichment process with progress
- */
-async function runEnrichment() {
-    chronikEnrichmentCancelled = false;
-
-    // Update UI
-    document.getElementById('enrichment-info').classList.add('hidden');
-    document.getElementById('enrichment-progress').classList.remove('hidden');
-    document.getElementById('enrichment-start-btn').classList.add('hidden');
-    document.getElementById('enrichment-cancel-btn').classList.remove('hidden');
-
-    // Collect persons
-    const letters = state.getFilteredLetters();
-    const personsToEnrich = new Map();
-
-    letters.forEach(letter => {
-        [letter.sender, letter.recipient].forEach(person => {
-            if (!person) return;
-            const authority = person.authority || (person.viaf ? 'viaf' : (person.gnd ? 'gnd' : null));
-            const authorityId = person.viaf || person.gnd || person.id;
-            if (authority && authorityId && !personsToEnrich.has(authorityId)) {
-                personsToEnrich.set(authorityId, { name: person.name, authority, authorityId });
-            }
-        });
-    });
-
-    const personsArray = Array.from(personsToEnrich.values());
-    const total = personsArray.length;
-
-    document.getElementById('enrichment-total').textContent = total;
-
-    let enrichedCount = 0;
-    let notFoundCount = 0;
-    const enrichmentStats = {
-        withPortrait: 0,
-        withBirthDate: 0,
-        withDeathDate: 0,
-        withProfession: 0,
-        withWikipedia: 0
-    };
-    const liveLog = document.getElementById('enrichment-live-log');
-    liveLog.innerHTML = '';
-
-    for (let i = 0; i < personsArray.length; i++) {
-        if (chronikEnrichmentCancelled) break;
-
-        const person = personsArray[i];
-
-        // Update progress
-        document.getElementById('enrichment-current').textContent = i + 1;
-        document.getElementById('enrichment-current-person').textContent = person.name || '';
-        document.getElementById('enrichment-progress-bar').style.width = `${((i + 1) / total) * 100}%`;
-
-        try {
-            const enriched = await enrichPerson(person.authority, person.authorityId);
-            if (enriched) {
-                chronikEnrichmentData.set(person.authorityId, enriched);
-                if (person.name) chronikEnrichmentData.set(person.name, enriched);
-                enrichedCount++;
-
-                // Track what was found
-                if (enriched.image) enrichmentStats.withPortrait++;
-                if (enriched.birthDate) enrichmentStats.withBirthDate++;
-                if (enriched.deathDate) enrichmentStats.withDeathDate++;
-                if (enriched.professions?.length > 0) enrichmentStats.withProfession++;
-                if (enriched.wikipediaUrl) enrichmentStats.withWikipedia++;
-
-                // Live log entry - show what was found
-                const found = [];
-                if (enriched.image) found.push('<i class="fas fa-portrait" title="Portrait"></i>');
-                if (enriched.birthDate) found.push('<i class="fas fa-baby" title="Geburtsdatum"></i>');
-                if (enriched.deathDate) found.push('<i class="fas fa-cross" title="Sterbedatum"></i>');
-                if (enriched.professions?.length > 0) found.push('<i class="fas fa-briefcase" title="Beruf"></i>');
-                if (enriched.wikipediaUrl) found.push('<i class="fas fa-wikipedia-w" title="Wikipedia"></i>');
-
-                const logEntry = document.createElement('div');
-                logEntry.className = 'enrichment-log-entry enrichment-log-success';
-                logEntry.innerHTML = `<span class="log-name">${escapeHtml(person.name || 'Unbekannt')}</span> <span class="log-icons">${found.join(' ')}</span>`;
-                liveLog.insertBefore(logEntry, liveLog.firstChild);
-            } else {
-                notFoundCount++;
-                const logEntry = document.createElement('div');
-                logEntry.className = 'enrichment-log-entry enrichment-log-empty';
-                logEntry.innerHTML = `<span class="log-name">${escapeHtml(person.name || 'Unbekannt')}</span> <span class="log-status">keine Daten</span>`;
-                liveLog.insertBefore(logEntry, liveLog.firstChild);
-            }
-
-            // Keep only last 8 entries visible
-            while (liveLog.children.length > 8) {
-                liveLog.removeChild(liveLog.lastChild);
-            }
-
-            await new Promise(resolve => setTimeout(resolve, 100));
-        } catch (error) {
-            console.warn(`Failed to enrich ${person.name}:`, error.message);
-            notFoundCount++;
-        }
-    }
-
-    // Done
-    chronikEnriched = true;
-    renderChronik();
-    document.querySelector('.chronik-container')?.classList.add('enriched');
-    updateChronikEnrichmentUI();
-
-    // Show done state with summary
-    document.getElementById('enrichment-progress').classList.add('hidden');
-    document.getElementById('enrichment-done').classList.remove('hidden');
-    document.getElementById('enrichment-success-count').textContent = enrichedCount;
-
-    // Build summary
-    const summaryEl = document.getElementById('enrichment-summary');
-    summaryEl.innerHTML = `
-        <div class="enrichment-summary-grid">
-            <div class="summary-item"><i class="fas fa-portrait"></i> ${enrichmentStats.withPortrait} Portraits</div>
-            <div class="summary-item"><i class="fas fa-baby"></i> ${enrichmentStats.withBirthDate} Geburtsdaten</div>
-            <div class="summary-item"><i class="fas fa-cross"></i> ${enrichmentStats.withDeathDate} Sterbedaten</div>
-            <div class="summary-item"><i class="fas fa-briefcase"></i> ${enrichmentStats.withProfession} Berufe</div>
-            <div class="summary-item"><i class="fas fa-wikipedia-w"></i> ${enrichmentStats.withWikipedia} Wikipedia</div>
-            <div class="summary-item summary-empty"><i class="fas fa-times-circle"></i> ${notFoundCount} ohne Daten</div>
-        </div>
-    `;
-
-    document.getElementById('enrichment-cancel-btn').classList.add('hidden');
-    document.getElementById('enrichment-close-btn').classList.remove('hidden');
-}
-
-/**
- * Render the Chronik timeline view with lazy loading
- */
-function renderChronik() {
-    const container = elements.getById('chronik-timeline');
-    if (!container) return;
-
-    const letters = state.getFilteredLetters();
-
-    if (!letters || letters.length === 0) {
-        container.innerHTML = `
-            <div class="chronik-empty">
-                <i class="fas fa-scroll"></i>
-                <p>Keine Briefe im ausgewaehlten Zeitraum</p>
-            </div>
-        `;
-        chronikSortedLetters = [];
-        chronikRenderedCount = 0;
-        return;
-    }
-
-    // Sort letters by date (oldest first for top-to-bottom timeline)
-    chronikSortedLetters = [...letters].sort((a, b) => {
-        const dateA = a.date || '9999';
-        const dateB = b.date || '9999';
-        return dateA.localeCompare(dateB);
-    });
-
-    // Build correspondence index for relationship context
-    chronikCorrespondenceIndex = buildCorrespondenceIndex(chronikSortedLetters);
-
-    // Reset state
-    chronikRenderedCount = 0;
-    container.innerHTML = '';
-
-    // Render first batch
-    renderChronikBatch(container);
-
-    // Update enrichment button visibility
-    updateChronikEnrichmentUI();
-
-    // Setup scroll handler for lazy loading
-    setupChronikScrollHandler(container);
-
-    // Show total count info
-    const totalCount = chronikSortedLetters.length;
-    if (totalCount > CHRONIK_BATCH_SIZE) {
-        updateChronikLoadMoreInfo(container, totalCount);
-    }
-
-    log.render(`Rendered Chronik: ${Math.min(CHRONIK_BATCH_SIZE, totalCount)} of ${totalCount} letters (lazy loading)`);
-}
-
-/**
- * Render a batch of letters to the Chronik
- */
-function renderChronikBatch(container) {
-    const startIdx = chronikRenderedCount;
-    const endIdx = Math.min(startIdx + CHRONIK_BATCH_SIZE, chronikSortedLetters.length);
-
-    if (startIdx >= chronikSortedLetters.length) return;
-
-    // Track current year for year markers
-    let currentYear = null;
-    if (startIdx > 0 && chronikSortedLetters[startIdx - 1]) {
-        const prevLetter = chronikSortedLetters[startIdx - 1];
-        currentYear = prevLetter.year || (prevLetter.date ? prevLetter.date.substring(0, 4) : null);
-    }
-
-    // Build HTML for this batch
-    let html = '';
-    for (let i = startIdx; i < endIdx; i++) {
-        const letter = chronikSortedLetters[i];
-        const year = letter.year || (letter.date ? letter.date.substring(0, 4) : 'Unbekannt');
-
-        // Add year marker if year changed
-        if (year !== currentYear) {
-            html += `
-                <div class="chronik-year-marker">
-                    <span class="chronik-year-label">${escapeHtml(year)}</span>
-                </div>
-            `;
-            currentYear = year;
-        }
-
-        html += renderChronikEntry(letter);
-    }
-
-    // Append to container
-    const fragment = document.createElement('div');
-    fragment.innerHTML = html;
-
-    // Add click handlers before appending
-    fragment.querySelectorAll('.chronik-entry').forEach(entry => {
-        entry.addEventListener('click', (e) => {
-            if (e.target.closest('a')) return;
-            const letterId = entry.dataset.letterId;
-            if (letterId) {
-                showLetterDetail(letterId);
-            }
-        });
-    });
-
-    // Move children to container
-    while (fragment.firstChild) {
-        container.appendChild(fragment.firstChild);
-    }
-
-    chronikRenderedCount = endIdx;
-
-    // Update load more info
-    if (chronikSortedLetters.length > CHRONIK_BATCH_SIZE) {
-        updateChronikLoadMoreInfo(container, chronikSortedLetters.length);
-    }
-}
-
-/**
- * Setup scroll handler for lazy loading
- */
-function setupChronikScrollHandler(container) {
-    // Remove old handler
-    if (chronikScrollHandler) {
-        window.removeEventListener('scroll', chronikScrollHandler);
-    }
-
-    const mainContent = document.querySelector('.main-content');
-    if (!mainContent) return;
-
-    chronikScrollHandler = debounce(() => {
-        if (currentView !== 'chronik') return;
-        if (chronikRenderedCount >= chronikSortedLetters.length) return;
-
-        // Check if user scrolled near bottom
-        const scrollTop = mainContent.scrollTop;
-        const scrollHeight = mainContent.scrollHeight;
-        const clientHeight = mainContent.clientHeight;
-
-        if (scrollTop + clientHeight >= scrollHeight - 500) {
-            renderChronikBatch(container);
-        }
-    }, 100);
-
-    mainContent.addEventListener('scroll', chronikScrollHandler);
-}
-
-/**
- * Update the load more info display
- */
-function updateChronikLoadMoreInfo(container, total) {
-    // Remove existing info
-    const existingInfo = container.querySelector('.chronik-load-info');
-    if (existingInfo) existingInfo.remove();
-
-    if (chronikRenderedCount < total) {
-        const remaining = total - chronikRenderedCount;
-        const info = document.createElement('div');
-        info.className = 'chronik-load-info';
-        info.innerHTML = `
-            <p>${chronikRenderedCount} von ${total} Briefen geladen</p>
-            <button class="btn btn-secondary btn-sm" id="chronik-load-more">
-                <i class="fas fa-plus"></i> ${Math.min(remaining, CHRONIK_BATCH_SIZE)} weitere laden
-            </button>
-        `;
-        container.appendChild(info);
-
-        // Add click handler
-        info.querySelector('#chronik-load-more')?.addEventListener('click', () => {
-            renderChronikBatch(container);
-        });
-    }
-}
-
-/**
- * Render a single letter entry in the Chronik (dispatches to layout-specific renderer)
- */
-function renderChronikEntry(letter) {
-    if (chronikLayout === 'compact') {
-        return renderChronikEntryCompact(letter);
-    } else if (chronikLayout === 'timeline') {
-        return renderChronikEntryTimeline(letter);
-    }
-    return renderChronikEntryCards(letter);
-}
-
-/**
- * Render letter entry in cards layout (original, detailed view)
- */
-function renderChronikEntryCards(letter) {
-    const senderName = letter.sender?.name || 'Unbekannt';
-    const senderPrecision = letter.sender?.precision || 'identified';
-    const recipientName = letter.recipient?.name || 'Unbekannt';
-    const recipientPrecision = letter.recipient?.precision || 'identified';
-
-    const senderEnriched = getPersonEnrichment(letter.sender);
-    const recipientEnriched = getPersonEnrichment(letter.recipient);
-
-    const senderBirthYear = getPersonBirthYear(letter.sender, senderEnriched);
-    const recipientBirthYear = getPersonBirthYear(letter.recipient, recipientEnriched);
-    const senderDeathYear = getPersonDeathYear(letter.sender, senderEnriched);
-    const recipientDeathYear = getPersonDeathYear(letter.recipient, recipientEnriched);
-    const senderAge = calculateAge(senderBirthYear, letter);
-    const recipientAge = calculateAge(recipientBirthYear, letter);
-
-    const context = getCorrespondenceContext(letter);
-    const dateDisplay = formatDateWithPrecision(letter);
-
-    const senderPortrait = buildPortraitHtml(senderEnriched, senderName);
-    const recipientPortrait = buildPortraitHtml(recipientEnriched, recipientName);
-    const senderBio = buildBioHtml(senderEnriched);
-    const recipientBio = buildBioHtml(recipientEnriched);
-    const senderLifespan = buildLifespanBar(senderBirthYear, senderDeathYear, senderAge);
-    const recipientLifespan = buildLifespanBar(recipientBirthYear, recipientDeathYear, recipientAge);
-
-    let contextHtml = '';
-    if (context) {
-        if (context.isFirstLetter) {
-            contextHtml = '<span class="chronik-first-letter"><i class="fas fa-star"></i> Erster Brief</span>';
-        } else if (context.totalLetters > 1) {
-            contextHtml = `<span class="chronik-letter-count">Brief ${context.letterNumber} von ${context.totalLetters}</span>`;
-        }
-    }
-
-    const place = letter.place_sent?.name || '';
-
-    return `
-        <div class="chronik-entry chronik-entry-cards" data-letter-id="${escapeHtml(letter.id)}">
-            <a href="${escapeHtml(safeUrl(letter.url) || '#')}" target="_blank" class="chronik-entry-link"
-               title="Quelle oeffnen">
-                <i class="fas fa-external-link-alt"></i>
-            </a>
-            <div class="chronik-entry-header">
-                <div class="chronik-entry-date">${dateDisplay}</div>
-                <div class="chronik-entry-persons">
-                    <div class="chronik-entry-sender">
-                        ${senderPortrait}
-                        <div class="chronik-person-info">
-                            <span class="chronik-person-name">${formatPersonName(senderName, senderPrecision)}</span>
-                            ${senderLifespan}
-                            ${senderBio}
-                        </div>
-                    </div>
-                    <div class="chronik-entry-arrow">
-                        <i class="fas fa-arrow-right"></i> an
-                    </div>
-                    <div class="chronik-entry-recipient">
-                        ${recipientPortrait}
-                        <div class="chronik-person-info">
-                            <span class="chronik-person-name">${formatPersonName(recipientName, recipientPrecision)}</span>
-                            ${recipientLifespan}
-                            ${recipientBio}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="chronik-entry-meta">
-                ${contextHtml}
-                ${place ? `<span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</span>` : ''}
-            </div>
-        </div>
-    `;
-}
-
-/**
- * Render letter entry in compact layout (single row)
- */
-function renderChronikEntryCompact(letter) {
-    const senderName = letter.sender?.name || 'Unbekannt';
-    const recipientName = letter.recipient?.name || 'Unbekannt';
-
-    const senderEnriched = getPersonEnrichment(letter.sender);
-    const recipientEnriched = getPersonEnrichment(letter.recipient);
-
-    const senderBirthYear = getPersonBirthYear(letter.sender, senderEnriched);
-    const recipientBirthYear = getPersonBirthYear(letter.recipient, recipientEnriched);
-    const senderDeathYear = getPersonDeathYear(letter.sender, senderEnriched);
-    const recipientDeathYear = getPersonDeathYear(letter.recipient, recipientEnriched);
-    const senderAge = calculateAge(senderBirthYear, letter);
-    const recipientAge = calculateAge(recipientBirthYear, letter);
-
-    const context = getCorrespondenceContext(letter);
-    const dateDisplay = formatDateWithPrecision(letter);
-    const place = letter.place_sent?.name || '';
-
-    // Compact lifespan (just the bar, smaller)
-    const senderBar = buildLifespanBarCompact(senderBirthYear, senderDeathYear, senderAge);
-    const recipientBar = buildLifespanBarCompact(recipientBirthYear, recipientDeathYear, recipientAge);
-
-    let contextBadge = '';
-    if (context?.isFirstLetter) {
-        contextBadge = '<span class="chronik-badge-first" title="Erster Brief"><i class="fas fa-star"></i></span>';
-    } else if (context?.totalLetters > 1) {
-        contextBadge = `<span class="chronik-badge-count" title="Brief ${context.letterNumber} von ${context.totalLetters}">${context.letterNumber}/${context.totalLetters}</span>`;
-    }
-
-    return `
-        <div class="chronik-entry chronik-entry-compact" data-letter-id="${escapeHtml(letter.id)}">
-            <div class="chronik-compact-date">${dateDisplay}</div>
-            <div class="chronik-compact-sender">
-                <span class="chronik-compact-name" title="${escapeHtml(senderName)}">${escapeHtml(truncateName(senderName))}</span>
-                ${senderBar}
-            </div>
-            <div class="chronik-compact-arrow"><i class="fas fa-arrow-right"></i></div>
-            <div class="chronik-compact-recipient">
-                <span class="chronik-compact-name" title="${escapeHtml(recipientName)}">${escapeHtml(truncateName(recipientName))}</span>
-                ${recipientBar}
-            </div>
-            <div class="chronik-compact-meta">
-                ${contextBadge}
-                ${place ? `<span class="chronik-compact-place" title="${escapeHtml(place)}"><i class="fas fa-map-marker-alt"></i></span>` : ''}
-            </div>
-        </div>
-    `;
-}
-
-/**
- * Render letter entry in timeline layout (sender left, recipient right)
- */
-function renderChronikEntryTimeline(letter) {
-    const senderName = letter.sender?.name || 'Unbekannt';
-    const recipientName = letter.recipient?.name || 'Unbekannt';
-
-    const senderEnriched = getPersonEnrichment(letter.sender);
-    const recipientEnriched = getPersonEnrichment(letter.recipient);
-
-    const senderBirthYear = getPersonBirthYear(letter.sender, senderEnriched);
-    const recipientBirthYear = getPersonBirthYear(letter.recipient, recipientEnriched);
-    const senderDeathYear = getPersonDeathYear(letter.sender, senderEnriched);
-    const recipientDeathYear = getPersonDeathYear(letter.recipient, recipientEnriched);
-    const senderAge = calculateAge(senderBirthYear, letter);
-    const recipientAge = calculateAge(recipientBirthYear, letter);
-
-    const context = getCorrespondenceContext(letter);
-    const dateDisplay = formatDateWithPrecision(letter);
-    const place = letter.place_sent?.name || '';
-
-    const senderPortraitSmall = buildPortraitHtmlSmall(senderEnriched, senderName);
-    const recipientPortraitSmall = buildPortraitHtmlSmall(recipientEnriched, recipientName);
-
-    const senderBar = buildLifespanBarCompact(senderBirthYear, senderDeathYear, senderAge);
-    const recipientBar = buildLifespanBarCompact(recipientBirthYear, recipientDeathYear, recipientAge);
-
-    let contextBadge = '';
-    if (context?.isFirstLetter) {
-        contextBadge = '<span class="chronik-tl-badge first"><i class="fas fa-star"></i></span>';
-    } else if (context?.totalLetters > 1) {
-        contextBadge = `<span class="chronik-tl-badge">${context.letterNumber}/${context.totalLetters}</span>`;
-    }
-
-    return `
-        <div class="chronik-entry chronik-entry-timeline" data-letter-id="${escapeHtml(letter.id)}">
-            <div class="chronik-tl-left">
-                ${senderPortraitSmall}
-                <div class="chronik-tl-person">
-                    <span class="chronik-tl-name">${escapeHtml(truncateName(senderName, 20))}</span>
-                    ${senderBar}
-                </div>
-            </div>
-            <div class="chronik-tl-center">
-                <div class="chronik-tl-date">${dateDisplay}</div>
-                ${contextBadge}
-                ${place ? `<div class="chronik-tl-place"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(truncateName(place, 15))}</div>` : ''}
-            </div>
-            <div class="chronik-tl-right">
-                ${recipientPortraitSmall}
-                <div class="chronik-tl-person">
-                    <span class="chronik-tl-name">${escapeHtml(truncateName(recipientName, 20))}</span>
-                    ${recipientBar}
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-/**
- * Build compact lifespan bar (smaller version for compact/timeline layouts)
- */
-function buildLifespanBarCompact(birthYear, deathYear, age) {
-    if (!birthYear || !age || age < 0) return '';
-
-    const totalYears = deathYear ? (deathYear - birthYear) : 85;
-    const percentage = Math.min(100, Math.round((age / totalYears) * 100));
-
-    const tooltip = deathYear
-        ? `${age} Jahre (${birthYear}-${deathYear})`
-        : `${age} Jahre (*${birthYear})`;
-
-    return `
-        <div class="chronik-lifespan-compact" title="${tooltip}">
-            <div class="chronik-lifespan-bar-compact">
-                <div class="chronik-lifespan-progress-compact" style="width: ${percentage}%"></div>
-            </div>
-            <span class="chronik-lifespan-age-compact">${age}</span>
-        </div>
-    `;
-}
-
-/**
- * Build small portrait HTML (for timeline layout)
- */
-function buildPortraitHtmlSmall(enriched, name) {
-    if (enriched?.thumbnail) {
-        return `<img src="${escapeHtml(safeUrl(enriched.thumbnail))}" alt="${escapeHtml(name)}" class="chronik-portrait-small" loading="lazy">`;
-    }
-    if (chronikEnriched) {
-        const initials = getPersonInitials(name, 'identified');
-        return `<div class="chronik-portrait-small-placeholder">${escapeHtml(initials)}</div>`;
-    }
-    return '';
-}
-
-/**
- * Truncate name to max length
- */
-function truncateName(name, maxLen = 25) {
-    if (!name || name.length <= maxLen) return name;
-    return name.substring(0, maxLen - 1) + '…';
-}
-
-/**
- * Switch Chronik layout and re-render
- */
-function switchChronikLayout(layout) {
-    chronikLayout = layout;
-
-    // Update toggle buttons
-    document.querySelectorAll('.chronik-layout-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.layout === layout);
-    });
-
-    // Update timeline class for CSS
-    const timeline = document.getElementById('chronik-timeline');
-    if (timeline) {
-        timeline.className = `chronik-timeline chronik-layout-${layout}`;
-    }
-
-    // Re-render
-    renderChronik();
-}
-
-/**
- * Build portrait HTML for a person
- */
-function buildPortraitHtml(enriched, name) {
-    if (enriched && enriched.thumbnail) {
-        return `<img src="${escapeHtml(safeUrl(enriched.thumbnail))}" alt="${escapeHtml(name)}" class="chronik-portrait" loading="lazy">`;
-    }
-
-    if (chronikEnriched) {
-        // Show placeholder if enrichment was done but no image found
-        const initials = getPersonInitials(name, 'identified');
-        return `<div class="chronik-portrait-placeholder">${escapeHtml(initials)}</div>`;
-    }
-
-    // Before enrichment, show nothing
-    return '';
-}
-
-/**
- * Build biographical info HTML
- */
-function buildBioHtml(enriched) {
-    if (!enriched) return '';
-
-    const lifeDates = formatLifeDates(enriched);
-    const profession = enriched.professions?.[0] || '';
-
-    if (!lifeDates && !profession) return '';
-
-    return `
-        <div class="chronik-bio">
-            ${lifeDates ? `<div class="chronik-bio-dates"><i class="fas fa-birthday-cake"></i> ${escapeHtml(lifeDates)}</div>` : ''}
-            ${profession ? `<div class="chronik-bio-profession">${escapeHtml(profession)}</div>` : ''}
-        </div>
-    `;
-}
-
-/**
- * Get enrichment data for a person
- */
-function getPersonEnrichment(person) {
-    if (!person || !chronikEnriched) return null;
-
-    // Try to find by authority ID
-    const authorityId = person.viaf || person.gnd || person.id;
-    if (authorityId && chronikEnrichmentData.has(authorityId)) {
-        return chronikEnrichmentData.get(authorityId);
-    }
-
-    // Try to find by name
-    if (person.name && chronikEnrichmentData.has(person.name)) {
-        return chronikEnrichmentData.get(person.name);
-    }
-
-    return null;
-}
-
-/**
- * Update Chronik enrichment UI elements
- */
-function updateChronikEnrichmentUI() {
-    const enrichBtn = elements.getById('chronik-enrich-btn');
-    const statusEl = elements.getById('chronik-enrich-status');
-
-    if (chronikEnriched) {
-        if (enrichBtn) enrichBtn.classList.add('hidden');
-        if (statusEl) statusEl.classList.remove('hidden');
-    } else {
-        if (enrichBtn) enrichBtn.classList.remove('hidden');
-        if (statusEl) statusEl.classList.add('hidden');
-    }
-}
+// ===================
+// CHRONIK VIEW - Extracted to views/chronik-view.js
+// ===================
 
 // ============================================================================
 // RESEARCH QUESTIONS VIEW
@@ -6868,8 +3844,7 @@ function analyzeResearchQuestions() {
             coverage: 100,
             dataField: 'subjects',
             path: [
-                { view: 'topics', label: 'Themen', action: 'Thema auswaehlen' },
-                { view: 'letters', label: 'Briefe', action: 'gefilterte Briefe ansehen' }
+                { view: 'topics', label: 'Themen', action: 'Thema auswaehlen und zum Korb' }
             ]
         });
     }
@@ -6877,7 +3852,9 @@ function analyzeResearchQuestions() {
     // Languages - with Top 3 preview
     const languages = Object.keys(dataIndices.languages || {});
     if (languages.length > 1) {
+        // dataIndices.languages contains objects with letter_count property
         const topLangs = Object.entries(dataIndices.languages)
+            .map(([lang, data]) => [lang, data.letter_count || 0])
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3);
         questions.push({
@@ -6894,8 +3871,7 @@ function analyzeResearchQuestions() {
             coverage: 100,
             dataField: 'languages',
             path: [
-                { view: 'timeline', label: 'Timeline', action: 'Sprachverteilung nach Jahr' },
-                { view: 'letters', label: 'Briefe', action: 'nach Sprache filtern' }
+                { view: 'timeline', label: 'Timeline', action: 'Sprachen in Farblegende sehen' }
             ]
         });
     }
@@ -6919,13 +3895,13 @@ function analyzeResearchQuestions() {
             question: 'Wie entwickelt sich die Korrespondenzfrequenz ueber Zeit?',
             description: `Zeitraum ${minYear}-${maxYear}, ${datedLetters.length} datierte Briefe`,
             preview: topYears.map(([year, count]) => `${year} (${count})`),
-            view: 'timeline',
+            view: 'activity',
             icon: 'fa-chart-line',
             coverage: Math.round((datedLetters.length / totalLetters) * 100),
             dataField: 'dates',
             path: [
-                { view: 'timeline', label: 'Timeline', action: 'Peaks identifizieren' },
-                { view: 'chronik', label: 'Chronik', action: 'Details zu Spitzenjahren' }
+                { view: 'activity', label: 'Aktivitaet', action: 'Heatmap fuer Muster pruefen' },
+                { view: 'timeline', label: 'Timeline', action: 'Jaehrliche Verteilung' }
             ]
         });
     }
@@ -6978,8 +3954,7 @@ function analyzeResearchQuestions() {
             dataField: 'coordinates',
             path: [
                 { view: 'map', label: 'Karte', action: 'Cluster identifizieren' },
-                { view: 'places', label: 'Orte', action: 'Ort auswaehlen' },
-                { view: 'letters', label: 'Briefe', action: 'Briefe von diesem Ort' }
+                { view: 'places', label: 'Orte', action: 'Ort auswaehlen und zum Korb' }
             ]
         });
     }
@@ -7005,7 +3980,7 @@ function analyzeResearchQuestions() {
             description: `${totalMentions} Personen-Erwaehnungen in ${lettersWithMentions.length} Briefen`,
             preview: topMentioned.map(([name, count]) => `${name} (${count}x)`),
             view: 'mentions-flow',
-            icon: 'fa-diagram-project',
+            icon: 'fa-stream',
             coverage: Math.round((lettersWithMentions.length / totalLetters) * 100),
             dataField: 'mentions',
             path: [
@@ -7017,59 +3992,37 @@ function analyzeResearchQuestions() {
 
     // --- INTERPRETIVE QUESTIONS (What does it mean?) ---
 
-    // Language-geography correlation
-    if (languages.length > 1 && placesWithCoords.length >= 3) {
-        questions.push({
-            category: 'interpretive',
-            question: 'Korreliert die Briefsprache mit dem Absende-Ort?',
-            description: 'Werden bestimmte Sprachen an bestimmten Orten bevorzugt?',
-            view: 'map',
-            icon: 'fa-globe',
-            coverage: Math.min(
-                Math.round((placesWithCoords.length / places.length) * 100),
-                100
-            ),
-            dataField: 'language-geography',
-            path: [
-                { view: 'timeline', label: 'Timeline', action: 'Sprache identifizieren' },
-                { view: 'map', label: 'Karte', action: 'Sprach-Filter aktivieren' },
-                { view: 'places', label: 'Orte', action: 'Verteilung vergleichen' }
-            ]
-        });
-    }
+    // Language-geography correlation - REMOVED: No view shows this correlation directly
+    // The path was misleading - users couldn't actually filter map by language
 
     // Biographical context
     if (datedLetters.length > 0 && personsWithAuthority.length > 0) {
         questions.push({
             category: 'interpretive',
             question: 'Wie veraendert sich die Korrespondenz im Lebensverlauf?',
-            description: 'Alter der Korrespondenten zum Briefzeitpunkt analysieren',
+            description: 'Erfordert Wikidata-Anreicherung fuer Lebensdaten',
             view: 'chronik',
             icon: 'fa-scroll',
             coverage: Math.round((personsWithAuthority.length / persons.length) * 100),
             dataField: 'biography',
             path: [
-                { view: 'chronik', label: 'Chronik', action: 'Wikidata anreichern' },
-                { view: 'persons', label: 'Korrespondenten', action: 'Person mit Lebensdaten waehlen' },
-                { view: 'chronik', label: 'Chronik', action: 'Alter zum Briefzeitpunkt sehen' }
+                { view: 'chronik', label: 'Chronik', action: 'Wikidata-Anreicherung aktivieren' }
             ]
         });
     }
 
-    // Topic evolution
+    // Topic evolution - Note: We don't have a topics-over-time view, just topic filtering
     if (subjects.length > 0 && datedLetters.length > 0) {
         questions.push({
             category: 'interpretive',
-            question: 'Wie entwickeln sich die diskutierten Themen ueber Zeit?',
-            description: 'Themen-Schwerpunkte in verschiedenen Perioden',
+            question: 'Welche Themen dominieren in bestimmten Zeitraeumen?',
+            description: 'Zeitfilter + Themenansicht kombinieren',
             view: 'topics',
             icon: 'fa-stream',
             coverage: 100,
             dataField: 'topic-evolution',
             path: [
-                { view: 'timeline', label: 'Timeline', action: 'Zeitraum eingrenzen' },
-                { view: 'topics', label: 'Themen', action: 'Themen in diesem Zeitraum' },
-                { view: 'letters', label: 'Briefe', action: 'Beispiel-Briefe lesen' }
+                { view: 'topics', label: 'Themen', action: 'Thema waehlen, dann Zeitfilter setzen' }
             ]
         });
     }
@@ -7080,14 +4033,13 @@ function analyzeResearchQuestions() {
             category: 'interpretive',
             question: 'Wie entwickeln sich einzelne Briefbeziehungen?',
             description: 'Erster Brief, Frequenz, Dauer einer Korrespondenz',
-            view: 'chronik',
+            view: 'persons',
             icon: 'fa-handshake',
             coverage: Math.round((datedLetters.length / totalLetters) * 100),
             dataField: 'relationships',
             path: [
-                { view: 'persons', label: 'Korrespondenten', action: 'Person auswaehlen' },
-                { view: 'chronik', label: 'Chronik', action: 'Beziehungsverlauf sehen' },
-                { view: 'network', label: 'Netzwerk', action: 'Kontext im Gesamtnetzwerk' }
+                { view: 'persons', label: 'Korrespondenten', action: 'Person waehlen und filtern' },
+                { view: 'activity', label: 'Aktivitaet', action: 'Aktivitaetsmuster der Person' }
             ]
         });
     }
@@ -7174,6 +4126,11 @@ function analyzeResearchQuestions() {
             suggestion: 'xml:lang zu correspAction-Elementen hinzufuegen'
         });
     }
+
+    // Add unique IDs to all questions
+    questions.forEach((q, i) => {
+        q.id = `q-${q.category}-${i}`;
+    });
 
     return questions;
 }
@@ -7335,24 +4292,42 @@ function renderResearchQuestions() {
         });
     });
 
-    // Add click handlers for cards (navigate to first step or default view)
-    container.querySelectorAll('.question-card').forEach(card => {
+    // Add click handlers for cards - start knowledge path
+    container.querySelectorAll('.question-card:not(.unavailable)').forEach(card => {
         card.addEventListener('click', (e) => {
-            // Don't navigate if clicking on path steps
+            // Don't start path if clicking on individual path steps
             if (e.target.closest('.path-step')) return;
 
-            // Try to get first path step, otherwise use default view
-            let view = card.dataset.view;
-            try {
-                const path = JSON.parse(card.dataset.path || '[]');
-                if (path.length > 0) {
-                    view = path[0].view;
-                }
-            } catch (err) { /* use default view */ }
+            // Extract question data and start knowledge path
+            const questionText = card.querySelector('.question-text')?.textContent || '';
+            const pathData = card.dataset.path || '[]';
+            const view = card.dataset.view;
 
-            if (view) {
-                switchView(view);
-                updateUrlState();
+            try {
+                const path = JSON.parse(pathData);
+                if (path && path.length > 0) {
+                    // Get category from parent element
+                    const categoryEl = card.closest('.questions-category');
+                    const categoryTitle = categoryEl?.querySelector('h3')?.textContent?.toLowerCase() || '';
+                    let category = 'descriptive';
+                    if (categoryTitle.includes('analytisch')) category = 'analytical';
+                    else if (categoryTitle.includes('interpretativ')) category = 'interpretive';
+
+                    // Start the knowledge path
+                    startKnowledgePath({
+                        question: questionText,
+                        category: category,
+                        path: path,
+                        view: view
+                    });
+                }
+            } catch (err) {
+                console.error('Error starting knowledge path:', err);
+                // Fallback: just navigate to the view
+                if (view) {
+                    switchView(view);
+                    updateUrlState();
+                }
             }
         });
     });
@@ -7383,318 +4358,445 @@ function renderResearchQuestions() {
 }
 
 // ===================
-// ACTIVITY HEATMAP VIEW
+// WISSENSPFAD (Knowledge Path)
 // ===================
 
-let activityIndex = null;
-let activitySelectedYear = 'all';
+let knowledgePath = null;
 
 /**
- * Baut Index fuer Aktivitaets-Heatmap
- * @param {Array} letters - Array von Brief-Objekten
- * @returns {Object} Index mit byDate, byYear, byMonth, byWeekday, stats
+ * Startet einen neuen Wissenspfad
+ * @param {Object} question - Forschungsfrage mit path Array
  */
-function buildActivityIndex(letters) {
-    const byDate = new Map();      // "YYYY-MM-DD" -> {count, ids}
-    const byYear = new Map();      // YYYY -> count
-    const byMonth = new Map();     // "YYYY-MM" -> count
-    const byWeekday = [0, 0, 0, 0, 0, 0, 0]; // Mo-So counts
-
-    let total = 0;
-    let maxDay = { date: null, count: 0 };
-    let maxYear = { year: null, count: 0 };
-
-    for (const letter of letters) {
-        // Nur Briefe mit Datum (nicht 'unknown')
-        if (!letter.date || letter.datePrecision === 'unknown') continue;
-
-        const date = letter.date;  // "YYYY-MM-DD"
-        const year = letter.year;
-        const month = date.substring(0, 7);  // "YYYY-MM"
-
-        // Wochentag berechnen (0=So in JS, wir wollen 0=Mo)
-        const jsWeekday = new Date(date).getDay();
-        const weekday = jsWeekday === 0 ? 6 : jsWeekday - 1;
-
-        // By date aggregieren
-        if (!byDate.has(date)) {
-            byDate.set(date, { count: 0, ids: [] });
-        }
-        const dateEntry = byDate.get(date);
-        dateEntry.count++;
-        dateEntry.ids.push(letter.id);
-
-        // By year aggregieren
-        byYear.set(year, (byYear.get(year) || 0) + 1);
-
-        // By month aggregieren
-        byMonth.set(month, (byMonth.get(month) || 0) + 1);
-
-        // By weekday aggregieren
-        byWeekday[weekday]++;
-
-        // Max day tracken (nur exakte Daten, nicht Platzhalter wie 1798-01-01)
-        if (letter.datePrecision === 'day' && dateEntry.count > maxDay.count) {
-            maxDay = { date, count: dateEntry.count };
-        }
-
-        total++;
+function startKnowledgePath(question) {
+    if (!question || !question.path || question.path.length === 0) {
+        console.error('Cannot start knowledge path: invalid question data');
+        return;
     }
 
-    // Max year finden
-    for (const [year, count] of byYear) {
-        if (count > maxYear.count) {
-            maxYear = { year, count };
-        }
-    }
-
-    // Statistiken berechnen
-    const years = Array.from(byYear.keys()).sort((a, b) => a - b);
-    const monthCount = byMonth.size || 1;
-    const avgPerMonth = Math.round(total / monthCount * 10) / 10;
-
-    return {
-        byDate,
-        byYear,
-        byMonth,
-        byWeekday,
-        total,
-        maxDay,
-        maxYear,
-        years,
-        avgPerMonth
+    knowledgePath = {
+        active: true,
+        questionId: `kp-${Date.now()}`,
+        question: question.question,
+        category: question.category,
+        path: question.path,
+        currentStep: 0,
+        basket: {
+            personIds: [],
+            placeIds: [],
+            letterIds: [],
+            topicIds: [],
+            timeRange: null,
+            languages: []
+        },
+        stepHistory: []
     };
+
+    // In sessionStorage speichern
+    sessionStorage.setItem('knowledgePath', JSON.stringify(knowledgePath));
+
+    // UI anzeigen
+    showKnowledgePathUI();
+
+    // Zum ersten View navigieren
+    const firstStep = question.path[0];
+    switchView(firstStep.view);
+    updateUrlState();
 }
 
 /**
- * Rendert den Activity-Heatmap-View
+ * Laedt bestehenden Wissenspfad aus sessionStorage
  */
-function renderActivity() {
-    const container = document.getElementById('activity-view');
+function loadKnowledgePath() {
+    const saved = sessionStorage.getItem('knowledgePath');
+    if (saved) {
+        try {
+            knowledgePath = JSON.parse(saved);
+            if (knowledgePath && knowledgePath.active) {
+                showKnowledgePathUI();
+                return true;
+            }
+        } catch (e) {
+            console.error('Error loading knowledge path:', e);
+        }
+    }
+    knowledgePath = null;
+    return false;
+}
+
+/**
+ * Speichert aktuellen Wissenspfad
+ */
+function saveKnowledgePath() {
+    if (knowledgePath) {
+        sessionStorage.setItem('knowledgePath', JSON.stringify(knowledgePath));
+    }
+}
+
+/**
+ * Beendet den Wissenspfad
+ */
+function endKnowledgePath() {
+    knowledgePath = null;
+    sessionStorage.removeItem('knowledgePath');
+    hideKnowledgePathUI();
+
+    // Zur Start-View (mit Forschungspfaden) zurueck
+    switchView('overview');
+    updateUrlState();
+}
+
+/**
+ * Navigiert zum naechsten Schritt im Pfad
+ */
+function nextPathStep() {
+    if (!knowledgePath) return;
+
+    // Aktuellen Zustand zur History hinzufuegen
+    knowledgePath.stepHistory.push({
+        step: knowledgePath.currentStep,
+        view: knowledgePath.path[knowledgePath.currentStep].view,
+        basket: JSON.parse(JSON.stringify(knowledgePath.basket)),
+        timestamp: Date.now()
+    });
+
+    knowledgePath.currentStep++;
+    saveKnowledgePath();
+
+    if (knowledgePath.currentStep >= knowledgePath.path.length) {
+        // Pfad abgeschlossen - zurueck zur Pfade-View
+        showPathCompletedMessage();
+        endKnowledgePath();
+    } else {
+        // Naechster View
+        const nextStep = knowledgePath.path[knowledgePath.currentStep];
+        switchView(nextStep.view);
+        updateUrlState();
+        updateKnowledgePathUI();
+    }
+}
+
+/**
+ * Navigiert zum vorherigen Schritt
+ */
+function previousPathStep() {
+    if (!knowledgePath || knowledgePath.currentStep === 0) return;
+
+    knowledgePath.currentStep--;
+
+    // Korb auf vorherigen Zustand zuruecksetzen
+    if (knowledgePath.stepHistory.length > 0) {
+        const prevState = knowledgePath.stepHistory.pop();
+        knowledgePath.basket = prevState.basket;
+    }
+
+    saveKnowledgePath();
+
+    const prevStep = knowledgePath.path[knowledgePath.currentStep];
+    switchView(prevStep.view);
+    updateUrlState();
+    updateKnowledgePathUI();
+}
+
+/**
+ * Fuegt aktuelle Auswahl zum universellen Korb hinzu (basket.js)
+ * Funktioniert auch ohne aktiven Wissenspfad
+ */
+function addToBasketFromView() {
+    const currentView = state.ui.currentView;
+    const filteredLetters = state.getFilteredLetters();
+    let addedCount = 0;
+
+    switch (currentView) {
+        case 'persons':
+            // Alle Personen aus gefilterten Briefen
+            filteredLetters.forEach(l => {
+                if (l.sender?.id) {
+                    const result = basketAdd('persons', l.sender.id);
+                    if (result === true) addedCount++;
+                }
+                if (l.recipient?.id) {
+                    const result = basketAdd('persons', l.recipient.id);
+                    if (result === true) addedCount++;
+                }
+            });
+            break;
+
+        case 'places':
+        case 'map':
+            // Alle Orte aus gefilterten Briefen
+            filteredLetters.forEach(l => {
+                if (l.place_sent?.id) {
+                    const result = basketAdd('places', l.place_sent.id);
+                    if (result === true) addedCount++;
+                }
+            });
+            break;
+
+        case 'letters':
+        case 'chronik':
+            // Alle gefilterten Briefe
+            filteredLetters.forEach(l => {
+                if (l.id) {
+                    const result = basketAdd('letters', l.id);
+                    if (result === true) addedCount++;
+                }
+            });
+            break;
+
+        case 'timeline':
+        case 'activity':
+            // Bei Timeline/Activity: alle gefilterten Briefe
+            filteredLetters.forEach(l => {
+                if (l.id) {
+                    const result = basketAdd('letters', l.id);
+                    if (result === true) addedCount++;
+                }
+            });
+            break;
+
+        default:
+            // Generisch: alle Brief-IDs
+            filteredLetters.forEach(l => {
+                if (l.id) {
+                    const result = basketAdd('letters', l.id);
+                    if (result === true) addedCount++;
+                }
+            });
+    }
+
+    // Feedback
+    if (addedCount > 0) {
+        showToast(`${addedCount} Element(e) zum Korb hinzugefuegt`);
+    } else {
+        showToast('Auswahl bereits im Korb oder Limit erreicht');
+    }
+}
+
+/**
+ * Leert den universellen Korb (basket.js)
+ */
+function clearBasketHandler() {
+    basketClear();
+    showToast('Korb geleert');
+}
+
+/**
+ * Zeigt Wissenspfad UI-Elemente (Pfad-Leiste und Navigation)
+ * Wissenskorb-Sidebar bleibt IMMER sichtbar
+ */
+function showKnowledgePathUI() {
+    const pathBar = document.getElementById('knowledge-path-bar');
+    const pathNav = document.getElementById('knowledge-path-nav');
+
+    if (pathBar) pathBar.classList.remove('hidden');
+    if (pathNav) pathNav.classList.remove('hidden');
+
+    updateKnowledgePathUI();
+}
+
+/**
+ * Versteckt Wissenspfad UI-Elemente (nur Pfad-Leiste und Navigation)
+ * Wissenskorb-Sidebar bleibt IMMER sichtbar
+ */
+function hideKnowledgePathUI() {
+    const pathBar = document.getElementById('knowledge-path-bar');
+    const pathNav = document.getElementById('knowledge-path-nav');
+
+    if (pathBar) pathBar.classList.add('hidden');
+    if (pathNav) pathNav.classList.add('hidden');
+}
+
+/**
+ * Aktualisiert alle Wissenspfad UI-Elemente
+ */
+function updateKnowledgePathUI() {
+    if (!knowledgePath) return;
+
+    // Frage-Text
+    const questionText = document.getElementById('path-bar-question-text');
+    if (questionText) {
+        questionText.textContent = knowledgePath.question;
+        questionText.title = knowledgePath.question;
+    }
+
+    // Pfad-Schritte rendern
+    const stepsContainer = document.getElementById('path-bar-steps');
+    if (stepsContainer) {
+        let html = '';
+        knowledgePath.path.forEach((step, i) => {
+            const isActive = i === knowledgePath.currentStep;
+            const isComplete = i < knowledgePath.currentStep;
+
+            html += `
+                <div class="path-bar-step ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}"
+                     data-step="${i}" title="${escapeHtml(step.action)}">
+                    <span class="path-bar-step-num">${i + 1}</span>
+                    <span class="path-bar-step-label">${escapeHtml(step.label)}</span>
+                </div>
+            `;
+
+            if (i < knowledgePath.path.length - 1) {
+                html += '<span class="path-bar-step-arrow"><i class="fas fa-chevron-right"></i></span>';
+            }
+        });
+        stepsContainer.innerHTML = html;
+
+        // Click-Handler fuer Schritte
+        stepsContainer.querySelectorAll('.path-bar-step').forEach(stepEl => {
+            stepEl.addEventListener('click', () => {
+                const stepIndex = parseInt(stepEl.dataset.step);
+                if (stepIndex <= knowledgePath.currentStep) {
+                    // Zu diesem Schritt zurueckspringen
+                    while (knowledgePath.currentStep > stepIndex) {
+                        previousPathStep();
+                    }
+                }
+            });
+        });
+    }
+
+    // Korb-Zaehler aus basket.js
+    const basketCount = document.getElementById('path-bar-basket-count');
+    if (basketCount) {
+        const counts = getBasketCounts();
+        basketCount.textContent = counts.total;
+    }
+
+    // Aktions-Anleitung aktualisieren
+    const actionText = document.getElementById('path-action-text');
+    if (actionText && knowledgePath.path[knowledgePath.currentStep]) {
+        const currentStep = knowledgePath.path[knowledgePath.currentStep];
+        actionText.textContent = currentStep.action || 'Erkunde diese Ansicht und fuege interessante Elemente zum Korb hinzu.';
+    }
+
+    // Navigation aktualisieren
+    updatePathNavigation();
+    updateSidebarBasketUI();
+}
+
+/**
+ * Aktualisiert Pfad-Navigation Buttons
+ */
+function updatePathNavigation() {
+    if (!knowledgePath) return;
+
+    const backBtn = document.getElementById('path-nav-back');
+    const nextBtn = document.getElementById('path-nav-next');
+    const stepInfo = document.getElementById('path-nav-step');
+
+    if (backBtn) {
+        backBtn.disabled = knowledgePath.currentStep === 0;
+    }
+
+    if (nextBtn) {
+        const isLastStep = knowledgePath.currentStep >= knowledgePath.path.length - 1;
+        nextBtn.innerHTML = isLastStep
+            ? 'Pfad abschliessen <i class="fas fa-check"></i>'
+            : 'Weiter im Pfad <i class="fas fa-arrow-right"></i>';
+    }
+
+    if (stepInfo) {
+        stepInfo.textContent = `Schritt ${knowledgePath.currentStep + 1} von ${knowledgePath.path.length}`;
+    }
+}
+
+/**
+ * Aktualisiert Korb-Sidebar mit Daten aus basket.js
+ */
+function updateSidebarBasketUI() {
+    const container = document.getElementById('basket-content');
     if (!container) return;
 
-    const letters = state.getFilteredLetters();
+    const counts = getBasketCounts();
+    let html = '';
 
-    // Index bauen
-    activityIndex = buildActivityIndex(letters);
-
-    // Statistik-Karten aktualisieren
-    const totalEl = document.getElementById('activity-total');
-    const busiestDayEl = document.getElementById('activity-busiest-day');
-    const busiestYearEl = document.getElementById('activity-busiest-year');
-    const avgEl = document.getElementById('activity-avg-per-month');
-
-    if (totalEl) totalEl.textContent = activityIndex.total.toLocaleString('de-DE');
-    if (busiestDayEl) {
-        busiestDayEl.textContent = activityIndex.maxDay.date
-            ? `${activityIndex.maxDay.count} (${activityIndex.maxDay.date})`
-            : '-';
+    if (counts.persons > 0) {
+        html += `
+            <div class="basket-group">
+                <span class="basket-group-label"><i class="fas fa-users"></i> Personen</span>
+                <span class="basket-group-count">${counts.persons}</span>
+            </div>
+        `;
     }
-    if (busiestYearEl) {
-        busiestYearEl.textContent = activityIndex.maxYear.year
-            ? `${activityIndex.maxYear.year} (${activityIndex.maxYear.count})`
-            : '-';
+
+    if (counts.places > 0) {
+        html += `
+            <div class="basket-group">
+                <span class="basket-group-label"><i class="fas fa-map-marker-alt"></i> Orte</span>
+                <span class="basket-group-count">${counts.places}</span>
+            </div>
+        `;
     }
-    if (avgEl) avgEl.textContent = activityIndex.avgPerMonth;
 
-    // Jahr-Selector rendern
-    renderActivityYearSelector();
+    if (counts.letters > 0) {
+        html += `
+            <div class="basket-group">
+                <span class="basket-group-label"><i class="fas fa-envelope"></i> Briefe</span>
+                <span class="basket-group-count">${counts.letters}</span>
+            </div>
+        `;
+    }
 
-    // Heatmap rendern
-    renderActivityHeatmap();
+    if (html === '') {
+        html = '<div class="basket-empty">Korb ist leer</div>';
+    }
 
-    // Details ausblenden
-    const detailsPanel = document.getElementById('activity-details');
-    if (detailsPanel) detailsPanel.classList.add('hidden');
-}
-
-/**
- * Rendert Jahr-Auswahl-Buttons
- */
-function renderActivityYearSelector() {
-    const container = document.getElementById('activity-year-selector');
-    if (!container || !activityIndex) return;
-
-    const years = activityIndex.years;
-
-    let html = `<button class="activity-year-btn ${activitySelectedYear === 'all' ? 'active' : ''}"
-                        data-year="all">Alle Jahre</button>`;
-
-    // Nur jeden 5. Jahr zeigen wenn viele Jahre
-    const step = years.length > 20 ? 5 : (years.length > 10 ? 2 : 1);
-
-    for (let i = 0; i < years.length; i += step) {
-        const year = years[i];
-        const isActive = activitySelectedYear === year;
-        html += `<button class="activity-year-btn ${isActive ? 'active' : ''}"
-                         data-year="${year}">${year}</button>`;
+    // Link zur Wissenskorb-Seite
+    if (counts.total > 0) {
+        html += `
+            <a href="wissenskorb.html" class="basket-view-link">
+                <i class="fas fa-external-link-alt"></i> Korb oeffnen
+            </a>
+        `;
     }
 
     container.innerHTML = html;
 
-    // Click-Handler
-    container.querySelectorAll('.activity-year-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const year = btn.dataset.year;
-            activitySelectedYear = year === 'all' ? 'all' : parseInt(year);
+    // Korb-Zaehler in Pfad-Leiste aktualisieren
+    const pathBarCount = document.getElementById('path-bar-basket-count');
+    if (pathBarCount) {
+        pathBarCount.textContent = counts.total;
+    }
 
-            // Active-Status aktualisieren
-            container.querySelectorAll('.activity-year-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Heatmap neu rendern
-            renderActivityHeatmap();
-        });
-    });
+    // Navbar-Badge aktualisieren
+    const badge = document.getElementById('basket-badge');
+    if (badge) {
+        badge.textContent = counts.total;
+        if (counts.total > 0) {
+            badge.classList.add('has-items');
+        } else {
+            badge.classList.remove('has-items');
+        }
+    }
 }
 
 /**
- * Rendert die Heatmap-Grid
+ * Zeigt Erfolgsmeldung bei Pfad-Abschluss
  */
-function renderActivityHeatmap() {
-    const container = document.getElementById('activity-heatmap');
-    if (!container || !activityIndex) return;
-
-    const { byDate, years } = activityIndex;
-
-    // Jahre filtern
-    const displayYears = activitySelectedYear === 'all'
-        ? years
-        : [activitySelectedYear];
-
-    // Max-Wert fuer Farbskala berechnen (fuer angezeigte Jahre)
-    let maxCount = 0;
-    for (const [date, data] of byDate) {
-        const year = parseInt(date.substring(0, 4));
-        if (displayYears.includes(year) && data.count > maxCount) {
-            maxCount = data.count;
-        }
-    }
-
-    // HTML generieren
-    let html = '';
-
-    for (const year of displayYears) {
-        html += `<div class="activity-year-block">
-            <div class="activity-year-label">${year}</div>
-            <div class="activity-year-grid">`;
-
-        // Erstes Datum des Jahres
-        const firstDay = new Date(year, 0, 1);
-        const lastDay = new Date(year, 11, 31);
-
-        // Fuer jeden Tag des Jahres
-        const currentDate = new Date(firstDay);
-        let weekHtml = '<div class="activity-week">';
-
-        // Leere Zellen am Anfang (vor erstem Wochentag)
-        const firstWeekday = firstDay.getDay();
-        const adjustedFirstWeekday = firstWeekday === 0 ? 6 : firstWeekday - 1;
-        for (let i = 0; i < adjustedFirstWeekday; i++) {
-            weekHtml += '<span class="activity-cell activity-cell-empty"></span>';
-        }
-
-        while (currentDate <= lastDay) {
-            const dateStr = currentDate.toISOString().substring(0, 10);
-            const data = byDate.get(dateStr);
-            const count = data ? data.count : 0;
-            const level = getActivityLevel(count, maxCount);
-
-            const weekday = currentDate.getDay();
-            const adjustedWeekday = weekday === 0 ? 6 : weekday - 1;
-
-            // Neue Woche starten (Montag)
-            if (adjustedWeekday === 0 && currentDate > firstDay) {
-                weekHtml += '</div><div class="activity-week">';
-            }
-
-            weekHtml += `<span class="activity-cell activity-level-${level}"
-                              data-date="${dateStr}"
-                              data-count="${count}"
-                              title="${dateStr}: ${count} Brief${count !== 1 ? 'e' : ''}"></span>`;
-
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        weekHtml += '</div>';
-        html += weekHtml + '</div></div>';
-    }
-
-    container.innerHTML = html;
-
-    // Click-Handler fuer Zellen
-    container.querySelectorAll('.activity-cell[data-date]').forEach(cell => {
-        cell.addEventListener('click', () => {
-            const date = cell.dataset.date;
-            const count = parseInt(cell.dataset.count);
-            if (count > 0) {
-                showActivityDetails(date);
-            }
-        });
-    });
+function showPathCompletedMessage() {
+    showToast('Wissenspfad abgeschlossen');
 }
 
 /**
- * Berechnet Aktivitaets-Level (0-4) fuer Farbskala
+ * Setup Event-Handler fuer Wissenspfad und Korb
  */
-function getActivityLevel(count, maxCount) {
-    if (count === 0) return 0;
-    if (maxCount === 0) return 0;
+function setupKnowledgePathHandlers() {
+    // Pfad-Navigation
+    document.getElementById('path-nav-back')?.addEventListener('click', previousPathStep);
+    document.getElementById('path-nav-next')?.addEventListener('click', nextPathStep);
+    document.getElementById('path-bar-close')?.addEventListener('click', endKnowledgePath);
 
-    const ratio = count / maxCount;
-    if (ratio <= 0.25) return 1;
-    if (ratio <= 0.5) return 2;
-    if (ratio <= 0.75) return 3;
-    return 4;
-}
+    // Korb-Aktionen (nutzt jetzt basket.js)
+    document.getElementById('add-to-basket')?.addEventListener('click', addToBasketFromView);
+    document.getElementById('clear-basket')?.addEventListener('click', clearBasketHandler);
 
-/**
- * Zeigt Details fuer einen bestimmten Tag
- */
-function showActivityDetails(date) {
-    const detailsPanel = document.getElementById('activity-details');
-    const dateEl = document.getElementById('activity-details-date');
-    const listEl = document.getElementById('activity-details-list');
-
-    if (!detailsPanel || !dateEl || !listEl || !activityIndex) return;
-
-    const data = activityIndex.byDate.get(date);
-    if (!data) return;
-
-    // Datum formatieren
-    const dateObj = new Date(date);
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    dateEl.textContent = dateObj.toLocaleDateString('de-DE', options);
-
-    // Briefe des Tages finden
-    const allLetters = state.getFilteredLetters();
-    const dayLetters = allLetters.filter(l => l.date === date);
-
-    // Liste rendern
-    let html = '';
-    for (const letter of dayLetters) {
-        const senderName = letter.sender?.name || 'Unbekannt';
-        const recipientName = letter.recipient?.name || 'Unbekannt';
-        const place = letter.place_sent?.name || '';
-
-        html += `<div class="activity-detail-item" data-letter-id="${escapeHtml(letter.id)}">
-            <span class="activity-detail-sender">${escapeHtml(senderName)}</span>
-            <span class="activity-detail-arrow"><i class="fas fa-arrow-right"></i></span>
-            <span class="activity-detail-recipient">${escapeHtml(recipientName)}</span>
-            ${place ? `<span class="activity-detail-place">(${escapeHtml(place)})</span>` : ''}
-        </div>`;
-    }
-
-    listEl.innerHTML = html;
-    detailsPanel.classList.remove('hidden');
-
-    // Click-Handler fuer Brief-Details
-    listEl.querySelectorAll('.activity-detail-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const letterId = item.dataset.letterId;
-            showLetterDetail(letterId);
-        });
+    // Listener fuer Korb-Aenderungen (synchronisiert UI)
+    onBasketChange((counts) => {
+        updateSidebarBasketUI();
     });
+
+    // Initiales UI-Update
+    updateSidebarBasketUI();
 }
 
 // role="button" elements get native button keyboard behaviour: Enter and Space trigger their click handler

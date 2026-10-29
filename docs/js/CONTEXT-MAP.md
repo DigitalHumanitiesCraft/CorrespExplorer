@@ -21,12 +21,11 @@ Core (keine Dependencies)
 
 Data (Parsing und Laden)
 - cmif-parser.js - Browser-XML-Parser, TEI-JSON-Handler
-- correspsearch-api.js - correspSearch API v2.0 Integration
+- correspsearch-api.js - correspSearch API v2.0, von cmif-parser.js und upload.js fuer correspSearch-API-URLs genutzt
 
 Enrichment (Datenanreicherung)
 - wikidata-enrichment.js - SPARQL fuer Bilder, Lebensdaten
 - geonames-enrichment.js - GeoNames zu Koordinaten via Wikidata
-- enrichment.js - lobid.org GND API
 
 UI/UX (User-Interaktion)
 - basket.js - LocalStorage-Wissenskorb-Logik
@@ -37,6 +36,16 @@ Tests (siehe tests/CONTEXT-MAP.md)
 - test-runner.js - Test-Framework
 - run-all-tests.js - Test-Entry-Point
 - test-*.js - Test-Suites
+
+Views (extrahierte Module, siehe views/CONTEXT-MAP.md)
+- views/timeline-view.js - Zeitleisten-Visualisierung
+- views/activity-view.js - GitHub-style Heatmap
+- views/chronik-view.js - Chronologische Liste mit Wikidata
+- views/comparison-view.js - Side-by-Side Vergleich
+- views/network-view.js - D3.js Force-Graph
+- views/mentions-view.js - Sankey fuer Erwahnungen
+- views/topics-view.js - Themen-Browse mit Detail-Panel
+- views/places-view.js - Orte-Browse mit Koordinaten-Aufloesung
 
 ## Kritische Abhaengigkeiten
 
@@ -50,7 +59,9 @@ Aenderungen an diesen Modulen haben weitreichende Auswirkungen:
 
 ## Views in explore.js
 
-Views: Overview, Map, Persons, Letters, Timeline, Topics, Places, Network, Mentions Flow, Chronik, Questions, Activity
+Verbleibende Views (nicht extrahiert): Overview, Map, Persons, Letters, Questions
+
+Extrahierte Views: Timeline, Activity, Chronik, Comparison, Network, Mentions Flow, Topics, Places
 
 Jeder View hat:
 - renderXYZ() Funktion
