@@ -358,17 +358,3 @@ export function countEnrichable(persons) {
         return authority && authorityId;
     }).length;
 }
-
-/**
- * Clear enrichment cache
- */
-export function clearEnrichmentCache() {
-    const keysToRemove = [];
-    for (let i = 0; i < sessionStorage.length; i++) {
-        const key = sessionStorage.key(i);
-        if (key?.startsWith(CACHE_PREFIX)) {
-            keysToRemove.push(key);
-        }
-    }
-    keysToRemove.forEach(key => sessionStorage.removeItem(key));
-}

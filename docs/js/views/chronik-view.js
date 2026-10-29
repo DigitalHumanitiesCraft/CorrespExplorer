@@ -1,4 +1,4 @@
-// Chronik View - Extracted from explore.js
+// Chronik View
 // Timeline display of letters with Wikidata enrichment support
 
 import { escapeHtml, safeUrl } from '../utils.js';
@@ -842,20 +842,4 @@ async function runEnrichment() {
 
     document.getElementById('enrichment-cancel-btn').classList.add('hidden');
     document.getElementById('enrichment-close-btn').classList.remove('hidden');
-}
-
-/**
- * Check if chronik is enriched
- */
-export function isChronikEnriched() {
-    return chronikEnriched;
-}
-
-/**
- * Reset chronik state (call when data changes)
- */
-export function resetChronikState() {
-    chronikRenderedCount = 0;
-    chronikSortedLetters = [];
-    chronikCorrespondenceIndex = null;
 }

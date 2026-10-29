@@ -1,4 +1,4 @@
-// Comparison View - Extracted from explore.js
+// Comparison View
 // Side-by-side comparison of persons, periods, or places
 
 import { LANGUAGE_LABELS } from '../constants.js';

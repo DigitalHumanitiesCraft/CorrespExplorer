@@ -1,4 +1,4 @@
-// Topics View - Extracted from explore.js
+// Topics View
 // Subject/Topic browsing and filtering
 
 import { escapeHtml, debounce } from '../utils.js';
@@ -408,25 +408,4 @@ export function getSelectedSubjectId() {
  */
 export function setSelectedSubjectId(id) {
     selectedSubjectId = id;
-}
-
-/**
- * Rebuild the subject index (call after data changes)
- */
-export function rebuildSubjectIndex() {
-    buildSubjectIndex();
-}
-
-/**
- * Reset topics view state
- */
-export function resetTopicsState() {
-    selectedSubjectId = null;
-    topicsSearchTerm = '';
-    topicsSortOrder = 'count-desc';
-
-    const emptyState = elements.getById('topic-detail-empty');
-    const content = elements.getById('topic-detail-content');
-    if (emptyState) emptyState.classList.remove('hidden');
-    if (content) content.classList.add('hidden');
 }

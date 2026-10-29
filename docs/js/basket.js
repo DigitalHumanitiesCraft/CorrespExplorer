@@ -107,16 +107,6 @@ export function hasCapacity(type) {
 }
 
 /**
- * Get remaining capacity for a type
- * @param {string} type
- * @returns {number}
- */
-export function getRemainingCapacity(type) {
-    if (!basket[type]) return 0;
-    return getCapacityLimit(type) - basket[type].length;
-}
-
-/**
  * Add item to basket
  * @param {string} type - 'letters', 'persons', or 'places'
  * @param {string} id - Item ID
@@ -218,45 +208,11 @@ export function clearBasket() {
 }
 
 /**
- * Clear specific type from basket
- * @param {string} type - 'letters', 'persons', or 'places'
- */
-export function clearBasketType(type) {
-    if (basket[type]) {
-        basket[type] = [];
-        saveBasket();
-    }
-}
-
-/**
- * Get full basket data
- * @returns {Object}
- */
-export function getBasket() {
-    return {
-        letters: [...basket.letters],
-        persons: [...basket.persons],
-        places: [...basket.places]
-    };
-}
-
-/**
  * Add listener for basket changes
  * @param {Function} callback
  */
 export function onBasketChange(callback) {
     listeners.push(callback);
-}
-
-/**
- * Remove listener
- * @param {Function} callback
- */
-export function offBasketChange(callback) {
-    const index = listeners.indexOf(callback);
-    if (index > -1) {
-        listeners.splice(index, 1);
-    }
 }
 
 /**

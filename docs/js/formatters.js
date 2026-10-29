@@ -1,11 +1,8 @@
 // Formatters - Display formatting for dates, persons, places with uncertainty
-// Extracted from explore.js for better modularity
 
 import { escapeHtml } from './utils.js';
 
-// ===================
-// CSS CLASS HELPERS
-// ===================
+// Css class helpers
 
 /**
  * Get CSS class for date precision
@@ -51,9 +48,7 @@ export function getPlacePrecisionClass(precision) {
     return '';
 }
 
-// ===================
-// NAME FORMATTERS
-// ===================
+// Name formatters
 
 /**
  * Format person name with uncertainty indicator
@@ -92,9 +87,7 @@ export function formatPlaceName(name, precision) {
     return escapeHtml(name);
 }
 
-// ===================
-// DATE FORMATTERS
-// ===================
+// Date formatters
 
 // German month names for date formatting
 const MONTH_NAMES = ['Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
@@ -177,9 +170,7 @@ export function formatDateWithPrecision(letter) {
     return escapeHtml(formattedDate);
 }
 
-// ===================
-// INITIALS
-// ===================
+// Initials
 
 /**
  * Get initials for person, handling unknown persons

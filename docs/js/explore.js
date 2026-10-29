@@ -1,8 +1,7 @@
 // Explore View - Generic CMIF visualization
 // Displays data from sessionStorage (uploaded/loaded via upload.js)
 
-import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DEFAULTS, computeLanguageColors } from './constants.js';
-import { initBasketUI } from './basket-ui.js';
+import { LANGUAGE_COLORS, LANGUAGE_LABELS, MAP_DEFAULTS, computeLanguageColors } from './constants.js';
 import {
     isInBasket as basketIsInBasket,
     addToBasket as basketAdd,
@@ -11,57 +10,50 @@ import {
     getBasketCounts,
     clearBasket as basketClear,
     onBasketChange,
-    getBasketItems
+    initBasket,
+    loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard, downloadFile } from './utils.js';
 import {
     formatDateWithPrecision,
-    formatSingleDate,
     formatPersonName,
     formatPlaceName,
     getDatePrecisionClass,
     getPersonPrecisionClass,
-    getPlacePrecisionClass,
     getPersonInitials
 } from './formatters.js';
 import { checkAndStartDemoTour, startTour } from './demo-tour.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
-// Extracted views
-import { initTimelineView, renderTimeline as renderTimelineView, resetTimelineRendered } from './views/timeline-view.js';
+// View modules
+import { initTimelineView, renderTimeline as renderTimelineView } from './views/timeline-view.js';
 import { initActivityView, renderActivity as renderActivityView } from './views/activity-view.js';
 import { initComparisonView, renderComparison as renderComparisonView } from './views/comparison-view.js';
-import { initChronikView, renderChronik as renderChronikView, resetChronikState } from './views/chronik-view.js';
-import { initNetworkView as initNetworkViewModule, renderNetwork as renderNetworkView, resetNetworkZoom } from './views/network-view.js';
-import { initMentionsView, renderMentionsFlow as renderMentionsFlowView, resetMentionsPerson } from './views/mentions-view.js';
-import { initTopicsView, renderTopicsList as renderTopicsListView, getSubjectIndex, getSelectedSubjectId, setSelectedSubjectId, rebuildSubjectIndex, resetTopicsState } from './views/topics-view.js';
-import { initPlacesView, renderPlacesList as renderPlacesListView, getPlacesIndex, getSelectedPlaceId, setSelectedPlaceId, rebuildPlacesIndex, resetPlacesState, updateMissingCoordinatesBanner } from './views/places-view.js';
+import { initChronikView, renderChronik as renderChronikView } from './views/chronik-view.js';
+import { initNetworkView as initNetworkViewModule, renderNetwork as renderNetworkView } from './views/network-view.js';
+import { initMentionsView, renderMentionsFlow as renderMentionsFlowView } from './views/mentions-view.js';
+import { initTopicsView, renderTopicsList as renderTopicsListView, getSubjectIndex, getSelectedSubjectId, setSelectedSubjectId } from './views/topics-view.js';
+import { initPlacesView, renderPlacesList as renderPlacesListView, getPlacesIndex, getSelectedPlaceId, updateMissingCoordinatesBanner } from './views/places-view.js';
 
 const IS_PRODUCTION = true;
 
 // Map instance (not in state - MapLibre manages its own state)
 let map;
 
-// DEPRECATED: Legacy variables for backward compatibility
-// TODO: Migrate remaining usages to state-manager.js
-let allLetters = [];       // Use: state.getAllLetters()
-let filteredLetters = [];  // Use: state.getFilteredLetters()
-let placeAggregation = {}; // Use: state.getPlaceAggregation()
-let dataIndices = {};      // Use: state.getDataIndices()
-let temporalFilter = null; // Use: state.filters.temporal
-let dateRange = { min: 1800, max: 2000 }; // Use: state.ui.dateRange
+// Module-level copies of the loaded data and the filter inputs. state-manager.js holds the
+// filter logic; applyFilters() writes these inputs into it and reads the result back.
+let allLetters = [];
+let filteredLetters = [];
+let placeAggregation = {};
+let dataIndices = {};
+let temporalFilter = null;
+let dateRange = { min: 1800, max: 2000 };
 let qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
 
 // Track state
 let handlersSetup = false;
-let mapInitialized = false;  // Use: state.mapInitialized
-
-// Topics view state - now in views/topics-view.js
-// Access via getSubjectIndex(), getSelectedSubjectId()
-
-// Places view state - now in views/places-view.js
-// Access via getPlacesIndex(), getSelectedPlaceId()
+let mapInitialized = false;
 
 // Mentions Flow view state
 let mentionedPersonsIndex = new Map();  // Used for detectAvailableViews
@@ -163,83 +155,6 @@ function updateViewButtons() {
 
 }
 
-// Update sidebar data coverage details
-function updateDataCoverageDetails() {
-    const container = elements.dataCoverageDetails;
-    if (!container) return;
-
-    // Calculate data coverage
-    const coordCount = Object.keys(placeAggregation).length;
-    const totalPlaces = Object.keys(dataIndices.places || {}).length;
-    const missingCount = totalPlaces - coordCount;
-    const hasLanguages = allLetters.some(l => l.language?.code);
-    const hasSubjects = allLetters.some(l => l.mentions?.subjects?.length > 0);
-    const hasAuthorityIds = allLetters.some(l =>
-        l.sender?.authority || l.recipient?.authority
-    );
-
-    // Count languages
-    const languageSet = new Set();
-    allLetters.forEach(l => {
-        if (l.language?.code) languageSet.add(l.language.code);
-    });
-
-    // Count subjects
-    const subjectSet = new Set();
-    allLetters.forEach(l => {
-        l.mentions?.subjects?.forEach(s => subjectSet.add(s.name || s));
-    });
-
-    // Build compact info lines
-    const lines = [];
-
-    // Geo data - always show with link to missing places
-    if (totalPlaces > 0) {
-        let geoLine = `<div class="dataset-coverage-item"><i class="fas fa-map-marker-alt"></i> ${coordCount}/${totalPlaces} Orte verortet`;
-        if (missingCount > 0) {
-            geoLine += ` <a href="#" id="show-missing-places" class="missing-places-link" title="Liste der Orte ohne Koordinaten">(${missingCount} ohne Geodaten)</a>`;
-        }
-        geoLine += '</div>';
-        lines.push(geoLine);
-    }
-
-    // Languages - only if present
-    if (hasLanguages) {
-        lines.push(`<div class="dataset-coverage-item"><i class="fas fa-language"></i> ${languageSet.size} Sprache(n)</div>`);
-    }
-
-    // Subjects - only if present
-    if (hasSubjects) {
-        lines.push(`<div class="dataset-coverage-item"><i class="fas fa-tags"></i> ${subjectSet.size} Themen</div>`);
-    }
-
-    // Authority IDs - only if present
-    if (hasAuthorityIds) {
-        lines.push(`<div class="dataset-coverage-item"><i class="fas fa-fingerprint"></i> Authority-IDs</div>`);
-    }
-
-    // Show what's NOT in the data (compact)
-    const missing = [];
-    if (!hasLanguages) missing.push('Sprachen');
-    if (!hasSubjects) missing.push('Themen');
-    if (!hasAuthorityIds) missing.push('Authority-IDs');
-
-    if (missing.length > 0) {
-        lines.push(`<div class="dataset-coverage-item muted"><i class="fas fa-minus"></i> Ohne: ${missing.join(', ')}</div>`);
-    }
-
-    container.innerHTML = lines.join('');
-
-    // Re-attach missing places link handler
-    const missingLink = container.querySelector('#show-missing-places');
-    if (missingLink) {
-        missingLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            showMissingPlacesModal();
-        });
-    }
-}
-
 // Get first available view
 function getFirstAvailableView() {
     const viewOrder = ['letters', 'persons', 'timeline', 'places', 'network', 'map', 'topics'];
@@ -276,7 +191,6 @@ async function init() {
             placeAggregation: {}  // Will be set below
         });
 
-        // Keep backward-compatible references (TODO: Remove after full migration)
         allLetters = data.letters || [];
         filteredLetters = allLetters;
         dataIndices = data.indices || {};
@@ -321,9 +235,6 @@ async function init() {
 
         // Update view buttons based on data availability
         updateViewButtons();
-
-        // Update data coverage details in sidebar
-        updateDataCoverageDetails();
 
         initMap();
         initFilters();
@@ -400,8 +311,9 @@ async function init() {
             showLetterDetail
         });
         initExport();
-        initMissingPlacesModal();
-        initBasketUI(dataIndices, allLetters);
+        // Basket from localStorage, then items shared via ?basket_* URL parameters
+        initBasket();
+        loadBasketFromUrl();
 
         // Setup Knowledge Path handlers and load existing session
         setupKnowledgePathHandlers();
@@ -516,30 +428,6 @@ function updateUI(data) {
 
     // Build language filter
     buildLanguageFilter();
-}
-
-
-// Format licence text for display
-function formatLicence(licence) {
-    if (!licence) return '';
-
-    const text = licence.text || '';
-    const url = licence.url || '';
-
-    // Detect common licence types
-    if (url.includes('publicdomain/zero') || text.includes('CC0')) {
-        return 'CC0';
-    } else if (url.includes('by-sa/4.0') || text.includes('CC BY-SA 4.0')) {
-        return 'CC BY-SA 4.0';
-    } else if (url.includes('by/4.0') || text.includes('CC BY 4.0')) {
-        return 'CC BY 4.0';
-    } else if (url.includes('by-nc/4.0') || text.includes('CC BY-NC 4.0')) {
-        return 'CC BY-NC 4.0';
-    } else if (text.length > 20) {
-        return text.substring(0, 20) + '...';
-    }
-
-    return text || 'Lizenz';
 }
 
 // Update uncertainty statistics in sidebar using icons with tooltips
@@ -765,9 +653,7 @@ function updateTopicsQuickFilterState() {
     });
 }
 
-// ============================================
-// Mentions Flow View - Helper Functions
-// ============================================
+// Mentions flow view - helper functions
 
 // Build index of mentioned persons
 function buildMentionedPersonsIndex(letters) {
@@ -798,131 +684,6 @@ function buildMentionedPersonsIndex(letters) {
     }
 
     return mentioned;
-}
-
-// Classify person as correspondent, mentioned, or both
-function classifyPerson(personId, correspondents, mentioned) {
-    const isCorrespondent = correspondents.has(personId);
-    const isMentioned = mentioned.has(personId);
-
-    if (isCorrespondent && isMentioned) return 'both';
-    if (isCorrespondent) return 'correspondent';
-    if (isMentioned) return 'mentioned';
-    return null;
-}
-
-// Build Sankey data structure from mentions
-function buildSankeyData(letters, topN = 20, minSenderMentions = 5, minFlowValue = 2) {
-    // 1. Aggregiere Mention-Flows
-    const flows = new Map(); // key: "senderId→mentionedId", value: count
-
-    for (const letter of letters) {
-        if (!letter.mentions?.persons) continue;
-
-        for (const person of letter.mentions.persons) {
-            const targetId = person.id || person.name;
-            const key = `${letter.sender.id}→${targetId}`;
-            flows.set(key, (flows.get(key) || 0) + 1);
-        }
-    }
-
-    // 2. Finde Top N meist-erwähnte Personen
-    const mentionCounts = new Map();
-    for (const [flow, count] of flows) {
-        const [_, targetId] = flow.split('→');
-        mentionCounts.set(targetId, (mentionCounts.get(targetId) || 0) + count);
-    }
-
-    const topMentioned = Array.from(mentionCounts.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, topN)
-        .map(([id]) => id);
-
-    if (topMentioned.length === 0) {
-        return { nodes: [], links: [] };
-    }
-
-    // 3. Berechne Sender-Statistiken (wie viele top-mentioned persons erwähnt jeder Sender?)
-    const senderStats = new Map();
-    for (const [flow, count] of flows) {
-        const [sourceId, targetId] = flow.split('→');
-
-        if (!topMentioned.includes(targetId)) continue;
-
-        if (!senderStats.has(sourceId)) {
-            senderStats.set(sourceId, {
-                totalMentions: 0,
-                uniqueTargets: new Set()
-            });
-        }
-
-        const stats = senderStats.get(sourceId);
-        stats.totalMentions += count;
-        stats.uniqueTargets.add(targetId);
-    }
-
-    // 4. Baue Nodes - nur Sender mit genug Mentions
-    const nodeSet = new Set();
-    const nodes = [];
-
-    for (const [flow, count] of flows) {
-        const [sourceId, targetId] = flow.split('→');
-
-        if (!topMentioned.includes(targetId)) continue;
-        if (count < minFlowValue) continue;  // Zu schwache Verbindung ignorieren
-
-        // Prüfe ob Sender genug mentions hat
-        const senderStat = senderStats.get(sourceId);
-        if (!senderStat || senderStat.totalMentions < minSenderMentions) {
-            continue;
-        }
-
-        // Source node (correspondent)
-        if (!nodeSet.has(sourceId)) {
-            nodeSet.add(sourceId);
-            const sourcePerson = dataIndices.persons?.[sourceId];
-            nodes.push({
-                id: sourceId,
-                name: sourcePerson?.name || sourceId,
-                column: 0  // Linke Spalte
-            });
-        }
-
-        // Target node (mentioned)
-        if (!nodeSet.has(targetId)) {
-            nodeSet.add(targetId);
-            const targetPerson = mentionedPersonsIndex.get(targetId);
-            const displayName = targetPerson?.name || dataIndices.persons?.[targetId]?.name || targetId;
-            nodes.push({
-                id: targetId,
-                name: displayName,
-                column: 1  // Rechte Spalte
-            });
-        }
-    }
-
-    // 5. Baue Links - nur für verbleibende Nodes
-    const links = [];
-    for (const [flow, count] of flows) {
-        const [sourceId, targetId] = flow.split('→');
-
-        if (!topMentioned.includes(targetId)) continue;
-        if (count < minFlowValue) continue;
-
-        const sourceIndex = nodes.findIndex(n => n.id === sourceId);
-        const targetIndex = nodes.findIndex(n => n.id === targetId);
-
-        if (sourceIndex !== -1 && targetIndex !== -1) {
-            links.push({
-                source: sourceIndex,
-                target: targetIndex,
-                value: count
-            });
-        }
-    }
-
-    log.render(`Built Sankey data: ${nodes.length} nodes, ${links.length} links (filtered: topN=${topN}, minSenderMentions=${minSenderMentions}, minFlowValue=${minFlowValue})`);
-    return { nodes, links };
 }
 
 // Aggregate letters by place_sent for map visualization
@@ -1617,7 +1378,6 @@ function applyFilters() {
     // Get filtered letters from state (uses cached filter logic)
     filteredLetters = state.getFilteredLetters();
 
-    // Keep backward compatibility references
     allLetters = state.getAllLetters();
 
     // Re-aggregate places based on filtered letters
@@ -1899,9 +1659,7 @@ function handlePlacesDataUpdated(coordinates) {
     }
 }
 
-// ===================
-// URL STATE MANAGEMENT
-// ===================
+// Url state management
 
 function initUrlState() {
     // Read initial state from URL
@@ -1984,9 +1742,7 @@ let selectedPersonId = null;
 let selectedPlaceFilter = null;
 let initialLanguageFilter = null;
 
-// ===================
-// VIEW SWITCHING
-// ===================
+// View switching
 
 let currentView = 'overview';
 
@@ -2039,12 +1795,6 @@ function switchView(view) {
         toggle?.classList.toggle('hidden', noSidebar);
     }
 
-    // Update sidebar legend for current view
-    updateSidebarLegend(view);
-
-    // Update view-specific filter controls visibility
-    updateViewSpecificFilters(view);
-
     // Render view-specific content
     if (view === 'overview') {
         renderOverview();
@@ -2074,43 +1824,7 @@ function switchView(view) {
     }
 }
 
-// Update sidebar legend based on current view
-function updateSidebarLegend(view) {
-    // All legend content elements
-    const legendElements = {
-        map: elements.getById('legend-map'),
-        letters: elements.getById('legend-letters'),
-        timeline: elements.getById('legend-timeline'),
-        persons: elements.getById('legend-persons'),
-        topics: elements.getById('legend-topics'),
-        places: elements.getById('legend-places'),
-        network: elements.getById('legend-network')
-    };
-
-    // Hide all legends
-    Object.values(legendElements).forEach(el => {
-        if (el) el.style.display = 'none';
-    });
-
-    // Show view-specific legend
-    const targetLegend = legendElements[view];
-    if (targetLegend) {
-        targetLegend.style.display = 'block';
-    } else {
-        // Fallback to map legend if no specific legend exists
-        if (legendElements.map) legendElements.map.style.display = 'block';
-    }
-}
-
-// Update view-specific filter controls visibility
-function updateViewSpecificFilters(view) {
-    // Currently no view-specific sidebar filters
-    // Mentions Flow search is now in the main content area
-}
-
-// ===================
-// PERSONS LIST
-// ===================
+// Persons list
 
 let personsSortOrder = 'letters-desc';
 let personsSearchTerm = '';
@@ -2289,30 +2003,6 @@ function setupEntryPointButtons() {
 }
 
 /**
- * Update a quality bar with percentage and label
- */
-function updateQualityBar(barId, valueId, percentage, count, total) {
-    const bar = document.getElementById(barId);
-    const value = document.getElementById(valueId);
-
-    if (bar) {
-        bar.style.width = `${percentage}%`;
-        bar.classList.remove('high', 'medium', 'low');
-        if (percentage >= 70) {
-            bar.classList.add('high');
-        } else if (percentage >= 40) {
-            bar.classList.add('medium');
-        } else {
-            bar.classList.add('low');
-        }
-    }
-
-    if (value) {
-        value.textContent = `${percentage}% (${count}/${total})`;
-    }
-}
-
-/**
  * Render research paths in the Overview view
  * Uses the same analyzeResearchQuestions() function as the questions view
  * Limited to 4 paths with "show all" button
@@ -2425,226 +2115,6 @@ function renderResearchPathCards(container, paths, allQuestions) {
             }
         });
     });
-}
-
-/**
- * Setup quick access buttons in overview
- */
-function setupQuickAccessButtons() {
-    document.querySelectorAll('.quick-access-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const target = btn.dataset.target;
-            if (target) {
-                switchView(target);
-                updateUrlState();
-            }
-        });
-    });
-}
-
-/**
- * Render metadata section on Overview page
- * Supports both JSON format (teiHeader) and cmif-parser format (direct properties)
- */
-function renderOverviewMetadata() {
-    const container = document.getElementById('overview-metadata');
-    const meta = state.getMeta();
-    if (!container || !meta) return;
-
-    const items = [];
-
-    // Check for JSON format (teiHeader object) vs cmif-parser format (direct properties)
-    const teiHeader = meta.teiHeader || {};
-    const hasJsonFormat = Object.keys(teiHeader).length > 0;
-
-    // Values are HTML; every text and URL from the dataset passes through here
-    const link = (url, text) => safeUrl(url)
-        ? `<a href="${escapeHtml(safeUrl(url))}" target="_blank" rel="noopener">${escapeHtml(text)}</a>`
-        : escapeHtml(text);
-
-    // Editor - JSON: teiHeader.editor (string), Parser: editors (array)
-    const editorValue = escapeHtml(hasJsonFormat
-        ? teiHeader.editor
-        : (meta.editors?.map(e => e.name).join(', ') || null));
-    if (editorValue) {
-        items.push({
-            icon: 'fa-user-edit',
-            label: 'Herausgeber',
-            value: editorValue
-        });
-    }
-
-    // Publisher - JSON: teiHeader.publisher (string), Parser: publishers (array)
-    const publisherValue = hasJsonFormat
-        ? escapeHtml(teiHeader.publisher)
-        : (meta.publishers?.map(p => link(p.url, p.name)).join(', ') || null);
-    if (publisherValue) {
-        items.push({
-            icon: 'fa-building',
-            label: 'Verlag',
-            value: publisherValue
-        });
-    }
-
-    // Source (bibl) - JSON: teiHeader.bibl, Parser: sourceReference/sourceUrl
-    const sourceValue = hasJsonFormat
-        ? escapeHtml(teiHeader.bibl)
-        : (meta.sourceReference ? link(meta.sourceUrl, meta.sourceReference) : null);
-    if (sourceValue) {
-        items.push({
-            icon: 'fa-quote-left',
-            label: 'Quelle',
-            value: sourceValue
-        });
-    }
-
-    // CMIF URL - both formats use cmifUrl
-    const cmifUrl = safeUrl(hasJsonFormat ? teiHeader.cmifUrl : meta.cmifUrl);
-    if (cmifUrl) {
-        items.push({
-            icon: 'fa-link',
-            label: 'CMIF',
-            value: link(cmifUrl, 'CMIF oeffnen')
-        });
-    }
-
-    // Licence - JSON: teiHeader.licence/licenceTarget, Parser: licence.text/url
-    let licenceText = null;
-    if (hasJsonFormat && teiHeader.licence) {
-        licenceText = link(teiHeader.licenceTarget, teiHeader.licence);
-    } else if (meta.licence?.text) {
-        licenceText = link(meta.licence.url, meta.licence.text);
-    }
-    if (licenceText) {
-        items.push({
-            icon: 'fa-balance-scale',
-            label: 'Lizenz',
-            value: licenceText
-        });
-    }
-
-    // If no metadata available
-    if (items.length === 0) {
-        container.innerHTML = '<p class="no-data">Keine Metadaten verfuegbar</p>';
-        return;
-    }
-
-    container.innerHTML = items.map(item => `
-        <div class="overview-metadata-item">
-            <i class="fas ${item.icon}"></i>
-            <span>${item.value}</span>
-        </div>
-    `).join('');
-}
-
-/**
- * Render top correspondents on Overview page
- */
-function renderTopCorrespondents() {
-    const container = document.getElementById('overview-top-correspondents');
-    if (!container || !allLetters || allLetters.length === 0) return;
-
-    // Count letters per person (both as sender and recipient)
-    const personCounts = {};
-
-    allLetters.forEach(letter => {
-        if (letter.sender?.name) {
-            const key = letter.sender.id || letter.sender.name;
-            if (!personCounts[key]) {
-                personCounts[key] = { name: letter.sender.name, id: letter.sender.id, count: 0 };
-            }
-            personCounts[key].count++;
-        }
-        if (letter.recipient?.name) {
-            const key = letter.recipient.id || letter.recipient.name;
-            if (!personCounts[key]) {
-                personCounts[key] = { name: letter.recipient.name, id: letter.recipient.id, count: 0 };
-            }
-            personCounts[key].count++;
-        }
-    });
-
-    // Sort by count and take top 5
-    const topPersons = Object.values(personCounts)
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
-
-    if (topPersons.length === 0) {
-        container.innerHTML = '<p class="no-data">Keine Korrespondenten gefunden</p>';
-        return;
-    }
-
-    container.innerHTML = topPersons.map((person, index) => `
-        <div class="correspondent-item" role="button" tabindex="0" data-person-id="${escapeHtml(person.id || '')}" data-person-name="${escapeHtml(person.name)}">
-            <span class="correspondent-rank">${index + 1}.</span>
-            <span class="correspondent-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}</span>
-            <span class="correspondent-count">${person.count} Briefe</span>
-        </div>
-    `).join('');
-
-    // Add click handlers to navigate to persons view
-    container.querySelectorAll('.correspondent-item').forEach(item => {
-        item.addEventListener('click', () => {
-            switchView('persons');
-            updateUrlState();
-            // Focus on search field with person name
-            const searchInput = document.getElementById('person-search');
-            if (searchInput) {
-                searchInput.value = item.dataset.personName;
-                searchInput.dispatchEvent(new Event('input'));
-            }
-        });
-    });
-}
-
-/**
- * Render language distribution on Overview page
- */
-function renderLanguageDistribution() {
-    const container = document.getElementById('overview-languages');
-    const section = document.getElementById('overview-languages-section');
-    if (!container || !section || !allLetters || allLetters.length === 0) return;
-
-    // Count letters per language
-    const langCounts = {};
-    let totalWithLang = 0;
-
-    allLetters.forEach(letter => {
-        if (letter.language) {
-            const lang = letter.language;
-            langCounts[lang] = (langCounts[lang] || 0) + 1;
-            totalWithLang++;
-        }
-    });
-
-    const languages = Object.entries(langCounts);
-
-    // Only show if there are multiple languages
-    if (languages.length <= 1) {
-        section.classList.add('hidden');
-        return;
-    }
-
-    section.classList.remove('hidden');
-
-    // Sort by count
-    languages.sort((a, b) => b[1] - a[1]);
-
-    const maxCount = languages[0][1];
-
-    container.innerHTML = languages.map(([lang, count]) => {
-        const percentage = Math.round((count / totalWithLang) * 100);
-        const barWidth = Math.round((count / maxCount) * 100);
-        return `
-            <div class="language-item">
-                <span class="language-name">${escapeHtml(lang.toUpperCase())}</span>
-                <div class="language-bar-container">
-                    <div class="language-bar" style="width: ${barWidth}%"></div>
-                </div>
-                <span class="language-count">${count} (${percentage}%)</span>
-            </div>
-        `;
-    }).join('');
 }
 
 function renderPersonsList() {
@@ -2831,9 +2301,7 @@ function renderPersonsList() {
     });
 }
 
-// ===================
-// LETTERS LIST
-// ===================
+// Letters list
 
 let lettersSortOrder = 'date-desc';
 let lettersSearchTerm = '';
@@ -3065,9 +2533,7 @@ function buildLetterDetails(letter) {
     return html;
 }
 
-// ===================
-// LETTER DETAIL MODAL (kept for backwards compatibility)
-// ===================
+// Letter detail modal
 
 function showLetterDetail(letterId) {
     const letter = allLetters.find(l => l.id === letterId);
@@ -3485,15 +2951,6 @@ function filterByPerson(personId) {
     updateUrlState();
 }
 
-// ===================
-// TIMELINE VIEW - Extracted to views/timeline-view.js
-// ===================
-
-// ===================
-// TOPICS VIEW - Extracted to views/topics-view.js
-// ===================
-
-
 // Apply subject filter (stays on current view, updates map/data)
 function applySubjectFilter(subjectId) {
     setSelectedSubjectId(subjectId);
@@ -3550,15 +3007,6 @@ function updateSubjectFilterDisplay() {
     }
 }
 
-// Global function for filtering by subject
-window.filterBySubject = function(subjectId) {
-    applySubjectFilter(subjectId);
-};
-
-// ===================
-// PLACES VIEW - Extracted to views/places-view.js
-// ===================
-
 // Goes through the state manager like the other filters, so every view and the reset button see it
 function applyPlaceFilter(placeId) {
     log.event(`Applying place filter: ${placeId}`);
@@ -3567,11 +3015,7 @@ function applyPlaceFilter(placeId) {
     log.event(`Filtered letters count: ${filteredLetters.length}`);
 }
 
-// updateMissingCoordinatesBanner and handleResolveCoordinates - now in views/places-view.js
-
-// ===================
-// EXPORT
-// ===================
+// Export
 
 function initExport() {
     const exportBtn = elements.exportBtn;
@@ -3649,132 +3093,9 @@ function exportData(format) {
     downloadFile(content, filename, mimeType);
 }
 
-function downloadFile(content, filename, mimeType) {
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-}
+// Missing places modal
 
-// ===================
-// NETWORK VIEW - Extracted to views/network-view.js
-// ===================
-
-// ===================
-// MISSING PLACES MODAL
-// ===================
-
-function initMissingPlacesModal() {
-    const modal = elements.getById('missing-places-modal');
-    const closeBtn = modal?.querySelector('.modal-close');
-
-    if (!modal) return;
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-    }
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
-}
-
-function showMissingPlacesModal() {
-    const modal = elements.getById('missing-places-modal');
-    const body = elements.getById('missing-places-body');
-
-    if (!modal || !body) return;
-
-    // Collect all places from letters
-    const allPlacesFromLetters = new Map();
-    const placesIndex = dataIndices.places || {};
-
-    allLetters.forEach(letter => {
-        if (!letter.place_sent) return;
-
-        const placeId = letter.place_sent.geonames_id;
-        const placeName = letter.place_sent.name;
-
-        if (!placeId || !placeName) return;
-
-        // Check if this place has coordinates
-        let hasCoords = false;
-
-        // Check in letter data
-        if (letter.place_sent.lat && letter.place_sent.lon) {
-            hasCoords = true;
-        }
-
-        // Check in places index
-        if (!hasCoords && placesIndex[placeId]) {
-            const indexed = placesIndex[placeId];
-            if (indexed.lat && indexed.lon) {
-                hasCoords = true;
-            }
-        }
-
-        // Check in placeAggregation (already filtered for coords)
-        if (!hasCoords && placeAggregation[placeId]) {
-            hasCoords = true;
-        }
-
-        if (!hasCoords) {
-            if (!allPlacesFromLetters.has(placeId)) {
-                allPlacesFromLetters.set(placeId, {
-                    id: placeId,
-                    name: placeName,
-                    letterCount: 0
-                });
-            }
-            allPlacesFromLetters.get(placeId).letterCount++;
-        }
-    });
-
-    // Sort by letter count
-    const missingPlaces = Array.from(allPlacesFromLetters.values())
-        .sort((a, b) => b.letterCount - a.letterCount);
-
-    // Render list
-    if (missingPlaces.length === 0) {
-        body.innerHTML = '<p class="empty-state">Alle Orte haben Koordinaten.</p>';
-    } else {
-        const geonamesBase = 'https://www.geonames.org/';
-        body.innerHTML = `
-            <p class="missing-places-intro">${missingPlaces.length} Orte ohne Koordinaten gefunden:</p>
-            <div class="missing-places-list">
-                ${missingPlaces.map(place => `
-                    <div class="missing-place-item">
-                        <span class="missing-place-name">${escapeHtml(place.name)}</span>
-                        <span class="missing-place-count">${place.letterCount} ${place.letterCount === 1 ? 'Brief' : 'Briefe'}</span>
-                        ${place.id ? `<a href="${geonamesBase}${encodeURIComponent(place.id)}" target="_blank" class="missing-place-link" title="GeoNames"><i class="fas fa-external-link-alt"></i></a>` : ''}
-                    </div>
-                `).join('')}
-            </div>
-        `;
-    }
-
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-}
-
-// ===================
-// MENTIONS FLOW VIEW - Extracted to views/mentions-view.js
-// ===================
-
-// ===================
-// CHRONIK VIEW - Extracted to views/chronik-view.js
-// ===================
-
-// ============================================================================
-// RESEARCH QUESTIONS VIEW
-// ============================================================================
+// Research questions view
 
 /**
  * Analyze corpus data and generate research questions with epistemological categories
@@ -4152,231 +3473,7 @@ function analyzeResearchQuestions() {
     return questions;
 }
 
-/**
- * Render the Research Questions view
- */
-function renderResearchQuestions() {
-    const container = document.getElementById('questions-grid');
-    const metaContainer = document.getElementById('questions-meta');
-    if (!container) return;
-
-    const questions = analyzeResearchQuestions();
-
-    if (questions.length === 0) {
-        container.innerHTML = `
-            <div class="questions-empty">
-                <i class="fas fa-question-circle"></i>
-                <p>Keine Forschungsfragen konnten generiert werden. Das Korpus enthaelt moeglicherweise zu wenig strukturierte Daten.</p>
-            </div>
-        `;
-        return;
-    }
-
-    // Group by category
-    const categories = {
-        descriptive: {
-            title: 'Deskriptiv',
-            subtitle: 'Was ist im Korpus?',
-            icon: 'fa-list',
-            questions: []
-        },
-        analytical: {
-            title: 'Analytisch',
-            subtitle: 'Welche Muster gibt es?',
-            icon: 'fa-search',
-            questions: []
-        },
-        interpretive: {
-            title: 'Interpretativ',
-            subtitle: 'Was bedeutet das?',
-            icon: 'fa-lightbulb',
-            questions: []
-        },
-        unavailable: {
-            title: 'Nicht beantwortbar',
-            subtitle: 'Fehlende Daten im Korpus',
-            icon: 'fa-exclamation-triangle',
-            questions: []
-        }
-    };
-
-    questions.forEach(q => {
-        if (categories[q.category]) {
-            categories[q.category].questions.push(q);
-        }
-    });
-
-    // Render categories
-    let html = '';
-    for (const [catKey, cat] of Object.entries(categories)) {
-        if (cat.questions.length === 0) continue;
-
-        html += `
-            <div class="questions-category">
-                <div class="questions-category-header">
-                    <i class="fas ${cat.icon}"></i>
-                    <div>
-                        <h3>${escapeHtml(cat.title)}</h3>
-                        <span class="questions-category-subtitle">${escapeHtml(cat.subtitle)}</span>
-                    </div>
-                </div>
-                <div class="questions-list">
-        `;
-
-        for (const q of cat.questions) {
-            const isUnavailable = catKey === 'unavailable';
-            const coverageClass = q.coverage >= 70 ? 'high' : q.coverage >= 40 ? 'medium' : 'low';
-
-            // Build preview HTML if available
-            let previewHtml = '';
-            if (q.preview && q.preview.length > 0) {
-                previewHtml = `
-                    <div class="question-preview">
-                        <span class="preview-label">Top ${q.preview.length}:</span>
-                        ${q.preview.map(item => `<span class="preview-item">${escapeHtml(item)}</span>`).join('')}
-                    </div>
-                `;
-            }
-
-            // Build path HTML if available (not for unavailable)
-            let pathHtml = '';
-            if (q.path && q.path.length > 0 && !isUnavailable) {
-                const pathSteps = q.path.map((step, i) => `
-                    <span class="path-step" data-view="${escapeHtml(step.view)}">
-                        <span class="path-step-header">
-                            <span class="path-step-num">${i + 1}</span>
-                            <span class="path-step-label">${escapeHtml(step.label)}</span>
-                        </span>
-                        <span class="path-step-action">${escapeHtml(step.action)}</span>
-                    </span>
-                `).join('<span class="path-arrow"><i class="fas fa-chevron-right"></i></span>');
-                pathHtml = `<div class="question-path">${pathSteps}</div>`;
-            }
-
-            // Build suggestion HTML for unavailable questions
-            let suggestionHtml = '';
-            if (isUnavailable && q.suggestion) {
-                suggestionHtml = `
-                    <div class="question-suggestion">
-                        <span class="suggestion-label"><i class="fas fa-wrench"></i> Fehlend:</span>
-                        <span class="suggestion-text">${escapeHtml(q.missingData)}</span>
-                    </div>
-                    <div class="question-fix">
-                        <i class="fas fa-lightbulb"></i> ${escapeHtml(q.suggestion)}
-                    </div>
-                `;
-            }
-
-            html += `
-                <div class="question-card ${isUnavailable ? 'unavailable' : ''}" ${!isUnavailable ? `data-view="${escapeHtml(q.view)}" data-path="${escapeHtml(JSON.stringify(q.path || []))}"` : ''}>
-                    <div class="question-icon"><i class="fas ${q.icon}"></i></div>
-                    <div class="question-content">
-                        <div class="question-text">${escapeHtml(q.question)}</div>
-                        <div class="question-description">${escapeHtml(q.description)}</div>
-                        ${previewHtml}
-                        ${pathHtml}
-                        ${suggestionHtml}
-                        ${q.filterHint ? `<div class="question-hint"><i class="fas fa-info-circle"></i> ${escapeHtml(q.filterHint)}</div>` : ''}
-                    </div>
-                    ${!isUnavailable ? `
-                    <div class="question-meta">
-                        <div class="question-coverage ${coverageClass}" title="Anreicherungspotential: ${q.coverage}% der Daten haben IDs fuer Wikidata-Lookup">
-                            <div class="question-coverage-bar" style="width: ${q.coverage}%"></div>
-                            <span>${q.coverage}%</span>
-                        </div>
-                        <div class="question-action">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>` : ''}
-                </div>
-            `;
-        }
-
-        html += '</div></div>';
-    }
-
-    container.innerHTML = html;
-
-    // Add click handlers for path steps (navigate to that specific view)
-    container.querySelectorAll('.path-step').forEach(step => {
-        step.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent card click
-            const view = step.dataset.view;
-            if (view) {
-                switchView(view);
-                updateUrlState();
-            }
-        });
-    });
-
-    // Add click handlers for cards - start knowledge path
-    container.querySelectorAll('.question-card:not(.unavailable)').forEach(card => {
-        card.addEventListener('click', (e) => {
-            // Don't start path if clicking on individual path steps
-            if (e.target.closest('.path-step')) return;
-
-            // Extract question data and start knowledge path
-            const questionText = card.querySelector('.question-text')?.textContent || '';
-            const pathData = card.dataset.path || '[]';
-            const view = card.dataset.view;
-
-            try {
-                const path = JSON.parse(pathData);
-                if (path && path.length > 0) {
-                    // Get category from parent element
-                    const categoryEl = card.closest('.questions-category');
-                    const categoryTitle = categoryEl?.querySelector('h3')?.textContent?.toLowerCase() || '';
-                    let category = 'descriptive';
-                    if (categoryTitle.includes('analytisch')) category = 'analytical';
-                    else if (categoryTitle.includes('interpretativ')) category = 'interpretive';
-
-                    // Start the knowledge path
-                    startKnowledgePath({
-                        question: questionText,
-                        category: category,
-                        path: path,
-                        view: view
-                    });
-                }
-            } catch (err) {
-                console.error('Error starting knowledge path:', err);
-                // Fallback: just navigate to the view
-                if (view) {
-                    switchView(view);
-                    updateUrlState();
-                }
-            }
-        });
-    });
-
-    // Render meta info
-    if (metaContainer) {
-        const answerable = questions.filter(q => q.category !== 'unavailable').length;
-        const unavailable = categories.unavailable.questions.length;
-        const descriptive = categories.descriptive.questions.length;
-        const analytical = categories.analytical.questions.length;
-        const interpretive = categories.interpretive.questions.length;
-
-        metaContainer.innerHTML = `
-            <div class="questions-meta-info">
-                <p>
-                    <strong>${answerable} Forschungspfade</strong> wurden aus der Datenstruktur abgeleitet:
-                    ${descriptive} deskriptive, ${analytical} analytische, ${interpretive} interpretative.
-                    ${unavailable > 0 ? `<span class="meta-unavailable">${unavailable} weitere Pfade sind wegen fehlender Daten nicht verfuegbar.</span>` : ''}
-                </p>
-                <p class="questions-meta-note">
-                    <i class="fas fa-info-circle"></i>
-                    Klicke auf einen Pfad-Schritt um direkt zu diesem View zu navigieren.
-                    Die Datenabdeckung zeigt, wie vollstaendig die Daten fuer diese Frage sind.
-                </p>
-            </div>
-        `;
-    }
-}
-
-// ===================
-// WISSENSPFAD (Knowledge Path)
-// ===================
+// Wissenspfad (knowledge path)
 
 let knowledgePath = null;
 

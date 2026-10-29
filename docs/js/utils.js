@@ -1,5 +1,5 @@
 // Shared utility functions for CorrespExplorer
-// Used by: explore.js, wissenskorb.js, basket-ui.js
+// Used by the explorer, the Datenkorb page, the parser and the view modules
 
 /**
  * Debounce function - delays execution until after wait milliseconds
@@ -82,15 +82,6 @@ export function downloadFile(content, filename, mimeType) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-}
-
-/**
- * Format number with locale
- * @param {number} num - Number to format
- * @returns {string} - Formatted number
- */
-export function formatNumber(num) {
-    return new Intl.NumberFormat('de-DE').format(num);
 }
 
 /**
@@ -199,30 +190,6 @@ export function enableModalKeyboard() {
 }
 
 /**
- * Copy text to clipboard
- * @param {string} text - Text to copy
- * @returns {Promise<boolean>} - Success
- */
-export async function copyToClipboard(text) {
-    try {
-        if (navigator.clipboard) {
-            await navigator.clipboard.writeText(text);
-            return true;
-        }
-        // Fallback for older browsers
-        const input = document.createElement('input');
-        input.value = text;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        return true;
-    } catch {
-        return false;
-    }
-}
-
-/**
  * Build authority link (GND, VIAF, GeoNames)
  * @param {string} authorityUri - Full URI
  * @returns {string} - HTML link
@@ -243,32 +210,6 @@ export function buildAuthorityLink(authorityUri) {
     }
 
     return `<a href="${escapeHtml(authorityUri)}" target="_blank" class="authority-link" title="${label}">${label}</a>`;
-}
-
-/**
- * Parse URL parameters
- * @returns {URLSearchParams}
- */
-export function getUrlParams() {
-    return new URLSearchParams(window.location.search);
-}
-
-/**
- * Update URL parameter without page reload
- * @param {string} key - Parameter key
- * @param {string|null} value - Parameter value (null to remove)
- */
-export function setUrlParam(key, value) {
-    const params = new URLSearchParams(window.location.search);
-    if (value === null || value === undefined || value === '') {
-        params.delete(key);
-    } else {
-        params.set(key, value);
-    }
-    const newUrl = params.toString()
-        ? `${window.location.pathname}?${params.toString()}`
-        : window.location.pathname;
-    history.replaceState(null, '', newUrl);
 }
 
 /**

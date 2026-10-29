@@ -1,4 +1,4 @@
-// Network View - Extracted from explore.js
+// Network View
 // Force-directed graph showing relationships between correspondents or topics
 
 import { debounce } from '../utils.js';

@@ -1,4 +1,4 @@
-// Timeline View - Extracted from explore.js
+// Timeline View
 // Stacked bar chart showing temporal distribution of correspondence
 
 import { LANGUAGE_COLORS, LANGUAGE_LABELS } from '../constants.js';
@@ -40,20 +40,6 @@ export function initTimelineView(deps) {
             renderTimeline();
         });
     }
-}
-
-/**
- * Check if timeline has been rendered
- */
-export function isTimelineRendered() {
-    return timelineRendered;
-}
-
-/**
- * Reset timeline rendered state (call when filters change)
- */
-export function resetTimelineRendered() {
-    timelineRendered = false;
 }
 
 /**

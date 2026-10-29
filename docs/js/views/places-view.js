@@ -1,4 +1,4 @@
-// Places View - Extracted from explore.js
+// Places View
 // Place browsing, filtering and coordinate resolution
 
 import { escapeHtml, debounce } from '../utils.js';
@@ -481,32 +481,4 @@ export function getPlacesIndex() {
  */
 export function getSelectedPlaceId() {
     return selectedPlaceId;
-}
-
-/**
- * Set the selected place ID (for external control)
- */
-export function setSelectedPlaceId(id) {
-    selectedPlaceId = id;
-}
-
-/**
- * Rebuild the places index (call after data changes)
- */
-export function rebuildPlacesIndex() {
-    buildPlacesIndex();
-}
-
-/**
- * Reset places view state
- */
-export function resetPlacesState() {
-    selectedPlaceId = null;
-    placesSearchTerm = '';
-    placesSortOrder = 'count-desc';
-
-    const emptyState = elements.getById('place-detail-empty');
-    const content = elements.getById('place-detail-content');
-    if (emptyState) emptyState.classList.remove('hidden');
-    if (content) content.classList.add('hidden');
 }

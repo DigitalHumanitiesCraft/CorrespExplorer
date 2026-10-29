@@ -191,11 +191,3 @@ function setupTourListeners() {
         }
     });
 }
-
-/**
- * Manually trigger tour (for testing or restart)
- */
-export function restartTour() {
-    sessionStorage.removeItem('ce-demo-tour-completed');
-    startTour();
-}

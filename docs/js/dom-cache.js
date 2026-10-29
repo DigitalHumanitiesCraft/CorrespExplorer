@@ -77,11 +77,7 @@ const cache = new DOMCache();
  */
 export const elements = {
     // Navigation
-    get navbar() { return cache.bySelector('.navbar'); },
-    get navBrand() { return cache.bySelector('.nav-brand'); },
     get datasetTitle() { return cache.byId('dataset-title'); },
-    get viewSwitcher() { return cache.bySelector('.view-switcher'); },
-    get viewButtons() { return cache.allBySelector('.view-btn'); },
 
     // Sidebar
     get sidebar() { return cache.bySelector('.sidebar'); },
@@ -91,21 +87,13 @@ export const elements = {
     get totalSendersCount() { return cache.byId('total-senders-count'); },
     get totalPlacesCount() { return cache.byId('total-places-count'); },
     get sourceInfo() { return cache.byId('source-info'); },
-    get dataCoverageDetails() { return cache.byId('data-coverage-details'); },
-
-    // Quality icons
-    get lettersQualityIcon() { return cache.byId('letters-quality-icon'); },
-    get sendersQualityIcon() { return cache.byId('senders-quality-icon'); },
-    get placesQualityIcon() { return cache.byId('places-quality-icon'); },
 
     // Filter controls
     get resetFiltersBtn() { return cache.byId('reset-filters'); },
-    get activeFilters() { return cache.byId('active-filters'); },
     get yearRangeSlider() { return cache.byId('year-range-slider'); },
     get yearRangeText() { return cache.byId('year-range-text'); },
 
     // Quality filters
-    get qualityFilterGroup() { return cache.byId('quality-filter-group'); },
     get filterPreciseDates() { return cache.byId('filter-precise-dates'); },
     get filterKnownPersons() { return cache.byId('filter-known-persons'); },
     get filterLocatedPlaces() { return cache.byId('filter-located-places'); },
@@ -120,85 +108,35 @@ export const elements = {
     get topicsQuickFilter() { return cache.byId('topics-quick-filter'); },
     get showAllTopics() { return cache.byId('show-all-topics'); },
 
-    // Mentions Flow filter
-    get mentionsFilterGroup() { return cache.byId('mentions-filter-group'); },
-    get mentionsPersonSearch() { return cache.byId('mentions-person-search'); },
-    get mentionsPersonDropdown() { return cache.byId('mentions-person-dropdown'); },
-
-    // View containers
-    get overviewContainer() { return cache.byId('overview-view'); },
-    get overviewTitle() { return cache.byId('overview-title'); },
-    get overviewSubtitle() { return cache.byId('overview-subtitle'); },
-    get viewRecommendations() { return cache.byId('view-recommendations'); },
-
+    // Views
     get mapContainer() { return cache.byId('map-container'); },
-    get mapElement() { return cache.byId('map'); },
     get mapLegend() { return cache.byId('map-legend'); },
     get mapColorToggle() { return cache.byId('map-color-toggle'); },
 
-    get personsContainer() { return cache.byId('persons-container'); },
     get personSearch() { return cache.byId('person-search'); },
     get personSort() { return cache.byId('person-sort'); },
     get personsList() { return cache.byId('persons-list'); },
 
-    get lettersContainer() { return cache.byId('letters-container'); },
     get letterSearch() { return cache.byId('letter-search'); },
     get letterSort() { return cache.byId('letter-sort'); },
     get lettersList() { return cache.byId('letters-list'); },
 
-    get timelineContainer() { return cache.byId('timeline-container'); },
     get timelineChart() { return cache.byId('timeline-chart'); },
 
-    get topicsContainer() { return cache.byId('topics-container'); },
-    get topicsSearch() { return cache.byId('topics-search'); },
-    get topicsSort() { return cache.byId('topics-sort'); },
     get topicsList() { return cache.byId('topics-list'); },
-    get topicDetail() { return cache.byId('topic-detail'); },
 
-    get placesContainer() { return cache.byId('places-container'); },
-    get placesSearch() { return cache.byId('places-search'); },
-    get placesSort() { return cache.byId('places-sort'); },
     get placesList() { return cache.byId('places-list'); },
-    get placeDetail() { return cache.byId('place-detail'); },
 
-    get networkContainer() { return cache.byId('network-container'); },
-    get networkSvg() { return cache.byId('network-svg'); },
-    get networkModeSelect() { return cache.byId('network-mode'); },
-    get networkMinYearsSlider() { return cache.byId('network-min-years'); },
-    get networkMinYearsValue() { return cache.byId('network-min-years-value'); },
-    get networkMaxNodesSlider() { return cache.byId('network-max-nodes'); },
-    get networkMaxNodesValue() { return cache.byId('network-max-nodes-value'); },
-    get networkMinCooccurrenceSlider() { return cache.byId('network-min-cooccurrence'); },
-    get networkMinCooccurrenceValue() { return cache.byId('network-min-cooccurrence-value'); },
-    get networkColorModeSelect() { return cache.byId('network-color-mode'); },
     get networkResetZoom() { return cache.byId('network-reset-zoom'); },
 
-    get mentionsFlowContainer() { return cache.byId('mentions-flow-container'); },
-    get mentionsFlowSvg() { return cache.byId('mentions-flow-svg'); },
     get mentionsFlowPlaceholder() { return cache.byId('mentions-flow-placeholder'); },
 
     // Modals
     get exportModal() { return cache.byId('export-modal'); },
     get exportBtn() { return cache.byId('export-btn'); },
-    get exportCsv() { return cache.byId('export-csv'); },
-    get exportJson() { return cache.byId('export-json'); },
-    get exportClose() { return cache.byId('export-close'); },
-
-    get placesWithoutCoordsModal() { return cache.byId('places-without-coords-modal'); },
-    get placesWithoutCoordsList() { return cache.byId('places-without-coords-list'); },
-    get closeWithoutCoordsModal() { return cache.byId('close-without-coords-modal'); },
 
     // Loading overlay
     get loadingOverlay() { return cache.byId('loading-overlay'); },
-
-    // Tooltips
-    get mentionsTooltip() { return cache.byId('mentions-tooltip'); },
-
-    // View-specific buttons
-    get topicsViewBtn() { return cache.byId('topics-view-btn'); },
-    get placesViewBtn() { return cache.byId('places-view-btn'); },
-    get networkViewBtn() { return cache.byId('network-view-btn'); },
-    get mentionsFlowViewBtn() { return cache.byId('mentions-flow-view-btn'); },
 
     // Helper methods
     clearCache() {
@@ -251,7 +189,6 @@ export const elements = {
  * This pre-loads frequently accessed elements
  */
 export function initDOMCache() {
-    // Pre-load critical elements by accessing them
     // This ensures they're in cache when needed
     const criticalElements = [
         'loadingOverlay',

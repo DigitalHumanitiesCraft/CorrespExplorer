@@ -1,4 +1,4 @@
-// Mentions Flow View - Extracted from explore.js
+// Mentions Flow View
 // Sankey diagram showing person mention relationships
 
 import { escapeHtml } from '../utils.js';
@@ -25,13 +25,6 @@ export function initMentionsView(deps) {
     log = deps.log || { init: () => {}, render: () => {} };
 
     initMentionsFlowViewInternal();
-}
-
-/**
- * Reset selected person (e.g., when data changes)
- */
-export function resetMentionsPerson() {
-    selectedMentionsPerson = null;
 }
 
 /**
@@ -207,27 +200,6 @@ function initMentionsPersonAutocomplete() {
             }
         }
     });
-}
-
-/**
- * Create tooltip element for hover effects
- */
-function createTooltip() {
-    const tooltip = document.createElement('div');
-    tooltip.id = 'mentions-tooltip';
-    tooltip.style.position = 'absolute';
-    tooltip.style.display = 'none';
-    tooltip.style.background = 'var(--color-background-elevated)';
-    tooltip.style.border = '1px solid var(--color-border)';
-    tooltip.style.borderRadius = '4px';
-    tooltip.style.padding = '8px 12px';
-    tooltip.style.fontSize = '13px';
-    tooltip.style.lineHeight = '1.5';
-    tooltip.style.pointerEvents = 'none';
-    tooltip.style.zIndex = '10000';
-    tooltip.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-    document.body.appendChild(tooltip);
-    return tooltip;
 }
 
 /**
