@@ -406,6 +406,11 @@ def parse_cmif(file_path: Path) -> dict:
             'generated': datetime.now().isoformat(),
             'source': 'Hugo Schuchardt Archiv CMIF',
             'source_file': 'data/hsa/CMIF.xml',
+            # CC BY 4.0 requires indicating changes; shown with the licence in the explorer
+            'modifications': ('Changed from the CMIF file of the Hugo Schuchardt Archiv (CC BY 4.0, see teiHeader) '
+                              'by CorrespExplorer preprocessing/build_hsa_data.py: converted to JSON, letters indexed '
+                              'by person, place, subject and language, date precision and certainty classified, '
+                              'coordinates of places added from Wikidata via their GeoNames IDs.'),
             'total_letters': len(letters),
             'unique_senders': len([p for p in persons_index.values() if p['letters_sent'] > 0]),
             'unique_recipients': len([p for p in persons_index.values() if p['letters_received'] > 0]),

@@ -236,6 +236,17 @@
     color: var(--color-border);
 }
 
+.overview-source-inline .source-modifications summary {
+    cursor: pointer;
+    color: var(--color-primary);
+}
+
+.overview-source-inline .source-modifications[open] {
+    flex-basis: 100%;
+    max-width: 60ch;
+    text-align: left;
+}
+
 /* Quality Bar Inline (compact chips) */
 .quality-bar-inline {
     display: flex;

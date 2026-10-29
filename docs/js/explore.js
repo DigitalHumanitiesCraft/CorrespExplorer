@@ -14,7 +14,7 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard, downloadFile } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard, downloadFile, csvCell } from './utils.js';
 import {
     formatDateWithPrecision,
     formatPersonName,
@@ -1895,11 +1895,14 @@ function renderOverview() {
             parts.push(escapeHtml(publisherValue));
         }
 
-        // Licence
+        // Licence, with the change note a preprocessed dataset carries (CC BY requires indicating changes)
         if (hasJsonFormat && teiHeader.licence) {
             parts.push(externalLink(teiHeader.licenceTarget, teiHeader.licence));
         } else if (meta.licence?.text) {
             parts.push(externalLink(meta.licence.url, meta.licence.text));
+        }
+        if (meta.modifications) {
+            parts.push(`<details class="source-modifications"><summary>Bearbeitet</summary>${escapeHtml(meta.modifications)}</details>`);
         }
 
         // CMIF URL
@@ -3079,7 +3082,7 @@ function exportData(format) {
     if (format === 'csv') {
         const headers = Object.keys(data[0] || {});
         const rows = data.map(row =>
-            headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(',')
+            headers.map(h => csvCell(row[h] ?? '')).join(',')
         );
         content = [headers.join(','), ...rows].join('\n');
         filename = 'korrespondenz.csv';
