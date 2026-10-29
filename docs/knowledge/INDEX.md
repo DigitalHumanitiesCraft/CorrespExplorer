@@ -10,7 +10,7 @@ status: draft
 language: de
 version: 0.1
 created: 2025-12-03
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Index
@@ -46,6 +46,7 @@ Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index,
 - `docs/knowledge/` enthält die dauerhaft gepflegten Promptotyping Documents einschließlich `handoff.md`.
 - `research-artefacts/` enthält den Paper-Entwurf zur Entstehung des Werkzeugs als Forschung und den Prompt für ein externes LLM-Review.
 - `docs/data/` enthält Beispiel- und Testdatensätze, `preprocessing/` die Python-Skripte, die erweiterte Datensätze erzeugen.
+- `docs/vendor/` enthält die eingebundenen Bibliotheken und Schriften mit ihren Lizenzdateien ([architecture.md](architecture.md#bibliotheken)).
 
 ## Lesepfade
 
@@ -86,6 +87,12 @@ Verwendet in [specification.md](specification.md#adr-004-epistemische-kategorien
 
 ### Wissenskorb
 
-Sammlung ausgewählter Briefe, Personen und Orte, im localStorage gehalten, über Tabs synchronisiert und auf einer eigenen Analyseseite ausgewertet (`wissenskorb.html`).
+Sammlung ausgewählter Briefe, Personen und Orte, im localStorage gehalten, über Tabs synchronisiert und auf einer eigenen Analyseseite ausgewertet (`wissenskorb.html`). In Oberfläche und Commits heißt er auch Datenkorb.
 
-Verwendet in [architecture.md](architecture.md#3-basket-knowledge-basket).
+### Wissenspfad
+
+Ein gestarteter Forschungspfad, den eine Leiste Schritt für Schritt durch die Ansichten führt, während der Wissenskorb die Auswahl sammelt.
+
+Verwendet in [specification.md](specification.md#us-35-geführte-exploration-mit-wissenskorb), [design.md](design.md#wissenspfade).
+
+Verwendet in [architecture.md](architecture.md#datenfluss), [`wissenskorb.html`](architecture.md#seiten).

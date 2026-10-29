@@ -49,10 +49,10 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 
 | Datei | Inhalt | Rolle |
 |---|---|---|
-| `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 | Tutorial-Datensatz der Startseite mit Onboarding-Tour |
+| `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 mit allen Erwähnungstypen des CMIF-v2-Entwurfs (Themen, Personen, Orte, Organisationen, Werke) und Sprachangaben | Tutorial-Datensatz der Startseite mit Onboarding-Tour |
 | `docs/data/hsa.xml` | CMIF-Export des Hugo Schuchardt Archivs | Quelle der Vorprozessierung |
-| `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes und teiHeader-Metadaten | Erweiterter Beispieldatensatz der Startseite |
-| `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs | Ergänzung von Orten ohne Koordinaten |
+| `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes, teiHeader-Metadaten und Änderungsvermerk `meta.modifications` | Erweiterter Beispieldatensatz der Startseite |
+| `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs, teils falsch zugeordnet (siehe [Rechte und Lizenzen](#rechte-und-lizenzen)) | Ergänzung von Orten ohne Koordinaten beim Upload |
 | `docs/data/test-uncertainty.xml` | Synthetische Unsicherheitsfälle | Testdatei, siehe [Testdatensätze](#testdatensätze) |
 | `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs) | Testdatei der Sicherheits-Suite |
 | `docs/data/schoenbach.xml` | Lokale Kopie der Schönbach-Briefe | Kleiner Realdatensatz |
@@ -81,6 +81,8 @@ Kennzahlen der gebündelten Datei, Stand der Vorprozessierung im Dezember 2025:
 
 Die häufigsten Korrespondenten sind Leo Spitzer (447 Briefe, VIAF 46804188), Julio de Urquijo Ybarra (243, VIAF 18030027), Georges Lacombe (235, VIAF 34446283), Theodor Gartner (222, VIAF 59114592) und Edward Spencer Dodgson (181, VIAF 27433725). Die häufigsten Absendeorte sind Graz (2.371, GeoNames 2778067), Wien (855, 2761369), Paris (781, 2988507), Leipzig (247, 2879139) und Berlin (237, 2950159). Graz als Schuchardts Wirkungsort stellt rund ein Fünftel aller Briefe.
 
+Im Sprachindex der Datei steht der Code `None` für die Bezeichnung „Ladinisch“. Die Oberfläche zeigt `None` als „Ohne Angabe“, weil der Parser `None` für Briefe ohne Sprachangabe vergibt. Die Doppeldeutigkeit stammt aus der Vorprozessierung (geprüft am 2026-10-29 in `indices.languages`).
+
 ### Externe CMIF-Quellen
 
 Diese Quellen wurden beim Aufbau des Werkzeugs als ladbar erfasst. Ob eine URL weiterhin antwortet, ist beim Laden zu prüfen.
@@ -89,7 +91,7 @@ Diese Quellen wurden beim Aufbau des Werkzeugs als ladbar erfasst. Ob eine URL w
 |---|---|---|
 | Schnitzler-CMIF (GitHub) | https://github.com/arthur-schnitzler/schnitzler-cmif, Raw-Muster `https://raw.githubusercontent.com/arthur-schnitzler/schnitzler-cmif/main/{dateiname}.xml` | Getestet mit `1971_Schnitzler_Reinhardt.xml` (104 Briefe, 1902–1921), GND für Personen, Orte ohne GeoNames |
 | correspSearch Storage (GitHub) | https://github.com/correspSearch/csStorage, Raw-Muster `https://raw.githubusercontent.com/correspSearch/csStorage/dev/{ordner}/{datei}.xml` | CMIF-Dateien ohne eigenes Hosting, etwa avhumboldt, wvhumboldt, forster, hofmannsthal, droste-huelshoff, lasker-schueler, rilke, wieland, feuerbach, helmholtz. Beispiele `.../dev/avhumboldt/Spiker.xml`, `.../dev/rilke-kappus.xml` |
-| correspSearch API v2.0 | https://correspsearch.net/api/v2.0/tei-json.xql | Parameter `correspondent` (GND/VIAF-URI), `placeSender` (GeoNames-URI), `startdate`, `enddate`. Der Ladepfad im Werkzeug ist defekt, siehe [plan.md](plan.md#offene-befunde) |
+| correspSearch API v2.0 | https://correspsearch.net/api/v2.0/tei-json.xql | Parameter laut Dokumentation (https://correspsearch.net/en/api.html, abgerufen 2026-10-29) `s` (Personen-URI), `p` (GeoNames-URI), `d` (Datum oder Zeitraum), `o`, `e`, `c`, `a` und `x` (Seite ab 1). Die Antworten liefern je Seite 10 Briefe, die Dokumentation nennt 100. Das URL-Feld der Startseite lädt solche URLs, geprüft am 2026-10-29 mit `d=1890-01-01` (87 Briefe auf 9 Seiten) |
 | Leibniz-Briefportal | https://leibniz-briefportal.de | CMIF-Export, GND für Personen |
 | Carl-Maria-von-Weber-Gesamtausgabe | https://weber-gesamtausgabe.de/cmif_v1.xml (empfohlen), `cmif_v2.xml` (CMIF-v2-Entwurf) | Umfangreicher Bestand, GND für Personen, CC BY 4.0 |
 | Edvard-Munch-Korrespondenz (NorKorr) | https://dataverse.no/api/access/datafile/191809, Datensatz https://dataverse.no/dataset.xhtml?persistentId=doi:10.18710/TAFUSV | Großer Datensatz aus der Edition eMunch.no, GeoNames für Orte, geeignet für Lasttests |
@@ -101,20 +103,23 @@ Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY
 | Datei | Herkunft | Lizenzangabe | Beleg |
 |---|---|---|---|
 | `docs/data/hsa.xml`, identisch `data/hsa/CMIF.xml` | CMIF-Export des Hugo Schuchardt Archivs, Publisher Zentrum für Informationsmodellierung der Universität Graz, Stand 2025-01-28 | CC BY 4.0 | `licence target="https://creativecommons.org/licenses/by/4.0/"` im teiHeader, Quelle https://gams.uni-graz.at/context:hsa/CMIF |
-| `docs/data/hsa-letters.json` | Mit `build_hsa_data.py` aus `data/hsa/CMIF.xml` abgeleitet | CC BY 4.0 der Quelle | `meta.teiHeader` übernimmt Publisher, Herausgabe, Lizenztext, Lizenz-URL und Bibliographie, die Übersicht zeigt den Lizenzlink |
+| `docs/data/hsa-letters.json` | Mit `build_hsa_data.py` aus `data/hsa/CMIF.xml` abgeleitet und dabei geändert | CC BY 4.0 der Quelle | `meta.teiHeader` übernimmt Publisher, Herausgabe, Lizenztext, Lizenz-URL und Bibliographie. `meta.modifications` nennt die Änderungen, die Übersicht zeigt ihn neben dem Lizenzlink, `about.html` und README erwähnen ihn |
 | `docs/data/schoenbach.xml` | Lokale Kopie des CMIF der Edition „Fünf Briefe aus dem Nachlass von Anton Emanuel Schönbach“ am ACDH-OEAW | CC0 | `licence target="https://creativecommons.org/publicdomain/zero/1.0/"` im teiHeader |
 | `docs/data/demo-showcase.xml`, `docs/data/test-uncertainty.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | teiHeader der Dateien |
-| `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | keine gültige Angabe, das `licence`-Element ist absichtlich feindliche Eingabe | teiHeader |
+| `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 wie die übrigen synthetischen Dateien | Diese Tabelle. Das `licence`-Element der Datei bleibt absichtlich feindliche Eingabe der Sicherheits-Suite und trägt deshalb keine gültige Angabe |
 | `data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata, per SPARQL über die GeoNames-ID (P1566) abgefragt | Wikidata-Daten stehen unter CC0 | `meta.source` der Datei |
-| `docs/data/geonames_coordinates.json` | Kleinere, abweichende Koordinatentabelle, von `upload.js` geladen | keine | Herkunft nicht dokumentiert, eingeführt mit Commit `e1a13cf` |
+| `docs/data/geonames_coordinates.json` | Im Projekt angelegte Koordinatentabelle, von `upload.js` geladen | keine | Siehe die Herkunftsprüfung unten |
 
 Externe Quellen, die Nutzende zur Laufzeit laden, sind nicht im Repository gebündelt. Ihre Lizenz steht im teiHeader der geladenen Datei, die Übersicht zeigt sie an. Die correspSearch-API gibt ihre Ergebnisse laut API-Dokumentation (https://correspsearch.net/en/api.html, abgerufen 2026-10-29) unter CC BY 4.0 aus, die zu nennenden Datengeber stehen in `teiHeader//respStmt`.
 
-Offen sind drei Punkte.
+### Herkunft von docs/data/geonames_coordinates.json
 
-- CC BY 4.0 verlangt neben der Namensnennung einen Hinweis auf Änderungen. `hsa-letters.json` trägt mit `meta.generated` und `meta.source_file` nur implizit die Information, dass es sich um eine vorprozessierte Ableitung handelt, ein ausdrücklicher Änderungshinweis fehlt in Datei und Oberfläche. Ob die bisherige Anzeige genügt, entscheidet der Operator als Lizenznehmer, das datengebende Archiv muss dafür nicht gefragt werden.
-- Herkunft und damit Rechtsgrundlage von `docs/data/geonames_coordinates.json` sind nicht belegt. Die Klärung liegt beim Operator, weil die Datei im Projekt entstanden ist.
-- `test-hostile.xml` trägt als Eigenproduktion keine gültige Lizenzangabe. Ob für synthetische Testdateien die Dokumentationslizenz CC BY 4.0 gilt, legt der Operator fest.
+Die Datei entstand mit Commit `e1a13cf` (2025-11-26) als leeres Objekt. Commit `d2bc2eb` (2025-11-27, in einer Coding-Agent-Session) füllte sie mit 58 europäischen Städten. Weder Commit noch Skript nennen eine Quelle, und keine Pipeline im Repository erzeugt die Datei. Ein Abgleich jeder ID mit dem GeoNames-RDF-Dienst (`https://sws.geonames.org/{id}/about.rdf`, am 2026-10-29) ergab 31 Einträge mit identischen Koordinaten und 14 mit Abweichungen unter 0,05 Grad. 13 Einträge ordnen einer GeoNames-ID Namen und Koordinaten einer anderen Stadt zu, etwa ID 2660646 (GeoNames: Genf) mit Namen und Koordinaten von Bern oder ID 3164603 (GeoNames: Venedig) mit denen von Turin. Die Übereinstimmung der übrigen Werte mit GeoNames spricht vermutlich dafür, dass die Tabelle aus GeoNames-Werten zusammengestellt wurde, die Vertauschungen sprechen gegen einen maschinellen Abruf. Die Werte sind deshalb nicht belegt und teils falsch. Der Tutorial-Datensatz ist betroffen, weil er Genf mit ID 2660646 führt und `upload.js` Genf dadurch bei Bern verortet. Die Datei bleibt unverändert, die Entscheidung steht in [plan.md](plan.md#9-statische-koordinatentabelle-ordnet-ids-falsch-zu).
+
+### Entschieden am 2026-10-29
+
+- `hsa-letters.json` trägt einen ausdrücklichen Änderungsvermerk in `meta.modifications`, den `build_hsa_data.py` bei jedem Lauf mitschreibt. Die Oberfläche zeigt ihn dort, wo die Lizenz steht.
+- `test-hostile.xml` steht wie die übrigen synthetischen Testdateien unter CC BY 4.0. Die Angabe steht in dieser Wissensbasis, weil das `licence`-Element der Datei Testeingabe bleibt.
 
 ## Modell
 
@@ -203,7 +208,7 @@ Erweiterte Datensätze wie das HSA werden in Python vorprozessiert (`preprocessi
 - GitHub-Raw-URLs (`https://raw.githubusercontent.com/{user}/{repo}/{branch}/{pfad}.xml`) erlauben CORS.
 - Bei einem CORS-Fehler die Datei herunterladen und per Drag-and-Drop hochladen.
 - Dateien über etwa 5 MB können das sessionStorage-Limit überschreiten, die Fehlermeldung nennt dann die Größe.
-- Orte ohne Koordinaten erscheinen in der Ortsansicht, aber nicht auf der Karte. Der Link „ohne Geodaten“ listet sie.
+- Orte ohne Koordinaten erscheinen in der Ortsansicht, aber nicht auf der Karte. Ein Hinweis in der Ortsansicht nennt ihre Zahl und bietet die Auflösung über Wikidata an.
 
 ## Testdatensätze
 

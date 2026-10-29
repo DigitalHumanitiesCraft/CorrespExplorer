@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-12-03
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Testing
@@ -54,8 +54,8 @@ Wichtige Regel: NIE Mock-Daten verwenden
 ## Test-Ebenen
 
 - Unit- und Integrationstests laufen im Browser-Test-Runner (docs/test.html)
-- E2E-Tests gibt es nicht
-- Visuelle Pruefung und Bedienung der Views erfolgen manuell oder in Agenten-Reviews
+- Eine automatisierte E2E-Suite im Repository gibt es nicht
+- Bedienung und Darstellung der Ansichten werden mit einem Playwright-Durchlauf im Browser geprüft, siehe [Browser-Prüfung der Ansichten](#browser-prüfung-der-ansichten)
 
 ## Test-Abdeckung
 
@@ -66,13 +66,11 @@ Business Logic mit echten CMIF-Daten
 - test-aggregation.js - Indices-Erstellung, State-Manager Integration
 - test-formatters.js - Formatierung mit echten Daten
 - test-security.js - Escaping, URL-Schemata und ?json=-Pfade gegen docs/data/test-hostile.xml
-- test-state-manager.js - Filter-Logik mit echten CMIF-Daten
+- test-state-manager.js - Filter-Logik mit echten CMIF-Daten, darunter Personen- und Ortsfilter ohne Normdaten-ID
 
 Infrastructure (ohne CMIF-Daten)
 - test-dom-cache.js - Element-Caching
 
-Nicht im Runner
-- test-uncertainty.js - Konsolen-Helfer, der ein mit parseCMIF geladenes test-uncertainty.xml prueft
 
 ## Test-Typen
 
@@ -116,6 +114,21 @@ http://localhost:8000/test.html?test=true
 ```
 
 Eine CI ist nicht eingerichtet.
+
+## Browser-Prüfung der Ansichten
+
+Die Ansichten prüft ein Durchlauf mit Python-Playwright in Chrome (`channel="chrome"`, headless) gegen einen lokalen Server auf `docs/`. Die Skripte liegen nicht im Repository. Der Durchlauf vom 2026-10-29 deckte ab:
+
+- Laden von `explore.html?json=data/hsa-letters.json` und Upload von `demo-showcase.xml`, `test-uncertainty.xml` und `test-hostile.xml` über die Startseite
+- jede der zwölf Ansichten mit Prüfung auf Konsolen- und Seitenfehler
+- Bedienelemente der Karte, Personen-Dialog mit Escape und Fokusrückgabe, Aufklappen eines Briefs per Enter, Ortsfilter für einen Ort ohne GeoNames-ID, aktivster Tag der Heatmap
+- Wissenspfad starten, alle Forschungspfade anzeigen, Briefe in den Korb legen und auf `wissenskorb.html` wiederfinden
+- Breite 390px je Ansicht (kein horizontaler Seitenüberlauf, breite Grafiken scrollen im eigenen Container) und der Filter-Schalter der Sidebar
+- alle Seiten ohne Zugriff auf externe Hosts außer der Grundkarte, dazu die Karte ohne Grundkarte
+- `vault.html` mit Links zwischen den Wissensdokumenten
+- Laden einer correspSearch-API-URL gegen den Live-Dienst mit einer Datumsabfrage
+
+Externe Dienste mit Personenbezug (Wikidata) wurden im Durchlauf blockiert.
 
 ## Best Practices
 

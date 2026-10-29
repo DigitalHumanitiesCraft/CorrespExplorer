@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Design
@@ -322,6 +322,8 @@ input:focus {
 
 Dicke Border (3px) statt box-shadow fuer Tiefe.
 
+Escape schließt den obersten offenen Dialog über seinen Schließen-Knopf. Beim Öffnen springt der Fokus auf diesen Knopf, beim Schließen zurück auf das auslösende Element. Die Dialoge tragen `role="dialog"` und `aria-modal`. Umgesetzt für alle Seiten mit `enableModalKeyboard()` in `utils.js`.
+
 ---
 
 ## 6. Datenvisualisierung
@@ -374,8 +376,10 @@ Dicke Border (3px) statt box-shadow fuer Tiefe.
 
 | Breakpoint | Sidebar | Main Content |
 |------------|---------|--------------|
-| < 768px | Collapsed (Hamburger) | Full Width |
-| >= 768px | 380px (var(--sidebar-width)) | Flex Fill |
+| < 768px | Außerhalb des Bildschirms, ein Filter-Schalter in der Navigation öffnet sie (`#sidebar-toggle`, `aria-expanded`) | volle Breite, Ansichtswechsel als scrollbare Icon-Leiste, Datensatztitel ausgeblendet |
+| >= 768px | 380px (var(--sidebar-width)), 240px bis 1024px | Flex Fill |
+
+Breite Darstellungen (Timeline, Aktivitäts-Heatmap, Erwähnungsfluss) scrollen in ihrem eigenen Container, die Seite selbst bleibt auf 390px ohne horizontalen Überlauf (geprüft 2026-10-29 mit Playwright).
 
 ---
 
@@ -496,6 +500,14 @@ Fehlende Daten werden ausdrücklich als „unbekannt“ markiert, Tooltips erkl�
 ### Progressive Disclosure
 
 Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige Metadaten in Dialog oder Panel. Bei großen Datensätzen würde die gleichzeitige Anzeige aller Details überfordern.
+
+### Startansicht und Navigation
+
+Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe, Bezeichnung und Kurzbeschreibung stehen im Tooltip und im zugänglichen Namen. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips färben nach Schwellen von 70 und 40 Prozent grün, gelb und rot. Ob diese Ampel mit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten) vereinbar ist, ist offen ([plan.md](plan.md#offene-entscheidungen-und-abhängigkeiten)).
+
+### Wissenspfade
+
+Ein gestarteter Forschungspfad erscheint als Leiste unter der Navigation mit Frage, nummerierten Schritten, Zurück, Weiter, Beenden und der Zahl der Einträge im Korb. Der Korb steht zusätzlich als Abschnitt in der Sidebar.
 
 ### Forschungspfade
 

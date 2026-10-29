@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Projekt-Wissensdokument
@@ -32,7 +32,7 @@ CorrespExplorer ist ein Werkzeug im Browser zur interaktiven Exploration von Kor
 
 ## Datengrundlage
 
-Das Werkzeug arbeitet auf CMIF-Dateien, die Editionen und Archive veröffentlichen und die der Webservice correspSearch der Berlin-Brandenburgischen Akademie der Wissenschaften aggregiert. Nutzende laden eine Datei hoch oder geben eine URL an. Als Beispiel dient der vorprozessierte Briefbestand des Hugo Schuchardt Archivs der Universität Graz mit Themen, erwähnten Personen und Orten und Briefsprachen. Ein synthetischer Datensatz führt durch die Funktionen. Die Rechte an den Korrespondenzdaten bleiben bei den Editionen und Archiven. Quellen, Datenmodell und Testdatensätze beschreibt [data.md](data.md).
+Das Werkzeug arbeitet auf CMIF-Dateien, die Editionen und Archive veröffentlichen und die der Webservice correspSearch der Berlin-Brandenburgischen Akademie der Wissenschaften aggregiert. Nutzende laden eine Datei hoch oder geben eine URL an. Als Beispiel dient der vorprozessierte Briefbestand des Hugo Schuchardt Archivs der Universität Graz mit Themen, erwähnten Personen und Orten und Briefsprachen. Ein synthetischer Datensatz führt durch die Funktionen. Die Korrespondenzdaten behalten die Lizenzen, die ihre Herausgeber im teiHeader angeben. Quellen, Datenmodell und Testdatensätze beschreibt [data.md](data.md).
 
 ## Übergeordneter Kontext
 
@@ -83,4 +83,4 @@ Die projektzentralen Begriffe definiert [INDEX.md](INDEX.md#begriffe).
 
 ## Lizenz
 
-Der Code steht unter der MIT-Lizenz (`LICENSE`), Dokumentation und Wissensdokumente unter Creative Commons Attribution 4.0 International. Forschungsdaten Dritter sind davon ausgenommen, die Rechte bleiben bei ihren Inhabern, für den gebündelten Datensatz beim Hugo Schuchardt Archiv. Zitierangaben stehen in `CITATION.cff` und `codemeta.json`.
+Der Code steht unter der MIT-Lizenz (`LICENSE`), Dokumentation und Wissensdokumente unter Creative Commons Attribution 4.0 International. Forschungsdaten Dritter sind davon ausgenommen und behalten die Lizenz ihrer Herausgeber. Der gebündelte Datensatz des Hugo Schuchardt Archivs steht laut teiHeader unter CC BY 4.0 und liegt in geänderter Form vor ([data.md](data.md#rechte-und-lizenzen)). Zitierangaben stehen in `CITATION.cff` und `codemeta.json`.

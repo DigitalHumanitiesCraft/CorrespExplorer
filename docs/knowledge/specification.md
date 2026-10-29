@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Specification
@@ -32,14 +32,14 @@ Die funktionalen Anforderungen stehen als Akzeptanzkriterien bei den Stories im 
 ### Nicht-funktionale Anforderungen
 
 - NFR-01: Die Anwendung läuft vollständig im Browser ohne Backend. Hochgeladene Dateien verlassen den Rechner nicht, URL-Importe laden direkt von der angegebenen Quelle. Maßstab: keine Serverkomponente im Repository, Auslieferung als statische Seite über GitHub Pages.
-- NFR-02: Kein Build-Schritt. Maßstab: `docs/` ist ohne Werkzeugkette lauffähig ([architecture.md](architecture.md#zero-build)).
+- NFR-02: Kein Build-Schritt. Maßstab: `docs/` ist ohne Werkzeugkette lauffähig ([architecture.md](architecture.md#entwurfsmuster)).
 - NFR-03: Daten aus CMIF und Wikidata werden vor jeder Ausgabe in HTML escaped, Links nur mit `http` und `https` gesetzt. Maßstab: Suite `test-security.js` gegen `test-hostile.xml`.
 - NFR-04: Unsicherheit in den Daten bleibt sichtbar und wird nicht durch falsche Präzision überdeckt. Maßstab: [uncertainty-specification.md](uncertainty-specification.md).
 - NFR-05: Alle interaktiven Elemente sind per Tastatur bedienbar und haben einen sichtbaren Fokus. Maßstab: [design.md](design.md#9-accessibility).
 
 ## Epics und User Stories
 
-Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Ihr Umsetzungsstand ist nicht systematisch gegen den Code geprüft. Bekannte Abweichungen führt [plan.md](plan.md#offene-befunde), etwa beim Laden über die correspSearch-API (US-02) und beim Personenfilter für Personen ohne Normdaten (US-10).
+Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Ihr Umsetzungsstand ist nicht systematisch gegen den Code geprüft. Bekannte Abweichungen führt [plan.md](plan.md#offene-befunde).
 
 ### Datenimport
 
@@ -57,7 +57,7 @@ Als Forschende möchte ich eine CMIF-Datei von einer URL laden, um Daten aus Onl
 
 - URL-Eingabefeld
 - CORS-Fehlerbehandlung mit Hinweis
-- Unterstützung der correspSearch-API
+- URLs der correspSearch-API v2.0 laden alle Trefferseiten bis zu einer Obergrenze, eine URL mit Parameter `x` genau eine Seite
 
 #### US-03 Beispieldatensatz erkunden
 
@@ -334,15 +334,47 @@ Als Forschende möchte ich die Korrespondenz als Kalender-Heatmap sehen, um Akti
 - Jahresauswahl
 - Klick auf einen Tag zeigt dessen Briefe
 - Reagiert auf aktive Filter
-- Der aktivste Tag wird nur aus exakten Daten berechnet
+- Der aktivste Tag wird nur aus taggenauen Daten berechnet
+
+### Wissenspfade und Datenkorb
+
+#### US-35 Geführte Exploration mit Wissenskorb
+
+Als Forschende möchte ich von einer Forschungsfrage geleitet durch die Ansichten gehen und dabei Briefe, Personen und Orte sammeln, um eine Exploration methodisch zu strukturieren.
+
+- Ein Klick auf einen Forschungspfad der Übersicht startet einen Wissenspfad
+- Eine Leiste zeigt Frage, Schritte und aktuelle Position, mit Zurück, Weiter und Beenden
+- Der Wissenskorb in der Sidebar sammelt die Auswahl der aktuellen Ansicht
+- Der Korb bleibt in localStorage über Browser-Neustarts erhalten und synchronisiert sich zwischen Tabs
+- Die Navigation zeigt die Zahl der gesammelten Einträge und führt zur Analyseseite `wissenskorb.html`
+
+#### US-36 Kontextuelle Korb-Aktionen
+
+Als Forschende möchte ich aus jeder Detailansicht Einträge in den Korb legen, um ohne Seitenwechsel zu sammeln.
+
+- Brief-Dialog mit Umschalter für den einzelnen Brief
+- Personen-Dialog und Orts-Detail legen alle Briefe der Person oder des Orts in den Korb
+- Eine Rückmeldung nennt die Zahl der hinzugefügten Einträge, bereits gesammelte Einträge sind markiert
+
+### Vergleich
+
+#### US-37 Elemente vergleichen
+
+Als Forschende möchte ich zwei Personen, Zeiträume oder Orte nebeneinander vergleichen, um Unterschiede und Gemeinsamkeiten der Korrespondenz zu erkennen.
+
+- Drei Modi für Personen, Zeiträume und Orte
+- Zwei Spalten mit Briefanzahl, Zeitraum, häufigsten Orten, Themen und Sprachen
+- Überschneidungen bei gemeinsamen Briefen, Korrespondenten, Themen und Zeiträumen
+- Schnellauswahl häufiger Einträge und Suche mit Autovervollständigung
+- Die gemeinsamen Briefe öffnen sich als Liste und von dort im Brief-Dialog
 
 ## Funktionsumfang
 
-Die Ansichten von `explore.html` und ihre Umsetzung beschreibt [architecture.md](architecture.md#ui-komponenten). Die Zuordnung zu den Stories:
+Die Ansichten von `explore.html` und ihre Umsetzung beschreibt [architecture.md](architecture.md#ansichten). Die Zuordnung zu den Stories:
 
 | Ansicht | Stories |
 |---|---|
-| Übersicht | US-04, US-27 |
+| Übersicht mit Forschungspfaden | US-04, US-27, US-33 |
 | Karte | US-06, US-07, US-08 |
 | Korrespondenten | US-09, US-10, US-23 |
 | Briefe und Brief-Dialog | US-12, US-13, US-14 |
@@ -351,8 +383,9 @@ Die Ansichten von `explore.html` und ihre Umsetzung beschreibt [architecture.md]
 | Orte | US-07, US-08 |
 | Netzwerk | US-11 |
 | Chronik | US-28 bis US-32 |
-| Forschungspfade | US-33 |
 | Aktivität | US-34 |
+| Vergleich | US-37 |
+| Wissenspfade und Datenkorb (`wissenskorb.html`) | US-35, US-36 |
 | Sidebar und Navigation | US-15 bis US-22 |
 | Startseite | US-01 bis US-03 |
 
@@ -368,7 +401,7 @@ Wahl. Abgleich und Aggregation laufen über die URI, der Name dient nur der Anze
 
 Begründung. VIAF-, GND- und GeoNames-URIs sind eindeutig und erlauben korrekte Aggregation über Schreibvarianten hinweg.
 
-Effekt. Die Unterstützung mehrerer Normdatensysteme beschreibt [data.md](data.md#normdaten-und-anschlüsse). Der Personenfilter vergleicht bisher nur die ID, sodass Personen ohne URI keine Briefe liefern ([plan.md](plan.md#offene-befunde)).
+Effekt. Die Unterstützung mehrerer Normdatensysteme beschreibt [data.md](data.md#normdaten-und-anschlüsse). Filter, Personen- und Ortsindex und Datenkorb verwenden dieselben Schlüssel `personKey` und `placeKey` aus `utils.js`, also die ID und ohne ID den Namen.
 
 ### ADR-002 Unsicherheit sichtbar machen
 
@@ -388,11 +421,11 @@ Wahl. Der Filterzustand liegt zentral in `state-manager.js`, Indizes werden einm
 
 Begründung. Doppelte Zustände führen zu Synchronisationsfehlern zwischen Ansichten.
 
-Effekt. Die Migration von `explore.js` auf den zentralen Zustand ist unvollständig ([architecture.md](architecture.md#migration-status)).
+Effekt. Person-, Orts-, Themen-, Sprach-, Zeit- und Qualitätsfilter laufen über den state-manager. `explore.js` hält die geladenen Daten und die gefilterte Menge zusätzlich als Arbeitskopie für seine Ansichten und gleicht sie in `applyFilters()` ab ([architecture.md](architecture.md#entwurfsmuster)). Die ausgelagerten Ansichten lesen über injizierte Funktionen und halten nur ihren Darstellungszustand.
 
 ### ADR-004 Epistemische Kategorien für Forschungsfragen
 
-Kontext. Die Forschungspfade-Ansicht schlägt Fragen an den Datensatz vor.
+Kontext. Die Übersicht schlägt Forschungspfade als Fragen an den Datensatz vor.
 
 Wahl. Fragen werden nach der Art der nötigen Erkenntnis eingeteilt in deskriptiv (direkt ablesbar), analytisch (Berechnung oder Aggregation), interpretativ (Kontext nötig) und nicht beantwortbar (Daten fehlen). `analyzeResearchQuestions()` ordnet nach Datenverfügbarkeit zu. Jede Frage führt einen Pfad aus Schritten mit Zielansicht, Bezeichnung und konkreter Aktion.
 

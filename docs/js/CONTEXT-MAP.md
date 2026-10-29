@@ -1,79 +1,39 @@
 # JavaScript Context Map
 
-ES6-Architektur ohne Build-Tools
+ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md](../knowledge/architecture.md), die Ansichtsmodule [views/CONTEXT-MAP.md](views/CONTEXT-MAP.md), die Tests [tests/CONTEXT-MAP.md](tests/CONTEXT-MAP.md).
 
-Detaillierte Dokumentation: [architecture.md](../knowledge/architecture.md)
+## Einstiegspunkte
 
-## Module nach Kategorie
+- upload.js - Startseite `index.html`: Upload, URL-Feld, Beispieldatensätze, Konfigurationsdialog mit Anreicherung
+- explore.js - Explorer `explore.html`: Laden, Filter, URL-State, Übersicht, Karte, Korrespondenten, Briefe, Forschungs- und Wissenspfade, Export, Brief- und Personen-Dialog, Initialisierung der Ansichtsmodule
+- wissenskorb.js - Analyseseite `wissenskorb.html` des Wissenskorbs
+- vault.js - Viewer `vault.html` für `docs/knowledge/`, leitet Links zwischen Dokumenten intern weiter
 
-Entry Points (App-Initialisierung)
-- upload.js - Landing Page (index.html)
-- explore.js - Hauptansicht (explore.html)
-- wissenskorb.js - Persoenlicher Wissenskorb
-- vault.js - Dokumentations-Viewer
+## Daten
 
-Core (keine Dependencies)
-- state-manager.js - Zentrales State-Management
-- dom-cache.js - DOM-Element-Caching
-- constants.js - Farben, UI-Defaults, Konfiguration
-- utils.js - Hilfsfunktionen
-- formatters.js - Formatierung (Datum, Person, Ort)
+- cmif-parser.js - `parseCMIF()` für Datei, URL oder XML-String, leitet correspSearch-API-URLs an correspsearch-api.js weiter, `enrichWithCoordinates()`
+- correspsearch-api.js - `isCorrespSearchUrl()`, `fetchFromCorrespSearchUrl()` mit Seiten ab `x=1` und Obergrenze
+- state-manager.js - `state` mit Daten, Filtern (Zeit, Sprachen, Person, Ort, Thema, Qualität), Cache und URL-Serialisierung
+- formatters.js - Datum, Person und Ort mit Unsicherheitsanzeige, CSS-Klassen, Initialen
 
-Data (Parsing und Laden)
-- cmif-parser.js - Browser-XML-Parser, TEI-JSON-Handler
-- correspsearch-api.js - correspSearch API v2.0, von cmif-parser.js und upload.js fuer correspSearch-API-URLs genutzt
+## Gemeinsame Helfer
 
-Enrichment (Datenanreicherung)
-- wikidata-enrichment.js - SPARQL fuer Bilder, Lebensdaten
-- geonames-enrichment.js - GeoNames zu Koordinaten via Wikidata
+- utils.js - Escaping (`escapeHtml`, `safeUrl`, `externalLink`, `isAllowedJsonPath`), `csvCell`, `downloadFile`, `showToast`, `enableModalKeyboard`, Normdaten (`parseAuthorityRef`, `parseGeoNamesRef`, `buildAuthorityLink`), `classifyDate`, `personKey`, `placeKey`, `countIdentifiedPersons`, `analyzeDataCapabilities`, `debounce`
+- constants.js - Sprachfarben und -bezeichnungen, UI-, Karten-, Netzwerk- und API-Vorgaben, Korbgrenzen
+- dom-cache.js - `elements` mit Gettern für wiederholt genutzte Elemente des Explorers
 
-UI/UX (User-Interaktion)
-- basket.js - LocalStorage-Wissenskorb-Logik
-- basket-ui.js - Wissenskorb UI-Komponenten
-- demo-tour.js - Onboarding-Tour
+## Anreicherung
 
-Tests (siehe tests/CONTEXT-MAP.md)
-- test-runner.js - Test-Framework
-- run-all-tests.js - Test-Entry-Point
-- test-*.js - Test-Suites
+- wikidata-enrichment.js - Personen über VIAF oder GND bei Wikidata, Lebensdaten, Bilder, Berufe
+- geonames-enrichment.js - Koordinaten zu GeoNames-IDs über Wikidata
 
-Views (extrahierte Module, siehe views/CONTEXT-MAP.md)
-- views/timeline-view.js - Zeitleisten-Visualisierung
-- views/activity-view.js - GitHub-style Heatmap
-- views/chronik-view.js - Chronologische Liste mit Wikidata
-- views/comparison-view.js - Side-by-Side Vergleich
-- views/network-view.js - D3.js Force-Graph
-- views/mentions-view.js - Sankey fuer Erwahnungen
-- views/topics-view.js - Themen-Browse mit Detail-Panel
-- views/places-view.js - Orte-Browse mit Koordinaten-Aufloesung
+## Korb und Führung
 
-## Kritische Abhaengigkeiten
+- basket.js - Wissenskorb in localStorage, Tab-Synchronisation, Teilen per URL
+- demo-tour.js - Onboarding-Tour des Tutorial-Datensatzes
 
-explore.js importiert fast alle Module und ist das Herzstueck.
+## Regeln
 
-Aenderungen an diesen Modulen haben weitreichende Auswirkungen:
-- cmif-parser.js - Alle Datenverarbeitung
-- state-manager.js - Alle Filter und UI-State
-- formatters.js - Alle Views
-- constants.js - Fast alle Module
-
-## Views in explore.js
-
-Verbleibende Views (nicht extrahiert): Overview, Map, Persons, Letters, Questions
-
-Extrahierte Views: Timeline, Activity, Chronik, Comparison, Network, Mentions Flow, Topics, Places
-
-Jeder View hat:
-- renderXYZ() Funktion
-- Optionale setupXYZ() Funktion
-- View-spezifischer State in state.ui
-
-## Naming Conventions
-
-Dateien: kebab-case.js
-Funktionen: camelCase()
-Klassen: PascalCase
-Rendering: renderXYZ()
-State-Updates: updateXYZ()
-Filter: applyXYZ()
-Builder: buildXYZ()
+- Jeder Wert aus CMIF, JSON, Wikidata oder Storage passiert `escapeHtml` vor `innerHTML`, Links passieren `safeUrl` oder `externalLink`.
+- Personen werden über `personKey`, Orte über `placeKey` verglichen, im Filter, in Indizes und im Korb.
+- Dateinamen kebab-case, Funktionen camelCase, Rendering `render*()`, Filter `apply*()`.
