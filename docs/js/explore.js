@@ -299,8 +299,7 @@ async function init() {
         // Initialize extracted chronik view with dependencies
         initChronikView({
             getFilteredLetters: () => state.getFilteredLetters(),
-            showLetterDetail,
-            state
+            showLetterDetail
         });
         // Initialize extracted activity view with dependencies
         initActivityView({

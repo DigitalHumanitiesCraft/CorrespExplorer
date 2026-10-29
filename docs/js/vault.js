@@ -145,7 +145,7 @@ const REPOSITORY_BLOB = 'https://github.com/DigitalHumanitiesCraft/CorrespExplor
  * GitHub-style heading slug, so anchors written for the repository also work here
  */
 function slugify(text) {
-    return text.trim().toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s/g, '-');
+    return text.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-');
 }
 
 function scrollToSection(section) {

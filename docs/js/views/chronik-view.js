@@ -20,7 +20,6 @@ const CHRONIK_BATCH_SIZE = 100;
 // External dependencies - injected via init
 let getFilteredLetters = null;
 let showLetterDetail = null;
-let stateRef = null;
 
 /**
  * Initialize chronik view with external dependencies
@@ -29,7 +28,6 @@ let stateRef = null;
 export function initChronikView(deps) {
     getFilteredLetters = deps.getFilteredLetters;
     showLetterDetail = deps.showLetterDetail;
-    stateRef = deps.state;
 
     setupChronikEventHandlers();
 }
