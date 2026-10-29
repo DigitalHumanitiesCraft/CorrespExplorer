@@ -10,7 +10,7 @@ Test-Runner (Infrastructure)
 
 Business Logic Tests (CMIF-Datenverarbeitung)
 - test-cmif-parser.js - 17 Tests für XML→JSON Parsing, Eingabevertrag und Unsicherheits-Erkennung
-- test-aggregation.js - 11 Tests für Daten-Aggregation (Orte, Sprachen, Netzwerke)
+- test-aggregation.js - 12 Tests für Daten-Aggregation (Orte, Sprachen, Netzwerke, Normdaten-Abdeckung)
 - test-formatters.js - 26 Tests für Datum/Person/Ort Formatierung
 - test-security.js - Escaping, URL-Schemata und ?json=-Pfade gegen data/test-hostile.xml
 
@@ -110,13 +110,14 @@ CMIF Parser: 13 Tests
 - Mentions-Extraktion (subjects with GND)
 - Sprach-Erkennung (ISO 639-2 to ISO 639-1)
 
-Aggregation: 11 Tests
+Aggregation: 12 Tests
 - aggregateLettersByPlace: Gruppierung, Sender-Zählung, Sprachen
 - Koordinaten-Handling (Letter vs. Index)
 - Jahre-Sammlung (unique years)
 - countByLanguage: Null-Handling
 - buildNetworkData: Sender-Recipient Links
 - buildTimelineData: Jahr-Gruppierung
+- countIdentifiedPersons (utils.js): Personen mit Normdaten-ID für die Übersicht
 
 Formatters: 26 Tests
 - formatSingleDate: Jahr, Monat, Tag

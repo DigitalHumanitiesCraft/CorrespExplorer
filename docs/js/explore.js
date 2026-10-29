@@ -5,7 +5,7 @@ import { LANGUAGE_COLORS, LANGUAGE_LABELS, UI_DEFAULTS, MAP_DEFAULTS, NETWORK_DE
 import { initBasketUI } from './basket-ui.js';
 import { isInBasket } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, isAllowedJsonPath } from './utils.js';
+import { debounce, escapeHtml, safeUrl, isAllowedJsonPath, countIdentifiedPersons } from './utils.js';
 import {
     formatDateWithPrecision,
     formatSingleDate,
@@ -1987,26 +1987,17 @@ function renderOverview() {
         }
     }
 
-    // Calculate quality metrics
-    const quality = meta.uncertainty || {};
-    const totalLetters = meta.total_letters || 1;
+    // Calculate quality metrics from the letters, since parser and preprocessing
+    // name their uncertainty summaries differently
+    const totalLetters = allLetters.length;
 
-    // Date quality (precise dates)
-    const preciseDates = totalLetters - (quality.imprecise_dates || 0);
-    const dateQuality = Math.round((preciseDates / totalLetters) * 100);
+    // Date quality (day precision, as in the header quality icons)
+    const preciseDates = allLetters.filter(l => l.datePrecision === 'day').length;
+    const dateQuality = totalLetters > 0 ? Math.round((preciseDates / totalLetters) * 100) : 0;
 
     // Person quality (identified with authority refs)
-    const allPersonsSet = allLetters.reduce((set, l) => {
-        if (l.sender?.name) set.add(l.sender.id || l.sender.name);
-        if (l.recipient?.name) set.add(l.recipient.id || l.recipient.name);
-        return set;
-    }, new Set());
-    const identifiedPersons = allLetters.reduce((set, l) => {
-        if (l.sender?.id && l.sender.id.startsWith('http')) set.add(l.sender.id);
-        if (l.recipient?.id && l.recipient.id.startsWith('http')) set.add(l.recipient.id);
-        return set;
-    }, new Set());
-    const personQuality = allPersonsSet.size > 0 ? Math.round((identifiedPersons.size / allPersonsSet.size) * 100) : 0;
+    const persons = countIdentifiedPersons(allLetters);
+    const personQuality = persons.total > 0 ? Math.round((persons.identified / persons.total) * 100) : 0;
 
     // Place quality (georeferenced)
     const places = Object.values(dataIndices.places || {});
@@ -2015,7 +2006,7 @@ function renderOverview() {
 
     // Update quality bars
     updateQualityBar('quality-bar-dates', 'quality-dates', dateQuality, preciseDates, totalLetters);
-    updateQualityBar('quality-bar-persons', 'quality-persons', personQuality, identifiedPersons.size, allPersonsSet.size);
+    updateQualityBar('quality-bar-persons', 'quality-persons', personQuality, persons.identified, persons.total);
     updateQualityBar('quality-bar-places', 'quality-places', placeQuality, geoPlaces, places.length);
 
     // Generate view recommendations
@@ -7443,7 +7434,7 @@ function buildActivityIndex(letters) {
         byWeekday[weekday]++;
 
         // Max day tracken (nur exakte Daten, nicht Platzhalter wie 1798-01-01)
-        if (letter.datePrecision === 'exact' && dateEntry.count > maxDay.count) {
+        if (letter.datePrecision === 'day' && dateEntry.count > maxDay.count) {
             maxDay = { date, count: dateEntry.count };
         }
 

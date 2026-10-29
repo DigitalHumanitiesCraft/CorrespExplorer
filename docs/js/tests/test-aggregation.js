@@ -5,6 +5,7 @@
 
 import { parseCMIF } from '../cmif-parser.js';
 import { state } from '../state-manager.js';
+import { countIdentifiedPersons } from '../utils.js';
 
 export const AggregationTests = {
     name: 'Data Aggregation',
@@ -211,6 +212,19 @@ export const AggregationTests = {
 
                 console.log('Date precisions:', datePrecisions);
                 assert(Object.keys(datePrecisions).length > 0, 'Should have date precision distribution');
+            }
+        },
+
+        {
+            // Regression: the overview showed 0% identified persons because ids are bare
+            // authority ids, not URLs
+            name: 'countIdentifiedPersons: Zählt Personen mit Normdaten-ID',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const { identified, total } = countIdentifiedPersons(data.letters);
+
+                assert(identified > 0, `Should count persons with authority id, got ${identified}`);
+                assert(identified < total, `Fixture has persons without authority id, got ${identified}/${total}`);
             }
         }
     ]

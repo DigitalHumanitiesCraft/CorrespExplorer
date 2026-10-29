@@ -251,6 +251,27 @@ export function parseGeoNamesRef(url) {
 }
 
 /**
+ * Count distinct correspondents (senders and recipients) and those with an authority reference.
+ * Parser and preprocessing store the bare authority id (e.g. "18030027") in `id` and the
+ * system in `authority`, so a present `id` marks identification, not a URL prefix.
+ * Persons without id are keyed by name, as in the person index of explore.js.
+ * @param {Array} letters - Letters with sender/recipient objects
+ * @returns {{identified: number, total: number}}
+ */
+export function countIdentifiedPersons(letters) {
+    const all = new Set();
+    const identified = new Set();
+    for (const letter of letters) {
+        for (const person of [letter.sender, letter.recipient]) {
+            if (!person?.name) continue;
+            all.add(person.id || person.name);
+            if (person.id) identified.add(person.id);
+        }
+    }
+    return { identified: identified.size, total: all.size };
+}
+
+/**
  * Analyze dataset capabilities to determine which views are available
  * @param {Object} data - Parsed CMIF data
  * @returns {Object} Capabilities analysis

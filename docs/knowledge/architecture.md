@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Architecture
@@ -188,6 +188,7 @@ Shared utility functions:
 - formatNumber: Lokalisierte Zahlenformatierung
 - parseAuthorityRef: VIAF, GND, LCCN, ISNI, ORCID Erkennung
 - parseGeoNamesRef: GeoNames ID Extraktion
+- countIdentifiedPersons: Zählt Korrespondenten und solche mit Normdaten-ID für die Qualitätsanzeige der Übersicht
 - analyzeDataCapabilities: Erkennt ob Daten Koordinaten, Personen, Datums enthalten (für adaptive UI)
 - Imports: keine
 - Exports: Einzelne Funktionen
