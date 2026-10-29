@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2025-11-26
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Journal
@@ -22,6 +22,15 @@ related: [project, specification, plan, handoff]
 # Journal: CorrespExplorer
 
 ## Einträge
+
+### 2026-10-29 Qualitätsanzeige, Datenrechte und correspSearch-API
+
+- Anlass: Die Übersicht zeigte für das HSA 0 % identifizierte Personen. Dazu Sichtung des Branchs `feature/research-dashboards`, des Skripts `test-quick.js`, der Rechte an den gebündelten Datensätzen und des offenen Befunds 8.
+- Befund: `renderOverview` erkannte identifizierte Personen an einer ID mit Präfix `http`. Parser und Vorprozessierung speichern die Normdaten-ID ohne URL (`18030027`) und das System in `authority`, gezählt wurden nur Personen mit unbekanntem Normdatensystem. Die Datumsqualität las `meta.uncertainty.imprecise_dates`, das weder Parser noch Vorprozessierung schreiben, und zeigte immer 100 %. Der aktivste Tag der Aktivitätsansicht verglich `datePrecision` mit `'exact'`, das nie vorkommt, und blieb leer. `test-quick.js` bricht unter Node ab, weil `fetch` keinen relativen Pfad lädt, und deckt nur Prüfungen der Parser-Suite ab. Die CMIF-Datei des HSA steht laut teiHeader unter CC BY 4.0, die Schönbach-Datei unter CC0. Die correspSearch-API liefert beobachtet 10 Briefe je Seite, ihre Dokumentation nennt 100.
+- Entschieden: Die Personenquote zählt über die neue Funktion `countIdentifiedPersons` in `utils.js`, die Datumsqualität über `datePrecision === 'day'` der geladenen Briefe wie die Qualitäts-Icons im Kopf. `test-quick.js` entfällt, der Testort bleibt `docs/js/tests/` mit `run-all-tests.js`. Befund 8 bleibt Operatorentscheidung und ist um die geprüfte API-Lage ergänzt. Der Branch bleibt unverschmolzen, die Sichtung steht in [handoff.md](handoff.md).
+- Korrigiert: Die Aussage, die Rechte an den HSA-Daten lägen beim Archiv, in `data.md` und README durch die Lizenzangabe der Datei ersetzt.
+- Geändert: [data.md](data.md#rechte-und-lizenzen) mit Lizenztabelle und drei offenen Rechtsfragen, [plan.md](plan.md#8-correspsearch-api-urls-liefern-keine-briefe), [architecture.md](architecture.md), `docs/js/tests/CONTEXT-MAP.md`.
+- Belege: `9324b24`, `764cabc`, `e7cf201`. Browser-Test-Runner in headless Chrome ohne Fehlschlag, der neue Regressionstest schlägt mit der alten Bedingung fehl. Übersicht mit `hsa-letters.json`: Personen 83 % (852/1031), Datum 95 % (10991/11576), gegengerechnet in Python aus der Datei. Aktivster Tag 1912-02-04 mit 23 Briefen, gegengerechnet ebenso.
 
 ### 2026-10-28 verdichtet Journal
 

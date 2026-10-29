@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2026-10-28
-updated: 2026-10-28
+updated: 2026-10-29
 authors: [Christopher Pollin]
 template:
   name: Vorlage Plan
@@ -45,9 +45,9 @@ Nächster Schritt: `#map-view` als Bezugsrahmen (`position: relative`) setzen un
 
 ### 8. correspSearch-API-URLs liefern keine Briefe
 
-Schweregrad mittel. Eine correspSearch-API-URL im URL-Feld der Startseite lädt einen leeren Datensatz. `upload.js` und `cmif-parser.js` leiten URLs mit `correspsearch.net/api` an `fetchFromCorrespSearchUrl` in `correspsearch-api.js` weiter. Die Paginierung beginnt mit `x=0` und zählt um die Seitengröße hoch. Die API v2.0 nummeriert Seiten ab `x=1` und antwortet auf `x=0` mit einer leeren Seite, worauf die Schleife abbricht. Geprüft am 2026-10-28 mit Node gegen https://correspsearch.net/api/v2.0/tei-json.xql (CORS erlaubt, `x=1` liefert Briefe, das Modul liefert keine). Das Suchformular wurde in Phase 24 entfernt, `searchCorrespSearch` und `getResultCount` sind in `upload.js` importiert und ungenutzt. Das Modul war auf höchstens 5000 Briefe je Anfrage und 10 Briefe je Seite ausgelegt.
+Schweregrad mittel. Eine correspSearch-API-URL im URL-Feld der Startseite lädt einen leeren Datensatz. `upload.js` und `cmif-parser.js` leiten URLs mit `correspsearch.net/api` an `fetchFromCorrespSearchUrl` in `correspsearch-api.js` weiter. `fetchFromCorrespSearchUrl` setzt `x` auf einen Versatz (0, 10, 20 …) statt auf eine Seitennummer. Die API v2.0 nummeriert Seiten ab `x=1` und antwortet auf `x=0` mit einer leeren Seite, worauf die Schleife abbricht. `buildApiUrl` im selben Modul rechnet dagegen schon Seitennummern und ist nur über das entfernte Suchformular erreichbar. Geprüft am 2026-10-28 mit Node gegen https://correspsearch.net/api/v2.0/tei-json.xql (CORS erlaubt, `x=1` liefert Briefe, das Modul liefert keine) und am 2026-10-29 mit einer Abfrage nach einem GND-Korrespondenten: `x=0` liefert kein `correspDesc`, `x=1` und `x=2` je 10 Briefe. Die API-Dokumentation (https://correspsearch.net/en/api.html, abgerufen 2026-10-29) führt v2.0 weiter als Beta, beschreibt `x` als Seitennummer „1-n“ mit Vorgabe 1 und nennt 100 Treffer je Seite. Die beobachtete Seitengröße 10 entspricht `API_DEFAULTS.correspSearchPageSize` in `constants.js`, nicht der Dokumentation. Das Suchformular wurde in Phase 24 entfernt, `searchCorrespSearch` und `getResultCount` sind in `upload.js` importiert und ungenutzt. Das Modul war auf höchstens 5000 Briefe je Anfrage ausgelegt.
 
-Nächster Schritt: entscheiden, ob das Laden über die correspSearch-API erhalten bleibt. Falls ja, Paginierung auf Seitennummern ab 1 umstellen und eine Obergrenze für große Treffermengen setzen. Falls nein, den API-Pfad aus `upload.js` und `cmif-parser.js` entfernen und US-02 anpassen.
+Nächster Schritt: Der Operator entscheidet, ob das Laden über die correspSearch-API erhalten bleibt. Falls ja, in `fetchFromCorrespSearchUrl` Seitennummern ab 1 setzen, das Ende nicht an einer festen Seitengröße, sondern an einer leeren oder unvollständigen Seite erkennen, weil Dokumentation und Antwort in der Seitengröße abweichen, und eine Obergrenze für große Treffermengen setzen. Falls nein, den API-Pfad aus `upload.js` und `cmif-parser.js` entfernen und US-02 anpassen.
 
 ## Vorhaben
 
