@@ -1,9 +1,16 @@
 // Network View
 // Force-directed graph showing relationships between correspondents or topics
 
-import { debounce } from '../utils.js';
+import { debounce, personKey } from '../utils.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
 import { elements } from '../dom-cache.js';
+import { readTokens } from './view-support.js';
+
+// Node colours per network type, as custom properties of tokens.css
+const TYPE_COLOR_TOKEN = {
+    contemporaries: '--color-role-sender',
+    topics: '--color-warning'
+};
 
 // Module state
 let networkType = 'contemporaries'; // 'contemporaries', 'topics'
@@ -91,7 +98,7 @@ function setupNetworkEventHandlers() {
         });
 
         // Also handle change for final value
-        thresholdInput.addEventListener('change', (e) => {
+        thresholdInput.addEventListener('change', () => {
             renderNetwork();
         });
     }
@@ -194,7 +201,7 @@ function buildContemporariesNetwork(letters, minYears, maxNodes) {
 
     letters.forEach(letter => {
         const year = letter.year;
-        const senderId = letter.sender?.id || letter.sender?.name;
+        const senderId = personKey(letter.sender);
         const senderName = letter.sender?.name;
 
         if (!year || !senderId || !senderName) return;
@@ -451,12 +458,16 @@ export function renderNetwork() {
     // Update stats display
     updateNetworkStats(data, minYear, maxYear, yearColorScale);
 
+    // A running simulation of the previous render would keep ticking on detached nodes
+    networkSimulation?.stop();
+    networkSimulation = null;
+
     // Clear previous
     container.innerHTML = '';
 
     if (data.nodes.length === 0) {
         const thresholdText = networkType === 'topics'
-            ? `mindestens ${networkMinCooccurrence} gemeinsamen Erwaehungen`
+            ? `mindestens ${networkMinCooccurrence} gemeinsamen Erwaehnungen`
             : `mindestens ${networkMinYears} gemeinsamen Jahren`;
         container.innerHTML = `
             <div class="network-empty">
@@ -470,13 +481,30 @@ export function renderNetwork() {
 
     const width = container.clientWidth || 800;
     const height = container.clientHeight || 600;
+    const tokens = readTokens({
+        typeColor: TYPE_COLOR_TOKEN[networkType] || TYPE_COLOR_TOKEN.contemporaries,
+        edge: '--color-text-light',
+        edgeActive: '--color-text',
+        nodeStroke: '--color-bg',
+        label: '--color-text',
+        fontSize: '--font-size-xs'
+    });
+
+    // Text alternative of the chart; the nodes inside stay reachable as buttons, so the SVG is a
+    // labelled group rather than role="img", which would hide them from assistive technology
+    const nodeKind = networkType === 'topics' ? 'Themen' : 'Korrespondenten';
+    const topNames = [...data.nodes].sort((a, b) => b.total - a.total).slice(0, 3).map(n => n.name).join(', ');
+    const summary = `Netzwerk mit ${data.nodes.length} ${nodeKind} und ${data.links.length} Verbindungen. ` +
+        `Groesste Knoten: ${topNames}. Pfeiltasten wechseln den Knoten, Enter filtert die Briefe.`;
 
     // Create SVG
     networkSvg = d3.select(container)
         .append('svg')
         .attr('width', '100%')
         .attr('height', '100%')
-        .attr('viewBox', [0, 0, width, height]);
+        .attr('viewBox', [0, 0, width, height])
+        .attr('role', 'group')
+        .attr('aria-label', summary);
 
     // Create container for zoom
     const g = networkSvg.append('g');
@@ -506,8 +534,7 @@ export function renderNetwork() {
         .domain([minEdgeValue, maxEdgeValue])
         .range([1, 8]);
 
-    // Color for network types
-    const typeColor = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
+    const typeColor = tokens.typeColor;
 
     // Node color function
     const getNodeColor = (d) => {
@@ -534,10 +561,11 @@ export function renderNetwork() {
     // Draw edges
     const link = g.append('g')
         .attr('class', 'links')
+        .attr('aria-hidden', 'true')
         .selectAll('line')
         .data(data.links)
         .join('line')
-        .attr('stroke', '#999')
+        .attr('stroke', tokens.edge)
         .attr('stroke-opacity', baseOpacity)
         .attr('stroke-width', d => edgeScale(edgeValueFn(d)));
 
@@ -548,6 +576,11 @@ export function renderNetwork() {
         .data(data.nodes)
         .join('g')
         .attr('class', 'node')
+        .attr('role', 'button')
+        .attr('tabindex', -1)
+        .attr('aria-label', d => networkType === 'topics'
+            ? `${d.name}: ${d.total} Briefe`
+            : `${d.name}: ${d.total} Briefe, ${d.yearsActive} Jahre aktiv`)
         .call(d3.drag()
             .on('start', dragstarted)
             .on('drag', dragged)
@@ -557,7 +590,7 @@ export function renderNetwork() {
     node.append('circle')
         .attr('r', d => nodeScale(d.total))
         .attr('fill', d => getNodeColor(d))
-        .attr('stroke', '#fff')
+        .attr('stroke', tokens.nodeStroke)
         .attr('stroke-width', 2);
 
     // Node labels (only for larger nodes)
@@ -566,8 +599,8 @@ export function renderNetwork() {
         .text(d => d.name.length > 20 ? d.name.substring(0, 20) + '...' : d.name)
         .attr('x', d => nodeScale(d.total) + 5)
         .attr('y', 4)
-        .attr('font-size', '11px')
-        .attr('fill', '#333');
+        .attr('font-size', tokens.fontSize)
+        .attr('fill', tokens.label);
 
     // Tooltips
     if (networkType === 'topics') {
@@ -586,19 +619,21 @@ export function renderNetwork() {
             .text(d => `${d.sourceName} & ${d.targetName}\n${d.sharedYears} gemeinsame Jahre\n(${d.yearRange[0]}-${d.yearRange[1]})`);
     }
 
-    // Click handler
-    node.on('click', (event, d) => {
-        event.stopPropagation();
+    const activateNode = (d) => {
         if (networkType === 'topics') {
             applySubjectFilter(d.id);
         } else {
             applyPersonFilter(d.id);
         }
         switchView('letters');
+    };
+
+    node.on('click', (event, d) => {
+        event.stopPropagation();
+        activateNode(d);
     });
 
-    // Hover highlight
-    node.on('mouseenter', (event, d) => {
+    const highlight = (d) => {
         const connectedIds = new Set();
         connectedIds.add(d.id);
         data.links.forEach(l => {
@@ -609,7 +644,7 @@ export function renderNetwork() {
         link.attr('stroke-opacity', l =>
             (l.source.id === d.id || l.target.id === d.id) ? 0.8 : baseOpacity * 0.2
         ).attr('stroke', l =>
-            (l.source.id === d.id || l.target.id === d.id) ? '#666' : '#999'
+            (l.source.id === d.id || l.target.id === d.id) ? tokens.edgeActive : tokens.edge
         );
 
         node.select('circle').attr('opacity', n =>
@@ -618,13 +653,41 @@ export function renderNetwork() {
         node.select('text').attr('opacity', n =>
             connectedIds.has(n.id) ? 1 : 0.3
         );
-    });
+    };
 
-    node.on('mouseleave', () => {
+    const unhighlight = () => {
         link.attr('stroke-opacity', baseOpacity)
-            .attr('stroke', '#999');
+            .attr('stroke', tokens.edge);
         node.select('circle').attr('opacity', 1);
         node.select('text').attr('opacity', 1);
+    };
+
+    node.on('mouseenter', (event, d) => highlight(d));
+    node.on('mouseleave', unhighlight);
+    node.on('focus', (event, d) => highlight(d));
+    node.on('blur', unhighlight);
+
+    // Keyboard path: one tab stop on the largest node, arrows walk the nodes by size,
+    // Enter and Space filter like a click. SVG elements have no click(), so the global
+    // role="button" handler of explore.js cannot serve them.
+    const nodeElements = node.nodes();
+    const order = data.nodes.map((d, i) => i).sort((a, b) => data.nodes[b].total - data.nodes[a].total);
+    if (order.length > 0) nodeElements[order[0]].setAttribute('tabindex', 0);
+    node.on('keydown', (event, d) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            event.stopPropagation();
+            activateNode(d);
+            return;
+        }
+        const pos = order.indexOf(data.nodes.indexOf(d));
+        const targets = { ArrowRight: pos + 1, ArrowDown: pos + 1, ArrowLeft: pos - 1, ArrowUp: pos - 1, Home: 0, End: order.length - 1 };
+        if (!(event.key in targets)) return;
+        event.preventDefault();
+        const next = nodeElements[order[Math.max(0, Math.min(order.length - 1, targets[event.key]))]];
+        event.currentTarget.setAttribute('tabindex', -1);
+        next.setAttribute('tabindex', 0);
+        next.focus();
     });
 
     // Update positions on tick
@@ -695,7 +758,7 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
                 <div class="legend-hint">Farbe = Eintrittsjahr | Hover zeigt Verbindungen</div>
             `;
         } else {
-            const color = networkType === 'topics' ? '#f59e0b' : '#3b82f6';
+            const color = `var(${TYPE_COLOR_TOKEN[networkType] || TYPE_COLOR_TOKEN.contemporaries})`;
             legendDiv.innerHTML = `
                 <div class="legend-item">
                     <span class="legend-circle" style="background: ${color};"></span> ${label}

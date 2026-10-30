@@ -1,8 +1,8 @@
-// DOM Cache - Zentrale Referenzen zu häufig genutzten DOM-Elementen
-// Reduziert wiederholte querySelector/getElementById-Aufrufe und verbessert Performance
+// DOM cache of the explorer: elements looked up once by id or selector and kept, so the many
+// render calls do not repeat getElementById and querySelector
 
 /**
- * DOMCache - Lazy-loading cache für DOM-Elemente
+ * Lazy cache of DOM elements
  */
 class DOMCache {
     constructor() {
@@ -185,30 +185,9 @@ export const elements = {
 };
 
 /**
- * Initialize cache after DOM is ready
- * This pre-loads frequently accessed elements
+ * Fill the cache with the elements the explorer reads first, once the DOM is ready
  */
 export function initDOMCache() {
-    // This ensures they're in cache when needed
-    const criticalElements = [
-        'loadingOverlay',
-        'navbar',
-        'sidebar',
-        'viewButtons',
-        'mapContainer',
-        'personsContainer',
-        'lettersContainer',
-        'timelineContainer'
-    ];
-
-    criticalElements.forEach(key => {
-        try {
-            // Access getter to trigger caching
-            elements[key];
-        } catch (error) {
-            console.warn(`Failed to pre-cache element: ${key}`);
-        }
-    });
-
-    console.log('[DOM Cache] Initialized with pre-loaded elements');
+    ['loadingOverlay', 'sidebar', 'datasetTitle', 'yearRangeSlider', 'personsList', 'lettersList']
+        .forEach(key => elements[key]);
 }

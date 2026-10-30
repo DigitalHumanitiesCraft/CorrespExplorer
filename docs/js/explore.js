@@ -1,22 +1,21 @@
-// Explore View - Generic CMIF visualization
-// Displays data from sessionStorage (uploaded/loaded via upload.js)
+// Explorer page: loads a dataset (?json= path or the upload in sessionStorage), keeps the filter
+// inputs, renders overview, map, persons, letters and the dialogs, and wires the view modules.
 
-import { LANGUAGE_COLORS, MAP_DEFAULTS, NO_LANGUAGE, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
+import { LANGUAGE_COLORS, MAP_DEFAULTS, NO_LANGUAGE, BASKET_LIMITS, VIEWS, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
 import {
     isInBasket as basketIsInBasket,
     addToBasket as basketAdd,
     removeFromBasket as basketRemove,
-    toggleBasketItem as basketToggle,
-    getBasketCounts,
-    clearBasket as basketClear,
     addLettersToBasket,
-    onBasketChange,
     initBasket,
     datasetKey,
     loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, csvCell } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
+import { analyzeResearchQuestions, summarizeCorpus, renderOverviewResearchPaths } from './research-paths.js';
+import { lettersToCsv, lettersToJson } from './export.js';
+import { initKnowledgePath, startKnowledgePath } from './knowledge-path.js';
 import {
     formatDateWithPrecision,
     formatPersonName,
@@ -25,7 +24,7 @@ import {
     getPersonPrecisionClass,
     getPersonInitials
 } from './formatters.js';
-import { checkAndStartDemoTour, startTour } from './demo-tour.js';
+import { initDemoTour, checkAndStartDemoTour, startTour } from './demo-tour.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
 // View modules
@@ -35,10 +34,8 @@ import { initComparisonView, renderComparison as renderComparisonView } from './
 import { initChronikView, renderChronik as renderChronikView } from './views/chronik-view.js';
 import { initNetworkView as initNetworkViewModule, renderNetwork as renderNetworkView } from './views/network-view.js';
 import { initMentionsView, renderMentionsFlow as renderMentionsFlowView } from './views/mentions-view.js';
-import { initTopicsView, renderTopicsList as renderTopicsListView, getSubjectIndex, getSelectedSubjectId, setSelectedSubjectId } from './views/topics-view.js';
-import { initPlacesView, renderPlacesList as renderPlacesListView, getPlacesIndex, getSelectedPlaceId, updateMissingCoordinatesBanner } from './views/places-view.js';
-
-const IS_PRODUCTION = true;
+import { initTopicsView, renderTopicsList as renderTopicsListView, getSubjectIndex } from './views/topics-view.js';
+import { initPlacesView, renderPlacesList as renderPlacesListView } from './views/places-view.js';
 
 // Map instance (not in state - MapLibre manages its own state)
 let map;
@@ -52,6 +49,12 @@ let dataIndices = {};
 let temporalFilter = null;
 let dateRange = { min: 1800, max: 2000 };
 let qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
+let selectedPersonId = null;
+let selectedPlaceFilter = null;
+// The subject filter is separate from the topic shown in the topics view, which only displays it
+let activeSubjectFilter = null;
+let initialLanguageFilter = null;
+let currentView = 'overview';
 
 // Track state
 let handlersSetup = false;
@@ -60,16 +63,19 @@ let mapInitialized = false;
 // Mentions Flow view state
 let mentionedPersonsIndex = new Map();  // Used for detectAvailableViews
 
-// Logging utility
+// Logger handed to the view modules; only errors reach the console
+const noop = () => {};
 const log = {
-    init: (msg) => !IS_PRODUCTION && console.log(`[INIT] ${msg}`),
-    render: (msg) => !IS_PRODUCTION && console.log(`[RENDER] ${msg}`),
-    event: (msg) => !IS_PRODUCTION && console.log(`[EVENT] ${msg}`),
+    init: noop,
+    render: noop,
+    event: noop,
     error: (msg) => console.error(`[ERROR] ${msg}`)
 };
 
-// Map marker color - Rust Red from logo (tokens.css --color-primary)
-const PRIMARY_COLOR = '#A64B3F';
+// Colour of a design token from tokens.css, for canvas and WebGL layers that cannot read CSS
+function cssToken(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
 
 // Map color mode: 'uniform' (single color) or 'language' (by dominant language)
 let mapColorMode = 'language';
@@ -85,7 +91,6 @@ function detectAvailableViews() {
     const hasYears = allLetters.some(l => l.year !== null && l.year !== undefined);
     const hasSubjects = allLetters.some(l => l.mentions?.subjects?.length > 0);
     const hasPlaces = Object.keys(dataIndices.places || {}).length > 0;
-    const hasLanguages = allLetters.some(l => l.language?.code);
 
     availableViews = {
         overview: {
@@ -138,7 +143,6 @@ function detectAvailableViews() {
         }
     };
 
-    log.init(`Available views: ${Object.entries(availableViews).filter(([k, v]) => v.available).map(([k]) => k).join(', ')}`);
     return availableViews;
 }
 
@@ -151,18 +155,11 @@ function updateViewButtons() {
         const viewInfo = availableViews[view];
 
         if (viewInfo) {
-            if (viewInfo.available) {
-                btn.style.display = '';
-                btn.disabled = false;
-                btn.title = '';
-            } else {
-                btn.style.display = 'none';
-                btn.disabled = true;
-                btn.title = viewInfo.reason;
-            }
+            btn.classList.toggle('hidden', !viewInfo.available);
+            btn.disabled = !viewInfo.available;
+            btn.title = viewInfo.available ? '' : viewInfo.reason;
         }
     });
-
 }
 
 // Get first available view
@@ -178,17 +175,13 @@ function getFirstAvailableView() {
 
 // Initialize application
 async function init() {
-    log.init('Starting CorrespExplorer');
-
-    // Initialize DOM Cache
     initDOMCache();
-    log.init('DOM Cache initialized');
 
     try {
         const data = await loadData();
 
         if (!data) {
-            // No data available, redirect to index
+            // Nothing uploaded and no ?json= path: the start page offers the datasets
             window.location.href = 'index.html';
             return;
         }
@@ -204,8 +197,6 @@ async function init() {
         allLetters = data.letters || [];
         filteredLetters = allLetters;
         dataIndices = data.indices || {};
-
-        log.init('State Manager initialized with data');
 
         // Compute dynamic language colors based on data distribution
         computeLanguageColors(allLetters);
@@ -226,9 +217,7 @@ async function init() {
         // Update state with placeAggregation
         state.data.placeAggregation = placeAggregation;
 
-        // Build mentions index
         mentionedPersonsIndex = buildMentionedPersonsIndex(allLetters);
-        log.init(`Built mentions index: ${mentionedPersonsIndex.size} persons mentioned`);
 
         // Detect available views based on data
         detectAvailableViews();
@@ -242,7 +231,6 @@ async function init() {
         }
 
         updateUI(data);
-        log.init(`Loaded ${allLetters.length} letters, ${Object.keys(placeAggregation).length} places with coordinates`);
 
         // Update view buttons based on data availability
         updateViewButtons();
@@ -297,6 +285,7 @@ async function init() {
         // Initialize extracted chronik view with dependencies
         initChronikView({
             getFilteredLetters: () => state.getFilteredLetters(),
+            getAllLetters: () => allLetters,
             showLetterDetail
         });
         // Initialize extracted activity view with dependencies
@@ -317,113 +306,110 @@ async function init() {
         });
         initExport();
         // Basket of this dataset from localStorage, then items shared via ?basket_* URL parameters
-        currentDatasetKey = datasetKey(data.sourceInfo);
+        const currentDatasetKey = datasetKey(data.sourceInfo);
         sessionStorage.setItem('correspDatasetKey', currentDatasetKey);
         initBasket(currentDatasetKey);
         loadBasketFromUrl();
 
-        // Setup Knowledge Path handlers and load existing session
-        setupKnowledgePathHandlers();
-        loadKnowledgePath();
+        initKnowledgePath({
+            datasetKey: currentDatasetKey,
+            switchView,
+            getCurrentView: () => currentView,
+            getFilteredLetters: () => filteredLetters
+        });
 
-        // Store data in sessionStorage for wissenskorb.js
-        try {
-            sessionStorage.setItem('correspData', JSON.stringify({
-                letters: state.getAllLetters(),
-                indices: state.getIndices(),
-                meta: state.getMeta()
-            }));
-            sessionStorage.removeItem('correspDataSource');
-        } catch (e) {
-            // Large datasets exceed the sessionStorage quota; a ?json= dataset is reloaded by its path instead
-            sessionStorage.removeItem('correspData');
-            const jsonPath = new URLSearchParams(window.location.search).get('json');
-            if (isAllowedJsonPath(jsonPath)) {
-                sessionStorage.setItem('correspDataSource', JSON.stringify({ json: jsonPath }));
-            } else {
-                console.warn('Could not store data in sessionStorage for Wissenskorb', e);
-            }
-        }
+        handOverDatasetToBasketPage(data);
 
-        // Apply initial view (use detected first available if map not available)
+        // Every filter read from the URL applies before the first view renders
+        applyFilters({ render: false });
         switchView(currentView);
 
-        // Time range and languages from the URL
-        if (temporalFilter || initialLanguageFilter) {
-            applyFilters();
-        }
-
-        // Apply person filter from URL
-        if (selectedPersonId) {
-            applyPersonFilter(selectedPersonId);
-        }
-
-        // Apply subject filter from URL
-        if (getSelectedSubjectId()) {
-            applySubjectFilter(getSelectedSubjectId());
-        }
-
         hideLoading();
-        log.init('Application ready');
-
-        // Check if demo dataset and show tour
+        initDemoTour({ switchView });
         checkAndStartDemoTour();
     } catch (error) {
-        showError('Initialisierung fehlgeschlagen: ' + error.message);
         log.error('Init failed: ' + error.message);
-        hideLoading();
+        showError(error.message);
     }
 }
 
-// Load data from sessionStorage or URL parameter
+// wissenskorb.html needs the dataset. A ?json= dataset is reloaded there from its path, so only
+// uploads are copied into sessionStorage (stringifying a large file costs time and quota).
+function handOverDatasetToBasketPage(data) {
+    const jsonPath = data.sourceInfo?.type === 'preprocessed' ? data.sourceInfo.source : null;
+    if (isAllowedJsonPath(jsonPath)) {
+        sessionStorage.removeItem('correspData');
+        sessionStorage.setItem('correspDataSource', JSON.stringify({ json: jsonPath }));
+        return;
+    }
+    try {
+        sessionStorage.setItem('correspData', JSON.stringify({
+            letters: state.getAllLetters(),
+            indices: state.getIndices(),
+            meta: state.getMeta()
+        }));
+        sessionStorage.removeItem('correspDataSource');
+    } catch (e) {
+        sessionStorage.removeItem('correspData');
+        console.warn('Could not store data in sessionStorage for the Wissenskorb page', e);
+    }
+}
+
+// Load the dataset named by ?json=, else the upload from sessionStorage. A ?json= that fails
+// raises an error for the page instead of silently showing an older upload.
 async function loadData() {
-    // Check for direct JSON URL parameter (for large preprocessed datasets)
     const params = new URLSearchParams(window.location.search);
     const jsonUrl = params.get('json');
 
-    if (jsonUrl) {
-        try {
-            log.init(`Loading JSON from URL: ${jsonUrl}`);
-            if (!isAllowedJsonPath(jsonUrl)) {
-                throw new Error('json parameter must be a relative path under data/ ending in .json');
-            }
-            const response = await fetch(jsonUrl);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            const data = await response.json();
-            data.sourceInfo = {
-                type: 'preprocessed',
-                source: jsonUrl,
-                isDemo: params.get('demo') === 'true'
-            };
-            return data;
-        } catch (e) {
-            log.error(`Failed to load JSON from ${jsonUrl}: ${e.message}`);
+    if (jsonUrl !== null) {
+        if (!isAllowedJsonPath(jsonUrl)) {
+            throw new Error(`Der Parameter json= erlaubt nur relative Pfade unter data/ mit der Endung .json, nicht "${jsonUrl}".`);
         }
+        let response;
+        try {
+            response = await fetch(jsonUrl);
+        } catch {
+            throw new Error(`Die Datei ${jsonUrl} konnte nicht geladen werden (Netzwerkfehler).`);
+        }
+        if (!response.ok) {
+            throw new Error(`Die Datei ${jsonUrl} konnte nicht geladen werden (HTTP ${response.status}).`);
+        }
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            throw new Error(`Die Datei ${jsonUrl} enthält kein gültiges JSON.`);
+        }
+        if (!Array.isArray(data?.letters)) {
+            throw new Error(`Die Datei ${jsonUrl} enthält keine Briefliste (letters).`);
+        }
+        data.sourceInfo = {
+            type: 'preprocessed',
+            source: jsonUrl,
+            isDemo: params.get('demo') === 'true'
+        };
+        return data;
     }
 
-    // Try sessionStorage
     const storedData = sessionStorage.getItem('cmif-data');
-    if (storedData) {
-        try {
-            return JSON.parse(storedData);
-        } catch (e) {
-            log.error('Failed to parse stored data');
-        }
+    if (!storedData) return null;
+    try {
+        return JSON.parse(storedData);
+    } catch {
+        throw new Error('Der hochgeladene Datensatz in diesem Tab ist nicht lesbar. Bitte laden Sie ihn auf der Startseite erneut.');
     }
-
-    // Nothing in storage - redirect will happen
-    return null;
 }
 
 // Update UI with data info
 function updateUI(data) {
-    // Update navbar title
     const titleEl = elements.datasetTitle;
     if (titleEl && data.meta?.title) {
         titleEl.textContent = data.meta.title;
+        // The navbar truncates a long title; the tooltip keeps it readable in full
+        titleEl.title = data.meta.title;
         document.title = `${data.meta.title} - CorrespExplorer`;
+        const pageTitle = document.getElementById('page-title');
+        if (pageTitle) pageTitle.textContent = `${data.meta.title} im CorrespExplorer`;
     }
 
     // Update stats
@@ -431,9 +417,12 @@ function updateUI(data) {
     const totalSenders = elements.totalSendersCount;
     const totalPlacesEl = elements.totalPlacesCount;
 
+    // Persons and places are counted from the letters like in the overview (summarizeCorpus),
+    // because meta.unique_senders and meta.unique_places count differently per source
+    const corpus = summarizeCorpus(allLetters, dataIndices);
     if (totalLetters) totalLetters.textContent = (data.meta?.total_letters || allLetters.length).toLocaleString('de-DE');
-    if (totalSenders) totalSenders.textContent = (data.meta?.unique_senders || Object.keys(dataIndices.persons || {}).length).toLocaleString('de-DE');
-    if (totalPlacesEl) totalPlacesEl.textContent = (data.meta?.unique_places || Object.keys(dataIndices.places || {}).length).toLocaleString('de-DE');
+    if (totalSenders) totalSenders.textContent = corpus.persons.size.toLocaleString('de-DE');
+    if (totalPlacesEl) totalPlacesEl.textContent = corpus.places.size.toLocaleString('de-DE');
 
     // Update uncertainty statistics if available
     updateUncertaintyStats(data.meta?.uncertainty);
@@ -478,7 +467,7 @@ function updateUncertaintyStats(uncertainty) {
 
     // Update quality icons with tooltips
     updateQualityIcon('letters-quality-icon', impreciseDates, totalDates, 'mit ungenauem Datum');
-    updateQualityIcon('senders-quality-icon', unknownSenders, totalSenders, 'unbekannt/unvollstaendig');
+    updateQualityIcon('senders-quality-icon', unknownSenders, totalSenders, 'Absender unbekannt oder unvollstaendig');
     updateQualityIcon('places-quality-icon', imprecisePlaces, totalPlaces, 'ohne Koordinaten');
 }
 
@@ -488,13 +477,15 @@ function updateQualityIcon(iconId, count, total, label) {
     if (!iconEl) return;
 
     if (count === 0) {
-        iconEl.style.display = 'none';
+        iconEl.classList.add('hidden');
         return;
     }
 
     const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
     iconEl.title = `${count} ${label} (${percentage}%)`;
-    iconEl.style.display = 'inline';
+    iconEl.setAttribute('aria-label', iconEl.title);
+    iconEl.setAttribute('role', 'img');
+    iconEl.classList.remove('hidden');
 }
 
 // Build language filter checkboxes dynamically
@@ -531,11 +522,10 @@ function buildLanguageFilter() {
         container.appendChild(label);
     });
 
-    filterGroup.style.display = 'block';
+    filterGroup.classList.remove('hidden');
 
-    // Add event listeners
     container.querySelectorAll('input[name="language"]').forEach(cb => {
-        cb.addEventListener('change', debounce(applyFilters, 300));
+        cb.addEventListener('change', debounce(() => applyFilters(), 300));
     });
 }
 
@@ -563,7 +553,7 @@ function initTopicsQuickFilter() {
         count: subjects[id].letter_count || subjects[id].count || 0
     })).sort((a, b) => b.count - a.count);
 
-    filterGroup.style.display = 'block';
+    filterGroup.classList.remove('hidden');
 
     // Render initial list (top 15)
     renderTopicsQuickFilter('');
@@ -603,71 +593,55 @@ function renderTopicsQuickFilter(searchTerm) {
         return;
     }
 
-    const currentSubjectId = getSelectedSubjectId();
     container.innerHTML = toShow.map(topic => {
-        const isActive = currentSubjectId === topic.id;
+        const isActive = activeSubjectFilter === topic.id;
         return `
-            <div class="topic-quick-item ${isActive ? 'active' : ''}" data-topic-id="${escapeHtml(topic.id)}" title="${escapeHtml(topic.label)}">
+            <button type="button" class="topic-quick-item ${isActive ? 'active' : ''}" aria-pressed="${isActive}" data-topic-id="${escapeHtml(topic.id)}" title="${escapeHtml(topic.label)}">
                 <span class="topic-label">${escapeHtml(topic.label)}</span>
                 <span class="topic-count">${topic.count}</span>
-            </div>
+            </button>
         `;
     }).join('');
 
-    // Show count info
     if (filtered.length > toShow.length) {
         container.innerHTML += `<div class="topics-more-info">${filtered.length - toShow.length} weitere Themen...</div>`;
     }
 
-    // Add click handlers
     container.querySelectorAll('.topic-quick-item').forEach(item => {
         item.addEventListener('click', () => {
-            const topicId = item.dataset.topicId;
-            const isActive = item.classList.contains('active');
-
-            // Remove active from all
-            container.querySelectorAll('.topic-quick-item').forEach(i => i.classList.remove('active'));
-
-            if (isActive) {
-                // Clear filter
+            if (activeSubjectFilter === item.dataset.topicId) {
                 clearSubjectFilter();
             } else {
-                // Apply filter
-                item.classList.add('active');
-                applySubjectFilter(topicId);
+                applySubjectFilter(item.dataset.topicId);
             }
-            updateUrlState();
         });
     });
 }
 
-// Update topics quick filter state when subject filter changes
+// Mark the quick filter entry of the active subject filter
 function updateTopicsQuickFilterState() {
     const container = elements.topicsQuickFilter;
     if (!container) return;
 
-    const currentSubjectId = getSelectedSubjectId();
     container.querySelectorAll('.topic-quick-item').forEach(item => {
-        const topicId = item.dataset.topicId;
-        if (currentSubjectId === topicId) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
-        }
+        const isActive = activeSubjectFilter === item.dataset.topicId;
+        item.classList.toggle('active', isActive);
+        item.setAttribute('aria-pressed', String(isActive));
     });
 }
 
-// Mentions flow view - helper functions
-
-// Build index of mentioned persons
+// Mentioned persons, used to decide whether the mentions flow view is available
 function buildMentionedPersonsIndex(letters) {
     const mentioned = new Map();
 
     for (const letter of letters) {
         if (!letter.mentions?.persons) continue;
+        // Parser and correspSearch loader may leave sender or recipient null
+        const senderKey = personKey(letter.sender);
 
         for (const person of letter.mentions.persons) {
-            const key = person.id || person.name;
+            const key = personKey(person);
+            if (!key) continue;
 
             if (!mentioned.has(key)) {
                 mentioned.set(key, {
@@ -682,7 +656,7 @@ function buildMentionedPersonsIndex(letters) {
 
             const entry = mentioned.get(key);
             entry.mentionCount++;
-            entry.mentionedBy.add(letter.sender.id);
+            if (senderKey) entry.mentionedBy.add(senderKey);
             entry.mentionedInLetters.push(letter.id);
         }
     }
@@ -690,14 +664,13 @@ function buildMentionedPersonsIndex(letters) {
     return mentioned;
 }
 
-// Aggregate letters by place_sent for map visualization
+// Aggregate letters by place_sent for the map; places are keyed with placeKey (ADR-001), so a
+// place without GeoNames id still appears when its index entry carries coordinates
 function aggregateLettersByPlace(letters, placesIndex) {
     const places = {};
 
     letters.forEach(letter => {
-        if (!letter.place_sent) return;
-
-        const placeId = letter.place_sent.geonames_id;
+        const placeId = placeKey(letter.place_sent);
         if (!placeId) return;
 
         let lat = letter.place_sent.lat;
@@ -731,13 +704,10 @@ function aggregateLettersByPlace(letters, placesIndex) {
         places[placeId].letter_count++;
         places[placeId].letterIds.push(letter.id);
         if (letter.year) places[placeId].years.add(letter.year);
-        if (letter.sender?.name) {
-            const senderName = letter.sender.name;
-            const senderId = letter.sender.id || letter.sender.name;
-            if (!places[placeId].senderCounts[senderName]) {
-                places[placeId].senderCounts[senderName] = { count: 0, id: senderId };
-            }
-            places[placeId].senderCounts[senderName].count++;
+        const senderId = personKey(letter.sender);
+        if (senderId) {
+            places[placeId].senderCounts[senderId] ??= { count: 0, name: letter.sender.name || senderId };
+            places[placeId].senderCounts[senderId].count++;
         }
         if (letter.language?.code) {
             const langCode = letter.language.code;
@@ -754,7 +724,7 @@ function aggregateLettersByPlace(letters, placesIndex) {
         place.topSenders = Object.entries(place.senderCounts)
             .sort((a, b) => b[1].count - a[1].count)
             .slice(0, 5)
-            .map(([name, data]) => ({ name, count: data.count, id: data.id }));
+            .map(([id, data]) => ({ name: data.name, count: data.count, id }));
         place.senderCount = Object.keys(place.senderCounts).length;
 
         // Calculate dominant language
@@ -798,7 +768,13 @@ function initMap() {
         container: 'map',
         style: mapStyles[currentMapStyle],
         center: center,
-        zoom: 4
+        zoom: 4,
+        locale: {
+            'Map.Title': 'Karte der Absendeorte',
+            'NavigationControl.ZoomIn': 'Hineinzoomen',
+            'NavigationControl.ZoomOut': 'Herauszoomen',
+            'NavigationControl.ResetBearing': 'Nach Norden ausrichten'
+        }
     });
 
     // top-left, because the layer and colour buttons (.map-controls) sit top-right
@@ -809,7 +785,7 @@ function initMap() {
     map.on('error', () => {
         if (mapInitialized || usingFallbackStyle || map.isStyleLoaded()) return;
         usingFallbackStyle = true;
-        const background = getComputedStyle(document.documentElement).getPropertyValue('--color-bg-light').trim() || '#f5f0e8';
+        const background = cssToken('--color-bg-light');
         map.setStyle({
             version: 8,
             sources: {},
@@ -867,7 +843,7 @@ function setMapStyle(styleKey) {
 function updateLayerSwitcherButton(styleKey) {
     const layerSwitcherBtn = elements.getById('layer-switcher');
     if (layerSwitcherBtn) {
-        layerSwitcherBtn.innerHTML = (styleKey === 'light') ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        layerSwitcherBtn.innerHTML = (styleKey === 'light') ? '<i class="fas fa-moon" aria-hidden="true"></i>' : '<i class="fas fa-sun" aria-hidden="true"></i>';
         layerSwitcherBtn.title = (styleKey === 'light') ? 'Dunklen Kartenlayer aktivieren' : 'Hellen Kartenlayer aktivieren';
     }
 }
@@ -944,6 +920,9 @@ function renderPlaceMarkers(places) {
 
 // Add map layers
 function addMapLayers() {
+    const primary = cssToken('--color-primary');
+    const outline = cssToken('--color-bg');
+
     // Cluster layer - always uniform color (clusters mix languages)
     map.addLayer({
         id: 'places-clusters',
@@ -951,7 +930,7 @@ function addMapLayers() {
         source: 'places',
         filter: ['has', 'point_count'],
         paint: {
-            'circle-color': PRIMARY_COLOR,
+            'circle-color': primary,
             'circle-radius': [
                 'step',
                 ['get', 'total_letters'],
@@ -963,7 +942,7 @@ function addMapLayers() {
             ],
             'circle-opacity': 0.7,
             'circle-stroke-width': 2,
-            'circle-stroke-color': '#ffffff'
+            'circle-stroke-color': outline
         }
     });
 
@@ -979,7 +958,7 @@ function addMapLayers() {
             'text-size': 12
         },
         paint: {
-            'text-color': '#ffffff'
+            'text-color': outline
         }
     });
 
@@ -1002,7 +981,7 @@ function addMapLayers() {
                 500, 22
             ],
             'circle-stroke-width': 2,
-            'circle-stroke-color': '#ffffff',
+            'circle-stroke-color': outline,
             'circle-opacity': 0.85
         }
     });
@@ -1011,11 +990,11 @@ function addMapLayers() {
 // Get the circle color expression based on current color mode
 function getMapCircleColorExpression() {
     if (mapColorMode === 'uniform') {
-        return PRIMARY_COLOR;
+        return cssToken('--color-primary');
     }
 
     // Build dynamic match expression based on available languages
-    const defaultColor = LANGUAGE_COLORS['other'] || LANGUAGE_COLORS[NO_LANGUAGE] || '#78716c';
+    const defaultColor = LANGUAGE_COLORS['other'] || LANGUAGE_COLORS[NO_LANGUAGE];
     const matchExpr = ['match', ['get', 'dominant_language']];
 
     // Add only defined language colors (skip undefined values)
@@ -1044,16 +1023,13 @@ function toggleMapColorMode() {
     mapColorMode = (mapColorMode === 'language') ? 'uniform' : 'language';
     updateMapColors();
 
-    // Update button state
+    // The accessible name stays "Nach Sprache einfärben", aria-pressed carries the state
     const btn = elements.mapColorToggle;
     if (btn) {
-        if (mapColorMode === 'language') {
-            btn.innerHTML = '<i class="fas fa-palette"></i>';
-            btn.title = 'Einheitliche Farbe verwenden';
-        } else {
-            btn.innerHTML = '<i class="fas fa-circle"></i>';
-            btn.title = 'Nach Sprache einfaerben';
-        }
+        const byLanguage = mapColorMode === 'language';
+        btn.setAttribute('aria-pressed', String(byLanguage));
+        btn.innerHTML = byLanguage ? '<i class="fas fa-palette" aria-hidden="true"></i>' : '<i class="fas fa-circle" aria-hidden="true"></i>';
+        btn.title = byLanguage ? 'Einheitliche Farbe verwenden' : 'Nach Sprache einfärben';
     }
 }
 
@@ -1187,10 +1163,11 @@ function showPlacePopup(lngLat, props) {
         <div class="popup popup-place" data-place-id="${escapeHtml(placeId)}">
             <div class="popup-header">
                 <h3>${escapeHtml(props.name)}</h3>
-                <button class="popup-basket-toggle ${inBasket ? 'in-basket' : ''}"
+                <button type="button" class="popup-basket-toggle ${inBasket ? 'in-basket' : ''}"
                         data-type="places" data-id="${escapeHtml(placeId)}"
+                        aria-label="Ort im Wissenskorb" aria-pressed="${inBasket}"
                         title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="popup-stats">
@@ -1200,8 +1177,8 @@ function showPlacePopup(lngLat, props) {
                 ${props.languages ? `<p class="popup-languages"><small>Sprachen: ${escapeHtml(props.languages)}</small></p>` : ''}
             </div>
             <div class="popup-actions">
-                <button class="popup-action-btn popup-show-letters" data-place-id="${escapeHtml(placeId)}">
-                    <i class="fas fa-envelope"></i> Briefe anzeigen
+                <button type="button" class="popup-action-btn popup-show-letters" data-place-id="${escapeHtml(placeId)}">
+                    <i class="fas fa-envelope" aria-hidden="true"></i> Briefe anzeigen
                 </button>
             </div>
         </div>
@@ -1226,11 +1203,7 @@ function setupPopupEventHandlers(popup) {
     if (basketBtn) {
         basketBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const type = basketBtn.dataset.type;
-            const id = basketBtn.dataset.id;
-            const nowInBasket = basketToggle(type, id);
-            basketBtn.classList.toggle('in-basket', nowInBasket);
-            basketBtn.title = nowInBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen';
+            toggleBasketButton(basketBtn, basketBtn.dataset.type, basketBtn.dataset.id);
         });
     }
 
@@ -1266,12 +1239,10 @@ function initFilters() {
     const yearRangeText = elements.yearRangeText;
     const resetButton = elements.resetFiltersBtn;
 
-    if (!yearRangeSlider) {
-        log.init('Filter elements not found, skipping filter init');
-        return;
-    }
+    if (!yearRangeSlider) return;
 
-    const debouncedApply = debounce(applyFilters, 300);
+    // Wrapped, because applyFilters reads options from its first parameter, not from an event
+    const debouncedApply = debounce(() => applyFilters(), 300);
 
     // Year range slider
     if (typeof noUiSlider !== 'undefined' && dateRange.min < dateRange.max) {
@@ -1281,6 +1252,7 @@ function initFilters() {
             connect: true,
             step: 1,
             range: { 'min': dateRange.min, 'max': dateRange.max },
+            handleAttributes: [{ 'aria-label': 'Startjahr' }, { 'aria-label': 'Endjahr' }],
             format: {
                 to: value => Math.round(value),
                 from: value => Number(value)
@@ -1303,63 +1275,50 @@ function initFilters() {
         yearRangeText.textContent = `${dateRange.min} - ${dateRange.max}`;
     }
 
-    // Quality filter checkboxes
-    const preciseDatesCheckbox = elements.filterPreciseDates;
-    const knownPersonsCheckbox = elements.filterKnownPersons;
-    const locatedPlacesCheckbox = elements.filterLocatedPlaces;
-
-    if (preciseDatesCheckbox) {
-        preciseDatesCheckbox.checked = qualityFilter.preciseDates;
-        preciseDatesCheckbox.addEventListener('change', () => {
-            qualityFilter.preciseDates = preciseDatesCheckbox.checked;
+    const qualityCheckboxes = {
+        preciseDates: elements.filterPreciseDates,
+        knownPersons: elements.filterKnownPersons,
+        locatedPlaces: elements.filterLocatedPlaces
+    };
+    Object.entries(qualityCheckboxes).forEach(([key, checkbox]) => {
+        if (!checkbox) return;
+        checkbox.checked = qualityFilter[key];
+        checkbox.addEventListener('change', () => {
+            qualityFilter[key] = checkbox.checked;
             applyFilters();
         });
-    }
-    if (knownPersonsCheckbox) {
-        knownPersonsCheckbox.checked = qualityFilter.knownPersons;
-        knownPersonsCheckbox.addEventListener('change', () => {
-            qualityFilter.knownPersons = knownPersonsCheckbox.checked;
-            applyFilters();
-        });
-    }
-    if (locatedPlacesCheckbox) {
-        locatedPlacesCheckbox.checked = qualityFilter.locatedPlaces;
-        locatedPlacesCheckbox.addEventListener('change', () => {
-            qualityFilter.locatedPlaces = locatedPlacesCheckbox.checked;
-            applyFilters();
-        });
-    }
+    });
 
-    // Reset button
-    if (resetButton) {
-        resetButton.addEventListener('click', () => {
-            const languageCheckboxes = document.querySelectorAll('input[name="language"]');
-            languageCheckboxes.forEach(cb => cb.checked = true);
-            if (yearRangeSlider.noUiSlider) {
-                yearRangeSlider.noUiSlider.set([dateRange.min, dateRange.max]);
-            }
-            temporalFilter = null;
-            selectedPersonId = null;
-            selectedPlaceFilter = null;
-            setSelectedSubjectId(null);
-
-            // Reset quality filters
-            qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
-            if (preciseDatesCheckbox) preciseDatesCheckbox.checked = false;
-            if (knownPersonsCheckbox) knownPersonsCheckbox.checked = false;
-            if (locatedPlacesCheckbox) locatedPlacesCheckbox.checked = false;
-
-            updateSubjectFilterDisplay();
-            applyFilters();
-        });
-    }
+    resetButton?.addEventListener('click', () => {
+        document.querySelectorAll('input[name="language"]').forEach(cb => { cb.checked = true; });
+        if (yearRangeSlider.noUiSlider) {
+            yearRangeSlider.noUiSlider.set([dateRange.min, dateRange.max]);
+        }
+        temporalFilter = null;
+        selectedPersonId = null;
+        selectedPlaceFilter = null;
+        activeSubjectFilter = null;
+        qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
+        Object.values(qualityCheckboxes).forEach(cb => { if (cb) cb.checked = false; });
+        applyFilters();
+    });
 }
 
-// Apply filters and re-render map
-function applyFilters() {
-    const languageFilters = getCheckedValues('language');
+// Screen readers hear the result count once the filter input settles
+const announceResultCount = debounce(() => {
+    const status = document.getElementById('filter-status');
+    if (!status) return;
+    status.textContent = hasActiveFilter()
+        ? `${filteredLetters.length.toLocaleString('de-DE')} von ${allLetters.length.toLocaleString('de-DE')} Briefen entsprechen dem Filter`
+        : `Alle ${allLetters.length.toLocaleString('de-DE')} Briefe`;
+}, 600);
 
-    // Update state with current filters (will trigger getFilteredLetters cache invalidation)
+/**
+ * Write the filter inputs into the state manager, read the filtered letters back and update
+ * badges, counts, URL and, unless render is false, the active view.
+ */
+function applyFilters({ render = true } = {}) {
+    const languageFilters = getCheckedValues('language');
     const filterUpdates = {};
 
     if (temporalFilter?.undated) {
@@ -1378,17 +1337,13 @@ function applyFilters() {
     filterUpdates.languages = allLanguagesChecked ? null : languageFilters;
     filterUpdates.person = selectedPersonId || null;
     filterUpdates.place = selectedPlaceFilter || null;
-    filterUpdates.subject = getSelectedSubjectId() || null;
+    filterUpdates.subject = activeSubjectFilter || null;
     filterUpdates.quality = { ...qualityFilter };
 
     state.updateFilters(filterUpdates);
-
-    // Get filtered letters from state (uses cached filter logic)
     filteredLetters = state.getFilteredLetters();
-
     allLetters = state.getAllLetters();
 
-    // Re-aggregate places based on filtered letters
     placeAggregation = aggregateLettersByPlace(filteredLetters, dataIndices.places || {});
     state.data.placeAggregation = placeAggregation;
 
@@ -1399,27 +1354,12 @@ function applyFilters() {
 
     updateFilterCounts();
     updateUrlState();
-    updatePersonFilterDisplay();
+    updateFilterBadges();
+    updateTopicsQuickFilterState();
     updateFilterIndicators();
+    announceResultCount();
 
-    // Re-render active view
-    if (currentView === 'topics') {
-        renderTopicsListView();
-    } else if (currentView === 'timeline') {
-        renderTimelineView();
-    } else if (currentView === 'persons') {
-        renderPersonsList();
-    } else if (currentView === 'letters') {
-        renderLettersList();
-    } else if (currentView === 'places') {
-        renderPlacesListView();
-    } else if (currentView === 'chronik') {
-        renderChronikView();
-    } else if (currentView === 'network') {
-        renderNetworkView();
-    } else if (currentView === 'mentions-flow') {
-        renderMentionsFlowView();
-    }
+    if (render) renderView(currentView);
 }
 
 // Undated letters have no place on the year slider, so they get their own temporal filter
@@ -1429,111 +1369,134 @@ function showUndatedLetters() {
     switchView('letters');
 }
 
-// Apply person filter
 function applyPersonFilter(personId) {
-    log.event(`Applying person filter: ${personId}`);
     selectedPersonId = personId;
     applyFilters();
-    log.event(`Filtered letters count: ${filteredLetters.length}`);
-
-    // Update UI to show active filter
-    updatePersonFilterDisplay();
-    updateFilterIndicators();
 }
 
-// Clear person filter
 function clearPersonFilter() {
     selectedPersonId = null;
     applyFilters();
-    updateFilterIndicators();
 }
 
-// Update filter indicators on view buttons
+// Goes through the state manager like the other filters, so every view and the reset button see it
+function applyPlaceFilter(placeId) {
+    selectedPlaceFilter = placeId;
+    applyFilters();
+}
+
+function clearPlaceFilter() {
+    selectedPlaceFilter = null;
+    applyFilters();
+}
+
+// Only these two change the subject filter; selecting a topic in the topics view only shows it
+function applySubjectFilter(subjectId) {
+    activeSubjectFilter = subjectId;
+    applyFilters();
+}
+
+function clearSubjectFilter() {
+    activeSubjectFilter = null;
+    applyFilters();
+}
+
+function hasActiveFilter() {
+    const f = state.filters;
+    return Boolean(f.temporal || f.languages || f.person || f.place || f.subject ||
+        f.quality?.preciseDates || f.quality?.knownPersons || f.quality?.locatedPlaces);
+}
+
+// Views whose button marks active filters: letters and map, and the views without sidebar,
+// where the filters themselves are not visible
+const FILTER_INDICATOR_VIEWS = ['letters', 'map', 'chronik', 'activity', 'comparison'];
+
 function updateFilterIndicators() {
-    const hasActiveFilter = selectedPersonId || selectedPlaceFilter || getSelectedSubjectId() ||
-        qualityFilter.preciseDates || qualityFilter.knownPersons || qualityFilter.locatedPlaces;
-
-    // Update letters button with filter indicator
-    const lettersBtn = document.querySelector('[data-view="letters"]');
-    if (lettersBtn) {
-        let indicator = lettersBtn.querySelector('.filter-indicator');
-        if (hasActiveFilter) {
-            if (!indicator) {
-                indicator = document.createElement('span');
-                indicator.className = 'filter-indicator';
-                indicator.title = 'Filter aktiv';
-                lettersBtn.appendChild(indicator);
-            }
-        } else if (indicator) {
+    const active = hasActiveFilter();
+    FILTER_INDICATOR_VIEWS.forEach(view => {
+        const btn = document.querySelector(`.view-btn[data-view="${view}"]`);
+        if (!btn) return;
+        let indicator = btn.querySelector('.filter-indicator');
+        if (active && !indicator) {
+            indicator = document.createElement('span');
+            indicator.className = 'filter-indicator';
+            indicator.title = 'Filter aktiv';
+            indicator.setAttribute('aria-hidden', 'true');
+            btn.appendChild(indicator);
+        } else if (!active && indicator) {
             indicator.remove();
         }
-    }
-
-    // Update map button
-    const mapBtn = document.querySelector('[data-view="map"]');
-    if (mapBtn) {
-        let indicator = mapBtn.querySelector('.filter-indicator');
-        if (hasActiveFilter) {
-            if (!indicator) {
-                indicator = document.createElement('span');
-                indicator.className = 'filter-indicator';
-                indicator.title = 'Filter aktiv';
-                mapBtn.appendChild(indicator);
-            }
-        } else if (indicator) {
-            indicator.remove();
-        }
-    }
-
-    // Update stats card to show filtered count
-    const letterCountEl = elements.getById('letter-count');
-    if (letterCountEl && hasActiveFilter) {
-        letterCountEl.innerHTML = `${filteredLetters.length} <span class="filtered-indicator">/ ${allLetters.length}</span>`;
-    } else if (letterCountEl) {
-        letterCountEl.textContent = allLetters.length;
-    }
+    });
 }
 
-// Update person filter display in sidebar
-function updatePersonFilterDisplay() {
-    let filterDisplay = elements.getById('person-filter-display');
-
-    if (selectedPersonId && filteredLetters.length > 0) {
-        // Find person name
-        const letter = allLetters.find(l =>
-            (l.sender?.id || l.sender?.name) === selectedPersonId ||
-            (l.recipient?.id || l.recipient?.name) === selectedPersonId
-        );
-        const personName = letter?.sender?.id === selectedPersonId || letter?.sender?.name === selectedPersonId
-            ? letter.sender.name
-            : letter?.recipient?.name || selectedPersonId;
-
-        if (!filterDisplay) {
-            // Create filter display element
-            // .stats-cards sits inside a sidebar section, not directly in .sidebar
-            const statsCards = document.querySelector('.stats-cards');
-            filterDisplay = document.createElement('div');
-            filterDisplay.id = 'person-filter-display';
-            filterDisplay.className = 'person-filter-active';
-            statsCards.after(filterDisplay);
-        }
-
-        filterDisplay.innerHTML = `
-            <div class="filter-badge">
-                <i class="fas fa-user"></i>
-                <span>${escapeHtml(personName)}</span>
-                <button class="filter-clear" title="Filter entfernen">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-        filterDisplay.style.display = 'block';
-
-        // Add click handler
-        filterDisplay.querySelector('.filter-clear').addEventListener('click', clearPersonFilter);
-    } else if (filterDisplay) {
-        filterDisplay.style.display = 'none';
+function personNameForKey(key) {
+    for (const letter of allLetters) {
+        if (personKey(letter.sender) === key) return letter.sender.name || key;
+        if (personKey(letter.recipient) === key) return letter.recipient.name || key;
     }
+    return key;
+}
+
+function placeNameForKey(key) {
+    const letter = allLetters.find(l => placeKey(l.place_sent) === key);
+    return letter?.place_sent?.name || key;
+}
+
+function subjectLabelForKey(key) {
+    return getSubjectIndex()?.[key]?.label || dataIndices.subjects?.[key]?.label || key;
+}
+
+const FILTER_BADGE_ORDER = ['person-filter-display', 'place-filter-display', 'subject-filter-display'];
+
+/**
+ * Removable badge of an active person, place or subject filter under the sidebar stats. The
+ * badge stays while the filter is set, also when it leaves no letter, so it can be removed.
+ */
+function updateFilterBadge(id, className, icon, label, onClear) {
+    let display = elements.getById(id);
+    if (!label) {
+        display?.classList.add('hidden');
+        return;
+    }
+    if (!display) {
+        display = document.createElement('div');
+        display.id = id;
+        display.className = className;
+        // Person, place, subject: fixed order after the stats cards
+        const previous = FILTER_BADGE_ORDER.slice(0, FILTER_BADGE_ORDER.indexOf(id))
+            .map(prevId => document.getElementById(prevId))
+            .filter(Boolean)
+            .pop();
+        (previous || document.querySelector('.stats-cards'))?.after(display);
+    }
+    display.innerHTML = `
+        <div class="filter-badge ${className.includes('subject') ? 'subject-badge' : ''}">
+            <i class="fas ${icon}" aria-hidden="true"></i>
+            <span>${escapeHtml(label)}</span>
+            <button type="button" class="filter-clear" title="Filter entfernen" aria-label="Filter entfernen: ${escapeHtml(label)}">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+    `;
+    display.classList.remove('hidden');
+    display.querySelector('.filter-clear').addEventListener('click', () => {
+        onClear();
+        // The badge disappears with its filter, so focus moves to the next remaining badge or
+        // the reset button instead of falling back to the document
+        const next = FILTER_BADGE_ORDER
+            .map(badgeId => document.getElementById(badgeId))
+            .find(el => el && !el.classList.contains('hidden'));
+        (next?.querySelector('.filter-clear') || elements.resetFiltersBtn)?.focus();
+    });
+}
+
+function updateFilterBadges() {
+    updateFilterBadge('person-filter-display', 'person-filter-active', 'fa-user',
+        selectedPersonId ? personNameForKey(selectedPersonId) : null, clearPersonFilter);
+    updateFilterBadge('place-filter-display', 'person-filter-active place-filter-active', 'fa-map-marker-alt',
+        selectedPlaceFilter ? placeNameForKey(selectedPlaceFilter) : null, clearPlaceFilter);
+    updateFilterBadge('subject-filter-display', 'subject-filter-active', 'fa-tag',
+        activeSubjectFilter ? subjectLabelForKey(activeSubjectFilter) : null, clearSubjectFilter);
 }
 
 // Language counts under all other active filters, so each checkbox shows what selecting it would add
@@ -1562,24 +1525,25 @@ function hideLoading() {
     }
 }
 
+// A dataset that cannot be loaded is reported on the page, with the way back to the start page
 function showError(message) {
-    console.error(`Error: ${message}`);
     hideLoading();
-    // Redirect to index on error
-    setTimeout(() => {
-        window.location.href = 'index.html';
-    }, 2000);
+    const box = document.getElementById('load-error');
+    const text = document.getElementById('load-error-text');
+    if (box && text) {
+        text.textContent = message;
+        box.classList.remove('hidden');
+        document.querySelector('.container')?.classList.add('hidden');
+        box.querySelector('a')?.focus();
+    } else {
+        showToast(message, 10000);
+    }
 }
 
-/**
- * Callback for places view when coordinates are resolved
- * Updates map and view state
- */
-function handlePlacesDataUpdated(coordinates) {
-    // Rebuild place aggregation
+// Places view resolved coordinates: rebuild the aggregation and redraw the markers
+function handlePlacesDataUpdated() {
     placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
 
-    // Update views
     detectAvailableViews();
     updateViewButtons();
 
@@ -1590,65 +1554,36 @@ function handlePlacesDataUpdated(coordinates) {
     }
 }
 
-// Url state management
+// URL state
 
+// Read view and filters from the URL through the state manager, the one parser of the URL
+// state, and copy them into the explorer's filter inputs (slider, checkboxes, badges)
 function initUrlState() {
-    // Read initial state from URL
     const urlParams = new URLSearchParams(window.location.search);
+    state.fromURLParams(urlParams);
 
-    // View
     const view = urlParams.get('view');
-    if (view && ['overview', 'map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow', 'chronik', 'activity', 'comparison'].includes(view)) {
+    if (view === 'questions') {
+        currentView = 'overview';
+    } else if (VIEWS.includes(view)) {
         currentView = view;
     }
 
-    // Year range
-    const yearMin = urlParams.get('yearMin');
-    const yearMax = urlParams.get('yearMax');
-    if (urlParams.get('undated') === '1') {
+    const f = state.filters;
+    if (f.temporal?.undated) {
         temporalFilter = { undated: true };
-    } else if (yearMin && yearMax) {
-        temporalFilter = {
-            start: parseInt(yearMin),
-            end: parseInt(yearMax)
-        };
+    } else if (f.temporal) {
+        temporalFilter = { start: f.temporal.min, end: f.temporal.max };
     }
-
-    // Person filter
-    const person = urlParams.get('person');
-    if (person) {
-        selectedPersonId = person;
-    }
-
-    // Subject filter
-    const subject = urlParams.get('subject');
-    if (subject) {
-        setSelectedSubjectId(subject);
-    }
-
-    // Languages
-    if (urlParams.has('langs')) {
-        const langs = urlParams.get('langs');
-        initialLanguageFilter = langs ? langs.split(',') : [];
-    }
-
-    // Quality filters
-    if (urlParams.get('precise') === '1') {
-        qualityFilter.preciseDates = true;
-    }
-    if (urlParams.get('known') === '1') {
-        qualityFilter.knownPersons = true;
-    }
-    if (urlParams.get('located') === '1') {
-        qualityFilter.locatedPlaces = true;
-    }
-
+    selectedPersonId = f.person;
+    selectedPlaceFilter = f.place;
+    activeSubjectFilter = f.subject;
+    initialLanguageFilter = f.languages;
+    qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false, ...f.quality };
 }
 
 function updateUrlState() {
     const urlParams = new URLSearchParams(window.location.search);
-
-    // Get URL params from state-manager
     const newParams = state.toURLParams();
 
     // Keep the parameters that select the dataset, so a reload or shared link still loads it
@@ -1657,12 +1592,6 @@ function updateUrlState() {
         if (value) newParams.set(key, value);
     }
 
-    // Add quality filter parameters (custom to this app, not in base state)
-    if (qualityFilter.preciseDates) newParams.set('precise', '1');
-    if (qualityFilter.knownPersons) newParams.set('known', '1');
-    if (qualityFilter.locatedPlaces) newParams.set('located', '1');
-
-    // Update URL without reload
     const newUrl = newParams.toString()
         ? `${window.location.pathname}?${newParams.toString()}`
         : window.location.pathname;
@@ -1670,92 +1599,65 @@ function updateUrlState() {
     window.history.replaceState({}, '', newUrl);
 }
 
-// Variables for URL state
-let selectedPersonId = null;
-let selectedPlaceFilter = null;
-let initialLanguageFilter = null;
-
 // View switching
 
-let currentView = 'overview';
-
 function initViewSwitcher() {
-    const viewButtons = document.querySelectorAll('.view-btn');
-
-    viewButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const view = btn.dataset.view;
-            switchView(view);
-            updateUrlState();
-        });
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchView(btn.dataset.view));
     });
 }
 
-function switchView(view) {
-    // Redirect deprecated 'questions' view to 'overview' (Forschungspfade now in Start-View)
-    if (view === 'questions') {
-        view = 'overview';
+// Render a view from the current filtered letters
+function renderView(view) {
+    switch (view) {
+        case 'overview': renderOverview(); break;
+        case 'persons': renderPersonsList(); break;
+        case 'letters': renderLettersList(); break;
+        case 'timeline': renderTimelineView(); break;
+        case 'topics': renderTopicsListView(); break;
+        case 'places': renderPlacesListView(); break;
+        case 'network': renderNetworkView(); break;
+        case 'mentions-flow': renderMentionsFlowView(); break;
+        case 'chronik': renderChronikView(); break;
+        case 'activity': renderActivityView(); break;
+        case 'comparison': renderComparisonView(); break;
+        case 'map': map?.resize(); break;
     }
+}
+
+function switchView(view) {
+    // The former questions view is part of the overview
+    if (view === 'questions') view = 'overview';
 
     currentView = view;
     state.ui.currentView = view;
     updateUrlState();
 
-    // Update buttons
     document.querySelectorAll('.view-btn').forEach(btn => {
         const isActive = btn.dataset.view === view;
         btn.classList.toggle('active', isActive);
-        btn.setAttribute('aria-pressed', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+        // On narrow screens the switcher scrolls horizontally; keep the active view in sight
+        const switcher = btn.parentElement;
+        if (isActive && switcher && switcher.scrollWidth > switcher.clientWidth) {
+            btn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+        }
     });
 
-    // Update content
     document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
+        content.classList.toggle('active', content.id === `${view}-view`);
     });
 
-    const viewElement = document.getElementById(`${view}-view`);
-    if (viewElement) {
-        viewElement.classList.add('active');
-    }
-
-    // On overview, chronik, activity, and comparison: hide entire sidebar for full-width content
-    // On other views: show sidebar with stats and filters
+    // Overview, chronik, activity and comparison use the full width without sidebar
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
         const noSidebar = view === 'overview' || view === 'chronik' || view === 'activity' || view === 'comparison';
         sidebar.classList.toggle('hidden', noSidebar);
         setSidebarOpen(false);
-        const toggle = document.getElementById('sidebar-toggle');
-        toggle?.classList.toggle('hidden', noSidebar);
+        document.getElementById('sidebar-toggle')?.classList.toggle('hidden', noSidebar);
     }
 
-    // Render view-specific content
-    if (view === 'overview') {
-        renderOverview();
-    } else if (view === 'persons') {
-        renderPersonsList();
-    } else if (view === 'letters') {
-        renderLettersList();
-    } else if (view === 'timeline') {
-        // Always re-render timeline when switching to it (to reflect filters)
-        renderTimelineView();
-    } else if (view === 'topics') {
-        renderTopicsListView();
-    } else if (view === 'places') {
-        renderPlacesListView();
-    } else if (view === 'network') {
-        renderNetworkView();
-    } else if (view === 'mentions-flow') {
-        renderMentionsFlowView();
-    } else if (view === 'chronik') {
-        renderChronikView();
-    } else if (view === 'activity') {
-        renderActivityView();
-    } else if (view === 'comparison') {
-        renderComparisonView();
-    } else if (view === 'map' && map) {
-        map.resize();
-    }
+    renderView(view);
 }
 
 // Persons list
@@ -1789,6 +1691,9 @@ function renderOverview() {
     const meta = state.getMeta();
     if (!meta) return;
     const totalLetters = allLetters.length;
+    // Counted from the letters with personKey and placeKey like the lists and research paths,
+    // because the HSA index leaves out persons without authority id
+    const corpus = summarizeCorpus(allLetters, dataIndices);
 
     // Update title
     const titleEl = document.getElementById('overview-title');
@@ -1801,14 +1706,11 @@ function renderOverview() {
     if (statsInlineEl) {
         const minYear = meta.date_range?.min;
         const maxYear = meta.date_range?.max;
-        const personCount = Object.keys(dataIndices.persons || {}).length;
-        const placeCount = Object.keys(dataIndices.places || {}).length;
-
         statsInlineEl.innerHTML = `
-            <span class="stat-item"><i class="fas fa-envelope"></i> <span class="stat-value">${totalLetters.toLocaleString('de-DE')}</span> Briefe</span>
-            ${minYear && maxYear ? `<span class="stat-item"><i class="fas fa-calendar"></i> <span class="stat-value">${minYear}–${maxYear}</span></span>` : ''}
-            <span class="stat-item"><i class="fas fa-users"></i> <span class="stat-value">${personCount.toLocaleString('de-DE')}</span> Personen</span>
-            <span class="stat-item"><i class="fas fa-map-marker-alt"></i> <span class="stat-value">${placeCount.toLocaleString('de-DE')}</span> Orte</span>
+            <span class="stat-item"><i class="fas fa-envelope" aria-hidden="true"></i> <span class="stat-value">${totalLetters.toLocaleString('de-DE')}</span> Briefe</span>
+            ${minYear && maxYear ? `<span class="stat-item"><i class="fas fa-calendar" aria-hidden="true"></i> <span class="stat-value">${minYear}–${maxYear}</span></span>` : ''}
+            <span class="stat-item"><i class="fas fa-users" aria-hidden="true"></i> <span class="stat-value">${corpus.persons.size.toLocaleString('de-DE')}</span> Personen</span>
+            <span class="stat-item"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span class="stat-value">${corpus.places.size.toLocaleString('de-DE')}</span> Orte</span>
         `;
     }
 
@@ -1861,9 +1763,8 @@ function renderOverview() {
     const personQuality = persons.total > 0 ? Math.round((persons.identified / persons.total) * 100) : 0;
 
     // Place quality (georeferenced)
-    const places = Object.values(dataIndices.places || {});
-    const geoPlaces = places.filter(p => p.lat && p.lon).length;
-    const placeQuality = places.length > 0 ? Math.round((geoPlaces / places.length) * 100) : 0;
+    const geoPlaces = [...corpus.places.values()].filter(p => p.located).length;
+    const placeQuality = corpus.places.size > 0 ? Math.round((geoPlaces / corpus.places.size) * 100) : 0;
 
     // Update quality chips
     updateQualityChip('quality-chip-dates', `${dateQuality}% Datiert`);
@@ -1894,8 +1795,7 @@ function renderOverview() {
         }
     }
 
-    // Render research paths in overview (limited)
-    renderOverviewResearchPaths();
+    renderOverviewPaths();
 }
 
 /**
@@ -1917,181 +1817,53 @@ function setupEntryPointButtons() {
 
     document.querySelectorAll('.entry-point-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const target = btn.dataset.target;
-            if (target) {
-                switchView(target);
-                updateUrlState();
-            }
+            if (btn.dataset.target) switchView(btn.dataset.target);
         });
     });
 }
 
-/**
- * Render research paths in the Overview view
- * Uses the same analyzeResearchQuestions() function as the questions view
- * Limited to 4 paths with "show all" button
- */
-function renderOverviewResearchPaths() {
+// Research paths of the overview (US-33), analysed by research-paths.js from all letters
+function renderOverviewPaths() {
     const container = document.getElementById('overview-questions-grid');
-    const showAllBtn = document.getElementById('show-all-paths-btn');
     if (!container) return;
-
-    const questions = analyzeResearchQuestions();
-
-    if (questions.length === 0) {
-        container.innerHTML = `
-            <div class="questions-empty">
-                <i class="fas fa-question-circle"></i>
-                <p>Keine Forschungspfade verfuegbar.</p>
-            </div>
-        `;
-        if (showAllBtn) showAllBtn.classList.add('hidden');
-        return;
-    }
-
-    // Only show descriptive and analytical questions (not unanswerable)
-    const answerable = questions.filter(q => q.category !== 'unavailable' && q.path?.length);
-
-    // Limit to 4 paths for compact overview
-    const MAX_PATHS = 4;
-    const displayPaths = answerable.slice(0, MAX_PATHS);
-    const hasMore = answerable.length > MAX_PATHS;
-
-    // Show/hide "show all" button
-    if (showAllBtn) {
-        if (hasMore) {
-            showAllBtn.classList.remove('hidden');
-            showAllBtn.innerHTML = `<i class="fas fa-list"></i> Alle ${answerable.length} Pfade anzeigen`;
-            showAllBtn.onclick = () => {
-                renderResearchPathCards(container, answerable, questions);
-                showAllBtn.classList.add('hidden');
-            };
-        } else {
-            showAllBtn.classList.add('hidden');
-        }
-    }
-
-    // Render limited cards
-    renderResearchPathCards(container, displayPaths, questions);
-}
-
-/**
- * Render research path cards (shared by limited and expanded view)
- */
-function renderResearchPathCards(container, paths, allQuestions) {
-    container.innerHTML = paths.map(q => `
-        <div class="question-card question-${escapeHtml(q.category)}" role="button" tabindex="0" data-question-id="${escapeHtml(q.id)}">
-            <div class="question-icon">
-                <i class="fas ${q.icon || 'fa-question'}"></i>
-            </div>
-            <div class="question-content">
-                <div class="question-text">${escapeHtml(q.question)}</div>
-                <div class="question-path">
-                    ${q.path.map((step, i) => `
-                        <span class="path-step" data-view="${escapeHtml(step.view)}" data-step="${i}">
-                            <span class="path-step-num">${i + 1}</span>
-                            <span class="path-step-label">${escapeHtml(step.label)}</span>
-                        </span>
-                        ${i < q.path.length - 1 ? '<span class="path-arrow"><i class="fas fa-chevron-right"></i></span>' : ''}
-                    `).join('')}
-                </div>
-            </div>
-            <button class="question-start-btn" title="Wissenspfad starten">
-                <i class="fas fa-play"></i>
-            </button>
-        </div>
-    `).join('');
-
-    // Add click handlers for path steps
-    container.querySelectorAll('.path-step').forEach(step => {
-        step.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const view = step.dataset.view;
-            if (view) {
-                switchView(view);
-                updateUrlState();
-            }
+    renderOverviewResearchPaths(container, document.getElementById('show-all-paths-btn'),
+        analyzeResearchQuestions(allLetters, dataIndices), {
+            onStartPath: startKnowledgePath,
+            onStepClick: switchView
         });
-    });
-
-    // Add click handler for start button - starts knowledge path
-    container.querySelectorAll('.question-start-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const card = btn.closest('.question-card');
-            const questionId = card?.dataset.questionId;
-            if (questionId) {
-                const question = allQuestions.find(q => q.id === questionId);
-                if (question && typeof startKnowledgePath === 'function') {
-                    startKnowledgePath(question);
-                }
-            }
-        });
-    });
-
-    // Card click also starts knowledge path
-    container.querySelectorAll('.question-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const questionId = card.dataset.questionId;
-            const question = allQuestions.find(q => q.id === questionId);
-            if (question && typeof startKnowledgePath === 'function') {
-                startKnowledgePath(question);
-            }
-        });
-    });
 }
 
 function renderPersonsList() {
     const container = elements.personsList;
     if (!container) return;
 
-    // Build persons from filtered letters
+    // Persons of the filtered letters, keyed with personKey (ADR-001)
     const personsMap = {};
-
+    const count = (person, role) => {
+        const key = personKey(person);
+        if (!key || !person.name) return;
+        personsMap[key] ??= {
+            key,
+            name: person.name,
+            id: person.id,
+            authority: person.authority,
+            precision: person.precision,
+            sent: 0,
+            received: 0
+        };
+        personsMap[key][role]++;
+    };
     filteredLetters.forEach(letter => {
-        // Count as sender
-        if (letter.sender?.name) {
-            const key = letter.sender.id || letter.sender.name;
-            if (!personsMap[key]) {
-                personsMap[key] = {
-                    name: letter.sender.name,
-                    id: letter.sender.id,
-                    authority: letter.sender.authority,
-                    precision: letter.sender.precision,
-                    sent: 0,
-                    received: 0
-                };
-            }
-            personsMap[key].sent++;
-        }
-
-        // Count as recipient
-        if (letter.recipient?.name) {
-            const key = letter.recipient.id || letter.recipient.name;
-            if (!personsMap[key]) {
-                personsMap[key] = {
-                    name: letter.recipient.name,
-                    id: letter.recipient.id,
-                    authority: letter.recipient.authority,
-                    precision: letter.recipient.precision,
-                    sent: 0,
-                    received: 0
-                };
-            }
-            personsMap[key].received++;
-        }
+        count(letter.sender, 'sent');
+        count(letter.recipient, 'received');
     });
 
     let persons = Object.values(personsMap);
 
-    // Filter by search
     if (personsSearchTerm) {
-        persons = persons.filter(p =>
-            p.name.toLowerCase().includes(personsSearchTerm)
-        );
+        persons = persons.filter(p => p.name.toLowerCase().includes(personsSearchTerm));
     }
 
-    // Sort
     persons.sort((a, b) => {
         const totalA = a.sent + a.received;
         const totalB = b.sent + b.received;
@@ -2105,32 +1877,35 @@ function renderPersonsList() {
         }
     });
 
-    // Render
     if (persons.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <i class="fas fa-users"></i>
+                <i class="fas fa-users" aria-hidden="true"></i>
                 <p>Keine Korrespondenten gefunden</p>
             </div>
         `;
         return;
     }
 
-    // Get enrichment data from sessionStorage
-    const enrichmentData = JSON.parse(sessionStorage.getItem('person-enrichment') || '{}');
+    let enrichmentData = {};
+    try {
+        enrichmentData = JSON.parse(sessionStorage.getItem('person-enrichment') || '{}') || {};
+    } catch {
+        // Unreadable enrichment cache: the list shows no Wikidata markers
+    }
 
+    // The card is no button: filtering, basket, details and correspSearch are separate controls
     container.innerHTML = persons.map(person => {
         const initials = getPersonInitials(person.name, person.precision);
         const total = person.sent + person.received;
-        const personKey = person.id || person.name;
         const correspSearchUrl = buildCorrespSearchUrl(person);
         const precisionClass = getPersonPrecisionClass(person.precision);
-        const hasWikidataEnrichment = enrichmentData[personKey]?.source === 'wikidata';
+        const hasWikidataEnrichment = enrichmentData[person.key]?.source === 'wikidata';
+        const name = escapeHtml(person.name);
 
-        // Small Wikidata indicator SVG
         const wikidataIndicator = hasWikidataEnrichment ? `
-            <span class="wikidata-indicator" title="Wikidata-Anreicherung">
-                <svg viewBox="0 0 30 20" width="14" height="10">
+            <span class="wikidata-indicator" title="Wikidata-Anreicherung" role="img" aria-label="Wikidata-Anreicherung">
+                <svg viewBox="0 0 30 20" width="14" height="10" aria-hidden="true">
                     <rect fill="#990000" width="6" height="20"/>
                     <rect fill="#339966" x="8" width="6" height="20"/>
                     <rect fill="#006699" x="16" width="6" height="20"/>
@@ -2139,30 +1914,30 @@ function renderPersonsList() {
         ` : '';
 
         return `
-            <div class="person-card ${precisionClass}" role="button" tabindex="0" data-id="${escapeHtml(personKey)}" data-name="${escapeHtml(person.name)}">
-                <div class="person-avatar">${escapeHtml(initials)}</div>
+            <div class="person-card ${precisionClass}" data-id="${escapeHtml(person.key)}" data-name="${name}">
+                <div class="person-avatar" aria-hidden="true">${escapeHtml(initials)}</div>
                 <div class="person-info">
-                    <div class="person-name" title="${escapeHtml(person.name)}">${escapeHtml(person.name)}${wikidataIndicator}</div>
+                    <div class="person-name" title="${name}"><button type="button" class="person-filter-btn" data-id="${escapeHtml(person.key)}" title="Briefe von ${name} anzeigen">${name}</button>${wikidataIndicator}</div>
                     <div class="person-stats">
-                        <span><i class="fas fa-paper-plane"></i> ${person.sent} gesendet</span>
-                        <span><i class="fas fa-inbox"></i> ${person.received} empfangen</span>
+                        <span><i class="fas fa-paper-plane" aria-hidden="true"></i> ${person.sent} gesendet</span>
+                        <span><i class="fas fa-inbox" aria-hidden="true"></i> ${person.received} empfangen</span>
                     </div>
                 </div>
                 <div class="person-actions">
-                    <button class="btn-person-basket" data-person-id="${escapeHtml(personKey)}"
-                            title="${total} Briefe zum Korb hinzufuegen">
-                        <i class="fas fa-star"></i>
+                    <button type="button" class="btn-person-basket" data-person-id="${escapeHtml(person.key)}"
+                            title="${total} Briefe zum Korb hinzufuegen" aria-label="${total} Briefe von ${name} zum Korb hinzufügen">
+                        <i class="fas fa-star" aria-hidden="true"></i>
                     </button>
                     ${person.id ? `
-                        <button class="btn-person-info" data-person-id="${escapeHtml(personKey)}"
-                                title="Person-Details anzeigen">
-                            <i class="fas fa-info-circle"></i>
+                        <button type="button" class="btn-person-info" data-person-id="${escapeHtml(person.key)}"
+                                title="Person-Details anzeigen" aria-label="Details zu ${name}">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
                         </button>
                     ` : ''}
                     ${correspSearchUrl ? `
-                        <a href="${escapeHtml(correspSearchUrl)}" target="_blank" class="btn-correspsearch"
-                           title="Weitere Briefe bei correspSearch suchen">
-                            <i class="fas fa-search"></i>
+                        <a href="${escapeHtml(correspSearchUrl)}" target="_blank" rel="noopener noreferrer" class="btn-correspsearch"
+                           title="Weitere Briefe bei correspSearch suchen" aria-label="${name} bei correspSearch suchen">
+                            <i class="fas fa-search" aria-hidden="true"></i>
                         </a>
                     ` : ''}
                     <div class="person-count">${total}</div>
@@ -2171,43 +1946,38 @@ function renderPersonsList() {
         `;
     }).join('');
 
-    // Add click handlers for person filtering
+    const filterTo = (personId) => {
+        if (!personId) return;
+        applyPersonFilter(personId);
+        switchView('letters');
+    };
+
+    // The name button is the keyboard control; a click on the card surface does the same
     container.querySelectorAll('.person-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('a, button')) return;
-            const personId = card.dataset.id;
-            if (personId) {
-                applyPersonFilter(personId);
-                switchView('letters');
-                updateUrlState();
-            }
+            filterTo(card.dataset.id);
         });
     });
+    container.querySelectorAll('.person-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => filterTo(btn.dataset.id));
+    });
 
-    // Add click handlers for person info buttons
     container.querySelectorAll('.btn-person-info').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const personId = btn.dataset.personId;
-            if (personId) {
-                showPersonDetail(personId);
-            }
+            if (btn.dataset.personId) showPersonDetail(btn.dataset.personId);
         });
     });
 
-    // Add click handlers for person basket buttons
     container.querySelectorAll('.btn-person-basket').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const personId = btn.dataset.personId;
             if (!personId) return;
-
-            // Find all letters where this person is sender or recipient
             const personLetterIds = filteredLetters
-                .filter(l => (l.sender?.id || l.sender?.name) === personId ||
-                             (l.recipient?.id || l.recipient?.name) === personId)
+                .filter(l => personKey(l.sender) === personId || personKey(l.recipient) === personId)
                 .map(l => l.id);
-
             showToast(addLettersToBasket(personLetterIds));
         });
     });
@@ -2237,13 +2007,50 @@ function initLettersView() {
     }
 }
 
+// Date order with undated letters last in both directions (they have no place on the time axis)
+function compareByDate(a, b, direction) {
+    if (!a.date && !b.date) return 0;
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return direction * a.date.localeCompare(b.date);
+}
+
+const BASKET_LABELS = {
+    letters: { one: 'Brief', limit: `höchstens ${BASKET_LIMITS.maxLetters} Briefe` },
+    persons: { one: 'Person', limit: `höchstens ${BASKET_LIMITS.maxPersons} Personen` },
+    places: { one: 'Ort', limit: `höchstens ${BASKET_LIMITS.maxPlaces} Orte` }
+};
+
+/**
+ * Toggle one basket entry from a star button. A full basket leaves the entry out and says so,
+ * instead of marking it as added. Returns whether the entry is in the basket afterwards.
+ */
+function toggleBasketButton(btn, type, id, { pressed = true } = {}) {
+    const labels = BASKET_LABELS[type];
+    if (basketIsInBasket(type, id)) {
+        basketRemove(type, id);
+        showToast(`${labels.one} aus dem Korb entfernt`);
+    } else {
+        const result = basketAdd(type, id);
+        if (result !== true) {
+            showToast(result === 'full' ? `Korb voll: ${labels.limit}` : `${labels.one} nicht hinzugefügt`);
+            return false;
+        }
+        showToast(`${labels.one} zum Korb hinzugefügt`);
+    }
+    const inBasket = basketIsInBasket(type, id);
+    btn.classList.toggle('in-basket', inBasket);
+    btn.title = inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen';
+    if (pressed) btn.setAttribute('aria-pressed', String(inBasket));
+    return inBasket;
+}
+
 function renderLettersList() {
     const container = elements.lettersList;
     if (!container) return;
 
     let letters = [...filteredLetters];
 
-    // Filter by search
     if (lettersSearchTerm) {
         letters = letters.filter(l =>
             (l.sender?.name || '').toLowerCase().includes(lettersSearchTerm) ||
@@ -2252,15 +2059,11 @@ function renderLettersList() {
         );
     }
 
-    // Sort
     letters.sort((a, b) => {
         switch (lettersSortOrder) {
-            case 'date-desc':
-                return (b.date || '').localeCompare(a.date || '');
-            case 'date-asc':
-                return (a.date || '').localeCompare(b.date || '');
-            case 'sender-asc':
-                return (a.sender?.name || '').localeCompare(b.sender?.name || '');
+            case 'date-desc': return compareByDate(a, b, -1);
+            case 'date-asc': return compareByDate(a, b, 1);
+            case 'sender-asc': return (a.sender?.name || '').localeCompare(b.sender?.name || '');
             default: return 0;
         }
     });
@@ -2271,61 +2074,63 @@ function renderLettersList() {
     if (displayLetters.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <i class="fas fa-envelope"></i>
+                <i class="fas fa-envelope" aria-hidden="true"></i>
                 <p>Keine Briefe gefunden</p>
             </div>
         `;
         return;
     }
 
-    container.innerHTML = displayLetters.map(letter => {
+    container.innerHTML = displayLetters.map((letter, index) => {
         const senderName = formatPersonName(letter.sender?.name, letter.sender?.precision);
         const recipientName = formatPersonName(letter.recipient?.name, letter.recipient?.precision);
         const date = formatDateWithPrecision(letter);
         const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision);
         const language = letter.language?.label || '';
-
-        // Get uncertainty CSS classes
         const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
+        const inBasket = basketIsInBasket('letters', letter.id);
+        const detailsId = `letter-details-${index}`;
 
-        // Check if letter has additional details worth showing
         const hasDetails = letter.mentions?.subjects?.length > 0 ||
                           letter.mentions?.persons?.length > 0 ||
                           letter.mentions?.places?.length > 0 ||
                           letter.sender?.id ||
                           letter.recipient?.id;
 
+        // The participants are the expand button; the star stays a sibling control (no nesting)
+        const participants = `
+            ${hasDetails ? '<i class="fas fa-chevron-right expand-icon" aria-hidden="true"></i>' : ''}
+            ${senderName}
+            <span class="letter-arrow" role="img" aria-label="an"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+            ${recipientName}
+        `;
+
         return `
             <div class="letter-card ${hasDetails ? 'has-details' : ''}" data-id="${escapeHtml(letter.id || '')}">
-                <div class="letter-header"${hasDetails ? ' role="button" tabindex="0" aria-expanded="false"' : ''}>
-                    <div class="letter-participants">
-                        ${hasDetails ? '<i class="fas fa-chevron-right expand-icon"></i>' : ''}
-                        ${senderName}
-                        <span class="letter-arrow"><i class="fas fa-arrow-right"></i></span>
-                        ${recipientName}
-                    </div>
+                <div class="letter-header">
+                    ${hasDetails
+                        ? `<button type="button" class="letter-participants letter-toggle" aria-expanded="false" aria-controls="${detailsId}">${participants}</button>`
+                        : `<div class="letter-participants">${participants}</div>`}
                     <div class="letter-header-actions">
                         <div class="letter-date ${dateClass}">${date}</div>
-                        <button class="btn-letter-basket ${basketIsInBasket('letters', letter.id) ? 'in-basket' : ''}"
+                        <button type="button" class="btn-letter-basket ${inBasket ? 'in-basket' : ''}"
                                 data-letter-id="${escapeHtml(letter.id || '')}"
-                                title="${basketIsInBasket('letters', letter.id) ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
-                            <i class="fas fa-star"></i>
+                                aria-label="Im Wissenskorb" aria-pressed="${inBasket}"
+                                title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
+                            <i class="fas fa-star" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
                 <div class="letter-meta">
-                    ${placeName ? `<span><i class="fas fa-map-marker-alt"></i> ${placeName}</span>` : ''}
-                    ${language ? `<span><i class="fas fa-language"></i> ${escapeHtml(language)}</span>` : ''}
-                    ${safeUrl(letter.url) ? `<span><a href="${escapeHtml(safeUrl(letter.url))}" target="_blank"><i class="fas fa-external-link-alt"></i> Quelle</a></span>` : ''}
+                    ${placeName ? `<span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${placeName}</span>` : ''}
+                    ${language ? `<span><i class="fas fa-language" aria-hidden="true"></i> ${escapeHtml(language)}</span>` : ''}
+                    ${safeUrl(letter.url) ? `<span><a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt" aria-hidden="true"></i> Quelle</a></span>` : ''}
                 </div>
-                <div class="letter-details" style="display: none;">
-                    ${buildLetterDetails(letter)}
-                </div>
+                ${hasDetails ? `<div class="letter-details hidden" id="${detailsId}">${buildLetterDetails(letter)}</div>` : ''}
             </div>
         `;
     }).join('');
 
-    // Show count info if limited
     if (letters.length > 500) {
         container.insertAdjacentHTML('beforeend', `
             <div class="empty-state">
@@ -2334,118 +2139,82 @@ function renderLettersList() {
         `);
     }
 
-    // Add click handlers for letter expansion (inline details)
+    // The toggle button and a click on the card surface expand the inline details
     container.querySelectorAll('.letter-card.has-details').forEach(card => {
         card.addEventListener('click', (e) => {
-            // Don't expand if clicking on external link, basket toggle, or action buttons
-            if (e.target.closest('a') || e.target.closest('.basket-toggle') || e.target.closest('button')) return;
-
+            if (e.target.closest('a, .btn-letter-basket')) return;
             toggleLetterExpand(card);
         });
     });
 
-    // Add click handlers for letter basket buttons
     container.querySelectorAll('.btn-letter-basket').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const letterId = btn.dataset.letterId;
-            if (!letterId) return;
-
-            const isInBasket = basketIsInBasket('letters', letterId);
-            if (isInBasket) {
-                basketRemove('letters', letterId);
-                btn.classList.remove('in-basket');
-                btn.title = 'Zum Korb hinzufuegen';
-                showToast('Brief aus Korb entfernt');
-            } else {
-                basketAdd('letters', letterId);
-                btn.classList.add('in-basket');
-                btn.title = 'Aus Korb entfernen';
-                showToast('Brief zum Korb hinzugefuegt');
-            }
+            if (btn.dataset.letterId) toggleBasketButton(btn, 'letters', btn.dataset.letterId);
         });
     });
 }
 
-// Toggle letter card expansion
 function toggleLetterExpand(card) {
     const details = card.querySelector('.letter-details');
     const icon = card.querySelector('.expand-icon');
-    const isExpanded = card.classList.contains('expanded');
-    card.querySelector('.letter-header').setAttribute('aria-expanded', String(!isExpanded));
-
-    if (isExpanded) {
-        card.classList.remove('expanded');
-        details.style.display = 'none';
-        if (icon) icon.classList.replace('fa-chevron-down', 'fa-chevron-right');
-    } else {
-        card.classList.add('expanded');
-        details.style.display = 'block';
-        if (icon) icon.classList.replace('fa-chevron-right', 'fa-chevron-down');
-    }
+    const expand = !card.classList.contains('expanded');
+    card.classList.toggle('expanded', expand);
+    card.querySelector('.letter-toggle')?.setAttribute('aria-expanded', String(expand));
+    details?.classList.toggle('hidden', !expand);
+    icon?.classList.replace(expand ? 'fa-chevron-right' : 'fa-chevron-down', expand ? 'fa-chevron-down' : 'fa-chevron-right');
 }
 
-// Build inline letter details content
+// Inline letter details: persons with authority links, mentions, correspSearch links
 function buildLetterDetails(letter) {
     let html = '<div class="letter-detail-content">';
 
-    // Links to sender/recipient at correspSearch
-    const senderLink = buildPersonLink(letter.sender);
-    const recipientLink = buildPersonLink(letter.recipient);
-
     html += '<div class="letter-detail-persons">';
-    html += `<span class="detail-person"><strong>Von:</strong> ${senderLink}</span>`;
-    html += `<span class="detail-person"><strong>An:</strong> ${recipientLink}</span>`;
+    html += `<span class="detail-person"><strong>Von:</strong> ${buildPersonLink(letter.sender)}</span>`;
+    html += `<span class="detail-person"><strong>An:</strong> ${buildPersonLink(letter.recipient)}</span>`;
     html += '</div>';
 
-    // Mentioned subjects
-    if (letter.mentions?.subjects?.length > 0) {
-        html += '<div class="letter-detail-mentions">';
-        html += '<strong>Themen:</strong> ';
-        html += letter.mentions.subjects.map(s => `<span class="mention-tag">${escapeHtml(s.label)}</span>`).join(' ');
+    const mentionGroups = [
+        ['Themen', letter.mentions?.subjects, s => s.label],
+        ['Personen', letter.mentions?.persons, p => p.name],
+        ['Orte', letter.mentions?.places, p => p.name]
+    ];
+    for (const [label, items, text] of mentionGroups) {
+        if (!items?.length) continue;
+        html += `<div class="letter-detail-mentions"><strong>${label}:</strong> `;
+        html += items.map(item => `<span class="mention-tag">${escapeHtml(text(item))}</span>`).join(' ');
         html += '</div>';
     }
 
-    // Mentioned persons
-    if (letter.mentions?.persons?.length > 0) {
-        html += '<div class="letter-detail-mentions">';
-        html += '<strong>Personen:</strong> ';
-        html += letter.mentions.persons.map(p => `<span class="mention-tag">${escapeHtml(p.name)}</span>`).join(' ');
-        html += '</div>';
-    }
-
-    // Mentioned places
-    if (letter.mentions?.places?.length > 0) {
-        html += '<div class="letter-detail-mentions">';
-        html += '<strong>Orte:</strong> ';
-        html += letter.mentions.places.map(p => `<span class="mention-tag">${escapeHtml(p.name)}</span>`).join(' ');
-        html += '</div>';
-    }
-
-    // Action links
     html += '<div class="letter-detail-links">';
-
     const senderCorrespUrl = buildCorrespSearchUrl(letter.sender);
     const recipientCorrespUrl = buildCorrespSearchUrl(letter.recipient);
-
     if (senderCorrespUrl) {
-        html += `<a href="${escapeHtml(senderCorrespUrl)}" target="_blank" class="detail-link" title="Alle Briefe von ${escapeHtml(letter.sender?.name)} bei correspSearch">
-            <i class="fas fa-search"></i> ${escapeHtml(letter.sender?.name)} bei correspSearch
-        </a>`;
+        html += correspSearchLink(senderCorrespUrl, letter.sender.name, 'detail-link');
     }
     if (recipientCorrespUrl && letter.recipient?.name !== letter.sender?.name) {
-        html += `<a href="${escapeHtml(recipientCorrespUrl)}" target="_blank" class="detail-link" title="Alle Briefe von ${escapeHtml(letter.recipient?.name)} bei correspSearch">
-            <i class="fas fa-search"></i> ${escapeHtml(letter.recipient?.name)} bei correspSearch
-        </a>`;
+        html += correspSearchLink(recipientCorrespUrl, letter.recipient.name, 'detail-link');
     }
-
     html += '</div>';
     html += '</div>';
 
     return html;
 }
 
+function correspSearchLink(url, name, className) {
+    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="${className}" title="Briefe von ${escapeHtml(name)} bei correspSearch">
+        <i class="fas fa-search" aria-hidden="true"></i> ${escapeHtml(name)} bei correspSearch
+    </a>`;
+}
+
 // Letter detail modal
+
+function detailRow(label, valueHtml, valueClass = '') {
+    return `<div class="letter-detail-row">
+        <span class="letter-detail-label">${label}</span>
+        <span class="letter-detail-value ${valueClass}">${valueHtml}</span>
+    </div>`;
+}
 
 function showLetterDetail(letterId) {
     const letter = allLetters.find(l => l.id === letterId);
@@ -2457,137 +2226,77 @@ function showLetterDetail(letterId) {
 
     if (!modal || !body) return;
 
-    // Build title
     const sender = letter.sender?.name || 'Unbekannt';
     const recipient = letter.recipient?.name || 'Unbekannt';
     title.textContent = `${sender} an ${recipient}`;
 
-    // Build content
     let html = '<div class="letter-detail">';
 
-    // Basic info section
     html += '<div class="letter-detail-section">';
     html += '<h4>Grunddaten</h4>';
-
-    html += `<div class="letter-detail-row">
-        <span class="letter-detail-label">Datum</span>
-        <span class="letter-detail-value">${escapeHtml(letter.date || 'Unbekannt')}</span>
-    </div>`;
-
-    html += `<div class="letter-detail-row">
-        <span class="letter-detail-label">Absender</span>
-        <span class="letter-detail-value">${buildPersonLink(letter.sender)}</span>
-    </div>`;
-
-    html += `<div class="letter-detail-row">
-        <span class="letter-detail-label">Empfaenger</span>
-        <span class="letter-detail-value">${buildPersonLink(letter.recipient)}</span>
-    </div>`;
-
+    // Date with its precision marker, as in the list (ADR-002)
+    html += detailRow('Datum', formatDateWithPrecision(letter), getDatePrecisionClass(letter.datePrecision, letter.dateCertainty));
+    html += detailRow('Absender', buildPersonLink(letter.sender));
+    html += detailRow('Empfaenger', buildPersonLink(letter.recipient));
     if (letter.place_sent?.name) {
-        html += `<div class="letter-detail-row">
-            <span class="letter-detail-label">Absendeort</span>
-            <span class="letter-detail-value">${buildPlaceLink(letter.place_sent)}</span>
-        </div>`;
+        html += detailRow('Absendeort', buildPlaceLink(letter.place_sent));
     }
-
     if (letter.language?.label) {
-        html += `<div class="letter-detail-row">
-            <span class="letter-detail-label">Sprache</span>
-            <span class="letter-detail-value">${escapeHtml(letter.language.label)}</span>
-        </div>`;
+        html += detailRow('Sprache', escapeHtml(letter.language.label));
     }
-
     html += '</div>';
 
-    // Mentions section (if available)
-    if (letter.mentions) {
-        // Mentioned subjects
-        if (letter.mentions.subjects?.length > 0) {
-            html += '<div class="letter-detail-section">';
-            html += '<h4>Erwaehnte Themen</h4>';
-            html += '<div class="letter-detail-tags">';
-            letter.mentions.subjects.forEach(subject => {
-                html += `<span class="letter-detail-tag">${escapeHtml(subject.label)}</span>`;
-            });
-            html += '</div></div>';
-        }
-
-        // Mentioned persons
-        if (letter.mentions.persons?.length > 0) {
-            html += '<div class="letter-detail-section">';
-            html += '<h4>Erwaehnte Personen</h4>';
-            html += '<div class="letter-detail-tags">';
-            letter.mentions.persons.forEach(person => {
-                html += `<span class="letter-detail-tag">${buildPersonLink(person, true)}</span>`;
-            });
-            html += '</div></div>';
-        }
-
-        // Mentioned places
-        if (letter.mentions.places?.length > 0) {
-            html += '<div class="letter-detail-section">';
-            html += '<h4>Erwaehnte Orte</h4>';
-            html += '<div class="letter-detail-tags">';
-            letter.mentions.places.forEach(place => {
-                html += `<span class="letter-detail-tag">${buildPlaceLink(place, true)}</span>`;
-            });
-            html += '</div></div>';
-        }
+    const mentionSections = [
+        ['Erwaehnte Themen', letter.mentions?.subjects, s => escapeHtml(s.label)],
+        ['Erwaehnte Personen', letter.mentions?.persons, p => buildPersonLink(p)],
+        ['Erwaehnte Orte', letter.mentions?.places, p => buildPlaceLink(p)]
+    ];
+    for (const [heading, items, render] of mentionSections) {
+        if (!items?.length) continue;
+        html += `<div class="letter-detail-section"><h4>${heading}</h4><div class="letter-detail-tags">`;
+        html += items.map(item => `<span class="letter-detail-tag">${render(item)}</span>`).join('');
+        html += '</div></div>';
     }
 
-    // Actions section
     html += '<div class="letter-detail-actions">';
     if (safeUrl(letter.url)) {
-        html += `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" class="btn btn-primary">
-            <i class="fas fa-external-link-alt"></i> Zur Quelle
+        html += `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+            <i class="fas fa-external-link-alt" aria-hidden="true"></i> Zur Quelle
         </a>`;
     }
-    // Add to basket button
     const inBasket = basketIsInBasket('letters', letter.id);
-    html += `<button class="btn btn-basket ${inBasket ? 'in-basket' : ''}" data-letter-id="${escapeHtml(letter.id)}">
-        <i class="fas fa-star"></i> ${inBasket ? 'Im Korb' : 'Zum Korb'}
+    html += `<button type="button" class="btn btn-basket ${inBasket ? 'in-basket' : ''}" data-letter-id="${escapeHtml(letter.id)}">
+        <i class="fas fa-star" aria-hidden="true"></i> <span class="btn-basket-label">${inBasket ? 'Im Korb' : 'Zum Korb'}</span>
     </button>`;
-    html += `<button class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(letter.sender?.id || letter.sender?.name)}">
-        <i class="fas fa-filter"></i> Briefe von ${escapeHtml(letter.sender?.name || 'Absender')}
-    </button>`;
+    const senderKey = personKey(letter.sender);
+    if (senderKey) {
+        html += `<button type="button" class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(senderKey)}">
+            <i class="fas fa-filter" aria-hidden="true"></i> Briefe von ${escapeHtml(letter.sender.name || 'Absender')}
+        </button>`;
+    }
 
-    // correspSearch links for sender and recipient
     const senderCorrespUrl = buildCorrespSearchUrl(letter.sender);
     const recipientCorrespUrl = buildCorrespSearchUrl(letter.recipient);
     if (senderCorrespUrl || recipientCorrespUrl) {
         html += '<div class="corresp-search-links">';
-        if (senderCorrespUrl) {
-            html += `<a href="${escapeHtml(senderCorrespUrl)}" target="_blank" class="btn btn-corresp" title="Briefe von ${escapeHtml(letter.sender?.name)} bei correspSearch">
-                <i class="fas fa-search"></i> ${escapeHtml(letter.sender?.name)} bei correspSearch
-            </a>`;
-        }
-        if (recipientCorrespUrl) {
-            html += `<a href="${escapeHtml(recipientCorrespUrl)}" target="_blank" class="btn btn-corresp" title="Briefe von ${escapeHtml(letter.recipient?.name)} bei correspSearch">
-                <i class="fas fa-search"></i> ${escapeHtml(letter.recipient?.name)} bei correspSearch
-            </a>`;
-        }
+        if (senderCorrespUrl) html += correspSearchLink(senderCorrespUrl, letter.sender.name, 'btn btn-corresp');
+        if (recipientCorrespUrl) html += correspSearchLink(recipientCorrespUrl, letter.recipient.name, 'btn btn-corresp');
         html += '</div>';
     }
     html += '</div>';
-
     html += '</div>';
 
     body.innerHTML = html;
-    body.querySelector('.btn-filter-person').addEventListener('click', (e) => {
+    body.querySelector('.btn-filter-person')?.addEventListener('click', (e) => {
         filterByPerson(e.currentTarget.dataset.personId);
     });
 
-    // Setup basket button handler
     const basketBtn = body.querySelector('.btn-basket[data-letter-id]');
-    if (basketBtn) {
-        basketBtn.addEventListener('click', () => {
-            const letterId = basketBtn.dataset.letterId;
-            const nowInBasket = basketToggle('letters', letterId);
-            basketBtn.classList.toggle('in-basket', nowInBasket);
-            basketBtn.innerHTML = `<i class="fas fa-star"></i> ${nowInBasket ? 'Im Korb' : 'Zum Korb'}`;
-        });
-    }
+    basketBtn?.addEventListener('click', () => {
+        // The visible label carries the state, so no aria-pressed here
+        const nowInBasket = toggleBasketButton(basketBtn, 'letters', basketBtn.dataset.letterId, { pressed: false });
+        basketBtn.querySelector('.btn-basket-label').textContent = nowInBasket ? 'Im Korb' : 'Zum Korb';
+    });
 
     openModal(modal);
 }
@@ -2595,13 +2304,12 @@ function showLetterDetail(letterId) {
 // Counts opened person dialogs, so a Wikidata answer for an earlier person is dropped
 let personDetailRequest = 0;
 
-// Show person detail modal. Wikidata is queried only on an explicit click (finding 10),
+// Show person detail modal. Wikidata is queried only on an explicit click (ADR-006),
 // enrichment already consented to during upload is read from sessionStorage.
 function showPersonDetail(personId) {
-    // Find person in index (dataIndices.persons is keyed by authority ID like VIAF)
+    // Parser indices are keyed with personKey, the HSA index with the VIAF id
     let person = dataIndices.persons?.[personId];
     if (!person) {
-        // Try to find by iterating values (match by viaf, id, or name)
         person = Object.values(dataIndices.persons || {}).find(p =>
             p.viaf === personId || p.id === personId || p.name === personId
         );
@@ -2613,10 +2321,10 @@ function showPersonDetail(personId) {
     const body = elements.getById('person-modal-body');
     if (!modal || !body) return;
 
-    // Normalize authority and id (HSA uses 'viaf' property, others use 'id' + 'authority')
-    const authorityId = person.viaf || person.id;
-    const authority = person.authority || (person.viaf ? 'viaf' : null);
-    const canEnrich = Boolean(authority && authorityId && ['gnd', 'viaf'].includes(authority));
+    const ref = personAuthority(person);
+    const authority = ref?.authority || null;
+    const authorityId = ref?.id || null;
+    const canEnrich = Boolean(ref && ['gnd', 'viaf'].includes(authority));
 
     let cached = null;
     if (canEnrich) {
@@ -2638,16 +2346,22 @@ async function loadPersonEnrichment(detail, button) {
     button.disabled = true;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Daten von Wikidata...';
     let enriched = null;
+    let failed = false;
     try {
         enriched = await enrichPerson(detail.authority, detail.authorityId);
     } catch (error) {
+        // enrichPerson throws only when the request fails; null means Wikidata has no entry
+        failed = true;
         console.warn('Wikidata request failed:', error);
     }
     if (detail.request !== personDetailRequest) return;
     if (enriched) {
         renderPersonDetail(detail, enriched);
     } else {
-        button.outerHTML = '<p class="person-enrich-status" tabindex="-1">Kein Wikidata-Eintrag gefunden.</p>';
+        const status = failed
+            ? 'Wikidata nicht erreichbar. Bitte später erneut versuchen.'
+            : 'Kein Wikidata-Eintrag gefunden.';
+        button.outerHTML = `<p class="person-enrich-status" tabindex="-1">${status}</p>`;
     }
     // The clicked button is gone after re-rendering; keep keyboard focus inside the dialog
     (detail.body.querySelector('.person-enrich-status') || detail.modal.querySelector('.modal-close'))?.focus();
@@ -2658,21 +2372,18 @@ function renderPersonDetail(detail, enriched) {
 
     let html = '<div class="person-detail">';
 
-    // Header with avatar/image and basic info
     html += '<div class="person-detail-header">';
-    if (enriched?.thumbnail) {
+    if (enriched?.thumbnail && safeUrl(enriched.thumbnail)) {
         html += `<img class="person-detail-image" src="${escapeHtml(safeUrl(enriched.thumbnail))}" alt="${escapeHtml(person.name)}">`;
     } else {
-        const initials = person.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        html += `<div class="person-detail-avatar">${escapeHtml(initials)}</div>`;
+        html += `<div class="person-detail-avatar" aria-hidden="true">${escapeHtml(getPersonInitials(person.name, person.precision))}</div>`;
     }
     html += '<div class="person-detail-info">';
     html += `<h3>${escapeHtml(enriched?.name || person.name)}</h3>`;
 
-    // Show enriched biographical data with Wikidata indicator
     if (enriched) {
         html += `<div class="wikidata-badge" title="Daten angereichert via Wikidata">
-            <svg class="wikidata-logo" viewBox="0 0 30 20" width="16" height="11">
+            <svg class="wikidata-logo" viewBox="0 0 30 20" width="16" height="11" aria-hidden="true">
                 <rect fill="#990000" width="6" height="20"/>
                 <rect fill="#339966" x="8" width="6" height="20"/>
                 <rect fill="#006699" x="16" width="6" height="20"/>
@@ -2685,22 +2396,22 @@ function renderPersonDetail(detail, enriched) {
         const lifeDates = formatLifeDates(enriched);
         const places = formatPlaces(enriched);
         if (lifeDates) {
-            html += `<div class="person-life-dates"><i class="fas fa-calendar"></i> ${escapeHtml(lifeDates)}</div>`;
+            html += `<div class="person-life-dates"><i class="fas fa-calendar" aria-hidden="true"></i> ${escapeHtml(lifeDates)}</div>`;
         }
         if (places) {
-            html += `<div class="person-places"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(places)}</div>`;
+            html += `<div class="person-places"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${escapeHtml(places)}</div>`;
         }
         if (enriched.professions?.length > 0) {
-            html += `<div class="person-professions"><i class="fas fa-briefcase"></i> ${escapeHtml(enriched.professions.slice(0, 3).join(', '))}</div>`;
+            html += `<div class="person-professions"><i class="fas fa-briefcase" aria-hidden="true"></i> ${escapeHtml(enriched.professions.slice(0, 3).join(', '))}</div>`;
         }
     } else if (canEnrich) {
         html += `<button type="button" class="btn btn-secondary person-enrich-btn">
-            <i class="fas fa-cloud-download-alt"></i> Lebensdaten von Wikidata laden
+            <i class="fas fa-cloud-download-alt" aria-hidden="true"></i> Lebensdaten von Wikidata laden
         </button>`;
     }
     html += '</div></div>';
 
-    // External links (from Wikidata enrichment or fallback)
+    const authorityHref = authorityUrl(authority, authorityId);
     if (enriched) {
         const externalLinks = buildExternalLinks(enriched);
         if (externalLinks) {
@@ -2709,44 +2420,33 @@ function renderPersonDetail(detail, enriched) {
             html += `<div class="person-detail-links">${externalLinks}</div>`;
             html += '</div>';
         }
-    } else if (authority && authorityId) {
-        // Fallback: show direct authority link if no Wikidata data
+    } else if (authorityHref) {
         html += '<div class="person-detail-section">';
         html += '<h4>Externe Links</h4>';
-        html += '<div class="person-detail-links">';
-        if (authority === 'viaf') {
-            html += `<a href="https://viaf.org/viaf/${encodeURIComponent(authorityId)}" target="_blank" rel="noopener" title="VIAF">VIAF</a>`;
-        } else if (authority === 'gnd') {
-            html += `<a href="https://d-nb.info/gnd/${encodeURIComponent(authorityId)}" target="_blank" rel="noopener" title="GND">GND</a>`;
-        }
-        html += '</div></div>';
+        html += `<div class="person-detail-links"><a href="${escapeHtml(authorityHref)}" target="_blank" rel="noopener noreferrer">${escapeHtml(authority.toUpperCase())}</a></div>`;
+        html += '</div>';
     }
 
-    // Calculate letter count for this person
-    const personLetterIds = allLetters.filter(l =>
-        l.sender?.id === personId || l.sender?.viaf === personId ||
-        l.recipient?.id === personId || l.recipient?.viaf === personId ||
-        l.sender?.name === person.name || l.recipient?.name === person.name
-    ).map(l => l.id);
-    const totalLetters = personLetterIds.length;
+    // Letters of this person, matched with personKey like the person filter (ADR-001)
+    const personLetterIds = allLetters
+        .filter(l => personKey(l.sender) === personId || personKey(l.recipient) === personId)
+        .map(l => l.id);
 
-    // Action buttons
     html += '<div class="person-detail-actions">';
 
     const correspSearchUrl = buildCorrespSearchUrl(person);
     if (correspSearchUrl) {
-        html += `<a href="${escapeHtml(correspSearchUrl)}" target="_blank" class="btn btn-primary">
-            <i class="fas fa-search"></i> Bei correspSearch suchen
+        html += `<a href="${escapeHtml(correspSearchUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+            <i class="fas fa-search" aria-hidden="true"></i> Bei correspSearch suchen
         </a>`;
     }
 
-    // Add to basket button
-    html += `<button class="btn btn-basket" id="person-add-basket-btn" data-letter-ids="${escapeHtml(JSON.stringify(personLetterIds))}">
-        <i class="fas fa-star"></i> ${totalLetters} Briefe zum Korb
+    html += `<button type="button" class="btn btn-basket person-add-basket-btn">
+        <i class="fas fa-star" aria-hidden="true"></i> ${personLetterIds.length} Briefe zum Korb
     </button>`;
 
-    html += `<button class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(personId)}">
-        <i class="fas fa-filter"></i> Briefe filtern
+    html += `<button type="button" class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(personId)}">
+        <i class="fas fa-filter" aria-hidden="true"></i> Briefe filtern
     </button>`;
 
     html += '</div></div>';
@@ -2759,78 +2459,52 @@ function renderPersonDetail(detail, enriched) {
         closeModal(modal);
         filterByPerson(e.currentTarget.dataset.personId);
     });
-
-    // Setup basket button handler
-    const personBasketBtn = document.getElementById('person-add-basket-btn');
-    if (personBasketBtn) {
-        personBasketBtn.addEventListener('click', () => {
-            const letterIds = JSON.parse(personBasketBtn.dataset.letterIds);
-            showToast(addLettersToBasket(letterIds));
-        });
-    }
+    // The letter ids stay in this closure instead of a JSON attribute in the markup
+    body.querySelector('.person-add-basket-btn').addEventListener('click', () => {
+        showToast(addLettersToBasket(personLetterIds));
+    });
 }
 
-// Helper to build correspSearch URL for a person
-function buildCorrespSearchUrl(person) {
-    if (!person) return null;
-
-    // Normalize authority and id (HSA uses 'viaf' property, others use 'id' + 'authority')
-    const authorityId = person.viaf || person.id;
-    const authority = person.authority || (person.viaf ? 'viaf' : null);
-
-    if (!authorityId || !authority) return null;
-
-    // correspSearch API accepts GND and VIAF IDs
-    let authorityUrl = null;
-    switch (authority) {
-        case 'gnd':
-            authorityUrl = `http://d-nb.info/gnd/${authorityId}`;
-            break;
-        case 'viaf':
-            authorityUrl = `http://viaf.org/viaf/${authorityId}`;
-            break;
-    }
-
-    if (authorityUrl) {
-        return `https://correspsearch.net/search.xql?correspondent=${encodeURIComponent(authorityUrl)}`;
-    }
+// Page of a person at the authority (VIAF or GND), or null for other systems
+function authorityUrl(authority, id) {
+    if (!id) return null;
+    if (authority === 'viaf') return `https://viaf.org/viaf/${encodeURIComponent(id)}`;
+    if (authority === 'gnd') return `https://d-nb.info/gnd/${encodeURIComponent(id)}`;
     return null;
 }
 
-// Helper to build person link with authority URL
-function buildPersonLink(person, compact = false) {
-    if (!person) return 'Unbekannt';
+// correspSearch search for a person; the API accepts GND and VIAF URIs as correspondent
+function buildCorrespSearchUrl(person) {
+    const ref = personAuthority(person);
+    if (!ref) return null;
 
-    const name = escapeHtml(person.name);
-    let url = null;
+    let authorityUri = null;
+    if (ref.authority === 'gnd') authorityUri = `http://d-nb.info/gnd/${ref.id}`;
+    if (ref.authority === 'viaf') authorityUri = `http://viaf.org/viaf/${ref.id}`;
 
-    if (person.id && person.authority) {
-        switch (person.authority) {
-            case 'viaf':
-                url = `https://viaf.org/viaf/${encodeURIComponent(person.id)}`;
-                break;
-            case 'gnd':
-                url = `https://d-nb.info/gnd/${encodeURIComponent(person.id)}`;
-                break;
-        }
-    }
-
-    if (url) {
-        return `<a href="${escapeHtml(url)}" target="_blank" title="In ${escapeHtml(person.authority.toUpperCase())} ansehen">${name}</a>`;
-    }
-    return name;
+    return authorityUri
+        ? `https://correspsearch.net/search.xql?correspondent=${encodeURIComponent(authorityUri)}`
+        : null;
 }
 
-// Helper to build place link with GeoNames URL
-function buildPlaceLink(place, compact = false) {
+// Person name, linked to its authority page when it has one
+function buildPersonLink(person) {
+    if (!person) return 'Unbekannt';
+    const name = escapeHtml(person.name);
+    const ref = personAuthority(person);
+    const url = ref && authorityUrl(ref.authority, ref.id);
+    return url
+        ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="In ${escapeHtml(ref.authority.toUpperCase())} ansehen">${name}</a>`
+        : name;
+}
+
+// Place name, linked to GeoNames when it has an id
+function buildPlaceLink(place) {
     if (!place) return 'Unbekannt';
-
     const name = escapeHtml(place.name);
-
-    if (place.geonames_id) {
-        return `<a href="https://www.geonames.org/${encodeURIComponent(place.geonames_id)}" target="_blank" title="In GeoNames ansehen">${name}</a>`;
-    }
-    return name;
+    return place.geonames_id
+        ? `<a href="https://www.geonames.org/${encodeURIComponent(place.geonames_id)}" target="_blank" rel="noopener noreferrer" title="In GeoNames ansehen">${name}</a>`
+        : name;
 }
 
 function filterByPerson(personId) {
@@ -2839,71 +2513,6 @@ function filterByPerson(personId) {
 
     applyPersonFilter(personId);
     switchView('letters');
-    updateUrlState();
-}
-
-// Apply subject filter (stays on current view, updates map/data)
-function applySubjectFilter(subjectId) {
-    setSelectedSubjectId(subjectId);
-    applyFilters();
-    updateSubjectFilterDisplay();
-    updateTopicsQuickFilterState();
-    updateFilterIndicators();
-    updateUrlState();
-}
-
-// Clear subject filter
-function clearSubjectFilter() {
-    setSelectedSubjectId(null);
-    applyFilters();
-    updateSubjectFilterDisplay();
-    updateTopicsQuickFilterState();
-    updateFilterIndicators();
-}
-
-// Update subject filter display in sidebar
-function updateSubjectFilterDisplay() {
-    let filterDisplay = elements.getById('subject-filter-display');
-    const subjectIndex = getSubjectIndex();
-    const selectedSubjectId = getSelectedSubjectId();
-
-    if (selectedSubjectId && subjectIndex[selectedSubjectId]) {
-        const topic = subjectIndex[selectedSubjectId];
-
-        if (!filterDisplay) {
-            // Create filter display element
-            // .stats-cards sits inside a sidebar section, not directly in .sidebar
-            const statsCards = document.querySelector('.stats-cards');
-            filterDisplay = document.createElement('div');
-            filterDisplay.id = 'subject-filter-display';
-            filterDisplay.className = 'subject-filter-active';
-            statsCards.after(filterDisplay);
-        }
-
-        filterDisplay.innerHTML = `
-            <div class="filter-badge subject-badge">
-                <i class="fas fa-tag"></i>
-                <span>${escapeHtml(topic.label)}</span>
-                <button class="filter-clear" title="Filter entfernen">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-        filterDisplay.style.display = 'block';
-
-        // Add click handler
-        filterDisplay.querySelector('.filter-clear').addEventListener('click', clearSubjectFilter);
-    } else if (filterDisplay) {
-        filterDisplay.style.display = 'none';
-    }
-}
-
-// Goes through the state manager like the other filters, so every view and the reset button see it
-function applyPlaceFilter(placeId) {
-    log.event(`Applying place filter: ${placeId}`);
-    selectedPlaceFilter = placeId;
-    applyFilters();
-    log.event(`Filtered letters count: ${filteredLetters.length}`);
 }
 
 // Export
@@ -2913,885 +2522,32 @@ function initExport() {
     const modal = elements.exportModal;
     const exportOptions = modal?.querySelectorAll('.export-option');
 
-    if (exportBtn && modal) {
-        exportBtn.addEventListener('click', () => {
-            const info = elements.getById('export-info');
-            if (info) {
-                info.textContent = `${filteredLetters.length} Briefe werden exportiert`;
-            }
-            openModal(modal);
-        });
+    if (!exportBtn || !modal) return;
 
-        exportOptions?.forEach(option => {
-            option.addEventListener('click', () => {
-                const format = option.dataset.format;
-                exportData(format);
-                closeModal(modal);
-            });
-        });
-    }
-}
-
-function exportData(format) {
-    const data = filteredLetters.map(letter => ({
-        id: letter.id,
-        date: letter.date,
-        date_to: letter.dateTo || '',
-        year: letter.year,
-        date_precision: letter.datePrecision || '',
-        date_certainty: letter.dateCertainty || 'high',
-        sender_name: letter.sender?.name || '',
-        sender_id: letter.sender?.id || '',
-        sender_precision: letter.sender?.precision || '',
-        recipient_name: letter.recipient?.name || '',
-        recipient_id: letter.recipient?.id || '',
-        recipient_precision: letter.recipient?.precision || '',
-        place_name: letter.place_sent?.name || '',
-        place_geonames: letter.place_sent?.geonames_id || '',
-        place_precision: letter.place_sent?.precision || '',
-        language: letter.language?.code || '',
-        url: letter.url || ''
-    }));
-
-    let content, filename, mimeType;
-
-    if (format === 'csv') {
-        const headers = Object.keys(data[0] || {});
-        const rows = data.map(row =>
-            headers.map(h => csvCell(row[h] ?? '')).join(',')
-        );
-        content = [headers.join(','), ...rows].join('\n');
-        filename = 'korrespondenz.csv';
-        mimeType = 'text/csv;charset=utf-8';
-    } else {
-        content = JSON.stringify(data, null, 2);
-        filename = 'korrespondenz.json';
-        mimeType = 'application/json';
-    }
-
-    downloadFile(content, filename, mimeType);
-}
-
-// Missing places modal
-
-// Research questions view
-
-/**
- * Analyze corpus data and generate research questions with epistemological categories
- * Categories: descriptive (what), analytical (patterns), interpretive (meaning)
- */
-function analyzeResearchQuestions() {
-    if (!allLetters || !dataIndices) return [];
-
-    const questions = [];
-    const totalLetters = allLetters.length;
-
-    // --- DESCRIPTIVE QUESTIONS (What is in the corpus?) ---
-
-    // Persons - with Top 3 preview
-    const persons = Object.values(dataIndices.persons || {});
-    const personsWithAuthority = persons.filter(p => p.authority || p.viaf || p.gnd);
-    if (persons.length > 0) {
-        // Calculate total letters per person and get top 3
-        // Use letter_count from parser (as_sender + as_recipient counts)
-        const personsByActivity = persons
-            .map(p => ({
-                name: p.name,
-                count: p.letter_count || 0
-            }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 3);
-
-        questions.push({
-            category: 'descriptive',
-            question: 'Wer sind die aktivsten Korrespondenten?',
-            description: `${persons.length} Personen im Korpus`,
-            preview: personsByActivity.map(p => `${p.name} (${p.count})`),
-            view: 'persons',
-            icon: 'fa-users',
-            coverage: Math.round((personsWithAuthority.length / persons.length) * 100),
-            dataField: 'persons',
-            path: [
-                { view: 'persons', label: 'Korrespondenten', action: 'sortieren nach Briefanzahl' }
-            ]
-        });
-    }
-
-    // Places - with Top 3 preview
-    const places = Object.values(dataIndices.places || {});
-    const placesWithCoords = places.filter(p => p.lat && p.lon);
-    if (places.length > 0) {
-        const topPlaces = places
-            .map(p => ({ name: p.name, count: p.letter_count || 0 }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 3);
-
-        questions.push({
-            category: 'descriptive',
-            question: 'Von welchen Orten wurde korrespondiert?',
-            description: `${places.length} Orte, ${placesWithCoords.length} georeferenziert`,
-            preview: topPlaces.map(p => `${p.name} (${p.count})`),
-            view: 'places',
-            icon: 'fa-map-marker-alt',
-            coverage: Math.round((placesWithCoords.length / places.length) * 100),
-            dataField: 'places',
-            path: [
-                { view: 'places', label: 'Orte', action: 'Liste durchsuchen' },
-                { view: 'map', label: 'Karte', action: 'geografische Verteilung' }
-            ]
-        });
-    }
-
-    // Subjects/Topics - with Top 3 preview
-    const subjects = Object.values(dataIndices.subjects || {});
-    if (subjects.length > 0) {
-        const topSubjects = subjects
-            .map(s => ({ name: s.label || s.name, count: s.letter_count || 0 }))
-            .filter(s => s.name && s.count > 0)
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 3);
-
-        questions.push({
-            category: 'descriptive',
-            question: 'Welche Themen dominieren die Korrespondenz?',
-            description: `${subjects.length} verschiedene Themen`,
-            preview: topSubjects.length > 0 ? topSubjects.map(s => `${s.name} (${s.count})`) : null,
-            view: 'topics',
-            icon: 'fa-tags',
-            coverage: 100,
-            dataField: 'subjects',
-            path: [
-                { view: 'topics', label: 'Themen', action: 'Thema auswaehlen und zum Korb' }
-            ]
-        });
-    }
-
-    // Languages - with Top 3 preview
-    const languages = Object.keys(dataIndices.languages || {});
-    if (languages.length > 1) {
-        // dataIndices.languages contains objects with letter_count property
-        const topLangs = Object.entries(dataIndices.languages)
-            .map(([lang, data]) => [lang, data.letter_count || 0])
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3);
-        questions.push({
-            category: 'descriptive',
-            question: 'In welchen Sprachen wurde korrespondiert?',
-            description: `${languages.length} Sprachen im Korpus`,
-            preview: topLangs.map(([lang, count]) => {
-                const label = languageLabel(lang);
-                return `${label} (${count})`;
-            }),
-            view: 'timeline',
-            icon: 'fa-language',
-            coverage: 100,
-            dataField: 'languages',
-            path: [
-                { view: 'timeline', label: 'Timeline', action: 'Sprachen in Farblegende sehen' }
-            ]
-        });
-    }
-
-    // --- ANALYTICAL QUESTIONS (What patterns exist?) ---
-
-    // Temporal patterns - with top years preview
-    const datedLetters = allLetters.filter(l => l.year);
-    if (datedLetters.length > 0) {
-        const years = datedLetters.map(l => l.year);
-        const minYear = Math.min(...years);
-        const maxYear = Math.max(...years);
-        // Count letters per year and get top 3
-        const yearCounts = {};
-        years.forEach(y => { yearCounts[y] = (yearCounts[y] || 0) + 1; });
-        const topYears = Object.entries(yearCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3);
-        questions.push({
-            category: 'analytical',
-            question: 'Wie entwickelt sich die Korrespondenzfrequenz ueber Zeit?',
-            description: `Zeitraum ${minYear}-${maxYear}, ${datedLetters.length} datierte Briefe`,
-            preview: topYears.map(([year, count]) => `${year} (${count})`),
-            view: 'activity',
-            icon: 'fa-chart-line',
-            coverage: Math.round((datedLetters.length / totalLetters) * 100),
-            dataField: 'dates',
-            path: [
-                { view: 'activity', label: 'Aktivitaet', action: 'Heatmap fuer Muster pruefen' },
-                { view: 'timeline', label: 'Timeline', action: 'Jaehrliche Verteilung' }
-            ]
-        });
-    }
-
-    // Network structure - with top network nodes preview
-    if (persons.length >= 5) {
-        // Check for ego-network pattern and get top 3 by connections
-        // Use letter_count from parser
-        const personsWithCounts = persons
-            .map(p => ({
-                name: p.name,
-                count: p.letter_count || 0
-            }))
-            .sort((a, b) => b.count - a.count);
-        const topNetworkNodes = personsWithCounts.slice(0, 3);
-        const maxLetters = personsWithCounts[0]?.count || 0;
-        const totalConnections = personsWithCounts.reduce((a, b) => a + b.count, 0) / 2;
-        const isEgoNetwork = maxLetters > totalConnections * 0.6;
-
-        questions.push({
-            category: 'analytical',
-            question: isEgoNetwork
-                ? 'Wie ist das Ego-Netzwerk um die zentrale Person strukturiert?'
-                : 'Welche Cluster und Vermittler gibt es im Korrespondenz-Netzwerk?',
-            description: isEgoNetwork
-                ? 'Ego-Netzwerk erkannt: Eine Person dominiert die Korrespondenz'
-                : `${persons.length} Personen in Beziehung`,
-            preview: topNetworkNodes.map(p => `${p.name} (${p.count})`),
-            view: 'network',
-            icon: 'fa-project-diagram',
-            coverage: Math.round((personsWithAuthority.length / persons.length) * 100),
-            dataField: 'network',
-            path: [
-                { view: 'network', label: 'Netzwerk', action: 'Struktur erkunden' },
-                { view: 'persons', label: 'Korrespondenten', action: 'Person auswaehlen' },
-                { view: 'chronik', label: 'Chronik', action: 'Beziehungsverlauf' }
-            ]
-        });
-    }
-
-    // Geographic patterns
-    if (placesWithCoords.length >= 3) {
-        questions.push({
-            category: 'analytical',
-            question: 'Gibt es geografische Cluster in der Korrespondenz?',
-            description: `${placesWithCoords.length} Orte mit Koordinaten`,
-            view: 'map',
-            icon: 'fa-map',
-            coverage: Math.round((placesWithCoords.length / places.length) * 100),
-            dataField: 'coordinates',
-            path: [
-                { view: 'map', label: 'Karte', action: 'Cluster identifizieren' },
-                { view: 'places', label: 'Orte', action: 'Ort auswaehlen und zum Korb' }
-            ]
-        });
-    }
-
-    // Mentions analysis (if available) - with top mentioned persons
-    const lettersWithMentions = allLetters.filter(l => l.mentions?.persons?.length > 0);
-    if (lettersWithMentions.length > 0) {
-        const totalMentions = lettersWithMentions.reduce((sum, l) => sum + l.mentions.persons.length, 0);
-        // Count mentions per person
-        const mentionCounts = {};
-        lettersWithMentions.forEach(l => {
-            l.mentions.persons.forEach(p => {
-                const name = p.name || p.ref || 'Unbekannt';
-                mentionCounts[name] = (mentionCounts[name] || 0) + 1;
-            });
-        });
-        const topMentioned = Object.entries(mentionCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3);
-        questions.push({
-            category: 'analytical',
-            question: 'Wer wird in wessen Briefen erwaehnt?',
-            description: `${totalMentions} Personen-Erwaehnungen in ${lettersWithMentions.length} Briefen`,
-            preview: topMentioned.map(([name, count]) => `${name} (${count}x)`),
-            view: 'mentions-flow',
-            icon: 'fa-stream',
-            coverage: Math.round((lettersWithMentions.length / totalLetters) * 100),
-            dataField: 'mentions',
-            path: [
-                { view: 'mentions-flow', label: 'Mentions', action: 'Erwaehnungs-Muster' },
-                { view: 'persons', label: 'Korrespondenten', action: 'Person filtern' }
-            ]
-        });
-    }
-
-    // --- INTERPRETIVE QUESTIONS (What does it mean?) ---
-
-    // Language-geography correlation - REMOVED: No view shows this correlation directly
-    // The path was misleading - users couldn't actually filter map by language
-
-    // Biographical context
-    if (datedLetters.length > 0 && personsWithAuthority.length > 0) {
-        questions.push({
-            category: 'interpretive',
-            question: 'Wie veraendert sich die Korrespondenz im Lebensverlauf?',
-            description: 'Erfordert Wikidata-Anreicherung fuer Lebensdaten',
-            view: 'chronik',
-            icon: 'fa-scroll',
-            coverage: Math.round((personsWithAuthority.length / persons.length) * 100),
-            dataField: 'biography',
-            path: [
-                { view: 'chronik', label: 'Chronik', action: 'Wikidata-Anreicherung aktivieren' }
-            ]
-        });
-    }
-
-    // Topic evolution - Note: We don't have a topics-over-time view, just topic filtering
-    if (subjects.length > 0 && datedLetters.length > 0) {
-        questions.push({
-            category: 'interpretive',
-            question: 'Welche Themen dominieren in bestimmten Zeitraeumen?',
-            description: 'Zeitfilter + Themenansicht kombinieren',
-            view: 'topics',
-            icon: 'fa-stream',
-            coverage: 100,
-            dataField: 'topic-evolution',
-            path: [
-                { view: 'topics', label: 'Themen', action: 'Thema waehlen, dann Zeitfilter setzen' }
-            ]
-        });
-    }
-
-    // Relationship development
-    if (persons.length >= 2 && datedLetters.length > 0) {
-        questions.push({
-            category: 'interpretive',
-            question: 'Wie entwickeln sich einzelne Briefbeziehungen?',
-            description: 'Erster Brief, Frequenz, Dauer einer Korrespondenz',
-            view: 'persons',
-            icon: 'fa-handshake',
-            coverage: Math.round((datedLetters.length / totalLetters) * 100),
-            dataField: 'relationships',
-            path: [
-                { view: 'persons', label: 'Korrespondenten', action: 'Person waehlen und filtern' },
-                { view: 'activity', label: 'Aktivitaet', action: 'Aktivitaetsmuster der Person' }
-            ]
-        });
-    }
-
-    // --- UNAVAILABLE QUESTIONS (what's missing) ---
-    // These questions COULD be asked but can't be answered with current data
-
-    // No geo data
-    if (places.length > 0 && placesWithCoords.length === 0) {
-        questions.push({
-            category: 'unavailable',
-            question: 'Wo wurde korrespondiert? (Kartenansicht)',
-            description: `${places.length} Orte ohne Koordinaten - Geo-Visualisierung nicht moeglich`,
-            icon: 'fa-map-marked-alt',
-            coverage: 0,
-            missingData: 'Koordinaten',
-            suggestion: 'GeoNames-IDs oder Wikidata-IDs in CMIF hinzufuegen'
-        });
-    }
-
-    // No dates
-    if (datedLetters.length === 0 && totalLetters > 0) {
-        questions.push({
-            category: 'unavailable',
-            question: 'Wie entwickelt sich die Korrespondenz zeitlich?',
-            description: `${totalLetters} Briefe ohne Datierung - Timeline nicht moeglich`,
-            icon: 'fa-calendar-times',
-            coverage: 0,
-            missingData: 'Datumsangaben',
-            suggestion: 'correspAction-Elemente mit when/notBefore/notAfter befuellen'
-        });
-    }
-
-    // No authority IDs
-    if (persons.length > 0 && personsWithAuthority.length === 0) {
-        questions.push({
-            category: 'unavailable',
-            question: 'Wer sind die Korrespondenten? (Wikidata-Anreicherung)',
-            description: `${persons.length} Personen ohne Authority-IDs - keine Anreicherung moeglich`,
-            icon: 'fa-user-slash',
-            coverage: 0,
-            missingData: 'GND/VIAF IDs',
-            suggestion: 'Authority-IDs (GND, VIAF) zu persName-Elementen hinzufuegen'
-        });
-    }
-
-    // No mentions
-    if (lettersWithMentions.length === 0 && totalLetters > 10) {
-        questions.push({
-            category: 'unavailable',
-            question: 'Wer wird in Briefen erwaehnt?',
-            description: 'Keine Personen-Erwaehnungen erfasst - Mentions-Analyse nicht moeglich',
-            icon: 'fa-comment-slash',
-            coverage: 0,
-            missingData: 'rs/persName in correspDesc',
-            suggestion: 'Erwaehnungen als rs-Elemente innerhalb note erfassen'
-        });
-    }
-
-    // No subjects/topics
-    if (subjects.length === 0 && totalLetters > 10) {
-        questions.push({
-            category: 'unavailable',
-            question: 'Welche Themen werden behandelt?',
-            description: 'Keine Themen-Verschlagwortung - Topic-Analyse nicht moeglich',
-            icon: 'fa-tags',
-            coverage: 0,
-            missingData: 'Keywords/Subjects',
-            suggestion: 'Keywords als rs type="subject" in note erfassen'
-        });
-    }
-
-    // Only one language
-    if (languages.length <= 1 && totalLetters > 10) {
-        questions.push({
-            category: 'unavailable',
-            question: 'In welchen Sprachen wurde korrespondiert?',
-            description: languages.length === 1
-                ? `Nur eine Sprache erfasst (${languages[0]}) - Sprachvergleich nicht moeglich`
-                : 'Keine Sprachangaben - Sprachanalyse nicht moeglich',
-            icon: 'fa-language',
-            coverage: 0,
-            missingData: 'xml:lang Attribute',
-            suggestion: 'xml:lang zu correspAction-Elementen hinzufuegen'
-        });
-    }
-
-    // Add unique IDs to all questions
-    questions.forEach((q, i) => {
-        q.id = `q-${q.category}-${i}`;
-    });
-
-    return questions;
-}
-
-// Wissenspfad (knowledge path)
-
-let knowledgePath = null;
-let currentDatasetKey = null;
-
-/**
- * Startet einen neuen Wissenspfad
- * @param {Object} question - Forschungsfrage mit path Array
- */
-function startKnowledgePath(question) {
-    if (!question || !question.path || question.path.length === 0) {
-        console.error('Cannot start knowledge path: invalid question data');
-        return;
-    }
-
-    knowledgePath = {
-        active: true,
-        dataset: currentDatasetKey,
-        questionId: `kp-${Date.now()}`,
-        question: question.question,
-        category: question.category,
-        path: question.path,
-        currentStep: 0,
-        basket: {
-            personIds: [],
-            placeIds: [],
-            letterIds: [],
-            topicIds: [],
-            timeRange: null,
-            languages: []
-        },
-        stepHistory: []
-    };
-
-    // In sessionStorage speichern
-    sessionStorage.setItem('knowledgePath', JSON.stringify(knowledgePath));
-
-    // UI anzeigen
-    showKnowledgePathUI();
-
-    // Zum ersten View navigieren
-    const firstStep = question.path[0];
-    switchView(firstStep.view);
-    updateUrlState();
-}
-
-/**
- * Laedt bestehenden Wissenspfad aus sessionStorage
- */
-function loadKnowledgePath() {
-    const saved = sessionStorage.getItem('knowledgePath');
-    if (saved) {
-        try {
-            knowledgePath = JSON.parse(saved);
-            // A path started on another dataset refers to its persons and places
-            if (knowledgePath?.active && knowledgePath.dataset === currentDatasetKey) {
-                showKnowledgePathUI();
-                return true;
-            }
-        } catch (e) {
-            console.error('Error loading knowledge path:', e);
+    exportBtn.addEventListener('click', () => {
+        // An empty selection offers no download, which would be a file without letters
+        const empty = filteredLetters.length === 0;
+        const info = elements.getById('export-info');
+        if (info) {
+            info.textContent = empty
+                ? 'Der aktuelle Filter enthält keine Briefe. Ändern oder entfernen Sie Filter, um zu exportieren.'
+                : `${filteredLetters.length.toLocaleString('de-DE')} Briefe werden exportiert`;
         }
-    }
-    knowledgePath = null;
-    return false;
-}
-
-/**
- * Speichert aktuellen Wissenspfad
- */
-function saveKnowledgePath() {
-    if (knowledgePath) {
-        sessionStorage.setItem('knowledgePath', JSON.stringify(knowledgePath));
-    }
-}
-
-/**
- * Beendet den Wissenspfad
- */
-function endKnowledgePath() {
-    knowledgePath = null;
-    sessionStorage.removeItem('knowledgePath');
-    hideKnowledgePathUI();
-
-    // Zur Start-View (mit Forschungspfaden) zurueck
-    switchView('overview');
-    updateUrlState();
-}
-
-/**
- * Navigiert zum naechsten Schritt im Pfad
- */
-function nextPathStep() {
-    if (!knowledgePath) return;
-
-    // Aktuellen Zustand zur History hinzufuegen
-    knowledgePath.stepHistory.push({
-        step: knowledgePath.currentStep,
-        view: knowledgePath.path[knowledgePath.currentStep].view,
-        basket: JSON.parse(JSON.stringify(knowledgePath.basket)),
-        timestamp: Date.now()
+        exportOptions?.forEach(option => { option.disabled = empty; });
+        openModal(modal);
     });
 
-    knowledgePath.currentStep++;
-    saveKnowledgePath();
-
-    if (knowledgePath.currentStep >= knowledgePath.path.length) {
-        // Pfad abgeschlossen - zurueck zur Pfade-View
-        showPathCompletedMessage();
-        endKnowledgePath();
-    } else {
-        // Naechster View
-        const nextStep = knowledgePath.path[knowledgePath.currentStep];
-        switchView(nextStep.view);
-        updateUrlState();
-        updateKnowledgePathUI();
-    }
-}
-
-/**
- * Navigiert zum vorherigen Schritt
- */
-function previousPathStep() {
-    if (!knowledgePath || knowledgePath.currentStep === 0) return;
-
-    knowledgePath.currentStep--;
-
-    // Korb auf vorherigen Zustand zuruecksetzen
-    if (knowledgePath.stepHistory.length > 0) {
-        const prevState = knowledgePath.stepHistory.pop();
-        knowledgePath.basket = prevState.basket;
-    }
-
-    saveKnowledgePath();
-
-    const prevStep = knowledgePath.path[knowledgePath.currentStep];
-    switchView(prevStep.view);
-    updateUrlState();
-    updateKnowledgePathUI();
-}
-
-/**
- * Fuegt aktuelle Auswahl zum universellen Korb hinzu (basket.js)
- * Funktioniert auch ohne aktiven Wissenspfad
- */
-function addToBasketFromView() {
-    const currentView = state.ui.currentView;
-    const filteredLetters = state.getFilteredLetters();
-    let addedCount = 0;
-
-    switch (currentView) {
-        case 'persons':
-            // Alle Personen aus gefilterten Briefen
-            filteredLetters.forEach(l => {
-                if (l.sender?.id) {
-                    const result = basketAdd('persons', l.sender.id);
-                    if (result === true) addedCount++;
-                }
-                if (l.recipient?.id) {
-                    const result = basketAdd('persons', l.recipient.id);
-                    if (result === true) addedCount++;
-                }
-            });
-            break;
-
-        case 'places':
-        case 'map':
-            // Alle Orte aus gefilterten Briefen
-            filteredLetters.forEach(l => {
-                if (l.place_sent?.geonames_id) {
-                    const result = basketAdd('places', l.place_sent.geonames_id);
-                    if (result === true) addedCount++;
-                }
-            });
-            break;
-
-        case 'letters':
-        case 'chronik':
-            // Alle gefilterten Briefe
-            filteredLetters.forEach(l => {
-                if (l.id) {
-                    const result = basketAdd('letters', l.id);
-                    if (result === true) addedCount++;
-                }
-            });
-            break;
-
-        case 'timeline':
-        case 'activity':
-            // Bei Timeline/Activity: alle gefilterten Briefe
-            filteredLetters.forEach(l => {
-                if (l.id) {
-                    const result = basketAdd('letters', l.id);
-                    if (result === true) addedCount++;
-                }
-            });
-            break;
-
-        default:
-            // Generisch: alle Brief-IDs
-            filteredLetters.forEach(l => {
-                if (l.id) {
-                    const result = basketAdd('letters', l.id);
-                    if (result === true) addedCount++;
-                }
-            });
-    }
-
-    // Feedback
-    if (addedCount > 0) {
-        showToast(`${addedCount} Element(e) zum Korb hinzugefuegt`);
-    } else {
-        showToast('Auswahl bereits im Korb oder Limit erreicht');
-    }
-}
-
-/**
- * Leert den universellen Korb (basket.js)
- */
-function clearBasketHandler() {
-    basketClear();
-    showToast('Korb geleert');
-}
-
-/**
- * Zeigt Wissenspfad UI-Elemente (Pfad-Leiste und Navigation)
- * Wissenskorb-Sidebar bleibt IMMER sichtbar
- */
-function showKnowledgePathUI() {
-    const pathBar = document.getElementById('knowledge-path-bar');
-    const pathNav = document.getElementById('knowledge-path-nav');
-
-    if (pathBar) pathBar.classList.remove('hidden');
-    if (pathNav) pathNav.classList.remove('hidden');
-
-    updateKnowledgePathUI();
-}
-
-/**
- * Versteckt Wissenspfad UI-Elemente (nur Pfad-Leiste und Navigation)
- * Wissenskorb-Sidebar bleibt IMMER sichtbar
- */
-function hideKnowledgePathUI() {
-    const pathBar = document.getElementById('knowledge-path-bar');
-    const pathNav = document.getElementById('knowledge-path-nav');
-
-    if (pathBar) pathBar.classList.add('hidden');
-    if (pathNav) pathNav.classList.add('hidden');
-}
-
-/**
- * Aktualisiert alle Wissenspfad UI-Elemente
- */
-function updateKnowledgePathUI() {
-    if (!knowledgePath) return;
-
-    // Frage-Text
-    const questionText = document.getElementById('path-bar-question-text');
-    if (questionText) {
-        questionText.textContent = knowledgePath.question;
-        questionText.title = knowledgePath.question;
-    }
-
-    // Pfad-Schritte rendern
-    const stepsContainer = document.getElementById('path-bar-steps');
-    if (stepsContainer) {
-        let html = '';
-        knowledgePath.path.forEach((step, i) => {
-            const isActive = i === knowledgePath.currentStep;
-            const isComplete = i < knowledgePath.currentStep;
-
-            html += `
-                <div class="path-bar-step ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}"
-                     data-step="${i}" title="${escapeHtml(step.action)}">
-                    <span class="path-bar-step-num">${i + 1}</span>
-                    <span class="path-bar-step-label">${escapeHtml(step.label)}</span>
-                </div>
-            `;
-
-            if (i < knowledgePath.path.length - 1) {
-                html += '<span class="path-bar-step-arrow"><i class="fas fa-chevron-right"></i></span>';
+    exportOptions?.forEach(option => {
+        option.addEventListener('click', () => {
+            if (filteredLetters.length === 0) return;
+            if (option.dataset.format === 'csv') {
+                downloadFile(lettersToCsv(filteredLetters), 'korrespondenz.csv', 'text/csv;charset=utf-8');
+            } else {
+                downloadFile(lettersToJson(filteredLetters), 'korrespondenz.json', 'application/json');
             }
+            closeModal(modal);
         });
-        stepsContainer.innerHTML = html;
-
-        // Click-Handler fuer Schritte
-        stepsContainer.querySelectorAll('.path-bar-step').forEach(stepEl => {
-            stepEl.addEventListener('click', () => {
-                const stepIndex = parseInt(stepEl.dataset.step);
-                if (stepIndex <= knowledgePath.currentStep) {
-                    // Zu diesem Schritt zurueckspringen
-                    while (knowledgePath.currentStep > stepIndex) {
-                        previousPathStep();
-                    }
-                }
-            });
-        });
-    }
-
-    // Korb-Zaehler aus basket.js
-    const basketCount = document.getElementById('path-bar-basket-count');
-    if (basketCount) {
-        const counts = getBasketCounts();
-        basketCount.textContent = counts.total;
-    }
-
-    // Aktions-Anleitung aktualisieren
-    const actionText = document.getElementById('path-action-text');
-    if (actionText && knowledgePath.path[knowledgePath.currentStep]) {
-        const currentStep = knowledgePath.path[knowledgePath.currentStep];
-        actionText.textContent = currentStep.action || 'Erkunde diese Ansicht und fuege interessante Elemente zum Korb hinzu.';
-    }
-
-    // Navigation aktualisieren
-    updatePathNavigation();
-    updateSidebarBasketUI();
-}
-
-/**
- * Aktualisiert Pfad-Navigation Buttons
- */
-function updatePathNavigation() {
-    if (!knowledgePath) return;
-
-    const backBtn = document.getElementById('path-nav-back');
-    const nextBtn = document.getElementById('path-nav-next');
-    const stepInfo = document.getElementById('path-nav-step');
-
-    if (backBtn) {
-        backBtn.disabled = knowledgePath.currentStep === 0;
-    }
-
-    if (nextBtn) {
-        const isLastStep = knowledgePath.currentStep >= knowledgePath.path.length - 1;
-        nextBtn.innerHTML = isLastStep
-            ? 'Pfad abschliessen <i class="fas fa-check"></i>'
-            : 'Weiter im Pfad <i class="fas fa-arrow-right"></i>';
-    }
-
-    if (stepInfo) {
-        stepInfo.textContent = `Schritt ${knowledgePath.currentStep + 1} von ${knowledgePath.path.length}`;
-    }
-}
-
-/**
- * Aktualisiert Korb-Sidebar mit Daten aus basket.js
- */
-function updateSidebarBasketUI() {
-    const container = document.getElementById('basket-content');
-    if (!container) return;
-
-    const counts = getBasketCounts();
-    let html = '';
-
-    if (counts.persons > 0) {
-        html += `
-            <div class="basket-group">
-                <span class="basket-group-label"><i class="fas fa-users"></i> Personen</span>
-                <span class="basket-group-count">${counts.persons}</span>
-            </div>
-        `;
-    }
-
-    if (counts.places > 0) {
-        html += `
-            <div class="basket-group">
-                <span class="basket-group-label"><i class="fas fa-map-marker-alt"></i> Orte</span>
-                <span class="basket-group-count">${counts.places}</span>
-            </div>
-        `;
-    }
-
-    if (counts.letters > 0) {
-        html += `
-            <div class="basket-group">
-                <span class="basket-group-label"><i class="fas fa-envelope"></i> Briefe</span>
-                <span class="basket-group-count">${counts.letters}</span>
-            </div>
-        `;
-    }
-
-    if (html === '') {
-        html = '<div class="basket-empty">Korb ist leer</div>';
-    }
-
-    // Link zur Wissenskorb-Seite
-    if (counts.total > 0) {
-        html += `
-            <a href="wissenskorb.html" class="basket-view-link">
-                <i class="fas fa-external-link-alt"></i> Korb oeffnen
-            </a>
-        `;
-    }
-
-    container.innerHTML = html;
-
-    // Korb-Zaehler in Pfad-Leiste aktualisieren
-    const pathBarCount = document.getElementById('path-bar-basket-count');
-    if (pathBarCount) {
-        pathBarCount.textContent = counts.total;
-    }
-
-    // Navbar-Badge aktualisieren
-    const badge = document.getElementById('basket-badge');
-    if (badge) {
-        badge.textContent = counts.total;
-        if (counts.total > 0) {
-            badge.classList.add('has-items');
-        } else {
-            badge.classList.remove('has-items');
-        }
-    }
-}
-
-/**
- * Zeigt Erfolgsmeldung bei Pfad-Abschluss
- */
-function showPathCompletedMessage() {
-    showToast('Wissenspfad abgeschlossen');
-}
-
-/**
- * Setup Event-Handler fuer Wissenspfad und Korb
- */
-function setupKnowledgePathHandlers() {
-    // Pfad-Navigation
-    document.getElementById('path-nav-back')?.addEventListener('click', previousPathStep);
-    document.getElementById('path-nav-next')?.addEventListener('click', nextPathStep);
-    document.getElementById('path-bar-close')?.addEventListener('click', endKnowledgePath);
-
-    // Korb-Aktionen (nutzt jetzt basket.js)
-    document.getElementById('add-to-basket')?.addEventListener('click', addToBasketFromView);
-    document.getElementById('clear-basket')?.addEventListener('click', clearBasketHandler);
-
-    // Listener fuer Korb-Aenderungen (synchronisiert UI)
-    onBasketChange((counts) => {
-        updateSidebarBasketUI();
     });
-
-    // Initiales UI-Update
-    updateSidebarBasketUI();
 }
 
 enableModalKeyboard();
@@ -3808,6 +2564,15 @@ function setSidebarOpen(open) {
 
 document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
     setSidebarOpen(!document.querySelector('.sidebar')?.classList.contains('open'));
+});
+
+// Escape closes the open off-canvas sidebar and returns focus to its toggle. Dialogs, the tour and
+// the comboboxes handle Escape first and mark it with preventDefault or stop it.
+document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
+    if (!document.querySelector('.sidebar')?.classList.contains('open')) return;
+    setSidebarOpen(false);
+    document.getElementById('sidebar-toggle')?.focus();
 });
 
 // role="button" elements get native button keyboard behaviour: Enter and Space trigger their click handler

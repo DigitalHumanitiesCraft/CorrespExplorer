@@ -1,9 +1,24 @@
 // Demo Tour Module
-// Interactive onboarding tour for CorrespExplorer Demo
+// Interactive onboarding tour for CorrespExplorer Demo. The tour is a modal dialog: focus moves
+// to the primary button of each step, Tab stays inside the step, Escape ends the tour and focus
+// returns to where it was before.
+
+import { trapTabKey } from './utils.js';
 
 let currentStep = 1;
 const totalSteps = 12;
 let tourActive = false;
+let returnFocus = null;
+let switchView = null;
+
+/**
+ * Hand the tour the view switch of explore.js; steps with data-view open their view first,
+ * because sidebar sections are hidden on the overview
+ * @param {{switchView: function(string): void}} deps
+ */
+export function initDemoTour(deps) {
+    switchView = deps.switchView;
+}
 
 /**
  * Check if this is a demo dataset and show tour
@@ -30,6 +45,7 @@ export function startTour() {
     const tourElement = document.getElementById('demo-tour');
     if (!tourElement) return;
 
+    if (!tourActive) returnFocus = document.activeElement;
     tourActive = true;
     currentStep = 1;
     tourElement.classList.remove('hidden');
@@ -60,8 +76,15 @@ function endTour() {
         el.classList.remove('tour-highlight');
     });
 
-    // Mark tour as completed
-    sessionStorage.setItem('ce-demo-tour-completed', 'true');
+    // Mark tour as completed; blocked storage only means the tour may start again
+    try {
+        sessionStorage.setItem('ce-demo-tour-completed', 'true');
+    } catch {
+        // Nothing to keep
+    }
+
+    if (returnFocus?.isConnected) returnFocus.focus();
+    returnFocus = null;
 }
 
 /**
@@ -77,6 +100,7 @@ function showStep(stepNumber) {
     const currentStepEl = document.querySelector(`.tour-step[data-step="${stepNumber}"]`);
     if (currentStepEl) {
         currentStepEl.classList.add('active');
+        if (currentStepEl.dataset.view && switchView) switchView(currentStepEl.dataset.view);
     }
 
     // Update progress dots
@@ -86,6 +110,9 @@ function showStep(stepNumber) {
     highlightTarget(stepNumber);
 
     currentStep = stepNumber;
+
+    // The previous step's button is hidden now, so focus moves to the primary button of this one
+    currentStepEl?.querySelector('.tour-next, .tour-finish')?.focus();
 }
 
 /**
@@ -93,9 +120,8 @@ function showStep(stepNumber) {
  */
 function addProgressDots() {
     document.querySelectorAll('.tour-content').forEach((content, index) => {
-        // Remove existing progress if any
-        const existing = content.querySelector('.tour-progress');
-        if (existing) existing.remove();
+        // A restart from the tutorial button calls this again, so drop the previous counter and dots
+        content.querySelectorAll('.tour-progress, .tour-step-counter').forEach(el => el.remove());
 
         // Add step counter
         const counter = document.createElement('div');
@@ -151,13 +177,19 @@ function highlightTarget(stepNumber) {
 
     if (targetSelector) {
         const targetEl = document.querySelector(targetSelector);
-        if (targetEl) {
+        // A hidden target (off-canvas sidebar on narrow screens) gets no spotlight
+        if (targetEl && isOnScreen(targetEl)) {
             targetEl.classList.add('tour-highlight');
 
             // Scroll target into view if needed
             targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
+}
+
+function isOnScreen(el) {
+    const rect = el.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.left < window.innerWidth;
 }
 
 /**
@@ -188,10 +220,15 @@ function setupTourListeners() {
         }
     });
 
-    // ESC key to close
+    // Escape ends the tour, Tab stays inside the active step
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && tourActive) {
+        if (!tourActive) return;
+        if (e.key === 'Escape') {
+            e.preventDefault();
             endTour();
+        } else if (e.key === 'Tab') {
+            const stepEl = document.querySelector(`.tour-step[data-step="${currentStep}"]`);
+            if (stepEl) trapTabKey(e, stepEl);
         }
     });
 }

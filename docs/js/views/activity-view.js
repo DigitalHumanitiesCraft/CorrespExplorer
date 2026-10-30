@@ -20,28 +20,45 @@ export function initActivityView(deps) {
 }
 
 /**
- * Builds index for activity heatmap
+ * Parse "YYYY-MM-DD" as a local calendar date; new Date(string) reads it as UTC midnight and
+ * shows the previous day in time zones west of UTC
+ * @param {string} dateStr
+ * @returns {Date}
+ */
+function parseLocalDate(dateStr) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+
+/**
+ * Builds index for activity heatmap. Only day-precise letters go into day cells: a month, year
+ * or range date has no day, and placing it on the first day would invent a peak (NFR-04).
  * @param {Array} letters - Array of letter objects
- * @returns {Object} Index with byDate, byYear, byMonth, stats
+ * @returns {Object} Index with byDate, byYear, byMonth, stats and the count of letters without a day
  */
 function buildActivityIndex(letters) {
     const byDate = new Map();      // "YYYY-MM-DD" -> {count, ids}
-    const byYear = new Map();      // YYYY -> count
-    const byMonth = new Map();     // "YYYY-MM" -> count
+    const byYear = new Map();      // YYYY -> count of day-precise letters
+    const byMonth = new Map();     // "YYYY-MM" -> count of day-precise letters
+    const withoutDay = { month: 0, year: 0, range: 0 };
+    const yearsWithLetters = new Set();
 
     let total = 0;
     let maxDay = { date: null, count: 0 };
     let maxYear = { year: null, count: 0 };
 
     for (const letter of letters) {
-        // Only letters with date (not 'unknown')
         if (!letter.date || letter.datePrecision === 'unknown') continue;
 
-        const date = letter.date;  // "YYYY-MM-DD"
-        const year = letter.year;
-        const month = date.substring(0, 7);  // "YYYY-MM"
+        if (letter.datePrecision !== 'day') {
+            if (letter.datePrecision in withoutDay) withoutDay[letter.datePrecision]++;
+            continue;
+        }
 
-        // Aggregate by date
+        const date = letter.date.substring(0, 10);
+        const year = letter.year;
+        const month = date.substring(0, 7);
+
         if (!byDate.has(date)) {
             byDate.set(date, { count: 0, ids: [] });
         }
@@ -49,29 +66,24 @@ function buildActivityIndex(letters) {
         dateEntry.count++;
         dateEntry.ids.push(letter.id);
 
-        // Aggregate by year
         byYear.set(year, (byYear.get(year) || 0) + 1);
-
-        // Aggregate by month
         byMonth.set(month, (byMonth.get(month) || 0) + 1);
+        yearsWithLetters.add(year);
 
-        // Track max day (only day-precise dates, not placeholders like 1798-01-01)
-        if (letter.datePrecision === 'day' && dateEntry.count > maxDay.count) {
+        if (dateEntry.count > maxDay.count) {
             maxDay = { date, count: dateEntry.count };
         }
 
         total++;
     }
 
-    // Find max year
     for (const [year, count] of byYear) {
         if (count > maxYear.count) {
             maxYear = { year, count };
         }
     }
 
-    // Calculate statistics
-    const years = Array.from(byYear.keys()).sort((a, b) => a - b);
+    const years = Array.from(yearsWithLetters).sort((a, b) => a - b);
     const monthCount = byMonth.size || 1;
     const avgPerMonth = Math.round(total / monthCount * 10) / 10;
 
@@ -80,6 +92,7 @@ function buildActivityIndex(letters) {
         byYear,
         byMonth,
         total,
+        withoutDay,
         maxDay,
         maxYear,
         years,
@@ -96,8 +109,10 @@ export function renderActivity() {
 
     const letters = getFilteredLetters();
 
-    // Build index
     activityIndex = buildActivityIndex(letters);
+    if (activitySelectedYear !== 'all' && !activityIndex.years.includes(activitySelectedYear)) {
+        activitySelectedYear = 'all';
+    }
 
     // Update statistics cards
     const totalEl = document.getElementById('activity-total');
@@ -108,7 +123,7 @@ export function renderActivity() {
     if (totalEl) totalEl.textContent = activityIndex.total.toLocaleString('de-DE');
     if (busiestDayEl) {
         busiestDayEl.textContent = activityIndex.maxDay.date
-            ? `${activityIndex.maxDay.count} (${activityIndex.maxDay.date})`
+            ? `${activityIndex.maxDay.count} (${formatDay(activityIndex.maxDay.date, false)})`
             : '-';
     }
     if (busiestYearEl) {
@@ -117,6 +132,8 @@ export function renderActivity() {
             : '-';
     }
     if (avgEl) avgEl.textContent = activityIndex.avgPerMonth;
+
+    renderWithoutDayNote(container);
 
     // Render year selector
     renderActivityYearSelector();
@@ -130,40 +147,69 @@ export function renderActivity() {
 }
 
 /**
- * Renders year selection buttons
+ * German date of a day key: long form with weekday for headings, DD.MM.YYYY otherwise.
+ * The short form is built from the string, because the heatmap labels up to 366 cells per year.
+ */
+function formatDay(dateStr, withWeekday = true) {
+    if (!withWeekday) {
+        const [y, m, d] = dateStr.split('-');
+        return `${d}.${m}.${y}`;
+    }
+    return parseLocalDate(dateStr).toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+/**
+ * Note on the letters dated only to month, year or a range, which have no day cell
+ */
+function renderWithoutDayNote(container) {
+    let note = document.getElementById('activity-without-day-note');
+    if (!note) {
+        note = document.createElement('p');
+        note.id = 'activity-without-day-note';
+        note.className = 'filter-help';
+        container.querySelector('.activity-stats')?.after(note);
+    }
+    const { month, year, range } = activityIndex.withoutDay;
+    const sum = month + year + range;
+    if (sum === 0) {
+        note.classList.add('hidden');
+        note.textContent = '';
+        return;
+    }
+    const parts = [];
+    if (month) parts.push(`${month.toLocaleString('de-DE')} auf den Monat`);
+    if (year) parts.push(`${year.toLocaleString('de-DE')} auf das Jahr`);
+    if (range) parts.push(`${range.toLocaleString('de-DE')} auf einen Zeitraum`);
+    note.textContent = `Die Heatmap zeigt nur tagesgenau datierte Briefe. ${sum.toLocaleString('de-DE')} weitere Briefe sind nur ${parts.join(', ')} datiert und erscheinen in keiner Tageszelle.`;
+    note.classList.remove('hidden');
+}
+
+/**
+ * Renders one button per dated year; the selector wraps, so every year stays selectable
  */
 function renderActivityYearSelector() {
     const container = document.getElementById('activity-year-selector');
     if (!container || !activityIndex) return;
 
-    const years = activityIndex.years;
-
-    let html = `<button class="activity-year-btn ${activitySelectedYear === 'all' ? 'active' : ''}"
-                        data-year="all">Alle Jahre</button>`;
-
-    // Only show every 5th year if many years
-    const step = years.length > 20 ? 5 : (years.length > 10 ? 2 : 1);
-
-    for (let i = 0; i < years.length; i += step) {
-        const year = years[i];
+    const buttons = ['all', ...activityIndex.years].map(year => {
         const isActive = activitySelectedYear === year;
-        html += `<button class="activity-year-btn ${isActive ? 'active' : ''}"
-                         data-year="${year}">${year}</button>`;
-    }
+        return `<button type="button" class="activity-year-btn ${isActive ? 'active' : ''}" aria-pressed="${isActive}"
+                        data-year="${year}">${year === 'all' ? 'Alle Jahre' : year}</button>`;
+    });
+    container.setAttribute('role', 'group');
+    container.setAttribute('aria-label', 'Jahr der Heatmap');
+    container.innerHTML = buttons.join('');
 
-    container.innerHTML = html;
-
-    // Click handlers
     container.querySelectorAll('.activity-year-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const year = btn.dataset.year;
-            activitySelectedYear = year === 'all' ? 'all' : parseInt(year);
+            activitySelectedYear = year === 'all' ? 'all' : parseInt(year, 10);
 
-            // Update active status
-            container.querySelectorAll('.activity-year-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            container.querySelectorAll('.activity-year-btn').forEach(b => {
+                b.classList.toggle('active', b === btn);
+                b.setAttribute('aria-pressed', String(b === btn));
+            });
 
-            // Re-render heatmap
             renderActivityHeatmap();
         });
     });
@@ -230,10 +276,13 @@ function renderActivityHeatmap() {
                 weekHtml += '</div><div class="activity-week">';
             }
 
-            weekHtml += `<span class="activity-cell activity-level-${level}"
-                              data-date="${dateStr}"
-                              data-count="${count}"
-                              title="${dateStr}: ${count} Brief${count !== 1 ? 'e' : ''}"></span>`;
+            // Only days with letters are operable; one roving tab stop keeps Tab order usable
+            const label = `${formatDay(dateStr, false)}: ${count} Brief${count !== 1 ? 'e' : ''}`;
+            weekHtml += count > 0
+                ? `<span class="activity-cell activity-level-${level}" role="button" tabindex="-1"
+                              data-date="${dateStr}" data-count="${count}"
+                              aria-label="${label}" title="${label}"></span>`
+                : `<span class="activity-cell activity-level-0" data-date="${dateStr}" title="${label}"></span>`;
 
             currentDate.setDate(currentDate.getDate() + 1);
         }
@@ -243,17 +292,46 @@ function renderActivityHeatmap() {
     }
 
     container.innerHTML = html;
+    container.setAttribute('role', 'group');
+    container.setAttribute('aria-label', 'Briefe pro Tag. Pfeiltasten wechseln zwischen Tagen mit Briefen, Enter zeigt die Briefe des Tages');
 
-    // Click handlers for cells
-    container.querySelectorAll('.activity-cell[data-date]').forEach(cell => {
-        cell.addEventListener('click', () => {
-            const date = cell.dataset.date;
-            const count = parseInt(cell.dataset.count);
-            if (count > 0) {
-                showActivityDetails(date);
-            }
+    const cells = [...container.querySelectorAll('.activity-cell[role="button"]')];
+    if (cells.length > 0) cells[0].tabIndex = 0;
+
+    // One delegated listener per container instead of one per cell; the container persists across renders
+    if (!container.dataset.bound) {
+        container.dataset.bound = '1';
+        container.addEventListener('click', (e) => {
+            const cell = e.target.closest('.activity-cell[role="button"]');
+            if (!cell) return;
+            moveCellFocus(container, cell, false);
+            showActivityDetails(cell.dataset.date);
         });
-    });
+        container.addEventListener('keydown', (e) => {
+            const cell = e.target.closest('.activity-cell[role="button"]');
+            if (!cell) return;
+            const all = [...container.querySelectorAll('.activity-cell[role="button"]')];
+            const index = all.indexOf(cell);
+            const targets = {
+                ArrowRight: index + 1, ArrowDown: index + 1,
+                ArrowLeft: index - 1, ArrowUp: index - 1,
+                Home: 0, End: all.length - 1
+            };
+            if (!(e.key in targets)) return;
+            e.preventDefault();
+            const next = all[Math.max(0, Math.min(all.length - 1, targets[e.key]))];
+            if (next) moveCellFocus(container, next, true);
+        });
+    }
+}
+
+/**
+ * Move the roving tab stop of the heatmap to a cell
+ */
+function moveCellFocus(container, cell, focus) {
+    container.querySelectorAll('.activity-cell[tabindex="0"]').forEach(c => { c.tabIndex = -1; });
+    cell.tabIndex = 0;
+    if (focus) cell.focus();
 }
 
 /**
@@ -283,14 +361,10 @@ function showActivityDetails(date) {
     const data = activityIndex.byDate.get(date);
     if (!data) return;
 
-    // Format date
-    const dateObj = new Date(date);
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    dateEl.textContent = dateObj.toLocaleDateString('de-DE', options);
+    dateEl.textContent = formatDay(date);
 
-    // Find letters of the day
-    const allLetters = getFilteredLetters();
-    const dayLetters = allLetters.filter(l => l.date === date);
+    const ids = new Set(data.ids);
+    const dayLetters = getFilteredLetters().filter(l => ids.has(l.id));
 
     // Render list
     let html = '';

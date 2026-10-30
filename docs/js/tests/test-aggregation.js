@@ -53,7 +53,7 @@ export const AggregationTests = {
                 const data = await parseCMIF('data/test-uncertainty.xml');
 
                 assert(data.indices.subjects, 'Should have subjects index');
-                // Subjects können leer sein wenn keine mentions vorhanden sind
+                // A fixture without mentions has an empty subject index
                 console.log(`Found ${Object.keys(data.indices.subjects).length} subjects in test data`);
             }
         },

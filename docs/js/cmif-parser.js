@@ -3,7 +3,7 @@
 // Also handles correspSearch API responses (TEI-JSON format)
 
 import { isCorrespSearchUrl, fetchFromCorrespSearchUrl } from './correspsearch-api.js';
-import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate, cleanId, buildIndices } from './utils.js';
+import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate, cleanId, buildIndices, isUnknownPlaceName } from './utils.js';
 import { LANGUAGE_LABELS } from './constants.js';
 
 const TEI_NS = 'http://www.tei-c.org/ns/1.0';
@@ -59,12 +59,18 @@ export async function parseCMIF(source, onProgress = null) {
         }
     }
 
+    if (!xmlString || !xmlString.trim()) {
+        throw new Error('Die Datei ist leer. Bitte waehlen Sie eine CMIF-Datei mit Briefdaten aus.');
+    }
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(xmlString, 'application/xml');
 
     const parseError = doc.querySelector('parsererror');
     if (parseError) {
-        throw new Error(`XML parsing error: ${parseError.textContent}`);
+        // The browser's parser text is English and technical; it stays in the console for debugging
+        console.error('CMIF XML parser error:', parseError.textContent);
+        throw new Error('Die Datei ist kein gueltiges XML und kann nicht als CMIF gelesen werden. Bitte pruefen Sie, ob es sich um eine wohlgeformte CMIF-XML-Datei handelt.');
     }
 
     const letters = extractLetters(doc);
@@ -215,13 +221,6 @@ function extractPerson(action) {
     };
 }
 
-// Patterns indicating unknown places
-const UNKNOWN_PLACE_PATTERNS = [
-    /^Unbekannt$/i,
-    /^Unknown$/i,
-    /^\[?\?\]?$/
-];
-
 /**
  * Determine place precision level
  * Levels: exact (has GeoNames), region (name only, no GeoNames), unknown
@@ -232,7 +231,7 @@ function getPlacePrecision(name, geonamesId) {
     const trimmedName = name.trim();
 
     // Check if unknown
-    if (UNKNOWN_PLACE_PATTERNS.some(p => p.test(trimmedName))) {
+    if (isUnknownPlaceName(trimmedName)) {
         return 'unknown';
     }
 

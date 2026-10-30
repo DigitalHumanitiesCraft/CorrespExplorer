@@ -57,11 +57,6 @@ export class TestRunner {
                 // Run test
                 await test.run();
 
-                // Teardown
-                if (suite.teardown) {
-                    await suite.teardown();
-                }
-
                 this.results.passed++;
                 console.log(`  ✓ ${test.name}`);
 
@@ -71,6 +66,16 @@ export class TestRunner {
                 console.error(`    ${error.message}`);
                 if (error.stack) {
                     console.error(`    ${error.stack.split('\n')[1]}`);
+                }
+            } finally {
+                // Teardown also after a failure, so a suite never leaves its state for the next one
+                // or in the browser storage of the person running the tests
+                if (suite.teardown) {
+                    try {
+                        await suite.teardown();
+                    } catch (error) {
+                        console.error(`  Teardown ${suite.name}: ${error.message}`);
+                    }
                 }
             }
         }

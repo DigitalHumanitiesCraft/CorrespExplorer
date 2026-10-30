@@ -2,10 +2,20 @@
 // Allows users to collect letters, persons, and places for later analysis
 
 import { BASKET_LIMITS } from './constants.js';
+import { showToast } from './utils.js';
 
 // One basket per dataset: IDs of another dataset would point at the wrong or no letters
 const STORAGE_PREFIX = 'correspexplorer-basket';
 let storageKey = STORAGE_PREFIX;
+let currentDataset = 'unknown';
+
+// URL parameters of a shared basket. Format 2 percent-encodes each key before joining with
+// commas, because name-based person keys ("Nachname, Vorname") contain commas themselves.
+const URL_PARAMS = { letters: 'basket_letters', persons: 'basket_persons', places: 'basket_places' };
+const URL_DATASET_PARAM = 'basket_dataset';
+const URL_FORMAT_PARAM = 'basket_v';
+const URL_FORMAT = '2';
+const BASKET_TYPES = ['letters', 'persons', 'places'];
 
 // Capacity limits
 const MAX_PERSONS = BASKET_LIMITS.maxPersons;
@@ -39,7 +49,8 @@ export function datasetKey(sourceInfo) {
  * @param {string} dataset - Key from datasetKey()
  */
 export function initBasket(dataset) {
-    storageKey = `${STORAGE_PREFIX}:${dataset || 'unknown'}`;
+    currentDataset = dataset || 'unknown';
+    storageKey = `${STORAGE_PREFIX}:${currentDataset}`;
     basket = { letters: [], persons: [], places: [] };
     try {
         const stored = localStorage.getItem(storageKey);
@@ -106,7 +117,7 @@ function getCapacityLimit(type) {
         case 'persons': return MAX_PERSONS;
         case 'letters': return MAX_LETTERS;
         case 'places': return MAX_PLACES;
-        default: return 50;
+        default: return 0;
     }
 }
 
@@ -130,15 +141,39 @@ export function addToBasket(type, id) {
     if (!basket[type]) return false;
     if (basket[type].includes(id)) return false;
 
-    // Check capacity
-    if (!hasCapacity(type)) {
-        console.warn(`[Basket] Capacity limit reached for ${type}`);
-        return 'full';
-    }
+    if (!hasCapacity(type)) return 'full';
 
     basket[type].push(id);
     saveBasket();
     return true;
+}
+
+/**
+ * Add several items of one type with a single save and a single change notification, so a bulk
+ * add from a view does not write localStorage and re-render the listeners once per item.
+ * @param {string} type - 'letters', 'persons', or 'places'
+ * @param {string[]} ids - Item IDs (personKey/placeKey for persons and places)
+ * @returns {{added: number, duplicates: number, rejected: number}} rejected counts items beyond the capacity limit
+ */
+export function addItemsToBasket(type, ids) {
+    const result = { added: 0, duplicates: 0, rejected: 0 };
+    if (!basket[type]) return result;
+    const limit = getCapacityLimit(type);
+    const present = new Set(basket[type]);
+    for (const id of ids) {
+        if (id === null || id === undefined || id === '') continue;
+        if (present.has(id)) {
+            result.duplicates++;
+        } else if (basket[type].length >= limit) {
+            result.rejected++;
+        } else {
+            basket[type].push(id);
+            present.add(id);
+            result.added++;
+        }
+    }
+    if (result.added > 0) saveBasket();
+    return result;
 }
 
 /**
@@ -148,13 +183,7 @@ export function addToBasket(type, id) {
  * @returns {string} Message for showToast
  */
 export function addLettersToBasket(ids) {
-    let added = 0;
-    let rejected = 0;
-    ids.forEach(id => {
-        const result = addToBasket('letters', id);
-        if (result === true) added++;
-        else if (result === 'full') rejected++;
-    });
+    const { added, rejected } = addItemsToBasket('letters', ids);
     if (rejected > 0) {
         return `${added} Briefe zum Korb hinzugefuegt, ${rejected} nicht: Korb voll (hoechstens ${MAX_LETTERS} Briefe)`;
     }
@@ -175,21 +204,6 @@ export function removeFromBasket(type, id) {
     basket[type].splice(index, 1);
     saveBasket();
     return true;
-}
-
-/**
- * Toggle item in basket
- * @param {string} type - 'letters', 'persons', or 'places'
- * @param {string} id - Item ID
- * @returns {boolean} - true if now in basket, false if removed
- */
-export function toggleBasketItem(type, id) {
-    if (isInBasket(type, id)) {
-        removeFromBasket(type, id);
-        return false;
-    }
-    // 'full' (capacity reached) leaves the item outside the basket
-    return addToBasket(type, id) === true;
 }
 
 /**
@@ -243,9 +257,15 @@ export function clearBasket() {
 /**
  * Add listener for basket changes
  * @param {Function} callback
+ * @returns {Function} Removes the listener again
  */
 export function onBasketChange(callback) {
     listeners.push(callback);
+    // The pages listen for their lifetime; the tests remove their listener again
+    return () => {
+        const index = listeners.indexOf(callback);
+        if (index >= 0) listeners.splice(index, 1);
+    };
 }
 
 /**
@@ -263,94 +283,117 @@ function notifyListeners() {
 }
 
 /**
- * Export basket items with full data
- * @param {Object} dataIndices - The indices object containing persons, places data
- * @param {Array} allLetters - All letters array
- * @returns {Object} - Full basket data with resolved items
+ * Serialise a basket into URL parameters (format 2) together with its dataset key
+ * @param {{letters: string[], persons: string[], places: string[]}} items
+ * @param {string} dataset - Key from datasetKey()
+ * @param {URLSearchParams} [params] - Existing parameters; stale basket parameters are removed
+ * @returns {URLSearchParams}
  */
-export function resolveBasketItems(dataIndices, allLetters) {
-    const resolved = {
-        letters: [],
-        persons: [],
-        places: []
-    };
-
-    // Resolve letters
-    const letterMap = new Map(allLetters.map(l => [l.id, l]));
-    for (const id of basket.letters) {
-        const letter = letterMap.get(id);
-        if (letter) {
-            resolved.letters.push(letter);
+export function basketToParams(items, dataset, params = new URLSearchParams()) {
+    for (const name of [...Object.values(URL_PARAMS), URL_DATASET_PARAM, URL_FORMAT_PARAM]) {
+        params.delete(name);
+    }
+    let any = false;
+    for (const type of BASKET_TYPES) {
+        const ids = items[type] || [];
+        if (ids.length > 0) {
+            params.set(URL_PARAMS[type], ids.map(encodeURIComponent).join(','));
+            any = true;
         }
     }
-
-    // Resolve persons
-    for (const id of basket.persons) {
-        const person = dataIndices.persons?.[id];
-        if (person) {
-            resolved.persons.push({ id, ...person });
-        }
+    if (any) {
+        params.set(URL_FORMAT_PARAM, URL_FORMAT);
+        if (dataset && dataset !== 'unknown') params.set(URL_DATASET_PARAM, dataset);
     }
-
-    // Resolve places
-    for (const id of basket.places) {
-        const place = dataIndices.places?.[id];
-        if (place) {
-            resolved.places.push({ id, ...place });
-        }
-    }
-
-    return resolved;
+    return params;
 }
 
 /**
- * Generate shareable URL with basket items
+ * Read a shared basket from URL parameters. Links without basket_v predate format 2 and are
+ * split on commas only.
+ * @param {URLSearchParams} params
+ * @returns {{items: {letters: string[], persons: string[], places: string[]}, dataset: string|null, found: boolean}}
+ */
+export function basketFromParams(params) {
+    const encoded = params.get(URL_FORMAT_PARAM) === URL_FORMAT;
+    const decode = (part) => {
+        if (!encoded) return part;
+        try {
+            return decodeURIComponent(part);
+        } catch {
+            return part;
+        }
+    };
+    const items = { letters: [], persons: [], places: [] };
+    let found = false;
+    for (const type of BASKET_TYPES) {
+        const value = params.get(URL_PARAMS[type]);
+        if (value) {
+            items[type] = [...new Set(value.split(',').filter(Boolean).map(decode).filter(Boolean))];
+            found = true;
+        }
+    }
+    return { items, dataset: params.get(URL_DATASET_PARAM), found };
+}
+
+/**
+ * Dataset key named by the basket parameters of the current URL, if any
+ * @returns {string|null}
+ */
+export function getSharedBasketDataset() {
+    return new URLSearchParams(window.location.search).get(URL_DATASET_PARAM);
+}
+
+/**
+ * Generate a shareable URL for the current page with the basket and its dataset key
  * @returns {string}
  */
 export function generateBasketUrl() {
-    const params = new URLSearchParams(window.location.search);
-
-    if (basket.letters.length > 0) {
-        params.set('basket_letters', basket.letters.join(','));
-    }
-    if (basket.persons.length > 0) {
-        params.set('basket_persons', basket.persons.join(','));
-    }
-    if (basket.places.length > 0) {
-        params.set('basket_places', basket.places.join(','));
-    }
-
-    return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    const params = basketToParams(basket, currentDataset, new URLSearchParams(window.location.search));
+    const query = params.toString();
+    return `${window.location.origin}${window.location.pathname}${query ? `?${query}` : ''}`;
 }
 
 /**
- * Load basket from URL parameters
- * @returns {boolean} - true if basket was loaded from URL
+ * Merge a basket shared via URL parameters into the basket of the loaded dataset, once: the
+ * parameters are removed from the address afterwards, so a reload does not import again.
+ * A link for another dataset is not imported, because its IDs would point at other letters.
+ * @param {Object} [options]
+ * @param {boolean} [options.notify=true] - Report the outcome with showToast
+ * @returns {{status: 'none'|'imported'|'other-dataset', added: number, rejected: number, dataset: string|null}}
  */
-export function loadBasketFromUrl() {
+export function loadBasketFromUrl({ notify = true } = {}) {
     const params = new URLSearchParams(window.location.search);
-    let loaded = false;
+    const { items, dataset, found } = basketFromParams(params);
+    if (!found) return { status: 'none', added: 0, rejected: 0, dataset };
 
-    const letters = params.get('basket_letters');
-    const persons = params.get('basket_persons');
-    const places = params.get('basket_places');
-
-    if (letters) {
-        basket.letters = letters.split(',').filter(id => id);
-        loaded = true;
-    }
-    if (persons) {
-        basket.persons = persons.split(',').filter(id => id);
-        loaded = true;
-    }
-    if (places) {
-        basket.places = places.split(',').filter(id => id);
-        loaded = true;
+    const outcome = { status: 'imported', added: 0, rejected: 0, dataset };
+    if (dataset && dataset !== currentDataset) {
+        outcome.status = 'other-dataset';
+    } else {
+        for (const type of BASKET_TYPES) {
+            const { added, rejected } = addItemsToBasket(type, items[type]);
+            outcome.added += added;
+            outcome.rejected += rejected;
+        }
     }
 
-    if (loaded) {
-        saveBasket();
-    }
+    // Strip the basket parameters, so a reload or a later navigation does not import again
+    basketToParams({}, null, params);
+    const query = params.toString();
+    window.history.replaceState(window.history.state, '', `${window.location.pathname}${query ? `?${query}` : ''}${window.location.hash}`);
 
-    return loaded;
+    if (notify) {
+        if (outcome.status === 'other-dataset') {
+            const source = dataset.slice(dataset.indexOf(':') + 1);
+            showToast(`Der geteilte Korb gehoert zum Datensatz "${source}". Laden Sie diesen Datensatz und oeffnen Sie den Link erneut.`, 8000);
+        } else if (outcome.rejected > 0) {
+            showToast(`${outcome.added} Eintraege aus dem geteilten Korb uebernommen, ${outcome.rejected} nicht: Korb voll (hoechstens ${MAX_LETTERS} Briefe, ${MAX_PERSONS} Personen, ${MAX_PLACES} Orte)`, 6000);
+        } else {
+            showToast(outcome.added > 0
+                ? `${outcome.added} Eintraege aus dem geteilten Korb uebernommen`
+                : 'Alle Eintraege des geteilten Korbs sind bereits im Korb');
+        }
+    }
+    return outcome;
 }

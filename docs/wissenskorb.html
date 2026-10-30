@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CorrespExplorer - Wissenskorb fuer gesammelte Korrespondenten">
+    <meta name="description" content="CorrespExplorer - Wissenskorb fuer gesammelte Briefe, Personen und Orte">
     <title>Wissenskorb - CorrespExplorer</title>
     <link rel="icon" type="image/png" href="assets/logo-no-background-no-text.png">
 
@@ -27,37 +27,39 @@
     <!-- Simple Navigation -->
     <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
         <div class="nav-brand">
-            <a href="explore.html" class="nav-brand-link">
-                <i class="fas fa-arrow-left"></i>
-                <span class="brand-text">Wissenskorb</span>
+            <a href="explore.html" class="nav-brand-link explorer-link" aria-label="Zurueck zum Explorer">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                <span class="brand-text">Explorer</span>
             </a>
         </div>
         <div class="nav-links">
             <span class="basket-count-display">
-                <i class="fas fa-user"></i> <span id="person-count">0</span> Personen
+                <i class="fas fa-star" aria-hidden="true"></i> <span id="basket-total-count">0</span> Eintraege
             </span>
-            <button id="share-btn" class="nav-link" aria-label="Korb teilen" title="Link zum Teilen kopieren">
-                <i class="fas fa-share-alt"></i> <span class="nav-link-text">Teilen</span>
+            <button type="button" id="share-btn" class="nav-link" aria-label="Korb teilen" title="Link zum Teilen kopieren">
+                <i class="fas fa-share-alt" aria-hidden="true"></i> <span class="nav-link-text">Teilen</span>
             </button>
-            <button id="clear-btn" class="nav-link" aria-label="Korb leeren" title="Alle Personen entfernen">
-                <i class="fas fa-trash"></i> <span class="nav-link-text">Leeren</span>
+            <button type="button" id="clear-btn" class="nav-link" aria-label="Korb leeren" title="Alle Eintraege entfernen">
+                <i class="fas fa-trash" aria-hidden="true"></i> <span class="nav-link-text">Leeren</span>
             </button>
             <a href="about.html" class="nav-link" title="About">
-                <i class="fas fa-info-circle"></i>
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
                 <span class="nav-link-text">About</span>
             </a>
             <a href="vault.html" class="nav-link" title="Promptotyping Vault">
-                <i class="fas fa-book"></i>
+                <i class="fas fa-book" aria-hidden="true"></i>
                 <span class="nav-link-text">Vault</span>
             </a>
         </div>
     </nav>
 
-    <!-- Main Container -->
-    <div class="wissenskorb-container">
+    <!-- Main Container: the main landmark exists in the empty and the filled state -->
+    <main class="wissenskorb-container">
+        <h1 class="wissenskorb-title">Wissenskorb</h1>
+
         <!-- Work in Progress Notice -->
         <div class="wip-notice">
-            <i class="fas fa-tools"></i>
+            <i class="fas fa-tools" aria-hidden="true"></i>
             <div>
                 <strong>In Arbeit</strong>
                 <p>Der Wissenskorb ist noch nicht vollstaendig implementiert. Einige Funktionen sind moeglicherweise noch nicht verfuegbar.</p>
@@ -66,32 +68,32 @@
 
         <!-- Empty State -->
         <div class="empty-state hidden" id="empty-state">
-            <i class="fas fa-shopping-basket"></i>
+            <i class="fas fa-shopping-basket" aria-hidden="true"></i>
             <h2>Ihr Wissenskorb ist leer</h2>
-            <p>Fuegen Sie Personen aus der Korrespondenten-Ansicht hinzu, um sie hier zu analysieren.</p>
-            <a href="explore.html" class="btn btn-primary">
-                <i class="fas fa-users"></i> Zur Korrespondenten-Ansicht
+            <p>Legen Sie im Explorer Briefe, Personen oder Orte mit dem Stern in den Korb, um sie hier gemeinsam auszuwerten. Der Korb gilt fuer den zuletzt im Explorer geladenen Datensatz.</p>
+            <a href="explore.html" class="btn btn-primary explorer-link">
+                <i class="fas fa-compass" aria-hidden="true"></i> Zum Explorer
             </a>
         </div>
 
         <!-- Main Content (visible when basket has items) -->
-        <div class="wissenskorb-content" id="wissenskorb-content">
+        <div class="wissenskorb-content hidden" id="wissenskorb-content">
             <!-- Left Panel: Item Lists with Tabs -->
             <aside class="item-list-panel">
                 <!-- Item Type Tabs -->
-                <div class="item-tabs">
-                    <button class="item-tab active" data-type="persons">
-                        <i class="fas fa-users"></i>
+                <div class="item-tabs" role="group" aria-label="Eintraege des Korbs">
+                    <button type="button" class="item-tab active" data-type="persons" aria-pressed="true" aria-controls="persons-list-container">
+                        <i class="fas fa-users" aria-hidden="true"></i>
                         <span class="item-tab-label">Personen</span>
                         <span class="item-tab-count" id="tab-persons-count">0</span>
                     </button>
-                    <button class="item-tab" data-type="letters">
-                        <i class="fas fa-envelope"></i>
+                    <button type="button" class="item-tab" data-type="letters" aria-pressed="false" aria-controls="letters-list-container">
+                        <i class="fas fa-envelope" aria-hidden="true"></i>
                         <span class="item-tab-label">Briefe</span>
                         <span class="item-tab-count" id="tab-letters-count">0</span>
                     </button>
-                    <button class="item-tab" data-type="places">
-                        <i class="fas fa-map-marker-alt"></i>
+                    <button type="button" class="item-tab" data-type="places" aria-pressed="false" aria-controls="places-list-container">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                         <span class="item-tab-label">Orte</span>
                         <span class="item-tab-count" id="tab-places-count">0</span>
                     </button>
@@ -100,7 +102,7 @@
                 <!-- Persons List -->
                 <div class="item-list-container active" id="persons-list-container">
                     <div class="panel-header">
-                        <span class="item-list-count" id="persons-list-count">0 / 50</span>
+                        <span class="item-list-count" id="persons-list-count">0</span>
                     </div>
                     <div class="item-list" id="persons-list">
                         <!-- Persons will be rendered here -->
@@ -110,7 +112,7 @@
                 <!-- Letters List -->
                 <div class="item-list-container" id="letters-list-container">
                     <div class="panel-header">
-                        <span class="item-list-count" id="letters-list-count">0 / 100</span>
+                        <span class="item-list-count" id="letters-list-count">0</span>
                     </div>
                     <div class="item-list" id="letters-list">
                         <!-- Letters will be rendered here -->
@@ -120,7 +122,7 @@
                 <!-- Places List -->
                 <div class="item-list-container" id="places-list-container">
                     <div class="panel-header">
-                        <span class="item-list-count" id="places-list-count">0 / 50</span>
+                        <span class="item-list-count" id="places-list-count">0</span>
                     </div>
                     <div class="item-list" id="places-list">
                         <!-- Places will be rendered here -->
@@ -129,7 +131,7 @@
             </aside>
 
             <!-- Right Panel: Visualizations -->
-            <main class="visualization-panel">
+            <section class="visualization-panel" aria-label="Auswertung des Korbs">
                 <!-- Summary Stats -->
                 <div class="summary-stats">
                     <div class="stat-card">
@@ -151,18 +153,18 @@
                 </div>
 
                 <!-- Visualization Tabs -->
-                <div class="viz-tabs">
-                    <button class="viz-tab active" data-viz="timeline">
-                        <i class="fas fa-chart-line"></i> Timeline
+                <div class="viz-tabs" role="group" aria-label="Auswertung">
+                    <button type="button" class="viz-tab active" data-viz="timeline" aria-pressed="true" aria-controls="viz-timeline">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i> Timeline
                     </button>
-                    <button class="viz-tab" data-viz="network">
-                        <i class="fas fa-project-diagram"></i> Netzwerk
+                    <button type="button" class="viz-tab" data-viz="network" aria-pressed="false" aria-controls="viz-network">
+                        <i class="fas fa-project-diagram" aria-hidden="true"></i> Netzwerk
                     </button>
-                    <button class="viz-tab" data-viz="map">
-                        <i class="fas fa-map"></i> Karte
+                    <button type="button" class="viz-tab" data-viz="map" aria-pressed="false" aria-controls="viz-map">
+                        <i class="fas fa-map" aria-hidden="true"></i> Karte
                     </button>
-                    <button class="viz-tab" data-viz="details">
-                        <i class="fas fa-list"></i> Details
+                    <button type="button" class="viz-tab" data-viz="details" aria-pressed="false" aria-controls="viz-details">
+                        <i class="fas fa-list" aria-hidden="true"></i> Details
                     </button>
                 </div>
 
@@ -171,8 +173,8 @@
                     <!-- Timeline Panel -->
                     <div class="viz-panel active" id="viz-timeline">
                         <div class="viz-header">
-                            <h4>Zeitliche Aktivitaet</h4>
-                            <p class="viz-info">Aktivitaetszeitraum der gesammelten Personen</p>
+                            <h2>Zeitliche Aktivitaet</h2>
+                            <p class="viz-info">Ausgewertete Briefe je Jahr: Briefe des Korbs und alle Briefe seiner Personen und Orte</p>
                         </div>
                         <div id="timeline-chart" class="timeline-chart"></div>
                         <div class="timeline-legend" id="timeline-legend"></div>
@@ -181,8 +183,8 @@
                     <!-- Network Panel -->
                     <div class="viz-panel" id="viz-network">
                         <div class="viz-header">
-                            <h4>Korrespondenz-Netzwerk</h4>
-                            <p class="viz-info">Verbindungen zwischen gesammelten Personen</p>
+                            <h2>Korrespondenz-Netzwerk</h2>
+                            <p class="viz-info">Verbindungen zwischen den Personen des Korbs und den Korrespondenten seiner Briefe</p>
                         </div>
                         <div id="network-chart" class="network-chart"></div>
                     </div>
@@ -190,21 +192,22 @@
                     <!-- Map Panel -->
                     <div class="viz-panel" id="viz-map">
                         <div class="viz-header">
-                            <h4>Geografische Verteilung</h4>
-                            <p class="viz-info">Absendeorte der Korrespondenz</p>
+                            <h2>Geografische Verteilung</h2>
+                            <p class="viz-info">Absendeorte der ausgewerteten Briefe</p>
                         </div>
-                        <div id="basket-map" class="basket-map"></div>
+                        <div id="basket-map" class="basket-map" role="region" aria-label="Karte der Absendeorte"></div>
+                        <div id="basket-map-empty" class="viz-empty hidden">Keine Orte mit Koordinaten verfuegbar</div>
                     </div>
 
                     <!-- Details Panel -->
                     <div class="viz-panel" id="viz-details">
                         <div class="viz-header">
-                            <h4>Detail-Uebersicht</h4>
-                            <p class="viz-info">Alle Briefe der gesammelten Personen</p>
+                            <h2>Detail-Uebersicht</h2>
+                            <p class="viz-info">Alle ausgewerteten Briefe: Briefe des Korbs und alle Briefe seiner Personen und Orte</p>
                         </div>
                         <div class="details-filters">
                             <input type="search" id="details-search" class="list-search" placeholder="Suchen..." aria-label="Briefe durchsuchen">
-                            <select id="details-sort" class="list-sort-select">
+                            <select id="details-sort" class="list-sort-select" aria-label="Briefe sortieren">
                                 <option value="date-desc">Datum (neueste)</option>
                                 <option value="date-asc">Datum (aelteste)</option>
                                 <option value="sender-asc">Absender (A-Z)</option>
@@ -216,19 +219,19 @@
 
                 <!-- Export Section -->
                 <div class="export-section">
-                    <h4>Daten exportieren</h4>
+                    <h2>Daten exportieren</h2>
                     <div class="export-buttons">
-                        <button class="btn btn-secondary" id="export-csv-btn">
-                            <i class="fas fa-file-csv"></i> CSV
+                        <button type="button" class="btn btn-secondary" id="export-csv-btn">
+                            <i class="fas fa-file-csv" aria-hidden="true"></i> CSV
                         </button>
-                        <button class="btn btn-secondary" id="export-json-btn">
-                            <i class="fas fa-file-code"></i> JSON
+                        <button type="button" class="btn btn-secondary" id="export-json-btn">
+                            <i class="fas fa-file-code" aria-hidden="true"></i> JSON
                         </button>
                     </div>
                 </div>
-            </main>
+            </section>
         </div>
-    </div>
+    </main>
 
     <!-- Scripts -->
     <script src="vendor/maplibre-gl/maplibre-gl.js"></script>

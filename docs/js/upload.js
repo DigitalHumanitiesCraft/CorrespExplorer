@@ -3,9 +3,9 @@
 
 import { parseCMIF, enrichWithCoordinates } from './cmif-parser.js';
 import { isCorrespSearchUrl } from './correspsearch-api.js';
-import { enrichPersonsBatch, countEnrichable } from './wikidata-enrichment.js';
+import { enrichPersonsBatch } from './wikidata-enrichment.js';
 import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
-import { analyzeDataCapabilities, openModal, closeModal } from './utils.js';
+import { openModal, closeModal, enableModalKeyboard, personKey, placeKey } from './utils.js';
 
 // DOM Elements
 let uploadZone, fileInput, urlInput, urlSubmit;
@@ -18,6 +18,12 @@ let configModal;
 // Pending data for configuration
 let pendingData = null;
 let pendingSourceInfo = null;
+
+// Aborted when the dialog closes, so a running enrichment neither redirects nor touches cleared state
+let enrichmentController = null;
+
+// The element that started loading; it is hidden while loading, so focus returns to it explicitly
+let lastTrigger = null;
 
 // Initialize on DOM ready
 if (document.readyState === 'loading') {
@@ -41,6 +47,14 @@ async function init() {
     configModal = document.getElementById('config-modal');
 
     setupEventListeners();
+    enableModalKeyboard();
+
+    // about.html links here with ?demo=true, because the tutorial dataset has to pass the upload
+    // dialog before explore.html can show it
+    if (new URLSearchParams(window.location.search).get('demo') === 'true') {
+        const demoCard = document.querySelector('.dataset-card[data-demo="true"]');
+        if (demoCard) handleDatasetSelect(demoCard);
+    }
 }
 
 function setupEventListeners() {
@@ -68,12 +82,8 @@ function setupEventListeners() {
     });
 
     // Dataset cards
-    console.log('Found dataset cards:', datasetCards.length);
     datasetCards.forEach(card => {
-        card.addEventListener('click', () => {
-            console.log('Card clicked:', card.dataset.url || card.dataset.dataset);
-            handleDatasetSelect(card);
-        });
+        card.addEventListener('click', () => handleDatasetSelect(card));
         // Cards are role="button" divs (block content cannot go into <button>)
         card.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -119,6 +129,7 @@ function handleDrop(e) {
 
     const files = e.dataTransfer.files;
     if (files.length > 0) {
+        lastTrigger = fileInput;
         processFile(files[0]);
     }
 }
@@ -127,13 +138,17 @@ function handleDrop(e) {
 function handleFileSelect(e) {
     const files = e.target.files;
     if (files.length > 0) {
+        lastTrigger = fileInput;
         processFile(files[0]);
     }
+    // Without the reset, choosing the same file again fires no change event
+    e.target.value = '';
 }
 
 // URL submit handler
 async function handleUrlSubmit() {
     const url = urlInput.value.trim();
+    lastTrigger = urlInput;
 
     if (!url) {
         showError('Bitte geben Sie eine URL ein.');
@@ -158,6 +173,7 @@ async function handleUrlSubmit() {
             });
             await showConfigDialog(data, { type: 'correspsearch', source: url });
         } catch (error) {
+            console.error('correspSearch load failed:', error);
             showError(`Fehler beim Laden: ${error.message}`);
             hideLoading();
         }
@@ -170,6 +186,7 @@ async function handleUrlSubmit() {
         const data = await parseCMIF(url);
         await showConfigDialog(data, { type: 'url', source: url });
     } catch (error) {
+        console.error('CMIF URL load failed:', error);
         showError(`Fehler beim Laden: ${error.message}`);
         hideLoading();
     }
@@ -177,33 +194,25 @@ async function handleUrlSubmit() {
 
 // Dataset card handler
 async function handleDatasetSelect(card) {
-    const dataset = card.dataset.dataset;
     const info = card.dataset.info;
     const url = card.dataset.url;
     const jsonUrl = card.dataset.json;
     const isDemo = card.dataset.demo === 'true';
-
-    console.log('handleDatasetSelect:', { dataset, info, url, jsonUrl, isDemo });
+    lastTrigger = card;
 
     hideError();
 
     if (jsonUrl) {
-        // Pre-processed JSON dataset (e.g., HSA with extended annotations)
-        // Redirect directly to explore.html with json URL parameter
-        // explore.js will load the JSON directly (bypasses sessionStorage size limits)
-        console.log('Redirecting to explore with JSON URL:', jsonUrl);
+        // Pre-processed JSON goes to explore.html by path, which bypasses the sessionStorage size limit
         const params = new URLSearchParams();
         params.set('json', jsonUrl);
         params.set('view', 'overview');
         if (isDemo) params.set('demo', 'true');
         window.location.href = `explore.html?${params.toString()}`;
     } else if (url) {
-        // External CMIF URL - load and show config
-        console.log('Loading CMIF from:', url);
         showLoading('Lade CMIF von URL...');
         try {
             const data = await parseCMIF(url);
-            console.log('CMIF parsed successfully:', data);
             await showConfigDialog(data, { type: 'url', source: url, isDemo: isDemo });
         } catch (error) {
             console.error('Error loading CMIF:', error);
@@ -211,7 +220,6 @@ async function handleDatasetSelect(card) {
             hideLoading();
         }
     } else if (info === 'cmif') {
-        // Trigger file input click
         fileInput.click();
     }
 }
@@ -231,6 +239,7 @@ async function processFile(file) {
         const data = await parseCMIF(file);
         await showConfigDialog(data, { type: 'file', source: file.name });
     } catch (error) {
+        console.error('CMIF file parse failed:', error);
         showError(`Fehler beim Parsen: ${error.message}`);
         hideLoading();
     }
@@ -238,7 +247,6 @@ async function processFile(file) {
 
 // Show configuration dialog
 async function showConfigDialog(data, sourceInfo) {
-    console.log('showConfigDialog called with:', { letterCount: data.letters?.length, sourceInfo });
     hideLoading();
 
     // Store pending data
@@ -250,24 +258,19 @@ async function showConfigDialog(data, sourceInfo) {
         const coordsResponse = await fetch('data/geonames_coordinates.json');
         if (coordsResponse.ok) {
             const { coordinates } = await coordsResponse.json();
-            enrichWithCoordinates(pendingData, coordinates);
-            console.log('Static coordinates enriched');
+            enrichWithCoordinates(data, coordinates);
         }
     } catch (error) {
-        console.log('Coordinates cache not available:', error);
+        console.warn('Coordinates cache not available:', error);
     }
 
-    // Analyze data capabilities
-    console.log('Analyzing data capabilities...');
-    const capabilities = analyzeDataCapabilities(data);
     const coordStats = analyzeCoordinateNeeds(data);
-    console.log('Coordinate stats:', coordStats);
 
     // Count entities
     const letterCount = data.letters?.length || 0;
     const personCount = countUniquePersons(data.letters || []);
     const placeCount = countUniquePlaces(data.letters || []);
-    const enrichableCount = countEnrichablePersons(data.letters || []);
+    const enrichableCount = extractEnrichablePersons(data.letters || []).length;
 
     // Update modal content
     // A correspSearch query above the letter cap loads only its first pages
@@ -282,15 +285,14 @@ async function showConfigDialog(data, sourceInfo) {
     const coordInfo = document.getElementById('enrich-coordinates-info');
     const coordCheckbox = document.getElementById('enrich-coordinates');
 
+    // The hidden class is the only visibility switch (display:none !important in base.css)
+    coordOption.classList.toggle('hidden', coordStats.needsResolution === 0);
     if (coordStats.needsResolution > 0) {
-        coordOption.style.display = 'block';
         const cacheInfo = coordStats.withCoordinates > 0 ?
             ` (${coordStats.withCoordinates} bereits im Cache)` : '';
         coordInfo.textContent = `${coordStats.needsResolution} Orte mit GeoNames-ID${cacheInfo}`;
         coordCheckbox.disabled = false;
         coordCheckbox.checked = true;
-    } else {
-        coordOption.style.display = 'none';
     }
 
     // Person enrichment option
@@ -303,50 +305,47 @@ async function showConfigDialog(data, sourceInfo) {
     const totalTime = Math.ceil(coordStats.needsResolution * 0.2 + enrichableCount * 0.15);
 
     if (enrichableCount > 50 || coordStats.needsResolution > 50) {
-        warningEl.style.display = 'block';
         warningTextEl.textContent = `Die Anreicherung kann ca. ${totalTime} Sekunden dauern.`;
+        warningEl.classList.remove('hidden');
     } else if (enrichableCount === 0 && coordStats.needsResolution === 0) {
-        warningEl.style.display = 'block';
         warningTextEl.textContent = 'Keine Anreicherungsoptionen verfuegbar.';
+        warningEl.classList.remove('hidden');
     } else {
-        warningEl.style.display = 'none';
+        warningEl.classList.add('hidden');
     }
 
     // Disable person enrichment if no enrichable persons
+    const personsCheckbox = document.getElementById('enrich-persons');
     if (enrichableCount === 0) {
-        document.getElementById('enrich-persons').checked = false;
-        document.getElementById('enrich-persons').disabled = true;
+        personsCheckbox.checked = false;
+        personsCheckbox.disabled = true;
     } else {
-        document.getElementById('enrich-persons').disabled = false;
+        personsCheckbox.disabled = false;
     }
 
-    console.log('Preparing to show modal...');
-
-    // Reset progress
-    const progressSection = document.getElementById('config-progress');
-    progressSection.classList.add('hidden');
-    progressSection.style.display = 'none';
-    document.getElementById('config-progress-fill').style.width = '0%';
-
-    // Show buttons
-    document.querySelector('.config-actions').style.display = 'flex';
-
-    console.log('Opening modal...');
-    // Show modal
+    resetConfigProgress();
     openModal(configModal);
-    console.log('Modal should be visible now. configModal:', configModal);
 }
 
-function hideConfigModal() {
-    closeModal(configModal);
+// Back to the options view: progress hidden, action buttons shown
+function resetConfigProgress() {
+    document.getElementById('config-progress').classList.add('hidden');
+    document.getElementById('config-progress-fill').style.width = '0%';
+    document.querySelector('.config-actions').classList.remove('hidden');
+}
 
-    // Reset progress section
-    const progressSection = document.getElementById('config-progress');
-    progressSection.classList.add('hidden');
-    progressSection.style.display = 'none';
+// Closing also cancels a running enrichment; its results are discarded
+function hideConfigModal() {
+    enrichmentController?.abort();
+    enrichmentController = null;
+
+    closeModal(configModal);
+    resetConfigProgress();
 
     pendingData = null;
     pendingSourceInfo = null;
+
+    if (lastTrigger?.isConnected) lastTrigger.focus();
 }
 
 // Skip enrichment and go directly to visualization
@@ -359,26 +358,31 @@ function handleConfigSkip() {
 async function handleConfigStart() {
     if (!pendingData) return;
 
+    // Local copies: hideConfigModal clears the pending state while the requests below await
+    const data = pendingData;
+    const sourceInfo = pendingSourceInfo;
+    const controller = new AbortController();
+    enrichmentController = controller;
+    const { signal } = controller;
+
     const shouldEnrichCoords = document.getElementById('enrich-coordinates')?.checked;
     const shouldEnrichPersons = document.getElementById('enrich-persons')?.checked;
 
     if (!shouldEnrichCoords && !shouldEnrichPersons) {
-        finalizeAndRedirect(pendingData, pendingSourceInfo);
+        finalizeAndRedirect(data, sourceInfo);
         return;
     }
 
     // Hide buttons, show progress
-    document.querySelector('.config-actions').style.display = 'none';
-    const progressSection = document.getElementById('config-progress');
-    progressSection.classList.remove('hidden');
-    progressSection.style.display = 'block';
+    document.querySelector('.config-actions').classList.add('hidden');
+    document.getElementById('config-progress').classList.remove('hidden');
 
     const progressFill = document.getElementById('config-progress-fill');
     const progressText = document.getElementById('config-progress-text');
 
     // Step 1: Enrich coordinates (if requested)
     if (shouldEnrichCoords) {
-        const coordStats = analyzeCoordinateNeeds(pendingData);
+        const coordStats = analyzeCoordinateNeeds(data);
 
         if (coordStats.needsResolution > 0) {
             try {
@@ -387,43 +391,50 @@ async function handleConfigStart() {
                 const coordinates = await resolveGeoNamesCoordinates(
                     coordStats.geonamesIdsToResolve,
                     (loaded, total) => {
+                        if (signal.aborted) return;
                         const percent = Math.round((loaded / total) * 50); // First 50% of progress
                         progressFill.style.width = `${percent}%`;
                         progressText.textContent = `Lade Koordinaten... ${loaded}/${total}`;
-                    }
+                    },
+                    signal
                 );
+                if (signal.aborted) return;
 
-                applyCoordinatesToData(pendingData, coordinates);
+                applyCoordinatesToData(data, coordinates);
                 progressText.textContent = `${Object.keys(coordinates).length} Orte georeferenziert`;
 
             } catch (error) {
+                if (signal.aborted) return;
                 console.warn('Coordinate enrichment failed:', error);
                 progressText.textContent = 'Koordinaten-Auflösung fehlgeschlagen, fahre fort...';
             }
 
             await new Promise(resolve => setTimeout(resolve, 500));
+            if (signal.aborted) return;
         }
     }
 
     // Step 2: Enrich persons (if requested)
     if (shouldEnrichPersons) {
-        const persons = extractEnrichablePersons(pendingData.letters || []);
+        const persons = extractEnrichablePersons(data.letters || []);
 
         if (persons.length > 0) {
             try {
                 const baseProgress = shouldEnrichCoords ? 50 : 0;
 
                 const enrichedMap = await enrichPersonsBatch(persons, (current, total, person) => {
+                    if (signal.aborted) return;
                     const percent = baseProgress + Math.round((current / total) * (100 - baseProgress));
                     progressFill.style.width = `${percent}%`;
                     progressText.textContent = `Lade Personen... ${current}/${total}: ${person.name}`;
-                });
+                }, signal);
+                if (signal.aborted) return;
 
                 // Store enrichment data in session storage for use by explore.js
                 if (enrichedMap.size > 0) {
                     const enrichmentData = {};
-                    enrichedMap.forEach((data, authorityId) => {
-                        enrichmentData[authorityId] = data;
+                    enrichedMap.forEach((entry, authorityId) => {
+                        enrichmentData[authorityId] = entry;
                     });
                     sessionStorage.setItem('person-enrichment', JSON.stringify(enrichmentData));
                 }
@@ -431,21 +442,21 @@ async function handleConfigStart() {
                 progressText.textContent = `${enrichedMap.size} Personen angereichert`;
 
             } catch (error) {
+                if (signal.aborted) return;
                 console.warn('Person enrichment failed:', error);
                 progressText.textContent = 'Personen-Anreicherung fehlgeschlagen, fahre fort...';
             }
 
             await new Promise(resolve => setTimeout(resolve, 500));
+            if (signal.aborted) return;
         }
     }
 
-    finalizeAndRedirect(pendingData, pendingSourceInfo);
+    finalizeAndRedirect(data, sourceInfo);
 }
 
 // Store data and redirect to visualization
 function finalizeAndRedirect(data, sourceInfo) {
-    console.log('finalizeAndRedirect sourceInfo:', sourceInfo);
-
     const storedData = {
         ...data,
         sourceInfo,
@@ -455,50 +466,39 @@ function finalizeAndRedirect(data, sourceInfo) {
     try {
         sessionStorage.setItem('cmif-data', JSON.stringify(storedData));
     } catch (e) {
+        console.error('Could not store dataset in sessionStorage:', e);
         showError(`Datensatz zu gross fuer Browser-Speicher (${data.letters?.length || 0} Briefe). Bitte verwenden Sie einen kleineren Datensatz oder das vorprozessierte HSA.`);
         hideConfigModal();
         return;
     }
 
-    // Redirect to visualization - append demo flag if needed, always start with overview
-    const redirectUrl = sourceInfo?.isDemo ? 'explore.html?demo=true&view=overview' : 'explore.html?view=overview';
-    console.log('Redirecting to:', redirectUrl, 'isDemo:', sourceInfo?.isDemo);
-    window.location.href = redirectUrl;
+    // Always start with the overview; the demo flag starts the tour in explore.js
+    window.location.href = sourceInfo?.isDemo ? 'explore.html?demo=true&view=overview' : 'explore.html?view=overview';
 }
 
-// Helper: Count unique persons
+// Persons by personKey (ADR-001), so name variants of one authority ID count once
 function countUniquePersons(letters) {
     const persons = new Set();
     letters.forEach(letter => {
-        if (letter.sender?.name) persons.add(letter.sender.name);
-        if (letter.recipient?.name) persons.add(letter.recipient.name);
-    });
-    return persons.size;
-}
-
-// Helper: Count unique places
-function countUniquePlaces(letters) {
-    const places = new Set();
-    letters.forEach(letter => {
-        if (letter.place_sent?.name) places.add(letter.place_sent.name);
-    });
-    return places.size;
-}
-
-// Helper: Count enrichable persons (with GND or VIAF)
-function countEnrichablePersons(letters) {
-    const persons = new Map();
-    letters.forEach(letter => {
         [letter.sender, letter.recipient].forEach(person => {
-            if (person?.id && person?.authority && ['gnd', 'viaf'].includes(person.authority)) {
-                persons.set(person.id, person);
-            }
+            const key = personKey(person);
+            if (key) persons.add(key);
         });
     });
     return persons.size;
 }
 
-// Helper: Extract enrichable persons for batch processing
+// Places by placeKey (ADR-001)
+function countUniquePlaces(letters) {
+    const places = new Set();
+    letters.forEach(letter => {
+        const key = placeKey(letter.place_sent);
+        if (key) places.add(key);
+    });
+    return places.size;
+}
+
+// Persons with a GND or VIAF ID, the authorities the Wikidata lookup supports
 function extractEnrichablePersons(letters) {
     const persons = new Map();
     letters.forEach(letter => {
@@ -517,14 +517,15 @@ function extractEnrichablePersons(letters) {
     return Array.from(persons.values());
 }
 
-// UI helpers
+// UI helpers: the input sections give way to the loading state, switched by the hidden class
+function setInputSectionsHidden(hidden) {
+    [uploadZone, document.querySelector('.url-input-section'), document.querySelector('.example-datasets')]
+        .forEach(el => el?.classList.toggle('hidden', hidden));
+}
+
 function showLoading(text) {
     loadingState.classList.add('active');
-    uploadZone.style.display = 'none';
-    document.querySelector('.url-input-section').style.display = 'none';
-    const csSection = document.getElementById('correspsearch-section');
-    if (csSection) csSection.style.display = 'none';
-    document.querySelector('.example-datasets').style.display = 'none';
+    setInputSectionsHidden(true);
     if (text) {
         loadingText.textContent = text;
     }
@@ -532,11 +533,7 @@ function showLoading(text) {
 
 function hideLoading() {
     loadingState.classList.remove('active');
-    uploadZone.style.display = 'block';
-    document.querySelector('.url-input-section').style.display = 'block';
-    const csSection = document.getElementById('correspsearch-section');
-    if (csSection) csSection.style.display = 'block';
-    document.querySelector('.example-datasets').style.display = 'block';
+    setInputSectionsHidden(false);
 }
 
 function updateLoadingText(text) {

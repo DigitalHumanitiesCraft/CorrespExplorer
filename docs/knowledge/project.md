@@ -28,7 +28,7 @@ related: [data, specification, architecture, design, plan]
 
 # Project
 
-CorrespExplorer ist ein Werkzeug im Browser zur interaktiven Exploration von Korrespondenz-Metadaten im Correspondence Metadata Interchange Format (CMIF). Es lädt beliebige CMIF-Dateien und bringt einen Beispieldatensatz aus dem Hugo Schuchardt Archiv mit. Die Anwendung ist unter https://dhcraft.org/CorrespExplorer erreichbar.
+CorrespExplorer ist ein Werkzeug im Browser zur interaktiven Exploration von Korrespondenz-Metadaten im Correspondence Metadata Interchange Format (CMIF). Es lädt beliebige CMIF-Dateien und bringt einen Beispieldatensatz aus dem Hugo Schuchardt Archiv und einen synthetischen Tutorial-Datensatz mit. Die Anwendung ist unter https://dhcraft.org/CorrespExplorer erreichbar.
 
 ## Datengrundlage
 
@@ -56,11 +56,11 @@ Normdaten-URIs tragen Abgleich und Aggregation, weil Editionen Namen unterschied
 
 ## Technische Umsetzung
 
-Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. CMIF wird im Browser geparst, große Datensätze werden in Python vorprozessiert. Bibliotheken (MapLibre GL JS, D3 mit D3-Sankey, noUiSlider, Font Awesome, marked) lädt die Seite zur Laufzeit von CDNs, Kartenkacheln von OpenFreeMap. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code. Die Commit-Trailer nennen die beteiligten LLM-Versionen, die README fasst sie zusammen. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md).
+Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. CMIF wird im Browser geparst, große Datensätze werden in Python vorprozessiert. Bibliotheken (MapLibre GL JS, D3 mit D3-Sankey, noUiSlider, Font Awesome, marked) und Schriften liegen versioniert in `docs/vendor/`, extern lädt die Seite nur die Grundkarte von OpenFreeMap. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code. Die Commit-Trailer nennen die beteiligten LLM-Versionen, die README fasst sie zusammen. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md).
 
 ## Funktionsumfang
 
-Die Ansichten umfassen Übersicht, Karte, Korrespondenten, Briefe, Timeline, Themen, Orte, Netzwerk, Erwähnungsflüsse, Chronik, Forschungspfade und Aktivitäts-Heatmap. Sie teilen einen Filterzustand für Zeitraum, Sprache, Person, Thema und Ort, der in der URL steht und sich teilen lässt. Gefilterte Briefe lassen sich als CSV oder JSON exportieren, der Wissenskorb sammelt Briefe, Personen und Orte für eine eigene Analyseseite. Anforderungen und Stories stehen in [specification.md](specification.md).
+Die zwölf Ansichten umfassen Übersicht mit Forschungspfaden, Karte, Korrespondenten, Briefe, Timeline, Themen, Orte, Netzwerk, Erwähnungsfluss, Chronik, Aktivitäts-Heatmap und Vergleich. Sie teilen einen Filterzustand für Zeitraum, Sprache, Person, Thema und Ort, der in der URL steht und sich teilen lässt. Gefilterte Briefe lassen sich als CSV oder JSON exportieren, der Wissenskorb sammelt Briefe, Personen und Orte für eine eigene Analyseseite. Anforderungen und Stories stehen in [specification.md](specification.md).
 
 Unsicherheit in den Daten wird erkannt und markiert. Exakte Werte bleiben ohne Markierung, unvollständige Daten, Zeiträume und unsichere Datierungen tragen Symbole, undatierte Briefe stehen außerhalb der Zeitachse ([uncertainty-specification.md](uncertainty-specification.md)).
 

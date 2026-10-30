@@ -1,16 +1,17 @@
-// State Manager - Zentrales State-Management für CorrespExplorer
-// Verwaltet globalen Anwendungszustand und benachrichtigt Subscriber bei Änderungen
+// State manager: one filter state for all views (ADR-003), so every view and the URL see the same
+// letter set, and subscribers learn about changes without importing each other
 
 import { personKey, placeKey } from './utils.js';
+
+const LEGACY_PLACE_PREFIX = 'name:';
 import { NO_LANGUAGE } from './constants.js';
 
 /**
- * AppState - Zentrale State-Verwaltung
+ * AppState
  *
- * Struktur:
- * - data: Geladene CMIF-Daten (letters, indices, meta)
- * - filters: Aktive Filter (temporal, languages, person, subject, place, quality)
- * - ui: UI-Zustand (currentView, selected items, search terms, sort orders)
+ * - data: loaded CMIF data (letters, indices, meta)
+ * - filters: active filters (temporal, languages, person, subject, place, quality)
+ * - ui: UI state (currentView, selected items, search terms, sort orders)
  */
 class AppState {
     constructor() {
@@ -31,9 +32,9 @@ class AppState {
         this.filters = {
             temporal: null,              // { min, max } or { undated: true }
             languages: null,             // null = no filter, array = allowed codes (empty = none)
-            person: null,                // Person ID
-            subject: null,               // Subject URI
-            place: null,                 // Place GeoNames ID
+            person: null,                // personKey: authority id, else name
+            subject: null,               // Subject URI, else id or label
+            place: null,                 // placeKey: GeoNames id, else name
             quality: {
                 preciseDates: false,
                 knownPersons: false,
@@ -255,7 +256,7 @@ class AppState {
 
             if (filters.place) {
                 const place = letter.place_sent;
-                if (!place || (placeKey(place) !== filters.place && `name:${place.name}` !== filters.place)) {
+                if (!place || placeKey(place) !== filters.place) {
                     return false;
                 }
             }
@@ -301,7 +302,10 @@ class AppState {
     }
 
     /**
-     * Export state to URL parameters
+     * Export view and every filter to URL parameters. fromURLParams reads the same names, so
+     * a shared link restores the exact letter set.
+     * Names: view, undated=1 | yearMin+yearMax, langs (comma list, empty = no language selected),
+     * person, subject, place, precise=1, known=1, located=1
      * @returns {URLSearchParams} URL params
      */
     toURLParams() {
@@ -340,61 +344,59 @@ class AppState {
             params.set('place', this.filters.place);
         }
 
+        // Quality filters
+        if (this.filters.quality?.preciseDates) params.set('precise', '1');
+        if (this.filters.quality?.knownPersons) params.set('known', '1');
+        if (this.filters.quality?.locatedPlaces) params.set('located', '1');
+
         return params;
     }
 
     /**
-     * Load state from URL parameters
+     * Load view and filters from URL parameters written by toURLParams. The URL describes the
+     * complete filter state: a filter missing from it is reset, so the round trip is exact.
      * @param {URLSearchParams} params - URL params
      */
     fromURLParams(params) {
-        const updates = {};
-
-        // View
         const view = params.get('view');
         if (view) {
             this.updateUI({ currentView: view });
         }
 
-        // Temporal filter
-        const yearMin = params.get('yearMin');
-        const yearMax = params.get('yearMax');
+        // A year range needs both ends as integers; anything else means no time filter
+        let temporal = null;
+        const yearMin = parseInt(params.get('yearMin'), 10);
+        const yearMax = parseInt(params.get('yearMax'), 10);
         if (params.get('undated') === '1') {
-            updates.temporal = { undated: true };
-        } else if (yearMin && yearMax) {
-            updates.temporal = {
-                min: parseInt(yearMin),
-                max: parseInt(yearMax)
-            };
+            temporal = { undated: true };
+        } else if (Number.isInteger(yearMin) && Number.isInteger(yearMax)) {
+            temporal = { min: yearMin, max: yearMax };
         }
 
-        // Language filter
+        // An empty langs parameter is a deliberate empty selection, not a missing filter
+        let languages = null;
         if (params.has('langs')) {
             const langs = params.get('langs');
-            updates.languages = langs ? langs.split(',') : [];
+            languages = langs ? langs.split(',') : [];
         }
 
-        // Person filter
-        const person = params.get('person');
-        if (person) {
-            updates.person = person;
-        }
+        // Links shared before ADR-001 named a place without GeoNames id as name:<Ort>; placeKey
+        // keys such a place by its bare name, so the prefix is dropped to keep old links working
+        let place = params.get('place') || null;
+        if (place?.startsWith(LEGACY_PLACE_PREFIX)) place = place.slice(LEGACY_PLACE_PREFIX.length) || null;
 
-        // Subject filter
-        const subject = params.get('subject');
-        if (subject) {
-            updates.subject = subject;
-        }
-
-        // Place filter
-        const place = params.get('place');
-        if (place) {
-            updates.place = place;
-        }
-
-        if (Object.keys(updates).length > 0) {
-            this.updateFilters(updates);
-        }
+        this.updateFilters({
+            temporal,
+            languages,
+            person: params.get('person') || null,
+            subject: params.get('subject') || null,
+            place,
+            quality: {
+                preciseDates: params.get('precise') === '1',
+                knownPersons: params.get('known') === '1',
+                locatedPlaces: params.get('located') === '1'
+            }
+        });
     }
 }
 

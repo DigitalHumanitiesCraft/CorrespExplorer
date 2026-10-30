@@ -6,34 +6,6 @@
  * SIDEBAR INFO SECTION
  * ========================================== */
 
-.sidebar-info {
-    margin-top: var(--space-md);
-    padding-top: var(--space-md);
-    border-top: 1px solid var(--color-border);
-}
-
-.sidebar-info h3,
-.sidebar-info h4 {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    color: var(--color-text);
-    margin: 0 0 var(--space-sm) 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.sidebar-info h3:not(:first-child),
-.sidebar-info h4:not(:first-child) {
-    margin-top: var(--space-md);
-}
-
-.info-text {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    line-height: 1.5;
-    margin: 0 0 var(--space-sm) 0;
-}
-
 /* ==========================================
  * FILTER GROUP
  * ========================================== */
@@ -114,6 +86,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-sm);
+    text-decoration: none;
 }
 
 /* Primary Button */
@@ -131,52 +104,13 @@
 /* Secondary Button */
 .btn-secondary {
     background: transparent;
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     border: 2px solid var(--color-primary);
 }
 
 .btn-secondary:hover {
     background: var(--color-primary);
     color: white;
-}
-
-/* Reset Button */
-.btn-reset {
-    width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    background: var(--color-bg-light);
-    color: var(--color-text);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.btn-reset:hover {
-    background: var(--color-primary);
-    color: white;
-    border-color: var(--color-primary);
-}
-
-/* Export Button */
-.btn-export {
-    width: 100%;
-    padding: var(--space-sm) var(--space-lg);
-    background: var(--color-primary);
-    color: white;
-    border: 2px solid var(--color-primary-dark);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    transition: all var(--transition-fast);
-}
-
-.btn-export:hover {
-    background: var(--color-primary-dark);
-    border-color: var(--color-primary-dark);
 }
 
 /* ==========================================
@@ -232,7 +166,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--color-backdrop);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     z-index: 10000;
@@ -255,7 +189,6 @@
     width: 100%;
     max-width: 600px;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .modal-header {
@@ -277,8 +210,7 @@
     font-family: var(--font-headings);
 }
 
-.modal-close,
-.modal-close-btn {
+.modal-close {
     background: var(--color-bg-light);
     border: none;
     color: var(--color-text);
@@ -293,22 +225,13 @@
     transition: all 0.2s;
 }
 
-.modal-close:hover,
-.modal-close-btn:hover {
-    background: #e0e0e0;
+.modal-close:hover {
+    background: var(--color-border-light);
     transform: rotate(90deg);
 }
 
 .modal-body {
     padding: var(--space-2xl);
-}
-
-.modal-footer {
-    padding: var(--space-xl) var(--space-2xl);
-    background: var(--color-bg);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 /* ==========================================
@@ -320,7 +243,7 @@
     align-items: center;
     gap: var(--space-md);
     padding: var(--space-md);
-    background: var(--color-bg-alt);
+    background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: 4px;
 }
@@ -379,7 +302,7 @@
 
 .entity-detail-panel {
     min-width: 0;
-    background: var(--color-surface);
+    background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--space-lg);
@@ -416,7 +339,7 @@
     border-bottom: 1px solid var(--color-border);
 }
 
-.entity-detail-header h4 {
+.entity-detail-header h3 {
     margin: 0;
     font-size: var(--font-size-lg);
     color: var(--color-text);
@@ -434,7 +357,7 @@
     margin-bottom: var(--space-lg);
 }
 
-.entity-detail-section h5 {
+.entity-detail-section h4 {
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
@@ -553,7 +476,7 @@
 }
 
 /* ==========================================
- * ENTITY CONTAINER AND HEADER
+ * ENTITY CONTAINER
  * Gemeinsamer Container fuer Entity Views (Topics, Places, etc.)
  * ========================================== */
 
@@ -564,20 +487,66 @@
     flex-direction: column;
 }
 
-.entity-header {
+/* ==========================================
+ * VIEW HEADER
+ * Shared head of every explorer view: h2 title, optional description,
+ * optional actions (badges, counts, mode switches). The actions sit right
+ * of the text from the tablet layout on and wrap below it on phones.
+ * ========================================== */
+
+.view-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-xs) var(--space-lg);
     margin-bottom: var(--space-lg);
+    text-align: left;
 }
 
-.entity-header h3 {
-    margin: 0 0 var(--space-xs) 0;
+.view-header__title {
+    margin: 0;
     font-size: var(--font-size-xl);
     color: var(--color-text);
 }
 
-.entity-header p {
+.view-header__description {
     margin: 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
+}
+
+.view-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm) var(--space-md);
+    margin-top: var(--space-sm);
+}
+
+/* Views without a padded container (map, lists, mentions flow) carry the padding themselves */
+.view-header--inset {
+    padding: var(--space-lg);
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+@media (min-width: 768px) {
+    /* Actions take at most half the width so the title keeps room on tablets */
+    .view-header {
+        grid-template-columns: minmax(0, 1fr) fit-content(50%);
+    }
+
+    .view-header > * {
+        grid-column: 1;
+    }
+
+    .view-header__actions {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        justify-content: flex-end;
+        min-width: 0;
+        margin-top: 0;
+    }
 }
 
 /* ==========================================
@@ -602,9 +571,10 @@
     border-color: var(--color-primary);
 }
 
-.entity-card.active {
+.entity-card.active,
+.entity-card[aria-pressed="true"] {
     border-color: var(--color-primary);
-    background: rgba(166, 75, 63, 0.05);
+    background: var(--color-primary-light);
 }
 
 .entity-card-info {
@@ -644,12 +614,12 @@
 .entity-card-count {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     min-width: 50px;
     text-align: right;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .entity-card {
         padding: var(--space-sm);
     }
@@ -671,12 +641,11 @@
     border: 2px solid var(--color-border);
     border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
-    background: #FFFFFF;
+    background: var(--color-bg);
     color: var(--color-text);
 }
 
 .autocomplete-input:focus {
-    outline: none;
     border-color: var(--color-primary);
 }
 
@@ -687,11 +656,10 @@
     right: 0;
     max-height: 300px;
     overflow-y: auto;
-    background: #FFFFFF;
+    background: var(--color-bg);
     border: 2px solid var(--color-border);
     border-top: none;
     border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 100;
 }
 
@@ -770,11 +738,11 @@
     color: white;
     padding: var(--space-sm) var(--space-lg);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    z-index: 1000;
+    /* Above dialogs (z-index 10000), so a toast raised from a dialog stays visible and closable */
+    z-index: 10100;
     opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
@@ -804,4 +772,10 @@
 
 .toast-close:hover {
     color: white;
+}
+
+/* Mentions search sits in the view header actions, narrower than the comparison selectors */
+.mentions-autocomplete {
+    width: 400px;
+    max-width: 100%;
 }

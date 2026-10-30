@@ -24,19 +24,20 @@
     <!-- Landing Container -->
     <div class="landing-container">
         <header class="landing-header">
-            <nav class="landing-nav">
+            <nav class="landing-nav" aria-label="Hauptnavigation">
                 <a href="about.html">About</a>
                 <a href="vault.html">Promptotyping Vault</a>
                 <a href="test.html">Tests</a>
             </nav>
-            <img src="assets/logo-no-background.png" alt="CorrespExplorer Logo" class="landing-logo">
+            <h1 class="landing-title"><img src="assets/logo-no-background.png" alt="CorrespExplorer" class="landing-logo"></h1>
             <p>Visualisieren Sie Korrespondenz-Metadaten im CMIF-Format. Laden Sie eine XML-Datei hoch oder geben Sie eine URL ein.</p>
 
             <div class="disclaimer">
-                <p><span class="tooltip-trigger">Promptotyping<i class="fas fa-info-circle"></i><span class="tooltip-content">Promptotyping ist eine iterative Context-Engineering-Arbeitstechnik, um datengetrieben und gemeinsam mit Frontier-LLMs Forschungsartefakte wie Interfaces, Tools oder Workflows zu entwickeln. Im <a href="vault.html">Promptotyping Vault</a> ist das Wissen zum CorrespExplorer destilliert.</span></span> Demo: Dieses Projekt befindet sich in aktiver Entwicklung. Ideen und Bugs koennen gerne als <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues" target="_blank">Issues im GitHub-Repo</a> dokumentiert werden.</p>
+                <p><span class="tooltip-trigger" tabindex="0">Promptotyping<i class="fas fa-info-circle" aria-hidden="true"></i><span class="tooltip-content">Promptotyping ist eine iterative Context-Engineering-Arbeitstechnik, um datengetrieben und gemeinsam mit Frontier-LLMs Forschungsartefakte wie Interfaces, Tools oder Workflows zu entwickeln. Im <a href="vault.html">Promptotyping Vault</a> ist das Wissen zum CorrespExplorer destilliert.</span></span> Demo: Dieses Projekt befindet sich in aktiver Entwicklung. Ideen und Bugs koennen gerne als <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues" target="_blank" rel="noopener noreferrer">Issues im GitHub-Repo</a> dokumentiert werden.</p>
             </div>
         </header>
 
+        <main class="landing-main">
         <!-- Upload Zone -->
         <div class="upload-zone" id="upload-zone">
             <div class="upload-icon">
@@ -66,10 +67,10 @@
         </div>
 
         <!-- Error Message -->
-        <div class="error-message" id="error-message"></div>
+        <div class="error-message" id="error-message" role="alert"></div>
 
         <!-- Loading State -->
-        <div class="loading-state" id="loading-state">
+        <div class="loading-state" id="loading-state" role="status" aria-live="polite">
             <div class="loading-spinner"></div>
             <p id="loading-text">Verarbeite CMIF-Datei...</p>
         </div>
@@ -86,13 +87,13 @@
                         <span><i class="fas fa-graduation-cap"></i> Interaktive Tour</span>
                     </div>
                 </div>
-                <div class="dataset-card dataset-card-extended" data-json="data/hsa-letters.json" data-demo="true" role="button" tabindex="0">
+                <div class="dataset-card dataset-card-extended" data-json="data/hsa-letters.json" role="button" tabindex="0">
                     <div class="dataset-badge dataset-badge-extended">Erweitert</div>
                     <h4>Hugo Schuchardt Archiv</h4>
                     <p>Korrespondenz des Sprachwissenschaftlers Hugo Schuchardt (1842-1927). Uni Graz.</p>
                     <div class="dataset-stats">
                         <span><i class="fas fa-envelope"></i> 11.576 Briefe</span>
-                        <span><i class="fas fa-users"></i> 846 Korrespondenten</span>
+                        <span><i class="fas fa-users"></i> 852 Personen mit Normdaten</span>
                     </div>
                     <div class="dataset-extended-info">
                         <i class="fas fa-star"></i> Mit Themen, erwaehnte Personen und Orte
@@ -107,13 +108,14 @@
             </div>
             <div class="api-hint">
                 <i class="fas fa-database"></i>
-                Weitere CMIF-Datensaetze zum Laden via URL finden Sie bei <a href="https://correspsearch.net/de/daten.html" target="_blank">correspSearch</a>.
+                Weitere CMIF-Datensaetze zum Laden via URL finden Sie bei <a href="https://correspsearch.net/de/daten.html" target="_blank" rel="noopener noreferrer">correspSearch</a>.
             </div>
         </section>
+        </main>
     </div>
 
     <!-- Dataset Configuration Modal -->
-    <div id="config-modal" class="modal hidden">
+    <div id="config-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="config-modal-title">
         <div class="modal-content config-modal-content">
             <div class="modal-header">
                 <h3 id="config-modal-title">Datensatz konfigurieren</h3>
@@ -138,7 +140,7 @@
 
                 <!-- Enrichment Options -->
                 <div class="config-section">
-                    <h4><i class="fas fa-magic"></i> Semantische Anreicherung</h4>
+                    <h4><i class="fas fa-magic" aria-hidden="true"></i> Semantische Anreicherung</h4>
                     <p class="config-hint">Zusaetzliche Daten von Wikidata laden</p>
 
                     <div class="config-option" id="config-option-coordinates">

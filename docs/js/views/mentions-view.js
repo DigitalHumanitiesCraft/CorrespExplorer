@@ -1,8 +1,10 @@
 // Mentions Flow View
 // Sankey diagram showing person mention relationships
 
-import { escapeHtml, openModal, closeModal } from '../utils.js';
+import { escapeHtml, openModal, closeModal, personKey } from '../utils.js';
+import { formatDateWithPrecision } from '../formatters.js';
 import { elements } from '../dom-cache.js';
+import { bindCombobox, readTokens } from './view-support.js';
 
 // Module state
 let selectedMentionsPerson = null;
@@ -12,8 +14,8 @@ let getFilteredLetters = null;
 let showLetterDetail = null;
 let log = { init: () => {}, render: () => {} };
 
-// Constants
-const PRIMARY_COLOR = '#A64B3F';
+// Below this width the side columns get short labels, the full name stays in a <title>
+const NARROW_WIDTH = 480;
 
 /**
  * Initialize mentions view with external dependencies
@@ -43,99 +45,60 @@ function initMentionsPersonAutocomplete() {
     const dropdown = elements.getById('mentions-person-dropdown');
     if (!input || !dropdown) return;
 
-    let highlightedIndex = -1;
-    let currentResults = [];
-
     // Build persons list for autocomplete
     function getPersonsWithMentions() {
         const personsMap = new Map();
-        const filteredLetters = getFilteredLetters();
-
-        filteredLetters.forEach(letter => {
-            // Count how many times each person is mentioned
-            const mentions = letter.mentions?.persons || [];
-            mentions.forEach(person => {
-                const id = person.id || person.name;
-                const name = person.name || id;
+        getFilteredLetters().forEach(letter => {
+            (letter.mentions?.persons || []).forEach(person => {
+                const id = personKey(person);
+                if (!id) return;
                 if (!personsMap.has(id)) {
-                    personsMap.set(id, { id, name, mentionCount: 0 });
+                    personsMap.set(id, { id, name: person.name || id, mentionCount: 0 });
                 }
                 personsMap.get(id).mentionCount++;
             });
-
-            // Also count correspondents who mention others
-            const senderId = letter.sender?.id;
-            const senderName = letter.sender?.name;
-            if (senderId && mentions.length > 0) {
-                if (!personsMap.has(senderId)) {
-                    personsMap.set(senderId, { id: senderId, name: senderName, mentionCount: 0 });
-                }
-            }
         });
 
-        // Filter out entries with 0 mentions and sort by count
         return Array.from(personsMap.values())
-            .filter(p => p.mentionCount > 0)
             .sort((a, b) => b.mentionCount - a.mentionCount);
-    }
-
-    function renderDropdown(results) {
-        currentResults = results;
-        highlightedIndex = -1;
-
-        if (results.length === 0) {
-            dropdown.innerHTML = '<div class="autocomplete-empty">Keine Treffer</div>';
-            dropdown.classList.remove('hidden');
-            return;
-        }
-
-        // Show all results - scrollable dropdown handles large lists
-        dropdown.innerHTML = results.map((person, i) => `
-            <div class="autocomplete-item" data-index="${i}" data-id="${escapeHtml(person.id)}">
-                <span class="autocomplete-item-name">${escapeHtml(person.name)}</span>
-                <span class="autocomplete-item-count">${person.mentionCount}</span>
-            </div>
-        `).join('');
-
-        dropdown.classList.remove('hidden');
     }
 
     function selectPerson(person) {
         selectedMentionsPerson = person;
         input.value = person.name;
-        dropdown.classList.add('hidden');
 
-        // Update selected person display
         const selectedDisplay = elements.getById('mentions-flow-selected-person');
         if (selectedDisplay) {
             selectedDisplay.innerHTML = `<strong>${escapeHtml(person.name)}</strong> - ${person.mentionCount} Erwaehnungen`;
         }
 
-        // Render the flow for this person
         renderMentionsFlowForPerson(person);
     }
 
-    // Input event - filter as user types
+    const combobox = bindCombobox(input, dropdown, {
+        onSelect: selectPerson,
+        count: person => person.mentionCount
+    });
+
+    const showAllAlphabetically = () => {
+        combobox.show(getPersonsWithMentions().sort((a, b) => a.name.localeCompare(b.name, 'de')));
+    };
+
     input.addEventListener('input', () => {
         const query = input.value.toLowerCase().trim();
         if (query.length < 1) {
-            // Show all alphabetically when empty
-            const allPersons = getPersonsWithMentions();
-            const sorted = allPersons.sort((a, b) => a.name.localeCompare(b.name, 'de'));
-            renderDropdown(sorted);
+            showAllAlphabetically();
             return;
         }
 
-        const allPersons = getPersonsWithMentions();
-        // Split query into words for multi-word search
+        // Every word of the query must occur in the name
         const queryWords = query.split(/\s+/);
-        const filtered = allPersons.filter(p => {
+        const filtered = getPersonsWithMentions().filter(p => {
             const nameLower = p.name.toLowerCase();
-            // All query words must be found in the name
             return queryWords.every(word => nameLower.includes(word));
         });
 
-        // Sort filtered results: exact matches first, then by mention count
+        // Names starting with the query first, then by mention count
         filtered.sort((a, b) => {
             const aStartsWith = a.name.toLowerCase().startsWith(query);
             const bStartsWith = b.name.toLowerCase().startsWith(query);
@@ -144,62 +107,10 @@ function initMentionsPersonAutocomplete() {
             return b.mentionCount - a.mentionCount;
         });
 
-        renderDropdown(filtered);
+        combobox.show(filtered);
     });
 
-    // Focus - show all persons alphabetically sorted
-    input.addEventListener('focus', () => {
-        const allPersons = getPersonsWithMentions();
-        // Sort alphabetically by name
-        const sorted = allPersons.sort((a, b) => a.name.localeCompare(b.name, 'de'));
-        renderDropdown(sorted);
-    });
-
-    // Click outside - close dropdown
-    document.addEventListener('click', (e) => {
-        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
-
-    // Keyboard navigation
-    input.addEventListener('keydown', (e) => {
-        if (dropdown.classList.contains('hidden')) return;
-
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            highlightedIndex = Math.min(highlightedIndex + 1, currentResults.length - 1);
-            updateHighlight();
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            highlightedIndex = Math.max(highlightedIndex - 1, 0);
-            updateHighlight();
-        } else if (e.key === 'Enter') {
-            e.preventDefault();
-            if (highlightedIndex >= 0 && currentResults[highlightedIndex]) {
-                selectPerson(currentResults[highlightedIndex]);
-            }
-        } else if (e.key === 'Escape') {
-            dropdown.classList.add('hidden');
-        }
-    });
-
-    function updateHighlight() {
-        dropdown.querySelectorAll('.autocomplete-item').forEach((item, i) => {
-            item.classList.toggle('highlighted', i === highlightedIndex);
-        });
-    }
-
-    // Click on dropdown item
-    dropdown.addEventListener('click', (e) => {
-        const item = e.target.closest('.autocomplete-item');
-        if (item) {
-            const index = parseInt(item.dataset.index);
-            if (currentResults[index]) {
-                selectPerson(currentResults[index]);
-            }
-        }
-    });
+    input.addEventListener('focus', showAllAlphabetically);
 }
 
 /**
@@ -215,7 +126,8 @@ export function renderMentionsFlow() {
         filteredLetters.forEach(letter => {
             const mentions = letter.mentions?.persons || [];
             mentions.forEach(person => {
-                const id = person.id || person.name;
+                const id = personKey(person);
+                if (!id) return;
                 const name = person.name || id;
                 if (!personsMap.has(id)) {
                     personsMap.set(id, { id, name, mentionCount: 0 });
@@ -244,7 +156,7 @@ export function renderMentionsFlow() {
     if (placeholder) {
         if (!selectedMentionsPerson) {
             placeholder.style.display = 'flex';
-            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Personen mit Erwahnungen im Datensatz</p>';
+            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Personen mit Erwaehnungen im Datensatz</p>';
         } else {
             renderMentionsFlowForPerson(selectedMentionsPerson);
         }
@@ -280,7 +192,7 @@ function renderMentionsFlowForPerson(person) {
         // Check if this person is the sender - show who they mention
         if (senderId === person.id) {
             mentions.forEach(m => {
-                const mentionId = m.id || m.name;
+                const mentionId = personKey(m);
                 // Skip self-references
                 if (mentionId === person.id) return;
 
@@ -298,7 +210,7 @@ function renderMentionsFlowForPerson(person) {
         }
 
         // Check if this person is mentioned in the letter
-        const isMentioned = mentions.some(m => (m.id || m.name) === person.id);
+        const isMentioned = mentions.some(m => personKey(m) === person.id);
         // Skip if sender is the same person (self-reference)
         if (isMentioned && senderId && senderId !== person.id) {
             const existingIdx = personMentionedBy.findIndex(x => x.id === senderId);
@@ -378,20 +290,43 @@ function renderMentionsFlowForPerson(person) {
     const width = container.clientWidth || 900;
     const height = Math.max(400, nodes.length * 30);
     const headerHeight = 40; // Space for column labels
+    const narrow = width < NARROW_WIDTH;
+    const tokens = readTokens({
+        center: '--color-primary',
+        sender: '--color-role-sender',
+        mentioned: '--color-role-mentioned',
+        text: '--color-text',
+        textLight: '--color-text-light',
+        fontXs: '--font-size-xs',
+        fontSm: '--font-size-sm'
+    });
+    const nodeColor = d => d.isCenter ? tokens.center : (d.column === 0 ? tokens.sender : tokens.mentioned);
+
+    // Side labels sit outside the node columns; reserve their width, so long names are not clipped
+    const labelChars = narrow ? 12 : 25;
+    const labelMargin = Math.min(Math.round(width * 0.3), labelChars * 7 + 16);
+    const shortName = name => name.length > labelChars ? name.substring(0, labelChars - 1) + '…' : name;
+
+    // Determine which columns have data
+    const hasLeftColumn = personMentionedBy.length > 0;
+    const hasRightColumn = mentionedByPerson.length > 0;
+
+    const summary = `Erwaehnungsfluss fuer ${person.name}: ` +
+        `${personMentionedBy.length} Absender erwaehnen die Person, die Person erwaehnt ${mentionedByPerson.length} Personen. ` +
+        'Pfeiltasten wechseln den Knoten, Enter wechselt zu dieser Person.';
 
     const svg = d3.select(container)
         .append('svg')
         .attr('width', width)
         .attr('height', height + headerHeight)
+        .attr('role', 'group')
+        .attr('aria-label', summary)
         .style('cursor', 'grab');
 
     // Column labels (outside zoom group, always visible)
     const labelGroup = svg.append('g')
-        .attr('class', 'column-labels');
-
-    // Determine which columns have data
-    const hasLeftColumn = personMentionedBy.length > 0;
-    const hasRightColumn = mentionedByPerson.length > 0;
+        .attr('class', 'column-labels')
+        .attr('aria-hidden', 'true');
 
     // Left column: People who mention the selected person (only show if data exists)
     if (hasLeftColumn) {
@@ -399,18 +334,20 @@ function renderMentionsFlowForPerson(person) {
             .attr('x', 20)
             .attr('y', 20)
             .attr('text-anchor', 'start')
-            .style('font-size', '11px')
+            .style('font-size', tokens.fontXs)
             .style('font-weight', '600')
-            .style('fill', '#2c5f8d')
+            .style('fill', tokens.sender)
             .text('ERWAEHNT VON');
 
-        labelGroup.append('text')
-            .attr('x', 20)
-            .attr('y', 32)
-            .attr('text-anchor', 'start')
-            .style('font-size', '9px')
-            .style('fill', 'var(--color-text-light)')
-            .text('(diese Absender erwaehnen die Person)');
+        if (!narrow) {
+            labelGroup.append('text')
+                .attr('x', 20)
+                .attr('y', 34)
+                .attr('text-anchor', 'start')
+                .style('font-size', tokens.fontXs)
+                .style('fill', tokens.textLight)
+                .text('(diese Absender erwaehnen die Person)');
+        }
     }
 
     // Center: Selected person
@@ -418,9 +355,9 @@ function renderMentionsFlowForPerson(person) {
         .attr('x', width / 2)
         .attr('y', 26)
         .attr('text-anchor', 'middle')
-        .style('font-size', '11px')
+        .style('font-size', tokens.fontXs)
         .style('font-weight', '600')
-        .style('fill', PRIMARY_COLOR)
+        .style('fill', tokens.center)
         .text('PERSON');
 
     // Right column: People mentioned by the selected person (only show if data exists)
@@ -429,29 +366,31 @@ function renderMentionsFlowForPerson(person) {
             .attr('x', width - 20)
             .attr('y', 20)
             .attr('text-anchor', 'end')
-            .style('font-size', '11px')
+            .style('font-size', tokens.fontXs)
             .style('font-weight', '600')
-            .style('fill', '#f59e0b')
+            .style('fill', tokens.mentioned)
             .text('ERWAEHNT');
 
-        labelGroup.append('text')
-            .attr('x', width - 20)
-            .attr('y', 32)
-            .attr('text-anchor', 'end')
-            .style('font-size', '9px')
-            .style('fill', 'var(--color-text-light)')
-            .text('(von der Person in Briefen erwaehnt)');
+        if (!narrow) {
+            labelGroup.append('text')
+                .attr('x', width - 20)
+                .attr('y', 34)
+                .attr('text-anchor', 'end')
+                .style('font-size', tokens.fontXs)
+                .style('fill', tokens.textLight)
+                .text('(von der Person in Briefen erwaehnt)');
+        }
     }
 
     // Zoomable content group
     const g = svg.append('g')
         .attr('transform', `translate(0, ${headerHeight})`);
 
-    // Sankey generator
+    // Sankey generator; a missing side column needs no label margin
     const sankeyGenerator = d3.sankey()
         .nodeWidth(20)
         .nodePadding(10)
-        .extent([[80, 10], [width - 80, height - 10]]);
+        .extent([[hasLeftColumn ? labelMargin : 20, 10], [width - (hasRightColumn ? labelMargin : 20), height - 10]]);
 
     const { nodes: layoutNodes, links: layoutLinks } = sankeyGenerator({
         nodes: nodes.map(d => Object.assign({}, d)),
@@ -467,25 +406,28 @@ function renderMentionsFlowForPerson(person) {
             .attr('x1', link.source.x1)
             .attr('x2', link.target.x0);
 
-        const sourceColor = link.source.isCenter ? PRIMARY_COLOR : '#2c5f8d';
-        const targetColor = link.target.isCenter ? PRIMARY_COLOR : '#f59e0b';
+        const sourceColor = nodeColor(link.source);
+        const targetColor = nodeColor(link.target);
 
         gradient.append('stop').attr('offset', '0%').attr('stop-color', sourceColor);
         gradient.append('stop').attr('offset', '100%').attr('stop-color', targetColor);
     });
 
-    // Create tooltip
+    // Create tooltip. The look should move to a .sankey-tooltip rule in the CSS; until then the
+    // inline declarations use tokens only, so the floating box stays readable
     let tooltip = document.getElementById('sankey-tooltip');
     if (!tooltip) {
         tooltip = document.createElement('div');
         tooltip.id = 'sankey-tooltip';
-        tooltip.style.cssText = 'position:fixed;display:none;background:#fff;border:2px solid var(--color-border);border-radius:4px;padding:8px 12px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:1000;pointer-events:none;max-width:300px;';
+        tooltip.className = 'sankey-tooltip';
+        tooltip.setAttribute('aria-hidden', 'true');
+        tooltip.style.display = 'none';
         document.body.appendChild(tooltip);
     }
 
     // Links with hover and click
-    const linkGroup = g.append('g');
-    const linkPaths = linkGroup.selectAll('path')
+    const linkGroup = g.append('g').attr('aria-hidden', 'true');
+    linkGroup.selectAll('path')
         .data(layoutLinks)
         .join('path')
         .attr('d', d3.sankeyLinkHorizontal())
@@ -520,21 +462,54 @@ function renderMentionsFlowForPerson(person) {
         });
 
     // Nodes with click to navigate
+    const navigateTo = (d) => {
+        if (d.isCenter) return; // Don't navigate to self
+        const newPerson = { id: d.id, name: d.name, mentionCount: d.value || 0 };
+        selectedMentionsPerson = newPerson;
+        const input = elements.getById('mentions-person-search');
+        if (input) input.value = d.name;
+        renderMentionsFlowForPerson(newPerson);
+        // The re-render replaced the nodes; keep keyboard users inside the chart
+        container.querySelector('.sankey-node[tabindex="0"]')?.focus();
+    };
+
     const node = g.append('g')
         .selectAll('g')
         .data(layoutNodes)
         .join('g')
         .attr('class', d => d.isCenter ? 'sankey-node sankey-node-center' : 'sankey-node sankey-node-clickable')
+        .attr('role', d => d.isCenter ? null : 'button')
+        .attr('tabindex', d => d.isCenter ? null : -1)
+        // A shortened label leads the name so speech input can address the node by what it shows
+        .attr('aria-label', d => {
+            if (d.isCenter) return null;
+            const shown = shortName(d.name);
+            const lead = shown === d.name ? d.name : `${shown.replace('…', '')}, ${d.name}`;
+            return `${lead}: ${d.value} ${d.column === 0 ? 'Briefe mit Erwaehnung der Person' : 'Erwaehnungen'}`;
+        })
         .style('cursor', d => d.isCenter ? 'default' : 'pointer')
         .on('click', function(event, d) {
-            if (d.isCenter) return; // Don't navigate to self
+            if (d.isCenter) return;
             event.stopPropagation();
-            // Navigate to this person
-            const newPerson = { id: d.id, name: d.name, mentionCount: d.value || 0 };
-            selectedMentionsPerson = newPerson;
-            const input = elements.getById('mentions-person-search');
-            if (input) input.value = d.name;
-            renderMentionsFlowForPerson(newPerson);
+            navigateTo(d);
+        })
+        .on('keydown', function(event, d) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                event.stopPropagation();
+                navigateTo(d);
+                return;
+            }
+            // The clickable nodes in layout order, the roving tabindex moves between them
+            const stops = node.filter(n => !n.isCenter).nodes();
+            const pos = stops.indexOf(this);
+            const targets = { ArrowDown: pos + 1, ArrowRight: pos + 1, ArrowUp: pos - 1, ArrowLeft: pos - 1, Home: 0, End: stops.length - 1 };
+            if (!(event.key in targets)) return;
+            event.preventDefault();
+            const next = stops[Math.max(0, Math.min(stops.length - 1, targets[event.key]))];
+            this.setAttribute('tabindex', -1);
+            next.setAttribute('tabindex', 0);
+            next.focus();
         })
         .on('mouseover', function(event, d) {
             if (d.isCenter) return;
@@ -542,12 +517,12 @@ function renderMentionsFlowForPerson(person) {
             d3.select(this).select('rect')
                 .transition().duration(150)
                 .attr('opacity', 0.7)
-                .attr('stroke', 'var(--color-text)')
+                .attr('stroke', tokens.text)
                 .attr('stroke-width', 2);
             d3.select(this).select('text')
                 .transition().duration(150)
                 .style('text-decoration', 'underline')
-                .style('fill', 'var(--color-primary)');
+                .style('fill', tokens.center);
             tooltip.innerHTML = `<strong>${escapeHtml(d.name)}</strong><br>Klicken um zu dieser Person zu wechseln`;
             tooltip.style.display = 'block';
             tooltip.style.left = (event.clientX + 10) + 'px';
@@ -568,29 +543,38 @@ function renderMentionsFlowForPerson(person) {
             d3.select(this).select('text')
                 .transition().duration(150)
                 .style('text-decoration', 'none')
-                .style('fill', 'var(--color-text)');
+                .style('fill', tokens.text);
             tooltip.style.display = 'none';
         });
+
+    // One roving tab stop for the side nodes, in the order left column, right column
+    const focusable = node.filter(d => !d.isCenter).nodes();
+    if (focusable.length > 0) focusable[0].setAttribute('tabindex', 0);
 
     node.append('rect')
         .attr('x', d => d.x0)
         .attr('y', d => d.y0)
         .attr('height', d => Math.max(4, d.y1 - d.y0))
         .attr('width', sankeyGenerator.nodeWidth())
-        .attr('fill', d => d.isCenter ? PRIMARY_COLOR : (d.column === 0 ? '#2c5f8d' : '#f59e0b'))
+        .attr('fill', nodeColor)
         .attr('rx', 3);
 
-    // Labels
-    node.append('text')
-        .attr('x', d => d.column === 0 ? d.x0 - 8 : (d.column === 2 ? d.x1 + 8 : d.x0 + 10))
+    // Labels; a shortened name keeps the full one in a <title>
+    // Without a right column the center node sits at the right edge, so its label goes to the left
+    const labelLeft = d => d.column === 0 || (d.isCenter && !hasRightColumn);
+    const labels = node.append('text')
+        .attr('x', d => labelLeft(d) ? d.x0 - 8 : (d.column === 2 ? d.x1 + 8 : d.x0 + 10))
         .attr('y', d => (d.y1 + d.y0) / 2)
         .attr('dy', '0.35em')
-        .attr('text-anchor', d => d.column === 0 ? 'end' : 'start')
-        .text(d => d.name.length > 25 ? d.name.substring(0, 25) + '...' : d.name)
-        .style('font-size', d => d.isCenter ? '14px' : '12px')
+        .attr('text-anchor', d => labelLeft(d) ? 'end' : 'start')
+        .text(d => d.isCenter ? d.name : shortName(d.name))
+        .style('font-size', d => d.isCenter ? tokens.fontSm : tokens.fontXs)
         .style('font-weight', d => d.isCenter ? '700' : 'normal')
-        .style('fill', 'var(--color-text)')
+        .style('fill', tokens.text)
         .style('pointer-events', 'none');
+    labels.filter(d => !d.isCenter && shortName(d.name) !== d.name)
+        .append('title')
+        .text(d => d.name);
 
     // Add zoom behavior
     const zoom = d3.zoom()
@@ -606,9 +590,9 @@ function renderMentionsFlowForPerson(person) {
     const controlsDiv = document.createElement('div');
     controlsDiv.className = 'sankey-zoom-controls';
     controlsDiv.innerHTML = `
-        <button class="map-control-btn" id="sankey-zoom-in" title="Vergroessern"><i class="fas fa-plus"></i></button>
-        <button class="map-control-btn" id="sankey-zoom-out" title="Verkleinern"><i class="fas fa-minus"></i></button>
-        <button class="map-control-btn" id="sankey-zoom-reset" title="Zuruecksetzen"><i class="fas fa-compress-arrows-alt"></i></button>
+        <button class="map-control-btn" id="sankey-zoom-in" title="Vergroessern" aria-label="Vergroessern"><i class="fas fa-plus" aria-hidden="true"></i></button>
+        <button class="map-control-btn" id="sankey-zoom-out" title="Verkleinern" aria-label="Verkleinern"><i class="fas fa-minus" aria-hidden="true"></i></button>
+        <button class="map-control-btn" id="sankey-zoom-reset" title="Zuruecksetzen" aria-label="Zuruecksetzen"><i class="fas fa-compress-arrows-alt" aria-hidden="true"></i></button>
     `;
     container.style.position = 'relative';
     container.appendChild(controlsDiv);
@@ -636,8 +620,7 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
     // Find all letters where sender mentions the person
     const relevantLetters = filteredLetters.filter(letter => {
         const letterSenderId = letter.sender?.id;
-        const mentions = letter.mentions?.persons || [];
-        const mentionIds = mentions.map(m => m.id || m.name);
+        const mentionIds = (letter.mentions?.persons || []).map(personKey);
         return letterSenderId === senderId && mentionIds.includes(mentionedId);
     });
 
@@ -645,19 +628,21 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
         return;
     }
 
-    // Create modal
+    // The modal reuses the list classes of the comparison view's common letters dialog
     let modal = document.getElementById('mention-letters-modal');
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'mention-letters-modal';
         modal.className = 'modal-overlay';
         modal.innerHTML = `
-            <div class="modal-content" style="max-width:700px;max-height:80vh;overflow-y:auto;">
+            <div class="modal-content common-letters-modal">
                 <div class="modal-header">
                     <h3 id="mention-modal-title"></h3>
                     <button class="modal-close" aria-label="Schliessen">&times;</button>
                 </div>
-                <div class="modal-body" id="mention-modal-body"></div>
+                <div class="modal-body">
+                    <div class="common-letters-list" id="mention-modal-body"></div>
+                </div>
             </div>
         `;
         document.body.appendChild(modal);
@@ -670,28 +655,24 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
         });
     }
 
-    // Populate modal
     document.getElementById('mention-modal-title').textContent =
         `${senderName} erwaehnt ${mentionedName} (${relevantLetters.length} Briefe)`;
 
     const body = document.getElementById('mention-modal-body');
     body.innerHTML = relevantLetters.slice(0, 50).map(letter => {
-        const date = letter.date || 'Datum unbekannt';
         const recipient = letter.recipient?.name || 'Unbekannt';
         const place = letter.place_sent?.name || '';
         return `
-            <div style="padding:12px;border-bottom:1px solid var(--color-border-light);cursor:pointer;"
-                 role="button" tabindex="0" data-letter-id="${escapeHtml(letter.id)}">
-                <div style="font-weight:600;color:var(--color-text);">${escapeHtml(date)}</div>
-                <div style="font-size:13px;color:var(--color-text-light);">
-                    An: ${escapeHtml(recipient)}${place ? ' | ' + escapeHtml(place) : ''}
-                </div>
+            <div class="common-letter-item" role="button" tabindex="0" data-letter-id="${escapeHtml(letter.id)}">
+                <span class="common-letter-date">${formatDateWithPrecision(letter)}</span>
+                <span class="common-letter-recipient">An: ${escapeHtml(recipient)}</span>
+                ${place ? `<span class="common-letter-place">(${escapeHtml(place)})</span>` : ''}
             </div>
         `;
     }).join('');
 
     if (relevantLetters.length > 50) {
-        body.innerHTML += `<div style="padding:12px;color:var(--color-text-light);text-align:center;">... und ${relevantLetters.length - 50} weitere Briefe</div>`;
+        body.innerHTML += `<p class="common-letters-more">... und ${relevantLetters.length - 50} weitere Briefe</p>`;
     }
 
     openModal(modal);

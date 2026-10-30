@@ -1,52 +1,63 @@
 /* Shadow System - CorrespExplorer
- * Following Hybrid Design Approach (Option B)
  *
- * Principle: Shadows ONLY for floating/overlay elements that need z-axis separation.
- * All regular UI elements use border-based design for clarity and reduced visual noise.
+ * Principle: shadows only for floating elements that sit above the page (dialogs, dropdowns,
+ * tooltips, toasts, the demo tour, map popups and map controls, the off-canvas sidebar).
+ * Regular elements (cards, buttons, inputs, bars, panels) use borders instead, see design.md.
  *
- * Rationale: shadows signal that an element sits above the page. On regular elements they
- * add visual noise without conveying layering, so they are reserved for floating elements.
+ * This file is the only place that sets box-shadow, apart from focus rings and resets
+ * (box-shadow: none). It loads after components.css, so its rules win over component rules.
  */
 
-/* ==========================================
- * ALLOWED: Floating Elements
- * ========================================== */
-
-/* Modals - Float above all content */
+/* Dialogs */
 .modal-content,
-.modal-overlay .modal-content {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+.modal-overlay .modal-content,
+.tour-content {
+    box-shadow: var(--shadow-lg);
 }
 
-/* Dropdowns - Float above content */
-.nav-dropdown-menu,
-.dropdown-menu {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+/* Toasts */
+.toast-notification {
+    box-shadow: var(--shadow-lg);
 }
 
-/* Map Popups - Float above map */
+/* Dropdowns and menus */
+.autocomplete-dropdown,
+.nav-mobile-menu {
+    box-shadow: var(--shadow-md);
+}
+
+/* Tooltips */
+.tooltip-content,
+.sankey-tooltip,
+.undated-bin-tooltip,
+.timeline-bar-tooltip,
+.view-btn[data-tooltip]::after {
+    box-shadow: var(--shadow-md);
+}
+
+/* Loading indicator floating above the map */
+#loading {
+    box-shadow: var(--shadow-md);
+}
+
+/* Map popups and map controls */
 .maplibregl-popup-content {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-sm);
 }
 
-/* Tooltips - Float above all */
-.hover-json-popup .maplibregl-popup-content,
-.json-popup-sticky .maplibregl-popup-content {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Map Controls - Float above map */
 .map-control-btn,
 .map-legend {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-sm);
 }
 
-/* ==========================================
- * FORBIDDEN: Regular UI Elements
- * Use border-based design instead
- * ========================================== */
+/* Demo tour spotlight: the spread shadow dims the page around the highlighted element */
+.tour-highlight {
+    box-shadow: 0 0 0 9999px var(--color-overlay);
+}
 
-/* Cards, Buttons, Inputs - NO shadows
- * These use border: 2px solid var(--color-border) instead
- * See components.css and tokens.css for correct patterns
- */
+/* Off-canvas sidebar below the tablet breakpoint */
+@media (max-width: 767px) {
+    .sidebar {
+        box-shadow: var(--shadow-md);
+    }
+}

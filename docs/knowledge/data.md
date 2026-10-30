@@ -50,7 +50,7 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 | Datei | Inhalt | Rolle |
 |---|---|---|
 | `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 mit allen Erwähnungstypen des CMIF-v2-Entwurfs (Themen, Personen, Orte, Organisationen, Werke) und Sprachangaben | Tutorial-Datensatz der Startseite mit Onboarding-Tour |
-| `docs/data/hsa.xml` | CMIF-Export des Hugo Schuchardt Archivs | Quelle der Vorprozessierung |
+| `docs/data/hsa.xml` | CMIF-Export des Hugo Schuchardt Archivs, byte-gleich mit `data/hsa/CMIF.xml` (geprüft mit `cmp` am 2026-10-29) | Ausgelieferte Kopie der CMIF-Datei. Die Vorprozessierung liest `data/hsa/CMIF.xml` (`build_hsa_data.py`, `meta.source_file`) |
 | `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes, teiHeader-Metadaten und Änderungsvermerk `meta.modifications` | Erweiterter Beispieldatensatz der Startseite |
 | `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs aus Wikidata, für Genf aus GeoNames (siehe [Herkunft](#herkunft-von-docsdatageonames_coordinatesjson)) | Ergänzung von Orten ohne Koordinaten beim Upload |
 | `docs/data/test-uncertainty.xml` | Synthetische Unsicherheitsfälle | Testdatei, siehe [Testdatensätze](#testdatensätze) |
@@ -61,14 +61,14 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 
 Das Hugo Schuchardt Archiv (HSA) der Universität Graz (https://gams.uni-graz.at/context:hsa) ist ein ego-zentriertes Netzwerk um den Sprachwissenschaftler Hugo Schuchardt mit Briefen an ihn und von ihm. Es nutzt das LOD Academy CMIF Vocabulary für die erweiterten Metadatentypen und VIAF als vorherrschendes Normdatensystem für Personen. Eigene kontrollierte Vokabulare für Themen und Sprachen ergänzen Lexvo-URIs. Die CMIF-Datei steht unter CC BY 4.0, siehe [Rechte und Lizenzen](#rechte-und-lizenzen).
 
-Kennzahlen der gebündelten Datei, Stand der Vorprozessierung im Dezember 2025:
+Kennzahlen der gebündelten Datei aus `meta` von `hsa-letters.json`, Stand der Vorprozessierung vom 2026-10-29 (`meta.generated`). Sie gleichen bis auf `generated` dem vorigen Lauf vom 2025-12-18:
 
 | Metrik | Wert |
 |---|---|
 | Briefe | 11.576 |
-| Absender | 846 |
-| Empfänger | 112 |
-| Absendeorte | 774 |
+| Absender mit Normdaten-ID (`unique_senders`) | 846 |
+| Empfänger mit Normdaten-ID (`unique_recipients`) | 112 |
+| Absendeorte mit GeoNames-ID (`unique_places`) | 774 |
 | Subjects | 1.622 |
 | Sprachen | 18 |
 | Zeitraum | 1859–1927 |
@@ -79,7 +79,11 @@ Kennzahlen der gebündelten Datei, Stand der Vorprozessierung im Dezember 2025:
 | HSA-Languages | 200 | `gams.uni-graz.at/o:hsa.languages#L.{id}` |
 | Lexvo | 148 | `lexvo.org/id/iso639-3/{code}` |
 
+Die Zählungen in `meta` und `indices` erfassen nur Personen mit Normdaten-ID und Orte mit GeoNames-ID. Die Oberfläche zählt seit 2026-10-29 überall gleich aus den Briefen (`summarizeCorpus()` in `research-paths.js`): Personen über `personKey` als Absender oder Empfänger, Orte über `placeKey` ohne Platzhalter für unbekannte Orte (`isKnownPlace()` in `utils.js`). Sidebar („Personen“, „Orte“) und Übersicht zeigen für das HSA deshalb dieselben 1.031 Personen (852 mit Normdaten-ID, 179 nur mit Namen) und 774 Absendeorte. Der Platzhalter „Unbekannt“ ohne GeoNames-ID bei 576 Briefen zählt nicht als Ort. Die Karte der Startseite nennt die 852 Personen mit Normdaten-ID ausdrücklich so. Gezählt am 2026-10-29 aus `docs/data/hsa-letters.json`.
+
 Die häufigsten Korrespondenten sind Leo Spitzer (447 Briefe, VIAF 46804188), Julio de Urquijo Ybarra (243, VIAF 18030027), Georges Lacombe (235, VIAF 34446283), Theodor Gartner (222, VIAF 59114592) und Edward Spencer Dodgson (181, VIAF 27433725). Die häufigsten Absendeorte sind Graz (2.371, GeoNames 2778067), Wien (855, 2761369), Paris (781, 2988507), Leipzig (247, 2879139) und Berlin (237, 2950159). Graz als Schuchardts Wirkungsort stellt rund ein Fünftel aller Briefe.
+
+Die CMIF-Datei des HSA schreibt VIAF-URIs in zwei Formen. Absender und Empfänger (`persName/@ref`) stehen als `https://viaf.org/viaf/{id}`, erwähnte Personen (`ref[@type="…#mentionsPerson"]/@target`) als Kurzform `https://viaf.org/{id}`. Gezählt in `data/hsa/CMIF.xml` am 2026-10-29: Von 17.413 Erwähnungen von Personen tragen 11.652 die Kurzform (280 davon mit Leerzeichen am Ende), 29 die doppelte Form `https://viaf.org/https://viaf.org/viaf/{id}/`, eine den Namen statt der ID (`https://viaf.org/Luigi Pigorini`) und 5.731 eine HSA-interne Personen-URI (`http://schuchardt.uni-graz.at/id/person/{id}`, Typ `hsa_person`). Bis zum 2026-10-29 erkannten `build_hsa_data.py` und `parseAuthorityRef()` nur `viaf/{id}`, deshalb trugen 11.653 der 17.413 Erwähnungen in `hsa-letters.json` die ID `null`. Beide erkennen seither auch die Kurzform, nach der Neuerzeugung bleibt allein die Erwähnung von Luigi Pigorini ohne ID. Die Indizes blieben dabei unverändert, weil erwähnte Personen in keinen Index eingehen.
 
 Die CMIF-Datei des HSA schreibt für Ladinisch `target="None"` mit dem Text „Ladinisch“ (`data/hsa/CMIF.xml`, zwei Briefe), die Vorprozessierung übernimmt den Code unverändert nach `indices.languages`. Bis zum 2026-10-29 nutzte die Oberfläche denselben String `None` für Briefe ohne Sprachangabe und zeigte Ladinisch deshalb als „Ohne Angabe“. Seither tragen Briefe ohne Sprache den internen Code `NO_LANGUAGE` (`_none`, `constants.js`), und `languageLabel()` zeigt für `None` die Bezeichnung aus den Daten. Der Quellwert selbst bleibt unverändert.
 
@@ -185,7 +189,7 @@ Normdaten-URIs sind der primäre Schlüssel für Abgleich und Aggregation, Anzei
 
 | Entität | System | URL-Muster |
 |---|---|---|
-| Person | VIAF | `viaf.org/viaf/{id}` |
+| Person | VIAF | `viaf.org/viaf/{id}`, Kurzform `viaf.org/{id}` (erwähnte Personen im HSA) |
 | Person | GND der Deutschen Nationalbibliothek | `d-nb.info/gnd/{id}` |
 | Person | Library of Congress | `id.loc.gov/authorities/names/{id}` |
 | Person | Bibliothèque nationale de France | `data.bnf.fr/ark:/12148/{id}` |
@@ -209,18 +213,18 @@ GeoNames liefert die Koordinaten für die Karte. Fehlen sie, löst `resolve_geon
 
 ### Vorprozessierung erweiterter Datensätze
 
-Erweiterte Datensätze wie das HSA werden in Python vorprozessiert (`preprocessing/build_hsa_data.py`), weil Größe und Quelle das Laden im Browser ausschließen. Der Ablauf steht in [architecture.md](architecture.md#datenfluss).
+Erweiterte Datensätze wie das HSA werden in Python vorprozessiert (`preprocessing/build_hsa_data.py`), weil Größe und Quelle das Laden im Browser ausschließen. Der Ablauf steht in [architecture.md](architecture.md#datenfluss). Eingabe ist `data/hsa/CMIF.xml`, Ausgabe `docs/data/hsa-letters.json`. `build_hsa_data.py` und `analyze_hsa_cmif.py` brauchen das Paket `lxml` (`from lxml import etree`), `resolve_geonames_wikidata.py` nur die Standardbibliothek. `preprocessing/requirements.txt` hält die Version von `lxml` fest (`pip install -r preprocessing/requirements.txt`).
 
 ### Laden externer CMIF-Dateien
 
 - GitHub-Raw-URLs (`https://raw.githubusercontent.com/{user}/{repo}/{branch}/{pfad}.xml`) erlauben CORS.
 - Bei einem CORS-Fehler die Datei herunterladen und per Drag-and-Drop hochladen.
-- Dateien über etwa 5 MB können das sessionStorage-Limit überschreiten, die Fehlermeldung nennt dann die Größe.
+- Dateien über etwa 5 MB können das sessionStorage-Limit überschreiten. Die Fehlermeldung nennt dann die Zahl der Briefe, nicht die Dateigröße, und verweist auf einen kleineren Datensatz oder das vorprozessierte HSA (`upload.js`).
 - Orte ohne Koordinaten erscheinen in der Ortsansicht, aber nicht auf der Karte. Ein Hinweis in der Ortsansicht nennt ihre Zahl und bietet die Auflösung über Wikidata an.
 
 ## Testdatensätze
 
-Die Tests laden ausschließlich die lokalen Dateien `test-uncertainty.xml` und `test-hostile.xml` über `parseCMIF` ([testing.md](testing.md)). Die übrigen Datensätze dienten der manuellen Prüfung beim Aufbau.
+Die Tests laden die lokalen Dateien `test-uncertainty.xml`, `test-hostile.xml` und für Erwähnungen `demo-showcase.xml` über `parseCMIF`, die Suite Research Paths zusätzlich `hsa-letters.json` für die Indexform der Vorprozessierung ([testing.md](testing.md)). Die externen Datensätze der folgenden Tabelle dienten der manuellen Prüfung beim Aufbau.
 
 | ID | Name | Briefe | Zeitraum | Quelle |
 |---|---|---|---|---|

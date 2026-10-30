@@ -82,7 +82,7 @@ Check the available tools and runtimes before dependent steps. Name any check th
 
 Never use mock data or test data objects in tests.
 
-- Tests load real CMIF-XML fixture files from `docs/data/` through `parseCMIF`.
+- Tests load real CMIF-XML fixture files from `docs/data/` through `parseCMIF`. Where a test needs the index shape of the preprocessing, it may load a bundled preprocessed dataset (`docs/data/*.json`) as it is, never a hand-made copy.
 - Tests import the real functions from the production modules and never duplicate helpers.
 - A new case becomes a letter in a fixture file (`test-uncertainty.xml`, `test-hostile.xml`).
 

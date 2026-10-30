@@ -9,10 +9,17 @@
     background: var(--color-bg-light);
 }
 
+/* Page heading */
+.wissenskorb-title {
+    margin: 0 0 var(--space-lg) 0;
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+}
+
 /* WIP Notice */
 .wip-notice {
-    background: #fff3cd;
-    border: 2px solid #ffc107;
+    background: var(--color-warning-light);
+    border: 2px solid var(--color-warning);
     border-radius: var(--radius-md);
     padding: var(--space-lg) var(--space-xl);
     margin-bottom: var(--space-xl);
@@ -22,19 +29,19 @@
 }
 
 .wip-notice i {
-    color: #856404;
+    color: var(--color-warning);
     font-size: 1.5em;
 }
 
 .wip-notice strong {
-    color: #856404;
+    color: var(--color-warning);
     display: block;
     margin-bottom: var(--space-xs);
 }
 
 .wip-notice p {
     margin: 0;
-    color: #856404;
+    color: var(--color-warning);
     font-size: var(--font-size-sm);
 }
 
@@ -49,7 +56,7 @@
     flex: 1;
 }
 
-.empty-state i {
+.empty-state > i {
     font-size: 4rem;
     color: var(--color-text-light);
     margin-bottom: 20px;
@@ -79,7 +86,6 @@
     flex-shrink: 0;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     max-height: calc(100vh - 100px);
@@ -112,7 +118,7 @@
 }
 
 .item-tab.active {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     border-bottom-color: var(--color-primary);
     background: var(--color-bg-light);
 }
@@ -127,7 +133,7 @@
 }
 
 .item-tab-count {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
     background: var(--color-bg-light);
     padding: 2px 6px;
     border-radius: 10px;
@@ -190,7 +196,7 @@
 }
 
 .item-row:hover {
-    background: #e8e8e8;
+    background: var(--color-bg-light);
 }
 
 .item-row-content {
@@ -209,7 +215,7 @@
 }
 
 .item-row-arrow {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
     color: var(--color-text-light);
 }
 
@@ -236,20 +242,8 @@
 }
 
 .item-remove-btn:hover {
-    color: #e74c3c;
-    background: rgba(231, 76, 60, 0.1);
-}
-
-/* Legacy support for person-list-panel */
-.person-list-panel {
-    width: var(--sidebar-width);
-    flex-shrink: 0;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    max-height: calc(100vh - 100px);
+    color: var(--color-error);
+    background: var(--color-error-light);
 }
 
 /* Visualization Panel */
@@ -272,7 +266,6 @@
     border-radius: 8px;
     padding: 15px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .summary-stats .stat-value {
@@ -294,7 +287,6 @@
     background: white;
     border-radius: 8px;
     padding: 5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .viz-tab {
@@ -328,7 +320,6 @@
     flex: 1;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
 
@@ -347,7 +338,7 @@
     border-bottom: 1px solid var(--color-border-light);
 }
 
-.viz-header h4 {
+.viz-header h2 {
     margin: 0 0 5px 0;
     font-size: 1rem;
 }
@@ -488,7 +479,7 @@
 }
 
 .details-correspondents i {
-    font-size: 0.7rem;
+    font-size: var(--font-size-xs);
     color: var(--color-text-light);
 }
 
@@ -509,7 +500,7 @@
 }
 
 .details-link:hover {
-    color: var(--primary-dark, #1e3a8a);
+    color: var(--color-primary-dark);
 }
 
 .details-more {
@@ -524,13 +515,12 @@
     background: white;
     border-radius: 8px;
     padding: 15px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.export-section h4 {
+.export-section h2 {
     margin: 0;
     font-size: 0.95rem;
 }
@@ -551,16 +541,15 @@
     font-size: 0.9rem;
 }
 
-
 /* Responsive */
 @media (max-width: 1024px) {
     .wissenskorb-content {
         flex-direction: column;
     }
 
-    .person-list-panel {
-        width: 100%;
-        max-height: 300px;
+    /* Stacked, the list panel takes the full width instead of the fixed sidebar width */
+    .item-list-panel {
+        width: auto;
     }
 
     .summary-stats {
@@ -572,7 +561,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .viz-tabs {
         flex-wrap: wrap;
     }
