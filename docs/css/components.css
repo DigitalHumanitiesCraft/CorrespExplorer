@@ -476,7 +476,7 @@
 }
 
 /* ==========================================
- * ENTITY CONTAINER AND HEADER
+ * ENTITY CONTAINER
  * Gemeinsamer Container fuer Entity Views (Topics, Places, etc.)
  * ========================================== */
 
@@ -487,20 +487,66 @@
     flex-direction: column;
 }
 
-.entity-header {
+/* ==========================================
+ * VIEW HEADER
+ * Shared head of every explorer view: h2 title, optional description,
+ * optional actions (badges, counts, mode switches). The actions sit right
+ * of the text from the tablet layout on and wrap below it on phones.
+ * ========================================== */
+
+.view-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-xs) var(--space-lg);
     margin-bottom: var(--space-lg);
+    text-align: left;
 }
 
-.entity-header h2 {
-    margin: 0 0 var(--space-xs) 0;
+.view-header__title {
+    margin: 0;
     font-size: var(--font-size-xl);
     color: var(--color-text);
 }
 
-.entity-header p {
+.view-header__description {
     margin: 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
+}
+
+.view-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm) var(--space-md);
+    margin-top: var(--space-sm);
+}
+
+/* Views without a padded container (map, lists, mentions flow) carry the padding themselves */
+.view-header--inset {
+    padding: var(--space-lg);
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+@media (min-width: 768px) {
+    /* Actions take at most half the width so the title keeps room on tablets */
+    .view-header {
+        grid-template-columns: minmax(0, 1fr) fit-content(50%);
+    }
+
+    .view-header > * {
+        grid-column: 1;
+    }
+
+    .view-header__actions {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        justify-content: flex-end;
+        min-width: 0;
+        margin-top: 0;
+    }
 }
 
 /* ==========================================
@@ -728,8 +774,8 @@
     color: white;
 }
 
-/* Mentions search sits centred above the Sankey, narrower than the comparison selectors */
+/* Mentions search sits in the view header actions, narrower than the comparison selectors */
 .mentions-autocomplete {
-    max-width: 400px;
-    margin: var(--space-lg) auto;
+    width: 400px;
+    max-width: 100%;
 }

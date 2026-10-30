@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-12-03
-updated: 2026-10-29
+updated: 2026-10-30
 authors: [Christopher Pollin]
 template:
   name: Vorlage Testing
@@ -44,7 +44,7 @@ Warum?
 
 Regel: keine Mock-Daten
 - Tests laden echte CMIF-XML-Dateien über `parseCMIF` (`docs/data/test-uncertainty.xml`, `docs/data/test-hostile.xml`, für Erwähnungen `docs/data/demo-showcase.xml`)
-- Die Indexform der Vorprozessierung prüft die Suite Research Paths an der echten Datei `docs/data/hsa-letters.json`
+- Die Indexform der Vorprozessierung prüft die Suite Research Paths an der echten Datei `docs/data/hsa-letters.json`. Gebündelte vorprozessierte Datensätze dürfen Tests unverändert laden, wenn sie die Indexform der Vorprozessierung brauchen, nachgebaute Kopien bleiben ausgeschlossen (Entscheidung des Operators vom 2026-10-30, Regel in `CLAUDE.md`)
 - Tests importieren echte Funktionen aus den Modulen (`parseCMIF`, `formatDateWithPrecision`, `analyzeResearchQuestions`, `addItemsToBasket`, `lettersToCsv`)
 - Keine duplizierten Helper-Funktionen in Tests
 - Keine Mock-Objekte oder Stub-Daten

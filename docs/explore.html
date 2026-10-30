@@ -52,6 +52,7 @@
         <div class="nav-brand">
             <a href="index.html" class="nav-brand-link">
                 <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                <span class="visually-hidden">Zur Startseite: </span>
                 <span class="brand-text" id="dataset-title">CorrespExplorer</span>
             </a>
         </div>
@@ -273,8 +274,8 @@
                 <div id="overview-view" class="tab-content active">
                     <div class="overview-container overview-compact">
                         <!-- Header with Title, Stats and Source -->
-                        <div class="overview-header-compact">
-                            <h2 id="overview-title">Datensatz</h2>
+                        <div class="view-header">
+                            <h2 class="view-header__title" id="overview-title">Datensatz</h2>
                             <div class="overview-stats-inline" id="overview-stats-inline">
                                 <!-- Filled by JavaScript: Briefe | Zeitraum | Personen | Orte -->
                             </div>
@@ -352,23 +353,33 @@
 
                 <!-- Map View -->
                 <div id="map-view" class="tab-content">
-                    <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
-                    <div class="map-controls">
-                        <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln" aria-label="Kartenlayer wechseln">
-                            <i class="fas fa-sun" aria-hidden="true"></i>
-                        </button>
-                        <button id="map-color-toggle" class="map-control-btn" title="Einheitliche Farbe verwenden" aria-label="Nach Sprache einfärben" aria-pressed="true">
-                            <i class="fas fa-palette" aria-hidden="true"></i>
-                        </button>
+                    <div class="view-header view-header--inset">
+                        <h2 class="view-header__title">Karte der Korrespondenz</h2>
+                        <p class="view-header__description">Briefe nach Absendeort, die Kreisgröße zeigt die Zahl der Briefe</p>
                     </div>
-                    <div id="map-legend" class="map-legend">
-                        <div class="map-legend-title">Sprache</div>
-                        <div class="map-legend-items"></div>
+                    <div class="map-stage">
+                        <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
+                        <div class="map-controls">
+                            <button id="layer-switcher" class="map-control-btn" title="Kartenlayer wechseln" aria-label="Kartenlayer wechseln">
+                                <i class="fas fa-sun" aria-hidden="true"></i>
+                            </button>
+                            <button id="map-color-toggle" class="map-control-btn" title="Einheitliche Farbe verwenden" aria-label="Nach Sprache einfärben" aria-pressed="true">
+                                <i class="fas fa-palette" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <div id="map-legend" class="map-legend">
+                            <div class="map-legend-title">Sprache</div>
+                            <div class="map-legend-items"></div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Persons View -->
                 <div id="persons-view" class="tab-content">
+                    <div class="view-header view-header--inset">
+                        <h2 class="view-header__title">Korrespondenten</h2>
+                        <p class="view-header__description">Absender und Empfänger der Briefe, ein Klick auf einen Namen filtert nach dieser Person</p>
+                    </div>
                     <div class="list-header">
                         <input type="search" id="person-search" class="list-search" placeholder="Korrespondent suchen..." aria-label="Korrespondent suchen">
                         <div class="list-sort">
@@ -386,6 +397,10 @@
 
                 <!-- Letters View -->
                 <div id="letters-view" class="tab-content">
+                    <div class="view-header view-header--inset">
+                        <h2 class="view-header__title">Briefe</h2>
+                        <p class="view-header__description">Alle Briefe durchsuchen und sortieren, ein Klick auf einen Brief klappt seine Details auf</p>
+                    </div>
                     <div class="list-header">
                         <input type="search" id="letter-search" class="list-search" placeholder="Brief suchen..." aria-label="Brief suchen">
                         <div class="list-sort">
@@ -403,9 +418,9 @@
                 <!-- Timeline View -->
                 <div id="timeline-view" class="tab-content">
                     <div class="timeline-container">
-                        <div class="timeline-header">
-                            <h2>Zeitliche Verteilung der Korrespondenz</h2>
-                            <p class="timeline-info">Klicken Sie auf ein Sprach-Segment, um nach Jahr und Sprache zu filtern.</p>
+                        <div class="view-header">
+                            <h2 class="view-header__title">Zeitliche Verteilung der Korrespondenz</h2>
+                            <p class="view-header__description">Klicken Sie auf ein Sprach-Segment, um nach Jahr und Sprache zu filtern.</p>
                         </div>
                         <div class="timeline-main">
                             <div id="timeline-chart" class="timeline-chart"></div>
@@ -426,9 +441,9 @@
                 <!-- Topics View -->
                 <div id="topics-view" class="tab-content">
                     <div class="entity-container">
-                        <div class="entity-header">
-                            <h2>Themen der Korrespondenz</h2>
-                            <p>Klicken Sie auf ein Thema, um Details zu sehen und zu filtern</p>
+                        <div class="view-header">
+                            <h2 class="view-header__title">Themen der Korrespondenz</h2>
+                            <p class="view-header__description">Klicken Sie auf ein Thema, um Details zu sehen und zu filtern</p>
                         </div>
                         <div class="entity-split-layout">
                             <!-- Topics List -->
@@ -483,9 +498,9 @@
                 <!-- Places View -->
                 <div id="places-view" class="tab-content">
                     <div class="entity-container">
-                        <div class="entity-header">
-                            <h2>Absendeorte der Korrespondenz</h2>
-                            <p>Klicken Sie auf einen Ort, um Details zu sehen und zu filtern</p>
+                        <div class="view-header">
+                            <h2 class="view-header__title">Absendeorte der Korrespondenz</h2>
+                            <p class="view-header__description">Klicken Sie auf einen Ort, um Details zu sehen und zu filtern</p>
                         </div>
 
                         <!-- Missing Coordinates Banner -->
@@ -560,9 +575,13 @@
                 <!-- Network View -->
                 <div id="network-view" class="tab-content">
                     <div class="network-container">
-                        <div class="network-header">
-                            <h2>Netzwerk-Analyse</h2>
-                            <p class="network-info" id="network-info-text">Korrespondenten die in denselben Jahren aktiv sind</p>
+                        <div class="view-header">
+                            <h2 class="view-header__title">Netzwerk-Analyse</h2>
+                            <p class="view-header__description" id="network-info-text">Korrespondenten die in denselben Jahren aktiv sind</p>
+                            <div class="view-header__actions network-stats">
+                                <span><i class="fas fa-circle" aria-hidden="true"></i> <span id="network-node-count">0</span> Knoten</span>
+                                <span><i class="fas fa-arrows-alt-h" aria-hidden="true"></i> <span id="network-edge-count">0</span> Verbindungen</span>
+                            </div>
                         </div>
                         <div class="network-controls">
                             <div class="network-control-group">
@@ -596,10 +615,6 @@
                                 <i class="fas fa-compress-arrows-alt" aria-hidden="true"></i> Zoom zuruecksetzen
                             </button>
                         </div>
-                        <div class="network-stats">
-                            <span><i class="fas fa-circle" aria-hidden="true"></i> <span id="network-node-count">0</span> Knoten</span>
-                            <span><i class="fas fa-arrows-alt-h" aria-hidden="true"></i> <span id="network-edge-count">0</span> Verbindungen</span>
-                        </div>
                         <div class="network-coverage" id="network-coverage"></div>
                         <div id="network-graph" class="network-graph"></div>
                         <div class="network-legend" id="network-legend">
@@ -614,10 +629,10 @@
                 <!-- Mentions Flow View -->
                 <div id="mentions-flow-view" class="tab-content">
                     <div class="mentions-flow-container">
-                        <div class="mentions-flow-header">
-                            <h2>Erwaehnungs-Fluesse</h2>
-                            <p class="mentions-flow-info">Visualisiert wer in wessen Briefen erwaehnt wird</p>
-                            <div class="mentions-flow-search">
+                        <div class="view-header view-header--inset">
+                            <h2 class="view-header__title">Erwaehnungs-Fluesse</h2>
+                            <p class="view-header__description">Visualisiert wer in wessen Briefen erwaehnt wird</p>
+                            <div class="view-header__actions">
                                 <div class="autocomplete-container mentions-autocomplete">
                                     <input type="search"
                                            id="mentions-person-search"
@@ -628,7 +643,7 @@
                                     <div id="mentions-person-dropdown" class="autocomplete-dropdown hidden"></div>
                                 </div>
                             </div>
-                            <p class="mentions-flow-selected-person" id="mentions-flow-selected-person"></p>
+                            <p class="view-header__description" id="mentions-flow-selected-person"></p>
                         </div>
                         <div id="mentions-flow-graph" class="mentions-flow-graph"></div>
                         <div class="content-placeholder" id="mentions-flow-placeholder">
@@ -641,10 +656,10 @@
                 <!-- Chronik View -->
                 <div id="chronik-view" class="tab-content">
                     <div class="chronik-container">
-                        <div class="chronik-header">
-                            <h2>Chronik</h2>
-                            <p class="chronik-info">Vertikaler Zeitstrahl aller Briefe in chronologischer Reihenfolge</p>
-                            <div class="chronik-controls">
+                        <div class="view-header">
+                            <h2 class="view-header__title">Chronik</h2>
+                            <p class="view-header__description">Vertikaler Zeitstrahl aller Briefe in chronologischer Reihenfolge</p>
+                            <div class="view-header__actions">
                                 <div class="chronik-layout-toggle">
                                     <button type="button" class="chronik-layout-btn active" data-layout="cards" title="Karten-Ansicht" aria-label="Karten-Ansicht">
                                         <i class="fas fa-th-large" aria-hidden="true"></i>
@@ -677,13 +692,15 @@
                 <!-- Activity Heatmap View -->
                 <div id="activity-view" class="tab-content">
                     <div class="activity-container">
-                        <div class="activity-header">
-                            <div class="experimental-badge" title="Experimenteller View zur Visualisierung von Korrespondenz-Aktivitaet">
-                                <i class="fas fa-flask" aria-hidden="true"></i>
-                                <span class="experimental-label">Experimentell</span>
+                        <div class="view-header">
+                            <h2 class="view-header__title">Korrespondenz-Aktivitaet</h2>
+                            <p class="view-header__description">GitHub-Style Heatmap der Briefaktivitaet</p>
+                            <div class="view-header__actions">
+                                <div class="experimental-badge" title="Experimenteller View zur Visualisierung von Korrespondenz-Aktivitaet">
+                                    <i class="fas fa-flask" aria-hidden="true"></i>
+                                    <span class="experimental-label">Experimentell</span>
+                                </div>
                             </div>
-                            <h2><i class="fas fa-calendar-alt" aria-hidden="true"></i> Korrespondenz-Aktivitaet</h2>
-                            <p class="activity-subtitle">GitHub-Style Heatmap der Briefaktivitaet</p>
                         </div>
 
                         <!-- Statistik-Karten -->
@@ -747,22 +764,20 @@
                 <!-- Comparison View -->
                 <div id="comparison-view" class="tab-content">
                     <div class="comparison-container">
-                        <div class="comparison-header">
-                            <h2><i class="fas fa-columns" aria-hidden="true"></i> Vergleichsanalyse</h2>
-                            <p class="comparison-subtitle">Vergleiche zwei Personen, Zeitraeume oder Orte</p>
-                        </div>
-
-                        <!-- Modus-Auswahl -->
-                        <div class="comparison-mode-selector">
-                            <button class="comparison-mode-btn active" data-mode="persons">
-                                <i class="fas fa-users" aria-hidden="true"></i> Personen
-                            </button>
-                            <button class="comparison-mode-btn" data-mode="periods">
-                                <i class="fas fa-clock" aria-hidden="true"></i> Zeitraeume
-                            </button>
-                            <button class="comparison-mode-btn" data-mode="places">
-                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Orte
-                            </button>
+                        <div class="view-header">
+                            <h2 class="view-header__title">Vergleichsanalyse</h2>
+                            <p class="view-header__description">Vergleiche zwei Personen, Zeitraeume oder Orte</p>
+                            <div class="view-header__actions">
+                                <button class="comparison-mode-btn active" data-mode="persons">
+                                    <i class="fas fa-users" aria-hidden="true"></i> Personen
+                                </button>
+                                <button class="comparison-mode-btn" data-mode="periods">
+                                    <i class="fas fa-clock" aria-hidden="true"></i> Zeitraeume
+                                </button>
+                                <button class="comparison-mode-btn" data-mode="places">
+                                    <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Orte
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Auswahl-Bereich -->

@@ -58,11 +58,11 @@ CorrespExplorer ist ein Visualisierungstool fuer Korrespondenz-Metadaten im CMIF
 
 Kerndaten:
 - Hugo Schuchardt Archiv: 11.576 Briefe
-- Zehn Visualisierungs-Views
+- Zwoelf Visualisierungs-Views
 - User Stories emergent entstanden, nicht vorab definiert
 - Vollstaendig dokumentierter Entwicklungsprozess (journal.md)
 
-Repository: https://github.com/chpollin/CorrespExplorer
+Repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
 
 ### Phasen-Rekonstruktion aus journal.md
 
@@ -85,14 +85,14 @@ Distillation (Phasen 22-32):
 
 Implementation (Phasen 33-37):
 - teiHeader Metadaten vollstaendig integriert
-- Chronik-View als finaler View
+- Chronik-View als letzter View dieser Phase (Aktivitaet und Vergleich folgten spaeter auf dem Branch feature/research-dashboards)
 - Dokumentations-Konsolidierung
 
 ## Beobachtungen
 
 ### Views als materialisierte Hypothesen
 
-Die zehn Views sind keine neutralen Fenster auf die Daten. Jeder View impliziert eine Annahme darueber, was an Korrespondenz forschungsrelevant ist:
+Die zwoelf Views sind keine neutralen Fenster auf die Daten. Jeder View impliziert eine Annahme darueber, was an Korrespondenz forschungsrelevant ist:
 
 | View | Implizite Hypothese |
 |------|---------------------|
@@ -120,7 +120,7 @@ Context Rot: Akkumulierte Fehlentscheidungen im langen Kontext. Gegenstrategie: 
 
 Vibe Research: Intuition statt Methodik, "feels right" als Entscheidungsgrundlage. Gegenstrategie: Dokumentation aller Entscheidungen mit Begruendung.
 
-Im CorrespExplorer-Projekt wurde Context Rot durch die Dokumentationsstruktur (CONTEXT-MAP.md in jedem Verzeichnis) aktiv bekaempft.
+Im CorrespExplorer-Projekt wurde Context Rot durch die Dokumentationsstruktur (CONTEXT-MAP.md in den Code-Verzeichnissen docs/js, docs/js/views, docs/js/tests und docs/css) aktiv bekaempft.
 
 ## Theoretische Einordnung
 

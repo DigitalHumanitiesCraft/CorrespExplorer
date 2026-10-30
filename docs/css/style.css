@@ -564,9 +564,9 @@ button {
     display: none;
 }
 
-/* Placeholder content for timeline/network; the info lines under the view headers keep their own spacing */
-#timeline-view p:not(.timeline-info),
-#network-view p:not(.network-info) {
+/* Placeholder content for timeline/network; the description lines of the view headers keep their own spacing */
+#timeline-view p:not(.view-header__description),
+#network-view p:not(.view-header__description) {
     padding: var(--space-3xl);
     text-align: center;
     color: var(--color-text-light);

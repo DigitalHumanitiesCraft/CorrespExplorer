@@ -18,7 +18,7 @@ Promptotyping-Kernkonzepte:
 - Disposable Code: Code regenerierbar aus Dokumentation
 - Vier Phasen: Preparation, Exploration, Distillation, Implementation
 
-Repository: https://github.com/chpollin/CorrespExplorer
+Repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
 Live Demo: https://dhcraft.org/CorrespExplorer
 
 ### Deine Aufgaben
@@ -34,10 +34,10 @@ Live Demo: https://dhcraft.org/CorrespExplorer
    - docs/js/*.js (JavaScript-Module)
    - docs/css/*.css (Stylesheets)
    - docs/data/hsa.xml (Beispiel-CMIF-Datei)
-   - CONTEXT-MAP.md Dateien in jedem Verzeichnis
+   - CONTEXT-MAP.md Dateien in docs/js, docs/js/views, docs/js/tests und docs/css
 
 3. Teste die Live-Demo mit dem HSA-Datensatz:
-   - Alle zehn Views durchklicken
+   - Alle zwoelf Views durchklicken
    - Filter ausprobieren
    - Wikidata-Anreicherung testen
    - Export-Funktionen pruefen

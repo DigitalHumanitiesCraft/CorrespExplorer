@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2025-11-26
-updated: 2026-10-29
+updated: 2026-10-30
 authors: [Christopher Pollin]
 template:
   name: Vorlage Journal
@@ -22,6 +22,15 @@ related: [project, specification, plan, handoff]
 # Journal: CorrespExplorer
 
 ## Einträge
+
+### 2026-10-30 Entscheidungen des Operators zu Testregel, Ansichtskopf und Paper-Entwurf
+
+- Anlass: Nach der Gesamtprüfung vom 2026-10-29 lagen drei Fragen beim Operator. Er entschied, die Testregel zu erweitern, die Kopfbereiche der Ansichten zu vereinheitlichen und im Paper-Entwurf nur die Fakten zu korrigieren.
+- Befund: Die Kopfbereiche der zwölf Ansichten hatten Überschriften zwischen 16 und 32px, zentriert oder linksbündig, Karte, Personen und Briefe hatten keine Überschrift. Ein axe-Lauf bei 390px fand zwei ältere Verstöße, die die Läufe bei Desktop-Breite nicht zeigten: Der Rücklink der Navigation hatte keinen Namen, sobald der Datensatztitel ausgeblendet ist, und gekürzte Beschriftungen im Erwähnungsfluss fehlten im zugänglichen Namen der Knoten. Der Paper-Entwurf und der Review-Prompt in `research-artefacts/` nannten zehn statt zwölf Ansichten, das Repository unter `chpollin/` und eine CONTEXT-MAP in jedem Verzeichnis.
+- Entschieden: Tests dürfen gebündelte vorprozessierte Datensätze unter `docs/data/*.json` unverändert laden, wenn sie die Indexform der Vorprozessierung brauchen, nachgebaute Kopien bleiben ausgeschlossen. Alle Ansichten beginnen mit der Komponente `.view-header` ([design.md](design.md)). Modellangaben und die Rahmung der Dokumentation als „Single Source of Truth“ im Paper-Entwurf bleiben Sache des Operators.
+- Korrigiert: Die Aussage des Journaleintrags vom 2026-10-29, die Suite Research Paths weiche von der Testregel ab, gilt mit der erweiterten Regel nicht mehr.
+- Geändert: `CLAUDE.md` und [testing.md](testing.md) mit der erweiterten Testregel. `.view-header` mit Titel, Beschreibung und Aktionsbereich in `components.css`, neue Überschriften für Karte, Personen und Briefe, alte Kopfregeln in `explore.css` entfernt, `.map-stage`. Rücklink mit verstecktem Text „Zur Startseite“, Sankey-Knoten mit der sichtbaren Kurzform am Anfang ihres Namens. In `research-artefacts/` Anzahl der Ansichten, Repository-URL, die vier Verzeichnisse mit CONTEXT-MAP und die Chronik als letzte Ansicht ihrer Phase. [design.md](design.md), `docs/css/CONTEXT-MAP.md`, [plan.md](plan.md).
+- Belege: Commit dieses Eintrags. Browser-Test-Runner headless ohne Fehlschlag. axe-core bei 320, 390, 768 und 1440px auf allen Seiten und den zwölf Ansichten mit `hsa-letters.json`, dazu Prüfung auf horizontalen Überlauf und Seitenfehler. Screenshots vorher und nachher der Ansichtsköpfe bei 390, 768 und 1440px.
 
 ### 2026-10-29 Gesamtprüfung durch Subagenten und Konsolidierung für das Paper
 

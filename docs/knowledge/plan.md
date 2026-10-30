@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2026-10-28
-updated: 2026-10-29
+updated: 2026-10-30
 authors: [Christopher Pollin]
 template:
   name: Vorlage Plan
@@ -55,7 +55,6 @@ Offen aus der Prüfung nach WCAG 2.2 AA vom 2026-10-29.
 ### Oberfläche und Texte
 
 - Die Legende der Zeitleiste kündigt eine Schraffur für den Anteil unscharfer Daten an ([design.md](design.md#unsicherheits-indikatoren)), die Zeitleiste rendert `.timeline-uncertainty-overlay` aber nicht
-- Die Kopfbereiche der Ansichten sind uneinheitlich aufgebaut, eine gemeinsame Komponente `.view-header` fehlt. Die Überschriftenebene ist seit 2026-10-29 einheitlich `h2`, Größe, Abstände und Zusatzelemente (Untertitel, Steuerung, Hinweis „Experimentell“) setzt jede Ansicht weiter selbst. Eine kleine gemeinsame Regel reicht dafür nicht, weil die Kopfbereiche zwischen 16px und 32px groß sind und verschiedene Kinder tragen. Zu entscheiden ist eine einheitliche Gestaltung ([design.md](design.md#3-typografie))
 - Die Kartenmarker sind Teil der MapLibre-Fläche und nicht einzeln per Tastatur erreichbar, die Ortsansicht bietet dieselben Orte als Liste
 
 ### Lücken der Stories

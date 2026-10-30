@@ -480,7 +480,13 @@ function renderMentionsFlowForPerson(person) {
         .attr('class', d => d.isCenter ? 'sankey-node sankey-node-center' : 'sankey-node sankey-node-clickable')
         .attr('role', d => d.isCenter ? null : 'button')
         .attr('tabindex', d => d.isCenter ? null : -1)
-        .attr('aria-label', d => d.isCenter ? null : `${d.name}: ${d.value} ${d.column === 0 ? 'Briefe mit Erwaehnung der Person' : 'Erwaehnungen'}`)
+        // A shortened label leads the name so speech input can address the node by what it shows
+        .attr('aria-label', d => {
+            if (d.isCenter) return null;
+            const shown = shortName(d.name);
+            const lead = shown === d.name ? d.name : `${shown.replace('…', '')}, ${d.name}`;
+            return `${lead}: ${d.value} ${d.column === 0 ? 'Briefe mit Erwaehnung der Person' : 'Erwaehnungen'}`;
+        })
         .style('cursor', d => d.isCenter ? 'default' : 'pointer')
         .on('click', function(event, d) {
             if (d.isCenter) return;

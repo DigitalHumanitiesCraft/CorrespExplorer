@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-10-29
+updated: 2026-10-30
 authors: [Christopher Pollin]
 template:
   name: Vorlage Design
@@ -48,7 +48,7 @@ Alle HTML-Seiten binden CSS in dieser Reihenfolge ein:
 <link rel="stylesheet" href="css/[page].css">
 ```
 
-Kein Stylesheet importiert `tokens.css` oder `components.css` erneut, `style.css` importiert nur die Schriften. `components.css` ist die einzige Quelle für `.btn`, `.btn-primary`, `.btn-secondary` und die Dialoggrundform (`.modal-overlay`, `.modal-content`, `.modal-header`, `.modal-body`).
+Kein Stylesheet importiert `tokens.css` oder `components.css` erneut, `style.css` importiert nur die Schriften. `components.css` ist die einzige Quelle für `.btn`, `.btn-primary`, `.btn-secondary`, die Dialoggrundform (`.modal-overlay`, `.modal-content`, `.modal-header`, `.modal-body`) und den Kopfbereich der Ansichten (`.view-header`, siehe [5.5](#55-kopfbereich-der-ansichten)).
 
 ---
 
@@ -220,7 +220,7 @@ Kartenmarker werden nach dominanter Briefsprache des Ortes eingefaerbt. Toggle-B
 
 Keine Schrift unterschreitet `--font-size-xs`, auch nicht in Zählern, Badges und Icons kleiner Kreise.
 
-Überschriften folgen der Dokumentgliederung: `h1` (visuell versteckt) für die Seite, `h2` für den Kopf jeder Ansicht des Explorers, darunter `h3` und `h4` in den Detailbereichen. Größe und Abstand setzen die Regeln der jeweiligen Kopfbereiche, nicht die Ebene.
+Überschriften folgen der Dokumentgliederung: `h1` (visuell versteckt) für die Seite, `h2` für den Kopf jeder Ansicht des Explorers, darunter `h3` und `h4` in den Detailbereichen. Größe und Abstand der `h2` setzt die gemeinsame Komponente `.view-header` ([5.5](#55-kopfbereich-der-ansichten)), nicht die Ebene.
 | Buttons | Sans | 0.875rem | 600 | `letter-spacing: 0.02em` |
 
 ---
@@ -350,6 +350,25 @@ Escape schließt den obersten offenen Dialog über seinen Schließen-Knopf. Beim
 Toasts liegen über den Dialogen, damit eine Meldung aus einem Dialog sichtbar und schließbar bleibt. Die Demo-Tour hebt ihr Zielelement mit Rahmen und abdunkelndem Schatten hervor, das Element bleibt dabei unter dem Tour-Dialog und nimmt keine Klicks an, damit „Weiter“ immer erreichbar ist. Ein Ziel außerhalb des Bildschirms wird nicht hervorgehoben.
 
 Karten-Popups lassen rechts im Kopf Platz für den Schließen-Knopf von MapLibre (`padding-right` an `.popup-header`), damit der Stern zum Korb klickbar bleibt.
+
+### 5.5 Kopfbereich der Ansichten
+
+Alle zwölf Ansichten des Explorers beginnen mit derselben Komponente `.view-header` aus `components.css`. Sie ersetzt die früheren Kopfregeln je Ansicht, die Überschriften zwischen 16px und 32px groß, teils zentriert und mit eigenen Abständen setzten. Karte, Korrespondenten und Briefe hatten zuvor keine Überschrift.
+
+```css
+.view-header              /* Grid, linksbündig, margin-bottom: var(--space-lg) */
+.view-header__title       /* h2, var(--font-size-xl) */
+.view-header__description /* optional, var(--font-size-sm), var(--color-text-light) */
+.view-header__actions     /* optional: Hinweise, Zähler, Moduswahl */
+.view-header--inset       /* eigener Innenabstand und untere Linie */
+```
+
+- Titel und Beschreibung stehen links. Weitere Kinder wie die Kennzahlen und die Quellenzeile der Übersicht reihen sich darunter ein.
+- Die Aktionen stehen ab 768px rechts neben Titel und Beschreibung und nehmen höchstens die halbe Breite ein, darunter brechen sie unter die Beschreibung um. Die Spalte darf schrumpfen, ihre Elemente umbrechen dann innerhalb der Spalte.
+- Einen Aktionsbereich haben Aktivität (Hinweis „Experimentell“), Netzwerk (Zahl der Knoten und Verbindungen), Erwähnungsfluss (Personensuche), Chronik (Layoutwahl und Wikidata-Anreicherung) und Vergleich (Moduswahl Personen, Zeiträume, Orte). Die übrigen Ansichten haben nur Titel und Beschreibung, die Übersicht nur Titel und Kennzahlen.
+- `--inset` gilt für Ansichten ohne gepolsterten Container (Karte, Korrespondenten, Briefe, Erwähnungsfluss). Der Kopf trägt dort selbst den Innenabstand `--space-lg` und schließt mit einer Linie in `--color-border-light` statt mit Außenabstand ab.
+- Die Überschriften tragen keine Icons, damit alle Köpfe gleich beginnen. Der Zusatz „(angereichert)“ der Chronik hängt per `::after` am Titel.
+- Auf der Karte liegen Steuerung und Legende auf `.map-stage`, die ab 768px den Platz unter dem Kopf füllt. Auf Telefonen behalten Karte und Listen ihre feste Höhe, die Seite scrollt um die Höhe des Kopfes.
 
 ---
 

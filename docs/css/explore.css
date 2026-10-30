@@ -50,20 +50,8 @@
     margin: 0 auto;
 }
 
-.overview-header-compact {
-    text-align: center;
-    margin-bottom: var(--space-xl);
-}
-
-.overview-header-compact h2 {
-    font-size: var(--font-size-2xl);
-    margin: 0 0 var(--space-sm) 0;
-    color: var(--color-text);
-}
-
 .overview-stats-inline {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
     gap: var(--space-md);
     font-size: var(--font-size-sm);
@@ -88,7 +76,6 @@
 /* Source Info Inline */
 .overview-source-inline {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
     gap: var(--space-sm);
     font-size: var(--font-size-xs);
@@ -121,9 +108,9 @@
 }
 
 /* Quality Bar Inline (compact chips) */
+/* Left-aligned with the view header above it */
 .quality-bar-inline {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
     gap: var(--space-sm);
     margin-bottom: var(--space-lg);
@@ -372,6 +359,20 @@
     border: 1px solid var(--color-border-light);
 }
 
+/* Controls and legend are placed on the map stage; from the tablet layout on it fills the space below the view header, phones keep the fixed map height */
+.map-stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+@media (min-width: 768px) {
+    .map-stage #map {
+        position: absolute;
+        inset: 0;
+    }
+}
+
 /* Map Controls */
 .map-controls {
     position: absolute;
@@ -535,6 +536,20 @@
     overflow-y: auto;
     height: calc(100vh - var(--navbar-height) - 80px);
     padding: var(--space-md);
+}
+
+/* Persons and letters: from the tablet layout on the list takes the height left under view header and toolbar; phones keep the fixed height and scroll the page */
+@media (min-width: 768px) {
+    #persons-view,
+    #letters-view {
+        min-height: 0;
+    }
+
+    .tab-content > .entity-list {
+        flex: 1;
+        min-height: 0;
+        height: auto;
+    }
 }
 
 /* Person Card */
@@ -1036,22 +1051,6 @@
     flex-direction: column;
     overflow-y: auto;
     overflow-x: visible;
-}
-
-.timeline-header {
-    margin-bottom: var(--space-lg);
-}
-
-.timeline-header h2 {
-    margin: 0 0 var(--space-xs) 0;
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
-}
-
-.timeline-info {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
 }
 
 /* Timeline main container for chart + undated bin */
@@ -1704,7 +1703,7 @@
     background: var(--color-primary-light);
 }
 
-/* Topics and Places now use shared .entity-container, .entity-header, .entity-card from components.css */
+/* Topics and Places use the shared .entity-container, .view-header and .entity-card from components.css */
 
 /* Subject Filter Badge */
 .subject-filter-active {
@@ -1974,22 +1973,6 @@
     flex-direction: column;
 }
 
-.network-header {
-    margin-bottom: var(--space-md);
-}
-
-.network-header h2 {
-    margin: 0 0 var(--space-xs) 0;
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
-}
-
-.network-info {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
 .network-controls {
     display: flex;
     gap: var(--space-lg);
@@ -2065,10 +2048,9 @@
     accent-color: var(--color-primary);
 }
 
+/* Node and edge counts in the view header actions */
 .network-stats {
-    display: flex;
-    gap: var(--space-lg);
-    margin-bottom: var(--space-sm);
+    column-gap: var(--space-lg);
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
 }
@@ -2600,23 +2582,6 @@ body:has(.tour-highlight) .tour-backdrop {
     position: relative;
 }
 
-.mentions-flow-header {
-    padding: var(--space-md);
-    border-bottom: 1px solid var(--color-border-light);
-}
-
-.mentions-flow-header h2 {
-    margin: 0 0 var(--space-xs) 0;
-    font-size: var(--font-size-md);
-    color: var(--color-text);
-}
-
-.mentions-flow-info {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
 .mentions-flow-graph {
     flex: 1;
     position: relative;
@@ -2689,31 +2654,6 @@ body:has(.tour-highlight) .tour-backdrop {
     padding: var(--space-lg);
     max-width: 900px;
     margin: 0 auto;
-}
-
-.chronik-header {
-    text-align: center;
-    margin-bottom: var(--space-xl);
-}
-
-.chronik-header h2 {
-    font-size: var(--font-size-2xl);
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: var(--space-sm);
-}
-
-.chronik-info {
-    color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
-    margin-bottom: var(--space-lg);
-}
-
-.chronik-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-md);
 }
 
 .chronik-enrich-status {
@@ -3219,7 +3159,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 /* Enriched state modifier */
-.chronik-container.enriched .chronik-header h2::after {
+.chronik-container.enriched .view-header__title::after {
     content: ' (angereichert)';
     font-size: var(--font-size-sm);
     font-weight: 400;
@@ -3437,7 +3377,6 @@ body:has(.tour-highlight) .tour-backdrop {
     background: var(--color-primary-light);
     border: 1px dashed var(--color-accent);
     border-radius: var(--radius-full);
-    margin-bottom: var(--space-md);
     cursor: help;
     transition: all 0.2s ease;
 }
@@ -3725,22 +3664,6 @@ body:has(.tour-highlight) .tour-backdrop {
     margin: 0 auto;
 }
 
-.activity-header {
-    margin-bottom: var(--space-lg);
-}
-
-.activity-header h2 {
-    margin: var(--space-sm) 0 var(--space-xs) 0;
-    font-size: var(--font-size-xl);
-    color: var(--color-text);
-}
-
-.activity-subtitle {
-    margin: 0;
-    color: var(--color-text-light);
-    font-size: var(--font-size-sm);
-}
-
 /* Stats Cards */
 .activity-stats {
     display: grid;
@@ -4004,31 +3927,6 @@ body:has(.tour-highlight) .tour-backdrop {
     padding: var(--space-lg);
     max-width: 1400px;
     margin: 0 auto;
-}
-
-.comparison-header {
-    text-align: center;
-    margin-bottom: var(--space-xl);
-}
-
-.comparison-header h2 {
-    margin: 0 0 var(--space-xs) 0;
-    font-size: var(--font-size-xl);
-    color: var(--color-text);
-}
-
-.comparison-subtitle {
-    margin: 0;
-    color: var(--color-text-light);
-    font-size: var(--font-size-sm);
-}
-
-/* Modus-Auswahl */
-.comparison-mode-selector {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-lg);
 }
 
 .comparison-mode-btn {
@@ -4357,10 +4255,6 @@ body:has(.tour-highlight) .tour-backdrop {
 
     .comparison-panels {
         grid-template-columns: 1fr;
-    }
-
-    .comparison-mode-selector {
-        flex-wrap: wrap;
     }
 }
 
