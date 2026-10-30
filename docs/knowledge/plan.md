@@ -40,6 +40,7 @@ Behoben am 2026-10-29 (`b80eff0`). Der Lader setzt `x` als Seitennummer ab 1, fo
 ### Tests und Prüfung
 
 - CI mit Headless-Browser, etwa ein GitHub-Actions-Lauf von `test.html?test=true` mit Playwright
+- Live-Prüfung der externen Dienste nach den Änderungen vom 2026-10-29 und 2026-10-30: Laden einer correspSearch-API-URL über die Startseite, „Lebensdaten von Wikidata laden“ im Personen-Dialog, Grundkarte von OpenFreeMap auf Karte und Korbseite. Die Prüfumgebung erreichte `correspsearch.net`, `query.wikidata.org`, `www.wikidata.org` und `tiles.openfreemap.org` nicht (Gateway antwortete 403), geprüft sind nur die Fehlerwege ohne Netz
 - Regressionstest für den Formelschutz von `csvCell`, sobald eine Fixture-Datei einen Wert mit führendem `=`, `+`, `-` oder `@` trägt. Das Verdoppeln von Anführungszeichen prüft die Suite Basket seit 2026-10-29
 - Regressionstests für die Transformation der correspSearch-Antwort, sobald ein Fixture dafür im Repository liegt
 - Parser-Test für Erwähnungen (`mentionsPerson`, `mentionsPlace`, `mentionsSubject`) an einer Fixture-Datei. Bisher prüft nur die Suite Research Paths an `demo-showcase.xml`, dass Erwähnungen ankommen
