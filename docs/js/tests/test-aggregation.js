@@ -5,7 +5,7 @@
 
 import { parseCMIF } from '../cmif-parser.js';
 import { state } from '../state-manager.js';
-import { countIdentifiedPersons } from '../utils.js';
+import { countIdentifiedPersons, isMultiYearSpan, datedYearRange } from '../utils.js';
 import { NO_LANGUAGE, registerLanguageLabels, languageLabel } from '../constants.js';
 import { assert } from './test-runner.js';
 import { analyzeCoordinateNeeds } from '../geonames-enrichment.js';
@@ -19,6 +19,19 @@ export const AggregationTests = {
     },
 
     tests: [
+        {
+            name: 'datedYearRange: Spanne über ein Jahrhundert (Fall 025) dehnt den Zeitraum nicht (E5)',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const span = data.letters.find(l => l.id.endsWith('025'));
+                const withinYear = data.letters.find(l => l.id.endsWith('005'));
+                assert(span && isMultiYearSpan(span), 'Fall 025 sollte als mehrjährige Spanne gelten');
+                assert(withinYear && withinYear.datePrecision === 'range' && !isMultiYearSpan(withinYear), 'Fall 005 liegt in einem Jahr');
+                const range = datedYearRange(data.letters);
+                assert(range.min > 1850, `Zeitraum beginnt bei ${range.min}, die Spanne 1850 bis 1950 zählt mit`);
+                assert(datedYearRange(data.letters, { includeSpans: true }).min === 1850, 'Mit includeSpans zählt das Anfangsjahr');
+            }
+        },
         {
             name: 'analyzeCoordinateNeeds: Nur Orte mit GeoNames-ID gehen an die Auflösung, nicht Namen',
             async run() {
@@ -200,6 +213,8 @@ export const AggregationTests = {
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
+                // setData keeps the filters, the temporal test before this one leaves its range set
+                state.resetFilters();
 
                 state.updateFilters({ quality: { preciseDates: true } });
 

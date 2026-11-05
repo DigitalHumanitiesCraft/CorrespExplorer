@@ -351,6 +351,10 @@
                     <div class="view-header view-header--inset">
                         <h2 class="view-header__title">Karte der Korrespondenz</h2>
                         <p class="view-header__description">Briefe nach Absendeort, die Kreisgröße zeigt die Zahl der Briefe</p>
+                        <!-- The markers are part of the map canvas; the place list is their keyboard path (decision E7) -->
+                        <p class="view-header__description">Mit der Tastatur erreichen Sie dieselben Orte als Liste:
+                            <button type="button" class="view-header__link" data-switch-view="places">Orte als Liste öffnen</button>
+                        </p>
                     </div>
                     <div class="map-stage">
                         <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
@@ -423,6 +427,12 @@
                                 <span class="undated-bin-count"></span>
                                 <div class="undated-bin-bar"></div>
                                 <span class="undated-bin-label">k.A.</span>
+                                <div class="undated-bin-tooltip"></div>
+                            </div>
+                            <div id="timeline-span-bin" class="timeline-undated-bin timeline-span-bin hidden">
+                                <span class="undated-bin-count"></span>
+                                <div class="undated-bin-bar"></div>
+                                <span class="undated-bin-label">Spanne</span>
                                 <div class="undated-bin-tooltip"></div>
                             </div>
                         </div>
@@ -555,7 +565,7 @@
                                             <i class="fas fa-filter" aria-hidden="true"></i> Briefe filtern
                                         </button>
                                         <button class="btn btn-basket" id="place-add-basket-btn">
-                                            <i class="fas fa-star" aria-hidden="true"></i> <span id="place-basket-count">0</span> Briefe zum Korb
+                                            <i class="fas fa-star" aria-hidden="true"></i> Ort zum Korb
                                         </button>
                                         <a id="place-geonames-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
                                             <i class="fas fa-external-link-alt" aria-hidden="true"></i> GeoNames

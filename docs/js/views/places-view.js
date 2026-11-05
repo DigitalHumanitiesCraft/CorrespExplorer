@@ -2,7 +2,7 @@
 // Place browsing, filtering and coordinate resolution
 
 import { escapeHtml, debounce, showToast, placeKey, personKey } from '../utils.js';
-import { addLettersToBasket } from '../basket.js';
+import { addEntityToBasket } from '../basket.js';
 import { getPlacePrecisionClass } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { LANGUAGE_COLORS, languageLabel } from '../constants.js';
@@ -12,8 +12,6 @@ let placesIndex = {};
 let selectedPlaceId = null;
 let placesSearchTerm = '';
 let placesSortOrder = 'count-desc';
-// Letter ids behind the basket button of the open detail, kept here instead of a JSON data attribute
-let placeDetailLetterIds = [];
 
 // Injected dependencies
 let getFilteredLetters = null;
@@ -72,8 +70,8 @@ export function initPlacesView(deps) {
     const addBasketBtn = elements.getById('place-add-basket-btn');
     if (addBasketBtn) {
         addBasketBtn.addEventListener('click', () => {
-            if (placeDetailLetterIds.length === 0) return;
-            showToast(addLettersToBasket(placeDetailLetterIds));
+            if (!selectedPlaceId) return;
+            showToast(addEntityToBasket('places', selectedPlaceId));
         });
     }
 
@@ -247,7 +245,6 @@ function selectPlace(placeId) {
  */
 function clearPlaceDetail() {
     selectedPlaceId = null;
-    placeDetailLetterIds = [];
     elements.getById('place-detail-empty')?.classList.remove('hidden');
     elements.getById('place-detail-content')?.classList.add('hidden');
 }
@@ -340,9 +337,6 @@ function renderPlaceDetail(placeId) {
         geonamesLink.style.display = 'none';
     }
 
-    const basketCountSpan = elements.getById('place-basket-count');
-    if (basketCountSpan) basketCountSpan.textContent = filteredCount;
-    placeDetailLetterIds = placeLetters.map(l => l.id);
 }
 
 /**

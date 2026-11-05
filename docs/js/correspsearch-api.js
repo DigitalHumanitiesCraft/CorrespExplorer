@@ -85,6 +85,19 @@ async function fetchPage(url) {
 }
 
 /**
+ * The correspSearch query a shared link carries as cs=, or null when the dataset did not come from
+ * the API. Only addresses isCorrespSearchUrl accepts qualify, so a link cannot make the explorer
+ * load an arbitrary address (decision E3 of 2026-11-05).
+ * @param {{type?: string, source?: string}|null} sourceInfo
+ * @returns {string|null}
+ */
+export function correspSearchShareUrl(sourceInfo) {
+    // The start page marks API queries as correspsearch, other URLs as url
+    const source = ['correspsearch', 'url'].includes(sourceInfo?.type) ? sourceInfo.source : null;
+    return source && isCorrespSearchUrl(source) ? source : null;
+}
+
+/**
  * Read the hit count from notesStmt/note ("1-10 of 87 hits")
  */
 function parseTotalHits(data) {

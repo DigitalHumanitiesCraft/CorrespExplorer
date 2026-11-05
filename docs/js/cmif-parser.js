@@ -650,7 +650,18 @@ export const DEMO_DATASET_URL = 'data/demo-showcase.xml';
  * @returns {Promise<Object>} parsed data with sourceInfo
  */
 export async function loadDemoDataset() {
-    const data = await addTableCoordinates(await parseCMIF(DEMO_DATASET_URL));
-    data.sourceInfo = { type: 'url', source: DEMO_DATASET_URL, isDemo: true };
+    return loadUrlDataset(DEMO_DATASET_URL, { isDemo: true });
+}
+
+/**
+ * A dataset from a URL as the start page prepares it, coordinates from the table and no Wikidata
+ * enrichment (ADR-006). The sourceInfo matches the start page, so the basket key stays the same.
+ * @param {string} url - Bundled CMIF path or correspSearch API URL
+ * @param {{isDemo?: boolean, type?: string}} [options] - type as the start page sets it (url, correspsearch)
+ * @returns {Promise<Object>}
+ */
+export async function loadUrlDataset(url, { isDemo = false, type = 'url' } = {}) {
+    const data = await addTableCoordinates(await parseCMIF(url));
+    data.sourceInfo = isDemo ? { type, source: url, isDemo: true } : { type, source: url };
     return data;
 }

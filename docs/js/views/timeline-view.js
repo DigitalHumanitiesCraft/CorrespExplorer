@@ -3,7 +3,7 @@
 
 import { LANGUAGE_COLORS, NO_LANGUAGE, languageLabel } from '../constants.js';
 import { elements } from '../dom-cache.js';
-import { escapeHtml, showToast } from '../utils.js';
+import { escapeHtml, showToast, isMultiYearSpan } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
 
 // Module state
@@ -37,6 +37,7 @@ export function renderTimeline() {
     const totalEl = elements.getById('timeline-total');
     const legendEl = elements.getById('timeline-stack-legend');
     const undatedBin = elements.getById('timeline-undated-bin');
+    const spanBin = elements.getById('timeline-span-bin');
     if (!container) return;
 
     const filteredLetters = getFilteredLetters();
@@ -46,25 +47,28 @@ export function renderTimeline() {
     const lettersToUse = filteredLetters;
     const isFiltered = filteredLetters.length < allLetters.length;
 
-    // Separate dated and undated letters
-    const datedLetters = lettersToUse.filter(l => l.year);
+    // Dated, undated and multi-year spans; a span has no year it belongs to (decision E5)
+    const spanLetters = lettersToUse.filter(isMultiYearSpan);
+    const datedLetters = lettersToUse.filter(l => l.year && !isMultiYearSpan(l));
     const undatedLetters = lettersToUse.filter(l => !l.year);
 
     // Get all years from all letters for consistent x-axis
     const allYearsSet = new Set();
     allLetters.forEach(letter => {
-        if (letter.year) allYearsSet.add(letter.year);
+        if (letter.year && !isMultiYearSpan(letter)) allYearsSet.add(letter.year);
     });
     const allYearsSorted = Array.from(allYearsSet).sort((a, b) => a - b);
 
-    if (allYearsSorted.length === 0 && undatedLetters.length === 0) {
+    if (allYearsSorted.length === 0 && undatedLetters.length === 0 && spanLetters.length === 0) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfügbar</p></div>';
         undatedBin?.classList.add('hidden');
+        spanBin?.classList.add('hidden');
         return;
     }
 
-    const minYear = allYearsSorted[0] || 0;
-    const maxYear = allYearsSorted[allYearsSorted.length - 1] || 0;
+    // Without any year the loops below render no bar (minYear above maxYear)
+    const minYear = allYearsSorted.length ? allYearsSorted[0] : 1;
+    const maxYear = allYearsSorted.length ? allYearsSorted[allYearsSorted.length - 1] : 0;
 
     // Build stacked data by year and language, tracking uncertainty
     const yearData = {};
@@ -109,8 +113,8 @@ export function renderTimeline() {
         languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
     });
 
-    // Find max for scaling (include undated count)
-    let maxCount = undatedLetters.length;
+    // Find max for scaling (include undated and span counts)
+    let maxCount = Math.max(undatedLetters.length, spanLetters.length);
     for (let y = minYear; y <= maxYear; y++) {
         if (yearData[y].total > maxCount) maxCount = yearData[y].total;
     }
@@ -202,10 +206,12 @@ export function renderTimeline() {
 
     // Render undated letters bin
     renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount);
+    renderSpanBin(spanBin, spanLetters, maxCount);
 
     // Update total
     if (totalEl) {
-        const undatedInfo = undatedLetters.length > 0 ? ` + ${undatedLetters.length} ohne Datum` : '';
+        const undatedInfo = (undatedLetters.length > 0 ? ` + ${undatedLetters.length} ohne Datum` : '') +
+            (spanLetters.length > 0 ? ` + ${spanLetters.length} über mehrere Jahre datiert` : '');
         if (isFiltered) {
             totalEl.textContent = `${datedLetters.length.toLocaleString('de-DE')} von ${allLetters.filter(l => l.year).length.toLocaleString('de-DE')} Briefen (${minYear}-${maxYear})${undatedInfo}`;
         } else {
@@ -223,6 +229,30 @@ export function renderTimeline() {
 /**
  * Render the undated letters bin
  */
+/**
+ * Bin for letters dated to a span over several years, beside the undated bin. It informs and does
+ * not filter: the year filter selects by start year, which a span does not stand for.
+ */
+function renderSpanBin(spanBin, spanLetters, maxCount) {
+    if (!spanBin) return;
+    if (spanLetters.length === 0) {
+        spanBin.classList.add('hidden');
+        return;
+    }
+    const startYears = spanLetters.map(l => l.year);
+    const endYears = spanLetters.map(l => parseInt(String(l.dateTo).substring(0, 4), 10));
+    const widest = `${Math.min(...startYears)} bis ${Math.max(...endYears)}`;
+    spanBin.classList.remove('hidden');
+    spanBin.querySelector('.undated-bin-count').textContent = spanLetters.length;
+    spanBin.querySelector('.undated-bin-label').textContent = 'Spanne';
+    const bar = spanBin.querySelector('.undated-bin-bar');
+    bar.style.height = `${Math.max(4, (spanLetters.length / maxCount) * 100)}%`;
+    bar.innerHTML = '<div class="timeline-stack-segment" style="height: 100%; background: var(--color-text-light); bottom: 0%;"></div>';
+    const description = `${spanLetters.length} Briefe über mehrere Jahre datiert, zwischen ${widest}. Sie stehen in keinem Jahresbalken.`;
+    spanBin.querySelector('.undated-bin-tooltip').textContent = description;
+    spanBin.setAttribute('title', description);
+}
+
 function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount) {
     if (!undatedBin) return;
 

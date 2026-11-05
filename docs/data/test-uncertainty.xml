@@ -349,6 +349,22 @@
         </note>
       </correspDesc>
 
+      <!-- CASE 025: A span over a century, as correspSearch editions date undated letters -->
+      <!-- Expected: Range precision, no year bar, not part of the dataset period -->
+      <correspDesc ref="https://example.org/letter/025" source="#test-source" key="025">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date notBefore="1850" notAfter="1950"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+        </note>
+      </correspDesc>
+
       <!-- CASE 024: from and to on the same day, as correspSearch writes exact dates -->
       <!-- Expected: Day precision, not a range -->
       <correspDesc ref="https://example.org/letter/024" source="#test-source" key="024">

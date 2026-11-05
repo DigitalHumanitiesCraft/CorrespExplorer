@@ -13,7 +13,8 @@ import {
     onBasketChange,
     basketToParams,
     basketFromParams,
-    loadBasketFromUrl
+    loadBasketFromUrl,
+    addEntityToBasket
 } from '../basket.js';
 import { assert } from './test-runner.js';
 
@@ -159,6 +160,20 @@ export const BasketTests = {
                 assert(name, 'Fixture sollte einen Namen mit Anführungszeichen enthalten');
                 const cell = csvCell(name);
                 assert(cell === `"${name.replace(/"/g, '""')}"`, `Unerwartete CSV-Zelle: ${cell}`);
+            }
+        },
+        {
+            name: 'addEntityToBasket: Person und Ort als eigene Einträge, ohne Briefe (E2)',
+            async run() {
+                const { persons, places } = await fixtureKeys();
+                initBasket(DATASET);
+                clearBasket();
+                assert(addEntityToBasket('persons', persons[0]) === 'Person zum Korb hinzugefügt', 'Meldung beim Hinzufügen');
+                assert(addEntityToBasket('persons', persons[0]) === 'Person ist bereits im Korb', 'Meldung bei Duplikat');
+                addEntityToBasket('places', places[0]);
+                assert(getBasketItems('persons').includes(persons[0]), 'Person sollte im Korb liegen');
+                assert(getBasketItems('places').includes(places[0]), 'Ort sollte im Korb liegen');
+                assert(getBasketItems('letters').length === 0, 'Es sollten keine Briefe in den Korb kommen');
             }
         },
         {

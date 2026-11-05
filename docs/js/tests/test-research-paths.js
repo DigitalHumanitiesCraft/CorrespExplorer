@@ -5,7 +5,7 @@ import { parseCMIF } from '../cmif-parser.js';
 import { personKey, placeKey, personAuthority, isKnownPlace } from '../utils.js';
 import { analyzeResearchQuestions, summarizeCorpus } from '../research-paths.js';
 import { basketSelectionForView } from '../knowledge-path.js';
-import { lettersToCsv, LETTER_EXPORT_COLUMNS } from '../export.js';
+import { lettersToCsv, LETTER_EXPORT_COLUMNS, CSV_BOM } from '../export.js';
 import { assert } from './test-runner.js';
 
 const lettersOf = (letters, key) =>
@@ -94,10 +94,24 @@ export const ResearchPathTests = {
         {
             name: 'lettersToCsv: Kopfzeile auch ohne Briefe, eine Zeile je Brief',
             async run() {
-                assert(lettersToCsv([]) === LETTER_EXPORT_COLUMNS.join(','), 'Empty export keeps the header');
+                assert(lettersToCsv([]) === CSV_BOM + LETTER_EXPORT_COLUMNS.join(','), 'Empty export keeps BOM and header');
                 const data = await parseCMIF('data/test-hostile.xml');
                 const lines = lettersToCsv(data.letters).split('\n');
                 assert(lines.length === data.letters.length + 1, `Expected ${data.letters.length + 1} lines, got ${lines.length}`);
+            }
+        },
+        {
+            name: 'lettersToCsv: Normdatei je Person in eigener Spalte (E4)',
+            async run() {
+                const data = await parseCMIF('data/demo-showcase.xml');
+                const header = lettersToCsv([]).slice(CSV_BOM.length).split(',');
+                const idCol = header.indexOf('sender_id');
+                const authCol = header.indexOf('sender_authority');
+                assert(idCol >= 0 && authCol === idCol + 1, `sender_authority sollte neben sender_id stehen: ${header.join(',')}`);
+                assert(header.includes('recipient_authority'), 'recipient_authority fehlt');
+                const letter = data.letters.find(l => l.sender?.id && l.sender?.authority);
+                const line = lettersToCsv([letter]).split('\n')[1];
+                assert(line.includes(`"${letter.sender.id}","${letter.sender.authority}"`), `Zeile ohne Normdatei: ${line}`);
             }
         },
         {

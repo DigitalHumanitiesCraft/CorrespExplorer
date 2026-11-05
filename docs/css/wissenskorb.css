@@ -16,35 +16,6 @@
     color: var(--color-primary);
 }
 
-/* WIP Notice */
-.wip-notice {
-    background: var(--color-warning-light);
-    border: 2px solid var(--color-warning);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg) var(--space-xl);
-    margin-bottom: var(--space-xl);
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-}
-
-.wip-notice i {
-    color: var(--color-warning);
-    font-size: 1.5em;
-}
-
-.wip-notice strong {
-    color: var(--color-warning);
-    display: block;
-    margin-bottom: var(--space-xs);
-}
-
-.wip-notice p {
-    margin: 0;
-    color: var(--color-warning);
-    font-size: var(--font-size-sm);
-}
-
 /* Empty State */
 .empty-state {
     display: flex;

@@ -190,6 +190,27 @@ export function addLettersToBasket(ids) {
     return added > 0 ? `${added} Briefe zum Korb hinzugefügt` : 'Alle Briefe bereits im Korb';
 }
 
+const ENTITY_NAMES = {
+    persons: { one: 'Person', limit: MAX_PERSONS, plural: 'Personen' },
+    places: { one: 'Ort', limit: MAX_PLACES, plural: 'Orte' }
+};
+
+/**
+ * Add one person or place as an entry of its own and describe the outcome for a toast. The basket
+ * page evaluates all letters of its persons and places, so no letter list is copied here
+ * (decision E2 of 2026-11-05).
+ * @param {'persons'|'places'} type
+ * @param {string} id - personKey or placeKey
+ * @returns {string} Message for showToast
+ */
+export function addEntityToBasket(type, id) {
+    const names = ENTITY_NAMES[type];
+    const { added, duplicates } = addItemsToBasket(type, [id]);
+    if (added) return `${names.one} zum Korb hinzugefügt`;
+    if (duplicates) return `${names.one} ist bereits im Korb`;
+    return `Korb voll (höchstens ${names.limit} ${names.plural})`;
+}
+
 /**
  * Remove item from basket
  * @param {string} type - 'letters', 'persons', or 'places'

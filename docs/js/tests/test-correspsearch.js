@@ -3,7 +3,7 @@
 // page 1) and data/test-correspsearch-empty.json (d=1066-01-01, no hits), CC BY 4.0 per their
 // teiHeader. The suite sends no request to the service.
 
-import { datasetFromPages } from '../correspsearch-api.js';
+import { datasetFromPages, correspSearchShareUrl } from '../correspsearch-api.js';
 import { assert } from './test-runner.js';
 
 const FIXTURE = 'data/test-correspsearch.json';
@@ -19,6 +19,19 @@ export const CorrespSearchTests = {
     name: 'correspSearch',
 
     tests: [
+        {
+            name: 'correspSearchShareUrl: Nur API-Abfragen von correspsearch.net gehen in den Link (E3)',
+            async run() {
+                const page = await loadPage();
+                // The query this fixture answers, as the API names it in publicationStmt/idno
+                const query = page.teiHeader.fileDesc.publicationStmt.idno.replace(/&amp;/g, '&');
+                assert(correspSearchShareUrl({ type: 'correspsearch', source: query }) === query, `Abfrage nicht übernommen: ${query}`);
+                assert(correspSearchShareUrl({ type: 'file', source: 'test-uncertainty.xml' }) === null, 'Upload trägt keine Abfrage');
+                assert(correspSearchShareUrl({ type: 'url', source: 'data/demo-showcase.xml' }) === null, 'Gebündelte Datei ist keine Abfrage');
+                assert(correspSearchShareUrl({ type: 'url', source: 'https://correspsearch.net.example.org/api/x' }) === null, 'Fremder Host darf nicht durch');
+                assert(correspSearchShareUrl(null) === null, 'Ohne Quelle keine Abfrage');
+            }
+        },
         {
             name: 'datasetFromPages: Briefe, Herausgeber und Lizenz aus der API-Seite',
             async run() {

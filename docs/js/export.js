@@ -5,8 +5,8 @@ import { csvCell } from './utils.js';
 
 export const LETTER_EXPORT_COLUMNS = [
     'id', 'date', 'date_to', 'year', 'date_precision', 'date_certainty',
-    'sender_name', 'sender_id', 'sender_precision',
-    'recipient_name', 'recipient_id', 'recipient_precision',
+    'sender_name', 'sender_id', 'sender_authority', 'sender_precision',
+    'recipient_name', 'recipient_id', 'recipient_authority', 'recipient_precision',
     'place_name', 'place_geonames', 'place_precision',
     'language', 'url'
 ];
@@ -26,9 +26,12 @@ export function letterExportRow(letter) {
         date_certainty: letter.dateCertainty || 'high',
         sender_name: letter.sender?.name || '',
         sender_id: letter.sender?.id || '',
+        // The id alone does not say whether it is a GND or a VIAF number
+        sender_authority: letter.sender?.authority || '',
         sender_precision: letter.sender?.precision || '',
         recipient_name: letter.recipient?.name || '',
         recipient_id: letter.recipient?.id || '',
+        recipient_authority: letter.recipient?.authority || '',
         recipient_precision: letter.recipient?.precision || '',
         place_name: letter.place_sent?.name || '',
         place_geonames: letter.place_sent?.geonames_id || '',
@@ -38,8 +41,12 @@ export function letterExportRow(letter) {
     };
 }
 
+// Byte order mark: Excel reads a UTF-8 CSV without it in the system code page and breaks umlauts
+// (decision E4 of 2026-11-05; the effect in Excel is not yet checked)
+export const CSV_BOM = '\uFEFF';
+
 /**
- * CSV with header row; every cell passes csvCell (quoting, formula guard)
+ * CSV with BOM and header row; every cell passes csvCell (quoting, formula guard)
  * @param {Array} letters
  * @returns {string}
  */
@@ -48,7 +55,7 @@ export function lettersToCsv(letters) {
         const row = letterExportRow(letter);
         return LETTER_EXPORT_COLUMNS.map(column => csvCell(row[column] ?? '')).join(',');
     });
-    return [LETTER_EXPORT_COLUMNS.join(','), ...rows].join('\n');
+    return CSV_BOM + [LETTER_EXPORT_COLUMNS.join(','), ...rows].join('\n');
 }
 
 /**

@@ -91,6 +91,59 @@ export function ignoreMissingStyleImages(map) {
     });
 }
 
+// Parameters that select the dataset, the shared basket or a one-time notice, not the filter state
+const NON_FILTER_PARAMS = new Set(['view', 'dataset', 'json', 'demo', 'cs', 'tour', 'notice']);
+
+/**
+ * Whether two URLs carry the same filters, ignoring view, dataset and basket parameters. The
+ * explorer uses it on Back: the same filters need only a view switch, others a reload.
+ * @param {URLSearchParams} a
+ * @param {URLSearchParams} b
+ * @returns {boolean}
+ */
+export function sameFilterParams(a, b) {
+    const key = params => [...params.entries()]
+        .filter(([name]) => !NON_FILTER_PARAMS.has(name) && !name.startsWith('basket_'))
+        .map(([name, value]) => `${name}=${value}`)
+        .sort()
+        .join('&');
+    return key(a) === key(b);
+}
+
+/**
+ * Whether a letter is dated only to a span reaching into a later year, such as 1822 to 1922. Its
+ * start year says nothing about when it was written, so year bars and the dataset period leave it
+ * out (decision E5 of 2026-11-05, NFR-04).
+ * @param {Object} letter
+ * @returns {boolean}
+ */
+export function isMultiYearSpan(letter) {
+    if (letter?.datePrecision !== 'range' || !letter.year || !letter.dateTo) return false;
+    const endYear = parseInt(String(letter.dateTo).substring(0, 4), 10);
+    return Number.isFinite(endYear) && endYear > letter.year;
+}
+
+/**
+ * First and last year of the letters that can be placed in a year, without multi-year spans and
+ * implausible years. With includeSpans the start years of spans count as well, for datasets
+ * that hold nothing else.
+ * @param {Array} letters
+ * @param {{includeSpans?: boolean}} [options]
+ * @returns {{min: number, max: number}|null}
+ */
+export function datedYearRange(letters, { includeSpans = false } = {}) {
+    let min = Infinity;
+    let max = -Infinity;
+    for (const letter of letters) {
+        const year = letter.year;
+        if (!Number.isInteger(year) || year < 1400 || year > 2100) continue;
+        if (!includeSpans && isMultiYearSpan(letter)) continue;
+        if (year < min) min = year;
+        if (year > max) max = year;
+    }
+    return min <= max ? { min, max } : null;
+}
+
 /**
  * Quote a value as a CSV cell. A leading =, +, - or @ gets an apostrophe, so spreadsheet
  * programs do not evaluate names or places from CMIF as formulas.

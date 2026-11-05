@@ -6,13 +6,13 @@ import {
     isInBasket as basketIsInBasket,
     addToBasket as basketAdd,
     removeFromBasket as basketRemove,
-    addLettersToBasket,
+    addEntityToBasket,
     initBasket,
     datasetKey,
     loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, ignoreMissingStyleImages, countIdentifiedPersons, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, ignoreMissingStyleImages, sameFilterParams, datedYearRange, countIdentifiedPersons, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
 import { analyzeResearchQuestions, summarizeCorpus, renderOverviewResearchPaths } from './research-paths.js';
 import { lettersToCsv, lettersToJson } from './export.js';
 import { initKnowledgePath, startKnowledgePath } from './knowledge-path.js';
@@ -26,7 +26,8 @@ import {
     formatCountOf
 } from './formatters.js';
 import { initDemoTour, checkAndStartDemoTour, startTour } from './demo-tour.js';
-import { loadDemoDataset } from './cmif-parser.js';
+import { loadDemoDataset, loadUrlDataset } from './cmif-parser.js';
+import { isCorrespSearchUrl, correspSearchShareUrl } from './correspsearch-api.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
 // View modules
@@ -52,6 +53,11 @@ let temporalFilter = null;
 let dateRange = { min: 1800, max: 2000 };
 // Letters, persons and places of the whole dataset, set once in updateUI
 let corpusTotals = null;
+// History entries start after the first render; Back then leaves the explorer as before
+let historyReady = false;
+// sourceInfo of the loaded dataset; a correspSearch query goes into shared links as cs=
+let datasetSource = null;
+let restoringFromHistory = false;
 let qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
 let selectedPersonId = null;
 let selectedPlaceFilter = null;
@@ -199,6 +205,7 @@ async function init() {
         });
 
         allLetters = data.letters || [];
+        datasetSource = data.sourceInfo || null;
         filteredLetters = allLetters;
         dataIndices = data.indices || {};
 
@@ -206,13 +213,11 @@ async function init() {
         computeLanguageColors(allLetters);
         registerLanguageLabels(allLetters);
 
-        // Calculate date range from data (filter unrealistic years)
-        const years = allLetters.map(l => l.year).filter(y =>
-            y !== null && y !== undefined && y >= 1400 && y <= 2100
-        );
-        if (years.length > 0) {
-            dateRange.min = Math.min(...years);
-            dateRange.max = Math.max(...years);
+        // Period of the letters that fit a year; multi-year spans only when nothing else is dated
+        const yearRange = datedYearRange(allLetters) || datedYearRange(allLetters, { includeSpans: true });
+        if (yearRange) {
+            dateRange.min = yearRange.min;
+            dateRange.max = yearRange.max;
             state.updateUI({ dateRange: { min: dateRange.min, max: dateRange.max } });
         }
 
@@ -328,6 +333,8 @@ async function init() {
         switchView(currentView);
 
         hideLoading();
+        historyReady = true;
+        window.addEventListener('popstate', handleHistoryNavigation);
         initDemoTour({ switchView });
         checkAndStartDemoTour();
     } catch (error) {
@@ -395,12 +402,26 @@ async function loadData() {
     }
 
     const storedData = sessionStorage.getItem('cmif-data');
-    if (!storedData) return params.get('demo') === 'true' ? loadDemoDataset() : null;
-    try {
-        return JSON.parse(storedData);
-    } catch {
-        throw new Error('Der hochgeladene Datensatz in diesem Tab ist nicht lesbar. Bitte laden Sie ihn auf der Startseite erneut.');
+    let stored = null;
+    if (storedData) {
+        try {
+            stored = JSON.parse(storedData);
+        } catch {
+            throw new Error('Der hochgeladene Datensatz in diesem Tab ist nicht lesbar. Bitte laden Sie ihn auf der Startseite erneut.');
+        }
     }
+
+    // A shared correspSearch link names its query and loads it again, also over another dataset
+    // that this tab still holds (decision E3)
+    const sharedQuery = params.get('cs');
+    if (sharedQuery !== null) {
+        if (!isCorrespSearchUrl(sharedQuery)) {
+            throw new Error('Der Parameter cs= erlaubt nur Adressen der correspSearch-API (https://correspsearch.net/api/...).');
+        }
+        return stored?.sourceInfo?.source === sharedQuery ? stored : loadUrlDataset(sharedQuery, { type: 'correspsearch' });
+    }
+    if (stored) return stored;
+    return params.get('demo') === 'true' ? loadDemoDataset() : null;
 }
 
 // Update UI with data info
@@ -1615,12 +1636,38 @@ function updateUrlState() {
         const value = urlParams.get(key);
         if (value) newParams.set(key, value);
     }
+    const sharedQuery = correspSearchShareUrl(datasetSource);
+    if (sharedQuery) newParams.set('cs', sharedQuery);
 
     const newUrl = newParams.toString()
         ? `${window.location.pathname}?${newParams.toString()}`
         : window.location.pathname;
 
-    window.history.replaceState({}, '', newUrl);
+    // A view change is a navigation step with its own history entry, so Back returns to the
+    // previous view (decision E1). Filter changes replace the entry: a slider drag would flood it.
+    const viewChanged = urlParams.get('view') !== newParams.get('view');
+    if (historyReady && viewChanged && !restoringFromHistory) {
+        window.history.pushState({}, '', newUrl);
+    } else {
+        window.history.replaceState({}, '', newUrl);
+    }
+}
+
+// Back and Forward: an entry with the current filters only switches the view, an entry with other
+// filters reloads, because init() reads view and filters from the URL in one place
+function handleHistoryNavigation() {
+    const params = new URLSearchParams(window.location.search);
+    if (!sameFilterParams(params, state.toURLParams())) {
+        window.location.reload();
+        return;
+    }
+    const view = params.get('view');
+    restoringFromHistory = true;
+    try {
+        switchView(VIEWS.includes(view) ? view : 'overview');
+    } finally {
+        restoringFromHistory = false;
+    }
 }
 
 // View switching
@@ -1628,6 +1675,10 @@ function updateUrlState() {
 function initViewSwitcher() {
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', () => switchView(btn.dataset.view));
+    });
+    // Links inside view texts, such as the place list named on the map
+    document.querySelectorAll('[data-switch-view]').forEach(btn => {
+        btn.addEventListener('click', () => switchView(btn.dataset.switchView));
     });
 }
 
@@ -1728,8 +1779,10 @@ function renderOverview() {
     // Update inline stats: Briefe | Zeitraum | Personen | Orte
     const statsInlineEl = document.getElementById('overview-stats-inline');
     if (statsInlineEl) {
-        const minYear = meta.date_range?.min;
-        const maxYear = meta.date_range?.max;
+        // Same period as the year slider, so a span such as 1822 to 1922 does not stretch it
+        const period = datedYearRange(allLetters) || datedYearRange(allLetters, { includeSpans: true });
+        const minYear = period?.min;
+        const maxYear = period?.max;
         statsInlineEl.innerHTML = `
             <span class="stat-item"><i class="fas fa-envelope" aria-hidden="true"></i> <span class="stat-value">${totalLetters.toLocaleString('de-DE')}</span> Briefe</span>
             ${minYear && maxYear ? `<span class="stat-item"><i class="fas fa-calendar" aria-hidden="true"></i> <span class="stat-value">${minYear}–${maxYear}</span></span>` : ''}
@@ -1945,7 +1998,7 @@ function renderPersonsList() {
                 </div>
                 <div class="person-actions">
                     <button type="button" class="btn-person-basket" data-person-id="${escapeHtml(person.key)}"
-                            title="${total} Briefe zum Korb hinzufügen" aria-label="${total} Briefe von ${name} zum Korb hinzufügen">
+                            title="Person zum Korb hinzufügen" aria-label="${name} zum Korb hinzufügen">
                         <i class="fas fa-star" aria-hidden="true"></i>
                     </button>
                     ${person.id ? `
@@ -1995,10 +2048,7 @@ function renderPersonsList() {
             e.stopPropagation();
             const personId = btn.dataset.personId;
             if (!personId) return;
-            const personLetterIds = filteredLetters
-                .filter(l => personKey(l.sender) === personId || personKey(l.recipient) === personId)
-                .map(l => l.id);
-            showToast(addLettersToBasket(personLetterIds));
+            showToast(addEntityToBasket('persons', personId));
         });
     });
 }
@@ -2447,11 +2497,6 @@ function renderPersonDetail(detail, enriched) {
         html += '</div>';
     }
 
-    // Letters of this person, matched with personKey like the person filter (ADR-001)
-    const personLetterIds = allLetters
-        .filter(l => personKey(l.sender) === personId || personKey(l.recipient) === personId)
-        .map(l => l.id);
-
     html += '<div class="person-detail-actions">';
 
     const correspSearchUrl = buildCorrespSearchUrl(person);
@@ -2462,7 +2507,7 @@ function renderPersonDetail(detail, enriched) {
     }
 
     html += `<button type="button" class="btn btn-basket person-add-basket-btn">
-        <i class="fas fa-star" aria-hidden="true"></i> ${personLetterIds.length} Briefe zum Korb
+        <i class="fas fa-star" aria-hidden="true"></i> Person zum Korb
     </button>`;
 
     html += `<button type="button" class="btn btn-secondary btn-filter-person" data-person-id="${escapeHtml(personId)}">
@@ -2479,9 +2524,8 @@ function renderPersonDetail(detail, enriched) {
         closeModal(modal);
         filterByPerson(e.currentTarget.dataset.personId);
     });
-    // The letter ids stay in this closure instead of a JSON attribute in the markup
     body.querySelector('.person-add-basket-btn').addEventListener('click', () => {
-        showToast(addLettersToBasket(personLetterIds));
+        showToast(addEntityToBasket('persons', personId));
     });
 }
 

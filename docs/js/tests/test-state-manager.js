@@ -3,7 +3,7 @@
 
 import { parseCMIF } from '../cmif-parser.js';
 import { state } from '../state-manager.js';
-import { placeKey } from '../utils.js';
+import { placeKey, sameFilterParams } from '../utils.js';
 import { assert } from './test-runner.js';
 
 export const StateManagerTests = {
@@ -21,6 +21,22 @@ export const StateManagerTests = {
     },
 
     tests: [
+        {
+            name: 'sameFilterParams: Ansicht, Datensatz und Korb zählen nicht als Filter (E1)',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                state.setData(data);
+                state.updateFilters({ temporal: { min: 1900, max: 1900 } });
+                const filtered = state.toURLParams();
+                const otherView = new URLSearchParams(filtered);
+                otherView.set('view', 'map');
+                otherView.set('json', 'data/hsa-letters.json');
+                otherView.set('basket_v', '2');
+                assert(sameFilterParams(filtered, otherView), 'Nur Ansicht und Datensatz unterscheiden sich');
+                state.resetFilters();
+                assert(!sameFilterParams(filtered, state.toURLParams()), 'Ein entfernter Zeitfilter ist ein anderer Filterzustand');
+            }
+        },
         {
             name: 'setData: Initialisiert Daten mit echten CMIF-Daten',
             async run() {
