@@ -1,7 +1,7 @@
 // Network View
 // Force-directed graph showing relationships between correspondents or topics
 
-import { debounce, personKey } from '../utils.js';
+import { debounce, motionMs, personKey, settleWithoutMotion } from '../utils.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
 import { elements } from '../dom-cache.js';
 import { readTokens } from './view-support.js';
@@ -708,6 +708,7 @@ export function renderNetwork() {
 
         node.attr('transform', d => `translate(${d.x},${d.y})`);
     });
+    settleWithoutMotion(networkSimulation);
 
     function dragstarted(event, d) {
         if (!event.active) networkSimulation.alphaTarget(0.3).restart();
@@ -806,6 +807,6 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
  */
 export function resetNetworkZoom() {
     if (networkSvg && networkZoom) {
-        networkSvg.transition().duration(500).call(networkZoom.transform, d3.zoomIdentity);
+        networkSvg.transition().duration(motionMs(500)).call(networkZoom.transform, d3.zoomIdentity);
     }
 }

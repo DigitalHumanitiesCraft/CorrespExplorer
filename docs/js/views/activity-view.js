@@ -139,6 +139,7 @@ export function renderActivity() {
     renderWithoutDayNote(container);
 
     // Render year selector
+    bindYearSelector();
     renderActivityYearSelector();
 
     // Render heatmap
@@ -193,32 +194,48 @@ function renderWithoutDayNote(container) {
 }
 
 /**
- * Renders one button per dated year; the selector wraps, so every year stays selectable
+ * Fills the year select (all years, then each year with its day-precise letters) and enables
+ * the previous and next buttons. A select keeps decades of years in one line, where one button
+ * per year filled the screen above the heatmap.
  */
 function renderActivityYearSelector() {
-    const container = document.getElementById('activity-year-selector');
-    if (!container || !activityIndex) return;
+    const select = document.getElementById('activity-year-select');
+    if (!select || !activityIndex) return;
 
-    const buttons = ['all', ...activityIndex.years].map(year => {
-        const isActive = activitySelectedYear === year;
-        return `<button type="button" class="activity-year-btn ${isActive ? 'active' : ''}" aria-pressed="${isActive}"
-                        data-year="${year}">${year === 'all' ? 'Alle Jahre' : year}</button>`;
+    const options = [['all', 'Alle Jahre'], ...activityIndex.years.map(year =>
+        [String(year), `${year} (${(activityIndex.byYear.get(year) || 0).toLocaleString('de-DE')} Briefe)`])];
+    select.innerHTML = options.map(([value, label]) => `<option value="${value}">${escapeHtml(label)}</option>`).join('');
+    select.value = String(activitySelectedYear);
+    updateYearSteps();
+}
+
+function selectActivityYear(value) {
+    activitySelectedYear = value === 'all' ? 'all' : parseInt(value, 10);
+    const select = document.getElementById('activity-year-select');
+    if (select) select.value = String(activitySelectedYear);
+    updateYearSteps();
+    renderActivityHeatmap();
+}
+
+// Previous and next walk through the select's options, from "Alle Jahre" into the first year
+function updateYearSteps() {
+    const select = document.getElementById('activity-year-select');
+    if (!select) return;
+    document.querySelectorAll('.activity-year-step').forEach(btn => {
+        const target = select.selectedIndex + Number(btn.dataset.step);
+        btn.disabled = target < 0 || target >= select.options.length;
     });
-    container.setAttribute('role', 'group');
-    container.setAttribute('aria-label', 'Jahr der Heatmap');
-    container.innerHTML = buttons.join('');
+}
 
-    container.querySelectorAll('.activity-year-btn').forEach(btn => {
+function bindYearSelector() {
+    const select = document.getElementById('activity-year-select');
+    if (!select || select.dataset.bound) return;
+    select.dataset.bound = 'true';
+    select.addEventListener('change', () => selectActivityYear(select.value));
+    document.querySelectorAll('.activity-year-step').forEach(btn => {
         btn.addEventListener('click', () => {
-            const year = btn.dataset.year;
-            activitySelectedYear = year === 'all' ? 'all' : parseInt(year, 10);
-
-            container.querySelectorAll('.activity-year-btn').forEach(b => {
-                b.classList.toggle('active', b === btn);
-                b.setAttribute('aria-pressed', String(b === btn));
-            });
-
-            renderActivityHeatmap();
+            const option = select.options[select.selectedIndex + Number(btn.dataset.step)];
+            if (option) selectActivityYear(option.value);
         });
     });
 }

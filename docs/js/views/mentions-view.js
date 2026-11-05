@@ -1,7 +1,7 @@
 // Mentions Flow View
 // Sankey diagram showing person mention relationships
 
-import { escapeHtml, openModal, closeModal, personKey } from '../utils.js';
+import { escapeHtml, motionMs, openModal, closeModal, personKey } from '../utils.js';
 import { formatDateWithPrecision } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { bindCombobox, readTokens } from './view-support.js';
@@ -515,12 +515,12 @@ function renderMentionsFlowForPerson(person) {
             if (d.isCenter) return;
             // Visual hover feedback: brighten rect and underline text
             d3.select(this).select('rect')
-                .transition().duration(150)
+                .transition().duration(motionMs(150))
                 .attr('opacity', 0.7)
                 .attr('stroke', tokens.text)
                 .attr('stroke-width', 2);
             d3.select(this).select('text')
-                .transition().duration(150)
+                .transition().duration(motionMs(150))
                 .style('text-decoration', 'underline')
                 .style('fill', tokens.center);
             tooltip.innerHTML = `<strong>${escapeHtml(d.name)}</strong><br>Klicken um zu dieser Person zu wechseln`;
@@ -536,12 +536,12 @@ function renderMentionsFlowForPerson(person) {
             if (d.isCenter) return;
             // Reset visual feedback
             d3.select(this).select('rect')
-                .transition().duration(150)
+                .transition().duration(motionMs(150))
                 .attr('opacity', 1)
                 .attr('stroke', 'none')
                 .attr('stroke-width', 0);
             d3.select(this).select('text')
-                .transition().duration(150)
+                .transition().duration(motionMs(150))
                 .style('text-decoration', 'none')
                 .style('fill', tokens.text);
             tooltip.style.display = 'none';
@@ -599,13 +599,13 @@ function renderMentionsFlowForPerson(person) {
 
     // Zoom control handlers
     document.getElementById('sankey-zoom-in')?.addEventListener('click', () => {
-        svg.transition().call(zoom.scaleBy, 1.3);
+        svg.transition().duration(motionMs(250)).call(zoom.scaleBy, 1.3);
     });
     document.getElementById('sankey-zoom-out')?.addEventListener('click', () => {
-        svg.transition().call(zoom.scaleBy, 0.7);
+        svg.transition().duration(motionMs(250)).call(zoom.scaleBy, 0.7);
     });
     document.getElementById('sankey-zoom-reset')?.addEventListener('click', () => {
-        svg.transition().call(zoom.transform, d3.zoomIdentity);
+        svg.transition().duration(motionMs(250)).call(zoom.transform, d3.zoomIdentity);
     });
 
     log.render(`Rendered person flow: ${layoutNodes.length} nodes, ${layoutLinks.length} links`);

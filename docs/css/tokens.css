@@ -88,7 +88,6 @@
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
     /* Font Sizes - design.md Section 3 */
-    --font-size-2xs: 11px;  /* Lower limit, only for dense chart labels and counters */
     --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-base: 14px;

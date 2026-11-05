@@ -7,7 +7,7 @@ Browser-Tests ohne externe Abhängigkeiten. Regeln und Abdeckung stehen in [test
 - test-runner.js - `TestRunner` mit Suites, Setup, Teardown (auch nach einem Fehlschlag) und Zeitmessung, gemeinsames `assert(condition, message)`
 - run-all-tests.js - registriert die Suites, stellt `runAllTests()` bereit und setzt `window.runAllTests`. Es startet keinen Lauf selbst, damit die Suites nicht zweimal gleichzeitig gegen den gemeinsamen state-manager laufen
 - test-cmif-parser.js - XML zu JSON, Eingabevertrag, Unsicherheitserkennung
-- test-aggregation.js - `datedYearRange()` ohne mehrjährige Spannen (Fall 025), `analyzeCoordinateNeeds()`, `buildActivityIndex()`, Indizes des Parsers, Filter über den state-manager, `countIdentifiedPersons`, Sprachcode `None` der Quelle gegenüber Briefen ohne Sprache
+- test-aggregation.js - `datedYearRange()` ohne mehrjährige Spannen (Fall 025), `analyzeCoordinateNeeds()`, `buildActivityIndex()`, Indizes des Parsers, Filter über den state-manager, `datasetQuality()` zählt aus derselben Zusammenfassung wie die Zähler, Sprachcode `None` der Quelle gegenüber Briefen ohne Sprache
 - test-formatters.js - Datum, Person und Ort mit Unsicherheitsanzeige, CSS-Klassen, Initialen
 - test-security.js - Escaping, URL-Schemata und `?json=`-Pfade gegen `data/test-hostile.xml`
 - test-research-paths.js - Normdatei-Spalten und BOM des CSV-Exports, `analyzeResearchQuestions()` und `summarizeCorpus()` gegen `test-uncertainty.xml`, `demo-showcase.xml` und die Indexform von `data/hsa-letters.json`, Platzhalter „Unbekannt“ zählt nicht als Ort, `basketSelectionForView()`, `lettersToCsv()` mit Kopfzeile ohne Briefe, Normdaten im Personenindex über `personAuthority()`

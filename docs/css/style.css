@@ -132,7 +132,7 @@ button {
     right: 2px;
     background: var(--color-error);
     color: white;
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-xs);
     font-weight: 600;
     padding: 0 var(--space-xs);
     border-radius: 8px;
@@ -714,7 +714,7 @@ button {
 
 /* Attribution */
 .maplibregl-ctrl-attrib {
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-xs);
     background-color: color-mix(in srgb, var(--color-bg) 80%, transparent);
 }
 

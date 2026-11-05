@@ -201,6 +201,36 @@ export function showToast(message, duration = 3000) {
 }
 
 /**
+ * True when the operating system asks for reduced motion (WCAG 2.3.3)
+ * @returns {boolean}
+ */
+export function prefersReducedMotion() {
+    return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
+/**
+ * Duration of an animated transition: the given milliseconds, or 0 under reduced motion
+ * @param {number} ms
+ * @returns {number}
+ */
+export function motionMs(ms) {
+    return prefersReducedMotion() ? 0 : ms;
+}
+
+/**
+ * Under reduced motion a d3 force simulation does not animate: the layout is computed in
+ * advance and drawn once through the tick handler, which must be registered before the call.
+ * Dragging a node still moves it, because that motion follows the user's hand.
+ * @param {Object} simulation - d3.forceSimulation with a tick handler
+ */
+export function settleWithoutMotion(simulation) {
+    if (!prefersReducedMotion()) return;
+    simulation.stop();
+    simulation.tick(Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay())));
+    simulation.on('tick')?.();
+}
+
+/**
  * Show a modal. The close button and a click on the backdrop close it; keyboard
  * behaviour comes from enableModalKeyboard. The hidden class is the only visibility switch.
  */
@@ -535,23 +565,3 @@ export function buildIndices(letters) {
     return { persons, places, subjects, languages };
 }
 
-/**
- * Count distinct correspondents (senders and recipients) and those with an authority reference.
- * Parser and preprocessing store the bare authority id (e.g. "18030027") in `id` and the
- * system in `authority`, so a present `id` marks identification, not a URL prefix.
- * Persons without id are keyed by name, as in the person index of explore.js.
- * @param {Array} letters - Letters with sender/recipient objects
- * @returns {{identified: number, total: number}}
- */
-export function countIdentifiedPersons(letters) {
-    const all = new Set();
-    const identified = new Set();
-    for (const letter of letters) {
-        for (const person of [letter.sender, letter.recipient]) {
-            if (!person?.name) continue;
-            all.add(person.id || person.name);
-            if (person.id) identified.add(person.id);
-        }
-    }
-    return { identified: identified.size, total: all.size };
-}

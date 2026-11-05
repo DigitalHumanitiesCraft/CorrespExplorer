@@ -249,6 +249,72 @@ class Smoke:
         assert span_visible, "timeline shows no bin for multi-year spans (case 025)"
         assert "view=places" in url, f"map hint did not open the place list: {url}"
 
+    def page_structure(self) -> None:
+        ctx = self.context()
+        page = ctx.new_page()
+        styles: list[str] = []
+        page.on(
+            "request",
+            lambda r: (
+                styles.append(r.url) if "openfreemap.org/styles/" in r.url else None
+            ),
+        )
+        page.goto(f"{self.base}explore.html?view=overview&{HSA}")
+        _loaded(page)
+        first_heading = page.evaluate(
+            "() => [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')]"
+            ".find(h => !h.closest('.hidden'))?.tagName"
+        )
+        undescribed = page.evaluate(
+            "() => [...document.querySelectorAll('.view-btn')].filter(b =>"
+            " document.getElementById(b.getAttribute('aria-describedby'))?.textContent"
+            " !== b.dataset.tooltipDesc).map(b => b.dataset.view)"
+        )
+        page.click(".overview-research-paths .question-start-btn >> nth=0")
+        path_controls = page.evaluate(
+            "() => { const bar = document.getElementById('knowledge-path-bar');"
+            " return !bar.classList.contains('hidden') && bar.contains(document.getElementById('path-nav-next'))"
+            " && bar.contains(document.getElementById('path-nav-back'))"
+            " && document.querySelectorAll('[id^=path-nav]').length === 2; }"
+        )
+        page.click("#path-bar-close")
+        page.click('.view-btn[data-view="letters"]')
+        topics_in_letters = page.locator("#topics-filter-group").is_visible()
+        page.click('.view-btn[data-view="topics"]')
+        topics_in_topics = page.locator("#topics-filter-group").is_visible()
+        page.click('.view-btn[data-view="activity"]')
+        years = page.locator("#activity-year-select option").count()
+        page.click('.view-btn[data-view="map"]')
+        page.wait_for_timeout(1000)
+        ctx.close()
+        assert first_heading == "H1", f"first heading is {first_heading}"
+        assert not undescribed, f"view buttons without description: {undescribed}"
+        assert path_controls, "knowledge path controls are not one bar"
+        assert topics_in_letters and not topics_in_topics, (
+            "sidebar topic list should step aside only in the topics view"
+        )
+        assert years > 2, f"activity year select has {years} options"
+        assert styles and "positron" in styles[0], f"map starts with {styles[:1]}"
+
+    def reduced_motion_network(self) -> None:
+        ctx = self.browser.new_context(
+            viewport={"width": 1366, "height": 900}, reduced_motion="reduce"
+        )
+        page = ctx.new_page()
+        page.goto(f"{self.base}explore.html?view=network&{HSA}")
+        _loaded(page)
+        read = (
+            "() => [...document.querySelectorAll('#network-graph g.node')]"
+            ".slice(0, 20).map(n => n.getAttribute('transform'))"
+        )
+        page.wait_for_selector("#network-graph g.node")
+        first = page.evaluate(read)
+        page.wait_for_timeout(700)
+        second = page.evaluate(read)
+        ctx.close()
+        assert first and first == second, "network still moves under reduced motion"
+        assert len(set(first)) > 1, "nodes were not laid out"
+
     def correspsearch_share_link(self) -> None:
         ctx = self.context()
         page = ctx.new_page()
@@ -322,6 +388,11 @@ def _checks(
             "span bin on the timeline, map hint opens the place list",
             smoke.span_bin_and_map_hint,
         ),
+        (
+            "page structure: h1 first, described views, one path bar, light map",
+            smoke.page_structure,
+        ),
+        ("network does not move under reduced motion", smoke.reduced_motion_network),
     ]
     if args.online:
         checks.append(

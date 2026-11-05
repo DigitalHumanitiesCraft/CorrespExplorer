@@ -85,6 +85,24 @@ export function summarizeCorpus(letters, indices = {}) {
     return { total: letters.length, persons, places, subjects, languages, mentioned, yearCounts, datedLetters, lettersWithMentions, personMentions };
 }
 
+/**
+ * Data-quality figures of one corpus summary: day-precise dates, persons with authority id,
+ * places with coordinates. The single source of the sidebar quality icons and the overview chips,
+ * so both count persons and places like the lists (personKey, placeKey).
+ * @param {Array} letters
+ * @param {ReturnType<typeof summarizeCorpus>} corpus - summary of the same letters
+ * @returns {{dates: {known: number, total: number}, persons: {known: number, total: number}, places: {known: number, total: number}}}
+ */
+export function datasetQuality(letters, corpus) {
+    const persons = [...corpus.persons.values()];
+    const places = [...corpus.places.values()];
+    return {
+        dates: { known: letters.filter(l => l.datePrecision === 'day').length, total: letters.length },
+        persons: { known: persons.filter(p => p.identified).length, total: persons.length },
+        places: { known: places.filter(p => p.located).length, total: places.length }
+    };
+}
+
 const preview = (entries, suffix = '') => entries.map(e => `${e.name} (${e.count}${suffix})`);
 
 /**

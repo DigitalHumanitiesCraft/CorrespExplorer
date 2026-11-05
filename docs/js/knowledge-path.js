@@ -115,7 +115,6 @@ function goToStep(index) {
 
 function setPathUIVisible(visible) {
     document.getElementById('knowledge-path-bar')?.classList.toggle('hidden', !visible);
-    document.getElementById('knowledge-path-nav')?.classList.toggle('hidden', !visible);
 }
 
 function updateKnowledgePathUI() {
@@ -169,17 +168,13 @@ function updateKnowledgePathUI() {
 function updatePathNavigation() {
     const backBtn = document.getElementById('path-nav-back');
     const nextBtn = document.getElementById('path-nav-next');
-    const stepInfo = document.getElementById('path-nav-step');
 
     if (backBtn) backBtn.disabled = knowledgePath.currentStep === 0;
     if (nextBtn) {
         const isLastStep = knowledgePath.currentStep >= knowledgePath.path.length - 1;
         nextBtn.innerHTML = isLastStep
-            ? 'Pfad abschliessen <i class="fas fa-check" aria-hidden="true"></i>'
-            : 'Weiter im Pfad <i class="fas fa-arrow-right" aria-hidden="true"></i>';
-    }
-    if (stepInfo) {
-        stepInfo.textContent = `Schritt ${knowledgePath.currentStep + 1} von ${knowledgePath.path.length}`;
+            ? 'Abschließen <i class="fas fa-check" aria-hidden="true"></i>'
+            : 'Weiter <i class="fas fa-arrow-right" aria-hidden="true"></i>';
     }
 }
 
@@ -249,9 +244,6 @@ function updateSidebarBasketUI() {
         }
         container.innerHTML = html;
     }
-
-    const pathBarCount = document.getElementById('path-bar-basket-count');
-    if (pathBarCount) pathBarCount.textContent = counts.total;
 
     const badge = document.getElementById('basket-badge');
     if (badge) {

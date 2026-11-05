@@ -12,8 +12,8 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, ignoreMissingStyleImages, sameFilterParams, datedYearRange, countIdentifiedPersons, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
-import { analyzeResearchQuestions, summarizeCorpus, renderOverviewResearchPaths } from './research-paths.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, ignoreMissingStyleImages, sameFilterParams, datedYearRange, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
+import { analyzeResearchQuestions, datasetQuality, summarizeCorpus, renderOverviewResearchPaths } from './research-paths.js';
 import { lettersToCsv, lettersToJson } from './export.js';
 import { initKnowledgePath, startKnowledgePath } from './knowledge-path.js';
 import {
@@ -53,6 +53,8 @@ let temporalFilter = null;
 let dateRange = { min: 1800, max: 2000 };
 // Letters, persons and places of the whole dataset, set once in updateUI
 let corpusTotals = null;
+let corpusSummary = null;
+let corpusQuality = null;
 // History entries start after the first render; Back then leaves the explorer as before
 let historyReady = false;
 // sourceInfo of the loaded dataset; a correspSearch query goes into shared links as cs=
@@ -436,57 +438,25 @@ function updateUI(data) {
         if (pageTitle) pageTitle.textContent = `${data.meta.title} im CorrespExplorer`;
     }
 
-    // Persons and places are counted from the letters like in the overview (summarizeCorpus),
-    // because meta.unique_senders and meta.unique_places count differently per source
-    const corpus = summarizeCorpus(allLetters, dataIndices);
-    corpusTotals = { letters: allLetters.length, persons: corpus.persons.size, places: corpus.places.size };
+    // The one summary of the whole dataset: persons and places are counted from the letters
+    // (summarizeCorpus), because meta.unique_senders and meta.unique_places count differently per
+    // source. Sidebar counts, quality icons and the overview all read from it.
+    corpusSummary = summarizeCorpus(allLetters, dataIndices);
+    corpusQuality = datasetQuality(allLetters, corpusSummary);
+    corpusTotals = { letters: allLetters.length, persons: corpusSummary.persons.size, places: corpusSummary.places.size };
     updateStatCounts();
 
-    // Update uncertainty statistics if available
-    updateUncertaintyStats(data.meta?.uncertainty);
+    updateQualityIcons(corpusQuality);
 
     // Build language filter
     buildLanguageFilter();
 }
 
-// Update uncertainty statistics in sidebar using icons with tooltips
-function updateUncertaintyStats(uncertainty) {
-    if (!uncertainty) return;
-
-    // Support both old format (dates/senders/places) and new format (date_precision/date_certainty)
-    let dates, senders, places;
-
-    if (uncertainty.date_precision) {
-        // New format from preprocessor
-        dates = uncertainty.date_precision;
-        senders = uncertainty.senders || { identified: 0, named: 0, unknown: 0 };
-        places = uncertainty.places || { exact: 0, region: 0, unknown: 0 };
-    } else if (uncertainty.dates) {
-        // Old format
-        dates = uncertainty.dates;
-        senders = uncertainty.senders || { identified: 0, named: 0, unknown: 0 };
-        places = uncertainty.places || { exact: 0, region: 0, unknown: 0 };
-    } else {
-        // No valid format
-        return;
-    }
-
-    // Calculate imprecise dates (month + year + range + unknown)
-    const impreciseDates = (dates.month || 0) + (dates.year || 0) + (dates.range || 0) + (dates.unknown || 0);
-    const totalDates = (dates.day || 0) + impreciseDates;
-
-    // Calculate unknown persons
-    const unknownSenders = (senders.unknown || 0) + (senders.partial || 0) + (senders.missing || 0);
-    const totalSenders = (senders.identified || 0) + (senders.named || 0) + unknownSenders;
-
-    // Calculate places without coordinates
-    const imprecisePlaces = (places.region || 0) + (places.unknown || 0) + (places.missing || 0);
-    const totalPlaces = (places.exact || 0) + imprecisePlaces;
-
-    // Update quality icons with tooltips
-    updateQualityIcon('letters-quality-icon', impreciseDates, totalDates, 'mit ungenauem Datum');
-    updateQualityIcon('senders-quality-icon', unknownSenders, totalSenders, 'Absender unbekannt oder unvollständig');
-    updateQualityIcon('places-quality-icon', imprecisePlaces, totalPlaces, 'ohne Koordinaten');
+// Quality icons next to the sidebar counts, from the same figures as the overview chips
+function updateQualityIcons(quality) {
+    updateQualityIcon('letters-quality-icon', quality.dates.total - quality.dates.known, quality.dates.total, 'ohne tagesgenaues Datum');
+    updateQualityIcon('senders-quality-icon', quality.persons.total - quality.persons.known, quality.persons.total, 'Personen ohne Normdatei-ID');
+    updateQualityIcon('places-quality-icon', quality.places.total - quality.places.known, quality.places.total, 'Orte ohne Koordinaten');
 }
 
 // Update quality icon visibility and tooltip
@@ -762,8 +732,8 @@ function aggregateLettersByPlace(letters, placesIndex) {
     return places;
 }
 
-// Map styles
-let currentMapStyle = 'dark';
+// Map styles; the light style is the default of design.md 6.1, dark stays one click away
+let currentMapStyle = 'light';
 
 // OpenFreeMap needs no API key; its styles carry the OpenFreeMap/OpenMapTiles/OSM attribution
 // (CARTO raster tiles now return an "API key required" placeholder)
@@ -1675,6 +1645,15 @@ function handleHistoryNavigation() {
 function initViewSwitcher() {
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', () => switchView(btn.dataset.view));
+        // The tooltip shows the description only to mouse users; a hidden text gives it to screen readers
+        if (btn.dataset.tooltipDesc) {
+            const desc = document.createElement('span');
+            desc.id = `view-desc-${btn.dataset.view}`;
+            desc.className = 'visually-hidden';
+            desc.textContent = btn.dataset.tooltipDesc;
+            btn.append(desc);
+            btn.setAttribute('aria-describedby', desc.id);
+        }
     });
     // Links inside view texts, such as the place list named on the map
     document.querySelectorAll('[data-switch-view]').forEach(btn => {
@@ -1731,6 +1710,8 @@ function switchView(view) {
         setSidebarOpen(false);
         document.getElementById('sidebar-toggle')?.classList.toggle('hidden', noSidebar);
     }
+    // The topics view lists and searches all topics itself, so the short list in the sidebar steps aside
+    document.getElementById('topics-filter-group')?.toggleAttribute('hidden', view === 'topics');
 
     renderView(view);
 }
@@ -1766,9 +1747,7 @@ function renderOverview() {
     const meta = state.getMeta();
     if (!meta) return;
     const totalLetters = allLetters.length;
-    // Counted from the letters with personKey and placeKey like the lists and research paths,
-    // because the HSA index leaves out persons without authority id
-    const corpus = summarizeCorpus(allLetters, dataIndices);
+    const corpus = corpusSummary;
 
     // Update title
     const titleEl = document.getElementById('overview-title');
@@ -1829,19 +1808,10 @@ function renderOverview() {
             : '';
     }
 
-    // Calculate quality metrics from the letters, since parser and preprocessing
-    // name their uncertainty summaries differently
-    // Date quality (day precision, as in the header quality icons)
-    const preciseDates = allLetters.filter(l => l.datePrecision === 'day').length;
-    const dateQuality = totalLetters > 0 ? Math.round((preciseDates / totalLetters) * 100) : 0;
-
-    // Person quality (identified with authority refs)
-    const persons = countIdentifiedPersons(allLetters);
-    const personQuality = persons.total > 0 ? Math.round((persons.identified / persons.total) * 100) : 0;
-
-    // Place quality (georeferenced)
-    const geoPlaces = [...corpus.places.values()].filter(p => p.located).length;
-    const placeQuality = corpus.places.size > 0 ? Math.round((geoPlaces / corpus.places.size) * 100) : 0;
+    const percent = ({ known, total }) => (total > 0 ? Math.round((known / total) * 100) : 0);
+    const dateQuality = percent(corpusQuality.dates);
+    const personQuality = percent(corpusQuality.persons);
+    const placeQuality = percent(corpusQuality.places);
 
     // Update quality chips
     updateQualityChip('quality-chip-dates', `${dateQuality}% Datiert`);

@@ -48,7 +48,9 @@ Alle HTML-Seiten binden CSS in dieser Reihenfolge ein:
 <link rel="stylesheet" href="css/[page].css">
 ```
 
-Kein Stylesheet importiert `tokens.css` oder `components.css` erneut, `style.css` importiert nur die Schriften. `components.css` ist die einzige Quelle für `.btn`, `.btn-primary`, `.btn-secondary`, die Dialoggrundform (`.modal-overlay`, `.modal-content`, `.modal-header`, `.modal-body`) und den Kopfbereich der Ansichten (`.view-header`, siehe [5.5](#55-kopfbereich-der-ansichten)).
+Kein Stylesheet importiert `tokens.css` oder `components.css` erneut, `style.css` importiert nur die Schriften. `components.css` ist die einzige Quelle für `.btn`, `.btn-primary`, `.btn-secondary`, die Dialoggrundform (`.modal`, `.modal-content`, `.modal-header`, `.modal-body`, siehe [5.4](#54-modals)) und den Kopfbereich der Ansichten (`.view-header`, siehe [5.5](#55-kopfbereich-der-ansichten)).
+
+Ebenen stehen als Skala in `tokens.css` (`--z-base`, `--z-raised` für Ebenen innerhalb einer Komponente, dann `--z-dropdown`, `--z-sticky`, `--z-fixed`, `--z-modal`, `--z-tooltip`, `--z-tour`, `--z-toast`, `--z-skip-link`), kein Stylesheet setzt einen z-index als Zahl. Übergänge nennen ihre Eigenschaften über `--transition-properties` statt `transition: all`. Eine Komponente mit eigenen Breakpoints (Ansichtsleiste in `style.css`, Netzwerksteuerung in `explore.css`) führt diese direkt hinter ihren Grundregeln, weil eine spätere Grundregel gleicher Spezifität eine frühere Media Query überschreibt. So hatten bis 2026-11-05 die Grundregeln der Ansichtsleiste die Telefonregeln aufgehoben.
 
 ---
 
@@ -74,7 +76,8 @@ Kein Stylesheet importiert `tokens.css` oder `components.css` erneut, `style.css
 | Text Primary | `--color-text` | `#222222` | Haupttext, Konturen (Ink) |
 | Text Secondary | `--color-text-light` | `#555555` | Subtexte, Hints |
 | Border | `--color-border` | `#222222` | Dicke Konturen (2-3px) |
-| Border Light | `--color-border-light` | `#D4D0C0` | Subtile Trennlinien |
+| Border Light | `--color-border-light` | `#D4D0C0` | Subtile Trennlinien, nie Rand eines Bedienelements |
+| Border Control | `--color-border-control` | `#7F7A69` | Rand von Eingaben und Knöpfen ohne eigene Füllung |
 
 ### Akzentfarben (aus Logo)
 
@@ -120,6 +123,8 @@ Helle Tönungen für Hover und Statusflächen werden mit `color-mix()` aus den G
 Die Heatmap nutzt eine sequentielle Skala aus der Primärfarbe statt der früheren GitHub-Grüntöne, die außerhalb der Palette lagen. Stufe 0 (kein Brief) ist `--color-bg-light`, die Stufen 1 bis 3 mischen `--color-primary` zu 25, 50 und 75 % auf `--color-bg`, Stufe 4 ist `--color-primary`. Die Tokens liegen in `tokens.css`, die Klassen `.activity-level-0` bis `.activity-level-4` in `explore.css`.
 
 Die Zellen bleiben 12 x 12px und unterschreiten damit die Zielgröße von 24 x 24px nach WCAG 2.2 SC 2.5.8. Das Werkzeug beruft sich auf die Ausnahme „wesentliche Darstellung“: Ein Tageskalender über Jahrzehnte ist nur als dichtes Raster lesbar, bei 24px würde der Kalender des HSA viermal so groß und müsste in beide Richtungen scrollen. Jede Zelle bleibt per Tastatur (Roving Tabindex, Pfeiltasten) und Tooltip erreichbar. Die Ausnahme ist eine Auslegung der Norm, keine Messung (Entscheidung E6 vom 2026-11-05).
+
+Das Jahr der Heatmap wählt eine Auswahlliste mit Knöpfen für das vorige und das nächste Jahr, jede Option nennt die tagesgenauen Briefe des Jahrs. Bis 2026-11-05 stand ein Knopf je Jahr über der Heatmap, beim HSA mehrere Dutzend.
 
 ### Unsicherheits-Indikatoren
 
@@ -220,7 +225,7 @@ Kartenmarker werden nach dominanter Briefsprache des Ortes eingefaerbt. Toggle-B
 | Data Values | Mono | 0.875rem | 500 | Zahlen, IDs, Daten |
 | Labels/Captions | Sans | 0.75rem | 600 | `text-transform: uppercase` |
 
-Keine Schrift unterschreitet `--font-size-xs`, auch nicht in Zählern, Badges und Icons kleiner Kreise.
+Keine Schrift unterschreitet `--font-size-xs`, auch nicht in Zählern, Badges und Icons kleiner Kreise. Bis 2026-11-05 zogen einige Regeln 1 bis 4px davon ab (Achsenbeschriftung der Timeline, Korbzähler, Legenden), sie stehen jetzt auf dem Token.
 
 Überschriften folgen der Dokumentgliederung: `h1` (visuell versteckt) für die Seite, `h2` für den Kopf jeder Ansicht des Explorers, darunter `h3` und `h4` in den Detailbereichen. Größe und Abstand der `h2` setzt die gemeinsame Komponente `.view-header` ([5.5](#55-kopfbereich-der-ansichten)), nicht die Ebene.
 | Buttons | Sans | 0.875rem | 600 | `letter-spacing: 0.02em` |
@@ -332,17 +337,11 @@ Der Text des Secondary Buttons steht in `--color-primary-dark`, weil `--color-pr
 
 ### 5.4 Modals
 
-```css
-.modal-overlay {
-    background: var(--color-backdrop);
-}
+Alle Seiten nutzen eine Dialogform aus `components.css`: `.modal` ist der Hintergrund (`--color-backdrop`, `--z-modal`), `.modal-content` der Kasten mit höchstens 480px, `.modal-lg` weitet ihn für Listen auf 640px. Der Kasten bleibt in der Bildschirmhöhe (`100dvh`), es scrollt nur `.modal-body`. Dynamisch erzeugte Dialoge (gemeinsame Briefe im Vergleich, Briefe einer Erwähnung) nutzen dieselben Klassen und `openModal()`. Bis 2026-11-05 gab es drei Grundformen in `components.css`, `explore.css` und `upload.css` und zwei Klassensysteme (`.modal`, `.modal-overlay`).
 
-.modal-content {
-    background: var(--color-bg);
-    border: 3px solid var(--color-text);
-    border-radius: var(--radius-lg);
-    max-width: 600px;
-}
+```css
+.modal { position: fixed; inset: 0; z-index: var(--z-modal); background: var(--color-backdrop); }
+.modal-content { max-width: 480px; max-height: calc(100dvh - 2 * var(--space-md)); border: var(--border-modal); }
 ```
 
 Dicke Border (3px) für die Kontur, dazu der Schatten aus `shadows.css`, weil der Dialog über der Seite schwebt.
@@ -378,6 +377,7 @@ Alle zwölf Ansichten des Explorers beginnen mit derselben Komponente `.view-hea
 
 ### 6.1 Karte
 
+- Grundkarte: Standard ist der helle Stil von OpenFreeMap (Positron), der dunkle Stil bleibt über den Ebenen-Knopf erreichbar. Bis 2026-11-05 startete die Karte dunkel. Positron zeigt Land hellgrau und Wasser grau, die Vorgabe darunter erfüllt erst ein eigener Kartenstil ([plan.md](plan.md#vorhaben))
 - Landmassen: Dezentes Beige (`#E8E4D4`), keine Texturen
 - Kuesten: 1px Linie, nicht zu dominant
 - Orte: Kreise mit `--color-accent`, Groesse nach Briefanzahl skaliert
@@ -431,7 +431,9 @@ Media Queries können keine Custom Properties auswerten, sie wiederholen daher d
 | 768px bis 1199px | wie unten | Navigationslinks nur mit Icon (Text für Screenreader erhalten), Datensatztitel höchstens 12rem mit Auslassungspunkten |
 | >= 768px | 380px (var(--sidebar-width)), 240px bis 1024px | Flex Fill |
 
-Ein langer Datensatztitel in der Navigation wird mit Auslassungspunkten gekürzt (höchstens 20rem, vollständig im Tooltip) und gibt zuerst Platz ab, damit der Ansichtswechsel bedienbar bleibt. Der Wissenskorb stapelt Liste und Auswertung bis 1024px, die Liste nimmt dann die volle Breite. Breite Darstellungen (Timeline, Aktivitäts-Heatmap, Erwähnungsfluss) scrollen in ihrem eigenen Container, die Seite selbst bleibt auf 390px ohne horizontalen Überlauf (geprüft 2026-10-29 mit Playwright).
+Ein langer Datensatztitel in der Navigation wird mit Auslassungspunkten gekürzt (höchstens 20rem, vollständig im Tooltip) und gibt zuerst Platz ab, damit der Ansichtswechsel bedienbar bleibt. Der Wissenskorb stapelt Liste und Auswertung bis 1024px, die Liste nimmt dann die volle Breite. Breite Darstellungen (Timeline, Aktivitäts-Heatmap, Erwähnungsfluss) scrollen in ihrem eigenen Container, die Seite selbst bleibt ohne horizontalen Überlauf (geprüft 2026-10-29 bei 390px, am 2026-11-05 für alle zwölf Ansichten bei 1440, 1024, 768 und 390px mit Playwright).
+
+Die Ansichtsleiste scrollt waagerecht, wenn die zwölf Ansichten nicht passen. Ihre dünne Scrollleiste bleibt sichtbar und der angeschnittene Knopf am Rand zeigt, dass weitere Ansichten folgen. Bis 2026-11-05 war die Scrollleiste ausgeblendet. Der Fokusrahmen der Knöpfe liegt innen (`outline-offset: -3px`), damit der Überlauf der Leiste ihn nicht abschneidet.
 
 ---
 
@@ -459,6 +461,8 @@ Erlaubt:
 - Modal fade-in (opacity)
 - Tooltip-Erscheinen
 
+Reduzierte Bewegung (WCAG 2.3.3): Bei `prefers-reduced-motion: reduce` setzt `base.css` Übergänge und Animationen auf ihren Endzustand. In D3 liefert `motionMs()` dann 0ms für Übergänge und Zoom, `settleWithoutMotion()` berechnet das Kräftelayout von Netzwerk und Wissenskorb vorab und zeichnet es einmal. Die Demo-Tour scrollt ohne Glättung. Ein gezogener Knoten bewegt sich weiter mit, weil diese Bewegung der Hand folgt. Alle drei Helfer stehen in `utils.js`.
+
 ---
 
 ## 9. Accessibility
@@ -474,8 +478,11 @@ Erlaubt:
 | Secondary auf BG Main | 7.2:1 | Pass (AAA) |
 | Warning auf BG Main / BG Card | 6.1:1 / 5.3:1 | Pass (AA) |
 | Info auf BG Main / BG Card | 6.7:1 / 5.9:1 | Pass (AA) |
+| Border Control auf BG Main / BG Card | 3.9:1 / 3.4:1 | Pass (1.4.11), Rand von Eingaben und Knöpfen |
+| Border Light auf BG Main | 1.4:1 | nur für Trennlinien, bis 2026-11-05 auch Rand von Suchfeldern und Schrittknöpfen |
+| BG Card auf Text (Hinweis im dunklen Tooltip) | 12.5:1 | Pass (AAA), vorher Text Light mit Deckkraft 0.8, etwa 1.8:1 |
 
-Werte berechnet nach der WCAG-Formel für relative Leuchtdichte am 2026-10-29. Links im Fließtext des Dokumenten-Viewers sind unterstrichen, weil `--color-secondary` sich vom Fließtext nur mit 2:1 abhebt.
+Werte berechnet nach der WCAG-Formel für relative Leuchtdichte am 2026-10-29, die Zeilen zu Border Control, Border Light und Tooltip-Hinweis am 2026-11-05. Links im Fließtext des Dokumenten-Viewers sind unterstrichen, weil `--color-secondary` sich vom Fließtext nur mit 2:1 abhebt.
 
 ### Fokus-States (WCAG 2.1 AA)
 
@@ -506,6 +513,8 @@ select:focus-visible {
 ```
 
 Implementiert in base.css. Der vorherige Fokus der Eingaben (Schatten mit 10 % Deckkraft) erreichte nur 1.15:1 und wurde am 2026-10-29 ersetzt. Ergänzend: versteckte Checkboxen zeichnen den Fokus auf ihrem sichtbaren Kästchen (`.config-checkbox input:focus-visible ~ .checkmark`), die Kartenfläche zeigt ihn innen (`.maplibregl-canvas:focus-visible`), SVG-Knoten in Netzwerk und Erwähnungsfluss als Kontur (`stroke`), die Tooltips der Ansichtsknöpfe erscheinen auch bei Tastaturfokus. `base.css` stellt `.visually-hidden` für Statusmeldungen und unsichtbare Überschriften und `.skip-link` für den Sprunglink bereit. Interaktive Elemente sind mindestens 24 x 24px groß und schrumpfen in Flex-Zeilen nicht (`flex-shrink: 0`). Ausnahme sind die Zellen der Aktivitäts-Heatmap mit 12 x 12px, begründet unter [Aktivitäts-Heatmap](#aktivitäts-heatmap).
+
+Seitenstruktur von `explore.html`: Die Seitenüberschrift `h1` steht vor der Sidebar, deren Abschnitte sind `h2`, ihre Filtergruppen `h3`, die Ansichtstitel `h2`. Bis 2026-11-05 standen `h4` und `h5` der Sidebar vor dem `h1`. Die Navigation ist das einzige Navigations-Landmark, die Ansichtsleiste darin eine Gruppe (`role="group"`). Die Dialoge tragen `role="dialog"`, `aria-modal` und `aria-labelledby` auf ihre Überschrift.
 
 ---
 
@@ -561,11 +570,11 @@ Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige
 
 ### Startansicht und Navigation
 
-Die Kennzahlen der Sidebar (Briefe, Personen, Orte) zeigen bei aktivem Filter die gefilterte Zahl groß und darunter klein „von“ und die Gesamtzahl, ohne Filter nur die Gesamtzahl. So bleibt kein Filter unbemerkt, auch wenn sein Bedienelement eingeklappt ist. Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe, Bezeichnung und Kurzbeschreibung stehen im Tooltip und im zugänglichen Namen. Ab 1600px Breite steht die Bezeichnung zusätzlich sichtbar unter dem Icon. Darunter reicht der Platz neben Datensatztitel und Navigationslinks nicht, bei 1440px lief die Leiste über. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen.
+Die Kennzahlen der Sidebar (Briefe, Personen, Orte) zeigen bei aktivem Filter die gefilterte Zahl groß und darunter klein „von“ und die Gesamtzahl, ohne Filter nur die Gesamtzahl. So bleibt kein Filter unbemerkt, auch wenn sein Bedienelement eingeklappt ist. Die Kennzahlen und die Datenlage (Symbole an den Sidebar-Zahlen, Chips der Startansicht) entstehen aus einer Zusammenfassung beim Laden (`summarizeCorpus()`, `datasetQuality()`). Bis 2026-11-05 lasen die Sidebar-Symbole `meta.uncertainty` der Vorverarbeitung und zählten damit anders als die Chips. In der Themenansicht tritt die kurze Themenliste der Sidebar zurück, weil die Ansicht alle Themen mit eigener Suche zeigt. Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe. Die Bezeichnung ist der zugängliche Name, die Kurzbeschreibung steht im Tooltip und über `aria-describedby` auch für Screenreader. Ab 1600px Breite steht die Bezeichnung zusätzlich sichtbar unter dem Icon. Darunter reicht der Platz neben Datensatztitel und Navigationslinks nicht, bei 1440px lief die Leiste über. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen.
 
 ### Wissenspfade
 
-Ein gestarteter Forschungspfad erscheint als Leiste unter der Navigation mit Frage, nummerierten Schritten, Zurück, Weiter, Beenden und der Zahl der Einträge im Korb. Der Korb steht zusätzlich als Abschnitt in der Sidebar.
+Ein gestarteter Forschungspfad erscheint als eine Leiste unter der Navigation mit Frage, nummerierten Schritten, Zurück, Weiter (im letzten Schritt Abschließen) und Beenden. Den Korb zählen Navigation und Sidebar, die Leiste wiederholt ihn nicht. Bis 2026-11-05 gab es zusätzlich eine zweite Pfadnavigation unter der Ansicht und einen Zähler „Items“ in der Leiste.
 
 ### Forschungspfade
 

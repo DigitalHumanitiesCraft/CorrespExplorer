@@ -171,11 +171,11 @@ Default: Show all data including uncertain entries.
 
 ## Statistics Display
 
-The sidebar shows letters, senders and places with an icon whose tooltip names the uncertain share (`updateUncertaintyStats()` in `explore.js`). The icon is hidden when the share is zero or `meta.uncertainty` has no entry for it.
+The sidebar shows letters, persons and places with an icon whose tooltip names the share without exact value (`updateQualityIcons()` in `explore.js`). The figures come from `datasetQuality()` in `research-paths.js`, the same source as the data-situation chips of the overview, so uploads and preprocessed datasets count alike. The icon is hidden when the share is zero. Until 2026-11-05 the icons read `meta.uncertainty` of the preprocessing.
 
-- Letters: month, year, range and unknown dates together, "{n} mit ungenauem Datum ({p}%)"
-- Senders: unknown, partial and missing senders, "{n} unbekannt/unvollstaendig ({p}%)"
-- Places: region, unknown and missing places, "{n} ohne Koordinaten ({p}%)"
+- Letters: every letter without day precision, "{n} ohne tagesgenaues Datum ({p}%)"
+- Persons: senders and recipients without authority id, counted by `personKey`, "{n} Personen ohne Normdatei-ID ({p}%)"
+- Places: places of dispatch without coordinates, counted by `placeKey`, "{n} Orte ohne Koordinaten ({p}%)"
 
 HSA, from `meta.uncertainty` of `hsa-letters.json` on 2026-10-29: 585 of 11,576 letters with imprecise or missing date (5.1 %: 115 month, 166 year, 304 unknown). The preprocessing writes no sender or place statistics, so the two other icons stay hidden for the HSA. Sidebar and overview count persons and places alike from the letters with `summarizeCorpus()`: 1,031 persons (senders and recipients by `personKey`) and 774 places (by `placeKey`, without the placeholder "Unbekannt", see `isKnownPlace()`). The quality icon of the persons card still counts senders.
 

@@ -42,6 +42,9 @@ Die Punkte sind technisch und umkehrbar und brauchen keine Entscheidung des Oper
 - Live-Prüfung von „Lebensdaten von Wikidata laden“ im Personen-Dialog. correspSearch-API und OpenFreeMap-Grundkarte sind am 2026-11-05 live geprüft
 - Prüfung des CSV-Exports in Excel: Der Export trägt seit Entscheidung E4 ein UTF-8-BOM, ob Excel die Umlaute damit beim Doppelklick richtig zeigt, ist ungeprüft, weil kein Excel zur Verfügung stand
 - GitHub-Actions-Lauf für `test.html?test=true` und `tests/browser/smoke.py` (zweiter Schritt von Entscheidung E9)
+- Eigener Kartenstil mit beigen Landflächen und hellblauem Wasser nach [design.md](design.md#61-karte). Die Karte startet seit 2026-11-05 im hellen Stil Positron, der Land und Wasser in Grau zeigt
+- Tabellarische Textalternative für die Grafikansichten (Timeline, Netzwerk, Erwähnungsfluss, Heatmap), etwa eine aufklappbare Tabelle der dargestellten Werte. Der Audit vom 2026-11-05 fand keine, die Listenansichten decken einen Teil ab
+- Gleichnamige Komponentenklassen in Seiten-CSS, die nie zusammen geladen werden (`.empty-state` in explore.css und wissenskorb.css, `.progress-bar` und `.progress-text` in explore.css und upload.css, `.error-message` in style.css und upload.css), auf je eine Komponente in components.css zurückführen
 - Tastaturweg für die Sprachsegmente der Zeitleiste und die Verbindungen im Erwähnungsfluss. Jahresbalken, Netzwerkknoten und die Seitenknoten des Erwähnungsflusses haben einen
 - `build_hsa_data.py` soll die Präzision von Absender, Empfänger und Absendeort wie der Parser klassifizieren. Den Briefen von `hsa-letters.json` fehlt das Feld `precision`, Personen- und Ortsmarkierungen bleiben beim HSA deshalb leer, auch für die 576 Briefe aus „Unbekannt“ ([uncertainty-specification.md](uncertainty-specification.md#hsa-dataset-analysis))
 

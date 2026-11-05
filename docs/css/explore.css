@@ -20,7 +20,7 @@
     margin-bottom: var(--space-sm);
 }
 
-.sidebar-section-header h4 {
+.sidebar-section-header h2 {
     margin: 0;
     font-size: var(--font-size-sm);
     text-transform: uppercase;
@@ -32,6 +32,15 @@
 /* Dataset Section */
 #sidebar-dataset .stats-cards {
     margin-bottom: var(--space-sm);
+}
+
+/* Three cards share the sidebar width; the side padding keeps the number clear of the quality icon in the corner */
+#sidebar-dataset .stat-card {
+    padding: var(--space-md) var(--space-lg);
+}
+
+#sidebar-dataset .stat-value {
+    font-size: var(--font-size-lg);
 }
 
 /* ===================
@@ -316,7 +325,7 @@
     border-bottom: none;
 }
 
-#sidebar-filters .filter-group h5 {
+#sidebar-filters .filter-group h3 {
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-sm);
     font-weight: 600;
@@ -1032,7 +1041,7 @@
     left: 0;
     width: 35px;
     text-align: right;
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-xs);
     color: var(--color-text-light);
     transform: translateY(-50%);
 }
@@ -1076,7 +1085,7 @@
 .undated-bin-label {
     position: absolute;
     bottom: 12px; /* Same level as year labels (40px padding - 28px offset) */
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-xs);
     color: var(--color-text-light);
     font-style: normal;
     white-space: nowrap;
@@ -1168,7 +1177,7 @@
     left: 50%;
     transform: translateX(-50%) rotate(-45deg);
     transform-origin: top center;
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-xs);
     color: var(--color-text-light);
     white-space: nowrap;
 }
@@ -1432,7 +1441,7 @@
 }
 
 .btn-corresp i {
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-xs);
 }
 
 /* Person Detail Modal */
@@ -1495,7 +1504,7 @@
     background: var(--color-bg);
     border: 1px solid var(--color-border-light);
     border-radius: 12px;
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-xs);
     color: var(--color-text-light);
     margin-bottom: var(--space-sm);
 }
@@ -1827,7 +1836,7 @@
     }
 
     .timeline-bar-label {
-        font-size: var(--font-size-2xs);
+        font-size: var(--font-size-xs);
     }
 
     .timeline-stack-legend {
@@ -1854,7 +1863,7 @@
     }
 
     .timeline-bar-label {
-        font-size: var(--font-size-2xs);
+        font-size: var(--font-size-xs);
     }
 
     .person-card {
@@ -2114,7 +2123,7 @@
 }
 
 .legend-size-hint i {
-    font-size: var(--font-size-2xs);
+    font-size: var(--font-size-xs);
     margin-right: var(--space-xs);
     vertical-align: middle;
 }
@@ -3579,38 +3588,46 @@ body:has(.tour-highlight) .tour-backdrop {
     font-style: italic;
 }
 
-/* Jahr-Auswahl */
+/* Year choice above the heatmap: label, previous, select, next */
 .activity-year-selector {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin-bottom: var(--space-lg);
-    padding: var(--space-sm);
-    background: var(--color-bg-light);
-    border-radius: var(--radius-md);
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
 }
 
-.activity-year-btn {
-    padding: var(--space-xs) var(--space-sm);
+.activity-year-selector label {
+    font-weight: 600;
+}
+
+.activity-year-select,
+.activity-year-step {
+    min-height: 36px;
     border: 1px solid var(--color-border-control);
     border-radius: var(--radius-sm);
     background: var(--color-bg);
     color: var(--color-text);
-    font-size: var(--font-size-xs);
+    font: inherit;
+}
+
+.activity-year-select {
+    padding: 0 var(--space-sm);
+}
+
+.activity-year-step {
+    min-width: 36px;
     cursor: pointer;
-    transition: 0.15s ease;
-    transition-property: var(--transition-properties);
 }
 
-.activity-year-btn:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+.activity-year-step:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
-.activity-year-btn.active {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
-    color: white;
+.activity-year-step:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 /* Heatmap Wrapper */
@@ -4286,20 +4303,10 @@ body:has(.tour-highlight) .tour-backdrop {
     font-size: var(--font-size-xs);
 }
 
-.path-bar-basket {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    background: var(--color-primary-light);
-    border-radius: var(--radius-sm);
-    color: var(--color-primary);
-    font-size: var(--font-size-xs);
-    font-weight: 500;
-}
-
 .path-bar-close {
-    padding: 2px 6px;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0 var(--space-xs);
     background: transparent;
     border: 1px solid var(--color-border-control);
     border-radius: var(--radius-sm);
@@ -4314,6 +4321,22 @@ body:has(.tour-highlight) .tour-backdrop {
     border-color: var(--color-error);
     color: var(--color-error);
     background: var(--color-error-light);
+}
+
+.path-bar-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.path-bar-actions .btn {
+    padding: var(--space-xs) var(--space-md);
+}
+
+.path-bar-actions .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Aktions-Anleitung - kompakter, in gleicher Zeile integriert */
@@ -4344,7 +4367,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 /* On --color-primary-light the accent reaches only 4.34:1, the dark variant meets AA */
-#sidebar-basket .sidebar-section-header h4 {
+#sidebar-basket .sidebar-section-header h2 {
     color: var(--color-primary-dark);
 }
 
@@ -4446,65 +4469,6 @@ body:has(.tour-highlight) .tour-backdrop {
     color: white;
 }
 
-/* Pfad-Navigation (unten) */
-.knowledge-path-nav {
-    position: sticky;
-    bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-md) var(--space-lg);
-    background: var(--color-bg);
-    border-top: 1px solid var(--color-border-light);
-    z-index: 50;
-}
-
-.btn-path-nav {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-lg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    font-size: var(--font-size-md);
-    font-weight: 500;
-    transition: 0.15s;
-    transition-property: var(--transition-properties);
-}
-
-.btn-path-back {
-    background: var(--color-bg);
-    color: var(--color-text);
-}
-
-.btn-path-back:hover:not(:disabled) {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-}
-
-.btn-path-back:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.btn-path-next {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
-    color: white;
-}
-
-.btn-path-next:hover {
-    background: var(--color-primary-dark);
-    border-color: var(--color-primary-dark);
-}
-
-.path-nav-info {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    font-weight: 500;
-}
-
 /* Responsive */
 @media (max-width: 767px) {
     .path-bar-content {
@@ -4522,22 +4486,11 @@ body:has(.tour-highlight) .tour-backdrop {
         width: 100%;
     }
 
-    .path-bar-basket {
+    .path-bar-actions {
         order: 2;
+        margin-left: auto;
     }
 
-    .path-bar-close {
-        order: 2;
-    }
-
-    .knowledge-path-nav {
-        padding: var(--space-sm);
-    }
-
-    .btn-path-nav {
-        padding: var(--space-xs) var(--space-md);
-        font-size: var(--font-size-sm);
-    }
 }
 
 /* Load error: replaces the explorer when a dataset cannot be loaded */

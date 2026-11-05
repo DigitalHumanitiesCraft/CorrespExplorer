@@ -14,7 +14,7 @@ import {
 } from './basket.js';
 
 import { BASKET_LIMITS } from './constants.js';
-import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath, ignoreMissingStyleImages } from './utils.js';
+import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath, ignoreMissingStyleImages, settleWithoutMotion } from './utils.js';
 import { lettersToCsv, letterExportRow } from './export.js';
 import { readTokens } from './views/view-support.js';
 
@@ -731,6 +731,7 @@ function renderNetwork(analysis) {
             .attr('x', d => d.x)
             .attr('y', d => d.y);
     });
+    settleWithoutMotion(simulation);
 
     function drag(simulation) {
         return d3.drag()

@@ -5,7 +5,8 @@
 
 import { parseCMIF } from '../cmif-parser.js';
 import { state } from '../state-manager.js';
-import { countIdentifiedPersons, isMultiYearSpan, datedYearRange } from '../utils.js';
+import { isMultiYearSpan, datedYearRange } from '../utils.js';
+import { datasetQuality, summarizeCorpus } from '../research-paths.js';
 import { NO_LANGUAGE, registerLanguageLabels, languageLabel } from '../constants.js';
 import { assert } from './test-runner.js';
 import { analyzeCoordinateNeeds } from '../geonames-enrichment.js';
@@ -260,14 +261,20 @@ export const AggregationTests = {
 
         {
             // Regression: the overview showed 0% identified persons because ids are bare
-            // authority ids, not URLs
-            name: 'countIdentifiedPersons: Zählt Personen mit Normdaten-ID',
+            // authority ids, not URLs. Sidebar icons and overview chips read these figures,
+            // which count persons and places like the corpus summary behind the counters
+            name: 'datasetQuality: Personen mit Normdaten-ID aus derselben Zusammenfassung wie die Zähler',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
-                const { identified, total } = countIdentifiedPersons(data.letters);
+                const corpus = summarizeCorpus(data.letters, data.indices);
+                const quality = datasetQuality(data.letters, corpus);
 
-                assert(identified > 0, `Should count persons with authority id, got ${identified}`);
-                assert(identified < total, `Fixture has persons without authority id, got ${identified}/${total}`);
+                assert(quality.persons.total === corpus.persons.size, `Personen ${quality.persons.total} statt ${corpus.persons.size}`);
+                assert(quality.places.total === corpus.places.size, `Orte ${quality.places.total} statt ${corpus.places.size}`);
+                assert(quality.persons.known > 0, `Should count persons with authority id, got ${quality.persons.known}`);
+                assert(quality.persons.known < quality.persons.total, `Fixture has persons without authority id, got ${quality.persons.known}/${quality.persons.total}`);
+                const dayPrecise = data.letters.filter(l => l.datePrecision === 'day').length;
+                assert(quality.dates.known === dayPrecise && quality.dates.total === data.letters.length, 'Tagesgenaue Daten falsch gezählt');
             }
         },
 

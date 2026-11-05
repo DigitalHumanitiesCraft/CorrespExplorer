@@ -3,7 +3,7 @@
 // to the primary button of each step, Tab stays inside the step, Escape ends the tour and focus
 // returns to where it was before.
 
-import { trapTabKey } from './utils.js';
+import { prefersReducedMotion, trapTabKey } from './utils.js';
 
 let currentStep = 1;
 const totalSteps = 12;
@@ -200,7 +200,7 @@ function highlightTarget(stepNumber) {
             targetEl.classList.add('tour-highlight');
 
             // Scroll target into view if needed
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetEl.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' });
         }
     }
 }

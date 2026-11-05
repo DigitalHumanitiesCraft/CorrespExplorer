@@ -48,7 +48,7 @@
     <div id="filter-status" class="visually-hidden" role="status" aria-live="polite"></div>
 
     <!-- Simple Navigation for Explore -->
-    <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
+    <nav class="navbar" aria-label="Hauptnavigation">
         <div class="nav-brand">
             <a href="index.html" class="nav-brand-link">
                 <i class="fas fa-arrow-left" aria-hidden="true"></i>
@@ -56,7 +56,7 @@
                 <span class="brand-text" id="dataset-title">CorrespExplorer</span>
             </a>
         </div>
-        <div class="view-switcher" role="navigation" aria-label="Ansichtswechsel">
+        <div class="view-switcher" role="group" aria-label="Ansichten">
             <!-- Start View (Overview + Pfade kombiniert) -->
             <button class="view-btn active" data-view="overview" aria-pressed="true" aria-label="Start" data-tooltip="Start" data-tooltip-desc="Übersicht und Forschungspfade">
                 <i class="fas fa-home" aria-hidden="true"></i> <span class="view-btn-text">Start</span>
@@ -120,8 +120,8 @@
         </div>
     </nav>
 
-    <!-- Wissenspfad-Leiste (hidden by default) -->
-    <div id="knowledge-path-bar" class="knowledge-path-bar hidden">
+    <!-- The only knowledge path control: question, steps, back, next and end -->
+    <div id="knowledge-path-bar" class="knowledge-path-bar hidden" role="region" aria-label="Wissenspfad">
         <div class="path-bar-content">
             <div class="path-bar-question">
                 <i class="fas fa-route" aria-hidden="true"></i>
@@ -130,13 +130,17 @@
             <div class="path-bar-steps" id="path-bar-steps">
                 <!-- Dynamisch: Pfad-Schritte -->
             </div>
-            <div class="path-bar-basket">
-                <i class="fas fa-shopping-basket" aria-hidden="true"></i>
-                <span id="path-bar-basket-count">0</span> Items
+            <div class="path-bar-actions">
+                <button type="button" id="path-nav-back" class="btn btn-secondary" disabled>
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i> Zurück
+                </button>
+                <button type="button" id="path-nav-next" class="btn btn-primary">
+                    Weiter <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="path-bar-close" id="path-bar-close" title="Wissenspfad beenden" aria-label="Wissenspfad beenden">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
             </div>
-            <button type="button" class="path-bar-close" id="path-bar-close" title="Wissenspfad beenden" aria-label="Wissenspfad beenden">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
         </div>
         <!-- Aktions-Anleitung für aktuellen Schritt -->
         <div class="path-action-hint" id="path-action-hint">
@@ -147,16 +151,17 @@
 
     <!-- Main Container -->
     <div class="container">
+        <h1 class="visually-hidden" id="page-title">CorrespExplorer</h1>
         <div class="content-wrapper">
             <!-- Sidebar -->
-            <aside class="sidebar" id="explore-sidebar" role="complementary" aria-label="Datensatz und Filter">
+            <aside class="sidebar" id="explore-sidebar" aria-label="Datensatz und Filter">
 
                 <!-- ========================================
                      SECTION 1: DATENSATZ (Kontext zuerst)
                      ======================================== -->
                 <div class="sidebar-section" id="sidebar-dataset">
                     <div class="sidebar-section-header">
-                        <h4>Datensatz</h4>
+                        <h2>Datensatz</h2>
                     </div>
 
                     <!-- Stats Cards -->
@@ -190,7 +195,7 @@
                      ======================================== -->
                 <div class="sidebar-section" id="sidebar-filters">
                     <div class="sidebar-section-header">
-                        <h4>Filter</h4>
+                        <h2>Filter</h2>
                         <button id="reset-filters" class="btn-reset-small" aria-label="Filter zurücksetzen" title="Filter zurücksetzen">
                             <i class="fas fa-undo" aria-hidden="true"></i>
                         </button>
@@ -198,7 +203,7 @@
 
                     <!-- Time Period Filter -->
                     <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
-                        <h5 id="filter-time-heading">Zeitraum</h5>
+                        <h3 id="filter-time-heading">Zeitraum</h3>
                         <div id="year-range-slider"></div>
                         <div class="year-range-display">
                             <span id="year-range-text">-</span>
@@ -225,13 +230,13 @@
 
                     <!-- Language Filter (dynamically populated) -->
                     <div class="filter-group hidden" role="group" aria-labelledby="filter-language-heading" id="language-filter-group">
-                        <h5 id="filter-language-heading">Briefsprache</h5>
+                        <h3 id="filter-language-heading">Briefsprache</h3>
                         <div id="language-checkboxes"></div>
                     </div>
 
                     <!-- Topics Quick Filter (dynamically populated) -->
                     <div class="filter-group hidden" role="group" aria-labelledby="filter-topics-heading" id="topics-filter-group">
-                        <h5 id="filter-topics-heading">Themen</h5>
+                        <h3 id="filter-topics-heading">Themen</h3>
                         <input type="search" id="topics-quick-search" class="topics-quick-search" placeholder="Thema suchen..." aria-label="Thema suchen">
                         <div id="topics-quick-filter" class="topics-quick-list"></div>
                         <a href="#" id="show-all-topics" class="show-all-link">Alle Themen anzeigen</a>
@@ -244,7 +249,7 @@
                      ======================================== -->
                 <div class="sidebar-section" id="sidebar-basket">
                     <div class="sidebar-section-header">
-                        <h4><i class="fas fa-star" aria-hidden="true"></i> Wissenskorb</h4>
+                        <h2><i class="fas fa-star" aria-hidden="true"></i> Wissenskorb</h2>
                         <button id="clear-basket" class="btn-reset-small" title="Korb leeren" aria-label="Korb leeren">
                             <i class="fas fa-trash" aria-hidden="true"></i>
                         </button>
@@ -264,7 +269,6 @@
 
             <!-- Main Content -->
             <main class="main-content" id="main-content" tabindex="-1">
-                <h1 class="visually-hidden" id="page-title">CorrespExplorer</h1>
                 <!-- Overview View -->
                 <div id="overview-view" class="tab-content active">
                     <div class="overview-container overview-compact">
@@ -728,9 +732,16 @@
                             </div>
                         </div>
 
-                        <!-- Jahr-Auswahl -->
+                        <!-- Year choice: one select instead of one button per year -->
                         <div class="activity-year-selector" id="activity-year-selector">
-                            <!-- Dynamisch gefüllt mit Jahr-Buttons -->
+                            <label for="activity-year-select">Jahr</label>
+                            <button type="button" class="activity-year-step" data-step="-1" aria-label="Vorheriges Jahr">
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </button>
+                            <select id="activity-year-select" class="activity-year-select"></select>
+                            <button type="button" class="activity-year-step" data-step="1" aria-label="Nächstes Jahr">
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </button>
                         </div>
 
                         <!-- Heatmap Container -->
@@ -846,18 +857,6 @@
                     </div>
                 </div>
 
-                <!-- Wissenspfad Navigation (hidden by default) -->
-                <div id="knowledge-path-nav" class="knowledge-path-nav hidden">
-                    <button id="path-nav-back" class="btn-path-nav btn-path-back" disabled>
-                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Zurück
-                    </button>
-                    <div class="path-nav-info">
-                        <span id="path-nav-step">Schritt 1 von 3</span>
-                    </div>
-                    <button id="path-nav-next" class="btn-path-nav btn-path-next">
-                        Weiter im Pfad <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                    </button>
-                </div>
             </main>
         </div>
     </div>
