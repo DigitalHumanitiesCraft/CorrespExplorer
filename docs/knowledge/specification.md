@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-10-29
+updated: 2026-11-05
 authors: [Christopher Pollin]
 template:
   name: Vorlage Specification
@@ -65,6 +65,7 @@ Als neue Nutzerin möchte ich einen Beispieldatensatz laden, um die Funktionen d
 
 - Vorprozessierter HSA-Datensatz verfügbar
 - Laden mit einem Klick
+- Links auf den Tutorial-Datensatz (`explore.html?view=…&demo=true`) öffnen ihn auch in einem neuen Tab oder bei anderen Personen, die Tour erscheint einmal je Browser und entfällt mit `tour=0`
 
 ### Überblick und Statistik
 
@@ -145,7 +146,7 @@ Als Forschende möchte ich alle Briefe einer bestimmten Person sehen, um deren K
 Als Forschende möchte ich sehen, wer mit wem korrespondiert hat, um Netzwerke und Cluster zu erkennen.
 
 - Force-Directed Graph mit D3.js, Zoom und Drag
-- Modus Zeitgenossen: Knoten sind Absender, Größe nach Briefanzahl, eine Kante verbindet zwei Absender, die in mindestens so vielen gleichen Jahren Briefe schrieben, wie der Regler vorgibt ([design.md](design.md#netzwerk)), dazu eine Obergrenze der Knoten
+- Modus Zeitgenossen: Knoten sind Absender, Größe nach Briefanzahl, eine Kante verbindet zwei Absender, die in mindestens so vielen gleichen Jahren Briefe schrieben, wie der Regler vorgibt ([design.md](design.md#netzwerk)), dazu eine Obergrenze der Knoten. Die Standardschwelle zeigt Verbindungen, sobald der Datensatz welche enthält
 - Modus Themen: Themen als Knoten, Kanten nach gemeinsamen Briefen
 - Klick oder Enter auf einen Knoten filtert die Briefe
 - Lücke: Kanten aus dem Briefwechsel selbst (Absender zu Empfänger, Stärke nach Briefanzahl) und ein Filter nach Mindestzahl der Briefe gibt es nicht. Die Kanten der Zeitgenossen zeigen gleichzeitige Aktivität, nicht Korrespondenz
@@ -222,7 +223,7 @@ Als Forschende möchte ich einen Link zu meiner gefilterten Ansicht teilen, um K
 
 - Ansicht und alle Filter (Zeitraum oder undatiert, Sprachen, Person, Ort, Thema, Qualität) stehen in der URL, ein fehlender Parameter bedeutet keinen Filter
 - Bei vorprozessierten Datensätzen (`?json=`) sehen Empfänger dieselbe Ansicht mit denselben Briefen
-- Bei hochgeladenen Dateien trägt der Link nur Ansicht und Filter, der Datensatz liegt im Tab der Absenderin. Empfänger ohne diesen Upload landen auf der Startseite
+- Bei hochgeladenen Dateien und correspSearch-Abfragen trägt der Link nur Ansicht und Filter, der Datensatz liegt im Tab der Absenderin. Empfänger ohne diesen Datensatz landen auf der Startseite mit einem Hinweis darauf. Links auf den Tutorial-Datensatz laden ihn selbst
 - Die URL wird mit `replaceState` geschrieben, der Zurück-Knopf nimmt keine Filterschritte zurück
 
 #### US-21 Als CSV exportieren

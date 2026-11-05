@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2025-11-26
-updated: 2026-10-30
+updated: 2026-11-05
 authors: [Christopher Pollin]
 template:
   name: Vorlage Journal
@@ -22,6 +22,15 @@ related: [project, specification, plan, handoff]
 # Journal: CorrespExplorer
 
 ## Einträge
+
+### 2026-11-05 Prüfung des Forschungswegs vor dem Workshop und Behebung der schweren Befunde
+
+- Anlass: Der CorrespExplorer wird im Workshop am 9. und 10.11.2026 gezeigt und steht als Beispiel auf der Seite „fancy (research) tools!“ von Digital Humanities Craft. Beim Aufnehmen von Screenshots brachen Tour und Ansichtsleiste das Aufnahme-Skript der Website. Der Operator ließ das Werkzeug zuerst prüfen und dann die schweren Befunde beheben.
+- Befund: Zwei unabhängige Subagenten gingen live und lokal den Weg einer Forscherin durch (Demo, Upload, correspSearch-URL, alle Ansichten, Filter, Korb, Export, Teilen, Zurück), dazu liefen axe-core und eigene Messungen. Die Tour öffnete in jedem neuen Tab erneut, weil ihr Zustand in sessionStorage lag, und ließ den Fokus nach Escape auf `body`. Links mit `demo=true` ohne vorherigen Upload leiteten still zur Startseite. Das Netzwerk des Tutorial-Datensatzes war mit der Standardschwelle leer, weil die Schwelle nur nach der Zeitspanne gewählt wurde. correspSearch schreibt genaue Daten als `from` gleich `to`, `classifyDate` stufte sie als Zeitspanne ein, bei der Abfrage für 1890 galten 54 von 87 Briefen als ungenau datiert. Das Aufnahme-Skript suchte die Ansicht über ihren sichtbaren Text, der in der Leiste immer ausgeblendet war. Die zugänglichen Namen der Ansichtsknöpfe waren vorhanden, axe-core fand auf keiner Seite einen Verstoß.
+- Entschieden: Demo-Links laden den Tutorial-Datensatz selbst, mit demselben Korbschlüssel wie der Weg über die Startseite und ohne Wikidata (ADR-006). Links ohne ihren Datensatz führen zur Startseite mit einem Hinweis. Die Tour merkt sich ihr Ende in localStorage, `tour=0` unterdrückt sie. Die Standardschwelle des Netzwerks ist der höchste Wert bis zum Vorgabewert, der noch eine Kante zeigt. Die Ansichtsleiste zeigt ab 1600px die Bezeichnungen, „Mentions Flow“ heißt in der Oberfläche „Erwähnungen“. Die übrigen Befunde stehen als 12 bis 17 und als offene Entscheidungen in [plan.md](plan.md).
+- Korrigiert: [design.md](design.md#netzwerk) begründete die Schwelle nach der Zeitspanne als lesbar für alle Datensätze, für den Tutorial-Datensatz traf das nicht zu. [specification.md](specification.md#us-20-gefilterte-ansicht-teilen) nannte nur Uploads als Links ohne Datensatz, correspSearch-Abfragen gehören dazu.
+- Geändert: `classifyDate` in `utils.js`, `demo-tour.js` mit `shouldStartDemoTour()`, `loadDemoDataset()` und `addTableCoordinates()` in `cmif-parser.js` (der Upload nutzt dieselbe Koordinatenfunktion), `explore.js` mit Demo-Laden und Hinweisweiterleitung, Hinweis in `upload.js`, `defaultNetworkThreshold()` in `network-view.js` statt der Zeitspannenregel, Beschriftung der Ansichtsleiste in `style.css`, Bezeichnungen in `explore.html`, `about.html`, `index.html` und `research-paths.js`. Fall 024 in `test-uncertainty.xml`, neue Suite Demo. [architecture.md](architecture.md), [specification.md](specification.md), [design.md](design.md), [testing.md](testing.md), [uncertainty-specification.md](uncertainty-specification.md), [plan.md](plan.md), README und die CONTEXT-MAPs.
+- Belege: Commit `4a4b9b0`. Browser-Test-Runner headless ohne Fehlschlag. Gegenprobe ohne die Änderungen: Die Suite Demo lädt nicht, ohne die Änderung an `classifyDate` scheitern Fall 024 und der Qualitätsfilter des state-managers. Playwright gegen den lokalen Server: Demo-Links aller zwölf Ansichten bleiben im Explorer, Netzwerk des Tutorial-Datensatzes mit Knoten bei Schwelle 1, Tour einmal je Browser und Fokus auf dem aktiven Ansichtsknopf, Hinweis auf der Startseite, Weg über die Demo-Karte unverändert, Ansichtsleiste ohne Überlauf bei 1366, 1599, 1600 und 1920px. axe-core ohne Verstöße auf allen Seiten, den zwölf Ansichten mit `hsa-letters.json` und dem Demo-Netzwerk.
 
 ### 2026-10-30 Entscheidungen des Operators zu Testregel, Ansichtskopf und Paper-Entwurf
 

@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-10-30
+updated: 2026-11-05
 authors: [Christopher Pollin]
 template:
   name: Vorlage Design
@@ -544,7 +544,7 @@ Bei Korpora mit vielen Sprachen werden gestapelte Balken mit lauter kräftigen F
 
 ### Netzwerk
 
-Die Mindestzahl gemeinsamer Jahre (`minYears`) für eine Kante richtet sich nach der Zeitspanne des Datensatzes, 1 bis zu fünf Jahren, 2 bis zu zwanzig Jahren, sonst 3. Kurze Zeiträume haben wenige Beziehungen und brauchen eine niedrige Schwelle, lange Zeiträume eine höhere, damit das Netzwerk lesbar bleibt. Alternativ färbt eine sequentielle Skala (D3 `interpolateYlGnBu`) jeden Korrespondenten nach dem Jahr seines ersten Briefs, eine Gradient-Legende zeigt den Jahresbereich. So werden frühe und späte Teilnehmer und die Entwicklung des Netzwerks sichtbar.
+Die Standardschwelle für eine Kante (gemeinsame Jahre `minYears`, bei Themen gemeinsame Briefe `minCooccurrence`) ist der höchste Wert bis zum Vorgabewert in `NETWORK_DEFAULTS`, bei dem der Datensatz noch eine Kante zeigt. Große Datensätze behalten so eine lesbare Schwelle, kleine wie der Tutorial-Datensatz zeigen ein Netz statt einer leeren Fläche. Die frühere Regel nach der Zeitspanne ließ den Tutorial-Datensatz (über 20 Jahre, wenige Briefe je Absender) leer. Alternativ färbt eine sequentielle Skala (D3 `interpolateYlGnBu`) jeden Korrespondenten nach dem Jahr seines ersten Briefs, eine Gradient-Legende zeigt den Jahresbereich. So werden frühe und späte Teilnehmer und die Entwicklung des Netzwerks sichtbar.
 
 ## Interaktionsmuster
 
@@ -558,7 +558,7 @@ Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige
 
 ### Startansicht und Navigation
 
-Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe, Bezeichnung und Kurzbeschreibung stehen im Tooltip und im zugänglichen Namen. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen.
+Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe, Bezeichnung und Kurzbeschreibung stehen im Tooltip und im zugänglichen Namen. Ab 1600px Breite steht die Bezeichnung zusätzlich sichtbar unter dem Icon. Darunter reicht der Platz neben Datensatztitel und Navigationslinks nicht, bei 1440px lief die Leiste über. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen.
 
 ### Wissenspfade
 

@@ -9,7 +9,7 @@ method:
 status: draft
 language: en
 created: 2025-11-27
-updated: 2026-10-29
+updated: 2026-11-05
 authors: [Christopher Pollin]
 related: [specification, data, design, architecture]
 ---
@@ -244,7 +244,7 @@ The file `data/test-uncertainty.xml` contains 23 cases organized in 4 sections:
 | 017 | No place at all | Empty or "-" |
 | 018 | Place with GeoNames | Normal display, map marker |
 
-### Section D: Special Cases (Cases 019-023)
+### Section D: Special Cases (Cases 019-024)
 
 | Case | Description | Expected Display |
 |------|-------------|------------------|
@@ -253,6 +253,7 @@ The file `data/test-uncertainty.xml` contains 23 cases organized in 4 sections:
 | 021 | Letter with language (fr) | Language filter shows "Franzoesisch" |
 | 022 | Letter with subjects | Topics visible in Topics view |
 | 023 | Language target "None" with label Ladinisch, as in the HSA source | Shown as "Ladinisch", not counted as a letter without language |
+| 024 | `from` and `to` on the same day, as correspSearch writes exact dates | Day precision, no range marker |
 
 ---
 

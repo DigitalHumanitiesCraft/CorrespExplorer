@@ -11,7 +11,7 @@ CorrespExplorer lets researchers load any CMIF file in the browser and explore t
 - CMIF-XML file upload (drag-and-drop or URL), and URLs of the correspSearch API v2.0
 - Links from person and letter details to the correspSearch web search
 - Wikidata enrichment (portraits, life dates, professions)
-- Twelve views (overview, map, correspondents, letters, timeline, topics, places, network, mentions flow, chronicle, activity heatmap, comparison)
+- Twelve views (overview, map, correspondents, letters, timeline, topics, places, network, mentions, chronicle, activity heatmap, comparison)
 - Research paths that guide through the views (Wissenspfade) and a basket (Wissenskorb) with its own analysis page
 - Multi-dimensional filtering (time, language, person, subject, place)
 - CSV/JSON export
@@ -50,7 +50,7 @@ The documentation lives in [docs/knowledge/](docs/knowledge/INDEX.md), whose ind
 
 CorrespExplorer began in October 2025 as HerData, a prototype for women in Goethe's correspondence (first commit `dbef54b`), and became a generic explorer for any CMIF file on 2025-11-26 (`9a01c32`). Christopher Pollin developed the tool with Promptotyping, an iterative method in which a domain expert and an LLM build a research tool from maintained project knowledge ([Promptotyping: Von der Idee zur Anwendung](https://dhcraft.org/excellence/blog/Promptotyping/)). The harness was Claude Code. Where commits carry a co-author trailer, it names the coding agent: in 2025 mostly an unversioned "Claude", Claude Opus 4.5 from December 2025, Claude Opus 4.8 on the July 2026 licensing commit and Claude Opus 5.5 from October 2026. The project knowledge lives in [docs/knowledge/](docs/knowledge/INDEX.md), and [CLAUDE.md](CLAUDE.md) is the agent's entry point.
 
-Checking is layered. Verification runs the browser test runner `docs/test.html`, which loads CMIF fixture files through the production parser; there is no CI. Agentic review by LLM agents checked behaviour beyond the tests, among them a prompt for an external review ([review-prompt.md](research-artefacts/review-prompt.md)), a code review round on 2026-10-02, a browser test of every view with Playwright on 2026-10-29 and, on the same day, an audit by subagents (function, pages, accessibility, design, code and documentation) with the fixes reviewed independently. Commit `29dfc15` is the state before the knowledge base was aligned with the Promptotyping document templates on 2026-10-28. The episodes in which output looked correct and was not are recorded in the [journal](docs/knowledge/journal.md).
+Checking is layered. Verification runs the browser test runner `docs/test.html`, which loads CMIF fixture files through the production parser; there is no CI. Agentic review by LLM agents checked behaviour beyond the tests, among them a prompt for an external review ([review-prompt.md](research-artefacts/review-prompt.md)), a code review round on 2026-10-02, a browser test of every view with Playwright on 2026-10-29 and, on the same day, an audit by subagents (function, pages, accessibility, design, code and documentation) with the fixes reviewed independently, and on 2026-11-05 a walkthrough of the researcher's path, live and locally, ahead of a workshop. Commit `29dfc15` is the state before the knowledge base was aligned with the Promptotyping document templates on 2026-10-28. The episodes in which output looked correct and was not are recorded in the [journal](docs/knowledge/journal.md).
 
 ## Limits
 

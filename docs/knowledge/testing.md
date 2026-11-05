@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-12-03
-updated: 2026-10-30
+updated: 2026-11-05
 authors: [Christopher Pollin]
 template:
   name: Vorlage Testing
@@ -33,7 +33,7 @@ Was testen wir?
 - Performance-kritische Funktionen (Caching)
 
 Was testen wir nicht?
-- Visuelles Rendering (D3, MapLibre) und die Aggregationen, die nur in `explore.js` oder einer Ansicht leben, etwa `aggregateLettersByPlace()` und den Aufbau des Netzwerks
+- Visuelles Rendering (D3, MapLibre) und die Aggregationen, die nur in `explore.js` oder einer Ansicht leben, etwa `aggregateLettersByPlace()`. Vom Netzwerk prüft die Suite Demo nur die Standardschwelle über die exportierten Builder
 - Externe APIs (Wikidata, correspSearch)
 - Browser-spezifische Edge-Cases
 
@@ -66,6 +66,7 @@ Business Logic mit echten Daten
 - test-formatters.js - Formatierung mit echten Daten
 - test-security.js - Escaping, URL-Schemata und `?json=`-Pfade gegen `docs/data/test-hostile.xml`
 - test-research-paths.js - Forschungspfade für Parser- und HSA-Indexform, Korbauswahl je Ansicht, CSV-Export, Normdaten im Personenindex
+- test-demo.js - Tour, Demo-Links ohne Upload und Standardschwelle des Netzwerks an `docs/data/demo-showcase.xml`
 - test-state-manager.js - Filter-Logik mit echten CMIF-Daten, darunter Personen- und Ortsfilter ohne Normdaten-ID und der Rundweg des URL-State
 
 Infrastruktur
