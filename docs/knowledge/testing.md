@@ -117,9 +117,19 @@ http://localhost:8000/test.html?test=true
 
 `test.html` besitzt den einzigen Auslöser. `?test=true` betätigt die Schaltfläche einmal, `run-all-tests.js` startet keinen eigenen Lauf, weil zwei gleichzeitige Läufe sich den state-manager teilten. Eine CI ist nicht eingerichtet.
 
+## Browser-Smoke-Test
+
+`tests/browser/smoke.py` prüft im Browser, was der Test-Runner nicht sieht (Entscheidung E9 vom 2026-11-05). Das Skript startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile, der Exit-Code ist nur bei vollständigem Erfolg 0. Es prüft den Test-Runner, alle Ansichten ohne Konsolenfehler, die Ladezeit des HSA, Demo-Link und Demo-Netzwerk, die Tour, den Hinweis bei fehlendem Datensatz, Zurück zur vorigen Ansicht, einen geteilten Filterlink gegen die Zahl aus `hsa-letters.json`, CSV-Export mit BOM und Normdatei-Spalten, die Person im Korb, den Balken „Spanne“ und den Link der Karte zur Ortsliste. `--online` prüft zusätzlich einen geteilten correspSearch-Link gegen die API, `--axe <Pfad zu axe.min.js>` führt axe-core über die Seiten.
+
+```bash
+uv run tests/browser/smoke.py --online --axe path/to/axe.min.js
+```
+
+Die Ladezeitgrenze des HSA liegt bei 5 Sekunden (`--load-limit`). Sie fängt einen Rückschritt um eine Größenordnung, nicht das Rauschen des Rechners, eigene Performance-Tests mit festen Grenzen gibt es deshalb nicht (Entscheidung E10 vom 2026-11-05). Eine CI ist nicht eingerichtet.
+
 ## Browser-Prüfung der Ansichten
 
-Die Ansichten prüft ein Durchlauf mit Python-Playwright in Chrome (`channel="chrome"`, headless) gegen einen lokalen Server auf `docs/`. Die Skripte liegen nicht im Repository. Der Durchlauf vom 2026-10-29 deckte ab:
+Vor dem Smoke-Test prüften Durchläufe mit Python-Playwright außerhalb des Repositorys die Ansichten. Der Durchlauf vom 2026-10-29 deckte ab:
 
 - Laden von `explore.html?json=data/hsa-letters.json` und Upload von `demo-showcase.xml`, `test-uncertainty.xml` und `test-hostile.xml` über die Startseite
 - jede der zwölf Ansichten mit Prüfung auf Konsolen- und Seitenfehler

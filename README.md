@@ -38,7 +38,7 @@ python -m http.server 8000 --directory docs
 # Visit http://localhost:8000
 ```
 
-Run the tests in the browser at `http://localhost:8000/test.html?test=true`, which starts one run on load, or open `test.html` and press Run. The extended HSA dataset is rebuilt with `python preprocessing/build_hsa_data.py`, which needs the Python package `lxml` (`pip install -r preprocessing/requirements.txt`). See [CLAUDE.md](CLAUDE.md) for coding guidelines.
+Run the tests in the browser at `http://localhost:8000/test.html?test=true`, which starts one run on load, or open `test.html` and press Run. The browser smoke test `uv run tests/browser/smoke.py` serves `docs/` itself and walks the researcher's path through the pages. The extended HSA dataset is rebuilt with `python preprocessing/build_hsa_data.py`, which needs the Python package `lxml` (`pip install -r preprocessing/requirements.txt`). See [CLAUDE.md](CLAUDE.md) for coding guidelines.
 
 The technology stack is MapLibre GL JS (map), D3 with d3-sankey (network and flow diagrams), noUiSlider (time range), marked (knowledge viewer) and vanilla JavaScript ES modules, with no build process. All libraries and fonts are vendored in `docs/vendor/` with their licence files, so the pages load no code from a CDN; only the OpenFreeMap basemap is external.
 
@@ -55,7 +55,7 @@ Checking is layered. Verification runs the browser test runner `docs/test.html`,
 ## Limits
 
 - The tests cover small fixture files and passed while the October 2026 review still found defects in the interface. Behaviour outside the tested functions is checked only by review.
-- There is no continuous integration. The test runner and the browser checks of the views run by hand.
+- There is no continuous integration. The test runner and the browser smoke test run by hand.
 - Open findings and planned work are tracked in [plan.md](docs/knowledge/plan.md).
 
 ## Licence and citation

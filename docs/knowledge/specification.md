@@ -83,7 +83,7 @@ Als Forschende möchte ich auf einen Blick sehen, wie viele Briefe, Personen und
 
 Als Forschende möchte ich die zeitliche Verteilung der Korrespondenz sehen, um Hochphasen und Lücken zu erkennen.
 
-- Timeline als Balkendiagramm je Jahr, gestapelt nach Sprache, undatierte Briefe in einem eigenen Balken
+- Timeline als Balkendiagramm je Jahr, gestapelt nach Sprache, undatierte Briefe in einem eigenen Balken, Briefe mit einer Datierung über mehrere Jahre (etwa 1822 bis 1922) in einem Balken „Spanne“. Diese zählen nicht zum Zeitraum des Datensatzes (Entscheidung E5 vom 2026-11-05)
 - Zeitfilter per Klick oder Enter auf einen Jahresbalken
 - Lücke: Eine Gruppierung nach Dekade gibt es nicht
 
@@ -225,15 +225,17 @@ Als Forschende möchte ich einen Link zu meiner gefilterten Ansicht teilen, um K
 
 - Ansicht und alle Filter (Zeitraum oder undatiert, Sprachen, Person, Ort, Thema, Qualität) stehen in der URL, ein fehlender Parameter bedeutet keinen Filter
 - Bei vorprozessierten Datensätzen (`?json=`) sehen Empfänger dieselbe Ansicht mit denselben Briefen
-- Bei hochgeladenen Dateien und correspSearch-Abfragen trägt der Link nur Ansicht und Filter, der Datensatz liegt im Tab der Absenderin. Empfänger ohne diesen Datensatz landen auf der Startseite mit einem Hinweis darauf. Links auf den Tutorial-Datensatz laden ihn selbst
-- Die URL wird mit `replaceState` geschrieben, der Zurück-Knopf nimmt keine Filterschritte zurück
+- Bei hochgeladenen Dateien trägt der Link nur Ansicht und Filter, der Datensatz liegt im Tab der Absenderin. Empfänger ohne diesen Datensatz landen auf der Startseite mit einem Hinweis darauf. Links auf den Tutorial-Datensatz laden ihn selbst
+- Ein Ansichtswechsel legt einen Eintrag in der Browser-Historie an, Zurück führt zur vorigen Ansicht. Filteränderungen ersetzen den Eintrag (`replaceState`), weil ein Zug am Jahresregler sonst viele Einträge erzeugte (Entscheidung E1 vom 2026-11-05)
+- Bei correspSearch-Abfragen trägt der Link die Abfrage als `cs=`, Empfänger laden sie neu. `cs=` nimmt nur Adressen der correspSearch-API an (Entscheidung E3 vom 2026-11-05)
 
 #### US-21 Als CSV exportieren
 
 Als Forschende möchte ich die gefilterten Briefe als CSV exportieren, um sie in Tabellenkalkulation oder anderen Werkzeugen zu analysieren.
 
 - Export der aktuell gefilterten Briefe, die Exportoptionen sind bei null Briefen deaktiviert
-- Spalten `id`, `date`, `date_to`, `year`, `date_precision`, `date_certainty`, `sender_name`, `sender_id`, `sender_precision`, `recipient_name`, `recipient_id`, `recipient_precision`, `place_name`, `place_geonames`, `place_precision`, `language`, `url` (`LETTER_EXPORT_COLUMNS` in `export.js`)
+- Spalten `id`, `date`, `date_to`, `year`, `date_precision`, `date_certainty`, `sender_name`, `sender_id`, `sender_authority`, `sender_precision`, `recipient_name`, `recipient_id`, `recipient_authority`, `recipient_precision`, `place_name`, `place_geonames`, `place_precision`, `language`, `url` (`LETTER_EXPORT_COLUMNS` in `export.js`). Die Spalten `*_authority` nennen die Normdatei (`gnd`, `viaf`) zur Nummer in `*_id`
+- Die Datei beginnt mit einem UTF-8-BOM, damit Excel Umlaute richtig liest. Ob das in Excel wirkt, ist nicht geprüft (Entscheidung E4 vom 2026-11-05)
 
 #### US-22 Als JSON exportieren
 
@@ -358,7 +360,7 @@ Als Forschende möchte ich von einer Forschungsfrage geleitet durch die Ansichte
 Als Forschende möchte ich aus jeder Detailansicht Einträge in den Korb legen, um ohne Seitenwechsel zu sammeln.
 
 - Brief-Dialog, Briefliste und Kartenpopup mit Umschalter für den einzelnen Brief
-- Personen-Dialog, Personenliste, Orts-Detail und Jahresbalken der Timeline legen alle Briefe der Person, des Orts oder des Jahrs in den Korb
+- Personen-Dialog und Personenliste legen die Person, das Orts-Detail den Ort als eigenen Eintrag in den Korb, die Analyseseite wertet alle ihre Briefe aus (Entscheidung E2 vom 2026-11-05). Der Jahresbalken der Timeline legt die Briefe des Jahrs in den Korb, ein Jahr ist kein Eintrag
 - Eine Rückmeldung nennt die Zahl der hinzugefügten Einträge und, bei vollem Korb, die abgewiesenen. Ein Umschalter wird nur markiert, wenn der Korb den Eintrag aufgenommen hat, bereits gesammelte Einträge sind markiert, im Brief-Dialog über die Beschriftung „Im Korb“, sonst mit `aria-pressed`
 
 ### Vergleich
@@ -457,3 +459,5 @@ Wahl. Jede Anfrage an Wikidata oder GeoNames startet erst auf eine ausdrücklich
 Begründung. Nutzende sollen sehen und bestimmen, wann Daten das Werkzeug verlassen. Eine einheitliche Regel ist leichter zu prüfen als Ausnahmen je Ansicht.
 
 Effekt. Gilt für Personen-Dialog, Chronik, Orte und Upload. Eine Antwort für eine zuvor geöffnete Person wird verworfen, wenn inzwischen eine andere im Dialog steht (`personDetailRequest` in `explore.js`).
+
+Ergänzung vom 2026-11-05. Die Regel betrifft Anreicherung mit Personenbezug. Das Laden des Datensatzes selbst fällt nicht darunter: Ein geteilter Link mit `cs=` lädt die genannte correspSearch-Abfrage beim Öffnen ohne weitere Aktion, so wie ein Link mit `json=` die gebündelte Datei lädt (Entscheidung E3). `cs=` nimmt nur Adressen an, die `isCorrespSearchUrl()` zulässt.

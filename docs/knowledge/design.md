@@ -119,6 +119,8 @@ Helle Tönungen für Hover und Statusflächen werden mit `color-mix()` aus den G
 
 Die Heatmap nutzt eine sequentielle Skala aus der Primärfarbe statt der früheren GitHub-Grüntöne, die außerhalb der Palette lagen. Stufe 0 (kein Brief) ist `--color-bg-light`, die Stufen 1 bis 3 mischen `--color-primary` zu 25, 50 und 75 % auf `--color-bg`, Stufe 4 ist `--color-primary`. Die Tokens liegen in `tokens.css`, die Klassen `.activity-level-0` bis `.activity-level-4` in `explore.css`.
 
+Die Zellen bleiben 12 x 12px und unterschreiten damit die Zielgröße von 24 x 24px nach WCAG 2.2 SC 2.5.8. Das Werkzeug beruft sich auf die Ausnahme „wesentliche Darstellung“: Ein Tageskalender über Jahrzehnte ist nur als dichtes Raster lesbar, bei 24px würde der Kalender des HSA viermal so groß und müsste in beide Richtungen scrollen. Jede Zelle bleibt per Tastatur (Roving Tabindex, Pfeiltasten) und Tooltip erreichbar. Die Ausnahme ist eine Auslegung der Norm, keine Messung (Entscheidung E6 vom 2026-11-05).
+
 ### Unsicherheits-Indikatoren
 
 Konsistente visuelle Sprache fuer Datenqualitaet ueber alle Views hinweg.
@@ -380,6 +382,7 @@ Alle zwölf Ansichten des Explorers beginnen mit derselben Komponente `.view-hea
 - Kuesten: 1px Linie, nicht zu dominant
 - Orte: Kreise mit `--color-accent`, Groesse nach Briefanzahl skaliert
 - Cluster: Konzentrisches Design, Zahl innen
+- Tastatur: Die Marker sind Teil der MapLibre-Fläche und nicht einzeln fokussierbar. Der Kopf der Karte nennt die Ortsansicht als Tastaturweg und öffnet sie über einen Link-Knopf (`.view-header__link`, `data-switch-view`). Die Ortsliste bietet dieselben Orte mit Briefzahl und Filter (Entscheidung E7 vom 2026-11-05)
 
 ### 6.2 Netzwerk
 
@@ -502,7 +505,7 @@ select:focus-visible {
 }
 ```
 
-Implementiert in base.css. Der vorherige Fokus der Eingaben (Schatten mit 10 % Deckkraft) erreichte nur 1.15:1 und wurde am 2026-10-29 ersetzt. Ergänzend: versteckte Checkboxen zeichnen den Fokus auf ihrem sichtbaren Kästchen (`.config-checkbox input:focus-visible ~ .checkmark`), die Kartenfläche zeigt ihn innen (`.maplibregl-canvas:focus-visible`), SVG-Knoten in Netzwerk und Erwähnungsfluss als Kontur (`stroke`), die Tooltips der Ansichtsknöpfe erscheinen auch bei Tastaturfokus. `base.css` stellt `.visually-hidden` für Statusmeldungen und unsichtbare Überschriften und `.skip-link` für den Sprunglink bereit. Interaktive Elemente sind mindestens 24 x 24px groß und schrumpfen in Flex-Zeilen nicht (`flex-shrink: 0`). Ausnahme sind bisher die Zellen der Aktivitäts-Heatmap mit 12 x 12px ([plan.md](plan.md#e6-zielgröße-der-heatmap-zellen)).
+Implementiert in base.css. Der vorherige Fokus der Eingaben (Schatten mit 10 % Deckkraft) erreichte nur 1.15:1 und wurde am 2026-10-29 ersetzt. Ergänzend: versteckte Checkboxen zeichnen den Fokus auf ihrem sichtbaren Kästchen (`.config-checkbox input:focus-visible ~ .checkmark`), die Kartenfläche zeigt ihn innen (`.maplibregl-canvas:focus-visible`), SVG-Knoten in Netzwerk und Erwähnungsfluss als Kontur (`stroke`), die Tooltips der Ansichtsknöpfe erscheinen auch bei Tastaturfokus. `base.css` stellt `.visually-hidden` für Statusmeldungen und unsichtbare Überschriften und `.skip-link` für den Sprunglink bereit. Interaktive Elemente sind mindestens 24 x 24px groß und schrumpfen in Flex-Zeilen nicht (`flex-shrink: 0`). Ausnahme sind die Zellen der Aktivitäts-Heatmap mit 12 x 12px, begründet unter [Aktivitäts-Heatmap](#aktivitäts-heatmap).
 
 ---
 

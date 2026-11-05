@@ -244,7 +244,7 @@ The file `data/test-uncertainty.xml` contains 23 cases organized in 4 sections:
 | 017 | No place at all | Empty or "-" |
 | 018 | Place with GeoNames | Normal display, map marker |
 
-### Section D: Special Cases (Cases 019-024)
+### Section D: Special Cases (Cases 019-025)
 
 | Case | Description | Expected Display |
 |------|-------------|------------------|
@@ -254,6 +254,7 @@ The file `data/test-uncertainty.xml` contains 23 cases organized in 4 sections:
 | 022 | Letter with subjects | Topics visible in Topics view |
 | 023 | Language target "None" with label Ladinisch, as in the HSA source | Shown as "Ladinisch", not counted as a letter without language |
 | 024 | `from` and `to` on the same day, as correspSearch writes exact dates | Day precision, no range marker |
+| 025 | `notBefore="1850"` and `notAfter="1950"`, a span over a century | Range precision, shown in the timeline bin "Spanne", not part of the dataset period |
 
 ---
 
