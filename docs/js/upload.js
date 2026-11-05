@@ -3,9 +3,10 @@
 
 import { parseCMIF, addTableCoordinates } from './cmif-parser.js';
 import { isCorrespSearchUrl } from './correspsearch-api.js';
+import { summarizeCorpus } from './research-paths.js';
 import { enrichPersonsBatch } from './wikidata-enrichment.js';
 import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
-import { openModal, closeModal, enableModalKeyboard, personKey, placeKey } from './utils.js';
+import { openModal, closeModal, enableModalKeyboard } from './utils.js';
 
 // DOM Elements
 let uploadZone, fileInput, urlInput, urlSubmit;
@@ -160,7 +161,7 @@ async function handleUrlSubmit() {
     }
 
     if (!isValidUrl(url)) {
-        showError('Bitte geben Sie eine gueltige URL ein.');
+        showError('Bitte geben Sie eine gültige URL ein.');
         return;
     }
 
@@ -232,7 +233,7 @@ async function handleDatasetSelect(card) {
 async function processFile(file) {
     // Validate file type
     if (!file.name.endsWith('.xml') && !file.type.includes('xml')) {
-        showError('Bitte waehlen Sie eine XML-Datei aus.');
+        showError('Bitte wählen Sie eine XML-Datei aus.');
         return;
     }
 
@@ -263,8 +264,10 @@ async function showConfigDialog(data, sourceInfo) {
 
     // Count entities
     const letterCount = data.letters?.length || 0;
-    const personCount = countUniquePersons(data.letters || []);
-    const placeCount = countUniquePlaces(data.letters || []);
+    // Counted like the explorer's overview, so the dialog and the explorer show the same figures
+    const corpus = summarizeCorpus(data.letters || [], data.indices);
+    const personCount = corpus.persons.size;
+    const placeCount = corpus.places.size;
     const enrichableCount = extractEnrichablePersons(data.letters || []).length;
 
     // Update modal content
@@ -303,7 +306,7 @@ async function showConfigDialog(data, sourceInfo) {
         warningTextEl.textContent = `Die Anreicherung kann ca. ${totalTime} Sekunden dauern.`;
         warningEl.classList.remove('hidden');
     } else if (enrichableCount === 0 && coordStats.needsResolution === 0) {
-        warningTextEl.textContent = 'Keine Anreicherungsoptionen verfuegbar.';
+        warningTextEl.textContent = 'Keine Anreicherungsoptionen verfügbar.';
         warningEl.classList.remove('hidden');
     } else {
         warningEl.classList.add('hidden');
@@ -462,35 +465,13 @@ function finalizeAndRedirect(data, sourceInfo) {
         sessionStorage.setItem('cmif-data', JSON.stringify(storedData));
     } catch (e) {
         console.error('Could not store dataset in sessionStorage:', e);
-        showError(`Datensatz zu gross fuer Browser-Speicher (${data.letters?.length || 0} Briefe). Bitte verwenden Sie einen kleineren Datensatz oder das vorprozessierte HSA.`);
+        showError(`Datensatz zu groß für Browser-Speicher (${data.letters?.length || 0} Briefe). Bitte verwenden Sie einen kleineren Datensatz oder das vorprozessierte HSA.`);
         hideConfigModal();
         return;
     }
 
     // Always start with the overview; the demo flag starts the tour in explore.js
     window.location.href = sourceInfo?.isDemo ? 'explore.html?demo=true&view=overview' : 'explore.html?view=overview';
-}
-
-// Persons by personKey (ADR-001), so name variants of one authority ID count once
-function countUniquePersons(letters) {
-    const persons = new Set();
-    letters.forEach(letter => {
-        [letter.sender, letter.recipient].forEach(person => {
-            const key = personKey(person);
-            if (key) persons.add(key);
-        });
-    });
-    return persons.size;
-}
-
-// Places by placeKey (ADR-001)
-function countUniquePlaces(letters) {
-    const places = new Set();
-    letters.forEach(letter => {
-        const key = placeKey(letter.place_sent);
-        if (key) places.add(key);
-    });
-    return places.size;
 }
 
 // Persons with a GND or VIAF ID, the authorities the Wikidata lookup supports

@@ -69,7 +69,7 @@ function initMentionsPersonAutocomplete() {
 
         const selectedDisplay = elements.getById('mentions-flow-selected-person');
         if (selectedDisplay) {
-            selectedDisplay.innerHTML = `<strong>${escapeHtml(person.name)}</strong> - ${person.mentionCount} Erwaehnungen`;
+            selectedDisplay.innerHTML = `<strong>${escapeHtml(person.name)}</strong> - ${person.mentionCount} Erwähnungen`;
         }
 
         renderMentionsFlowForPerson(person);
@@ -156,7 +156,7 @@ export function renderMentionsFlow() {
     if (placeholder) {
         if (!selectedMentionsPerson) {
             placeholder.style.display = 'flex';
-            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Personen mit Erwaehnungen im Datensatz</p>';
+            placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Personen mit Erwähnungen im Datensatz</p>';
         } else {
             renderMentionsFlowForPerson(selectedMentionsPerson);
         }
@@ -232,7 +232,7 @@ function renderMentionsFlowForPerson(person) {
 
     if (mentionedByPerson.length === 0 && personMentionedBy.length === 0) {
         placeholder.style.display = 'flex';
-        placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Mentions-Daten fuer diese Person</p>';
+        placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Keine Mentions-Daten für diese Person</p>';
         return;
     }
 
@@ -282,7 +282,7 @@ function renderMentionsFlowForPerson(person) {
 
     if (nodes.length < 2 || links.length === 0) {
         placeholder.style.display = 'flex';
-        placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Zu wenig Daten fuer Visualisierung</p>';
+        placeholder.innerHTML = '<i class="fas fa-info-circle"></i><p>Zu wenig Daten für Visualisierung</p>';
         return;
     }
 
@@ -311,8 +311,8 @@ function renderMentionsFlowForPerson(person) {
     const hasLeftColumn = personMentionedBy.length > 0;
     const hasRightColumn = mentionedByPerson.length > 0;
 
-    const summary = `Erwaehnungsfluss fuer ${person.name}: ` +
-        `${personMentionedBy.length} Absender erwaehnen die Person, die Person erwaehnt ${mentionedByPerson.length} Personen. ` +
+    const summary = `Erwähnungsfluss für ${person.name}: ` +
+        `${personMentionedBy.length} Absender erwähnen die Person, die Person erwähnt ${mentionedByPerson.length} Personen. ` +
         'Pfeiltasten wechseln den Knoten, Enter wechselt zu dieser Person.';
 
     const svg = d3.select(container)
@@ -346,7 +346,7 @@ function renderMentionsFlowForPerson(person) {
                 .attr('text-anchor', 'start')
                 .style('font-size', tokens.fontXs)
                 .style('fill', tokens.textLight)
-                .text('(diese Absender erwaehnen die Person)');
+                .text('(diese Absender erwähnen die Person)');
         }
     }
 
@@ -378,7 +378,7 @@ function renderMentionsFlowForPerson(person) {
                 .attr('text-anchor', 'end')
                 .style('font-size', tokens.fontXs)
                 .style('fill', tokens.textLight)
-                .text('(von der Person in Briefen erwaehnt)');
+                .text('(von der Person in Briefen erwähnt)');
         }
     }
 
@@ -440,7 +440,7 @@ function renderMentionsFlowForPerson(person) {
             d3.select(this).attr('opacity', 0.9);
             const sourceName = d.source.name;
             const targetName = d.target.name;
-            tooltip.innerHTML = `<strong>${escapeHtml(sourceName)}</strong> erwaehnt <strong>${escapeHtml(targetName)}</strong> in ${d.value} Brief(en)`;
+            tooltip.innerHTML = `<strong>${escapeHtml(sourceName)}</strong> erwähnt <strong>${escapeHtml(targetName)}</strong> in ${d.value} Brief(en)`;
             tooltip.style.display = 'block';
         })
         .on('mousemove', function(event) {
@@ -485,7 +485,7 @@ function renderMentionsFlowForPerson(person) {
             if (d.isCenter) return null;
             const shown = shortName(d.name);
             const lead = shown === d.name ? d.name : `${shown.replace('…', '')}, ${d.name}`;
-            return `${lead}: ${d.value} ${d.column === 0 ? 'Briefe mit Erwaehnung der Person' : 'Erwaehnungen'}`;
+            return `${lead}: ${d.value} ${d.column === 0 ? 'Briefe mit Erwähnung der Person' : 'Erwähnungen'}`;
         })
         .style('cursor', d => d.isCenter ? 'default' : 'pointer')
         .on('click', function(event, d) {
@@ -590,9 +590,9 @@ function renderMentionsFlowForPerson(person) {
     const controlsDiv = document.createElement('div');
     controlsDiv.className = 'sankey-zoom-controls';
     controlsDiv.innerHTML = `
-        <button class="map-control-btn" id="sankey-zoom-in" title="Vergroessern" aria-label="Vergroessern"><i class="fas fa-plus" aria-hidden="true"></i></button>
+        <button class="map-control-btn" id="sankey-zoom-in" title="Vergrößern" aria-label="Vergrößern"><i class="fas fa-plus" aria-hidden="true"></i></button>
         <button class="map-control-btn" id="sankey-zoom-out" title="Verkleinern" aria-label="Verkleinern"><i class="fas fa-minus" aria-hidden="true"></i></button>
-        <button class="map-control-btn" id="sankey-zoom-reset" title="Zuruecksetzen" aria-label="Zuruecksetzen"><i class="fas fa-compress-arrows-alt" aria-hidden="true"></i></button>
+        <button class="map-control-btn" id="sankey-zoom-reset" title="Zurücksetzen" aria-label="Zurücksetzen"><i class="fas fa-compress-arrows-alt" aria-hidden="true"></i></button>
     `;
     container.style.position = 'relative';
     container.appendChild(controlsDiv);
@@ -638,7 +638,7 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
             <div class="modal-content common-letters-modal">
                 <div class="modal-header">
                     <h3 id="mention-modal-title"></h3>
-                    <button class="modal-close" aria-label="Schliessen">&times;</button>
+                    <button class="modal-close" aria-label="Schließen">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="common-letters-list" id="mention-modal-body"></div>
@@ -656,7 +656,7 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
     }
 
     document.getElementById('mention-modal-title').textContent =
-        `${senderName} erwaehnt ${mentionedName} (${relevantLetters.length} Briefe)`;
+        `${senderName} erwähnt ${mentionedName} (${relevantLetters.length} Briefe)`;
 
     const body = document.getElementById('mention-modal-body');
     body.innerHTML = relevantLetters.slice(0, 50).map(letter => {

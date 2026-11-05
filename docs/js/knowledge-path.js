@@ -159,7 +159,7 @@ function updateKnowledgePathUI() {
     const actionText = document.getElementById('path-action-text');
     const currentStep = knowledgePath.path[knowledgePath.currentStep];
     if (actionText && currentStep) {
-        actionText.textContent = currentStep.action || 'Erkunde diese Ansicht und fuege interessante Elemente zum Korb hinzu.';
+        actionText.textContent = currentStep.action || 'Erkunde diese Ansicht und füge interessante Elemente zum Korb hinzu.';
     }
 
     updatePathNavigation();
@@ -243,7 +243,7 @@ function updateSidebarBasketUI() {
         } else {
             html += `
                 <a href="wissenskorb.html" class="basket-view-link">
-                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> Korb oeffnen
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i> Korb öffnen
                 </a>
             `;
         }

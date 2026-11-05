@@ -11,6 +11,7 @@ import { SecurityTests } from './test-security.js';
 import { BasketTests } from './test-basket.js';
 import { ResearchPathTests } from './test-research-paths.js';
 import { DemoTests } from './test-demo.js';
+import { CorrespSearchTests } from './test-correspsearch.js';
 
 /**
  * Run all registered suites
@@ -26,6 +27,7 @@ export async function runAllTests() {
         SecurityTests,
         ResearchPathTests,
         DemoTests,
+        CorrespSearchTests,
 
         // Infrastructure (State Management)
         StateManagerTests,

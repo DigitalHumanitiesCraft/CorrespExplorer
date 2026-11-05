@@ -41,7 +41,7 @@ export const SecurityTests = {
         },
 
         {
-            name: 'escapeHtml: Behaelt 0 und liefert leeren String fuer null/undefined',
+            name: 'escapeHtml: Behält 0 und liefert leeren String für null/undefined',
             run() {
                 assert(escapeHtml(0) === '0', `0 should stay "0", got "${escapeHtml(0)}"`);
                 assert(escapeHtml(null) === '', 'null should yield empty string');
@@ -61,7 +61,7 @@ export const SecurityTests = {
         },
 
         {
-            name: 'buildAuthorityLink: Kein Link fuer javascript: URI',
+            name: 'buildAuthorityLink: Kein Link für javascript: URI',
             run() {
                 assert(buildAuthorityLink('javascript:alert(1)') === '', 'javascript: URI must not become a link');
                 assert(buildAuthorityLink('https://d-nb.info/gnd/118540238').includes('href="https://d-nb.info/gnd/118540238"'), 'GND link should be built');

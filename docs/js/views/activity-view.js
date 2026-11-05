@@ -36,11 +36,11 @@ function parseLocalDate(dateStr) {
  * @param {Array} letters - Array of letter objects
  * @returns {Object} Index with byDate, byYear, byMonth, stats and the count of letters without a day
  */
-function buildActivityIndex(letters) {
+export function buildActivityIndex(letters) {
     const byDate = new Map();      // "YYYY-MM-DD" -> {count, ids}
     const byYear = new Map();      // YYYY -> count of day-precise letters
     const byMonth = new Map();     // "YYYY-MM" -> count of day-precise letters
-    const withoutDay = { month: 0, year: 0, range: 0 };
+    const withoutDay = { month: 0, year: 0, range: 0, undated: 0 };
     const yearsWithLetters = new Set();
 
     let total = 0;
@@ -48,7 +48,10 @@ function buildActivityIndex(letters) {
     let maxYear = { year: null, count: 0 };
 
     for (const letter of letters) {
-        if (!letter.date || letter.datePrecision === 'unknown') continue;
+        if (!letter.date || letter.datePrecision === 'unknown') {
+            withoutDay.undated++;
+            continue;
+        }
 
         if (letter.datePrecision !== 'day') {
             if (letter.datePrecision in withoutDay) withoutDay[letter.datePrecision]++;
@@ -169,9 +172,9 @@ function renderWithoutDayNote(container) {
         note.className = 'filter-help';
         container.querySelector('.activity-stats')?.after(note);
     }
-    const { month, year, range } = activityIndex.withoutDay;
+    const { month, year, range, undated } = activityIndex.withoutDay;
     const sum = month + year + range;
-    if (sum === 0) {
+    if (sum + undated === 0) {
         note.classList.add('hidden');
         note.textContent = '';
         return;
@@ -180,7 +183,12 @@ function renderWithoutDayNote(container) {
     if (month) parts.push(`${month.toLocaleString('de-DE')} auf den Monat`);
     if (year) parts.push(`${year.toLocaleString('de-DE')} auf das Jahr`);
     if (range) parts.push(`${range.toLocaleString('de-DE')} auf einen Zeitraum`);
-    note.textContent = `Die Heatmap zeigt nur tagesgenau datierte Briefe. ${sum.toLocaleString('de-DE')} weitere Briefe sind nur ${parts.join(', ')} datiert und erscheinen in keiner Tageszelle.`;
+    // Day, coarser and undated letters add up to the whole dataset, so no letter goes unmentioned
+    const sentences = ['Die Heatmap zeigt nur tagesgenau datierte Briefe.'];
+    if (sum) sentences.push(`${sum.toLocaleString('de-DE')} weitere Briefe sind nur ${parts.join(', ')} datiert.`);
+    if (undated) sentences.push(`${undated.toLocaleString('de-DE')} ${undated === 1 ? 'Brief ist' : 'Briefe sind'} undatiert.`);
+    sentences.push('Sie erscheinen in keiner Tageszelle.');
+    note.textContent = sentences.join(' ');
     note.classList.remove('hidden');
 }
 

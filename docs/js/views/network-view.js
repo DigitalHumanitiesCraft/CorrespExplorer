@@ -475,7 +475,7 @@ export function renderNetwork() {
 
     if (data.nodes.length === 0) {
         const thresholdText = networkType === 'topics'
-            ? `mindestens ${networkMinCooccurrence} gemeinsamen Erwaehnungen`
+            ? `mindestens ${networkMinCooccurrence} gemeinsamen Erwähnungen`
             : `mindestens ${networkMinYears} gemeinsamen Jahren`;
         container.innerHTML = `
             <div class="network-empty">
@@ -503,7 +503,7 @@ export function renderNetwork() {
     const nodeKind = networkType === 'topics' ? 'Themen' : 'Korrespondenten';
     const topNames = [...data.nodes].sort((a, b) => b.total - a.total).slice(0, 3).map(n => n.name).join(', ');
     const summary = `Netzwerk mit ${data.nodes.length} ${nodeKind} und ${data.links.length} Verbindungen. ` +
-        `Groesste Knoten: ${topNames}. Pfeiltasten wechseln den Knoten, Enter filtert die Briefe.`;
+        `Größte Knoten: ${topNames}. Pfeiltasten wechseln den Knoten, Enter filtert die Briefe.`;
 
     // Create SVG
     networkSvg = d3.select(container)
@@ -615,7 +615,7 @@ export function renderNetwork() {
         node.append('title')
             .text(d => `${d.name}\n${d.total} Briefe`);
         link.append('title')
-            .text(d => `${d.sourceName} + ${d.targetName}\n${d.count}x gemeinsam erwaehnt`);
+            .text(d => `${d.sourceName} + ${d.targetName}\n${d.count}x gemeinsam erwähnt`);
     } else {
         node.append('title')
             .text(d => {
@@ -743,7 +743,7 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
     // Update info text
     if (infoText) {
         if (networkType === 'topics') {
-            infoText.textContent = 'Themen die gemeinsam in Briefen erwaehnt werden';
+            infoText.textContent = 'Themen die gemeinsam in Briefen erwähnt werden';
         } else {
             infoText.textContent = 'Korrespondenten die in denselben Jahren aktiv sind';
         }
@@ -753,8 +753,8 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
     if (legendDiv) {
         const label = networkType === 'topics' ? 'Themen-Netzwerk' : 'Zeitgenossen-Netzwerk';
         const sizeHint = networkType === 'topics'
-            ? 'Groesse = Anzahl Briefe'
-            : 'Groesse = Briefmenge';
+            ? 'Größe = Anzahl Briefe'
+            : 'Größe = Briefmenge';
 
         if (networkColorMode === 'entry' && networkType === 'contemporaries' && minYear && maxYear) {
             legendDiv.innerHTML = `

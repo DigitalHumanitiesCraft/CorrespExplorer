@@ -3,7 +3,7 @@
 // Also handles correspSearch API responses (TEI-JSON format)
 
 import { isCorrespSearchUrl, fetchFromCorrespSearchUrl } from './correspsearch-api.js';
-import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate, cleanId, buildIndices, isUnknownPlaceName } from './utils.js';
+import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate, cleanId, buildIndices, isUnknownPlaceName, httpErrorMessage } from './utils.js';
 import { LANGUAGE_LABELS } from './constants.js';
 
 const TEI_NS = 'http://www.tei-c.org/ns/1.0';
@@ -32,26 +32,26 @@ export async function parseCMIF(source, onProgress = null) {
         try {
             const response = await fetch(source);
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(httpErrorMessage(response.status, response.statusText));
             }
             xmlString = await response.text();
         } catch (fetchError) {
-            // CORS errors manifest as TypeError or NetworkError
-            if (fetchError.name === 'TypeError' || fetchError.message.includes('Failed to fetch') ||
-                fetchError.message.includes('NetworkError') || fetchError.message.includes('CORS')) {
+            // fetch rejects with a TypeError for unknown hosts, missing network and CORS alike;
+            // the browser does not tell them apart, so the message names all three
+            if (fetchError.name === 'TypeError') {
                 const hostname = new URL(source).hostname;
-                throw new Error(`CORS-Fehler: ${hostname} erlaubt keine direkten Anfragen. Bitte laden Sie die Datei manuell herunter und verwenden Sie den Datei-Upload.`);
+                throw new Error(`${hostname} ist nicht erreichbar: Die Adresse existiert nicht, die Netzwerkverbindung fehlt oder der Server erlaubt keine Anfragen aus dem Browser (CORS). Prüfen Sie die URL, sonst laden Sie die Datei herunter und verwenden den Datei-Upload.`);
             }
             throw fetchError;
         }
     } else if (/^[a-z][a-z0-9+.-]*:/i.test(source)) {
-        throw new Error(`Nicht unterstuetztes URL-Schema: ${source.split(':')[0]}`);
+        throw new Error(`Nicht unterstütztes URL-Schema: ${source.split(':')[0]}`);
     } else {
         // Relative URL (local file path like 'data/test.xml')
         try {
             const response = await fetch(source);
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                throw new Error(httpErrorMessage(response.status, response.statusText));
             }
             xmlString = await response.text();
         } catch (fetchError) {
@@ -60,7 +60,7 @@ export async function parseCMIF(source, onProgress = null) {
     }
 
     if (!xmlString || !xmlString.trim()) {
-        throw new Error('Die Datei ist leer. Bitte waehlen Sie eine CMIF-Datei mit Briefdaten aus.');
+        throw new Error('Die Datei ist leer. Bitte wählen Sie eine CMIF-Datei mit Briefdaten aus.');
     }
 
     const parser = new DOMParser();
@@ -70,7 +70,7 @@ export async function parseCMIF(source, onProgress = null) {
     if (parseError) {
         // The browser's parser text is English and technical; it stays in the console for debugging
         console.error('CMIF XML parser error:', parseError.textContent);
-        throw new Error('Die Datei ist kein gueltiges XML und kann nicht als CMIF gelesen werden. Bitte pruefen Sie, ob es sich um eine wohlgeformte CMIF-XML-Datei handelt.');
+        throw new Error('Die Datei ist kein gültiges XML und kann nicht als CMIF gelesen werden. Bitte prüfen Sie, ob es sich um eine wohlgeformte CMIF-XML-Datei handelt.');
     }
 
     const letters = extractLetters(doc);
@@ -86,7 +86,7 @@ export async function parseCMIF(source, onProgress = null) {
 function extractLetters(doc) {
     const correspDescs = doc.getElementsByTagNameNS(TEI_NS, 'correspDesc');
     if (correspDescs.length === 0) {
-        throw new Error('Keine Briefe gefunden: Die Datei enthaelt kein correspDesc-Element im TEI-Namensraum. Ist es eine CMIF-Datei?');
+        throw new Error('Keine Briefe gefunden: Die Datei enthält kein correspDesc-Element im TEI-Namensraum. Ist es eine CMIF-Datei?');
     }
     const letters = [];
 

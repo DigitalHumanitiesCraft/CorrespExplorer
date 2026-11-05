@@ -531,7 +531,7 @@ function renderComparisonOverlap(overlap, lettersA, lettersB) {
         html += `
             <div class="overlap-item">
                 <i class="fas fa-clock"></i>
-                <span>Zeitliche Ueberlappung: ${overlap.timeOverlap.from} - ${overlap.timeOverlap.to}</span>
+                <span>Zeitliche Überlappung: ${overlap.timeOverlap.from} - ${overlap.timeOverlap.to}</span>
             </div>
         `;
     }
@@ -561,7 +561,7 @@ function renderComparisonOverlap(overlap, lettersA, lettersB) {
     }
 
     if (!html) {
-        html = '<p class="overlap-none">Keine direkten Ueberschneidungen gefunden</p>';
+        html = '<p class="overlap-none">Keine direkten Überschneidungen gefunden</p>';
     }
 
     container.innerHTML = html;
@@ -588,7 +588,7 @@ function showCommonLettersModal(letterIds) {
     let html = `
         <div class="modal-header">
             <h3>Gemeinsame Briefe (${letters.length})</h3>
-            <button class="modal-close" id="common-letters-modal-close" aria-label="Schliessen">&times;</button>
+            <button class="modal-close" id="common-letters-modal-close" aria-label="Schließen">&times;</button>
         </div>
         <div class="modal-body">
             <div class="common-letters-list">

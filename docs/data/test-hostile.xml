@@ -61,6 +61,18 @@
         </correspAction>
       </correspDesc>
 
+      <!-- Spreadsheet formulas in names and place: the CSV export must not hand them to Excel as formulas -->
+      <correspDesc ref="https://example.org/letter/005">
+        <correspAction type="sent">
+          <persName>=HYPERLINK("https://example.org","Klick")</persName>
+          <placeName>+Ort</placeName>
+          <date when="1904-04-04"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName>@SUM(A1:A9)</persName>
+        </correspAction>
+      </correspDesc>
+
       <!-- Valid https ref for comparison -->
       <correspDesc ref="https://example.org/letter/004">
         <correspAction type="sent">

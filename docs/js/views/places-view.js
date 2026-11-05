@@ -386,7 +386,7 @@ async function handleResolveCoordinates() {
     const missingIds = JSON.parse(banner.dataset.missingIds || '[]');
 
     if (missingIds.length === 0) {
-        showToast('Keine Orte zum Aufloesen gefunden');
+        showToast('Keine Orte zum Auflösen gefunden');
         return;
     }
 
@@ -441,7 +441,7 @@ async function handleResolveCoordinates() {
 
     } catch (error) {
         console.error('Failed to resolve coordinates:', error);
-        showToast(`Fehler beim Aufloesen: ${error.message}`);
+        showToast(`Fehler beim Auflösen: ${error.message}`);
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-globe"></i> Koordinaten nachladen';
     }

@@ -3,6 +3,7 @@
 
 import { parseCMIF } from '../cmif-parser.js';
 import { personKey, placeKey, csvCell } from '../utils.js';
+import { lettersToCsv } from '../export.js';
 import {
     datasetKey,
     initBasket,
@@ -72,20 +73,20 @@ export const BasketTests = {
 
     tests: [
         {
-            name: 'addItemsToBasket: Speichert und benachrichtigt einmal, zaehlt Duplikate',
+            name: 'addItemsToBasket: Speichert und benachrichtigt einmal, zählt Duplikate',
             async run() {
                 const { persons } = await fixtureKeys();
                 let notifications = 0;
                 const unsubscribe = onBasketChange(() => { notifications++; });
                 try {
                     const first = addItemsToBasket('persons', persons);
-                    assert(first.added === persons.length, `Erwartet ${persons.length} hinzugefuegt, erhalten ${first.added}`);
+                    assert(first.added === persons.length, `Erwartet ${persons.length} hinzugefügt, erhalten ${first.added}`);
                     assert(notifications === 1, `Erwartet eine Benachrichtigung, erhalten ${notifications}`);
 
                     const second = addItemsToBasket('persons', persons);
                     assert(second.added === 0 && second.duplicates === persons.length,
                         `Zweiter Aufruf sollte nur Duplikate melden: ${JSON.stringify(second)}`);
-                    assert(notifications === 1, 'Ohne Aenderung sollte keine weitere Benachrichtigung folgen');
+                    assert(notifications === 1, 'Ohne Änderung sollte keine weitere Benachrichtigung folgen');
                 } finally {
                     unsubscribe();
                 }
@@ -94,18 +95,18 @@ export const BasketTests = {
             }
         },
         {
-            name: 'URL-Teilen: Namensschluessel mit Komma, Orte und Datensatz ueberstehen den Rundweg',
+            name: 'URL-Teilen: Namensschlüssel mit Komma, Orte und Datensatz überstehen den Rundweg',
             async run() {
                 const { letters, persons, places } = await fixtureKeys();
                 const withComma = persons.filter(k => k.includes(','));
-                assert(withComma.length > 0, 'Fixture sollte einen Personenschluessel mit Komma enthalten');
+                assert(withComma.length > 0, 'Fixture sollte einen Personenschlüssel mit Komma enthalten');
 
                 const params = basketToParams({ letters, persons, places }, DATASET);
                 const parsed = basketFromParams(new URLSearchParams(params.toString()));
                 assert(parsed.dataset === DATASET, `Datensatz erwartet ${DATASET}, erhalten ${parsed.dataset}`);
-                assert(JSON.stringify(parsed.items.persons) === JSON.stringify(persons), 'Personenschluessel veraendert');
-                assert(JSON.stringify(parsed.items.letters) === JSON.stringify(letters), 'Brief-IDs veraendert');
-                assert(JSON.stringify(parsed.items.places) === JSON.stringify(places), 'Ortsschluessel veraendert');
+                assert(JSON.stringify(parsed.items.persons) === JSON.stringify(persons), 'Personenschlüssel verändert');
+                assert(JSON.stringify(parsed.items.letters) === JSON.stringify(letters), 'Brief-IDs verändert');
+                assert(JSON.stringify(parsed.items.places) === JSON.stringify(places), 'Ortsschlüssel verändert');
             }
         },
         {
@@ -129,7 +130,7 @@ export const BasketTests = {
             }
         },
         {
-            name: 'loadBasketFromUrl: Fuehrt zusammen, entfernt die Parameter, ignoriert fremde Datensaetze',
+            name: 'loadBasketFromUrl: Führt zusammen, entfernt die Parameter, ignoriert fremde Datensätze',
             async run() {
                 const { letters, persons } = await fixtureKeys();
                 addItemsToBasket('persons', persons.slice(0, 1));
@@ -142,22 +143,38 @@ export const BasketTests = {
                     return result;
                 });
                 assert(outcome.status === 'imported' && outcome.added === 3, `Erwartet 3 importiert: ${JSON.stringify(outcome)}`);
-                assert(getBasketItems('persons').length === 2, 'Vorhandene Person sollte erhalten bleiben (Zusammenfuehren)');
+                assert(getBasketItems('persons').length === 2, 'Vorhandene Person sollte erhalten bleiben (Zusammenführen)');
 
                 const foreign = basketToParams({ letters: letters.slice(2, 3), persons: [], places: [] }, OTHER_DATASET);
                 const other = await withSearch(`?${foreign}`, () => loadBasketFromUrl({ notify: false }));
                 assert(other.status === 'other-dataset', `Fremder Datensatz sollte nicht importiert werden: ${other.status}`);
-                assert(getBasketItems('letters').length === 2, 'Briefkorb sollte unveraendert bleiben');
+                assert(getBasketItems('letters').length === 2, 'Briefkorb sollte unverändert bleiben');
             }
         },
         {
-            name: 'csvCell: Verdoppelt Anfuehrungszeichen aus data/test-hostile.xml',
+            name: 'csvCell: Verdoppelt Anführungszeichen aus data/test-hostile.xml',
             async run() {
                 const data = await parseCMIF('data/test-hostile.xml');
                 const name = data.letters.map(l => l.recipient?.name).find(n => n?.includes('"'));
-                assert(name, 'Fixture sollte einen Namen mit Anfuehrungszeichen enthalten');
+                assert(name, 'Fixture sollte einen Namen mit Anführungszeichen enthalten');
                 const cell = csvCell(name);
                 assert(cell === `"${name.replace(/"/g, '""')}"`, `Unerwartete CSV-Zelle: ${cell}`);
+            }
+        },
+        {
+            name: 'CSV-Export: Formeln aus data/test-hostile.xml beginnen mit Apostroph',
+            async run() {
+                const data = await parseCMIF('data/test-hostile.xml');
+                const formulas = data.letters.flatMap(l => [l.sender?.name, l.recipient?.name, l.place_sent?.name])
+                    .filter(v => /^[=+\-@]/.test(v || ''));
+                assert(formulas.length >= 3, `Fixture sollte Formelwerte enthalten, gefunden ${formulas.length}`);
+                const csv = lettersToCsv(data.letters);
+                // A quoted cell may not open with a formula character; the guard puts an apostrophe first
+                const unguarded = csv.split('\n').filter(line => /(^|,)"[=+\-@]/.test(line));
+                assert(unguarded.length === 0, `Ungeschützte Formel im CSV: ${unguarded[0]}`);
+                for (const value of formulas) {
+                    assert(csv.includes(`"'${value.replace(/"/g, '""')}"`), `Wert ohne Apostroph exportiert: ${value}`);
+                }
             }
         }
     ]

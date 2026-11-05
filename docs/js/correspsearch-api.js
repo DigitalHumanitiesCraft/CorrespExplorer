@@ -39,32 +39,33 @@ export async function fetchFromCorrespSearchUrl(url, onProgress = null) {
     }
 
     if (urlObj.searchParams.has('x')) {
-        const data = await fetchPage(urlObj.toString());
-        return transformToInternalFormat(extractLettersFromResponse(data), {});
+        return datasetFromPages([await fetchPage(urlObj.toString())]);
     }
 
     const maxLetters = API_DEFAULTS.correspSearchMaxLetters;
-    const allLetters = [];
+    const pages = [];
+    let letterCount = 0;
     let totalHits = null;
     let truncated = false;
 
     for (let page = 1; ; page++) {
         urlObj.searchParams.set('x', String(page));
         const data = await fetchPage(urlObj.toString());
-        const letters = extractLettersFromResponse(data);
-        allLetters.push(...letters);
+        const pageLetters = extractLettersFromResponse(data).length;
+        pages.push(data);
+        letterCount += pageLetters;
         totalHits ??= parseTotalHits(data);
 
-        if (onProgress) onProgress(allLetters.length, totalHits);
+        if (onProgress) onProgress(letterCount, totalHits);
 
-        if (letters.length === 0 || !hasNextPage(data)) break;
-        if (allLetters.length >= maxLetters) {
+        if (pageLetters === 0 || !hasNextPage(data)) break;
+        if (letterCount >= maxLetters) {
             truncated = true;
             break;
         }
     }
 
-    const result = transformToInternalFormat(allLetters, {});
+    const result = datasetFromPages(pages);
     result.meta.total_hits = totalHits;
     result.meta.truncated = truncated;
     return result;
@@ -73,7 +74,7 @@ export async function fetchFromCorrespSearchUrl(url, onProgress = null) {
 async function fetchPage(url) {
     const response = await fetchWithRetry(url);
     if (!response.ok) {
-        throw new Error(`correspSearch-API antwortet mit Fehler ${response.status}. Bitte pruefen Sie die Parameter der URL.`);
+        throw new Error(`correspSearch-API antwortet mit Fehler ${response.status}. Bitte prüfen Sie die Parameter der URL.`);
     }
     try {
         return await response.json();
@@ -117,7 +118,7 @@ async function fetchWithRetry(url, retries = 3) {
             if (i === retries - 1) {
                 // fetch rejects without detail on network and CORS failures (US-02 asks for a hint)
                 console.error('correspSearch request failed:', error);
-                throw new Error(`correspSearch ist nicht erreichbar (${new URL(url).hostname}). Moeglich sind eine fehlende Netzwerkverbindung, eine voruebergehende Stoerung des Dienstes oder eine vom Browser blockierte Anfrage (CORS). Bitte versuchen Sie es spaeter erneut oder laden Sie das Ergebnis als Datei herunter und verwenden Sie den Datei-Upload.`);
+                throw new Error(`correspSearch ist nicht erreichbar (${new URL(url).hostname}). Möglich sind eine fehlende Netzwerkverbindung, eine vorübergehende Störung des Dienstes oder eine vom Browser blockierte Anfrage (CORS). Bitte versuchen Sie es später erneut oder laden Sie das Ergebnis als Datei herunter und verwenden Sie den Datei-Upload.`);
             }
             await new Promise(r => setTimeout(r, 1000 * (i + 1)));
         }
@@ -151,6 +152,37 @@ function extractLettersFromResponse(data) {
     }
 
     return [];
+}
+
+/**
+ * Dataset from the fetched API pages. Publisher and licence come from the teiHeader of the first
+ * page, as the API states them (CC BY 4.0 at the time of writing, data.md).
+ * @param {Array<Object>} pages - Parsed TEI-JSON responses
+ * @returns {{letters: Array, indices: Object, meta: Object}}
+ */
+export function datasetFromPages(pages) {
+    const csLetters = pages.flatMap(extractLettersFromResponse);
+    // A query without hits is no dataset; the start page reports it instead of opening an empty explorer
+    if (csLetters.length === 0) {
+        throw new Error('Die correspSearch-Abfrage liefert keine Briefe. Bitte prüfen Sie die Parameter der URL, etwa Zeitraum, Person oder Ort.');
+    }
+    const result = transformToInternalFormat(csLetters, {});
+    Object.assign(result.meta, headerMeta(pages[0]));
+    return result;
+}
+
+/**
+ * Publisher and licence from publicationStmt, in the shape the CMIF parser gives the overview
+ */
+function headerMeta(page) {
+    const asList = value => (Array.isArray(value) ? value : (value ? [value] : []));
+    const publicationStmt = page?.teiHeader?.fileDesc?.publicationStmt;
+    const publishers = asList(publicationStmt?.publisher)
+        .map(p => ({ name: p?.ref?.['#text'] || p?.['#text'] || (typeof p === 'string' ? p : null), url: safeUrl(p?.ref?.target) || null }))
+        .filter(p => p.name);
+    const licenceEl = asList(publicationStmt?.availability?.licence)[0];
+    const licence = licenceEl ? { text: licenceEl['#text'] || licenceEl.target || '', url: safeUrl(licenceEl.target) || null } : null;
+    return { publishers, licence };
 }
 
 /**

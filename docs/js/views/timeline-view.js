@@ -58,7 +58,7 @@ export function renderTimeline() {
     const allYearsSorted = Array.from(allYearsSet).sort((a, b) => a - b);
 
     if (allYearsSorted.length === 0 && undatedLetters.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfuegbar</p></div>';
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfügbar</p></div>';
         undatedBin?.classList.add('hidden');
         return;
     }
@@ -168,6 +168,7 @@ export function renderTimeline() {
             <div class="timeline-bar-wrapper ${hasImprecise ? 'has-imprecise' : ''}" role="button" tabindex="-1" aria-label="${barLabel}" data-year="${y}" data-year-end="${y}" data-imprecise="${data.imprecise}">
                 <div class="timeline-stacked-bar" style="height: ${totalHeight}%">
                     ${segments}
+                    ${hasImprecise ? `<div class="timeline-uncertainty-overlay" style="height: ${(data.imprecise / data.total) * 100}%"></div>` : ''}
                 </div>
                 <div class="timeline-bar-tooltip">${tooltipParts.join('<br>')}</div>
                 ${showLabel ? `<span class="timeline-bar-label">${y}</span>` : ''}
@@ -316,11 +317,11 @@ function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLang
                 return `<span class="timeline-legend-item"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count})</span>`;
             });
     } else {
-        legendItems.push(`<span class="timeline-legend-item timeline-legend-info" title="Dieses Korpus enthaelt keine Sprachmetadaten"><i class="fas fa-info-circle"></i> Keine Sprachdaten im Korpus</span>`);
+        legendItems.push(`<span class="timeline-legend-item timeline-legend-info" title="Dieses Korpus enthält keine Sprachmetadaten"><i class="fas fa-info-circle"></i> Keine Sprachdaten im Korpus</span>`);
     }
 
     if (totalImprecise > 0) {
-        legendItems.push(`<span class="timeline-legend-item timeline-legend-uncertainty" title="Briefe mit unvollstaendigem oder unsicherem Datum"><span class="timeline-legend-hatched"></span>Unscharfes Datum (${totalImprecise})</span>`);
+        legendItems.push(`<span class="timeline-legend-item timeline-legend-uncertainty" title="Briefe mit unvollständigem oder unsicherem Datum"><span class="timeline-legend-hatched"></span>Unscharfes Datum (${totalImprecise})</span>`);
     }
 
     legendEl.innerHTML = legendItems.join('');

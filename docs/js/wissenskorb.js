@@ -14,7 +14,7 @@ import {
 } from './basket.js';
 
 import { BASKET_LIMITS } from './constants.js';
-import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath } from './utils.js';
+import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath, ignoreMissingStyleImages } from './utils.js';
 import { lettersToCsv, letterExportRow } from './export.js';
 import { readTokens } from './views/view-support.js';
 
@@ -540,7 +540,7 @@ function renderTimeline(analysis) {
     });
 
     if (yearData.size === 0) {
-        container.innerHTML = '<div class="viz-empty">Keine Zeitdaten verfuegbar</div>';
+        container.innerHTML = '<div class="viz-empty">Keine Zeitdaten verfügbar</div>';
         return;
     }
 
@@ -814,6 +814,7 @@ function createMap() {
         zoom: 4
     });
     instance.addControl(new maplibregl.NavigationControl(), 'top-right');
+    ignoreMissingStyleImages(instance);
 
     // Same fallback as initMap in explore.js: a plain background keeps the markers usable
     let fallback = false;
@@ -924,7 +925,7 @@ function renderDetails(analysis = currentAnalysis()) {
                 </div>
                 ${letter.place_sent?.name ? `<div class="details-place"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${escapeHtml(letter.place_sent.name)}</div>` : ''}
             </div>
-            ${safeUrl(letter.url) ? `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer" class="details-link" title="Zum Brief" aria-label="Brief in der Edition oeffnen (neues Fenster)"><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>` : ''}
+            ${safeUrl(letter.url) ? `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer" class="details-link" title="Zum Brief" aria-label="Brief in der Edition öffnen (neues Fenster)"><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>` : ''}
         </div>
     `).join('');
 

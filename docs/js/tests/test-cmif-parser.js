@@ -3,6 +3,7 @@
 
 import { parseCMIF } from '../cmif-parser.js';
 import { assert } from './test-runner.js';
+import { httpErrorMessage } from '../utils.js';
 
 export const CMIFParserTests = {
     name: 'CMIF Parser',
@@ -12,6 +13,34 @@ export const CMIFParserTests = {
     },
 
     tests: [
+        {
+            name: 'parseCMIF: Fehlende Datei meldet HTTP 404 mit deutschem Grund',
+            async run() {
+                let message = '';
+                try {
+                    await parseCMIF('data/does-not-exist.xml');
+                } catch (error) {
+                    message = error.message;
+                }
+                assert(message.includes('HTTP 404 (Datei nicht gefunden)'), `Erhalten: ${message}`);
+                // HTTP/2 servers such as GitHub Pages send no status text; the message must not end in a colon
+                assert(httpErrorMessage(404, '') === 'HTTP 404 (Datei nicht gefunden)', `Erhalten: ${httpErrorMessage(404, '')}`);
+                assert(httpErrorMessage(418, '') === 'HTTP 418', `Erhalten: ${httpErrorMessage(418, '')}`);
+            }
+        },
+        {
+            name: 'parseCMIF: Erwähnte Personen, Orte und Themen aus data/demo-showcase.xml',
+            async run() {
+                const data = await parseCMIF('data/demo-showcase.xml');
+                const persons = data.letters.flatMap(l => l.mentions?.persons || []);
+                const places = data.letters.flatMap(l => l.mentions?.places || []);
+                const subjects = data.letters.flatMap(l => l.mentions?.subjects || []);
+                assert(persons.some(p => p.name === 'Jacob Grimm' && p.id === '31997136' && p.authority === 'viaf'),
+                    `Jacob Grimm mit VIAF 31997136 erwartet, erhalten ${JSON.stringify(persons.slice(0, 2))}`);
+                assert(places.length > 0 && places.some(p => p.geonames_id), 'Erwähnte Orte mit GeoNames-ID erwartet');
+                assert(subjects.length > 0 && subjects.every(s => s.label), 'Erwähnte Themen mit Bezeichnung erwartet');
+            }
+        },
         {
             name: 'parseCMIF: Lädt und parst test-uncertainty.xml',
             async run() {

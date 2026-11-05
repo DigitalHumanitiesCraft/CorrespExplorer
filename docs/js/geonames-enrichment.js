@@ -180,15 +180,16 @@ export function analyzeCoordinateNeeds(data) {
         return stats;
     }
 
-    for (const [id, place] of Object.entries(data.indices.places)) {
+    for (const place of Object.values(data.indices.places)) {
         stats.totalPlaces++;
 
         if (place.lat && place.lon) {
             stats.withCoordinates++;
-        } else if (id) {
+        } else if (place.geonames_id) {
+            // The index key of a place without GeoNames reference is its name, which Wikidata cannot resolve
             stats.withGeoNamesId++;
             stats.needsResolution++;
-            stats.geonamesIdsToResolve.push(id);
+            stats.geonamesIdsToResolve.push(place.geonames_id);
         }
     }
 

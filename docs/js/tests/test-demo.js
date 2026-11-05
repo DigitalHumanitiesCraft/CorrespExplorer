@@ -32,7 +32,7 @@ export const DemoTests = {
                 localStorage.removeItem(TOUR_DONE_KEY);
                 assert(shouldStartDemoTour('?demo=true&view=overview'), 'Demo ohne beendete Tour sollte die Tour zeigen');
                 assert(!shouldStartDemoTour('?view=overview'), 'Ohne demo=true keine Tour');
-                assert(!shouldStartDemoTour('?demo=true&tour=0'), 'tour=0 sollte die Tour unterdruecken');
+                assert(!shouldStartDemoTour('?demo=true&tour=0'), 'tour=0 sollte die Tour unterdrücken');
 
                 // Finished in another tab: localStorage reaches every tab, sessionStorage did not
                 localStorage.setItem(TOUR_DONE_KEY, 'true');
@@ -41,17 +41,17 @@ export const DemoTests = {
         },
 
         {
-            name: 'Demo-Link ohne Upload: laedt den Tutorial-Datensatz mit dem Korbschluessel der Startseite',
+            name: 'Demo-Link ohne Upload: lädt den Tutorial-Datensatz mit dem Korbschlüssel der Startseite',
             async run() {
                 const data = await loadDemoDataset();
                 const direct = await parseCMIF(DEMO_DATASET_URL);
 
                 assert(data.letters.length === direct.letters.length && data.letters.length > 0,
-                    `Briefe: ${data.letters.length} gegenueber ${direct.letters.length}`);
+                    `Briefe: ${data.letters.length} gegenüber ${direct.letters.length}`);
                 assert(data.sourceInfo?.isDemo === true, 'sourceInfo sollte den Datensatz als Demo kennzeichnen');
                 // upload.js keys the basket by the card's data-url, so shared basket links stay valid
                 assert(datasetKey(data.sourceInfo) === datasetKey({ type: 'url', source: 'data/demo-showcase.xml' }),
-                    `Korbschluessel weicht ab: ${datasetKey(data.sourceInfo)}`);
+                    `Korbschlüssel weicht ab: ${datasetKey(data.sourceInfo)}`);
                 assert(data.letters.some(l => l.place_sent?.lat), 'Koordinaten aus geonames_coordinates.json sollten gesetzt sein');
             }
         },
@@ -70,7 +70,7 @@ export const DemoTests = {
                     assert(links > 0, `${type}: Standardschwelle ${threshold} ergibt ein leeres Netzwerk`);
                     if (threshold < ceilings[type]) {
                         const above = build(letters, threshold + 1, NETWORK_DEFAULTS.maxNodes).links.length;
-                        assert(above === 0, `${type}: Schwelle ${threshold + 1} haette noch ${above} Verbindungen und waere der bessere Standard`);
+                        assert(above === 0, `${type}: Schwelle ${threshold + 1} hätte noch ${above} Verbindungen und wäre der bessere Standard`);
                     }
                 }
             }

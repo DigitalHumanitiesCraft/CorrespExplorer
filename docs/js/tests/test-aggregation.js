@@ -8,6 +8,8 @@ import { state } from '../state-manager.js';
 import { countIdentifiedPersons } from '../utils.js';
 import { NO_LANGUAGE, registerLanguageLabels, languageLabel } from '../constants.js';
 import { assert } from './test-runner.js';
+import { analyzeCoordinateNeeds } from '../geonames-enrichment.js';
+import { buildActivityIndex } from '../views/activity-view.js';
 
 export const AggregationTests = {
     name: 'Data Aggregation',
@@ -17,6 +19,30 @@ export const AggregationTests = {
     },
 
     tests: [
+        {
+            name: 'analyzeCoordinateNeeds: Nur Orte mit GeoNames-ID gehen an die Auflösung, nicht Namen',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const geonamesIds = new Set(data.letters.map(l => l.place_sent?.geonames_id).filter(Boolean));
+                const named = data.letters.filter(l => l.place_sent?.name && !l.place_sent.geonames_id);
+                assert(named.length > 0, 'Fixture sollte Orte ohne GeoNames-ID enthalten (Region, Unbekannt)');
+                const stats = analyzeCoordinateNeeds(data);
+                const foreign = stats.geonamesIdsToResolve.filter(id => !geonamesIds.has(id));
+                assert(foreign.length === 0, `Keine GeoNames-IDs: ${foreign.join(', ')}`);
+                assert(stats.withGeoNamesId === stats.geonamesIdsToResolve.length, 'Zählung und Liste sollten übereinstimmen');
+            }
+        },
+        {
+            name: 'buildActivityIndex: Tages-, gröber und undatierte Briefe ergeben zusammen alle Briefe',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const index = buildActivityIndex(data.letters);
+                const { month, year, range, undated } = index.withoutDay;
+                assert(undated > 0, 'Fixture sollte undatierte Briefe enthalten');
+                const sum = index.total + month + year + range + undated;
+                assert(sum === data.letters.length, `Summe ${sum} statt ${data.letters.length} Briefe`);
+            }
+        },
         {
             name: 'parseCMIF: Erstellt indices.persons aus echten Daten',
             async run() {

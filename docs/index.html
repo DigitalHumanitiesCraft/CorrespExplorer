@@ -33,7 +33,7 @@
             <p>Visualisieren Sie Korrespondenz-Metadaten im CMIF-Format. Laden Sie eine XML-Datei hoch oder geben Sie eine URL ein.</p>
 
             <div class="disclaimer">
-                <p><span class="tooltip-trigger" tabindex="0">Promptotyping<i class="fas fa-info-circle" aria-hidden="true"></i><span class="tooltip-content">Promptotyping ist eine iterative Context-Engineering-Arbeitstechnik, um datengetrieben und gemeinsam mit Frontier-LLMs Forschungsartefakte wie Interfaces, Tools oder Workflows zu entwickeln. Im <a href="vault.html">Promptotyping Vault</a> ist das Wissen zum CorrespExplorer destilliert.</span></span> Demo: Dieses Projekt befindet sich in aktiver Entwicklung. Ideen und Bugs koennen gerne als <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues" target="_blank" rel="noopener noreferrer">Issues im GitHub-Repo</a> dokumentiert werden.</p>
+                <p><span class="tooltip-trigger" tabindex="0">Promptotyping<i class="fas fa-info-circle" aria-hidden="true"></i><span class="tooltip-content">Promptotyping ist eine iterative Context-Engineering-Arbeitstechnik, um datengetrieben und gemeinsam mit Frontier-LLMs Forschungsartefakte wie Interfaces, Tools oder Workflows zu entwickeln. Im <a href="vault.html">Promptotyping Vault</a> ist das Wissen zum CorrespExplorer destilliert.</span></span> Demo: Dieses Projekt befindet sich in aktiver Entwicklung. Ideen und Bugs können gerne als <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues" target="_blank" rel="noopener noreferrer">Issues im GitHub-Repo</a> dokumentiert werden.</p>
             </div>
         </header>
 
@@ -44,9 +44,9 @@
                 <i class="fas fa-envelope-open-text"></i>
             </div>
             <h2>CMIF-Datei hochladen</h2>
-            <p>Ziehen Sie eine XML-Datei hierher oder klicken Sie zum Auswaehlen</p>
+            <p>Ziehen Sie eine XML-Datei hierher oder klicken Sie zum Auswählen</p>
             <input type="file" id="file-input" class="upload-input" accept=".xml,application/xml,text/xml">
-            <label for="file-input" class="upload-btn">Datei auswaehlen</label>
+            <label for="file-input" class="upload-btn">Datei auswählen</label>
         </div>
 
         <!-- URL Input -->
@@ -76,7 +76,7 @@
         </div>
         <!-- Example Datasets -->
         <section class="example-datasets">
-            <h3><img src="assets/logo-no-background-no-text.png" alt="" class="section-icon"> Beispiel-Datensaetze</h3>
+            <h3><img src="assets/logo-no-background-no-text.png" alt="" class="section-icon"> Beispiel-Datensätze</h3>
             <div class="dataset-grid">
                 <div class="dataset-card dataset-card-featured" data-url="data/demo-showcase.xml" data-demo="true" role="button" tabindex="0">
                     <div class="dataset-badge">Tutorial</div>
@@ -96,19 +96,19 @@
                         <span><i class="fas fa-users"></i> 852 Personen mit Normdaten</span>
                     </div>
                     <div class="dataset-extended-info">
-                        <i class="fas fa-star"></i> Mit Themen, erwaehnte Personen und Orte
+                        <i class="fas fa-star"></i> Mit Themen, erwähnte Personen und Orte
                     </div>
                 </div>
             </div>
             <div class="dataset-explanation">
                 <details>
                     <summary><i class="fas fa-info-circle"></i> Was bedeutet "Erweitert"?</summary>
-                    <p>Standard-CMIF-Dateien enthalten Absender, Empfaenger, Datum und Ort. <strong>Erweiterte Datensaetze</strong> wurden vorverarbeitet und enthalten zusaetzliche Annotationen wie erwaehnte Themen, Personen und Orte innerhalb der Briefe. Diese Daten ermoeglichen tiefere Analysen wie die Erwähnungen oder Themenfilter.</p>
+                    <p>Standard-CMIF-Dateien enthalten Absender, Empfänger, Datum und Ort. <strong>Erweiterte Datensätze</strong> wurden vorverarbeitet und enthalten zusätzliche Annotationen wie erwähnte Themen, Personen und Orte innerhalb der Briefe. Diese Daten ermöglichen tiefere Analysen wie die Erwähnungen oder Themenfilter.</p>
                 </details>
             </div>
             <div class="api-hint">
                 <i class="fas fa-database"></i>
-                Weitere CMIF-Datensaetze zum Laden via URL finden Sie bei <a href="https://correspsearch.net/de/daten.html" target="_blank" rel="noopener noreferrer">correspSearch</a>.
+                Weitere CMIF-Datensätze zum Laden via URL finden Sie bei <a href="https://correspsearch.net/de/daten.html" target="_blank" rel="noopener noreferrer">correspSearch</a>.
             </div>
         </section>
         </main>
@@ -119,7 +119,7 @@
         <div class="modal-content config-modal-content">
             <div class="modal-header">
                 <h3 id="config-modal-title">Datensatz konfigurieren</h3>
-                <button class="modal-close" aria-label="Schliessen">&times;</button>
+                <button class="modal-close" aria-label="Schließen">&times;</button>
             </div>
             <div class="modal-body" id="config-modal-body">
                 <!-- Dataset Summary -->
@@ -141,7 +141,7 @@
                 <!-- Enrichment Options -->
                 <div class="config-section">
                     <h4><i class="fas fa-magic" aria-hidden="true"></i> Semantische Anreicherung</h4>
-                    <p class="config-hint">Zusaetzliche Daten von Wikidata laden</p>
+                    <p class="config-hint">Zusätzliche Daten von Wikidata laden</p>
 
                     <div class="config-option" id="config-option-coordinates">
                         <label class="config-checkbox">
@@ -174,7 +174,7 @@
                 <!-- Actions -->
                 <div class="config-actions">
                     <button id="config-skip-btn" class="btn btn-secondary">
-                        <i class="fas fa-forward"></i> Ueberspringen
+                        <i class="fas fa-forward"></i> Überspringen
                     </button>
                     <button id="config-start-btn" class="btn btn-primary">
                         <i class="fas fa-play"></i> Starten

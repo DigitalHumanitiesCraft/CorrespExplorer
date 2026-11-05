@@ -51,6 +51,19 @@ export function getPlacePrecisionClass(precision) {
 // Name formatters
 
 /**
+ * A filtered count with its total ("8" and "von 35"), or the total alone when nothing is filtered out
+ * @param {number} part
+ * @param {number} total
+ * @returns {{value: string, of: string}} of is empty without filter
+ */
+export function formatCountOf(part, total) {
+    const totalText = total.toLocaleString('de-DE');
+    return part === total
+        ? { value: totalText, of: '' }
+        : { value: part.toLocaleString('de-DE'), of: `von ${totalText}` };
+}
+
+/**
  * Format person name with uncertainty indicator
  * @param {string} name - Person name
  * @param {string} precision - identified, named, partial, unknown

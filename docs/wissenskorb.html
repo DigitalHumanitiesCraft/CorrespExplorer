@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CorrespExplorer - Wissenskorb fuer gesammelte Briefe, Personen und Orte">
+    <meta name="description" content="CorrespExplorer - Wissenskorb für gesammelte Briefe, Personen und Orte">
     <title>Wissenskorb - CorrespExplorer</title>
     <link rel="icon" type="image/png" href="assets/logo-no-background-no-text.png">
 
@@ -27,19 +27,19 @@
     <!-- Simple Navigation -->
     <nav class="navbar" role="navigation" aria-label="Hauptnavigation">
         <div class="nav-brand">
-            <a href="explore.html" class="nav-brand-link explorer-link" aria-label="Zurueck zum Explorer">
+            <a href="explore.html" class="nav-brand-link explorer-link" aria-label="Zurück zum Explorer">
                 <i class="fas fa-arrow-left" aria-hidden="true"></i>
                 <span class="brand-text">Explorer</span>
             </a>
         </div>
         <div class="nav-links">
             <span class="basket-count-display">
-                <i class="fas fa-star" aria-hidden="true"></i> <span id="basket-total-count">0</span> Eintraege
+                <i class="fas fa-star" aria-hidden="true"></i> <span id="basket-total-count">0</span> Einträge
             </span>
             <button type="button" id="share-btn" class="nav-link" aria-label="Korb teilen" title="Link zum Teilen kopieren">
                 <i class="fas fa-share-alt" aria-hidden="true"></i> <span class="nav-link-text">Teilen</span>
             </button>
-            <button type="button" id="clear-btn" class="nav-link" aria-label="Korb leeren" title="Alle Eintraege entfernen">
+            <button type="button" id="clear-btn" class="nav-link" aria-label="Korb leeren" title="Alle Einträge entfernen">
                 <i class="fas fa-trash" aria-hidden="true"></i> <span class="nav-link-text">Leeren</span>
             </button>
             <a href="about.html" class="nav-link" title="About">
@@ -62,7 +62,7 @@
             <i class="fas fa-tools" aria-hidden="true"></i>
             <div>
                 <strong>In Arbeit</strong>
-                <p>Der Wissenskorb ist noch nicht vollstaendig implementiert. Einige Funktionen sind moeglicherweise noch nicht verfuegbar.</p>
+                <p>Der Wissenskorb ist noch nicht vollständig implementiert. Einige Funktionen sind möglicherweise noch nicht verfügbar.</p>
             </div>
         </div>
 
@@ -70,7 +70,7 @@
         <div class="empty-state hidden" id="empty-state">
             <i class="fas fa-shopping-basket" aria-hidden="true"></i>
             <h2>Ihr Wissenskorb ist leer</h2>
-            <p>Legen Sie im Explorer Briefe, Personen oder Orte mit dem Stern in den Korb, um sie hier gemeinsam auszuwerten. Der Korb gilt fuer den zuletzt im Explorer geladenen Datensatz.</p>
+            <p>Legen Sie im Explorer Briefe, Personen oder Orte mit dem Stern in den Korb, um sie hier gemeinsam auszuwerten. Der Korb gilt für den zuletzt im Explorer geladenen Datensatz.</p>
             <a href="explore.html" class="btn btn-primary explorer-link">
                 <i class="fas fa-compass" aria-hidden="true"></i> Zum Explorer
             </a>
@@ -81,7 +81,7 @@
             <!-- Left Panel: Item Lists with Tabs -->
             <aside class="item-list-panel">
                 <!-- Item Type Tabs -->
-                <div class="item-tabs" role="group" aria-label="Eintraege des Korbs">
+                <div class="item-tabs" role="group" aria-label="Einträge des Korbs">
                     <button type="button" class="item-tab active" data-type="persons" aria-pressed="true" aria-controls="persons-list-container">
                         <i class="fas fa-users" aria-hidden="true"></i>
                         <span class="item-tab-label">Personen</span>
@@ -173,7 +173,7 @@
                     <!-- Timeline Panel -->
                     <div class="viz-panel active" id="viz-timeline">
                         <div class="viz-header">
-                            <h2>Zeitliche Aktivitaet</h2>
+                            <h2>Zeitliche Aktivität</h2>
                             <p class="viz-info">Ausgewertete Briefe je Jahr: Briefe des Korbs und alle Briefe seiner Personen und Orte</p>
                         </div>
                         <div id="timeline-chart" class="timeline-chart"></div>
@@ -196,20 +196,20 @@
                             <p class="viz-info">Absendeorte der ausgewerteten Briefe</p>
                         </div>
                         <div id="basket-map" class="basket-map" role="region" aria-label="Karte der Absendeorte"></div>
-                        <div id="basket-map-empty" class="viz-empty hidden">Keine Orte mit Koordinaten verfuegbar</div>
+                        <div id="basket-map-empty" class="viz-empty hidden">Keine Orte mit Koordinaten verfügbar</div>
                     </div>
 
                     <!-- Details Panel -->
                     <div class="viz-panel" id="viz-details">
                         <div class="viz-header">
-                            <h2>Detail-Uebersicht</h2>
+                            <h2>Detail-Übersicht</h2>
                             <p class="viz-info">Alle ausgewerteten Briefe: Briefe des Korbs und alle Briefe seiner Personen und Orte</p>
                         </div>
                         <div class="details-filters">
                             <input type="search" id="details-search" class="list-search" placeholder="Suchen..." aria-label="Briefe durchsuchen">
                             <select id="details-sort" class="list-sort-select" aria-label="Briefe sortieren">
                                 <option value="date-desc">Datum (neueste)</option>
-                                <option value="date-asc">Datum (aelteste)</option>
+                                <option value="date-asc">Datum (älteste)</option>
                                 <option value="sender-asc">Absender (A-Z)</option>
                             </select>
                         </div>

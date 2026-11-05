@@ -12,7 +12,7 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, countIdentifiedPersons, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, ignoreMissingStyleImages, countIdentifiedPersons, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
 import { analyzeResearchQuestions, summarizeCorpus, renderOverviewResearchPaths } from './research-paths.js';
 import { lettersToCsv, lettersToJson } from './export.js';
 import { initKnowledgePath, startKnowledgePath } from './knowledge-path.js';
@@ -22,7 +22,8 @@ import {
     formatPlaceName,
     getDatePrecisionClass,
     getPersonPrecisionClass,
-    getPersonInitials
+    getPersonInitials,
+    formatCountOf
 } from './formatters.js';
 import { initDemoTour, checkAndStartDemoTour, startTour } from './demo-tour.js';
 import { loadDemoDataset } from './cmif-parser.js';
@@ -49,6 +50,8 @@ let placeAggregation = {};
 let dataIndices = {};
 let temporalFilter = null;
 let dateRange = { min: 1800, max: 2000 };
+// Letters, persons and places of the whole dataset, set once in updateUI
+let corpusTotals = null;
 let qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
 let selectedPersonId = null;
 let selectedPlaceFilter = null;
@@ -412,17 +415,11 @@ function updateUI(data) {
         if (pageTitle) pageTitle.textContent = `${data.meta.title} im CorrespExplorer`;
     }
 
-    // Update stats
-    const totalLetters = elements.totalLettersCount;
-    const totalSenders = elements.totalSendersCount;
-    const totalPlacesEl = elements.totalPlacesCount;
-
     // Persons and places are counted from the letters like in the overview (summarizeCorpus),
     // because meta.unique_senders and meta.unique_places count differently per source
     const corpus = summarizeCorpus(allLetters, dataIndices);
-    if (totalLetters) totalLetters.textContent = (data.meta?.total_letters || allLetters.length).toLocaleString('de-DE');
-    if (totalSenders) totalSenders.textContent = corpus.persons.size.toLocaleString('de-DE');
-    if (totalPlacesEl) totalPlacesEl.textContent = corpus.places.size.toLocaleString('de-DE');
+    corpusTotals = { letters: allLetters.length, persons: corpus.persons.size, places: corpus.places.size };
+    updateStatCounts();
 
     // Update uncertainty statistics if available
     updateUncertaintyStats(data.meta?.uncertainty);
@@ -467,7 +464,7 @@ function updateUncertaintyStats(uncertainty) {
 
     // Update quality icons with tooltips
     updateQualityIcon('letters-quality-icon', impreciseDates, totalDates, 'mit ungenauem Datum');
-    updateQualityIcon('senders-quality-icon', unknownSenders, totalSenders, 'Absender unbekannt oder unvollstaendig');
+    updateQualityIcon('senders-quality-icon', unknownSenders, totalSenders, 'Absender unbekannt oder unvollständig');
     updateQualityIcon('places-quality-icon', imprecisePlaces, totalPlaces, 'ohne Koordinaten');
 }
 
@@ -776,6 +773,8 @@ function initMap() {
             'NavigationControl.ResetBearing': 'Nach Norden ausrichten'
         }
     });
+
+    ignoreMissingStyleImages(map);
 
     // top-left, because the layer and colour buttons (.map-controls) sit top-right
     map.addControl(new maplibregl.NavigationControl(), 'top-left');
@@ -1166,7 +1165,7 @@ function showPlacePopup(lngLat, props) {
                 <button type="button" class="popup-basket-toggle ${inBasket ? 'in-basket' : ''}"
                         data-type="places" data-id="${escapeHtml(placeId)}"
                         aria-label="Ort im Wissenskorb" aria-pressed="${inBasket}"
-                        title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
+                        title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen'}">
                     <i class="fas fa-star" aria-hidden="true"></i>
                 </button>
             </div>
@@ -1353,6 +1352,7 @@ function applyFilters({ render = true } = {}) {
     }
 
     updateFilterCounts();
+    updateStatCounts();
     updateUrlState();
     updateFilterBadges();
     updateTopicsQuickFilterState();
@@ -1497,6 +1497,30 @@ function updateFilterBadges() {
         selectedPlaceFilter ? placeNameForKey(selectedPlaceFilter) : null, clearPlaceFilter);
     updateFilterBadge('subject-filter-display', 'subject-filter-active', 'fa-tag',
         activeSubjectFilter ? subjectLabelForKey(activeSubjectFilter) : null, clearSubjectFilter);
+}
+
+// The sidebar figures show the filtered share of the dataset, so an active filter is never silent
+function updateStatCounts() {
+    if (!corpusTotals) return;
+    const shown = hasActiveFilter()
+        ? summarizeCorpus(filteredLetters, dataIndices)
+        : null;
+    const pairs = [
+        [elements.totalLettersCount, shown ? shown.total : corpusTotals.letters, corpusTotals.letters],
+        [elements.totalSendersCount, shown ? shown.persons.size : corpusTotals.persons, corpusTotals.persons],
+        [elements.totalPlacesCount, shown ? shown.places.size : corpusTotals.places, corpusTotals.places]
+    ];
+    for (const [el, part, total] of pairs) {
+        if (!el) continue;
+        const { value, of } = formatCountOf(part, total);
+        el.textContent = value;
+        if (of) {
+            const small = document.createElement('span');
+            small.className = 'stat-value__of';
+            small.textContent = of;
+            el.append(small);
+        }
+    }
 }
 
 // Language counts under all other active filters, so each checkbox shows what selecting it would add
@@ -1921,7 +1945,7 @@ function renderPersonsList() {
                 </div>
                 <div class="person-actions">
                     <button type="button" class="btn-person-basket" data-person-id="${escapeHtml(person.key)}"
-                            title="${total} Briefe zum Korb hinzufuegen" aria-label="${total} Briefe von ${name} zum Korb hinzufügen">
+                            title="${total} Briefe zum Korb hinzufügen" aria-label="${total} Briefe von ${name} zum Korb hinzufügen">
                         <i class="fas fa-star" aria-hidden="true"></i>
                     </button>
                     ${person.id ? `
@@ -2036,7 +2060,7 @@ function toggleBasketButton(btn, type, id, { pressed = true } = {}) {
     }
     const inBasket = basketIsInBasket(type, id);
     btn.classList.toggle('in-basket', inBasket);
-    btn.title = inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen';
+    btn.title = inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen';
     if (pressed) btn.setAttribute('aria-pressed', String(inBasket));
     return inBasket;
 }
@@ -2112,7 +2136,7 @@ function renderLettersList() {
                         <button type="button" class="btn-letter-basket ${inBasket ? 'in-basket' : ''}"
                                 data-letter-id="${escapeHtml(letter.id || '')}"
                                 aria-label="Im Wissenskorb" aria-pressed="${inBasket}"
-                                title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufuegen'}">
+                                title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen'}">
                             <i class="fas fa-star" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -2233,7 +2257,7 @@ function showLetterDetail(letterId) {
     // Date with its precision marker, as in the list (ADR-002)
     html += detailRow('Datum', formatDateWithPrecision(letter), getDatePrecisionClass(letter.datePrecision, letter.dateCertainty));
     html += detailRow('Absender', buildPersonLink(letter.sender));
-    html += detailRow('Empfaenger', buildPersonLink(letter.recipient));
+    html += detailRow('Empfänger', buildPersonLink(letter.recipient));
     if (letter.place_sent?.name) {
         html += detailRow('Absendeort', buildPlaceLink(letter.place_sent));
     }
@@ -2243,9 +2267,9 @@ function showLetterDetail(letterId) {
     html += '</div>';
 
     const mentionSections = [
-        ['Erwaehnte Themen', letter.mentions?.subjects, s => escapeHtml(s.label)],
-        ['Erwaehnte Personen', letter.mentions?.persons, p => buildPersonLink(p)],
-        ['Erwaehnte Orte', letter.mentions?.places, p => buildPlaceLink(p)]
+        ['Erwähnte Themen', letter.mentions?.subjects, s => escapeHtml(s.label)],
+        ['Erwähnte Personen', letter.mentions?.persons, p => buildPersonLink(p)],
+        ['Erwähnte Orte', letter.mentions?.places, p => buildPlaceLink(p)]
     ];
     for (const [heading, items, render] of mentionSections) {
         if (!items?.length) continue;

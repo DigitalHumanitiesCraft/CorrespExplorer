@@ -185,9 +185,9 @@ export function addItemsToBasket(type, ids) {
 export function addLettersToBasket(ids) {
     const { added, rejected } = addItemsToBasket('letters', ids);
     if (rejected > 0) {
-        return `${added} Briefe zum Korb hinzugefuegt, ${rejected} nicht: Korb voll (hoechstens ${MAX_LETTERS} Briefe)`;
+        return `${added} Briefe zum Korb hinzugefügt, ${rejected} nicht: Korb voll (höchstens ${MAX_LETTERS} Briefe)`;
     }
-    return added > 0 ? `${added} Briefe zum Korb hinzugefuegt` : 'Alle Briefe bereits im Korb';
+    return added > 0 ? `${added} Briefe zum Korb hinzugefügt` : 'Alle Briefe bereits im Korb';
 }
 
 /**
@@ -386,13 +386,13 @@ export function loadBasketFromUrl({ notify = true } = {}) {
     if (notify) {
         if (outcome.status === 'other-dataset') {
             const source = dataset.slice(dataset.indexOf(':') + 1);
-            showToast(`Der geteilte Korb gehoert zum Datensatz "${source}". Laden Sie diesen Datensatz und oeffnen Sie den Link erneut.`, 8000);
+            showToast(`Der geteilte Korb gehört zum Datensatz "${source}". Laden Sie diesen Datensatz und öffnen Sie den Link erneut.`, 8000);
         } else if (outcome.rejected > 0) {
-            showToast(`${outcome.added} Eintraege aus dem geteilten Korb uebernommen, ${outcome.rejected} nicht: Korb voll (hoechstens ${MAX_LETTERS} Briefe, ${MAX_PERSONS} Personen, ${MAX_PLACES} Orte)`, 6000);
+            showToast(`${outcome.added} Einträge aus dem geteilten Korb übernommen, ${outcome.rejected} nicht: Korb voll (höchstens ${MAX_LETTERS} Briefe, ${MAX_PERSONS} Personen, ${MAX_PLACES} Orte)`, 6000);
         } else {
             showToast(outcome.added > 0
-                ? `${outcome.added} Eintraege aus dem geteilten Korb uebernommen`
-                : 'Alle Eintraege des geteilten Korbs sind bereits im Korb');
+                ? `${outcome.added} Einträge aus dem geteilten Korb übernommen`
+                : 'Alle Einträge des geteilten Korbs sind bereits im Korb');
         }
     }
     return outcome;

@@ -66,6 +66,31 @@ export function isAllowedJsonPath(path) {
     return !path.split('/').includes('..');
 }
 
+// HTTP/2 responses carry no status text, so the common codes get their own German reason
+const HTTP_REASONS = { 401: 'Anmeldung erforderlich', 403: 'Zugriff verweigert', 404: 'Datei nicht gefunden', 410: 'Datei entfernt', 500: 'Fehler auf dem Server', 502: 'Server nicht erreichbar', 503: 'Dienst nicht verfügbar' };
+
+/**
+ * Readable message for an HTTP error status
+ * @param {number} status
+ * @param {string} [statusText] - Reason phrase of the response, empty under HTTP/2
+ * @returns {string}
+ */
+export function httpErrorMessage(status, statusText = '') {
+    const reason = HTTP_REASONS[status] || statusText;
+    return reason ? `HTTP ${status} (${reason})` : `HTTP ${status}`;
+}
+
+/**
+ * The OpenFreeMap style names icons its sprite lacks (circle-11); a transparent pixel stands in,
+ * so the console stays free of a warning per map view that says nothing about the data
+ * @param {Object} map - maplibregl.Map
+ */
+export function ignoreMissingStyleImages(map) {
+    map.on('styleimagemissing', (e) => {
+        if (!map.hasImage(e.id)) map.addImage(e.id, { width: 1, height: 1, data: new Uint8Array(4) });
+    });
+}
+
 /**
  * Quote a value as a CSV cell. A leading =, +, - or @ gets an apostrophe, so spreadsheet
  * programs do not evaluate names or places from CMIF as formulas.
@@ -109,7 +134,7 @@ export function showToast(message, duration = 3000) {
     toast.setAttribute('role', 'status');
     toast.innerHTML = `
         <span class="toast-message">${escapeHtml(message)}</span>
-        <button type="button" class="toast-close" aria-label="Meldung schliessen"><i class="fas fa-times"></i></button>
+        <button type="button" class="toast-close" aria-label="Meldung schließen"><i class="fas fa-times"></i></button>
     `;
     document.body.appendChild(toast);
 

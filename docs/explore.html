@@ -138,7 +138,7 @@
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
         </div>
-        <!-- Aktions-Anleitung fuer aktuellen Schritt -->
+        <!-- Aktions-Anleitung für aktuellen Schritt -->
         <div class="path-action-hint" id="path-action-hint">
             <i class="fas fa-lightbulb" aria-hidden="true"></i>
             <span id="path-action-text">-</span>
@@ -191,14 +191,9 @@
                 <div class="sidebar-section" id="sidebar-filters">
                     <div class="sidebar-section-header">
                         <h4>Filter</h4>
-                        <button id="reset-filters" class="btn-reset-small" aria-label="Filter zuruecksetzen" title="Filter zuruecksetzen">
+                        <button id="reset-filters" class="btn-reset-small" aria-label="Filter zurücksetzen" title="Filter zurücksetzen">
                             <i class="fas fa-undo" aria-hidden="true"></i>
                         </button>
-                    </div>
-
-                    <!-- Active Filters Display -->
-                    <div id="active-filters" class="active-filters hidden">
-                        <!-- Filled by JavaScript when filters are active -->
                     </div>
 
                     <!-- Time Period Filter -->
@@ -303,7 +298,7 @@
 
                         <!-- Main Entry Points -->
                         <div class="overview-entry-points">
-                            <h3>Was moechten Sie erkunden?</h3>
+                            <h3>Was möchten Sie erkunden?</h3>
                             <div class="entry-point-grid">
                                 <button class="entry-point-btn" data-target="map">
                                     <i class="fas fa-map" aria-hidden="true"></i>
@@ -332,7 +327,7 @@
                                 </button>
                                 <button class="entry-point-btn" data-target="activity">
                                     <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-                                    <span class="entry-label">Aktivitaet</span>
+                                    <span class="entry-label">Aktivität</span>
                                     <span class="entry-desc">Kalender-Heatmap</span>
                                 </button>
                             </div>
@@ -407,7 +402,7 @@
                             <label for="letter-sort">Sortieren:</label>
                             <select id="letter-sort">
                                 <option value="date-desc">Datum (neueste)</option>
-                                <option value="date-asc">Datum (aelteste)</option>
+                                <option value="date-asc">Datum (älteste)</option>
                                 <option value="sender-asc">Absender (A-Z)</option>
                             </select>
                         </div>
@@ -465,7 +460,7 @@
                             <div class="entity-detail-panel" id="topic-detail-panel">
                                 <div class="entity-detail-empty" id="topic-detail-empty">
                                     <i class="fas fa-hand-pointer" aria-hidden="true"></i>
-                                    <p>Waehlen Sie ein Thema aus der Liste</p>
+                                    <p>Wählen Sie ein Thema aus der Liste</p>
                                 </div>
                                 <div class="hidden" id="topic-detail-content">
                                     <div class="entity-detail-header">
@@ -536,7 +531,7 @@
                             <div class="entity-detail-panel" id="place-detail-panel">
                                 <div class="entity-detail-empty" id="place-detail-empty">
                                     <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                                    <p>Waehlen Sie einen Ort aus der Liste</p>
+                                    <p>Wählen Sie einen Ort aus der Liste</p>
                                 </div>
                                 <div class="hidden" id="place-detail-content">
                                     <div class="entity-detail-header">
@@ -612,7 +607,7 @@
                                 </label>
                             </div>
                             <button id="network-reset-zoom" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-compress-arrows-alt" aria-hidden="true"></i> Zoom zuruecksetzen
+                                <i class="fas fa-compress-arrows-alt" aria-hidden="true"></i> Zoom zurücksetzen
                             </button>
                         </div>
                         <div class="network-coverage" id="network-coverage"></div>
@@ -621,7 +616,7 @@
                             <div class="legend-item">
                                 <span class="legend-circle legend-network-contemporary"></span> Zeitgenossen-Netzwerk
                             </div>
-                            <div class="legend-hint">Klick auf Knoten filtert Briefe | Hover fuer Details</div>
+                            <div class="legend-hint">Klick auf Knoten filtert Briefe | Hover für Details</div>
                         </div>
                     </div>
                 </div>
@@ -648,7 +643,7 @@
                         <div id="mentions-flow-graph" class="mentions-flow-graph"></div>
                         <div class="content-placeholder" id="mentions-flow-placeholder">
                             <i class="fas fa-search" aria-hidden="true"></i>
-                            <p>Suche eine Person um deren Erwaehnungen zu sehen</p>
+                            <p>Suche eine Person um deren Erwähnungen zu sehen</p>
                         </div>
                     </div>
                 </div>
@@ -694,9 +689,9 @@
                     <div class="activity-container">
                         <div class="view-header">
                             <h2 class="view-header__title">Korrespondenz-Aktivität</h2>
-                            <p class="view-header__description">GitHub-Style Heatmap der Briefaktivitaet</p>
+                            <p class="view-header__description">GitHub-Style Heatmap der Briefaktivität</p>
                             <div class="view-header__actions">
-                                <div class="experimental-badge" title="Experimenteller View zur Visualisierung von Korrespondenz-Aktivitaet">
+                                <div class="experimental-badge" title="Experimenteller View zur Visualisierung von Korrespondenz-Aktivität">
                                     <i class="fas fa-flask" aria-hidden="true"></i>
                                     <span class="experimental-label">Experimentell</span>
                                 </div>
@@ -725,7 +720,7 @@
 
                         <!-- Jahr-Auswahl -->
                         <div class="activity-year-selector" id="activity-year-selector">
-                            <!-- Dynamisch gefuellt mit Jahr-Buttons -->
+                            <!-- Dynamisch gefüllt mit Jahr-Buttons -->
                         </div>
 
                         <!-- Heatmap Container -->
@@ -753,7 +748,7 @@
                             <span class="activity-legend-label">Mehr</span>
                         </div>
 
-                        <!-- Detail-Panel fuer ausgewaehlten Tag -->
+                        <!-- Detail-Panel für ausgewählten Tag -->
                         <div id="activity-details" class="activity-details hidden">
                             <h3 id="activity-details-date">-</h3>
                             <div id="activity-details-list" class="activity-details-list"></div>
@@ -766,13 +761,13 @@
                     <div class="comparison-container">
                         <div class="view-header">
                             <h2 class="view-header__title">Vergleichsanalyse</h2>
-                            <p class="view-header__description">Vergleiche zwei Personen, Zeitraeume oder Orte</p>
+                            <p class="view-header__description">Vergleiche zwei Personen, Zeiträume oder Orte</p>
                             <div class="view-header__actions">
                                 <button class="comparison-mode-btn active" data-mode="persons">
                                     <i class="fas fa-users" aria-hidden="true"></i> Personen
                                 </button>
                                 <button class="comparison-mode-btn" data-mode="periods">
-                                    <i class="fas fa-clock" aria-hidden="true"></i> Zeitraeume
+                                    <i class="fas fa-clock" aria-hidden="true"></i> Zeiträume
                                 </button>
                                 <button class="comparison-mode-btn" data-mode="places">
                                     <i class="fas fa-map-marker-alt" aria-hidden="true"></i> Orte
@@ -813,20 +808,20 @@
                                 <div class="comparison-panel comparison-panel-a" id="comparison-panel-a">
                                     <h3 id="comparison-title-a">-</h3>
                                     <div class="comparison-metrics" id="comparison-metrics-a">
-                                        <!-- Metriken werden dynamisch gefuellt -->
+                                        <!-- Metriken werden dynamisch gefüllt -->
                                     </div>
                                 </div>
                                 <div class="comparison-panel comparison-panel-b" id="comparison-panel-b">
                                     <h3 id="comparison-title-b">-</h3>
                                     <div class="comparison-metrics" id="comparison-metrics-b">
-                                        <!-- Metriken werden dynamisch gefuellt -->
+                                        <!-- Metriken werden dynamisch gefüllt -->
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Ueberschneidungen -->
+                            <!-- Überschneidungen -->
                             <div class="comparison-overlap" id="comparison-overlap">
-                                <h3>Ueberschneidungen</h3>
+                                <h3>Überschneidungen</h3>
                                 <div class="comparison-overlap-content" id="comparison-overlap-content">
                                     <!-- Gemeinsame Elemente -->
                                 </div>
@@ -836,7 +831,7 @@
                         <!-- Platzhalter -->
                         <div class="comparison-placeholder" id="comparison-placeholder">
                             <i class="fas fa-balance-scale" aria-hidden="true"></i>
-                            <p>Waehle zwei Elemente zum Vergleichen</p>
+                            <p>Wähle zwei Elemente zum Vergleichen</p>
                         </div>
                     </div>
                 </div>
@@ -844,7 +839,7 @@
                 <!-- Wissenspfad Navigation (hidden by default) -->
                 <div id="knowledge-path-nav" class="knowledge-path-nav hidden">
                     <button id="path-nav-back" class="btn-path-nav btn-path-back" disabled>
-                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Zurueck
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i> Zurück
                     </button>
                     <div class="path-nav-info">
                         <span id="path-nav-step">Schritt 1 von 3</span>
@@ -862,7 +857,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Wikidata-Anreicherung</h3>
-                <button class="modal-close" aria-label="Schliessen">&times;</button>
+                <button class="modal-close" aria-label="Schließen">&times;</button>
             </div>
             <div class="modal-body">
                 <div id="enrichment-info" class="enrichment-info">
@@ -909,7 +904,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Daten exportieren</h3>
-                <button class="modal-close" aria-label="Schliessen">&times;</button>
+                <button class="modal-close" aria-label="Schließen">&times;</button>
             </div>
             <div class="modal-body">
                 <p>Exportiere die aktuell gefilterten Daten:</p>
@@ -935,7 +930,7 @@
         <div class="modal-content modal-lg">
             <div class="modal-header">
                 <h3 id="letter-modal-title">Brief-Details</h3>
-                <button class="modal-close" aria-label="Schliessen">&times;</button>
+                <button class="modal-close" aria-label="Schließen">&times;</button>
             </div>
             <div class="modal-body" id="letter-modal-body">
                 <!-- Content filled by JavaScript -->
@@ -948,7 +943,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="person-modal-title">Person</h3>
-                <button class="modal-close" aria-label="Schliessen">&times;</button>
+                <button class="modal-close" aria-label="Schließen">&times;</button>
             </div>
             <div class="modal-body" id="person-modal-body">
                 <!-- Content filled by JavaScript -->
@@ -963,10 +958,10 @@
         <div class="tour-step" data-step="1">
             <div class="tour-content">
                 <h3>Willkommen zur CorrespExplorer Demo</h3>
-                <p>Dieser Datensatz zeigt ein fiktives europaeisches Gelehrtennetzwerk (1880-1920) mit 35 Briefen zwischen 9 Korrespondenten: 7 Personen mit Normdaten, eine unbekannte Person [NN] und eine Akademie als Absenderin.</p>
+                <p>Dieser Datensatz zeigt ein fiktives europäisches Gelehrtennetzwerk (1880-1920) mit 35 Briefen zwischen 9 Korrespondenten: 7 Personen mit Normdaten, eine unbekannte Person [NN] und eine Akademie als Absenderin.</p>
                 <p>Die Demo demonstriert alle Funktionen von CorrespExplorer.</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-skip">Ueberspringen</button>
+                    <button type="button" class="tour-skip">Überspringen</button>
                     <button type="button" class="tour-next">Tour starten</button>
                 </div>
             </div>
@@ -976,17 +971,17 @@
                 <h3>Ansichten wechseln</h3>
                 <p>Mit diesen Buttons wechseln Sie zwischen zwölf Ansichten: Start, Karte, Korrespondenten, Briefe, Timeline, Themen, Orte, Netzwerk, Erwähnungen, Chronik, Aktivität und Vergleich. Ansichten, für die ein Datensatz keine Daten hat, sind ausgeblendet.</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
         </div>
         <div class="tour-step" data-step="3" data-view="letters">
             <div class="tour-content" data-target="#sidebar-dataset">
-                <h3>Datensatz-Uebersicht</h3>
-                <p>Die Tour wechselt dafuer in die Briefansicht, denn die Startansicht hat keine Sidebar. Oben in der Sidebar stehen die Zahl der Briefe, der Personen (Absender und Empfaenger) und der Absendeorte. Symbole daneben nennen den Anteil unscharfer Angaben.</p>
+                <h3>Datensatz-Übersicht</h3>
+                <p>Die Tour wechselt dafür in die Briefansicht, denn die Startansicht hat keine Sidebar. Oben in der Sidebar stehen die Zahl der Briefe, der Personen (Absender und Empfänger) und der Absendeorte. Symbole daneben nennen den Anteil unscharfer Angaben.</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -994,9 +989,9 @@
         <div class="tour-step" data-step="4" data-view="letters">
             <div class="tour-content" data-target="#sidebar-filters">
                 <h3>Zeitraum filtern</h3>
-                <p>Mit dem Timeline-Slider koennen Sie den Zeitraum einschraenken. Alle Ansichten werden automatisch aktualisiert.</p>
+                <p>Mit dem Timeline-Slider können Sie den Zeitraum einschränken. Alle Ansichten werden automatisch aktualisiert.</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -1004,9 +999,9 @@
         <div class="tour-step" data-step="5" data-view="letters">
             <div class="tour-content" data-target="#sidebar-filters">
                 <h3>Filter anwenden</h3>
-                <p>Unter dem Zeitraum grenzen Sie nach Datierung, identifizierten Personen, lokalisierten Orten, Briefsprache und Thema ein, Themen finden Sie ueber die Themensuche. Personen und Orte filtern Sie aus den Ansichten Korrespondenten und Orte. Alle Filter lassen sich kombinieren, aktive Personen-, Orts- und Themenfilter erscheinen als entfernbare Marken in der Sidebar.</p>
+                <p>Unter dem Zeitraum grenzen Sie nach Datierung, identifizierten Personen, lokalisierten Orten, Briefsprache und Thema ein, Themen finden Sie über die Themensuche. Personen und Orte filtern Sie aus den Ansichten Korrespondenten und Orte. Alle Filter lassen sich kombinieren, aktive Personen-, Orts- und Themenfilter erscheinen als entfernbare Marken in der Sidebar.</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -1014,9 +1009,9 @@
         <div class="tour-step" data-step="6">
             <div class="tour-content" data-target=".view-btn[data-view='map']">
                 <h3>Interaktive Karte</h3>
-                <p>Die Karte zeigt Briefe nach Absendeort. Klicken Sie auf Marker fuer Details. Die Legende erklaert die Farben (nach Sprache).</p>
+                <p>Die Karte zeigt Briefe nach Absendeort. Klicken Sie auf Marker für Details. Die Legende erklärt die Farben (nach Sprache).</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -1032,7 +1027,7 @@
                     <li>Zeitraum-Pfeile = notBefore/notAfter</li>
                 </ul>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -1043,7 +1038,7 @@
                 <p>Im Start-View finden Sie Forschungspfade - methodische Wege durch das Korpus. Jede Frage zeigt Schritte zur Beantwortung.</p>
                 <p>Der Abspielknopf neben einer Frage startet ihren Wissenspfad.</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -1051,10 +1046,10 @@
         <div class="tour-step" data-step="9">
             <div class="tour-content">
                 <h3>Wissenspfad starten</h3>
-                <p>Klicken Sie bei einer Forschungsfrage auf den Abspielknopf "Wissenspfad starten". Eine Pfad-Leiste erscheint oben und fuehrt Sie durch die Ansichten.</p>
-                <p>Der Wissenskorb in der Sidebar sammelt Ihre Auswahl waehrend der Navigation.</p>
+                <p>Klicken Sie bei einer Forschungsfrage auf den Abspielknopf "Wissenspfad starten". Eine Pfad-Leiste erscheint oben und führt Sie durch die Ansichten.</p>
+                <p>Der Wissenskorb in der Sidebar sammelt Ihre Auswahl während der Navigation.</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -1064,12 +1059,12 @@
                 <h3>Daten sammeln</h3>
                 <p>In Detail-Ansichten (Brief, Person, Ort) finden Sie "Zum Korb"-Buttons:</p>
                 <ul>
-                    <li>Brief-Modal: Einzelnen Brief hinzufuegen</li>
+                    <li>Brief-Modal: Einzelnen Brief hinzufügen</li>
                     <li>Person-Modal: Alle Briefe einer Person</li>
                     <li>Ort-Panel: Alle Briefe eines Ortes</li>
                 </ul>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -1078,9 +1073,9 @@
             <div class="tour-content" data-target="#basket-nav-link">
                 <h3>Wissenskorb</h3>
                 <p>Der Korb-Button in der Navigation zeigt die Anzahl gesammelter Items. Klicken Sie darauf, um zur Wissenskorb-Seite zu gelangen.</p>
-                <p>Dort koennen Sie Ihre kuratierte Sammlung als CSV oder JSON exportieren.</p>
+                <p>Dort können Sie Ihre kuratierte Sammlung als CSV oder JSON exportieren.</p>
                 <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurueck</button>
+                    <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
                 </div>
             </div>
@@ -1088,9 +1083,9 @@
         <div class="tour-step" data-step="12">
             <div class="tour-content">
                 <h3>Viel Erfolg beim Forschen</h3>
-                <p>Sie kennen nun den vollstaendigen Workflow:</p>
+                <p>Sie kennen nun den vollständigen Workflow:</p>
                 <ul>
-                    <li>Forschungsfrage waehlen</li>
+                    <li>Forschungsfrage wählen</li>
                     <li>Durch Views navigieren</li>
                     <li>Relevante Daten sammeln</li>
                     <li>Kuratierte Liste exportieren</li>

@@ -11,7 +11,8 @@ import {
     getPersonInitials,
     getDatePrecisionClass,
     getPersonPrecisionClass,
-    getPlacePrecisionClass
+    getPlacePrecisionClass,
+    formatCountOf
 } from '../formatters.js';
 
 export const FormattersTests = {
@@ -22,6 +23,19 @@ export const FormattersTests = {
     },
 
     tests: [
+        {
+            name: 'formatCountOf: Gefilterter Anteil neben der Gesamtzahl, ungefiltert nur die Gesamtzahl',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const total = data.letters.length;
+                const part = data.letters.filter(l => l.datePrecision === 'day').length;
+                assert(part > 0 && part < total, 'Fixture sollte Briefe mit und ohne Tagesdatum enthalten');
+                const filtered = formatCountOf(part, total);
+                assert(filtered.value === String(part) && filtered.of === `von ${total}`, `Erhalten: ${JSON.stringify(filtered)}`);
+                const all = formatCountOf(total, total);
+                assert(all.value === String(total) && all.of === '', 'Ohne Filter nur die Gesamtzahl');
+            }
+        },
         {
             name: 'formatSingleDate: Formatiert YYYY',
             run() {

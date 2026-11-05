@@ -25,7 +25,7 @@ const VAULT_DOCUMENTS = [
         id: 'data',
         filename: 'data.md',
         title: 'Daten',
-        description: 'CMIF-Modell, Datensaetze und externe Quellen',
+        description: 'CMIF-Modell, Datensätze und externe Quellen',
         icon: 'fa-database',
         category: 'data'
     },
@@ -41,7 +41,7 @@ const VAULT_DOCUMENTS = [
         id: 'uncertainty-specification',
         filename: 'uncertainty-specification.md',
         title: 'Uncertainty Specification',
-        description: 'Umgang mit Datenqualitaet und Unsicherheit',
+        description: 'Umgang mit Datenqualität und Unsicherheit',
         icon: 'fa-question-circle',
         category: 'requirements'
     },
@@ -81,7 +81,7 @@ const VAULT_DOCUMENTS = [
         id: 'handoff',
         filename: 'handoff.md',
         title: 'Handoff',
-        description: 'Offene Uebergabepunkte',
+        description: 'Offene Übergabepunkte',
         icon: 'fa-inbox',
         category: 'process'
     },
@@ -108,7 +108,7 @@ const DOCUMENT_ALIASES = {
 
 // Category definitions
 const CATEGORIES = {
-    overview: { title: 'Ueberblick', icon: 'fa-compass' },
+    overview: { title: 'Überblick', icon: 'fa-compass' },
     data: { title: 'Daten', icon: 'fa-database' },
     requirements: { title: 'Anforderungen', icon: 'fa-clipboard-list' },
     technical: { title: 'Technik', icon: 'fa-gear' },

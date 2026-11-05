@@ -111,7 +111,7 @@ export const StateManagerTests = {
 
         {
             // Regression: persons without authority id are keyed by name in the person list (plan finding 6)
-            name: 'updateFilters: Person-Filter ohne Normdaten-ID filtert ueber den Namen',
+            name: 'updateFilters: Person-Filter ohne Normdaten-ID filtert über den Namen',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
@@ -121,7 +121,7 @@ export const StateManagerTests = {
 
                 state.updateFilters({ person: unidentified.name });
                 const filtered = state.getFilteredLetters();
-                assert(filtered.length > 0, `Sollte Briefe fuer ${unidentified.name} finden`);
+                assert(filtered.length > 0, `Sollte Briefe für ${unidentified.name} finden`);
                 filtered.forEach(letter => {
                     const names = [letter.sender, letter.recipient].map(p => p?.id || p?.name);
                     assert(names.includes(unidentified.name), `Brief ${letter.id} sollte ${unidentified.name} enthalten`);
@@ -132,7 +132,7 @@ export const StateManagerTests = {
         {
             // Regression: the places view, the place index of the parser and the filter share placeKey,
             // so a place selected anywhere matches the same letters (ADR-001)
-            name: 'updateFilters: Ort-Filter ueber placeKey mit und ohne GeoNames-ID',
+            name: 'updateFilters: Ort-Filter über placeKey mit und ohne GeoNames-ID',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
@@ -142,7 +142,7 @@ export const StateManagerTests = {
 
                 for (const place of [unlocated, located]) {
                     const key = placeKey(place);
-                    assert(data.indices.places[key], `Ortsindex sollte den Schluessel ${key} fuehren`);
+                    assert(data.indices.places[key], `Ortsindex sollte den Schlüssel ${key} führen`);
 
                     state.updateFilters({ place: key });
                     const filtered = state.getFilteredLetters();
@@ -150,9 +150,9 @@ export const StateManagerTests = {
                     assert(filtered.length > 0 && filtered.length === expected.length,
                         `Filter ${key} sollte ${expected.length} Briefe finden, fand ${filtered.length}`);
                     assert(filtered.length === data.indices.places[key].letter_count,
-                        `Briefzahl des Ortsindex fuer ${key} sollte zum Filter passen`);
+                        `Briefzahl des Ortsindex für ${key} sollte zum Filter passen`);
                 }
-                assert(placeKey(located) === located.geonames_id, 'Ein Ort mit GeoNames-ID sollte ueber die ID filtern');
+                assert(placeKey(located) === located.geonames_id, 'Ein Ort mit GeoNames-ID sollte über die ID filtern');
             }
         },
 
@@ -358,7 +358,7 @@ export const StateManagerTests = {
                 state.setData(data);
 
                 state.updateFilters({ languages: [] });
-                assert(state.getFilteredLetters().length === 0, `Ohne gewaehlte Sprache sollte kein Brief bleiben, blieben ${state.getFilteredLetters().length}`);
+                assert(state.getFilteredLetters().length === 0, `Ohne gewählte Sprache sollte kein Brief bleiben, blieben ${state.getFilteredLetters().length}`);
 
                 state.updateFilters({ languages: null });
                 assert(state.getFilteredLetters().length === data.letters.length, 'Ohne Sprachfilter sollten alle Briefe bleiben');
@@ -382,7 +382,7 @@ export const StateManagerTests = {
         },
 
         {
-            name: 'URL-Parameter: undated und leere Sprachauswahl ueberstehen den Rundweg',
+            name: 'URL-Parameter: undated und leere Sprachauswahl überstehen den Rundweg',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
@@ -400,7 +400,7 @@ export const StateManagerTests = {
         },
 
         {
-            name: 'URL-Parameter: Alle Filter ueberstehen den Rundweg toURLParams und fromURLParams',
+            name: 'URL-Parameter: Alle Filter überstehen den Rundweg toURLParams und fromURLParams',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
@@ -419,14 +419,14 @@ export const StateManagerTests = {
                     quality: { preciseDates: true, knownPersons: true }
                 });
                 const lettersBefore = state.getFilteredLetters().map(l => l.id);
-                assert(lettersBefore.includes(letter.id), `Brief ${letter.id} sollte alle gesetzten Filter erfuellen`);
+                assert(lettersBefore.includes(letter.id), `Brief ${letter.id} sollte alle gesetzten Filter erfüllen`);
 
                 // parseCMIF alone resolves no coordinates, so located only takes part in the parameter round trip
                 state.updateFilters({ quality: { locatedPlaces: true } });
                 const before = JSON.stringify(state.filters);
                 const params = state.toURLParams();
                 assert(params.get('precise') === '1' && params.get('known') === '1' && params.get('located') === '1',
-                    'Qualitaetsfilter sollten als precise, known und located erscheinen');
+                    'Qualitätsfilter sollten als precise, known und located erscheinen');
 
                 state.resetFilters();
                 state.updateUI({ currentView: 'overview' });
@@ -443,7 +443,7 @@ export const StateManagerTests = {
 
         {
             // Regression: links from before ADR-001 wrote place=name:<Ort> for places without GeoNames id
-            name: 'fromURLParams: Alter Ortsparameter name:<Ort> fuehrt zum Schluessel nach placeKey',
+            name: 'fromURLParams: Alter Ortsparameter name:<Ort> führt zum Schlüssel nach placeKey',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
@@ -459,7 +459,7 @@ export const StateManagerTests = {
         },
 
         {
-            name: 'fromURLParams: Filter ohne Parameter werden zurueckgesetzt',
+            name: 'fromURLParams: Filter ohne Parameter werden zurückgesetzt',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
@@ -468,16 +468,16 @@ export const StateManagerTests = {
                 state.updateFilters({ person: personIds[0], languages: [], quality: { preciseDates: true } });
                 state.fromURLParams(new URLSearchParams('yearMin=abc&yearMax=1900'));
 
-                assert(state.filters.person === null, 'Person ohne Parameter sollte zurueckgesetzt sein');
+                assert(state.filters.person === null, 'Person ohne Parameter sollte zurückgesetzt sein');
                 assert(state.filters.languages === null, 'Sprachen ohne langs sollten ohne Filter sein');
                 assert(state.filters.temporal === null, 'Ein nicht numerisches Jahr sollte keinen Zeitfilter setzen');
-                assert(state.filters.quality.preciseDates === false, 'Qualitaetsfilter ohne Parameter sollte aus sein');
+                assert(state.filters.quality.preciseDates === false, 'Qualitätsfilter ohne Parameter sollte aus sein');
                 assert(state.getFilteredLetters().length === data.letters.length, 'Ohne Filter sollten alle Briefe bleiben');
             }
         },
 
         {
-            name: 'filterLetters: Zaehlt unter anderen Filtern ohne den Cache zu aendern',
+            name: 'filterLetters: Zählt unter anderen Filtern ohne den Cache zu ändern',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 state.setData(data);
@@ -488,8 +488,8 @@ export const StateManagerTests = {
                 const cached = state.getFilteredLetters();
                 const withoutLanguage = state.filterLetters({ ...state.filters, languages: null });
 
-                assert(withoutLanguage.length === data.letters.length, 'Ohne Sprachfilter sollten alle Briefe zaehlen');
-                assert(state.getFilteredLetters() === cached, 'Der Cache der gefilterten Briefe sollte unberuehrt bleiben');
+                assert(withoutLanguage.length === data.letters.length, 'Ohne Sprachfilter sollten alle Briefe zählen');
+                assert(state.getFilteredLetters() === cached, 'Der Cache der gefilterten Briefe sollte unberührt bleiben');
             }
         }
     ]

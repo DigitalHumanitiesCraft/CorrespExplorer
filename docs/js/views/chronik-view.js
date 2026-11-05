@@ -361,7 +361,7 @@ export function renderChronik() {
     chronikObserver?.disconnect();
 
     if (!letters || letters.length === 0) {
-        container.innerHTML = '<div class="chronik-empty">Keine Briefe im ausgewaehlten Zeitraum</div>';
+        container.innerHTML = '<div class="chronik-empty">Keine Briefe im ausgewählten Zeitraum</div>';
         chronikRenderedCount = 0;
         chronikSortedLetters = [];
         return;
@@ -535,7 +535,7 @@ function renderChronikEntryCards(letter) {
                 <div class="chronik-person chronik-recipient">
                     ${recipientPortrait}
                     <div class="chronik-person-info">
-                        <span class="chronik-person-role">Empfaenger</span>
+                        <span class="chronik-person-role">Empfänger</span>
                         <span class="chronik-person-name">${escapeHtml(recipientName)}</span>
                         ${recipientBio}
                         ${recipientLifespan}

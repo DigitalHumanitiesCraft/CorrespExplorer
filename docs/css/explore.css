@@ -336,16 +336,6 @@
     color: white;
 }
 
-/* Active Filters Display */
-.active-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin-bottom: var(--space-md);
-    padding-bottom: var(--space-sm);
-    border-bottom: 1px solid var(--color-border-light);
-}
-
 /* Legend Section */
 #sidebar-legend {
     background: var(--color-bg);
