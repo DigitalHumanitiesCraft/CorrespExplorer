@@ -107,10 +107,10 @@ Helle Tönungen für Hover und Statusflächen werden mit `color-mix()` aus den G
 
 | Rolle | Hex-Code | Verwendung |
 |-------|----------|------------|
-| Map Land | `#E8E4D4` | Landmassen |
-| Map Water | `#B8D4E8` | Wasser/Ozeane |
+| Map Land | `--color-map-land` (`#E8E4D4`) | Landmassen |
+| Map Water | `--color-map-water` (`#B8D4E8`) | Wasser/Ozeane |
 | Map Points | `#A64B3F` | Brieforte (Cluster) - --color-primary |
-| Netzwerk Personen | `--color-role-sender` | Knoten im Modus Zeitgenossen |
+| Netzwerk Personen | `--color-role-sender` | Knoten in den Modi Briefwechsel und Zeitgenossen |
 | Netzwerk Themen | `--color-warning` | Knoten im Modus Themen |
 | Netzwerk Kanten | `--color-text-light`, hervorgehoben `--color-text` | Linien, Knotenrand `--color-bg` |
 | Erwähnungsfluss | `--color-role-sender`, `--color-primary`, `--color-role-mentioned` | Absender links, Mitte, erwähnte Personen rechts |
@@ -377,7 +377,7 @@ Alle zwölf Ansichten des Explorers beginnen mit derselben Komponente `.view-hea
 
 ### 6.1 Karte
 
-- Grundkarte: Standard ist der helle Stil von OpenFreeMap (Positron), der dunkle Stil bleibt über den Ebenen-Knopf erreichbar. Bis 2026-11-05 startete die Karte dunkel. Positron zeigt Land hellgrau und Wasser grau, die Vorgabe darunter erfüllt erst ein eigener Kartenstil ([plan.md](plan.md#vorhaben))
+- Grundkarte: Standard ist der helle Stil von OpenFreeMap (Positron), umgefärbt mit `--color-map-land` für Land, Parks und Wald und `--color-map-water` für Wasser (`applyPaperBasemap()` in `explore.js`). Die Farben ändern nur die Darstellung des geladenen Stils, es wird keine weitere Ressource geladen. Fehlt eine Ebene in einer späteren Fassung von Positron, bleibt ihre Originalfarbe. Der dunkle Stil bleibt über den Ebenen-Knopf erreichbar. Bis 2026-11-05 startete die Karte dunkel, danach kurz grau
 - Landmassen: Dezentes Beige (`#E8E4D4`), keine Texturen
 - Kuesten: 1px Linie, nicht zu dominant
 - Orte: Kreise mit `--color-accent`, Groesse nach Briefanzahl skaliert
@@ -516,6 +516,8 @@ Implementiert in base.css. Der vorherige Fokus der Eingaben (Schatten mit 10 % D
 
 Seitenstruktur von `explore.html`: Die Seitenüberschrift `h1` steht vor der Sidebar, deren Abschnitte sind `h2`, ihre Filtergruppen `h3`, die Ansichtstitel `h2`. Bis 2026-11-05 standen `h4` und `h5` der Sidebar vor dem `h1`. Die Navigation ist das einzige Navigations-Landmark, die Ansichtsleiste darin eine Gruppe (`role="group"`). Die Dialoge tragen `role="dialog"`, `aria-modal` und `aria-labelledby` auf ihre Überschrift.
 
+Textalternativen der Grafiken: Unter Timeline, Netzwerk, Erwähnungsfluss und Aktivitäts-Heatmap steht eine aufklappbare Tabelle „Daten als Tabelle“ mit den dargestellten Werten (`renderDataTable()` in `views/view-support.js`, Klasse `.chart-table` in `components.css`): Briefe je Jahr mit Sprachen, die Verbindungen des Netzwerks mit ihrer Stärke, alle Erwähnungspaare um die gewählte Person, auch jenseits der 15 Knoten je Seite, und die tagesgenauen Briefe je Monat. Die Tabelle ist eingeklappt, damit die Grafik oben bleibt, ihr Scrollbereich ist fokussierbar und benannt. Die Karte braucht keine, weil die Ortsansicht dieselben Orte als Liste führt.
+
 ---
 
 ## 10. Design-Entscheidungen
@@ -556,7 +558,7 @@ Bei Korpora mit vielen Sprachen werden gestapelte Balken mit lauter kräftigen F
 
 ### Netzwerk
 
-Die Standardschwelle für eine Kante (gemeinsame Jahre `minYears`, bei Themen gemeinsame Briefe `minCooccurrence`) ist der höchste Wert bis zum Vorgabewert in `NETWORK_DEFAULTS`, bei dem der Datensatz noch eine Kante zeigt. Große Datensätze behalten so eine lesbare Schwelle, kleine wie der Tutorial-Datensatz zeigen ein Netz statt einer leeren Fläche. Die frühere Regel nach der Zeitspanne ließ den Tutorial-Datensatz (über 20 Jahre, wenige Briefe je Absender) leer. Alternativ färbt eine sequentielle Skala (D3 `interpolateYlGnBu`) jeden Korrespondenten nach dem Jahr seines ersten Briefs, eine Gradient-Legende zeigt den Jahresbereich. So werden frühe und späte Teilnehmer und die Entwicklung des Netzwerks sichtbar.
+Das Netzwerk startet im Modus Briefwechsel: Eine Kante verbindet zwei Personen, die einander schrieben, ihre Breite folgt der Zahl der Briefe in beide Richtungen, der Tooltip nennt beide Richtungen (Entscheidung E8 vom 2026-11-05). Beim HSA entsteht ein Stern um den Nachlassgeber, „Ego ausblenden“ zeigt die Verbindungen der übrigen Personen. Die Standardschwelle für eine Kante (Briefe `minLetters`, gemeinsame Jahre `minYears`, bei Themen gemeinsame Briefe `minCooccurrence`) ist der höchste Wert bis zum Vorgabewert in `NETWORK_DEFAULTS`, bei dem der Datensatz noch eine Kante zeigt. Große Datensätze behalten so eine lesbare Schwelle, kleine wie der Tutorial-Datensatz zeigen ein Netz statt einer leeren Fläche. Die frühere Regel nach der Zeitspanne ließ den Tutorial-Datensatz (über 20 Jahre, wenige Briefe je Absender) leer. Alternativ färbt eine sequentielle Skala (D3 `interpolateYlGnBu`) jeden Korrespondenten nach dem Jahr seines ersten Briefs, eine Gradient-Legende zeigt den Jahresbereich. So werden frühe und späte Teilnehmer und die Entwicklung des Netzwerks sichtbar.
 
 ## Interaktionsmuster
 

@@ -23,6 +23,15 @@ related: [project, specification, plan, handoff]
 
 ## Einträge
 
+### 2026-11-05 Entscheidung E8 umgesetzt, Kartenfarben nach design.md, Tabellen als Textalternative
+
+- Anlass: Der Operator gab das Entscheidungsbündel „Werkzeuge“ frei. Für CorrespExplorer folgt E8 der Empfehlung, mit freigegeben sind die zwei offenen Punkte des UI-Umbaus, ein heller Kartenstil nach [design.md](design.md#61-karte) ohne neue externe Ressource und tabellarische Textalternativen der Grafiken.
+- Befund: Der Abgleich der Stories hatte vier Kriterien offen gelassen (US-05, US-11, US-22, US-27). Positron zeigt Land und Wasser grau. Die Tabellen unter den Grafiken lösten bei geöffnetem Zustand den axe-Befund `scrollable-region-focusable` aus, weil ihr Scrollbereich nicht fokussierbar war. Die Code-Übersicht der Ansichten (`js/views/CONTEXT-MAP.md`) war in der vorigen Runde nicht nachgezogen worden.
+- Entschieden: US-11 und US-22 umgesetzt, die offenen Kriterien von US-05 und US-27 gestrichen ([ADR-007](specification.md#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code)). Das Netzwerk startet im Modus Briefwechsel. Der JSON-Export liefert die vollständige Datenstruktur statt der flachen Zeilen. Die Kartenfarben kommen als Tokens `--color-map-land` und `--color-map-water` auf die geladenen Positron-Ebenen. Die Tabellen sind eingeklappt und stehen unter Timeline, Netzwerk, Erwähnungsfluss und Heatmap, die Karte verweist auf die Ortsliste.
+- Korrigiert: Scrollbereich der Tabellen fokussierbar und benannt. `js/views/CONTEXT-MAP.md` nennt jetzt auch Jahresauswahl, reduzierte Bewegung und den Dialog des Erwähnungsflusses aus der vorigen Runde.
+- Geändert: `network-view.js` mit `buildCorrespondenceNetwork()` und `NETWORK_BUILDERS`, `constants.js` (`minLetters`), `export.js` mit `datasetToJson()` statt `lettersToJson()`, `explore.js` (JSON-Export, `applyPaperBasemap()`), `view-support.js` mit `renderDataTable()`, `timeline-view.js`, `mentions-view.js`, `activity-view.js`, `explore.html`, `components.css`, `tokens.css`, Tests in `test-demo.js` und `test-research-paths.js`, eine Prüfung in `tests/browser/smoke.py`. [specification.md](specification.md), [plan.md](plan.md), [design.md](design.md), [architecture.md](architecture.md), [testing.md](testing.md) und die CONTEXT-MAPs.
+- Belege: Commits dieses Eintrags. `tests/browser/smoke.py --axe` mit allen vierzehn Prüfungen bestanden, darin der Test-Runner ohne Fehlschlag. axe-core mit geöffneten Tabellen in Timeline, Netzwerk, Heatmap und Erwähnungsfluss bei 1440, 768 und 390px ohne Verstoß. Durchsicht der zwölf Ansichten bei 1440, 768 und 390px ohne Seitenüberlauf, Konsolenfehler oder Text unter 12px, Sichtprüfung der Karte mit beigem Land und hellblauem Wasser.
+
 ### 2026-11-05 UI-Refactoring: Kaskade, eine Dialogform, eine Pfadleiste, Barrierefreiheit
 
 - Anlass: Der Operator fragte, wo die Oberfläche zu viele Strukturen hat, und gab den Auftrag, CSS, Responsive und Barrierefreiheit gemeinsam zu bereinigen und das Ergebnis zu bewerten. Grundlage war ein Lese-Audit über `docs/` vom selben Tag und eine Durchsicht der zwölf Ansichten mit dem HSA.

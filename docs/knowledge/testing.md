@@ -65,8 +65,8 @@ Business Logic mit echten Daten
 - test-aggregation.js - Indizes des Parsers, Integration mit dem state-manager, `datasetQuality()`
 - test-formatters.js - Formatierung mit echten Daten
 - test-security.js - Escaping, URL-Schemata und `?json=`-Pfade gegen `docs/data/test-hostile.xml`
-- test-research-paths.js - Forschungspfade für Parser- und HSA-Indexform, Korbauswahl je Ansicht, CSV-Export, Normdaten im Personenindex
-- test-demo.js - Tour, Demo-Links ohne Upload und Standardschwelle des Netzwerks an `docs/data/demo-showcase.xml`
+- test-research-paths.js - Forschungspfade für Parser- und HSA-Indexform, Korbauswahl je Ansicht, CSV- und JSON-Export, Normdaten im Personenindex
+- test-demo.js - Tour, Demo-Links ohne Upload und Standardschwelle und Briefwechsel-Kanten des Netzwerks an `docs/data/demo-showcase.xml`, Escaping der Tabellen-Alternative an `test-hostile.xml`
 - test-correspsearch.js - `datasetFromPages()` an zwei gespeicherten Antworten der correspSearch-API (`docs/data/test-correspsearch.json`, `docs/data/test-correspsearch-empty.json`), ohne Anfrage an den Dienst
 - test-state-manager.js - Filter-Logik mit echten CMIF-Daten, darunter Personen- und Ortsfilter ohne Normdaten-ID und der Rundweg des URL-State
 
@@ -119,7 +119,7 @@ http://localhost:8000/test.html?test=true
 
 ## Browser-Smoke-Test
 
-`tests/browser/smoke.py` prüft im Browser, was der Test-Runner nicht sieht (Entscheidung E9 vom 2026-11-05). Das Skript startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile, der Exit-Code ist nur bei vollständigem Erfolg 0. Es prüft den Test-Runner, alle Ansichten ohne Konsolenfehler, die Ladezeit des HSA, Demo-Link und Demo-Netzwerk, die Tour, den Hinweis bei fehlendem Datensatz, Zurück zur vorigen Ansicht, einen geteilten Filterlink gegen die Zahl aus `hsa-letters.json`, CSV-Export mit BOM und Normdatei-Spalten, die Person im Korb, den Balken „Spanne“, den Link der Karte zur Ortsliste, die Seitenstruktur (zuerst `h1`, Ansichtsknöpfe mit Beschreibung, eine Pfad-Leiste, Themenliste der Sidebar nur außerhalb der Themenansicht, Jahresauswahl der Heatmap, heller Kartenstil) und das ruhende Netzwerk unter reduzierter Bewegung. `--online` prüft zusätzlich einen geteilten correspSearch-Link gegen die API, `--axe <Pfad zu axe.min.js>` führt axe-core über die Seiten.
+`tests/browser/smoke.py` prüft im Browser, was der Test-Runner nicht sieht (Entscheidung E9 vom 2026-11-05). Das Skript startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile, der Exit-Code ist nur bei vollständigem Erfolg 0. Es prüft den Test-Runner, alle Ansichten ohne Konsolenfehler, die Ladezeit des HSA, Demo-Link und Demo-Netzwerk, die Tour, den Hinweis bei fehlendem Datensatz, Zurück zur vorigen Ansicht, einen geteilten Filterlink gegen die Zahl aus `hsa-letters.json`, CSV-Export mit BOM und Normdatei-Spalten, die Person im Korb, den Balken „Spanne“, den Link der Karte zur Ortsliste, die Seitenstruktur (zuerst `h1`, Ansichtsknöpfe mit Beschreibung, eine Pfad-Leiste, Themenliste der Sidebar nur außerhalb der Themenansicht, Jahresauswahl der Heatmap, heller Kartenstil) das ruhende Netzwerk unter reduzierter Bewegung und Entscheidung E8 (Netzwerk startet im Modus Briefwechsel, JSON-Export mit Indizes, Tabellen unter Netzwerk, Timeline und Heatmap). `--online` prüft zusätzlich einen geteilten correspSearch-Link gegen die API, `--axe <Pfad zu axe.min.js>` führt axe-core über die Seiten.
 
 ```bash
 uv run tests/browser/smoke.py --online --axe path/to/axe.min.js

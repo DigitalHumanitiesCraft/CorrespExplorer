@@ -39,7 +39,7 @@ Die funktionalen Anforderungen stehen als Akzeptanzkriterien bei den Stories im 
 
 ## Epics und User Stories
 
-Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Am 2026-10-29 wurden die Stories US-05, US-11, US-17, US-20 bis US-22, US-27, US-28, US-33, US-35 und US-36 gegen den Code abgeglichen. Wo der Code bewusst anders arbeitet, beschreibt die Story das umgesetzte Verhalten, wo ein Kriterium fehlt, ist es als Lücke markiert und als Entscheidungsfrage in [plan.md](plan.md#e8-lücken-der-stories) geführt. Die übrigen Stories sind nicht systematisch geprüft.
+Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Am 2026-10-29 wurden die Stories US-05, US-11, US-17, US-20 bis US-22, US-27, US-28, US-33, US-35 und US-36 gegen den Code abgeglichen. Wo der Code bewusst anders arbeitet, beschreibt die Story das umgesetzte Verhalten. Die vier Lücken dieses Abgleichs hat der Operator am 2026-11-05 entschieden ([ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code)): US-11 und US-22 sind umgesetzt, die offenen Kriterien von US-05 und US-27 gestrichen. Die übrigen Stories sind nicht systematisch geprüft.
 
 ### Datenimport
 
@@ -85,7 +85,8 @@ Als Forschende möchte ich die zeitliche Verteilung der Korrespondenz sehen, um 
 
 - Timeline als Balkendiagramm je Jahr, gestapelt nach Sprache, undatierte Briefe in einem eigenen Balken, Briefe mit einer Datierung über mehrere Jahre (etwa 1822 bis 1922) in einem Balken „Spanne“. Diese zählen nicht zum Zeitraum des Datensatzes (Entscheidung E5 vom 2026-11-05)
 - Zeitfilter per Klick oder Enter auf einen Jahresbalken
-- Lücke: Eine Gruppierung nach Dekade gibt es nicht
+- Unter der Zeitleiste steht eine aufklappbare Tabelle mit Briefen, ungenau datierten Briefen und Sprachen je Jahr als Textalternative
+- Eine Gruppierung nach Dekade ist gestrichen, weil die Zeitleiste auch 70 Jahre lesbar zeigt und der Jahresregler eingrenzt ([ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code))
 
 #### US-27 Datensatz-Übersicht als Einstieg
 
@@ -98,7 +99,7 @@ Als Forschende möchte ich beim Laden eines Datensatzes eine Übersicht sehen, u
 - Einstiegspunkte zu Karte, Netzwerk, Timeline, Briefen, Chronik und Aktivität
 - Bis zu vier Forschungspfade ([US-33](#us-33-methodisch-geleitete-exploration))
 - Sidebar ausgeblendet für volle Breite
-- Lücke: Die fünf aktivsten Korrespondenten, die Sprachverteilung und Ansichtsempfehlungen auf Basis der Datenlage zeigt die Übersicht nicht
+- Die fünf aktivsten Korrespondenten, die Sprachverteilung und Ansichtsempfehlungen auf Basis der Datenlage sind gestrichen. Die Forschungspfade zeigen die aktivsten Korrespondenten als Vorschau, die Sprachverteilung steht in der Zeitleiste ([ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code))
 
 ### Räumliche Exploration
 
@@ -151,7 +152,8 @@ Als Forschende möchte ich sehen, wer mit wem korrespondiert hat, um Netzwerke u
 - Modus Zeitgenossen: Knoten sind Absender, Größe nach Briefanzahl, eine Kante verbindet zwei Absender, die in mindestens so vielen gleichen Jahren Briefe schrieben, wie der Regler vorgibt ([design.md](design.md#netzwerk)), dazu eine Obergrenze der Knoten. Die Standardschwelle zeigt Verbindungen, sobald der Datensatz welche enthält
 - Modus Themen: Themen als Knoten, Kanten nach gemeinsamen Briefen
 - Klick oder Enter auf einen Knoten filtert die Briefe
-- Lücke: Kanten aus dem Briefwechsel selbst (Absender zu Empfänger, Stärke nach Briefanzahl) und ein Filter nach Mindestzahl der Briefe gibt es nicht. Die Kanten der Zeitgenossen zeigen gleichzeitige Aktivität, nicht Korrespondenz
+- Modus Briefwechsel als Standard: Knoten sind Absender und Empfänger, eine Kante verbindet zwei Personen, die einander schrieben, ihre Stärke folgt der Zahl der Briefe in beide Richtungen, der Regler setzt die Mindestzahl der Briefe (`buildCorrespondenceNetwork()` in `network-view.js`, Entscheidung E8 vom 2026-11-05). Die Kanten der Zeitgenossen zeigen dagegen gleichzeitige Aktivität
+- Unter dem Netzwerk steht eine aufklappbare Tabelle der gezeigten Verbindungen mit ihrer Stärke als Textalternative
 
 ### Briefe
 
@@ -241,8 +243,8 @@ Als Forschende möchte ich die gefilterten Briefe als CSV exportieren, um sie in
 
 Als Entwicklerin möchte ich die Daten als JSON exportieren, um sie programmatisch weiterzuverarbeiten.
 
-- Export der gefilterten Briefe als JSON-Liste mit denselben Feldern wie der CSV-Export (`lettersToJson()` in `export.js`)
-- Lücke: Eine vollständige Datenstruktur mit Indizes und Erwähnungen exportiert der Explorer nicht
+- Export der gefilterten Briefe als JSON mit der vollständigen Datenstruktur: die Briefe, wie der Explorer sie hält, mit Erwähnungen, Präzision und Sicherheit, dazu Indizes der Personen, Orte und Themen mit Briefzahl und Normdaten- oder Koordinatenstatus, gezählt wie die Listen, und die Metadaten des Datensatzes mit seiner Quelle (`datasetToJson()` in `export.js`, Entscheidung E8 vom 2026-11-05)
+- Der CSV-Export behält die flachen Zeilen für Tabellenkalkulationen
 
 #### US-23 Mit correspSearch verknüpfen
 
@@ -461,3 +463,13 @@ Begründung. Nutzende sollen sehen und bestimmen, wann Daten das Werkzeug verlas
 Effekt. Gilt für Personen-Dialog, Chronik, Orte und Upload. Eine Antwort für eine zuvor geöffnete Person wird verworfen, wenn inzwischen eine andere im Dialog steht (`personDetailRequest` in `explore.js`).
 
 Ergänzung vom 2026-11-05. Die Regel betrifft Anreicherung mit Personenbezug. Das Laden des Datensatzes selbst fällt nicht darunter: Ein geteilter Link mit `cs=` lädt die genannte correspSearch-Abfrage beim Öffnen ohne weitere Aktion, so wie ein Link mit `json=` die gebündelte Datei lädt (Entscheidung E3). `cs=` nimmt nur Adressen an, die `isCorrespSearchUrl()` zulässt.
+
+### ADR-007 Umfang der Stories nach dem Abgleich mit dem Code
+
+Kontext. Der Abgleich der Stories mit dem Code vom 2026-10-29 ließ vier Kriterien offen: Kanten aus dem Briefwechsel im Netzwerk (US-11), ein JSON-Export der vollständigen Datenstruktur (US-22), eine Gruppierung der Zeitleiste nach Dekade (US-05) und Top-5-Korrespondenten, Sprachverteilung und Ansichtsempfehlungen in der Übersicht (US-27).
+
+Wahl. US-11 und US-22 werden umgesetzt, die offenen Kriterien von US-05 und US-27 gestrichen (Entscheidung E8 des Operators vom 2026-11-05 nach der Empfehlung in [plan.md](plan.md)).
+
+Begründung. „Wer schrieb wem“ ist die Grundfrage eines Korrespondenznetzes, das Zeitgenossen-Netz wurde in den Prüfungen vom 2026-11-05 als solches gelesen. Der JSON-Export ist eine Serialisierung vorhandener Daten. Die Zeitleiste bleibt über Jahrzehnte lesbar, und die Übersicht zeigt aktivste Korrespondenten schon in den Forschungspfaden, die Sprachverteilung in der Zeitleiste.
+
+Effekt. Das Netzwerk startet im Modus Briefwechsel, Zeitgenossen und Themen bleiben wählbar. Der JSON-Export ersetzt die flache Zeilenliste. Weitere Lücken in den Stories sind nicht offen.

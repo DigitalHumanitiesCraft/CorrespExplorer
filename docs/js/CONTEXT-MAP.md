@@ -21,7 +21,7 @@ ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md]
 - utils.js - Escaping (`escapeHtml`, `safeUrl`, `externalLink`, `isAllowedJsonPath`), `csvCell`, `downloadFile`, `showToast`, Dialoge (`openModal`, `closeModal`, `enableModalKeyboard` mit Fokusfalle, die nur bei Änderungen an Dialogen prüft, `trapTabKey` für Modals und Demo-Tour), Normdaten (`parseAuthorityRef` mit VIAF in beiden URI-Formen, `parseGeoNamesRef`, `buildAuthorityLink`, `personAuthority`), `classifyDate` (`from` gleich `to` gilt als genaues Datum), `httpErrorMessage` (deutscher Grund, auch ohne Statustext unter HTTP/2), `sameFilterParams` (Zurück-Navigation), `isMultiYearSpan` und `datedYearRange` (Spannen über mehrere Jahre), `ignoreMissingStyleImages` für Symbole, die der Grundkarte fehlen, `personKey`, `placeKey`, `isUnknownPlaceName`, `isKnownPlace` (Platzhalter wie „Unbekannt“ zählen nicht als Ort), `cleanId`, `buildIndices`, `debounce`, reduzierte Bewegung (`prefersReducedMotion`, `motionMs` für D3-Übergänge, `settleWithoutMotion` für Kräftelayouts)
 - constants.js - Sprachfarben, die eine Bezeichnungstabelle `LANGUAGE_LABELS` mit `languageLabel()` und `registerLanguageLabels()`, `NO_LANGUAGE` für Briefe ohne Sprache, `VIEWS` mit den zwölf Ansichten, Karten-, Netzwerk- und API-Vorgaben, Korbgrenzen `BASKET_LIMITS`
 - dom-cache.js - `elements` mit Gettern für wiederholt genutzte Elemente des Explorers
-- export.js - `LETTER_EXPORT_COLUMNS`, `letterExportRow()`, `lettersToCsv()` (Kopfzeile auch ohne Briefe), `lettersToJson()`
+- export.js - `LETTER_EXPORT_COLUMNS`, `letterExportRow()`, `lettersToCsv()` (Kopfzeile auch ohne Briefe), `datasetToJson()` (Briefe mit Erwähnungen, Indizes, Metadaten und Quelle)
 
 ## Anreicherung
 

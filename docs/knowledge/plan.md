@@ -42,8 +42,6 @@ Die Punkte sind technisch und umkehrbar und brauchen keine Entscheidung des Oper
 - Live-Prüfung von „Lebensdaten von Wikidata laden“ im Personen-Dialog. correspSearch-API und OpenFreeMap-Grundkarte sind am 2026-11-05 live geprüft
 - Prüfung des CSV-Exports in Excel: Der Export trägt seit Entscheidung E4 ein UTF-8-BOM, ob Excel die Umlaute damit beim Doppelklick richtig zeigt, ist ungeprüft, weil kein Excel zur Verfügung stand
 - GitHub-Actions-Lauf für `test.html?test=true` und `tests/browser/smoke.py` (zweiter Schritt von Entscheidung E9)
-- Eigener Kartenstil mit beigen Landflächen und hellblauem Wasser nach [design.md](design.md#61-karte). Die Karte startet seit 2026-11-05 im hellen Stil Positron, der Land und Wasser in Grau zeigt
-- Tabellarische Textalternative für die Grafikansichten (Timeline, Netzwerk, Erwähnungsfluss, Heatmap), etwa eine aufklappbare Tabelle der dargestellten Werte. Der Audit vom 2026-11-05 fand keine, die Listenansichten decken einen Teil ab
 - Gleichnamige Komponentenklassen in Seiten-CSS, die nie zusammen geladen werden (`.empty-state` in explore.css und wissenskorb.css, `.progress-bar` und `.progress-text` in explore.css und upload.css, `.error-message` in style.css und upload.css), auf je eine Komponente in components.css zurückführen
 - Tastaturweg für die Sprachsegmente der Zeitleiste und die Verbindungen im Erwähnungsfluss. Jahresbalken, Netzwerkknoten und die Seitenknoten des Erwähnungsflusses haben einen
 - `build_hsa_data.py` soll die Präzision von Absender, Empfänger und Absendeort wie der Parser klassifizieren. Den Briefen von `hsa-letters.json` fehlt das Feld `precision`, Personen- und Ortsmarkierungen bleiben beim HSA deshalb leer, auch für die 576 Briefe aus „Unbekannt“ ([uncertainty-specification.md](uncertainty-specification.md#hsa-dataset-analysis))
@@ -60,16 +58,11 @@ Die Analyse externer CMIF-Dateien vom November 2025 ([data.md](data.md#testdaten
 
 Der Branch `feature/research-dashboards` und die übrigen Branches bleiben bestehen, ihr Aufräumen liegt beim Operator. Das Journal des Branchs vergab die Phasennummern 40 bis 46, die sich mit Phase 40 auf main überschneiden. Der Merge übernahm sie nicht als Überschriften ([journal.md](journal.md)).
 
-Die Fragen E1 bis E10 vom 2026-11-05 lagen mit Optionen und Empfehlung beim Operator. Er übertrug die technischen und umkehrbaren Entscheidungen der koordinierenden Session. E1 bis E7, E9 und E10 sind nach der Empfehlung umgesetzt und im [Journal](journal.md) festgehalten, ihre Begründungen stehen in den zuständigen Dokumenten ([specification.md](specification.md), [design.md](design.md), [testing.md](testing.md)).
+Die Fragen E1 bis E10 vom 2026-11-05 lagen mit Optionen und Empfehlung beim Operator. Er übertrug die technischen und umkehrbaren Entscheidungen der koordinierenden Session und entschied E8 selbst. E1 bis E10 sind nach der Empfehlung umgesetzt und im [Journal](journal.md) festgehalten, ihre Begründungen stehen in den zuständigen Dokumenten ([specification.md](specification.md), [design.md](design.md), [testing.md](testing.md)).
 
 ### E8 Lücken der Stories
 
-Wartet auf den Operator, weil das Streichen von User Stories eine inhaltliche Frage des Umfangs ist. Beim Abgleich der Stories mit dem Code am 2026-10-29 ([specification.md](specification.md#epics-und-user-stories)) blieben vier Kriterien ohne Umsetzung. Je Story ist Ja „umsetzen“, Nein „aus der Story streichen“.
-
-- US-11 Netzwerk aus dem Briefwechsel (Kante Absender zu Empfänger, Stärke nach Briefanzahl, Mindestzahl der Briefe): Empfehlung umsetzen. „Wer schrieb wem“ ist die Grundfrage eines Korrespondenznetzes, beide Prüfagenten vom 2026-11-05 lasen das Zeitgenossen-Netz als solches. Der Typ wäre ein dritter Eintrag in `network-type` neben Zeitgenossen und Themen.
-- US-22 JSON-Export mit Indizes und Erwähnungen: Empfehlung umsetzen. Die Daten liegen im state-manager vollständig vor, der Export ist eine Serialisierung.
-- US-05 Gruppierung der Timeline nach Dekade: Empfehlung streichen. Die Zeitleiste zeigt auch 70 Jahre lesbar, der Jahresregler grenzt ein.
-- US-27 Top-5-Korrespondenten, Sprachverteilung und Ansichtsempfehlungen in der Übersicht: Empfehlung streichen. Die Forschungspfade der Übersicht zeigen die aktivsten Korrespondenten als Vorschau, die Sprachverteilung steht in der Zeitleiste.
+Entschieden vom Operator am 2026-11-05 nach der Empfehlung: US-11 (Netzwerk aus dem Briefwechsel) und US-22 (JSON-Export mit Indizes und Erwähnungen) sind umgesetzt, die offenen Kriterien von US-05 (Dekadengruppierung) und US-27 (Top-5-Korrespondenten, Sprachverteilung, Ansichtsempfehlungen) gestrichen. Begründung in [ADR-007](specification.md#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code), Umsetzung im [Journal](journal.md).
 
 ## Abweichungen
 

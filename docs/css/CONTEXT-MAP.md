@@ -29,6 +29,7 @@ Alle sechs Seiten laden diese Reihenfolge vollständig über `<link>` (geprüft 
 - Reguläre Elemente (Karten, Buttons, Eingaben, Leisten) tragen Rahmen. Schatten stehen nur in shadows.css und nur für Dialoge, Demo-Tour, Toasts, Dropdowns, Tooltips, Karten-Popups, Kartensteuerung und die mobile Sidebar. Die übrigen Stylesheets setzen höchstens `box-shadow: none` (geprüft am 2026-10-29 per Suche nach `box-shadow`).
 - Jede `var(--…)`-Referenz verweist auf ein in tokens.css definiertes Token, ohne Ersatzwert (geprüft am 2026-10-29 per Skript). Farben stehen als Token, Ausnahmen sind halbtransparentes Weiß auf farbigen Flächen und die Schraffurmuster der Timeline.
 - z-index nur über die Skala `--z-*` aus tokens.css, Übergänge mit `--transition-properties` statt `all`, Ränder von Bedienelementen mit `--color-border-control` (Werte und Gründe in [design.md](../knowledge/design.md#0-css-architektur)).
+- Textalternativen der Grafiken stehen als `.chart-table` in components.css (aufklappbar, fokussierbarer Scrollbereich).
 - Dialoge haben eine Form in components.css: `.modal` als Hintergrund, `.modal-content` als Kasten, `.modal-lg` für Listen. `.modal-overlay` gibt es nicht mehr.
 - Eine Komponente mit eigenen Breakpoints führt sie direkt hinter ihren Grundregeln (Ansichtsleiste in style.css, Netzwerksteuerung in explore.css), sonst überschreibt eine spätere Grundregel die Media Query.
 - `prefers-reduced-motion` behandelt base.css für alle Seiten.
