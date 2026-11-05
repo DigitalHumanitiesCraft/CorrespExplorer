@@ -312,6 +312,8 @@ export function parseGeoNamesRef(url) {
  */
 export function classifyDate({ when, from, to, notBefore, notAfter, cert } = {}) {
     const certainty = cert || 'high';
+    // correspSearch writes exact dates as from="d" to="d"; an interval of one value is that value
+    if (!when && from && from === to) return classifyDate({ when: from, cert });
     const dateStr = when || from || notBefore;
     const dateToStr = to || notAfter || null;
 

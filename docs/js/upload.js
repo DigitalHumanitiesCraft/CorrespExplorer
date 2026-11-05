@@ -1,7 +1,7 @@
 // Upload Component - Handles CMIF file upload and URL loading
 // Parses CMIF-XML and stores data for visualization
 
-import { parseCMIF, enrichWithCoordinates } from './cmif-parser.js';
+import { parseCMIF, addTableCoordinates } from './cmif-parser.js';
 import { isCorrespSearchUrl } from './correspsearch-api.js';
 import { enrichPersonsBatch } from './wikidata-enrichment.js';
 import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
@@ -51,9 +51,13 @@ async function init() {
 
     // about.html links here with ?demo=true, because the tutorial dataset has to pass the upload
     // dialog before explore.html can show it
-    if (new URLSearchParams(window.location.search).get('demo') === 'true') {
+    const startParams = new URLSearchParams(window.location.search);
+    if (startParams.get('demo') === 'true') {
         const demoCard = document.querySelector('.dataset-card[data-demo="true"]');
         if (demoCard) handleDatasetSelect(demoCard);
+    } else if (startParams.get('notice') === 'dataset-missing') {
+        // explore.html sends links here whose dataset lay only in the sender's tab
+        showError('Der Link gehört zu einem Datensatz, der nur im Browser der teilenden Person geladen war (eigene Datei oder correspSearch-Abfrage). Laden Sie den Datensatz hier erneut.');
     }
 }
 
@@ -253,16 +257,7 @@ async function showConfigDialog(data, sourceInfo) {
     pendingData = data;
     pendingSourceInfo = sourceInfo;
 
-    // Coordinates from the prebuilt Wikidata/GeoNames table (data.md, Rechte und Lizenzen)
-    try {
-        const coordsResponse = await fetch('data/geonames_coordinates.json');
-        if (coordsResponse.ok) {
-            const { coordinates } = await coordsResponse.json();
-            enrichWithCoordinates(data, coordinates);
-        }
-    } catch (error) {
-        console.warn('Coordinates cache not available:', error);
-    }
+    await addTableCoordinates(data);
 
     const coordStats = analyzeCoordinateNeeds(data);
 

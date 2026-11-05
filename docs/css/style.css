@@ -1160,6 +1160,26 @@ button {
     background: var(--color-primary);
 }
 
+/* Wide screens have room for the view names under the icons; narrower screens keep the icons,
+   whose names stay in the tooltip and the accessible name */
+@media (min-width: 1600px) {
+    .view-btn {
+        flex-direction: column;
+        gap: 2px;
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .view-btn .view-btn-text {
+        display: block;
+        font-size: var(--font-size-xs);
+        line-height: 1.1;
+    }
+
+    .view-btn i {
+        font-size: var(--font-size-md);
+    }
+}
+
 /* View Separator (between Meta-Views and Data-Views) */
 .view-separator {
     width: 1px;

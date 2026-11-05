@@ -20,17 +20,31 @@ export function initDemoTour(deps) {
     switchView = deps.switchView;
 }
 
+// localStorage, so a finished tour stays finished in new tabs and for links opened later
+const TOUR_DONE_KEY = 'ce-demo-tour-completed';
+
+/**
+ * Whether the tour opens on load: only for the demo, not after it was finished in this browser,
+ * and not with tour=0 (workshop links, screenshot scripts)
+ * @param {string} search - location.search
+ * @returns {boolean}
+ */
+export function shouldStartDemoTour(search) {
+    const params = new URLSearchParams(search);
+    if (params.get('demo') !== 'true' || params.get('tour') === '0') return false;
+    try {
+        return localStorage.getItem(TOUR_DONE_KEY) === null;
+    } catch {
+        // Blocked storage: the tour opens and can be closed with Escape
+        return true;
+    }
+}
+
 /**
  * Check if this is a demo dataset and show tour
  */
 export function checkAndStartDemoTour() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isDemo = urlParams.get('demo') === 'true';
-
-    // Check if tour was already completed
-    const tourCompleted = sessionStorage.getItem('ce-demo-tour-completed');
-
-    if (isDemo && !tourCompleted) {
+    if (shouldStartDemoTour(window.location.search)) {
         // Small delay to let the page render
         setTimeout(() => {
             startTour();
@@ -78,12 +92,16 @@ function endTour() {
 
     // Mark tour as completed; blocked storage only means the tour may start again
     try {
-        sessionStorage.setItem('ce-demo-tour-completed', 'true');
+        localStorage.setItem(TOUR_DONE_KEY, 'true');
     } catch {
         // Nothing to keep
     }
 
-    if (returnFocus?.isConnected) returnFocus.focus();
+    // A tour opened on load found focus on body; the active view button is the next useful place
+    const target = returnFocus?.isConnected && returnFocus !== document.body
+        ? returnFocus
+        : document.querySelector('.view-btn[aria-pressed="true"]');
+    target?.focus();
     returnFocus = null;
 }
 

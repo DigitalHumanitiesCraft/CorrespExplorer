@@ -620,3 +620,37 @@ export function enrichWithCoordinates(data, coordsCache) {
 
     return data;
 }
+
+/**
+ * Add coordinates from the prebuilt Wikidata/GeoNames table (data.md, Rechte und Lizenzen).
+ * A missing table leaves the places without coordinates, the map then lists them as such.
+ * @param {Object} data - Parsed CMIF data
+ * @returns {Promise<Object>} the same data
+ */
+export async function addTableCoordinates(data) {
+    try {
+        const response = await fetch('data/geonames_coordinates.json');
+        if (response.ok) {
+            const { coordinates } = await response.json();
+            enrichWithCoordinates(data, coordinates);
+        }
+    } catch (error) {
+        console.warn('Coordinates table not available:', error);
+    }
+    return data;
+}
+
+// Tutorial dataset of the start page; its card loads this path, so the basket key matches
+export const DEMO_DATASET_URL = 'data/demo-showcase.xml';
+
+/**
+ * The tutorial dataset as the start page prepares it, without Wikidata enrichment (ADR-006).
+ * Demo links opened in a new tab or by another person load it here instead of landing on the
+ * start page.
+ * @returns {Promise<Object>} parsed data with sourceInfo
+ */
+export async function loadDemoDataset() {
+    const data = await addTableCoordinates(await parseCMIF(DEMO_DATASET_URL));
+    data.sourceInfo = { type: 'url', source: DEMO_DATASET_URL, isDemo: true };
+    return data;
+}

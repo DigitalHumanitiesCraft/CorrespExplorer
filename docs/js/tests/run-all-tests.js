@@ -10,6 +10,7 @@ import { DOMCacheTests } from './test-dom-cache.js';
 import { SecurityTests } from './test-security.js';
 import { BasketTests } from './test-basket.js';
 import { ResearchPathTests } from './test-research-paths.js';
+import { DemoTests } from './test-demo.js';
 
 /**
  * Run all registered suites
@@ -24,6 +25,7 @@ export async function runAllTests() {
         FormattersTests,
         SecurityTests,
         ResearchPathTests,
+        DemoTests,
 
         // Infrastructure (State Management)
         StateManagerTests,

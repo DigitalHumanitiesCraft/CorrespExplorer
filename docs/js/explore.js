@@ -25,6 +25,7 @@ import {
     getPersonInitials
 } from './formatters.js';
 import { initDemoTour, checkAndStartDemoTour, startTour } from './demo-tour.js';
+import { loadDemoDataset } from './cmif-parser.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
 // View modules
@@ -181,8 +182,8 @@ async function init() {
         const data = await loadData();
 
         if (!data) {
-            // Nothing uploaded and no ?json= path: the start page offers the datasets
-            window.location.href = 'index.html';
+            // Nothing uploaded and no ?json= path: the start page says why and offers the datasets
+            window.location.href = 'index.html?notice=dataset-missing';
             return;
         }
 
@@ -270,7 +271,6 @@ async function init() {
         initNetworkViewModule({
             getFilteredLetters: () => state.getFilteredLetters(),
             getAllLetters: () => allLetters,
-            getDateRange: () => dateRange,
             applyPersonFilter,
             applySubjectFilter,
             switchView,
@@ -392,7 +392,7 @@ async function loadData() {
     }
 
     const storedData = sessionStorage.getItem('cmif-data');
-    if (!storedData) return null;
+    if (!storedData) return params.get('demo') === 'true' ? loadDemoDataset() : null;
     try {
         return JSON.parse(storedData);
     } catch {
@@ -1783,11 +1783,7 @@ function renderOverview() {
             tutorialBtn.classList.remove('hidden');
             // Setup click handler (once)
             if (!tutorialBtn.dataset.listenerAdded) {
-                tutorialBtn.addEventListener('click', () => {
-                    // Clear the "completed" flag so tour can restart
-                    sessionStorage.removeItem('ce-demo-tour-completed');
-                    startTour();
-                });
+                tutorialBtn.addEventListener('click', () => startTour());
                 tutorialBtn.dataset.listenerAdded = 'true';
             }
         } else {

@@ -58,7 +58,7 @@
         </div>
         <div class="view-switcher" role="navigation" aria-label="Ansichtswechsel">
             <!-- Start View (Overview + Pfade kombiniert) -->
-            <button class="view-btn active" data-view="overview" aria-pressed="true" aria-label="Start" data-tooltip="Start" data-tooltip-desc="Uebersicht und Forschungspfade">
+            <button class="view-btn active" data-view="overview" aria-pressed="true" aria-label="Start" data-tooltip="Start" data-tooltip-desc="Übersicht und Forschungspfade">
                 <i class="fas fa-home" aria-hidden="true"></i> <span class="view-btn-text">Start</span>
             </button>
             <span class="view-separator"></span>
@@ -66,7 +66,7 @@
             <button class="view-btn" data-view="map" aria-pressed="false" aria-label="Karte" data-tooltip="Karte" data-tooltip-desc="Briefe nach Absendeort auf Karte">
                 <i class="fas fa-map" aria-hidden="true"></i> <span class="view-btn-text">Karte</span>
             </button>
-            <button class="view-btn" data-view="persons" aria-pressed="false" aria-label="Korrespondenten" data-tooltip="Korrespondenten" data-tooltip-desc="Liste aller Absender und Empfaenger">
+            <button class="view-btn" data-view="persons" aria-pressed="false" aria-label="Korrespondenten" data-tooltip="Korrespondenten" data-tooltip-desc="Liste aller Absender und Empfänger">
                 <i class="fas fa-users" aria-hidden="true"></i> <span class="view-btn-text">Korrespondenten</span>
             </button>
             <button class="view-btn" data-view="letters" aria-pressed="false" aria-label="Briefe" data-tooltip="Briefe" data-tooltip-desc="Alle Briefe durchsuchen und filtern">
@@ -84,16 +84,16 @@
             <button class="view-btn" data-view="network" aria-pressed="false" id="network-view-btn" aria-label="Netzwerk" data-tooltip="Netzwerk" data-tooltip-desc="Verbindungen zwischen Korrespondenten">
                 <i class="fas fa-project-diagram" aria-hidden="true"></i> <span class="view-btn-text">Netzwerk</span>
             </button>
-            <button class="view-btn" data-view="mentions-flow" aria-pressed="false" id="mentions-flow-view-btn" aria-label="Mentions Flow" data-tooltip="Mentions Flow" data-tooltip-desc="Erwaehnte Personen und Orte (Sankey)">
-                <i class="fas fa-stream" aria-hidden="true"></i> <span class="view-btn-text">Mentions Flow</span>
+            <button class="view-btn" data-view="mentions-flow" aria-pressed="false" id="mentions-flow-view-btn" aria-label="Erwähnungen" data-tooltip="Erwähnungen" data-tooltip-desc="Erwähnte Personen und Orte (Sankey)">
+                <i class="fas fa-stream" aria-hidden="true"></i> <span class="view-btn-text">Erwähnungen</span>
             </button>
             <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" aria-label="Chronik" data-tooltip="Chronik" data-tooltip-desc="Korrespondenz mit Wikidata anreichern">
                 <i class="fas fa-scroll" aria-hidden="true"></i> <span class="view-btn-text">Chronik</span>
             </button>
-            <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" aria-label="Aktivitaet" data-tooltip="Aktivitaet" data-tooltip-desc="GitHub-Style Heatmap der Briefaktivitaet">
-                <i class="fas fa-calendar-alt" aria-hidden="true"></i> <span class="view-btn-text">Aktivitaet</span>
+            <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" aria-label="Aktivität" data-tooltip="Aktivität" data-tooltip-desc="Heatmap der Briefaktivität">
+                <i class="fas fa-calendar-alt" aria-hidden="true"></i> <span class="view-btn-text">Aktivität</span>
             </button>
-            <button class="view-btn" data-view="comparison" aria-pressed="false" id="comparison-view-btn" aria-label="Vergleich" data-tooltip="Vergleich" data-tooltip-desc="Personen, Zeitraeume oder Orte vergleichen">
+            <button class="view-btn" data-view="comparison" aria-pressed="false" id="comparison-view-btn" aria-label="Vergleich" data-tooltip="Vergleich" data-tooltip-desc="Personen, Zeiträume oder Orte vergleichen">
                 <i class="fas fa-columns" aria-hidden="true"></i> <span class="view-btn-text">Vergleich</span>
             </button>
         </div>
@@ -630,8 +630,8 @@
                 <div id="mentions-flow-view" class="tab-content">
                     <div class="mentions-flow-container">
                         <div class="view-header view-header--inset">
-                            <h2 class="view-header__title">Erwaehnungs-Fluesse</h2>
-                            <p class="view-header__description">Visualisiert wer in wessen Briefen erwaehnt wird</p>
+                            <h2 class="view-header__title">Erwähnungen</h2>
+                            <p class="view-header__description">Wer in wessen Briefen erwähnt wird</p>
                             <div class="view-header__actions">
                                 <div class="autocomplete-container mentions-autocomplete">
                                     <input type="search"
@@ -693,7 +693,7 @@
                 <div id="activity-view" class="tab-content">
                     <div class="activity-container">
                         <div class="view-header">
-                            <h2 class="view-header__title">Korrespondenz-Aktivitaet</h2>
+                            <h2 class="view-header__title">Korrespondenz-Aktivität</h2>
                             <p class="view-header__description">GitHub-Style Heatmap der Briefaktivitaet</p>
                             <div class="view-header__actions">
                                 <div class="experimental-badge" title="Experimenteller View zur Visualisierung von Korrespondenz-Aktivitaet">
@@ -974,7 +974,7 @@
         <div class="tour-step" data-step="2">
             <div class="tour-content" data-target=".view-switcher">
                 <h3>Ansichten wechseln</h3>
-                <p>Mit diesen Buttons wechseln Sie zwischen zwoelf Ansichten: Start, Karte, Korrespondenten, Briefe, Timeline, Themen, Orte, Netzwerk, Mentions Flow, Chronik, Aktivitaet und Vergleich. Ansichten, fuer die ein Datensatz keine Daten hat, sind ausgeblendet.</p>
+                <p>Mit diesen Buttons wechseln Sie zwischen zwölf Ansichten: Start, Karte, Korrespondenten, Briefe, Timeline, Themen, Orte, Netzwerk, Erwähnungen, Chronik, Aktivität und Vergleich. Ansichten, für die ein Datensatz keine Daten hat, sind ausgeblendet.</p>
                 <div class="tour-nav">
                     <button type="button" class="tour-prev">Zurueck</button>
                     <button type="button" class="tour-next">Weiter</button>

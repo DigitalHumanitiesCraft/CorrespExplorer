@@ -211,7 +211,7 @@ export function analyzeResearchQuestions(letters, indices = {}) {
             description: `${s.personMentions.toLocaleString('de-DE')} Personenerwähnungen in ${s.lettersWithMentions.toLocaleString('de-DE')} Briefen`,
             preview: preview(topEntries(s.mentioned), '×'),
             path: [
-                { view: 'mentions-flow', label: 'Mentions Flow', action: 'Erwähnungsmuster' },
+                { view: 'mentions-flow', label: 'Erwähnungen', action: 'Erwähnungsmuster' },
                 { view: 'persons', label: 'Korrespondenten', action: 'Person filtern' }
             ]
         });

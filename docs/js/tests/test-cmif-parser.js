@@ -80,6 +80,18 @@ export const CMIFParserTests = {
         },
 
         {
+            name: 'Datums-Präzision: from und to am selben Tag sind ein Tagesdatum (Fall 024)',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const letter = data.letters.find(l => l.id.endsWith('024'));
+
+                assert(letter, 'Fall 024 sollte geparst sein');
+                assert(letter.datePrecision === 'day', `Erwartet day, erhalten ${letter.datePrecision}`);
+                assert(letter.date === '1890-02-09' && letter.year === 1890, `Datum falsch: ${letter.date}`);
+            }
+        },
+
+        {
             name: 'Personen-Präzision: Findet identified persons (with authority) in echten Daten',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');

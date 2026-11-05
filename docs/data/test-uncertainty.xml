@@ -349,6 +349,22 @@
         </note>
       </correspDesc>
 
+      <!-- CASE 024: from and to on the same day, as correspSearch writes exact dates -->
+      <!-- Expected: Day precision, not a range -->
+      <correspDesc ref="https://example.org/letter/024" source="#test-source" key="024">
+        <correspAction type="sent">
+          <persName ref="https://viaf.org/viaf/261931943">Hugo Schuchardt</persName>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+          <date from="1890-02-09" to="1890-02-09"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="https://viaf.org/viaf/18030027">Julio de Urquijo</persName>
+        </correspAction>
+        <note>
+          <ref type="hasLanguage" target="de"/>
+        </note>
+      </correspDesc>
+
     </profileDesc>
   </teiHeader>
 </TEI>

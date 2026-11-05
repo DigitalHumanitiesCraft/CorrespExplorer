@@ -26,7 +26,6 @@ let networkZoom = null;
 // External dependencies - injected via init
 let getFilteredLetters = null;
 let getAllLetters = null;
-let getDateRange = null;
 let applyPersonFilter = null;
 let applySubjectFilter = null;
 let switchView = null;
@@ -39,7 +38,6 @@ let log = null;
 export function initNetworkView(deps) {
     getFilteredLetters = deps.getFilteredLetters;
     getAllLetters = deps.getAllLetters;
-    getDateRange = deps.getDateRange;
     applyPersonFilter = deps.applyPersonFilter;
     applySubjectFilter = deps.applySubjectFilter;
     switchView = deps.switchView;
@@ -57,16 +55,10 @@ function setupNetworkEventHandlers() {
     const maxNodesInput = elements.getById('network-max-nodes');
     const resetZoomBtn = elements.networkResetZoom;
 
-    // Calculate dynamic default for minYears based on dataset timespan
-    const dateRange = getDateRange();
-    const timespan = dateRange.max - dateRange.min;
-    if (timespan <= 5) {
-        networkMinYears = 1;
-    } else if (timespan <= 20) {
-        networkMinYears = 2;
-    } else {
-        networkMinYears = NETWORK_DEFAULTS.minYears;
-    }
+    // Defaults: at most the configured thresholds, lowered until the dataset shows a connection
+    const allLetters = getAllLetters();
+    networkMinYears = defaultNetworkThreshold(allLetters, 'contemporaries', NETWORK_DEFAULTS.minYears);
+    networkMinCooccurrence = defaultNetworkThreshold(allLetters, 'topics', NETWORK_DEFAULTS.minCooccurrence);
 
     // Check if topics are available and update UI
     updateNetworkTypeOptions();
@@ -193,9 +185,25 @@ function updateNetworkThresholdLabel() {
 }
 
 /**
+ * Default threshold of a network type: the highest value up to ceiling that still yields an edge.
+ * A fixed default left small datasets (the tutorial dataset) with an empty network.
+ * @param {Array} letters - All letters of the dataset
+ * @param {'contemporaries'|'topics'} type
+ * @param {number} ceiling - Configured default (NETWORK_DEFAULTS)
+ * @returns {number}
+ */
+export function defaultNetworkThreshold(letters, type, ceiling) {
+    const build = type === 'topics' ? buildTopicsNetwork : buildContemporariesNetwork;
+    for (let threshold = ceiling; threshold > 1; threshold--) {
+        if (build(letters, threshold, NETWORK_DEFAULTS.maxNodes).links.length > 0) return threshold;
+    }
+    return 1;
+}
+
+/**
  * Build contemporaries network: persons who correspond in the same years
  */
-function buildContemporariesNetwork(letters, minYears, maxNodes) {
+export function buildContemporariesNetwork(letters, minYears, maxNodes) {
     // Years and letter counts per sender
     const personInfo = new Map();
 
@@ -308,7 +316,7 @@ function buildContemporariesNetwork(letters, minYears, maxNodes) {
 /**
  * Build topic co-occurrence network
  */
-function buildTopicsNetwork(letters, minCooccurrence, maxNodes) {
+export function buildTopicsNetwork(letters, minCooccurrence, maxNodes) {
     const topicInfo = new Map();
     const cooccurrence = new Map();
 
