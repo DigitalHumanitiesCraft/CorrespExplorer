@@ -168,6 +168,68 @@
     line-height: 1.4;
 }
 
+/* Text alternative below a chart: collapsed table of the shown values (renderDataTable) */
+.chart-table {
+    margin-top: var(--space-md);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+}
+
+.chart-table summary {
+    padding: var(--space-sm) var(--space-md);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.chart-table__scroll {
+    max-height: 24rem;
+    overflow: auto;
+    border-top: 1px solid var(--color-border-light);
+}
+
+.chart-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+    font-variant-numeric: tabular-nums;
+}
+
+.chart-table caption {
+    padding: var(--space-sm) var(--space-md);
+    text-align: left;
+    color: var(--color-text-light);
+}
+
+.chart-table th,
+.chart-table td {
+    padding: var(--space-xs) var(--space-md);
+    border-bottom: 1px solid var(--color-border-light);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.chart-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg-light);
+}
+
+.chart-table .chart-table__num {
+    text-align: right;
+}
+
+/* Text cells such as the languages of a year wrap, numbers and names stay on one line */
+.chart-table td:not(.chart-table__num) {
+    min-width: 12rem;
+    white-space: normal;
+}
+
+.chart-table__note {
+    padding: var(--space-sm) var(--space-md);
+    color: var(--color-text-light);
+}
+
 /* Dialog: .modal is the backdrop, .modal-content the box, .modal-lg widens it for lists.
    The only dialog form of all pages; open and close through openModal and closeModal (utils.js). */
 .modal {

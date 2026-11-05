@@ -6,7 +6,9 @@ import { parseCMIF, loadDemoDataset, DEMO_DATASET_URL } from '../cmif-parser.js'
 import { shouldStartDemoTour } from '../demo-tour.js';
 import { datasetKey } from '../basket.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
-import { defaultNetworkThreshold, buildContemporariesNetwork, buildTopicsNetwork } from '../views/network-view.js';
+import { defaultNetworkThreshold, buildContemporariesNetwork, buildCorrespondenceNetwork, buildTopicsNetwork } from '../views/network-view.js';
+import { personKey } from '../utils.js';
+import { renderDataTable } from '../views/view-support.js';
 import { assert } from './test-runner.js';
 
 const TOUR_DONE_KEY = 'ce-demo-tour-completed';
@@ -60,8 +62,8 @@ export const DemoTests = {
             name: 'Netzwerk: Standardschwelle des Tutorial-Datensatzes ergibt Verbindungen',
             async run() {
                 const { letters } = await parseCMIF(DEMO_DATASET_URL);
-                const builders = { contemporaries: buildContemporariesNetwork, topics: buildTopicsNetwork };
-                const ceilings = { contemporaries: NETWORK_DEFAULTS.minYears, topics: NETWORK_DEFAULTS.minCooccurrence };
+                const builders = { correspondence: buildCorrespondenceNetwork, contemporaries: buildContemporariesNetwork, topics: buildTopicsNetwork };
+                const ceilings = { correspondence: NETWORK_DEFAULTS.minLetters, contemporaries: NETWORK_DEFAULTS.minYears, topics: NETWORK_DEFAULTS.minCooccurrence };
 
                 for (const [type, build] of Object.entries(builders)) {
                     const threshold = defaultNetworkThreshold(letters, type, ceilings[type]);
@@ -73,6 +75,49 @@ export const DemoTests = {
                         assert(above === 0, `${type}: Schwelle ${threshold + 1} hätte noch ${above} Verbindungen und wäre der bessere Standard`);
                     }
                 }
+            }
+        },
+
+        {
+            // US-11, decision E8: edges are letters between two persons, counted in both directions
+            name: 'Netzwerk Briefwechsel: Kante zählt die Briefe zwischen Absender und Empfänger',
+            async run() {
+                const { letters } = await parseCMIF(DEMO_DATASET_URL);
+                const all = buildCorrespondenceNetwork(letters, 1, 10000);
+                assert(all.links.length > 0, 'Tutorial-Datensatz sollte Briefwechsel enthalten');
+                for (const link of all.links.slice(0, 5)) {
+                    const between = letters.filter(l => {
+                        const pair = [personKey(l.sender), personKey(l.recipient)];
+                        return pair.includes(link.source) && pair.includes(link.target);
+                    });
+                    assert(link.count === between.length, `${link.sourceName} und ${link.targetName}: ${link.count} statt ${between.length} Briefe`);
+                    assert(link.forward + link.backward === link.count, 'Richtungen ergeben nicht die Summe');
+                }
+                const strongest = all.links[0].count;
+                const filtered = buildCorrespondenceNetwork(letters, strongest, 10000);
+                assert(filtered.links.every(l => l.count >= strongest), 'Mindestzahl der Briefe nicht eingehalten');
+                assert(filtered.links.length >= 1 && filtered.links.length <= all.links.length, 'Filter nach Mindestzahl wirkungslos');
+            }
+        },
+
+        {
+            // The text alternatives of the charts print names from the data; they must stay text
+            name: 'Textalternative: Tabelle des Netzwerks escaped Namen aus test-hostile.xml',
+            async run() {
+                const { letters } = await parseCMIF('data/test-hostile.xml');
+                const { links } = buildCorrespondenceNetwork(letters, 1, 1000);
+                assert(links.length > 0, 'Fixture sollte Briefwechsel enthalten');
+                const host = document.createElement('div');
+                renderDataTable(host, {
+                    caption: 'Verbindungen',
+                    columns: ['Person', 'Person', 'Briefe'],
+                    rows: links.map(l => [l.sourceName, l.targetName, l.count])
+                });
+                assert(host.querySelectorAll('tbody tr').length === links.length, 'Eine Zeile je Verbindung');
+                assert(!host.querySelector('tbody img, tbody b'), 'Markup aus den Daten wurde als HTML eingefügt');
+                assert(host.textContent.includes('<img src=x onerror=alert(1)>') || host.textContent.includes('<b>bold</b>'), 'Name sollte als Text erscheinen');
+                renderDataTable(host, { caption: '', columns: [], rows: [] });
+                assert(host.innerHTML === '', 'Ohne Zeilen bleibt der Platz leer');
             }
         }
     ]

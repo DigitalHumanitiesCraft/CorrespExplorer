@@ -138,6 +138,8 @@ export const MAP_DEFAULTS = {
 
 // Network defaults
 export const NETWORK_DEFAULTS = {
+    minLetters: 5,        // letters between two persons for the correspondence network
+    maxLettersSlider: 100,
     minYears: 3,          // shared active years for contemporaries
     maxNodes: 50,
     minCooccurrence: 5,   // shared letters for topic co-occurrence

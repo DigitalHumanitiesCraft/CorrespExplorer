@@ -14,7 +14,7 @@ import {
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
 import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, ignoreMissingStyleImages, sameFilterParams, datedYearRange, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
 import { analyzeResearchQuestions, datasetQuality, summarizeCorpus, renderOverviewResearchPaths } from './research-paths.js';
-import { lettersToCsv, lettersToJson } from './export.js';
+import { datasetToJson, lettersToCsv } from './export.js';
 import { initKnowledgePath, startKnowledgePath } from './knowledge-path.js';
 import {
     formatDateWithPrecision,
@@ -767,6 +767,12 @@ function initMap() {
 
     ignoreMissingStyleImages(map);
 
+    // design.md 6.1: the light basemap shows beige land and light-blue water. The paint of the
+    // loaded OpenFreeMap style is changed in place, so no further style or tile is fetched
+    map.on('style.load', () => {
+        if (currentMapStyle === 'light') applyPaperBasemap(map);
+    });
+
     // top-left, because the layer and colour buttons (.map-controls) sit top-right
     map.addControl(new maplibregl.NavigationControl(), 'top-left');
 
@@ -805,6 +811,19 @@ function initMap() {
     if (colorToggleBtn) {
         colorToggleBtn.addEventListener('click', toggleMapColorMode);
     }
+}
+
+// Land layers of the Positron style that take the paper colour; missing layers are skipped,
+// so a changed upstream style degrades to its own colours instead of failing
+const PAPER_LAND_LAYERS = ['background', 'park', 'landuse_residential', 'landcover_wood', 'road_area_pier'];
+
+function applyPaperBasemap(targetMap) {
+    const land = cssToken('--color-map-land');
+    for (const id of PAPER_LAND_LAYERS) {
+        const layer = targetMap.getLayer(id);
+        if (layer) targetMap.setPaintProperty(id, layer.type === 'background' ? 'background-color' : 'fill-color', land);
+    }
+    if (targetMap.getLayer('water')) targetMap.setPaintProperty('water', 'fill-color', cssToken('--color-map-water'));
 }
 
 function setMapStyle(styleKey) {
@@ -2577,7 +2596,7 @@ function initExport() {
             if (option.dataset.format === 'csv') {
                 downloadFile(lettersToCsv(filteredLetters), 'korrespondenz.csv', 'text/csv;charset=utf-8');
             } else {
-                downloadFile(lettersToJson(filteredLetters), 'korrespondenz.json', 'application/json');
+                downloadFile(datasetToJson(filteredLetters, { meta: state.getMeta(), source: datasetSource, indices: dataIndices }), 'korrespondenz.json', 'application/json');
             }
             closeModal(modal);
         });

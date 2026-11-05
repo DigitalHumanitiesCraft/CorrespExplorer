@@ -444,6 +444,7 @@
                             <div id="timeline-stack-legend" class="timeline-stack-legend"></div>
                             <span class="timeline-total" id="timeline-total"></span>
                         </div>
+                        <div id="timeline-table" class="chart-table-host"></div>
                     </div>
                 </div>
 
@@ -596,6 +597,7 @@
                             <div class="network-control-group">
                                 <label for="network-type">Netzwerk-Typ:</label>
                                 <select id="network-type">
+                                    <option value="correspondence">Briefwechsel</option>
                                     <option value="contemporaries">Zeitgenossen</option>
                                 </select>
                             </div>
@@ -626,6 +628,7 @@
                         </div>
                         <div class="network-coverage" id="network-coverage"></div>
                         <div id="network-graph" class="network-graph"></div>
+                        <div id="network-table" class="chart-table-host"></div>
                         <div class="network-legend" id="network-legend">
                             <div class="legend-item">
                                 <span class="legend-circle legend-network-contemporary"></span> Zeitgenossen-Netzwerk
@@ -655,6 +658,7 @@
                             <p class="view-header__description" id="mentions-flow-selected-person"></p>
                         </div>
                         <div id="mentions-flow-graph" class="mentions-flow-graph"></div>
+                        <div id="mentions-flow-table" class="chart-table-host"></div>
                         <div class="content-placeholder" id="mentions-flow-placeholder">
                             <i class="fas fa-search" aria-hidden="true"></i>
                             <p>Suche eine Person um deren Erwähnungen zu sehen</p>
@@ -768,6 +772,8 @@
                             <span class="activity-cell activity-level-4"></span>
                             <span class="activity-legend-label">Mehr</span>
                         </div>
+
+                        <div id="activity-table" class="chart-table-host"></div>
 
                         <!-- Detail-Panel für ausgewählten Tag -->
                         <div id="activity-details" class="activity-details hidden">
@@ -926,7 +932,7 @@
                     <button class="export-option" data-format="json">
                         <i class="fas fa-file-code" aria-hidden="true"></i>
                         <span>JSON</span>
-                        <small>Strukturierte Daten</small>
+                        <small>Briefe mit Erwähnungen und Indizes</small>
                     </button>
                 </div>
                 <p class="export-info" id="export-info"></p>

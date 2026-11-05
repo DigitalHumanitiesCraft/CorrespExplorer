@@ -1,6 +1,7 @@
 // Activity Heatmap View - calendar heatmap showing correspondence activity
 
 import { escapeHtml } from '../utils.js';
+import { renderDataTable } from './view-support.js';
 
 // Module state
 let activityIndex = null;
@@ -144,6 +145,7 @@ export function renderActivity() {
 
     // Render heatmap
     renderActivityHeatmap();
+    renderActivityTable();
 
     // Hide details panel
     const detailsPanel = document.getElementById('activity-details');
@@ -237,6 +239,23 @@ function bindYearSelector() {
             const option = select.options[select.selectedIndex + Number(btn.dataset.step)];
             if (option) selectActivityYear(option.value);
         });
+    });
+}
+
+const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+// Text alternative of the heatmap: day-precise letters per year and month
+function renderActivityTable() {
+    if (!activityIndex) return;
+    const perYear = new Map(activityIndex.years.map(year => [year, new Array(12).fill(0)]));
+    for (const [date, data] of activityIndex.byDate) {
+        const months = perYear.get(parseInt(date.substring(0, 4), 10));
+        if (months) months[parseInt(date.substring(5, 7), 10) - 1] += data.count;
+    }
+    renderDataTable(document.getElementById('activity-table'), {
+        caption: 'Tagesgenau datierte Briefe je Monat',
+        columns: ['Jahr', ...MONTHS, 'Summe'],
+        rows: [...perYear].map(([year, months]) => [String(year), ...months, months.reduce((a, b) => a + b, 0)])
     });
 }
 

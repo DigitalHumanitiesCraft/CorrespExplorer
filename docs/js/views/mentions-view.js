@@ -4,7 +4,7 @@
 import { escapeHtml, motionMs, openModal, closeModal, personKey } from '../utils.js';
 import { formatDateWithPrecision } from '../formatters.js';
 import { elements } from '../dom-cache.js';
-import { bindCombobox, readTokens } from './view-support.js';
+import { bindCombobox, readTokens, renderDataTable } from './view-support.js';
 
 // Module state
 let selectedMentionsPerson = null;
@@ -229,6 +229,16 @@ function renderMentionsFlowForPerson(person) {
     // Sort by count
     mentionedByPerson.sort((a, b) => b.count - a.count);
     personMentionedBy.sort((a, b) => b.count - a.count);
+
+    // Text alternative with every pair, also those beyond the 15 nodes per side of the chart
+    renderDataTable(document.getElementById('mentions-flow-table'), {
+        caption: `Erwähnungen um ${person.name}`,
+        columns: ['Absender', 'Erwähnte Person', 'Briefe'],
+        rows: [
+            ...personMentionedBy.map(p => [p.name, person.name, p.count]),
+            ...mentionedByPerson.map(p => [person.name, p.name, p.count])
+        ]
+    });
 
     if (mentionedByPerson.length === 0 && personMentionedBy.length === 0) {
         placeholder.style.display = 'flex';

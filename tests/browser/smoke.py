@@ -216,6 +216,33 @@ class Smoke:
         for column in ("sender_id", "sender_authority", "recipient_authority"):
             assert column in header, f"column {column} missing"
 
+    def decision_e8_and_tables(self) -> None:
+        ctx = self.context()
+        page = ctx.new_page()
+        page.goto(f"{self.base}explore.html?view=network&{HSA}")
+        _loaded(page)
+        page.wait_for_selector("#network-graph g.node")
+        network_type = page.input_value("#network-type")
+        network_rows = page.locator("#network-table tbody tr").count()
+        page.click('.view-btn[data-view="timeline"]')
+        timeline_rows = page.locator("#timeline-table tbody tr").count()
+        page.click('.view-btn[data-view="activity"]')
+        activity_rows = page.locator("#activity-table tbody tr").count()
+        page.click("#export-btn")
+        with page.expect_download() as info:
+            page.click('#export-modal .export-option[data-format="json"]')
+        export = json.loads(Path(info.value.path()).read_text(encoding="utf-8"))
+        ctx.close()
+        assert network_type == "correspondence", f"network starts as {network_type}"
+        assert network_rows > 0, "network has no table of its connections"
+        assert timeline_rows > 0 and activity_rows > 0, (
+            f"tables: timeline {timeline_rows}, activity {activity_rows}"
+        )
+        assert export["letterCount"] == len(export["letters"]) > 0, "JSON letters"
+        assert export["indices"]["persons"] and export["indices"]["places"], (
+            "JSON export without indices"
+        )
+
     def basket_takes_person(self) -> None:
         ctx = self.context()
         page = ctx.new_page()
@@ -393,6 +420,10 @@ def _checks(
             smoke.page_structure,
         ),
         ("network does not move under reduced motion", smoke.reduced_motion_network),
+        (
+            "E8: correspondence network, JSON with indices, chart tables",
+            smoke.decision_e8_and_tables,
+        ),
     ]
     if args.online:
         checks.append(

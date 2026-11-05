@@ -1,19 +1,22 @@
 // Network View
-// Force-directed graph showing relationships between correspondents or topics
+// Force-directed graph of who wrote to whom, of contemporaries or of topics
 
 import { debounce, motionMs, personKey, settleWithoutMotion } from '../utils.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
 import { elements } from '../dom-cache.js';
-import { readTokens } from './view-support.js';
+import { readTokens, renderDataTable } from './view-support.js';
 
 // Node colours per network type, as custom properties of tokens.css
 const TYPE_COLOR_TOKEN = {
+    correspondence: '--color-role-sender',
     contemporaries: '--color-role-sender',
     topics: '--color-warning'
 };
 
 // Module state
-let networkType = 'contemporaries'; // 'contemporaries', 'topics'
+// Who wrote to whom is the basic question of a correspondence network, so it is the default type
+let networkType = 'correspondence'; // 'correspondence', 'contemporaries', 'topics'
+let networkMinLetters = NETWORK_DEFAULTS.minLetters;
 let networkMinYears = NETWORK_DEFAULTS.minYears;
 let networkMinCooccurrence = NETWORK_DEFAULTS.minCooccurrence;
 let networkMaxNodes = NETWORK_DEFAULTS.maxNodes;
@@ -57,6 +60,7 @@ function setupNetworkEventHandlers() {
 
     // Defaults: at most the configured thresholds, lowered until the dataset shows a connection
     const allLetters = getAllLetters();
+    networkMinLetters = defaultNetworkThreshold(allLetters, 'correspondence', NETWORK_DEFAULTS.minLetters);
     networkMinYears = defaultNetworkThreshold(allLetters, 'contemporaries', NETWORK_DEFAULTS.minYears);
     networkMinCooccurrence = defaultNetworkThreshold(allLetters, 'topics', NETWORK_DEFAULTS.minCooccurrence);
 
@@ -80,7 +84,9 @@ function setupNetworkEventHandlers() {
             const val = parseInt(e.target.value) || 1;
             // Update display value immediately
             if (thresholdValue) thresholdValue.textContent = val;
-            if (networkType === 'contemporaries') {
+            if (networkType === 'correspondence') {
+                networkMinLetters = val;
+            } else if (networkType === 'contemporaries') {
                 networkMinYears = val;
             } else if (networkType === 'topics') {
                 networkMinCooccurrence = val;
@@ -143,6 +149,7 @@ function updateNetworkTypeOptions() {
 
     // Update options
     typeSelect.innerHTML = `
+        <option value="correspondence">Briefwechsel</option>
         <option value="contemporaries">Zeitgenossen</option>
         ${hasSubjects ? '<option value="topics">Themen-Netzwerk</option>' : ''}
     `;
@@ -161,7 +168,14 @@ function updateNetworkThresholdLabel() {
 
     if (!label || !input) return;
 
-    if (networkType === 'contemporaries') {
+    if (networkType === 'correspondence') {
+        label.textContent = 'Min. Briefe:';
+        input.value = networkMinLetters;
+        input.min = 1;
+        input.max = NETWORK_DEFAULTS.maxLettersSlider;
+        if (valueDisplay) valueDisplay.textContent = networkMinLetters;
+        if (colorGroup) colorGroup.style.display = '';
+    } else if (networkType === 'contemporaries') {
         label.textContent = 'Min. gemeinsame Jahre:';
         input.value = networkMinYears;
         input.min = 1;
@@ -188,16 +202,79 @@ function updateNetworkThresholdLabel() {
  * Default threshold of a network type: the highest value up to ceiling that still yields an edge.
  * A fixed default left small datasets (the tutorial dataset) with an empty network.
  * @param {Array} letters - All letters of the dataset
- * @param {'contemporaries'|'topics'} type
+ * @param {'correspondence'|'contemporaries'|'topics'} type
  * @param {number} ceiling - Configured default (NETWORK_DEFAULTS)
  * @returns {number}
  */
 export function defaultNetworkThreshold(letters, type, ceiling) {
-    const build = type === 'topics' ? buildTopicsNetwork : buildContemporariesNetwork;
+    const build = NETWORK_BUILDERS[type];
     for (let threshold = ceiling; threshold > 1; threshold--) {
         if (build(letters, threshold, NETWORK_DEFAULTS.maxNodes).links.length > 0) return threshold;
     }
     return 1;
+}
+
+/**
+ * Build the correspondence network (US-11): persons as nodes, an edge joins sender and recipient
+ * and counts their letters in both directions. Only pairs with at least minLetters letters are
+ * kept, then at most maxNodes persons by their letters in the dataset.
+ * @param {Array} letters
+ * @param {number} minLetters
+ * @param {number} maxNodes
+ */
+export function buildCorrespondenceNetwork(letters, minLetters, maxNodes) {
+    const personInfo = new Map();
+    const pairs = new Map();
+    const touch = (key, person, year) => {
+        if (!personInfo.has(key)) {
+            personInfo.set(key, { id: key, name: person.name || key, letterCount: 0, firstYear: null });
+        }
+        const info = personInfo.get(key);
+        info.letterCount++;
+        if (year && (info.firstYear === null || year < info.firstYear)) info.firstYear = year;
+    };
+
+    letters.forEach(letter => {
+        const from = personKey(letter.sender);
+        const to = personKey(letter.recipient);
+        if (from) touch(from, letter.sender, letter.year);
+        if (to) touch(to, letter.recipient, letter.year);
+        // A letter to oneself or with one side unknown is no correspondence between two persons
+        if (!from || !to || from === to) return;
+        const [a, b] = [from, to].sort();
+        if (!pairs.has(`${a}|${b}`)) pairs.set(`${a}|${b}`, { source: a, target: b, count: 0, forward: 0, backward: 0 });
+        const pair = pairs.get(`${a}|${b}`);
+        pair.count++;
+        if (from === a) pair.forward++; else pair.backward++;
+    });
+
+    const strong = [...pairs.values()].filter(p => p.count >= minLetters);
+    const active = new Set(strong.flatMap(p => [p.source, p.target]));
+    let shown = [...personInfo.values()].filter(p => active.has(p.id));
+    if (shown.length > maxNodes) {
+        shown = shown.sort((x, y) => y.letterCount - x.letterCount).slice(0, maxNodes);
+    }
+    const shownIds = new Set(shown.map(p => p.id));
+    const links = strong
+        .filter(p => shownIds.has(p.source) && shownIds.has(p.target))
+        .sort((x, y) => y.count - x.count)
+        .map(p => ({
+            ...p,
+            sourceName: personInfo.get(p.source).name,
+            targetName: personInfo.get(p.target).name
+        }));
+
+    return {
+        nodes: shown.map(p => ({ id: p.id, name: p.name, total: p.letterCount, firstYear: p.firstYear })),
+        links,
+        networkType: 'correspondence',
+        stats: {
+            totalPersons: personInfo.size,
+            totalConnections: pairs.size,
+            displayedPersons: shown.length,
+            displayedConnections: links.length
+        }
+    };
 }
 
 /**
@@ -403,6 +480,14 @@ export function buildTopicsNetwork(letters, minCooccurrence, maxNodes) {
     };
 }
 
+const NETWORK_BUILDERS = {
+    correspondence: buildCorrespondenceNetwork,
+    contemporaries: buildContemporariesNetwork,
+    topics: buildTopicsNetwork
+};
+
+const thresholdOf = type => ({ correspondence: networkMinLetters, contemporaries: networkMinYears, topics: networkMinCooccurrence })[type];
+
 /**
  * Render the network visualization
  */
@@ -413,12 +498,7 @@ export function renderNetwork() {
     const filteredLetters = getFilteredLetters();
 
     // Build network data based on selected type
-    let data;
-    if (networkType === 'topics') {
-        data = buildTopicsNetwork(filteredLetters, networkMinCooccurrence, networkMaxNodes);
-    } else {
-        data = buildContemporariesNetwork(filteredLetters, networkMinYears, networkMaxNodes);
-    }
+    const data = NETWORK_BUILDERS[networkType](filteredLetters, thresholdOf(networkType), networkMaxNodes);
 
     // Filter out ego node if requested (node with most connections)
     let egoNodeId = null;
@@ -453,7 +533,7 @@ export function renderNetwork() {
     let yearColorScale = null;
     let minYear = null;
     let maxYear = null;
-    if (networkColorMode === 'entry' && networkType === 'contemporaries') {
+    if (networkColorMode === 'entry' && networkType !== 'topics') {
         const years = data.nodes.map(n => n.firstYear).filter(y => y != null);
         if (years.length > 0) {
             minYear = Math.min(...years);
@@ -466,6 +546,14 @@ export function renderNetwork() {
     // Update stats display
     updateNetworkStats(data, minYear, maxYear, yearColorScale);
 
+    // Text alternative: every shown connection with its strength
+    const edgeColumn = { correspondence: 'Briefe', contemporaries: 'Gemeinsame Jahre', topics: 'Gemeinsame Briefe' }[networkType];
+    renderDataTable(elements.getById('network-table'), {
+        caption: `Verbindungen im Netzwerk (${data.links.length})`,
+        columns: [networkType === 'topics' ? 'Thema' : 'Person', networkType === 'topics' ? 'Thema' : 'Person', edgeColumn],
+        rows: data.links.map(l => [l.sourceName, l.targetName, networkType === 'contemporaries' ? l.sharedYears : l.count])
+    });
+
     // A running simulation of the previous render would keep ticking on detached nodes
     networkSimulation?.stop();
     networkSimulation = null;
@@ -474,9 +562,11 @@ export function renderNetwork() {
     container.innerHTML = '';
 
     if (data.nodes.length === 0) {
-        const thresholdText = networkType === 'topics'
-            ? `mindestens ${networkMinCooccurrence} gemeinsamen Erwähnungen`
-            : `mindestens ${networkMinYears} gemeinsamen Jahren`;
+        const thresholdText = {
+            correspondence: `mindestens ${networkMinLetters} Briefen zwischen zwei Personen`,
+            contemporaries: `mindestens ${networkMinYears} gemeinsamen Jahren`,
+            topics: `mindestens ${networkMinCooccurrence} gemeinsamen Erwähnungen`
+        }[networkType];
         container.innerHTML = `
             <div class="network-empty">
                 <i class="fas fa-project-diagram"></i>
@@ -533,11 +623,11 @@ export function renderNetwork() {
         .range([8, 35]);
 
     // Calculate edge widths
-    const edgeValueFn = networkType === 'topics'
-        ? d => d.count
-        : d => d.sharedYears;
+    const edgeValueFn = networkType === 'contemporaries'
+        ? d => d.sharedYears
+        : d => d.count;
     const maxEdgeValue = Math.max(...data.links.map(edgeValueFn));
-    const minEdgeValue = networkType === 'topics' ? networkMinCooccurrence : networkMinYears;
+    const minEdgeValue = thresholdOf(networkType);
     const edgeScale = d3.scaleLinear()
         .domain([minEdgeValue, maxEdgeValue])
         .range([1, 8]);
@@ -586,9 +676,9 @@ export function renderNetwork() {
         .attr('class', 'node')
         .attr('role', 'button')
         .attr('tabindex', -1)
-        .attr('aria-label', d => networkType === 'topics'
-            ? `${d.name}: ${d.total} Briefe`
-            : `${d.name}: ${d.total} Briefe, ${d.yearsActive} Jahre aktiv`)
+        .attr('aria-label', d => networkType === 'contemporaries'
+            ? `${d.name}: ${d.total} Briefe, ${d.yearsActive} Jahre aktiv`
+            : `${d.name}: ${d.total} Briefe`)
         .call(d3.drag()
             .on('start', dragstarted)
             .on('drag', dragged)
@@ -616,6 +706,11 @@ export function renderNetwork() {
             .text(d => `${d.name}\n${d.total} Briefe`);
         link.append('title')
             .text(d => `${d.sourceName} + ${d.targetName}\n${d.count}x gemeinsam erwähnt`);
+    } else if (networkType === 'correspondence') {
+        node.append('title')
+            .text(d => `${d.name}\n${d.total} Briefe als Absender oder Empfänger`);
+        link.append('title')
+            .text(d => `${d.sourceName} und ${d.targetName}\n${d.count} Briefe (${d.forward} an ${d.targetName}, ${d.backward} an ${d.sourceName})`);
     } else {
         node.append('title')
             .text(d => {
@@ -743,21 +838,21 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
 
     // Update info text
     if (infoText) {
-        if (networkType === 'topics') {
-            infoText.textContent = 'Themen die gemeinsam in Briefen erwähnt werden';
-        } else {
-            infoText.textContent = 'Korrespondenten die in denselben Jahren aktiv sind';
-        }
+        infoText.textContent = {
+            correspondence: 'Wer schrieb wem: eine Linie verbindet Absender und Empfänger, ihre Stärke folgt der Zahl der Briefe',
+            contemporaries: 'Korrespondenten, die in denselben Jahren aktiv sind',
+            topics: 'Themen, die gemeinsam in Briefen erwähnt werden'
+        }[networkType];
     }
 
     // Update legend
     if (legendDiv) {
-        const label = networkType === 'topics' ? 'Themen-Netzwerk' : 'Zeitgenossen-Netzwerk';
+        const label = { correspondence: 'Briefwechsel-Netzwerk', contemporaries: 'Zeitgenossen-Netzwerk', topics: 'Themen-Netzwerk' }[networkType];
         const sizeHint = networkType === 'topics'
             ? 'Größe = Anzahl Briefe'
             : 'Größe = Briefmenge';
 
-        if (networkColorMode === 'entry' && networkType === 'contemporaries' && minYear && maxYear) {
+        if (networkColorMode === 'entry' && networkType !== 'topics' && minYear && maxYear) {
             legendDiv.innerHTML = `
                 <div class="legend-item">
                     <span class="legend-gradient" style="background: linear-gradient(to right, ${yearColorScale(minYear)}, ${yearColorScale((minYear + maxYear) / 2)}, ${yearColorScale(maxYear)});"></span>

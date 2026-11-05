@@ -9,6 +9,40 @@ import { escapeHtml } from '../utils.js';
  * @param {Object<string, string>} names - Map of result key to custom property name
  * @returns {Object<string, string>}
  */
+/**
+ * Text alternative of a chart: a collapsed table of the values the chart shows, below the chart.
+ * Screen readers and keyboard users get every value without pointing at marks, and everyone can
+ * read exact numbers. Every cell is escaped. The scrolling region takes focus, so the keyboard can
+ * scroll it (axe scrollable-region-focusable). Without rows the host is emptied.
+ * @param {HTMLElement|null} host - container below the chart
+ * @param {{caption: string, columns: string[], rows: Array<Array<string|number>>, limit?: number}} table
+ */
+export function renderDataTable(host, { caption, columns, rows, limit = 500 }) {
+    if (!host) return;
+    if (rows.length === 0) {
+        host.innerHTML = '';
+        return;
+    }
+    const open = host.querySelector('details')?.open ? ' open' : '';
+    const shown = rows.slice(0, limit);
+    const cell = value => (typeof value === 'number' ? value.toLocaleString('de-DE') : escapeHtml(String(value ?? '')));
+    const note = rows.length > limit
+        ? `<p class="chart-table__note">Die ersten ${limit.toLocaleString('de-DE')} von ${rows.length.toLocaleString('de-DE')} Zeilen.</p>`
+        : '';
+    host.innerHTML = `
+        <details class="chart-table"${open}>
+            <summary>Daten als Tabelle</summary>
+            <div class="chart-table__scroll" tabindex="0" role="region" aria-label="${escapeHtml(caption)}">
+                <table>
+                    <caption>${escapeHtml(caption)}</caption>
+                    <thead><tr>${columns.map(c => `<th scope="col">${escapeHtml(c)}</th>`).join('')}</tr></thead>
+                    <tbody>${shown.map(row => `<tr>${row.map((v, i) => (i === 0 ? `<th scope="row">${cell(v)}</th>` : `<td${typeof v === 'number' ? ' class="chart-table__num"' : ''}>${cell(v)}</td>`)).join('')}</tr>`).join('')}</tbody>
+                </table>
+            </div>
+            ${note}
+        </details>`;
+}
+
 export function readTokens(names) {
     const style = getComputedStyle(document.documentElement);
     return Object.fromEntries(Object.entries(names).map(([key, prop]) => [key, style.getPropertyValue(prop).trim()]));

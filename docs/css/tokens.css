@@ -51,6 +51,8 @@
 
     /* Role Colors (Map/Network) - design.md Section 2, Datenvisualisierung */
     --color-role-sender: #2c5f8d;    /* Steel Blue - Absenderin */
+    --color-map-land: #E8E4D4;       /* Basemap land, design.md 6.1 */
+    --color-map-water: #B8D4E8;      /* Basemap water, design.md 6.1 */
     --color-role-mentioned: #6c757d; /* Medium Gray - Erwähnt */
     --color-role-both: #2d6a4f;      /* Forest Green - Beide */
     --color-role-indirect: #adb5bd;  /* Light Gray - Indirekt (SNDB only) */

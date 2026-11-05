@@ -5,6 +5,7 @@ import { LANGUAGE_COLORS, NO_LANGUAGE, languageLabel } from '../constants.js';
 import { elements } from '../dom-cache.js';
 import { escapeHtml, showToast, isMultiYearSpan } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
+import { renderDataTable } from './view-support.js';
 
 // Module state
 let undatedBinBound = false;  // the undated bin is static markup, its listeners are bound once
@@ -63,6 +64,7 @@ export function renderTimeline() {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfügbar</p></div>';
         undatedBin?.classList.add('hidden');
         spanBin?.classList.add('hidden');
+        renderDataTable(elements.getById('timeline-table'), { caption: '', columns: [], rows: [] });
         return;
     }
 
@@ -221,6 +223,24 @@ export function renderTimeline() {
 
     // Render legend
     renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLanguageData, totalImprecise);
+
+    // Text alternative: the values of every bar, with the languages of the stack in words
+    const languageText = languages => Object.entries(languages)
+        .filter(([lang]) => lang !== '_total')
+        .sort((a, b) => b[1] - a[1])
+        .map(([lang, count]) => `${lang === 'other' ? 'weitere' : languageLabel(lang)} ${count}`)
+        .join(', ');
+    const tableRows = [];
+    for (let y = minYear; y <= maxYear; y++) {
+        if (yearData[y]?.total) tableRows.push([String(y), yearData[y].total, yearData[y].imprecise, languageText(yearData[y].languages)]);
+    }
+    if (undatedLetters.length) tableRows.push(['ohne Datum', undatedLetters.length, undatedLetters.length, languageText(undatedByLang)]);
+    if (spanLetters.length) tableRows.push(['Spanne über mehrere Jahre', spanLetters.length, spanLetters.length, '']);
+    renderDataTable(elements.getById('timeline-table'), {
+        caption: 'Briefe je Jahr',
+        columns: ['Jahr', 'Briefe', 'davon ungenau datiert', 'Sprachen'],
+        rows: tableRows
+    });
 
     // Add click handlers
     setupTimelineClickHandlers(container);

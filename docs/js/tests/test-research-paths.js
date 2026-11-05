@@ -5,7 +5,7 @@ import { parseCMIF } from '../cmif-parser.js';
 import { personKey, placeKey, personAuthority, isKnownPlace } from '../utils.js';
 import { analyzeResearchQuestions, summarizeCorpus } from '../research-paths.js';
 import { basketSelectionForView } from '../knowledge-path.js';
-import { lettersToCsv, LETTER_EXPORT_COLUMNS, CSV_BOM } from '../export.js';
+import { datasetToJson, lettersToCsv, LETTER_EXPORT_COLUMNS, CSV_BOM } from '../export.js';
 import { assert } from './test-runner.js';
 
 const lettersOf = (letters, key) =>
@@ -122,6 +122,24 @@ export const ResearchPathTests = {
                 const entry = data.indices.persons[personKey(withId)];
                 const ref = personAuthority(entry);
                 assert(ref && ref.id === withId.id && ref.authority === withId.authority, 'Index entry should resolve to the authority of its letters');
+            }
+        },
+
+        {
+            // US-22, decision E8: the JSON export carries letters with mentions and the indices
+            name: 'JSON-Export: Briefe mit Erwähnungen und Indizes wie die Zusammenfassung',
+            async run() {
+                const data = await parseCMIF('data/demo-showcase.xml');
+                const json = JSON.parse(datasetToJson(data.letters, { meta: data.meta, exported: '2026-11-05' }));
+                const corpus = summarizeCorpus(data.letters);
+                assert(json.letterCount === data.letters.length && json.letters.length === data.letters.length, 'Briefzahl weicht ab');
+                const withMentions = data.letters.findIndex(l => (l.mentions?.persons || []).length > 0);
+                assert(withMentions >= 0, 'Fixture sollte Erwähnungen enthalten');
+                assert(json.letters[withMentions].mentions.persons.length === data.letters[withMentions].mentions.persons.length, 'Erwähnungen fehlen im Export');
+                assert(json.indices.persons.length === corpus.persons.size, `Personenindex ${json.indices.persons.length} statt ${corpus.persons.size}`);
+                assert(json.indices.places.length === corpus.places.size, 'Ortsindex weicht ab');
+                assert(json.indices.persons.every(p => typeof p.letters === 'number' && 'identified' in p), 'Personenindex ohne Briefzahl oder Normdatenstatus');
+                assert(json.dataset?.title === data.meta.title, 'Metadaten des Datensatzes fehlen');
             }
         }
     ]
