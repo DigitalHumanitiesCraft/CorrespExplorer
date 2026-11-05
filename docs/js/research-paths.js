@@ -110,16 +110,19 @@ const preview = (entries, suffix = '') => entries.map(e => `${e.name} (${e.count
  * descriptive, analytical, interpretive, and unavailable for questions the data cannot answer yet.
  * @param {Array} letters
  * @param {Object} [indices]
+ * @param {Object} [summary] - summarizeCorpus() of the same letters, computed here when missing
  * @returns {Array<{id, category, icon, question, description, preview?, path?, missingData?, suggestion?}>}
  */
-export function analyzeResearchQuestions(letters, indices = {}) {
+export function analyzeResearchQuestions(letters, indices = {}, summary = null) {
     if (!Array.isArray(letters) || letters.length === 0) return [];
 
-    const s = summarizeCorpus(letters, indices);
-    const personCount = s.persons.size;
-    const identifiedCount = [...s.persons.values()].filter(p => p.identified).length;
-    const placeCount = s.places.size;
-    const locatedCount = [...s.places.values()].filter(p => p.located).length;
+    // The explorer passes the summary it built at load time, so the overview counts only once
+    const s = summary || summarizeCorpus(letters, indices);
+    const quality = datasetQuality(letters, s);
+    const personCount = quality.persons.total;
+    const identifiedCount = quality.persons.known;
+    const placeCount = quality.places.total;
+    const locatedCount = quality.places.known;
     const questions = [];
 
     // Descriptive: what is in the corpus

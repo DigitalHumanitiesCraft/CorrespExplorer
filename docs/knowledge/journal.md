@@ -23,6 +23,15 @@ related: [project, specification, plan, handoff]
 
 ## Einträge
 
+### 2026-11-05 Nachprüfung des UI-Umbaus: Überschriftentest, eine Zählung, Kleinpunkte
+
+- Anlass: Ein unabhängiger Prüfer bewertete die Commits `acd448b` und `6304e5a` mit „gut“ und nannte Befunde, die die koordinierende Session in diese Runde gab.
+- Befund: Die Prüfung der Überschriftenfolge im Smoke-Test filterte auf `.hidden`. In der Startansicht ist die ganze Sidebar verborgen, die Prüfung bestand deshalb auch gegen den alten Stand. `analyzeResearchQuestions()` bildete die Zusammenfassung des Datensatzes bei jeder Übersicht ein zweites Mal. Dazu kamen literale Dauern in Übergängen, eine Pfadleiste, deren Schritte bei 390px nicht sicher umbrachen, Schritt-Chips unter 24px Höhe, tote Reste (`components/navbar.html`, `.filter-group h4`, `config-modal-content`), Attribut `hidden` neben der Klasse `.hidden` und eine Jahresauswahl, deren Zahl „Briefe“ hieß, obwohl sie nur tagesgenaue zählt.
+- Entschieden: Die Überschriftenprüfung läuft in der Briefansicht mit sichtbarer Sidebar über alle Überschriften in DOM-Reihenfolge außerhalb von `#load-error`: zuerst `h1`, keine Ebene übersprungen. Sichtbarkeit schaltet nur `.hidden` ([design.md](design.md#0-css-architektur)). `--color-border-control` bleibt, das ist entschieden (D9).
+- Korrigiert: `analyzeResearchQuestions(letters, indices, summary)` nimmt die beim Laden gebildete Zusammenfassung, die Anteile kommen aus `datasetQuality()`. Alle Übergangsdauern stehen als Token. Die Schritte der Pfadleiste brechen bei 390px in eine eigene Zeile (`flex-basis: 100%`), die Chips sind mindestens 24px hoch. Die Jahresauswahl nennt „(N tagesgenau)“.
+- Geändert: `research-paths.js`, `explore.js`, `activity-view.js`, `index.html`, `components.css`, `explore.css` und die übrigen Stylesheets mit Übergängen, `components/navbar.html` gelöscht, Test in `test-research-paths.js`, Überschriften- und Pfadprüfung in `tests/browser/smoke.py`. [architecture.md](architecture.md), [design.md](design.md), `css/CONTEXT-MAP.md`.
+- Belege: Commit dieses Eintrags. `tests/browser/smoke.py --axe` mit allen vierzehn Prüfungen bestanden, darin axe-core mit aktivem Wissenspfad bei 390px ohne Verstoß und ohne Seitenüberlauf. Die neue Überschriftenprüfung meldet gegen `acd448b` „first heading is h4“ und besteht auf dem neuen Stand. Durchsicht der zwölf Ansichten bei 1440, 768 und 390px ohne Befund.
+
 ### 2026-11-05 Entscheidung E8 umgesetzt, Kartenfarben nach design.md, Tabellen als Textalternative
 
 - Anlass: Der Operator gab das Entscheidungsbündel „Werkzeuge“ frei. Für CorrespExplorer folgt E8 der Empfehlung, mit freigegeben sind die zwei offenen Punkte des UI-Umbaus, ein heller Kartenstil nach [design.md](design.md#61-karte) ohne neue externe Ressource und tabellarische Textalternativen der Grafiken.

@@ -553,7 +553,7 @@ button {
         top: var(--navbar-height);
         height: calc(100dvh - var(--navbar-height));
         z-index: calc(var(--z-fixed) - 1);
-        transition: left 0.3s;
+        transition: left var(--transition-base);
     }
 
     .sidebar.open {
@@ -772,7 +772,7 @@ button {
     z-index: var(--z-modal);
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+    transition: opacity var(--transition-slow), visibility var(--transition-slow);
 }
 
 #loading-overlay.hidden {

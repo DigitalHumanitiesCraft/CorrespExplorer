@@ -32,6 +32,7 @@ import argparse
 import functools
 import json
 import sys
+import tempfile
 import threading
 import time
 from collections.abc import Callable
@@ -286,12 +287,19 @@ class Smoke:
                 styles.append(r.url) if "openfreemap.org/styles/" in r.url else None
             ),
         )
+        # Letters view: the sidebar is shown, so its headings count. Every heading in DOM order
+        # outside the load error, hidden views included, so no level is skipped anywhere
+        page.goto(f"{self.base}explore.html?view=letters&{HSA}")
+        _loaded(page)
+        heading_problem = page.evaluate(
+            "() => { const hs = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')]"
+            ".filter(h => !h.closest('#load-error')).map(h => Number(h.tagName[1]));"
+            " if (hs[0] !== 1) return 'first heading is h' + hs[0];"
+            " const i = hs.findIndex((l, k) => k > 0 && l > hs[k - 1] + 1);"
+            " return i < 0 ? '' : `h${hs[i - 1]} followed by h${hs[i]} at heading ${i}`; }"
+        )
         page.goto(f"{self.base}explore.html?view=overview&{HSA}")
         _loaded(page)
-        first_heading = page.evaluate(
-            "() => [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')]"
-            ".find(h => !h.closest('.hidden'))?.tagName"
-        )
         undescribed = page.evaluate(
             "() => [...document.querySelectorAll('.view-btn')].filter(b =>"
             " document.getElementById(b.getAttribute('aria-describedby'))?.textContent"
@@ -314,7 +322,7 @@ class Smoke:
         page.click('.view-btn[data-view="map"]')
         page.wait_for_timeout(1000)
         ctx.close()
-        assert first_heading == "H1", f"first heading is {first_heading}"
+        assert not heading_problem, heading_problem
         assert not undescribed, f"view buttons without description: {undescribed}"
         assert path_controls, "knowledge path controls are not one bar"
         assert topics_in_letters and not topics_in_topics, (
@@ -383,6 +391,25 @@ class Smoke:
             )
             violations += [f"{url}: {v}" for v in found]
         ctx.close()
+        # An active knowledge path on a phone: the bar wraps its steps below the question
+        phone = self.browser.new_context(viewport={"width": 390, "height": 844})
+        page = phone.new_page()
+        page.goto(f"{self.base}explore.html?view=overview&{HSA}")
+        _loaded(page)
+        page.click(".overview-research-paths .question-start-btn >> nth=0")
+        page.wait_for_timeout(800)
+        page.add_script_tag(content=script)
+        found = page.evaluate(
+            "async () => (await axe.run(document, {runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']}))"
+            ".violations.map(v => v.id)"
+        )
+        overflow = page.evaluate(
+            "() => document.documentElement.scrollWidth > document.documentElement.clientWidth"
+        )
+        page.screenshot(path=str(Path(tempfile.gettempdir()) / "ce-path-390.png"))
+        phone.close()
+        violations += [f"active path at 390px: {v}" for v in found]
+        assert not overflow, "active path bar overflows at 390px"
         assert not violations, "; ".join(violations)
 
 

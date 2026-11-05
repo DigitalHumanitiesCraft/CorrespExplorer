@@ -718,7 +718,7 @@
     height: 100%;
     background: var(--color-primary);
     width: 0%;
-    transition: width 0.3s ease;
+    transition: width var(--transition-base);
 }
 
 .progress-text {

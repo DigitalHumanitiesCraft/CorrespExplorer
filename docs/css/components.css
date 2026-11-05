@@ -14,15 +14,6 @@
     margin-bottom: var(--space-lg);
 }
 
-.filter-group h4 {
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    margin-bottom: var(--space-sm);
-    color: var(--color-text);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
 .filter-group label {
     display: flex;
     align-items: center;
@@ -838,7 +829,7 @@
     /* Above dialogs (z-index 10000), so a toast raised from a dialog stays visible and closable */
     z-index: var(--z-toast);
     opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity var(--transition-base), transform var(--transition-base);
 }
 
 .toast-notification.toast-show {
@@ -861,7 +852,7 @@
     color: rgba(255, 255, 255, 0.7);
     cursor: pointer;
     padding: var(--space-xs);
-    transition: color 0.15s;
+    transition: color var(--transition-fast);
 }
 
 .toast-close:hover {

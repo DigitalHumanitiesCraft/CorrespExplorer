@@ -79,7 +79,7 @@
     background: transparent;
     cursor: pointer;
     color: var(--color-text-light);
-    transition: 0.2s;
+    transition: var(--transition-fast);
     transition-property: var(--transition-properties);
     border-bottom: 2px solid transparent;
 }
@@ -164,7 +164,7 @@
     border-radius: 6px;
     background: var(--color-bg-light);
     margin-bottom: 6px;
-    transition: background 0.2s;
+    transition: background var(--transition-fast);
 }
 
 .item-row:hover {
@@ -209,7 +209,7 @@
     cursor: pointer;
     padding: 5px;
     border-radius: 4px;
-    transition: color 0.2s, background 0.2s;
+    transition: color var(--transition-fast), background var(--transition-fast);
     flex-shrink: 0;
 }
 
@@ -270,7 +270,7 @@
     cursor: pointer;
     font-size: 0.9rem;
     color: var(--color-text-light);
-    transition: 0.2s;
+    transition: var(--transition-fast);
     transition-property: var(--transition-properties);
     display: flex;
     align-items: center;
@@ -382,7 +382,7 @@
 }
 
 .basket-map-marker {
-    transition: transform 0.2s;
+    transition: transform var(--transition-fast);
 }
 
 .basket-map-marker:hover {

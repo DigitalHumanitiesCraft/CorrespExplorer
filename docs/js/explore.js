@@ -541,7 +541,9 @@ function initTopicsQuickFilter() {
         count: subjects[id].letter_count || subjects[id].count || 0
     })).sort((a, b) => b.count - a.count);
 
-    filterGroup.classList.remove('hidden');
+    // Only a dataset with topics offers the group; switchView hides it again in the topics view
+    filterGroup.dataset.available = 'true';
+    filterGroup.classList.toggle('hidden', currentView === 'topics');
 
     // Render initial list (top 15)
     renderTopicsQuickFilter('');
@@ -1729,8 +1731,10 @@ function switchView(view) {
         setSidebarOpen(false);
         document.getElementById('sidebar-toggle')?.classList.toggle('hidden', noSidebar);
     }
-    // The topics view lists and searches all topics itself, so the short list in the sidebar steps aside
-    document.getElementById('topics-filter-group')?.toggleAttribute('hidden', view === 'topics');
+    // The topics view lists and searches all topics itself, so the short list in the sidebar steps aside.
+    // Visibility runs through the .hidden class only (design.md), the dataset flag says whether topics exist
+    const topicsGroup = elements.topicsFilterGroup;
+    if (topicsGroup) topicsGroup.classList.toggle('hidden', view === 'topics' || topicsGroup.dataset.available !== 'true');
 
     renderView(view);
 }
@@ -1889,7 +1893,7 @@ function renderOverviewPaths() {
     const container = document.getElementById('overview-questions-grid');
     if (!container) return;
     renderOverviewResearchPaths(container, document.getElementById('show-all-paths-btn'),
-        analyzeResearchQuestions(allLetters, dataIndices), {
+        analyzeResearchQuestions(allLetters, dataIndices, corpusSummary), {
             onStartPath: startKnowledgePath,
             onStepClick: switchView
         });

@@ -126,6 +126,19 @@ export const ResearchPathTests = {
         },
 
         {
+            // The overview passes the summary built at load time instead of counting again
+            name: 'analyzeResearchQuestions: übergebene Zusammenfassung ergibt dieselben Fragen',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const summary = summarizeCorpus(data.letters, data.indices);
+                const passed = analyzeResearchQuestions(data.letters, data.indices, summary);
+                const own = analyzeResearchQuestions(data.letters, data.indices);
+                assert(passed.length > 0, 'Fixture sollte Forschungsfragen ergeben');
+                assert(JSON.stringify(passed) === JSON.stringify(own), 'Fragen hängen davon ab, wer die Zusammenfassung bildet');
+            }
+        },
+
+        {
             // US-22, decision E8: the JSON export carries letters with mentions and the indices
             name: 'JSON-Export: Briefe mit Erwähnungen und Indizes wie die Zusammenfassung',
             async run() {

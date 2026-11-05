@@ -196,7 +196,8 @@ function renderWithoutDayNote(container) {
 }
 
 /**
- * Fills the year select (all years, then each year with its day-precise letters) and enables
+ * Fills the year select (all years, then each year with its day-precise letters, labelled
+ * "tagesgenau" because the heatmap leaves out the letters dated to month or year) and enables
  * the previous and next buttons. A select keeps decades of years in one line, where one button
  * per year filled the screen above the heatmap.
  */
@@ -205,7 +206,7 @@ function renderActivityYearSelector() {
     if (!select || !activityIndex) return;
 
     const options = [['all', 'Alle Jahre'], ...activityIndex.years.map(year =>
-        [String(year), `${year} (${(activityIndex.byYear.get(year) || 0).toLocaleString('de-DE')} Briefe)`])];
+        [String(year), `${year} (${(activityIndex.byYear.get(year) || 0).toLocaleString('de-DE')} tagesgenau)`])];
     select.innerHTML = options.map(([value, label]) => `<option value="${value}">${escapeHtml(label)}</option>`).join('');
     select.value = String(activitySelectedYear);
     updateYearSteps();
