@@ -39,7 +39,7 @@ Die funktionalen Anforderungen stehen als Akzeptanzkriterien bei den Stories im 
 
 ## Epics und User Stories
 
-Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Am 2026-10-29 wurden die Stories US-05, US-11, US-17, US-20 bis US-22, US-27, US-28, US-33, US-35 und US-36 gegen den Code abgeglichen. Wo der Code bewusst anders arbeitet, beschreibt die Story das umgesetzte Verhalten, wo ein Kriterium fehlt, ist es als Lücke markiert und als Vorhaben in [plan.md](plan.md#vorhaben) geführt. Die übrigen Stories sind nicht systematisch geprüft.
+Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive und Bibliotheken, Editionsprojekte und eine interessierte Öffentlichkeit. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Nutzenden validiert. Am 2026-10-29 wurden die Stories US-05, US-11, US-17, US-20 bis US-22, US-27, US-28, US-33, US-35 und US-36 gegen den Code abgeglichen. Wo der Code bewusst anders arbeitet, beschreibt die Story das umgesetzte Verhalten, wo ein Kriterium fehlt, ist es als Lücke markiert und als Entscheidungsfrage in [plan.md](plan.md#e8-lücken-der-stories) geführt. Die übrigen Stories sind nicht systematisch geprüft.
 
 ### Datenimport
 
@@ -58,6 +58,8 @@ Als Forschende möchte ich eine CMIF-Datei von einer URL laden, um Daten aus Onl
 - URL-Eingabefeld
 - CORS-Fehlerbehandlung mit Hinweis
 - URLs der correspSearch-API v2.0 laden alle Trefferseiten bis zu einer Obergrenze, eine URL mit Parameter `x` genau eine Seite
+- Eine Abfrage ohne Treffer meldet das auf der Startseite und öffnet keinen leeren Explorer. Herausgeber und Lizenz kommen aus dem teiHeader der Antwort
+- Meldungen unterscheiden eine nicht erreichbare Adresse und HTTP-Fehler mit deutschem Grund
 
 #### US-03 Beispieldatensatz erkunden
 

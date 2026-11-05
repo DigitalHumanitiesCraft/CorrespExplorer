@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-10-29
+updated: 2026-11-05
 authors: [Christopher Pollin]
 template:
   name: Vorlage Datengrundlage
@@ -54,7 +54,8 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 | `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes, teiHeader-Metadaten und Änderungsvermerk `meta.modifications` | Erweiterter Beispieldatensatz der Startseite |
 | `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs aus Wikidata, für Genf aus GeoNames (siehe [Herkunft](#herkunft-von-docsdatageonames_coordinatesjson)) | Ergänzung von Orten ohne Koordinaten beim Upload |
 | `docs/data/test-uncertainty.xml` | Synthetische Unsicherheitsfälle | Testdatei, siehe [Testdatensätze](#testdatensätze) |
-| `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs) | Testdatei der Sicherheits-Suite |
+| `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs, Tabellenformeln) | Testdatei der Suites Security und Basket |
+| `docs/data/test-correspsearch.json`, `docs/data/test-correspsearch-empty.json` | Antworten der correspSearch-API v2.0 vom 2026-11-05 auf `d=1890-01-01&x=1` und `d=1066-01-01&x=1`, unverändert gespeichert | Testdateien der Suite correspSearch, CC BY 4.0 laut ihrem teiHeader, Herausgeber Berlin-Brandenburgische Akademie der Wissenschaften |
 | `docs/data/schoenbach.xml` | Lokale Kopie der Schönbach-Briefe | Kleiner Realdatensatz |
 
 ### Hugo Schuchardt Archiv

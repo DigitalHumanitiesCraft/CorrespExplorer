@@ -43,7 +43,7 @@ Warum?
 - Was die Tests nicht abdecken, prüft der Browser-Durchlauf ([Browser-Prüfung der Ansichten](#browser-prüfung-der-ansichten)). Grüne Tests schließen Fehler der Oberfläche nicht aus, das zeigten die Prüfungen vom 2026-10-29
 
 Regel: keine Mock-Daten
-- Tests laden echte CMIF-XML-Dateien über `parseCMIF` (`docs/data/test-uncertainty.xml`, `docs/data/test-hostile.xml`, für Erwähnungen `docs/data/demo-showcase.xml`)
+- Tests laden echte CMIF-XML-Dateien über `parseCMIF` (`docs/data/test-uncertainty.xml`, `docs/data/test-hostile.xml`, für Erwähnungen `docs/data/demo-showcase.xml`), die Suite correspSearch zwei unverändert gespeicherte Antworten der API
 - Die Indexform der Vorprozessierung prüft die Suite Research Paths an der echten Datei `docs/data/hsa-letters.json`. Gebündelte vorprozessierte Datensätze dürfen Tests unverändert laden, wenn sie die Indexform der Vorprozessierung brauchen, nachgebaute Kopien bleiben ausgeschlossen (Entscheidung des Operators vom 2026-10-30, Regel in `CLAUDE.md`)
 - Tests importieren echte Funktionen aus den Modulen (`parseCMIF`, `formatDateWithPrecision`, `analyzeResearchQuestions`, `addItemsToBasket`, `lettersToCsv`)
 - Keine duplizierten Helper-Funktionen in Tests
@@ -67,11 +67,12 @@ Business Logic mit echten Daten
 - test-security.js - Escaping, URL-Schemata und `?json=`-Pfade gegen `docs/data/test-hostile.xml`
 - test-research-paths.js - Forschungspfade für Parser- und HSA-Indexform, Korbauswahl je Ansicht, CSV-Export, Normdaten im Personenindex
 - test-demo.js - Tour, Demo-Links ohne Upload und Standardschwelle des Netzwerks an `docs/data/demo-showcase.xml`
+- test-correspsearch.js - `datasetFromPages()` an zwei gespeicherten Antworten der correspSearch-API (`docs/data/test-correspsearch.json`, `docs/data/test-correspsearch-empty.json`), ohne Anfrage an den Dienst
 - test-state-manager.js - Filter-Logik mit echten CMIF-Daten, darunter Personen- und Ortsfilter ohne Normdaten-ID und der Rundweg des URL-State
 
 Infrastruktur
 - test-dom-cache.js - Element-Caching, ohne CMIF-Daten
-- test-basket.js - Massenaufnahme, URL-Teilen und Datensatzbindung des Korbs mit Schlüsseln aus `test-uncertainty.xml`, `csvCell` mit Werten aus `test-hostile.xml`
+- test-basket.js - Massenaufnahme, URL-Teilen und Datensatzbindung des Korbs mit Schlüsseln aus `test-uncertainty.xml`, `csvCell` und der Formelschutz des CSV-Exports mit Werten aus `test-hostile.xml`
 
 ## Test-Typen
 

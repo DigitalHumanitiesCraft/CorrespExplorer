@@ -130,7 +130,7 @@ Konsistente visuelle Sprache fuer Datenqualitaet ueber alle Views hinweg.
 | Zeitraum | `--color-secondary` (Blau) | `fa-arrows-alt-h` | `.date-range-icon` | Briefliste: "1.1. – 31.12.1900" |
 | Unsichere Datierung | `--color-error` (Dunkelrot) | `fa-question-circle` | `.date-uncertain-icon` | cert="low" Attribut |
 | Datum unbekannt | `--color-text-light` (Grau) | `fa-question` | `.date-unknown` | Kein Datum vorhanden |
-| Timeline-Schraffur | Diagonale Streifen | -- | `.timeline-uncertainty-overlay` | Anteil unscharfer Daten im Jahr. Die Klasse steht in `explore.css`, die Zeitleiste rendert sie zurzeit nicht ([plan.md](plan.md#vorhaben)) |
+| Timeline-Schraffur | Diagonale Streifen | -- | `.timeline-uncertainty-overlay` | Anteil unscharfer Daten im Jahr, als Höhe des schraffierten Bereichs im Balken |
 
 #### Icon-Bedeutung
 
@@ -502,7 +502,7 @@ select:focus-visible {
 }
 ```
 
-Implementiert in base.css. Der vorherige Fokus der Eingaben (Schatten mit 10 % Deckkraft) erreichte nur 1.15:1 und wurde am 2026-10-29 ersetzt. Ergänzend: versteckte Checkboxen zeichnen den Fokus auf ihrem sichtbaren Kästchen (`.config-checkbox input:focus-visible ~ .checkmark`), die Kartenfläche zeigt ihn innen (`.maplibregl-canvas:focus-visible`), SVG-Knoten in Netzwerk und Erwähnungsfluss als Kontur (`stroke`), die Tooltips der Ansichtsknöpfe erscheinen auch bei Tastaturfokus. `base.css` stellt `.visually-hidden` für Statusmeldungen und unsichtbare Überschriften und `.skip-link` für den Sprunglink bereit. Interaktive Elemente sind mindestens 24 x 24px groß und schrumpfen in Flex-Zeilen nicht (`flex-shrink: 0`). Ausnahme sind bisher die Zellen der Aktivitäts-Heatmap mit 12 x 12px ([plan.md](plan.md#vorhaben)).
+Implementiert in base.css. Der vorherige Fokus der Eingaben (Schatten mit 10 % Deckkraft) erreichte nur 1.15:1 und wurde am 2026-10-29 ersetzt. Ergänzend: versteckte Checkboxen zeichnen den Fokus auf ihrem sichtbaren Kästchen (`.config-checkbox input:focus-visible ~ .checkmark`), die Kartenfläche zeigt ihn innen (`.maplibregl-canvas:focus-visible`), SVG-Knoten in Netzwerk und Erwähnungsfluss als Kontur (`stroke`), die Tooltips der Ansichtsknöpfe erscheinen auch bei Tastaturfokus. `base.css` stellt `.visually-hidden` für Statusmeldungen und unsichtbare Überschriften und `.skip-link` für den Sprunglink bereit. Interaktive Elemente sind mindestens 24 x 24px groß und schrumpfen in Flex-Zeilen nicht (`flex-shrink: 0`). Ausnahme sind bisher die Zellen der Aktivitäts-Heatmap mit 12 x 12px ([plan.md](plan.md#e6-zielgröße-der-heatmap-zellen)).
 
 ---
 
@@ -558,7 +558,7 @@ Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige
 
 ### Startansicht und Navigation
 
-Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe, Bezeichnung und Kurzbeschreibung stehen im Tooltip und im zugänglichen Namen. Ab 1600px Breite steht die Bezeichnung zusätzlich sichtbar unter dem Icon. Darunter reicht der Platz neben Datensatztitel und Navigationslinks nicht, bei 1440px lief die Leiste über. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen.
+Die Kennzahlen der Sidebar (Briefe, Personen, Orte) zeigen bei aktivem Filter die gefilterte Zahl groß und darunter klein „von“ und die Gesamtzahl, ohne Filter nur die Gesamtzahl. So bleibt kein Filter unbemerkt, auch wenn sein Bedienelement eingeklappt ist. Die Navigation zeigt die zwölf Ansichten als Icon-Knöpfe, Bezeichnung und Kurzbeschreibung stehen im Tooltip und im zugänglichen Namen. Ab 1600px Breite steht die Bezeichnung zusätzlich sichtbar unter dem Icon. Darunter reicht der Platz neben Datensatztitel und Navigationslinks nicht, bei 1440px lief die Leiste über. Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage (datiert, identifiziert, georeferenziert), Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen.
 
 ### Wissenspfade
 

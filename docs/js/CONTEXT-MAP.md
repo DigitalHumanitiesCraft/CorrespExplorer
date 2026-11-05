@@ -12,13 +12,13 @@ ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md]
 ## Daten
 
 - cmif-parser.js - `parseCMIF()` für Datei, URL oder XML-String, leitet correspSearch-API-URLs an correspsearch-api.js weiter, `enrichWithCoordinates()`, `addTableCoordinates()` aus `data/geonames_coordinates.json`, `loadDemoDataset()` für Demo-Links ohne Upload
-- correspsearch-api.js - `isCorrespSearchUrl()`, `fetchFromCorrespSearchUrl()` mit Seiten ab `x=1` und Obergrenze, Hinweis auf CORS bei Netzwerkfehlern, `tei-xml.xql` abgelehnt
+- correspsearch-api.js - `isCorrespSearchUrl()`, `fetchFromCorrespSearchUrl()` mit Seiten ab `x=1` und Obergrenze, `datasetFromPages()` mit Herausgeber und Lizenz aus dem teiHeader und Abbruch ohne Treffer, Hinweis auf CORS bei Netzwerkfehlern, `tei-xml.xql` abgelehnt
 - state-manager.js - `state` mit Daten, Filtern (Zeitraum oder undatiert, Sprachen, Person, Ort, Thema, Qualität), Cache, `filterLetters()` für beliebige Filtersätze, `toURLParams()` und `fromURLParams()` als einzige URL-Serialisierung
 - formatters.js - Datum, Person und Ort mit Unsicherheitsanzeige, CSS-Klassen, Initialen (`getPersonInitials`)
 
 ## Gemeinsame Helfer
 
-- utils.js - Escaping (`escapeHtml`, `safeUrl`, `externalLink`, `isAllowedJsonPath`), `csvCell`, `downloadFile`, `showToast`, Dialoge (`openModal`, `closeModal`, `enableModalKeyboard` mit Fokusfalle, die nur bei Änderungen an Dialogen prüft, `trapTabKey` für Modals und Demo-Tour), Normdaten (`parseAuthorityRef` mit VIAF in beiden URI-Formen, `parseGeoNamesRef`, `buildAuthorityLink`, `personAuthority`), `classifyDate` (`from` gleich `to` gilt als genaues Datum), `personKey`, `placeKey`, `isUnknownPlaceName`, `isKnownPlace` (Platzhalter wie „Unbekannt“ zählen nicht als Ort), `cleanId`, `buildIndices`, `countIdentifiedPersons`, `debounce`
+- utils.js - Escaping (`escapeHtml`, `safeUrl`, `externalLink`, `isAllowedJsonPath`), `csvCell`, `downloadFile`, `showToast`, Dialoge (`openModal`, `closeModal`, `enableModalKeyboard` mit Fokusfalle, die nur bei Änderungen an Dialogen prüft, `trapTabKey` für Modals und Demo-Tour), Normdaten (`parseAuthorityRef` mit VIAF in beiden URI-Formen, `parseGeoNamesRef`, `buildAuthorityLink`, `personAuthority`), `classifyDate` (`from` gleich `to` gilt als genaues Datum), `httpErrorMessage` (deutscher Grund, auch ohne Statustext unter HTTP/2), `ignoreMissingStyleImages` für Symbole, die der Grundkarte fehlen, `personKey`, `placeKey`, `isUnknownPlaceName`, `isKnownPlace` (Platzhalter wie „Unbekannt“ zählen nicht als Ort), `cleanId`, `buildIndices`, `countIdentifiedPersons`, `debounce`
 - constants.js - Sprachfarben, die eine Bezeichnungstabelle `LANGUAGE_LABELS` mit `languageLabel()` und `registerLanguageLabels()`, `NO_LANGUAGE` für Briefe ohne Sprache, `VIEWS` mit den zwölf Ansichten, Karten-, Netzwerk- und API-Vorgaben, Korbgrenzen `BASKET_LIMITS`
 - dom-cache.js - `elements` mit Gettern für wiederholt genutzte Elemente des Explorers
 - export.js - `LETTER_EXPORT_COLUMNS`, `letterExportRow()`, `lettersToCsv()` (Kopfzeile auch ohne Briefe), `lettersToJson()`
