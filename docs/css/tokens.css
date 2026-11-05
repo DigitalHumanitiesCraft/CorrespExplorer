@@ -23,7 +23,8 @@
     --color-bg-light: #E8E4D4;       /* Manila - Cards, containers */
     --color-bg-secondary: #E8E4D4;   /* Alias for bg-light */
     --color-border: #222222;         /* Ink Black - Thick borders (2-3px) */
-    --color-border-light: #D4D0C0;   /* Subtle borders, dividers */
+    --color-border-light: #D4D0C0;   /* Subtle borders, dividers; too faint for controls */
+    --color-border-control: #7F7A69; /* Boundaries of inputs and buttons, 3.4:1 on --color-bg-light (WCAG 1.4.11) */
 
     /* Functional Colors */
     --color-success: #2d6a4f;        /* Forest Green */
@@ -87,6 +88,7 @@
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
     /* Font Sizes - design.md Section 3 */
+    --font-size-2xs: 11px;  /* Lower limit, only for dense chart labels and counters */
     --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-base: 14px;
@@ -162,15 +164,21 @@
     --transition-fast: 0.15s ease-out;
     --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Properties that hover and state changes animate, instead of transition: all */
+    --transition-properties: color, background-color, border-color, opacity, transform;
 
     /* Z-Index Scale */
     --z-base: 1;
-    --z-dropdown: 1000;
-    --z-sticky: 1020;
-    --z-fixed: 1030;
+    --z-raised: 10;          /* Local layering inside a component: hover lift, map controls */
+    --z-dropdown: 1000;      /* Autocomplete lists and tooltips inside the content */
+    --z-sticky: 1020;        /* Knowledge path bar, landing navigation */
+    --z-fixed: 1030;         /* Navbar and the off-canvas sidebar */
     --z-modal-backdrop: 1040;
-    --z-modal: 1050;
-    --z-tooltip: 1060;
+    --z-modal: 1050;         /* Dialogs and the loading overlay */
+    --z-tooltip: 1060;       /* Tooltips of the view switcher */
+    --z-tour: 1070;          /* Demo tour above everything it explains */
+    --z-toast: 1080;
+    --z-skip-link: 1090;
 }
 
 /* ========================================

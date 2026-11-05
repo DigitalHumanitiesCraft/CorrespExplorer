@@ -216,7 +216,7 @@ export function closeModal(modal) {
     modal.classList.add('hidden');
 }
 
-const DIALOG_SELECTOR = '.modal-overlay, .modal:not(.modal-overlay .modal)';
+const DIALOG_SELECTOR = '.modal';
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
 
 function isShown(el) {

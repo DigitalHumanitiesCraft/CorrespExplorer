@@ -633,9 +633,12 @@ function showMentionLetters(senderId, mentionedId, senderName, mentionedName) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'mention-letters-modal';
-        modal.className = 'modal-overlay';
+        modal.className = 'modal hidden';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-labelledby', 'mention-modal-title');
         modal.innerHTML = `
-            <div class="modal-content common-letters-modal">
+            <div class="modal-content modal-lg">
                 <div class="modal-header">
                     <h3 id="mention-modal-title"></h3>
                     <button class="modal-close" aria-label="Schließen">&times;</button>

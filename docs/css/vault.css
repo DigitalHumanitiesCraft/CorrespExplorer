@@ -2,7 +2,7 @@
 
 /* Container */
 .vault-container {
-    min-height: calc(100vh - var(--navbar-height));
+    min-height: calc(100dvh - var(--navbar-height));
     display: flex;
     flex-direction: column;
     background: var(--color-bg);
@@ -76,7 +76,7 @@
     width: 14px;
     text-align: center;
     opacity: 0.6;
-    font-size: 12px;
+    font-size: var(--font-size-xs);
 }
 
 .doc-item.active i {

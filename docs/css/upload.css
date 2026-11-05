@@ -2,7 +2,7 @@
 
 /* Landing Page Layout */
 .landing-container {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -66,7 +66,7 @@
     color: var(--color-text);
     text-align: left;
     line-height: var(--line-height-base);
-    z-index: 100;
+    z-index: var(--z-dropdown);
     transition: opacity var(--transition-fast), visibility var(--transition-fast);
     margin-bottom: var(--space-sm);
 }
@@ -99,7 +99,7 @@
     right: var(--space-xl);
     display: flex;
     gap: var(--space-md);
-    z-index: 100;
+    z-index: var(--z-sticky);
 }
 
 .landing-nav a {
@@ -145,7 +145,8 @@
     padding: var(--space-3xl);
     text-align: center;
     background: var(--color-bg-light);  /* Manila background */
-    transition: all var(--transition-base);
+    transition: var(--transition-base);
+    transition-property: var(--transition-properties);
     cursor: pointer;
 }
 
@@ -204,7 +205,8 @@
     border-radius: var(--radius-md);
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     border: 2px solid var(--color-primary-dark);
     font-size: var(--font-size-base);
 }
@@ -269,7 +271,8 @@
     border-radius: var(--radius-md);
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     white-space: nowrap;
 }
 
@@ -319,7 +322,8 @@
     border-radius: var(--radius-md);
     padding: var(--space-lg);
     cursor: pointer;
-    transition: all var(--transition-base);
+    transition: var(--transition-base);
+    transition-property: var(--transition-properties);
 }
 
 .dataset-card:hover {
@@ -546,66 +550,6 @@
     }
 }
 
-/* Configuration Modal */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--color-backdrop);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: var(--color-bg);
-    border: 3px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.config-modal-content {
-    max-width: 480px;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-lg) var(--space-xl);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    font-size: var(--font-size-xl);
-    color: var(--color-text-light);
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-}
-
-.modal-close:hover {
-    color: var(--color-text);
-}
-
-.modal-body {
-    padding: var(--space-xl);
-}
-
 /* Config Summary */
 .config-summary {
     display: flex;
@@ -684,7 +628,8 @@
     align-items: center;
     justify-content: center;
     background: var(--color-bg);
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .config-checkbox input:checked ~ .checkmark {

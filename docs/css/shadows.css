@@ -10,7 +10,6 @@
 
 /* Dialogs */
 .modal-content,
-.modal-overlay .modal-content,
 .tour-content {
     box-shadow: var(--shadow-lg);
 }
@@ -21,8 +20,7 @@
 }
 
 /* Dropdowns and menus */
-.autocomplete-dropdown,
-.nav-mobile-menu {
+.autocomplete-dropdown {
     box-shadow: var(--shadow-md);
 }
 
@@ -32,11 +30,6 @@
 .undated-bin-tooltip,
 .timeline-bar-tooltip,
 .view-btn[data-tooltip]::after {
-    box-shadow: var(--shadow-md);
-}
-
-/* Loading indicator floating above the map */
-#loading {
     box-shadow: var(--shadow-md);
 }
 

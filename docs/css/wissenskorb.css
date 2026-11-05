@@ -4,7 +4,7 @@
 .wissenskorb-container {
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 60px);
+    min-height: calc(100dvh - var(--navbar-height));
     padding: 20px;
     background: var(--color-bg-light);
 }
@@ -59,7 +59,7 @@
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 100px);
+    max-height: calc(100dvh - 100px);
 }
 
 /* Item Type Tabs */
@@ -79,7 +79,8 @@
     background: transparent;
     cursor: pointer;
     color: var(--color-text-light);
-    transition: all 0.2s;
+    transition: 0.2s;
+    transition-property: var(--transition-properties);
     border-bottom: 2px solid transparent;
 }
 
@@ -99,7 +100,7 @@
 }
 
 .item-tab-label {
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
     font-weight: 500;
 }
 
@@ -269,7 +270,8 @@
     cursor: pointer;
     font-size: 0.9rem;
     color: var(--color-text-light);
-    transition: all 0.2s;
+    transition: 0.2s;
+    transition-property: var(--transition-properties);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -385,7 +387,7 @@
 
 .basket-map-marker:hover {
     transform: scale(1.2);
-    z-index: 1;
+    z-index: var(--z-base);
 }
 
 /* Details List */

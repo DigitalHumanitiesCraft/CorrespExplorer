@@ -145,7 +145,8 @@
     font-weight: 600;
     color: white;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     margin-left: var(--space-sm);
 }
 
@@ -184,10 +185,11 @@
     gap: var(--space-sm);
     padding: var(--space-lg);
     background: var(--color-bg-light);
-    border: 2px solid var(--color-border-light);
+    border: 2px solid var(--color-border-control);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .entry-point-btn:hover {
@@ -239,7 +241,8 @@
     color: var(--color-text-light);
     font-size: var(--font-size-sm);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .show-all-paths-btn:hover {
@@ -283,7 +286,8 @@
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     flex-shrink: 0;
 }
 
@@ -327,18 +331,14 @@
     font-size: var(--font-size-xs);
     color: var(--color-text-light);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .btn-reset-small:hover {
     background: var(--color-primary);
     border-color: var(--color-primary);
     color: white;
-}
-
-/* Legend Section */
-#sidebar-legend {
-    background: var(--color-bg);
 }
 
 .legend-color {
@@ -371,7 +371,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
-    z-index: 10;
+    z-index: var(--z-raised);
 }
 
 .map-control-btn {
@@ -386,7 +386,8 @@
     align-items: center;
     justify-content: center;
     font-size: var(--font-size-base);
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .map-control-btn:hover {
@@ -402,7 +403,7 @@
     background: var(--color-bg);
     border-radius: var(--radius-md);
     padding: var(--space-sm) var(--space-md);
-    z-index: 10;
+    z-index: var(--z-raised);
     max-width: 200px;
     font-size: var(--font-size-sm);
 }
@@ -453,17 +454,6 @@
     margin-left: auto;
 }
 
-/* View button disabled state */
-.view-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-/* Filter indicator dot on view buttons */
-.view-btn {
-    position: relative;
-}
-
 .filter-indicator {
     position: absolute;
     top: 4px;
@@ -474,8 +464,6 @@
     border-radius: 50%;
     border: 2px solid white;
 }
-
-/* Filtered count indicator in stats */
 
 /* List View Header */
 .list-header {
@@ -524,7 +512,7 @@
 /* Entity List */
 .entity-list {
     overflow-y: auto;
-    height: calc(100vh - var(--navbar-height) - 80px);
+    height: calc(100dvh - var(--navbar-height) - 80px);
     padding: var(--space-md);
 }
 
@@ -553,7 +541,8 @@
     border-radius: var(--radius-md);
     margin-bottom: var(--space-sm);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .person-card:hover {
@@ -580,9 +569,10 @@
 }
 
 .person-name {
+    font-size: var(--font-size-sm);
+    margin-bottom: 2px;
     font-weight: 600;
     color: var(--color-text);
-    margin-bottom: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -642,7 +632,8 @@
     color: var(--color-text-light);
     border: 1px solid var(--color-border);
     text-decoration: none;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     flex-shrink: 0;
     min-width: 24px;
     min-height: 24px;
@@ -668,7 +659,8 @@
     border-radius: var(--radius-md);
     margin-bottom: var(--space-sm);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .letter-card:hover {
@@ -860,7 +852,8 @@
     color: var(--color-text);
     text-decoration: none;
     font-size: var(--font-size-xs);
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .detail-link:hover {
@@ -870,64 +863,6 @@
 
 .detail-link i {
     color: var(--color-accent);
-}
-
-/* Modal */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--color-backdrop);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-}
-
-.modal-content {
-    background: var(--color-bg);
-    border: 3px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    max-width: 400px;
-    width: 90%;
-}
-
-.modal-content.modal-lg {
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-lg);
-    border-bottom: 1px solid var(--color-border);
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: var(--font-size-lg);
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    font-size: var(--font-size-xl);
-    cursor: pointer;
-    color: var(--color-text-light);
-    line-height: 1;
-}
-
-.modal-close:hover {
-    color: var(--color-text);
-}
-
-.modal-body {
-    padding: var(--space-lg);
 }
 
 .modal-body p {
@@ -953,7 +888,8 @@
     border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .export-option:hover {
@@ -1036,7 +972,7 @@
 .timeline-container {
     padding: var(--space-lg);
     padding-bottom: var(--space-xl);
-    height: calc(100vh - var(--navbar-height));
+    height: calc(100dvh - var(--navbar-height));
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -1056,7 +992,7 @@
 .timeline-chart {
     flex: 1;
     min-width: max-content; /* Ensure all bars are visible */
-    height: 300px;
+    height: 400px;
     position: relative;
     display: flex;
     align-items: flex-end;
@@ -1096,7 +1032,7 @@
     left: 0;
     width: 35px;
     text-align: right;
-    font-size: calc(var(--font-size-xs) - 2px);
+    font-size: var(--font-size-2xs);
     color: var(--color-text-light);
     transform: translateY(-50%);
 }
@@ -1128,7 +1064,8 @@
     border-radius: var(--radius-sm) var(--radius-sm) 0 0;
     position: absolute;
     bottom: 40px; /* Same as padding-bottom for X-axis labels */
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     overflow: hidden;
 }
 
@@ -1139,7 +1076,7 @@
 .undated-bin-label {
     position: absolute;
     bottom: 12px; /* Same level as year labels (40px padding - 28px offset) */
-    font-size: calc(var(--font-size-xs) - 1px);
+    font-size: var(--font-size-2xs);
     color: var(--color-text-light);
     font-style: normal;
     white-space: nowrap;
@@ -1164,7 +1101,7 @@
     pointer-events: none;
     opacity: 0;
     transition: opacity var(--transition-fast);
-    z-index: 100;
+    z-index: var(--z-dropdown);
 }
 
 .timeline-undated-bin:hover .undated-bin-tooltip {
@@ -1213,7 +1150,7 @@
 }
 
 .timeline-bar-wrapper:hover {
-    z-index: 5;
+    z-index: var(--z-raised);
 }
 
 .timeline-bar-wrapper.selected {
@@ -1231,7 +1168,7 @@
     left: 50%;
     transform: translateX(-50%) rotate(-45deg);
     transform-origin: top center;
-    font-size: calc(var(--font-size-xs) - 1px);
+    font-size: var(--font-size-2xs);
     color: var(--color-text-light);
     white-space: nowrap;
 }
@@ -1243,7 +1180,7 @@
     padding: calc(var(--space-xs) + var(--space-xs) / 2) calc(var(--space-sm) + var(--space-xs) / 2);
     border-radius: var(--radius-sm);
     font-size: var(--font-size-xs);
-    z-index: 1000;
+    z-index: var(--z-dropdown);
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
@@ -1303,7 +1240,8 @@
     position: absolute;
     left: 0;
     right: 0;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     cursor: pointer;
 }
 
@@ -1311,14 +1249,13 @@
     filter: brightness(1.15);
     outline: 2px solid rgba(255, 255, 255, 0.5);
     outline-offset: -2px;
-    z-index: 1;
+    z-index: var(--z-base);
 }
 
 .timeline-bar-wrapper:hover .timeline-stack-segment {
     filter: brightness(1.05);
 }
 
-/* Responsive */
 /* Letter Detail Modal */
 .letter-detail {
     display: flex;
@@ -1410,7 +1347,8 @@
     border-radius: var(--radius-md);
     font-size: var(--font-size-sm);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .letter-detail-actions .btn-primary {
@@ -1445,7 +1383,8 @@
     border-radius: var(--radius-sm);
     font-size: var(--font-size-sm);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .letter-detail-actions .btn-basket:hover {
@@ -1483,7 +1422,8 @@
     border-radius: var(--radius-sm);
     font-size: var(--font-size-xs);
     text-decoration: none;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .btn-corresp:hover {
@@ -1492,7 +1432,7 @@
 }
 
 .btn-corresp i {
-    font-size: calc(var(--font-size-xs) - 2px);
+    font-size: var(--font-size-2xs);
 }
 
 /* Person Detail Modal */
@@ -1555,7 +1495,7 @@
     background: var(--color-bg);
     border: 1px solid var(--color-border-light);
     border-radius: 12px;
-    font-size: calc(var(--font-size-xs) - 1px);
+    font-size: var(--font-size-2xs);
     color: var(--color-text-light);
     margin-bottom: var(--space-sm);
 }
@@ -1656,7 +1596,8 @@
     background: var(--color-bg);
     color: var(--color-text-light);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     flex-shrink: 0;
     min-width: 24px;
     min-height: 24px;
@@ -1681,7 +1622,8 @@
     background: var(--color-bg);
     color: var(--color-text-light);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
     flex-shrink: 0;
     min-width: 24px;
     min-height: 24px;
@@ -1723,8 +1665,10 @@
 }
 
 .popup h3 {
-    margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-base);
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+    margin: 0 0 var(--space-sm) 0;
     font-weight: 600;
 }
 
@@ -1749,8 +1693,9 @@
 }
 
 .popup-stats p {
-    margin: 0 0 var(--space-xs) 0;
     font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    margin: 0 0 var(--space-xs) 0;
 }
 
 .popup-year-range {
@@ -1869,8 +1814,6 @@
         min-width: auto;
     }
 
-    /* Topics/Places responsive handled by .entity-split-layout in components.css */
-
     /* Timeline mobile */
     .timeline-container {
         padding: var(--space-md);
@@ -1884,7 +1827,7 @@
     }
 
     .timeline-bar-label {
-        font-size: calc(var(--font-size-xs) - 3px);
+        font-size: var(--font-size-2xs);
     }
 
     .timeline-stack-legend {
@@ -1892,30 +1835,9 @@
         font-size: var(--font-size-xs);
     }
 
-    /* Network mobile */
-    .network-container {
-        padding: var(--space-md);
-    }
-
-    .network-controls {
-        flex-direction: column;
-        gap: var(--space-sm);
-    }
-
-    .network-control-group {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    #network-canvas {
-        height: 300px;
-    }
-
-    /* Entity cards mobile handled by components.css */
-
     /* Map mobile */
     #map {
-        height: calc(100vh - var(--navbar-height) - 60px);
+        height: calc(100dvh - var(--navbar-height) - 60px);
     }
 
     .map-legend {
@@ -1932,7 +1854,7 @@
     }
 
     .timeline-bar-label {
-        font-size: calc(var(--font-size-xs) - 4px);
+        font-size: var(--font-size-2xs);
     }
 
     .person-card {
@@ -1958,7 +1880,7 @@
 /* Network View */
 .network-container {
     padding: var(--space-lg);
-    height: calc(100vh - var(--navbar-height));
+    height: calc(100dvh - var(--navbar-height));
     display: flex;
     flex-direction: column;
 }
@@ -1978,6 +1900,24 @@
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+}
+
+/* Phones: the controls stack, after the base rules so they win */
+@media (max-width: 767px) {
+    .network-container {
+        padding: var(--space-md);
+    }
+
+    .network-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-sm);
+    }
+
+    .network-control-group {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 .network-control-group label {
@@ -2138,6 +2078,8 @@
     display: flex;
     align-items: center;
     gap: var(--space-xs);
+    margin-bottom: var(--space-xs);
+    font-size: var(--font-size-sm);
 }
 
 .legend-circle {
@@ -2172,7 +2114,7 @@
 }
 
 .legend-size-hint i {
-    font-size: calc(var(--font-size-xs) - 4px);
+    font-size: var(--font-size-2xs);
     margin-right: var(--space-xs);
     vertical-align: middle;
 }
@@ -2193,9 +2135,9 @@
 
 .legend-hint {
     font-size: var(--font-size-xs);
+    margin-top: var(--space-xs);
     color: var(--color-text-muted);
     font-style: italic;
-    margin-top: var(--space-xs);
 }
 
 .legend-hint a {
@@ -2213,31 +2155,6 @@
     padding: var(--space-xs) var(--space-sm);
     font-size: var(--font-size-sm);
 }
-
-/* Basket Styles */
-
-.basket-badge {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background: var(--color-error);
-    color: white;
-    font-size: calc(var(--font-size-xs) - 2px);
-    font-weight: 600;
-    min-width: 16px;
-    height: 16px;
-    line-height: 16px;
-    text-align: center;
-    border-radius: 8px;
-    padding: 0 var(--space-xs);
-}
-
-/* Basket Toggle Button - Add to item */
-
-
-
-
-/* Basket Modal */
 
 .basket-content {
     min-height: 200px;
@@ -2363,14 +2280,11 @@
 .tooltip-imprecise {
     color: color-mix(in srgb, var(--color-warning) 35%, white);
     font-style: italic;
-    font-size: 0.9em;
 }
 
 /* Tooltip hint for basket action */
 .tooltip-hint {
-    color: var(--color-text-light);
-    font-size: 0.85em;
-    opacity: 0.8;
+    color: var(--color-bg-light);
 }
 
 /* ===================
@@ -2383,7 +2297,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999;
+    z-index: var(--z-tour);
 }
 
 .tour-backdrop {
@@ -2401,7 +2315,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 10000;
+    z-index: calc(var(--z-tour) + 1);
 }
 
 .tour-step.active {
@@ -2456,7 +2370,8 @@
     font-size: var(--font-size-sm);
     font-weight: 600;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .tour-skip {
@@ -2524,7 +2439,8 @@
     height: 8px;
     border-radius: 50%;
     background: var(--color-border);
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .tour-progress-dot.active {
@@ -2537,12 +2453,12 @@
 }
 
 /* Highlight effect for target elements */
-/* The tour root (.demo-tour, z-index 9999) is a stacking context, so a highlight above 9999
+/* The tour root (.demo-tour, --z-tour) is a stacking context, so a highlight above it
    would cover the tour dialog and swallow its clicks. The highlight stays just below the tour,
    dims the page with its spread shadow (shadows.css) and the tour backdrop turns transparent. */
 .tour-highlight {
     position: relative;
-    z-index: 9998;
+    z-index: calc(var(--z-tour) - 1);
     border-radius: var(--radius-md);
     outline: 3px solid var(--color-primary);
     outline-offset: 2px;
@@ -2595,7 +2511,8 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .mentions-flow-graph .nodes rect {
-    transition: all 0.2s ease;
+    transition: 0.2s ease;
+    transition-property: var(--transition-properties);
     cursor: pointer;
 }
 
@@ -2610,25 +2527,12 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .mentions-flow-graph .links path {
-    transition: all 0.2s ease;
+    transition: 0.2s ease;
+    transition-property: var(--transition-properties);
 }
 
 .mentions-flow-graph .links path:hover {
     filter: brightness(1.2);
-}
-
-#mentions-tooltip {
-    color: var(--color-text);
-    max-width: 300px;
-}
-
-#mentions-tooltip strong {
-    color: var(--color-primary);
-}
-
-#mentions-tooltip em {
-    color: var(--color-text-light);
-    font-size: 0.9em;
 }
 
 /* ===================
@@ -2726,7 +2630,8 @@ body:has(.tour-highlight) .tour-backdrop {
     background: var(--color-bg);
     border: 2px solid var(--color-border);
     border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .chronik-entry:hover {
@@ -2746,7 +2651,8 @@ body:has(.tour-highlight) .tour-backdrop {
     background: var(--color-bg);
     border: 2px solid var(--color-border);
     border-radius: 50%;
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .chronik-entry:hover::before {
@@ -2928,7 +2834,8 @@ body:has(.tour-highlight) .tour-backdrop {
     color: var(--color-text-secondary);
     cursor: pointer;
     border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .chronik-layout-btn:hover {
@@ -3368,7 +3275,8 @@ body:has(.tour-highlight) .tour-backdrop {
     border: 1px dashed var(--color-accent);
     border-radius: var(--radius-full);
     cursor: help;
-    transition: all 0.2s ease;
+    transition: 0.2s ease;
+    transition-property: var(--transition-properties);
 }
 
 .experimental-badge:hover {
@@ -3405,7 +3313,8 @@ body:has(.tour-highlight) .tour-backdrop {
     background: var(--color-bg);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: 0.15s ease;
+    transition-property: var(--transition-properties);
     border: 1px solid transparent;
 }
 
@@ -3515,7 +3424,8 @@ body:has(.tour-highlight) .tour-backdrop {
     border: 1px solid var(--color-border-light);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: 0.15s ease;
+    transition-property: var(--transition-properties);
     font-size: var(--font-size-xs);
     min-width: 80px;
     font-family: inherit;
@@ -3570,7 +3480,7 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .path-arrow {
     color: var(--color-text-light);
-    font-size: 12px;
+    font-size: var(--font-size-xs);
     align-self: center;
 }
 
@@ -3582,7 +3492,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .questions-empty i {
-    font-size: 48px;
+    font-size: var(--font-size-3xl);
     margin-bottom: var(--space-md);
     color: var(--color-border);
 }
@@ -3591,8 +3501,6 @@ body:has(.tour-highlight) .tour-backdrop {
     margin: 0;
     font-size: var(--font-size-base);
 }
-
-/* Unavailable questions category */
 
 /* Questions the data cannot answer yet: enrichment potential in neutral tones (ADR-005) */
 .question-card.question-unavailable {
@@ -3684,13 +3592,14 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .activity-year-btn {
     padding: var(--space-xs) var(--space-sm);
-    border: 1px solid var(--color-border-light);
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-sm);
     background: var(--color-bg);
     color: var(--color-text);
     font-size: var(--font-size-xs);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: 0.15s ease;
+    transition-property: var(--transition-properties);
 }
 
 .activity-year-btn:hover {
@@ -3927,7 +3836,8 @@ body:has(.tour-highlight) .tour-backdrop {
     color: var(--color-text);
     font-size: var(--font-size-sm);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: 0.15s ease;
+    transition-property: var(--transition-properties);
 }
 
 .comparison-mode-btn:hover {
@@ -3975,13 +3885,14 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .comparison-quick-btn {
     padding: var(--space-xs) var(--space-sm);
-    border: 1px solid var(--color-border-light);
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-sm);
     background: var(--color-bg-light);
     color: var(--color-text);
     font-size: var(--font-size-xs);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: 0.15s ease;
+    transition-property: var(--transition-properties);
 }
 
 .comparison-quick-btn:hover {
@@ -4157,18 +4068,10 @@ body:has(.tour-highlight) .tour-backdrop {
     background: var(--color-primary-dark);
 }
 
-/* Common Letters Modal */
-.common-letters-modal {
-    max-width: 600px;
-    max-height: 80vh;
-}
-
 .common-letters-list {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
-    max-height: 60vh;
-    overflow-y: auto;
 }
 
 .common-letter-item {
@@ -4227,7 +4130,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .comparison-placeholder i {
-    font-size: 48px;
+    font-size: var(--font-size-3xl);
     margin-bottom: var(--space-md);
     opacity: 0.5;
 }
@@ -4255,8 +4158,8 @@ body:has(.tour-highlight) .tour-backdrop {
 /* Pfad-Leiste (oben, nach navbar) */
 .knowledge-path-bar {
     position: sticky;
-    top: 60px;
-    z-index: 99;
+    top: var(--navbar-height);
+    z-index: var(--z-sticky);
     background: var(--color-bg);
     border-bottom: 2px solid var(--color-accent);
 }
@@ -4318,11 +4221,12 @@ body:has(.tour-highlight) .tour-backdrop {
     padding: 2px 8px;
     border-radius: var(--radius-sm);
     background: var(--color-bg);
-    border: 1px solid var(--color-border-light);
+    border: 1px solid var(--color-border-control);
     font-size: var(--font-size-xs);
     white-space: nowrap;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: 0.15s ease;
+    transition-property: var(--transition-properties);
     font-family: inherit;
     color: inherit;
 }
@@ -4397,11 +4301,12 @@ body:has(.tour-highlight) .tour-backdrop {
 .path-bar-close {
     padding: 2px 6px;
     background: transparent;
-    border: 1px solid var(--color-border-light);
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-sm);
     cursor: pointer;
     color: var(--color-text-light);
-    transition: all 0.15s;
+    transition: 0.15s;
+    transition-property: var(--transition-properties);
     font-size: var(--font-size-xs);
 }
 
@@ -4475,7 +4380,7 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .basket-group-count {
     font-weight: 600;
-    color: var(--color-accent);
+    color: var(--color-primary-dark);
     background: var(--color-primary-light);
     padding: 2px 8px;
     border-radius: var(--radius-sm);
@@ -4532,7 +4437,8 @@ body:has(.tour-highlight) .tour-backdrop {
     color: var(--color-accent);
     text-decoration: none;
     font-size: var(--font-size-sm);
-    transition: all 0.15s;
+    transition: 0.15s;
+    transition-property: var(--transition-properties);
 }
 
 .basket-view-link:hover {
@@ -4563,7 +4469,8 @@ body:has(.tour-highlight) .tour-backdrop {
     cursor: pointer;
     font-size: var(--font-size-md);
     font-weight: 500;
-    transition: all 0.15s;
+    transition: 0.15s;
+    transition-property: var(--transition-properties);
 }
 
 .btn-path-back {
@@ -4632,7 +4539,6 @@ body:has(.tour-highlight) .tour-backdrop {
         font-size: var(--font-size-sm);
     }
 }
-
 
 /* Load error: replaces the explorer when a dataset cannot be loaded */
 #load-error {

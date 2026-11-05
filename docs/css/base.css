@@ -61,7 +61,7 @@ select:focus-visible {
     position: absolute;
     top: var(--space-sm);
     left: var(--space-sm);
-    z-index: 10200;
+    z-index: var(--z-skip-link);
     padding: var(--space-sm) var(--space-lg);
     background: var(--color-bg);
     color: var(--color-text);
@@ -99,6 +99,18 @@ select:focus-visible {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+/* Reduced motion: transitions and animations collapse to their end state */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 /* ==========================================

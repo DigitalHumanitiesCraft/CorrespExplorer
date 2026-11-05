@@ -5,7 +5,7 @@
     margin: 0 auto;
     padding: var(--space-xl);
     padding-top: calc(var(--navbar-height) + var(--space-xl));
-    min-height: 100vh;
+    min-height: 100dvh;
 }
 
 .about-header {
@@ -99,7 +99,8 @@
     background: var(--color-bg-light);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
 }
 
 .link-list a:hover {

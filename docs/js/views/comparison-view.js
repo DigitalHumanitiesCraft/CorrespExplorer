@@ -2,7 +2,7 @@
 // Side-by-side comparison of persons, periods, or places
 
 import { languageLabel } from '../constants.js';
-import { debounce, escapeHtml, personKey, placeKey, isKnownPlace } from '../utils.js';
+import { closeModal, debounce, escapeHtml, isKnownPlace, openModal, personKey, placeKey } from '../utils.js';
 import { formatDateWithPrecision } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { bindCombobox } from './view-support.js';
@@ -587,8 +587,8 @@ function showCommonLettersModal(letterIds) {
     // Create modal content
     let html = `
         <div class="modal-header">
-            <h3>Gemeinsame Briefe (${letters.length})</h3>
-            <button class="modal-close" id="common-letters-modal-close" aria-label="Schließen">&times;</button>
+            <h3 id="common-letters-modal-title">Gemeinsame Briefe (${letters.length})</h3>
+            <button class="modal-close" aria-label="Schließen">&times;</button>
         </div>
         <div class="modal-body">
             <div class="common-letters-list">
@@ -619,21 +619,17 @@ function showCommonLettersModal(letterIds) {
         </div>
     `;
 
-    // Show modal
+    // One dialog element, rebuilt per opening; openModal binds close button and backdrop
+    document.getElementById('common-letters-modal')?.remove();
     const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
+    modal.className = 'modal';
     modal.id = 'common-letters-modal';
-    modal.innerHTML = `<div class="modal common-letters-modal">${html}</div>`;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'common-letters-modal-title');
+    modal.innerHTML = `<div class="modal-content modal-lg">${html}</div>`;
     document.body.appendChild(modal);
-
-    // Close handler
-    document.getElementById('common-letters-modal-close').addEventListener('click', () => {
-        modal.remove();
-    });
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-    });
+    openModal(modal);
 
     // Click on letter opens detail
     modal.querySelectorAll('.common-letter-item').forEach(item => {
@@ -641,7 +637,7 @@ function showCommonLettersModal(letterIds) {
             const letterId = item.dataset.letterId;
             const letter = allLetters.find(l => l.id === letterId);
             if (letter) {
-                modal.remove();
+                closeModal(modal);
                 showLetterDetail(letter.id);
             }
         });
