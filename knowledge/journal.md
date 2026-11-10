@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2025-11-26
-updated: 2026-11-05
+updated: 2026-11-10
 authors: [Christopher Pollin]
 template:
   name: Vorlage Journal
@@ -22,6 +22,13 @@ related: [project, specification, plan, handoff]
 # Journal: CorrespExplorer
 
 ## Einträge
+
+### 2026-11-10 Wissensbasis aus der ausgelieferten Seite genommen
+
+- Anlass: Nach der Veröffentlichungsregel des Operators liefert eine Pages-Seite nur für Lesende bestimmte Inhalte aus, nie den Ordner `knowledge/`. Die öffentliche Seite lieferte die Wissensdokumente unter `/knowledge/` als von Jekyll gerenderte HTML-Seiten aus, dazu die Viewer-Seite `vault.html`.
+- Entschieden: Die Wissensbasis liegt nach der Konvention unter `knowledge/` im Repository-Root, `vault.html` entfällt, die Navigation verlinkt `knowledge/INDEX.md` auf GitHub ([ADR-008](specification.md#adr-008-wissensbasis-nicht-auf-der-website)).
+- Geändert: `docs/knowledge/` mit `git mv` nach `knowledge/`, `vault.html`, `js/vault.js`, `css/vault.css` und `vendor/marked/` gelöscht, Vault-Links in `index.html`, `about.html`, `explore.html`, `wissenskorb.html` und `test.html` auf GitHub umgestellt. `CLAUDE.md`, README, [INDEX.md](INDEX.md), [architecture.md](architecture.md), [project.md](project.md), [handoff.md](handoff.md), [uncertainty-specification.md](uncertainty-specification.md) und die CONTEXT-MAPs nachgezogen.
+- Belege: Commit dieses Eintrags. Browser-Test-Runner und `tests/browser/smoke.py` auf dem neuen Stand, lokaler Abruf von `/knowledge/INDEX.md` und `/vault.html` mit 404.
 
 ### 2026-11-05 Nachprüfung des UI-Umbaus: Überschriftentest, eine Zählung, Kleinpunkte
 

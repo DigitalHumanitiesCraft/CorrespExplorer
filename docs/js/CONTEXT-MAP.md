@@ -1,13 +1,12 @@
 # JavaScript Context Map
 
-ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md](../knowledge/architecture.md), die Ansichtsmodule [views/CONTEXT-MAP.md](views/CONTEXT-MAP.md), die Tests [tests/CONTEXT-MAP.md](tests/CONTEXT-MAP.md).
+ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md](../../knowledge/architecture.md), die Ansichtsmodule [views/CONTEXT-MAP.md](views/CONTEXT-MAP.md), die Tests [tests/CONTEXT-MAP.md](tests/CONTEXT-MAP.md).
 
 ## Einstiegspunkte
 
 - upload.js - Startseite `index.html`: Upload, URL-Feld, Beispieldatensätze, Konfigurationsdialog mit Anreicherung und Abbruch über `AbortController`, `?demo=true` startet den Tutorial-Datensatz, `?notice=dataset-missing` meldet einen Link ohne seinen Datensatz
 - explore.js - Explorer `explore.html`: Laden mit sichtbarer Fehlermeldung (`#load-error`), URL-State über `state.fromURLParams()`, Filter, Übersicht, Karte, Korrespondenten, Briefe, Brief- und Personen-Dialog (Wikidata erst auf Klick, „Wikidata nicht erreichbar“ getrennt von „Kein Wikidata-Eintrag“), Fokus nach dem Entfernen einer Filtermarke auf der nächsten Marke oder `#reset-filters`, Escape schließt die mobile Sidebar, Initialisierung der Ansichtsmodule, des Wissenspfads und des Exports
 - wissenskorb.js - Analyseseite `wissenskorb.html` des Wissenskorbs, lädt bei einem geteilten Link auf einen vorprozessierten Datensatz dessen Datei selbst, verlinkt nach einem `data/*.json`-Datensatz mit `?json=` zurück in den Explorer, exportiert über `lettersToCsv()` und `letterExportRow()` aus `export.js`, Farben über `readTokens()` aus `views/view-support.js`
-- vault.js - Viewer `vault.html` für `docs/knowledge/`, leitet Links zwischen Dokumenten intern weiter
 
 ## Daten
 

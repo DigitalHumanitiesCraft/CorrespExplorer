@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-05
+updated: 2026-11-10
 authors: [Christopher Pollin]
 template:
   name: Vorlage Specification
@@ -473,3 +473,13 @@ Wahl. US-11 und US-22 werden umgesetzt, die offenen Kriterien von US-05 und US-2
 Begründung. „Wer schrieb wem“ ist die Grundfrage eines Korrespondenznetzes, das Zeitgenossen-Netz wurde in den Prüfungen vom 2026-11-05 als solches gelesen. Der JSON-Export ist eine Serialisierung vorhandener Daten. Die Zeitleiste bleibt über Jahrzehnte lesbar, und die Übersicht zeigt aktivste Korrespondenten schon in den Forschungspfaden, die Sprachverteilung in der Zeitleiste.
 
 Effekt. Das Netzwerk startet im Modus Briefwechsel, Zeitgenossen und Themen bleiben wählbar. Der JSON-Export ersetzt die flache Zeilenliste. Weitere Lücken in den Stories sind nicht offen.
+
+### ADR-008 Wissensbasis nicht auf der Website
+
+Kontext. GitHub Pages liefert alles unter `docs/` aus. Die Wissensbasis lag in `docs/knowledge/` und war über `vault.html` und als einzelne Seiten öffentlich abrufbar.
+
+Wahl. Die Wissensbasis liegt in `knowledge/` im Repository-Root, die Website enthält keinen Viewer für sie und verlinkt `knowledge/INDEX.md` auf GitHub (Veröffentlichungsregel des Operators, umgesetzt am 2026-11-10).
+
+Begründung. Eine Pages-Seite liefert nur für Lesende bestimmte Inhalte aus. Wissensdokumente, interne Notizen, Arbeitsstände und Entwürfe gehören nicht dazu, auch wenn das Repository öffentlich ist.
+
+Effekt. Vor einem Push, der die Seite ändert, wird der ausgelieferte Baum `docs/` auf solches Material geprüft.

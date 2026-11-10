@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-05
+updated: 2026-11-10
 authors: [Christopher Pollin]
 template:
   name: Vorlage Architecture
@@ -21,7 +21,7 @@ related: [data, specification, design, testing]
 
 # Architecture
 
-CorrespExplorer ist eine statische Browser-Anwendung ohne Backend und ohne Build-Schritt. GitHub Pages liefert den Ordner `docs/` aus, alle Verarbeitung läuft clientseitig in ES-Modulen. Datenformat und Quellen beschreibt [data.md](data.md), die Begründungen übergreifender Entscheidungen [specification.md](specification.md#entscheidungen). Die Modulliste mit Exporten führt `docs/js/CONTEXT-MAP.md`, die Ansichtsmodule `docs/js/views/CONTEXT-MAP.md`.
+CorrespExplorer ist eine statische Browser-Anwendung ohne Backend und ohne Build-Schritt. GitHub Pages liefert den Ordner `docs/` aus, die Wissensbasis liegt außerhalb davon in `knowledge/` und wird nicht ausgeliefert, alle Verarbeitung läuft clientseitig in ES-Modulen. Datenformat und Quellen beschreibt [data.md](data.md), die Begründungen übergreifender Entscheidungen [specification.md](specification.md#entscheidungen). Die Modulliste mit Exporten führt `docs/js/CONTEXT-MAP.md`, die Ansichtsmodule `docs/js/views/CONTEXT-MAP.md`.
 
 ## Seiten
 
@@ -30,7 +30,6 @@ CorrespExplorer ist eine statische Browser-Anwendung ohne Backend und ohne Build
 | `index.html` | `upload.js` | Upload per Datei oder Drag-and-Drop, URL-Feld für CMIF-Dateien und correspSearch-API-URLs, zwei Beispieldatensätze, Konfigurationsdialog für die Anreicherung mit Abbruch. `index.html?demo=true` lädt den Tutorial-Datensatz und startet die Tour |
 | `explore.html` | `explore.js` | Explorer mit zwölf Ansichten, Sidebar mit Datensatz, Filtern und Wissenskorb, Wissenspfad-Leiste, Export |
 | `wissenskorb.html` | `wissenskorb.js` | Analyseseite des Datenkorbs mit Listen, Zeitleiste, Netzwerk, Karte, Details, Export und Teilen per Link |
-| `vault.html` | `vault.js` | Viewer für die Wissensbasis in `docs/knowledge/` |
 | `about.html` | keines | Projektinformation, Lizenzen |
 | `test.html` | `tests/run-all-tests.js` | Browser-Test-Runner. Die Seite besitzt den einzigen Auslöser eines Laufs, die Schaltfläche „Run“, die `?test=true` beim Laden einmal betätigt |
 
@@ -44,7 +43,6 @@ Alle Bibliotheken liegen versioniert in `docs/vendor/`, jeweils mit ihrer Lizenz
 | noUiSlider | 15.7.1 | Zeitraumfilter | MIT |
 | D3 | 7.9.0 | Netzwerk, Zeitleisten im Datenkorb | ISC |
 | d3-sankey | 0.12.3 | Erwähnungsfluss | BSD-3-Clause |
-| marked | 12.0.2 | Markdown-Rendering im Vault | MIT |
 | Font Awesome Free | 6.4.0 | Icons (nur woff2-Schriften) | Icons CC BY 4.0, Schriften OFL 1.1, Code MIT |
 | Inter, Lato, Merriweather | Google-Fonts-Stand vom 2026-10-29 | Schriften, Untermengen latin und latin-ext | OFL 1.1 |
 
@@ -64,7 +62,7 @@ Die Module stehen in `docs/js/`, die ausgelagerten Ansichten in `docs/js/views/`
 - Export: `export.js` mit `LETTER_EXPORT_COLUMNS`, `letterExportRow()` und `lettersToCsv()` für die flachen Zeilen, die Kopfzeile auch ohne Briefe, und `datasetToJson()` für die vollständige Datenstruktur mit Indizes aus `summarizeCorpus()`.
 - Korb: `basket.js` mit einem Korb je Datensatz in localStorage, Massenaufnahme über `addItemsToBasket()`, Tab-Synchronisation und URL-Teilen (`basketToParams()`, `basketFromParams()`, `loadBasketFromUrl()`). `onBasketChange()` gibt eine Funktion zum Abmelden zurück. Die Korbseite exportiert mit `lettersToCsv()` und `letterExportRow()` aus `export.js` und verlinkt nach einem `data/*.json`-Datensatz zurück auf `explore.html?json=<Pfad>`.
 - Demo-Tour: `demo-tour.js` mit `initDemoTour({ switchView })`, `shouldStartDemoTour(search)`, `checkAndStartDemoTour()` und `startTour()`. Sie öffnet bei `demo=true`, solange sie in diesem Browser nicht beendet wurde (localStorage, damit neue Tabs und spätere Links sie nicht erneut zeigen), `tour=0` unterdrückt sie für Workshop-Links und Aufnahme-Skripte. Die Tour ist ein modaler Dialog: Der Fokus liegt auf dem Hauptknopf des aktiven Schritts, Tab bleibt über `trapTabKey()` im Schritt, Escape beendet sie und gibt den Fokus zurück, bei einer beim Laden geöffneten Tour an den aktiven Ansichtsknopf. Schritte mit `data-view` wechseln vorher die Ansicht, die Sidebar-Schritte deshalb in die Briefansicht. Ein nicht sichtbares Ziel, etwa die eingeklappte Sidebar unter 768 px, erhält keine Hervorhebung.
-- Seiten: `upload.js`, `explore.js`, `wissenskorb.js`, `vault.js`, `demo-tour.js`.
+- Seiten: `upload.js`, `explore.js`, `wissenskorb.js`, `demo-tour.js`.
 - Ansichten in `views/`: Zeitleiste, Aktivität, Chronik, Vergleich, Netzwerk, Erwähnungsfluss, Themen, Orte, dazu `view-support.js` mit `readTokens()`, `bindCombobox()` und `renderDataTable()` (Textalternative der Grafiken) für mehrere Ansichten. Das Netzwerk wählt seinen Aufbau aus `NETWORK_BUILDERS` (Briefwechsel, Zeitgenossen, Themen).
 
 `explore.js` orchestriert. Übersicht, Karte, Korrespondenten, Briefe, Filter und die Detail-Dialoge liegen weiter dort, Forschungspfade, Wissenspfad und Export in den eigenen Modulen. Die Ansichtsmodule erhalten ihre Abhängigkeiten über `init*View(deps)` und importieren `explore.js` nicht, damit keine zirkulären Importe entstehen.

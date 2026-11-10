@@ -20,9 +20,9 @@ How CorrespExplorer handles incomplete or uncertain research data.
 
 Related: [specification.md](specification.md#adr-002-unsicherheit-sichtbar-machen), [data.md](data.md), [design.md](design.md#unsicherheits-indikatoren), [architecture.md](architecture.md)
 
-User documentation: [about.html](../about.html) (section "Umgang mit Unsicherheit")
+User documentation: [about.html](../docs/about.html) (section "Umgang mit Unsicherheit")
 
-Test file: [data/test-uncertainty.xml](../data/test-uncertainty.xml) (23 test cases)
+Test file: [data/test-uncertainty.xml](../docs/data/test-uncertainty.xml) (23 test cases)
 
 ---
 

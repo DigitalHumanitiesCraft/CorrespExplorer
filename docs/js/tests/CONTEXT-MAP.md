@@ -1,6 +1,6 @@
 # Test Context Map
 
-Browser-Tests ohne externe Abhängigkeiten. Regeln und Abdeckung stehen in [testing.md](../../knowledge/testing.md). Die in `run-all-tests.js` registrierten Suites sind die Quelle der Wahrheit, Anzahl und Ergebnis zeigt `test.html` beim Lauf.
+Browser-Tests ohne externe Abhängigkeiten. Regeln und Abdeckung stehen in [testing.md](../../../knowledge/testing.md). Die in `run-all-tests.js` registrierten Suites sind die Quelle der Wahrheit, Anzahl und Ergebnis zeigt `test.html` beim Lauf.
 
 ## Dateien
 

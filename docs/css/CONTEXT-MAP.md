@@ -1,6 +1,6 @@
 # CSS Context Map
 
-Border-basiertes Design mit Design-Tokens. Werte und Begründungen stehen in [design.md](../knowledge/design.md), `tokens.css` ist für Farben, Abstände und Schrift maßgeblich.
+Border-basiertes Design mit Design-Tokens. Werte und Begründungen stehen in [design.md](../../knowledge/design.md), `tokens.css` ist für Farben, Abstände und Schrift maßgeblich.
 
 ## Ladereihenfolge
 
@@ -11,7 +11,7 @@ Die Seiten laden zuerst die Bibliotheks-Stylesheets aus `../vendor/` (Font Aweso
 3. components.css - wiederverwendbare Komponenten, einzige Quelle für `.btn`, `.btn-primary`, `.btn-secondary`, die Dialoggrundform und den Ansichtskopf `.view-header`, dazu Karten, Toast aller Seiten, Sidebar-Abschnitte, Zoom-Steuerung des Sankey
 4. shadows.css - alle Schatten, nur für schwebende Elemente
 5. style.css - Navigation, Sidebar, Layout, Responsive-Regeln, importiert nur `../vendor/fonts/fonts.css`
-6. Seiten-CSS: explore.css, upload.css, about.css, vault.css, wissenskorb.css, test.css
+6. Seiten-CSS: explore.css, upload.css, about.css, wissenskorb.css, test.css
 
 Alle sechs Seiten laden diese Reihenfolge vollständig über `<link>` (geprüft am 2026-10-29). Kein Stylesheet importiert `tokens.css` oder `components.css` erneut, sonst würden Komponentenregeln nach `shadows.css` wiederholt und dessen Regeln überschreiben.
 
@@ -20,7 +20,6 @@ Alle sechs Seiten laden diese Reihenfolge vollständig über `<link>` (geprüft 
 - explore.css - alle Ansichten des Explorers (ohne Ansichtskopf), Startansicht, Kartenfläche `.map-stage`, Wissenspfad-Leiste, Wissenskorb in der Sidebar, Kartensteuerung, Demo-Tour
 - upload.css - Startseite, Upload-Zone, Datensatzkarten, Konfigurationsdialog
 - wissenskorb.css - Analyseseite des Wissenskorbs
-- vault.css - Dokumenten-Viewer
 - about.css - Projektseite
 - test.css - Test-Runner
 
@@ -28,12 +27,12 @@ Alle sechs Seiten laden diese Reihenfolge vollständig über `<link>` (geprüft 
 
 - Reguläre Elemente (Karten, Buttons, Eingaben, Leisten) tragen Rahmen. Schatten stehen nur in shadows.css und nur für Dialoge, Demo-Tour, Toasts, Dropdowns, Tooltips, Karten-Popups, Kartensteuerung und die mobile Sidebar. Die übrigen Stylesheets setzen höchstens `box-shadow: none` (geprüft am 2026-10-29 per Suche nach `box-shadow`).
 - Jede `var(--…)`-Referenz verweist auf ein in tokens.css definiertes Token, ohne Ersatzwert (geprüft am 2026-10-29 per Skript). Farben stehen als Token, Ausnahmen sind halbtransparentes Weiß auf farbigen Flächen und die Schraffurmuster der Timeline.
-- z-index nur über die Skala `--z-*` aus tokens.css, Übergänge mit `--transition-properties` statt `all` und Dauern nur über `--transition-fast`, `--transition-base`, `--transition-slow`, Ränder von Bedienelementen mit `--color-border-control` (Werte und Gründe in [design.md](../knowledge/design.md#0-css-architektur)).
+- z-index nur über die Skala `--z-*` aus tokens.css, Übergänge mit `--transition-properties` statt `all` und Dauern nur über `--transition-fast`, `--transition-base`, `--transition-slow`, Ränder von Bedienelementen mit `--color-border-control` (Werte und Gründe in [design.md](../../knowledge/design.md#0-css-architektur)).
 - Textalternativen der Grafiken stehen als `.chart-table` in components.css (aufklappbar, fokussierbarer Scrollbereich).
 - Dialoge haben eine Form in components.css: `.modal` als Hintergrund, `.modal-content` als Kasten, `.modal-lg` für Listen. `.modal-overlay` gibt es nicht mehr.
 - Eine Komponente mit eigenen Breakpoints führt sie direkt hinter ihren Grundregeln (Ansichtsleiste in style.css, Netzwerksteuerung in explore.css), sonst überschreibt eine spätere Grundregel die Media Query.
 - `prefers-reduced-motion` behandelt base.css für alle Seiten.
 - Media Queries für Telefone lauten `max-width: 767px`, so erhält genau 768px das Tablet-Layout. Unter 768px liegt die Sidebar außerhalb des Bildschirms (`.sidebar.open` blendet sie ein, Breite höchstens 85vw), der Ansichtswechsel wird zur scrollbaren Icon-Leiste.
-- Jede der zwölf Ansichten von `explore.html` beginnt mit `.view-header` (BEM: `__title` als `h2`, `__description`, `__actions`, Modifikator `--inset` für Ansichten ohne gepolsterten Container). Die Seiten-CSS setzt keine eigenen Regeln für Ansichtsköpfe, nur für die Elemente in den Aktionen (`.network-stats`, `.experimental-badge`, `.mentions-autocomplete`, `.chronik-layout-toggle`, `.comparison-mode-btn`). Werte und Verhalten in [design.md](../knowledge/design.md#55-kopfbereich-der-ansichten).
+- Jede der zwölf Ansichten von `explore.html` beginnt mit `.view-header` (BEM: `__title` als `h2`, `__description`, `__actions`, Modifikator `--inset` für Ansichten ohne gepolsterten Container). Die Seiten-CSS setzt keine eigenen Regeln für Ansichtsköpfe, nur für die Elemente in den Aktionen (`.network-stats`, `.experimental-badge`, `.mentions-autocomplete`, `.chronik-layout-toggle`, `.comparison-mode-btn`). Werte und Verhalten in [design.md](../../knowledge/design.md#55-kopfbereich-der-ansichten).
 - Knöpfe, die als Text erscheinen (Namen in Listen, Pfadschritte, Themen in der Sidebar), setzen Rahmen und Hintergrund zurück und übernehmen Schrift und Farbe (`font: inherit`, `color: inherit`).
 - `.hidden` in base.css blendet mit `!important` aus und überstimmt Anzeigeregeln der Seiten-CSS. Sie ist der einzige Sichtbarkeitsschalter, das Attribut `hidden` wird nicht verwendet. Dialoge öffnen und schließen deshalb nur über diese Klasse (`openModal`, `closeModal` in utils.js), nie über `style.display`.

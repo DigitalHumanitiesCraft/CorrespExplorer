@@ -25,7 +25,7 @@ Ansichtsmodule des Explorers. `explore.js` ruft beim Start `init*View(deps)` mit
 
 ## Farben der Grafiken
 
-Netzwerk und Erwähnungsfluss nehmen ihre Farben aus Tokens ([design.md](../../knowledge/design.md#datenvisualisierung)).
+Netzwerk und Erwähnungsfluss nehmen ihre Farben aus Tokens ([design.md](../../../knowledge/design.md#datenvisualisierung)).
 
 - Netzwerk: Personen in Briefwechsel und Zeitgenossen `--color-role-sender`, Themen `--color-warning`, Kanten `--color-text-light`, hervorgehobene Kanten und Beschriftung `--color-text`, Knotenrand `--color-bg`
 - Erwähnungsfluss: Absender links `--color-role-sender`, Mitte `--color-primary`, erwähnte Personen rechts `--color-role-mentioned`, Text `--color-text` und `--color-text-light`

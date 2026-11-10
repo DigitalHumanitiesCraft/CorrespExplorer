@@ -2,26 +2,26 @@
 
 # Project instructions for CorrespExplorer
 
-CorrespExplorer is a browser tool for exploring correspondence metadata in CMIF. It is built with Promptotyping: the documents in `docs/knowledge/` hold the domain knowledge and specification from which the code is implemented, and the operator (Christopher Pollin) decides on scope, acceptance and anything that leaves the repository.
+CorrespExplorer is a browser tool for exploring correspondence metadata in CMIF. It is built with Promptotyping: the documents in `knowledge/` hold the domain knowledge and specification from which the code is implemented, and the operator (Christopher Pollin) decides on scope, acceptance and anything that leaves the repository.
 
 ## Knowledge base
 
-The knowledge base lives in `docs/knowledge/` because GitHub Pages serves `docs/` and `vault.html` renders the documents from there. At every session start, after this file, read `docs/knowledge/INDEX.md`, then `docs/knowledge/handoff.md` and `docs/knowledge/plan.md`, then the documents relevant to the task. Consult `docs/knowledge/journal.md` when the origin or rationale of a change is needed.
+The knowledge base lives in `knowledge/` at the repository root, outside `docs/`, because GitHub Pages publishes everything under `docs/` and the knowledge base, internal notes and drafts are not served. The site links to it on GitHub. At every session start, after this file, read `knowledge/INDEX.md`, then `knowledge/handoff.md` and `knowledge/plan.md`, then the documents relevant to the task. Consult `knowledge/journal.md` when the origin or rationale of a change is needed.
 
 | Task | Read first |
 |---|---|
-| CMIF parsing, datasets, sources | `docs/knowledge/data.md`, `docs/knowledge/uncertainty-specification.md` |
-| Requirements, stories, decisions | `docs/knowledge/specification.md` |
-| Modules, pages, data flow | `docs/knowledge/architecture.md`, then `docs/js/CONTEXT-MAP.md` |
-| UI, CSS, visualisation | `docs/knowledge/design.md`, `docs/css/tokens.css`, `docs/css/CONTEXT-MAP.md` |
-| Tests | `docs/knowledge/testing.md`, `docs/js/tests/CONTEXT-MAP.md` |
-| Bugs and planned work | `docs/knowledge/plan.md` |
-| Open input or hand-over | `docs/knowledge/handoff.md` |
+| CMIF parsing, datasets, sources | `knowledge/data.md`, `knowledge/uncertainty-specification.md` |
+| Requirements, stories, decisions | `knowledge/specification.md` |
+| Modules, pages, data flow | `knowledge/architecture.md`, then `docs/js/CONTEXT-MAP.md` |
+| UI, CSS, visualisation | `knowledge/design.md`, `docs/css/tokens.css`, `docs/css/CONTEXT-MAP.md` |
+| Tests | `knowledge/testing.md`, `docs/js/tests/CONTEXT-MAP.md` |
+| Bugs and planned work | `knowledge/plan.md` |
+| Open input or hand-over | `knowledge/handoff.md` |
 
 ## Working rules
 
-- Handoff: read `docs/knowledge/handoff.md` at session start. Check source and current target of each point you use, integrate durable content first, write the journal record and remove the point completely.
-- Journal: write one entry per coherent transition at the top of `docs/knowledge/journal.md`, newest first, with date only, no timestamps, using the fields of the journal template (Anlass, Befund, Entschieden, Korrigiert, Geändert, Belege) and at least one commit or other evidence. Current status, open tasks and detailed test output belong in their own documents.
+- Handoff: read `knowledge/handoff.md` at session start. Check source and current target of each point you use, integrate durable content first, write the journal record and remove the point completely.
+- Journal: write one entry per coherent transition at the top of `knowledge/journal.md`, newest first, with date only, no timestamps, using the fields of the journal template (Anlass, Befund, Entschieden, Korrigiert, Geändert, Belege) and at least one commit or other evidence. Current status, open tasks and detailed test output belong in their own documents.
 - Write-back: after a change, update the document responsible for it and every document that restates it. Code change in modules or data flow goes into `architecture.md` and the matching `CONTEXT-MAP.md`. A new feature gets its story in `specification.md`, a design change goes into `design.md`, a new data source into `data.md`, a new or fixed bug into `plan.md` and the journal, a decision into `specification.md` as a new ADR.
 - Nothing invented: dataset figures, CMIF structures, authority IDs and source URLs come from the data files or the cited source. Ask when knowledge is missing.
 - Truth hierarchy: the code and the data files outrank the knowledge documents, `tokens.css` outranks the colour and spacing values in `design.md`, and the registered suites in `run-all-tests.js` outrank any test list in the documents. Report contradictions instead of letting them drift.
@@ -42,7 +42,7 @@ These rules keep documents compact and readable for people and for the model con
 
 ## Design principles
 
-Value source: `docs/knowledge/design.md`. Read it before UI or text work.
+Value source: `knowledge/design.md`. Read it before UI or text work.
 
 - Mark only uncertain values. Exact data stay unmarked, unknown data are called unknown.
 - Use border-based design. Box shadows only on floating elements (modals, dropdowns, tooltips, map popups).
@@ -52,7 +52,7 @@ Value source: `docs/knowledge/design.md`. Read it before UI or text work.
 
 ## Scope
 
-The project does not correct dates, geocode regions, identify unknown persons or rate the quality of an edition (see `docs/knowledge/project.md`).
+The project does not correct dates, geocode regions, identify unknown persons or rate the quality of an edition (see `knowledge/project.md`).
 
 Do not:
 

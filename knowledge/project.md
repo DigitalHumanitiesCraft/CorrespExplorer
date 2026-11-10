@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2026-10-28
-updated: 2026-10-29
+updated: 2026-11-10
 authors: [Christopher Pollin]
 template:
   name: Vorlage Projekt-Wissensdokument
@@ -56,7 +56,7 @@ Normdaten-URIs tragen Abgleich und Aggregation, weil Editionen Namen unterschied
 
 ## Technische Umsetzung
 
-Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. CMIF wird im Browser geparst, große Datensätze werden in Python vorprozessiert. Bibliotheken (MapLibre GL JS, D3 mit D3-Sankey, noUiSlider, Font Awesome, marked) und Schriften liegen versioniert in `docs/vendor/`, extern lädt die Seite nur die Grundkarte von OpenFreeMap. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code. Die Commit-Trailer nennen die beteiligten LLM-Versionen, die README fasst sie zusammen. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md).
+Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. CMIF wird im Browser geparst, große Datensätze werden in Python vorprozessiert. Bibliotheken (MapLibre GL JS, D3 mit D3-Sankey, noUiSlider, Font Awesome) und Schriften liegen versioniert in `docs/vendor/`, extern lädt die Seite nur die Grundkarte von OpenFreeMap. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code. Die Commit-Trailer nennen die beteiligten LLM-Versionen, die README fasst sie zusammen. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md).
 
 ## Funktionsumfang
 

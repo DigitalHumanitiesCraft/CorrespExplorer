@@ -10,7 +10,7 @@ status: draft
 language: de
 version: 0.1
 created: 2025-12-03
-updated: 2026-10-29
+updated: 2026-11-10
 authors: [Christopher Pollin]
 template:
   name: Vorlage Index
@@ -22,7 +22,7 @@ related: [project, data, specification, architecture, design, testing, plan, han
 
 # Index
 
-Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents, die am Werkzeug arbeiten. Sie liegt abweichend von der Konvention unter `docs/knowledge/` statt `knowledge/`, weil GitHub Pages den Ordner `docs/` ausliefert und die Seite `vault.html` die Dokumente von dort lädt. Die Arbeitsregeln für Agenten stehen in `CLAUDE.md` im Repository-Root, Code-nahe Übersichten in `docs/js/CONTEXT-MAP.md`, `docs/js/views/CONTEXT-MAP.md`, `docs/js/tests/CONTEXT-MAP.md` und `docs/css/CONTEXT-MAP.md`.
+Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents, die am Werkzeug arbeiten. Sie liegt nach der Konvention unter `knowledge/` im Repository-Root, außerhalb des von GitHub Pages ausgelieferten Ordners `docs/`, und wird nicht als Teil der Website ausgeliefert. Die Seite verlinkt sie auf GitHub. Die Arbeitsregeln für Agenten stehen in `CLAUDE.md` im Repository-Root, Code-nahe Übersichten in `docs/js/CONTEXT-MAP.md`, `docs/js/views/CONTEXT-MAP.md`, `docs/js/tests/CONTEXT-MAP.md` und `docs/css/CONTEXT-MAP.md`.
 
 Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index, die übrigen Dokumente erben sie.
 
@@ -43,7 +43,7 @@ Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index,
 
 ## Ablagezonen
 
-- `docs/knowledge/` enthält die dauerhaft gepflegten Promptotyping Documents einschließlich `handoff.md`.
+- `knowledge/` enthält die dauerhaft gepflegten Promptotyping Documents einschließlich `handoff.md`.
 - `research-artefacts/` enthält den Paper-Entwurf zur Entstehung des Werkzeugs als Forschung und den Prompt für ein externes LLM-Review.
 - `docs/data/` enthält Beispiel- und Testdatensätze, `preprocessing/` die Python-Skripte, die erweiterte Datensätze erzeugen.
 - `docs/vendor/` enthält die eingebundenen Bibliotheken und Schriften mit ihren Lizenzdateien ([architecture.md](architecture.md#bibliotheken)).
