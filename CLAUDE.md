@@ -57,7 +57,6 @@ The project does not correct dates, geocode regions, identify unknown persons or
 Do not:
 
 - push, merge, tag or rewrite history without explicit instruction
-- touch the branch `feature/research-dashboards` unless the task names it
 - add mock data, stubs or duplicated helpers to tests
 
 ## Tooling

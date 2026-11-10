@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2026-10-28
-updated: 2026-11-05
+updated: 2026-11-10
 authors: [Christopher Pollin]
 template:
   name: Vorlage Plan
@@ -25,7 +25,7 @@ Der Plan führt die offenen Befunde und angenommenen Vorhaben auf main. Erledigt
 
 ## Zielbild
 
-Ein Zielbild für eine nächste Ausbaustufe ist nicht festgelegt. Als Fixpunkt gilt, dass main der über GitHub Pages ausgelieferte Stand bleibt, die offenen Befunde behoben oder begründet verworfen werden und der Browser-Test-Runner ohne Fehlschlag läuft. Seit 2026-10-29 enthält main den Branch `feature/research-dashboards` (Merge `14b2d17`).
+Ein Zielbild für eine nächste Ausbaustufe ist nicht festgelegt. Als Fixpunkt gilt, dass main der über GitHub Pages ausgelieferte Stand bleibt, die offenen Befunde behoben oder begründet verworfen werden und der Browser-Test-Runner ohne Fehlschlag läuft. Seit 2026-10-29 enthält main den Stand des früheren Branchs `feature/research-dashboards` (Merge `14b2d17`).
 
 ## Offene Befunde
 
@@ -56,7 +56,7 @@ Die Analyse externer CMIF-Dateien vom November 2025 ([data.md](data.md#testdaten
 
 ## Offene Entscheidungen und Abhängigkeiten
 
-Der Branch `feature/research-dashboards` und die übrigen Branches bleiben bestehen, ihr Aufräumen liegt beim Operator. Das Journal des Branchs vergab die Phasennummern 40 bis 46, die sich mit Phase 40 auf main überschneiden. Der Merge übernahm sie nicht als Überschriften ([journal.md](journal.md)).
+Der Branch `feature/research-dashboards` besteht nach dem Merge weder lokal noch auf origin (lokale Remote-Referenzen am 2026-11-10). Das Aufräumen der übrigen Branches liegt beim Operator. Das Journal des Branchs vergab die Phasennummern 40 bis 46, die sich mit Phase 40 auf main überschneiden. Der Merge übernahm sie nicht als Überschriften ([journal.md](journal.md)).
 
 Die Fragen E1 bis E10 vom 2026-11-05 lagen mit Optionen und Empfehlung beim Operator. Er übertrug die technischen und umkehrbaren Entscheidungen der koordinierenden Session und entschied E8 selbst. E1 bis E10 sind nach der Empfehlung umgesetzt und im [Journal](journal.md) festgehalten, ihre Begründungen stehen in den zuständigen Dokumenten ([specification.md](specification.md), [design.md](design.md), [testing.md](testing.md)).
 
