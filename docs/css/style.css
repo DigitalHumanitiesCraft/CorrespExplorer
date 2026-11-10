@@ -73,7 +73,7 @@ button {
 
 /* Tablet widths: the navigation links show only their icons, the view switcher needs the room.
    The text stays for screen readers (as .visually-hidden), so the links keep their names. */
-@media (min-width: 768px) and (max-width: 1199px) {
+@media (min-width: 768px) and (max-width: 899px) {
     .nav-links .nav-link-text {
         position: absolute;
         width: 1px;
@@ -82,10 +82,6 @@ button {
         overflow: hidden;
         clip: rect(0 0 0 0);
         white-space: nowrap;
-    }
-
-    .nav-brand {
-        max-width: 12rem;
     }
 }
 
@@ -422,7 +418,7 @@ button {
     font-size: var(--font-size-md);
 }
 
-/* The names stay in the accessible name and the tooltip, wide screens also show them */
+/* Below 768 px only the icons fit, the names stay in the accessible name and the tooltip */
 .view-btn .view-btn-text {
     display: none;
 }
@@ -490,16 +486,55 @@ button {
     background: var(--color-border);
 }
 
-@media (min-width: 1600px) {
+/* From 768 px every view shows its name beside its icon. Twelve names do not fit beside the
+   dataset title and the actions at any common width, so the header takes two rows: title and
+   actions above, the views below. --navbar-height carries the taller header to every offset. */
+@media (min-width: 768px) {
     .view-btn {
-        flex-direction: column;
-        gap: 2px;
+        padding-inline: var(--space-md);
     }
 
     .view-btn .view-btn-text {
-        display: block;
-        font-size: var(--font-size-xs);
-        line-height: 1.1;
+        display: inline;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+    .view-btn {
+        padding-inline: var(--space-sm);
+    }
+}
+
+@media (min-width: 768px) {
+    /* Only the page with the view switcher has the second row */
+    html:has(.view-switcher) {
+        --navbar-height: 108px;
+    }
+
+    .navbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: "brand links" "views views";
+        align-content: center;
+        row-gap: var(--space-sm);
+    }
+
+    .nav-brand {
+        grid-area: brand;
+        max-width: none;
+        margin-right: var(--space-lg);
+    }
+
+    .nav-links {
+        grid-area: links;
+        margin-right: 0;
+    }
+
+    .view-switcher {
+        grid-area: views;
+        justify-self: start;
+        max-width: 100%;
+        margin: 0;
     }
 }
 

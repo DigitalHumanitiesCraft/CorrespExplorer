@@ -476,6 +476,9 @@ function updateQualityIcon(iconId, count, total, label) {
     iconEl.classList.remove('hidden');
 }
 
+// Number of languages the sidebar lists before the rest folds into "weitere Sprachen"
+const LANGUAGES_SHOWN = 8;
+
 // Build language filter checkboxes dynamically
 function buildLanguageFilter() {
     // Counted from the letters, because the index shape differs between parser
@@ -495,7 +498,19 @@ function buildLanguageFilter() {
 
     const languageKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
 
-    languageKeys.forEach(code => {
+    // The most frequent languages stand in the list, the others open on demand, so a dataset with
+    // twenty languages does not push the remaining filters off the screen
+    let target = container;
+    const more = languageKeys.length > LANGUAGES_SHOWN + 1 ? document.createElement('details') : null;
+    if (more) {
+        more.className = 'filter-more';
+        const summary = document.createElement('summary');
+        summary.textContent = `${languageKeys.length - LANGUAGES_SHOWN} weitere Sprachen`;
+        more.appendChild(summary);
+    }
+
+    languageKeys.forEach((code, index) => {
+        if (more && index === LANGUAGES_SHOWN) target = more;
         const displayLabel = languageLabel(code);
         const tooltip = code === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten' : '';
         const label = document.createElement('label');
@@ -507,8 +522,9 @@ function buildLanguageFilter() {
             <span>${escapeHtml(displayLabel)}</span>
             <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${counts[code]})</span>
         `;
-        container.appendChild(label);
+        target.appendChild(label);
     });
+    if (more) container.appendChild(more);
 
     filterGroup.classList.remove('hidden');
 
@@ -1544,9 +1560,20 @@ function updateFilterCounts() {
     });
 
     document.querySelectorAll('input[name="language"]').forEach(cb => {
+        const count = languageCounts[cb.value] || 0;
         const el = document.getElementById(`count-lang-${cb.value}`);
-        if (el) el.textContent = `(${languageCounts[cb.value] || 0})`;
+        if (el) el.textContent = `(${count})`;
+        // A language without a letter under the other filters says nothing and leaves the list
+        cb.closest('label')?.classList.toggle('hidden', count === 0);
     });
+
+    // The folded group names how many languages it still holds and leaves when it holds none
+    const more = document.querySelector('#language-checkboxes .filter-more');
+    if (more) {
+        const shown = more.querySelectorAll('label:not(.hidden)').length;
+        more.classList.toggle('hidden', shown === 0);
+        more.querySelector('summary').textContent = shown === 1 ? '1 weitere Sprache' : `${shown} weitere Sprachen`;
+    }
 }
 
 function getCheckedValues(name) {

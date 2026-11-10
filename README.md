@@ -1,6 +1,6 @@
 # CorrespExplorer
 
-Interactive visualization tool for correspondence metadata in CMIF (Correspondence Metadata Interchange Format).
+Experiment. CorrespExplorer is a research prototype developed with coding agents. It shows correspondence metadata in CMIF (Correspondence Metadata Interchange Format) as a map, lists, a timeline and a network, in the browser and without a server. It is not a finished or supported product, and its results need checking before any reuse. Its tests cover small fixture files, a review in October 2026 still found defects in the interface, and the open findings are listed in [knowledge/plan.md](knowledge/plan.md). Feedback belongs in the [issues of the repository](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues).
 
 Live Demo: https://dhcraft.org/CorrespExplorer
 

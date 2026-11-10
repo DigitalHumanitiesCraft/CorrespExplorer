@@ -35,6 +35,14 @@
     accent-color: var(--color-primary);
 }
 
+/* Languages beyond the most frequent ones, opened on demand */
+.filter-more > summary {
+    padding: var(--space-xs) 0;
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+}
+
 .filter-count {
     display: inline-block;
     margin-left: auto;
