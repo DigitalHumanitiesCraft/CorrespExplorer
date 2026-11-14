@@ -6,8 +6,10 @@
 
 Reads docs/data/hsa-letters.json (built by build_hsa_data.py) and writes docs/data/examples.json
 with one entry keyed "data/hsa-letters.json": which statements of the data model the letters
-carry, and the small aggregates the figure draws (correspondence circle, located sending places,
-letters per year and language, most mentioned persons, places and subjects, the example record).
+carry, the small aggregates the figure draws (correspondence circle with its outer ring of
+mentioned persons, located sending and mentioned places, letters per year and language, the
+profiles of the most frequent subjects, the hosts of the edition links) and the example letter
+with its place in each aggregate.
 
 Usage, from the repository root, after hsa-letters.json changed:
 
@@ -29,18 +31,20 @@ import math
 import re
 import sys
 from pathlib import Path
+from urllib.parse import urlsplit
 
 DATA = Path(__file__).resolve().parents[1] / "docs" / "data"
 SOURCE = "data/hsa-letters.json"
 NO_LANGUAGE = "_none"
-EGO_SHARE = 0.5
-TOP_PERSONS = 24
 TOP_MENTIONS = 3
+OUTER_LIMIT = 300
+EXAMPLES = 12
 # isUnknownPlaceName() in docs/js/utils.js
 UNKNOWN_PLACE = [
     re.compile(p, re.IGNORECASE)
     for p in (r"^Unbekannt$", r"^Unknown$", r"^ohne Ort$", r"^\[?\?\]?$")
 ]
+DATE = re.compile(r"^(\d{1,4})-(\d{2})(?:-(\d{2}))?")
 STATEMENTS = (
     "persons",
     "place",
@@ -79,10 +83,42 @@ def _known_place(place: dict | None) -> bool:
     return bool(name) and not any(p.search(name) for p in UNKNOWN_PLACE)
 
 
+def _located(place: dict | None) -> bool:
+    return bool(place) and all(
+        isinstance(place.get(k), (int, float)) and not isinstance(place.get(k), bool)
+        for k in ("lat", "lon")
+    )
+
+
 def _recipients(letter: dict) -> list[dict]:
     return letter.get("recipients") or (
         [letter["recipient"]] if letter.get("recipient") else []
     )
+
+
+def _parties(letter: dict) -> dict[str, dict]:
+    parties: dict[str, dict] = {}
+    for person in [letter.get("sender"), *_recipients(letter)]:
+        key = _person_key(person)
+        if key and key not in parties:
+            parties[key] = person
+    return parties
+
+
+def _round(value: float, digits: int) -> float:
+    """Math.round(value * 10 ** digits) / 10 ** digits, which rounds halves up."""
+    return math.floor(value * 10**digits + 0.5) / 10**digits
+
+
+def _letter_time(letter: dict) -> float | None:
+    """letterTime() in views/network-view.js."""
+    year = letter.get("year")
+    if not year or letter.get("dateImplausible"):
+        return None
+    m = DATE.match(letter.get("date") or "")
+    if not m or int(m.group(1)) != year:
+        return year
+    return year + (int(m.group(2)) - 1) / 12 + (int(m.group(3) or 1) - 1) / 366
 
 
 def _carries(letter: dict) -> dict[str, bool]:
@@ -107,11 +143,6 @@ def _carries(letter: dict) -> dict[str, bool]:
     }
 
 
-def _js_round(value: float) -> float:
-    """Math.round(value * 1000) / 1000, which rounds halves up, unlike round()."""
-    return math.floor(value * 1000 + 0.5) / 1000
-
-
 def _ranked(entries: dict[str, dict]) -> list[dict]:
     return sorted(entries.values(), key=lambda e: (-e["count"], e["key"]))
 
@@ -129,28 +160,204 @@ def _count_mentions(table: dict, items: list | None, key_of, name_of) -> None:
         entry["count"] += 1
 
 
-def _record(letter: dict) -> dict:
+def _subject_key(subject: dict) -> str | None:
+    return subject.get("uri") or subject.get("label")
+
+
+def _ego(letters: list[dict], persons: dict[str, dict]) -> dict:
+    """egoModel() in start-summary.js."""
+    centre = None
+    for p in persons.values():
+        if (
+            centre is None
+            or len(p["partners"]) > len(centre["partners"])
+            or (
+                len(p["partners"]) == len(centre["partners"])
+                and (
+                    p["count"] > centre["count"]
+                    or (p["count"] == centre["count"] and p["name"] < centre["name"])
+                )
+            )
+        ):
+            centre = p
+    if centre is None:
+        return {"model": None, "inner": {}, "outer": {}, "centre": None}
+    centre_id = centre["key"]
+    partners: dict[str, dict] = {}
+    mentioned: dict[str, dict] = {}
+    for letter in letters:
+        if centre_id not in _parties(letter):
+            continue
+        sender = _person_key(letter.get("sender"))
+        recipient_keys = [_person_key(p) for p in _recipients(letter)]
+        if sender == centre_id:
+            others = [k for k in recipient_keys if k and k != centre_id]
+            partner = next((k for k in recipient_keys if k and k != centre_id), None)
+        else:
+            others = [sender] if sender and sender != centre_id else []
+            partner = sender
+        time = _letter_time(letter)
+        for key in dict.fromkeys(others):
+            p = partners.setdefault(key, {"key": key, "letters": 0, "first": None})
+            p["letters"] += 1
+            if time is not None and (p["first"] is None or time < p["first"]):
+                p["first"] = time
+        seen = set()
+        for person in (letter.get("mentions") or {}).get("persons") or []:
+            key = _person_key(person)
+            if not key or key == centre_id or key in seen:
+                continue
+            seen.add(key)
+            m = mentioned.setdefault(
+                key,
+                {
+                    "key": key,
+                    "name": person.get("name") or key,
+                    "mentions": 0,
+                    "partners": {},
+                },
+            )
+            m["mentions"] += 1
+            if partner:
+                m["partners"][partner] = m["partners"].get(partner, 0) + 1
+
+    def name_of(key: str) -> str:
+        return persons[key]["name"] if key in persons else key
+
+    inner = sorted(
+        partners.values(), key=lambda p: (-p["letters"], name_of(p["key"]), p["key"])
+    )
+    inner_index = {p["key"]: i for i, p in enumerate(inner)}
+    outer = sorted(
+        (m for m in mentioned.values() if m["key"] not in partners),
+        key=lambda m: (-m["mentions"], m["name"], m["key"]),
+    )[:OUTER_LIMIT]
+    outer_index = {m["key"]: i for i, m in enumerate(outer)}
+    chords: dict[tuple[int, int], int] = {}
+    for letter in letters:
+        sender = _person_key(letter.get("sender"))
+        if sender not in inner_index:
+            continue
+        for to in dict.fromkeys(_person_key(p) for p in _recipients(letter)):
+            if not to or to == sender or to not in inner_index:
+                continue
+            pair = tuple(sorted((inner_index[sender], inner_index[to])))
+            chords[pair] = chords.get(pair, 0) + 1
+    model = {
+        "centre": centre["name"],
+        "correspondents": len(partners),
+        "inner": [
+            [
+                name_of(p["key"]),
+                p["letters"],
+                None if p["first"] is None else _round(p["first"], 4),
+            ]
+            for p in inner
+        ],
+        "outer": [
+            [
+                m["name"],
+                m["mentions"],
+                1 if m["key"] in persons else 0,
+                [
+                    [inner_index[key], n]
+                    for key, n in sorted(
+                        ((k, n) for k, n in m["partners"].items() if k in inner_index),
+                        key=lambda item: (-item[1], item[0]),
+                    )[:3]
+                ],
+            ]
+            for m in outer
+        ],
+        "chords": [[a, b, n] for (a, b), n in sorted(chords.items())],
+    }
+    return {
+        "model": model,
+        "inner": inner_index,
+        "outer": outer_index,
+        "centre": centre_id,
+    }
+
+
+def _examples(letters: list[dict], scores: list[int]) -> list[dict]:
+    """pickExamples() in start-summary.js."""
+    order = sorted(range(len(letters)), key=lambda i: (-scores[i], i))
+    seen: set[str] = set()
+    picked = []
+    for i in order:
+        letter = letters[i]
+        year = letter.get("year")
+        kind = "|".join(
+            (
+                (letter.get("language") or {}).get("code") or NO_LANGUAGE,
+                str(year // 10) if year else "-",
+                _place_key(letter.get("place_sent")) or "-",
+            )
+        )
+        if kind in seen:
+            continue
+        seen.add(kind)
+        picked.append(letter)
+        if len(picked) == EXAMPLES:
+            break
+    return picked
+
+
+def _record(letter: dict, ego: dict, subjects: list[str]) -> dict:
+    """describeRecord() in start-summary.js."""
+    first_subject = ((letter.get("mentions") or {}).get("subjects") or [None])[0]
+    subject_key = _subject_key(first_subject) if first_subject else None
+    subject_index = subjects.index(subject_key) if subject_key in subjects else -1
     mentions = letter.get("mentions") or {}
     place = letter.get("place_sent")
     recipients = _recipients(letter)
+    sender = _person_key(letter.get("sender"))
+    if sender == ego["centre"]:
+        partner = next(
+            (
+                k
+                for k in (_person_key(p) for p in recipients)
+                if k and k != ego["centre"]
+            ),
+            None,
+        )
+    else:
+        partner = sender
 
     def first(items: list | None) -> dict:
         return items[0] if items else {}
 
+    person = first(mentions.get("persons"))
+    person_key = _person_key(person) if person else None
+    mentioned_place = first(mentions.get("places"))
     return {
+        "id": letter.get("id") or None,
         "sender": (letter.get("sender") or {}).get("name"),
         "recipient": recipients[0].get("name") if recipients else None,
         "place": place.get("name") if _known_place(place) else None,
         "placeInferred": bool((place or {}).get("inferred")),
+        "lat": _round(place["lat"], 3) if _located(place) else None,
+        "lon": _round(place["lon"], 3) if _located(place) else None,
         "date": letter.get("date"),
         "dateText": letter.get("dateText"),
         "dateInferred": bool(letter.get("dateInferred")),
+        "year": letter.get("year") or None,
         "language": (letter.get("language") or {}).get("code"),
         "languageLabel": (letter.get("language") or {}).get("label"),
         "url": letter.get("url"),
-        "mentionsPerson": first(mentions.get("persons")).get("name"),
-        "mentionsPlace": first(mentions.get("places")).get("name"),
+        "partner": ego["inner"].get(partner),
+        "mentionsPerson": person.get("name"),
+        "mentionedInner": ego["inner"].get(person_key),
+        "mentionedOuter": ego["outer"].get(person_key),
+        "mentionsPlace": mentioned_place.get("name"),
+        "mentionedLat": _round(mentioned_place["lat"], 3)
+        if _located(mentioned_place)
+        else None,
+        "mentionedLon": _round(mentioned_place["lon"], 3)
+        if _located(mentioned_place)
+        else None,
         "mentionsSubject": first(mentions.get("subjects")).get("label"),
+        "subject": subject_index if subject_index >= 0 else None,
         "postmark": letter.get("postmark"),
         "address": letter.get("address"),
         "signature": letter.get("signature"),
@@ -162,50 +369,55 @@ def summarize(letters: list[dict]) -> dict:
     """Port of summarizeLetters() in docs/js/start-summary.js."""
     coverage = dict.fromkeys(STATEMENTS, 0)
     persons: dict[str, dict] = {}
-    pairs: dict[tuple[str, str], int] = {}
     located: dict[str, dict] = {}
     known_places: set[str] = set()
     languages: dict[str, int] = {}
     per_year: dict[int, dict[str, int]] = {}
     mentioned = {"persons": {}, "places": {}, "subjects": {}}
-    record, record_score = None, -1
+    mentioned_places: dict[str, dict] = {}
+    subject_years: dict[str, dict[int, int]] = {}
+    hosts: dict[str, int] = {}
+    scores: list[int] = []
 
     for letter in letters:
         carried = _carries(letter)
-        score = sum(carried.values())
+        scores.append(sum(carried.values()))
         for key, value in carried.items():
             coverage[key] += value
-        if score > record_score:
-            record, record_score = letter, score
 
-        seen: dict[str, str] = {}
-        for person in [letter.get("sender"), *_recipients(letter)]:
-            key = _person_key(person)
-            if key and key not in seen:
-                seen[key] = person.get("name") or key
-        for key, name in seen.items():
-            persons.setdefault(key, {"key": key, "name": name, "count": 0})[
-                "count"
-            ] += 1
-        sender_key = _person_key(letter.get("sender"))
-        if sender_key:
-            for recipient_key in {
-                k
-                for k in (_person_key(p) for p in _recipients(letter))
-                if k and k != sender_key
-            }:
-                pair = tuple(sorted((sender_key, recipient_key)))
-                pairs[pair] = pairs.get(pair, 0) + 1
+        for key, person in _parties(letter).items():
+            entry = persons.setdefault(
+                key,
+                {
+                    "key": key,
+                    "name": person.get("name") or key,
+                    "count": 0,
+                    "partners": set(),
+                },
+            )
+            entry["count"] += 1
+        sender = _person_key(letter.get("sender"))
+        if sender:
+            for recipient in _recipients(letter):
+                to = _person_key(recipient)
+                if not to or to == sender:
+                    continue
+                persons[sender]["partners"].add(to)
+                persons[to]["partners"].add(sender)
 
         place = letter.get("place_sent") or {}
         if _known_place(letter.get("place_sent")):
             known_places.add(_place_key(place))
-        lat, lon = place.get("lat"), place.get("lon")
-        if isinstance(lat, (int, float)) and isinstance(lon, (int, float)):
+        if _located(place):
             key = _place_key(place)
             entry = located.setdefault(
                 key,
-                {"key": key, "lat": _js_round(lat), "lon": _js_round(lon), "count": 0},
+                {
+                    "key": key,
+                    "lat": _round(place["lat"], 3),
+                    "lon": _round(place["lon"], 3),
+                    "count": 0,
+                },
             )
             entry["count"] += 1
 
@@ -214,6 +426,11 @@ def summarize(letters: list[dict]) -> dict:
         if letter.get("year"):
             counts = per_year.setdefault(letter["year"], {})
             counts[code] = counts.get(code, 0) + 1
+
+        if letter.get("url"):
+            host = urlsplit(letter["url"]).netloc.lower()
+            if host:
+                hosts[host] = hosts.get(host, 0) + 1
 
         mentions = letter.get("mentions") or {}
         _count_mentions(
@@ -231,35 +448,66 @@ def summarize(letters: list[dict]) -> dict:
         _count_mentions(
             mentioned["subjects"],
             mentions.get("subjects"),
-            lambda s: s.get("uri") or s.get("label"),
+            _subject_key,
             lambda s: s.get("label"),
         )
+        seen_places = set()
+        for p in mentions.get("places") or []:
+            key = _place_key(p)
+            if not key or key in seen_places or not _located(p):
+                continue
+            seen_places.add(key)
+            entry = mentioned_places.setdefault(
+                key,
+                {
+                    "key": key,
+                    "lat": _round(p["lat"], 3),
+                    "lon": _round(p["lon"], 3),
+                    "count": 0,
+                },
+            )
+            entry["count"] += 1
+        if letter.get("year"):
+            for key in dict.fromkeys(
+                k
+                for k in (_subject_key(s) for s in mentions.get("subjects") or [])
+                if k
+            ):
+                years = subject_years.setdefault(key, {})
+                years[letter["year"]] = years.get(letter["year"], 0) + 1
 
-    ranked = _ranked(persons)
-    ego = ranked and ranked[0]["count"] >= len(letters) * EGO_SHARE
-    circle = ranked[:TOP_PERSONS]
-    index = {p["key"]: i for i, p in enumerate(circle)}
-    edges = sorted(
-        [min(index[a], index[b]), max(index[a], index[b]), count]
-        for (a, b), count in pairs.items()
-        if a in index and b in index
-    )
     years = sorted(per_year)
+    ego = _ego(letters, persons)
+    examples = _examples(letters, scores)
+    record = examples[0] if examples else None
+    top_subjects = _ranked(mentioned["subjects"])
+    record_subject = ((record or {}).get("mentions") or {}).get("subjects") or []
+    record_subject_key = _subject_key(record_subject[0]) if record_subject else None
+    shown = [s["key"] for s in top_subjects[:TOP_MENTIONS]]
+    if (
+        record_subject_key
+        and record_subject_key in subject_years
+        and record_subject_key not in shown
+    ):
+        shown[TOP_MENTIONS - 1 : TOP_MENTIONS] = [record_subject_key]
     return {
         "letters": len(letters),
+        "dated": sum(sum(per_year[y].values()) for y in years),
         "first": years[0] if years else None,
         "last": years[-1] if years else None,
         "coverage": coverage,
         "persons": len(persons),
-        "ego": 0 if ego else None,
-        "circle": [[p["name"], p["count"]] for p in circle],
-        "edges": edges,
+        "ego": ego["model"],
         "places": len(known_places),
         "located": [[p["lat"], p["lon"], p["count"]] for p in _ranked(located)],
         "languages": dict(
             sorted(languages.items(), key=lambda item: (-item[1], item[0]))
         ),
         "perYear": [[year, per_year[year]] for year in years],
+        "hosts": [
+            [h, n]
+            for h, n in sorted(hosts.items(), key=lambda item: (-item[1], item[0]))[:3]
+        ],
         "mentioned": {
             kind: {
                 "distinct": len(table),
@@ -267,7 +515,17 @@ def summarize(letters: list[dict]) -> dict:
             }
             for kind, table in mentioned.items()
         },
-        "record": _record(record) if record else None,
+        "mentionedLocated": [
+            [p["lat"], p["lon"], p["count"]] for p in _ranked(mentioned_places)
+        ],
+        "subjects": [
+            [
+                mentioned["subjects"][key]["name"],
+                [[y, n] for y, n in sorted(subject_years.get(key, {}).items())],
+            ]
+            for key in shown
+        ],
+        "examples": [_record(letter, ego, shown) for letter in examples],
     }
 
 

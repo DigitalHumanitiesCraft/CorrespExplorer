@@ -267,16 +267,21 @@ body:has(.landing) {
 }
 
 /* The figure. Columns: band labels, the statements left of the letter, the letter, the statements
-   right of it. Rows: the three bands, the core largest, the letter records smallest */
+   right of it. Rows: the three bands; the first two hold pictures and share the height, the third
+   holds share bars and takes what it needs */
 .model {
     --leaders: lines;
     position: relative;
     flex: 1;
     display: grid;
-    grid-template-columns: 7.5rem minmax(0, 1fr) minmax(15rem, 20rem) minmax(0, 1fr);
-    grid-template-rows: minmax(9rem, 5fr) minmax(7rem, 3fr) minmax(min-content, 1.4fr);
+    grid-template-columns: 7.5rem minmax(0, 1fr) minmax(14rem, 18rem) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 0.9fr) auto;
     gap: var(--space-xl) var(--space-2xl);
     min-height: 0;
+}
+
+.model.is-extension-sparse {
+    grid-template-rows: minmax(0, 1fr) auto auto;
 }
 
 /* A short fade when the dataset changes; base.css ends it at once under reduced motion */
@@ -297,7 +302,7 @@ body:has(.landing) {
 .band-label {
     grid-column: 1;
     margin: 0;
-    padding-top: var(--space-md);
+    padding-top: var(--space-xs);
     font-size: var(--font-size-sm);
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -310,7 +315,6 @@ body:has(.landing) {
     grid-auto-columns: minmax(0, 1fr);
     gap: var(--space-xl);
     min-height: 0;
-    padding-top: var(--space-md);
 }
 
 .band-side--left {
@@ -321,43 +325,64 @@ body:has(.landing) {
     grid-column: 4;
 }
 
-/* The date figure is a year axis and takes twice the width of the link beside it */
-.band-side--core.band-side--right {
+/* Year figure and subject profiles share one width and one year axis, the link and the language
+   bar take the narrow column beside them */
+.band-side--core.band-side--right,
+.band-side--extension.band-side--right {
     grid-auto-columns: auto;
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
 }
 
-/* A statement: name, one number, its figure. The whole is the link into its view */
+/* A statement: the label line (name and one number) is the link into its view; the figure beneath
+   is no link, its marks choose a letter */
 .stmt {
-    display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr);
-    align-content: start;
+    display: flex;
+    flex-direction: column;
     min-width: 0;
     min-height: 0;
-    padding: var(--space-xs);
-    margin: calc(-1 * var(--space-xs));
-    border-radius: var(--radius-sm);
+}
+
+.stmt-label {
+    display: block;
+    align-self: start;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
     color: var(--color-text);
     text-decoration: none;
+    cursor: pointer;
 }
 
-a.stmt:hover {
-    background: var(--color-bg-light);
-    text-decoration: none;
-}
-
-a.stmt:hover .stmt-name,
-a.stmt:focus-visible .stmt-name {
-    color: var(--color-link);
+p.stmt-label {
+    cursor: default;
 }
 
 .stmt-name {
+    display: block;
     font-size: var(--font-size-sm);
     font-weight: 700;
     line-height: var(--line-height-tight);
 }
 
+/* The label of a link says it is one: the name underlines and takes the accent under pointer and
+   focus, the colour of what can be clicked */
+a.stmt-label:hover .stmt-name,
+a.stmt-label:focus-visible .stmt-name,
+button.stmt-label:hover .stmt-name,
+button.stmt-label:focus-visible .stmt-name {
+    color: var(--color-link);
+    text-decoration: underline;
+}
+
+.stmt-label:hover {
+    text-decoration: none;
+}
+
 .stmt-count {
+    display: block;
     font-size: var(--font-size-sm);
     line-height: var(--line-height-tight);
     color: var(--color-text-light);
@@ -366,67 +391,89 @@ a.stmt:focus-visible .stmt-name {
 
 .stmt-figure {
     position: relative;
-    display: block;
+    flex: 1;
     min-height: 24px;
     margin-top: var(--space-sm);
 }
 
-.stmt-figure > svg {
+.stmt-figure > svg,
+.subject-figure > svg {
     position: absolute;
     inset: 0;
     display: block;
+    overflow: hidden;
 }
 
 /* A statement the dataset lacks keeps its place: its name and "nicht im Bestand" over an empty
    dashed line */
-.stmt.is-absent .stmt-figure {
-    min-height: 0;
-    height: 0;
+.stmt-empty {
+    display: block;
     margin-top: var(--space-md);
     border-top: 1px dashed var(--color-border-control);
 }
 
-.stmt--language {
-    grid-template-rows: auto auto 12px auto;
-}
-
-.stmt--language .stmt-figure {
-    min-height: 12px;
+.stmt--language .stmt-figure,
+.band-side--record .stmt-figure {
+    flex: none;
+    height: 18px;
+    min-height: 18px;
 }
 
 .stmt-key {
     display: flex;
     flex-wrap: wrap;
     gap: 0 var(--space-md);
-    margin-top: var(--space-sm);
+    margin-top: var(--space-xs);
     font-size: var(--font-size-sm);
     line-height: var(--line-height-tight);
     color: var(--color-text-light);
 }
 
-/* Names of the most frequent mentions, each over a bar of its letters (--share, set per entry) */
 .stmt-list {
-    display: grid;
-    gap: var(--space-xs);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-md);
+    margin-top: var(--space-xs);
     font-size: var(--font-size-sm);
     line-height: var(--line-height-tight);
     color: var(--color-text);
 }
 
-.stmt-list span {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+/* Subject profiles: a name over each small year figure */
+.subject-rows {
+    display: grid;
+    flex: 1;
+    grid-auto-rows: minmax(0, 1fr);
+    gap: var(--space-xs);
+    min-height: 0;
+    margin-top: var(--space-sm);
 }
 
-.stmt-list span::after {
-    content: '';
-    display: block;
-    width: calc(var(--share, 0) * 100%);
-    min-width: 1px;
-    height: 2px;
-    margin-top: 2px;
-    background: var(--color-text-light);
+.subject-row {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.subject-name {
+    overflow: hidden;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color-text);
+}
+
+.subject-figure {
+    position: relative;
+    flex: 1;
+    min-height: 14px;
+}
+
+.mini-rim {
+    fill: none;
+    stroke: var(--color-border-light);
+    stroke-width: 1;
 }
 
 .mini-edge {
@@ -437,12 +484,22 @@ a.stmt:focus-visible .stmt-name {
 
 .mini-node {
     fill: var(--color-data);
-    stroke: var(--color-bg);
-    stroke-width: 1;
+    fill-opacity: 0.8;
 }
 
 .mini-node--centre {
     fill: var(--color-text);
+    fill-opacity: 1;
+}
+
+.mini-mention {
+    fill: var(--color-data);
+    stroke: var(--color-data);
+    stroke-width: 0.8;
+}
+
+.mini-mention--hollow {
+    fill: var(--color-bg);
 }
 
 .mini-land {
@@ -458,7 +515,24 @@ a.stmt:focus-visible .stmt-name {
     stroke-width: 0.5;
 }
 
-.mini-bar {
+.mini-place--mentioned {
+    fill: none;
+    stroke: var(--color-data);
+    stroke-opacity: 0.7;
+    stroke-width: 0.8;
+}
+
+.mini-subject {
+    fill: var(--color-data);
+}
+
+.mini-baseline {
+    stroke: var(--color-border-control);
+    stroke-width: 1;
+}
+
+.mini-axis {
+    font-size: var(--font-size-xs);
     fill: var(--color-text-light);
 }
 
@@ -470,18 +544,61 @@ a.stmt:focus-visible .stmt-name {
     fill: var(--color-data);
 }
 
-/* The letter: an envelope in the colour of manila with the fold of its flap, its statements
-   grouped in the rows of their bands (subgrid), so each group stands beside its band */
-.record {
+.mini-hit {
+    fill: transparent;
+}
+
+/* Marks that choose a letter answer the pointer; the keyboard steps with "anderer Brief" */
+.is-pickable {
+    cursor: pointer;
+}
+
+circle.is-pickable:hover,
+rect.is-pickable:hover {
+    stroke: var(--color-primary);
+    stroke-width: 1.5;
+}
+
+/* The example letter's own marks, the selection in rust; they move when the letter changes */
+.letter-mark {
+    fill: var(--color-primary);
+    stroke: var(--color-bg);
+    stroke-width: 1;
+    pointer-events: none;
+}
+
+.letter-mark--hollow {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+}
+
+.letter-mark--column {
+    fill: var(--color-primary);
+    fill-opacity: 0.25;
+    stroke: none;
+}
+
+.model.is-moving .letter-mark {
+    transition: transform 320ms ease-out;
+}
+
+/* The letter: three sheets out of one envelope, one per band and as tall as their lines */
+.record-sheet {
     position: relative;
     grid-column: 3;
-    grid-row: 1 / 4;
-    display: grid;
-    grid-template-rows: subgrid;
-    padding: 0 var(--space-lg) var(--space-lg);
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
     border: 1.5px solid var(--color-text);
     border-radius: var(--radius-md);
     background: var(--color-bg-light);
+}
+
+.record-sheet--core {
+    padding-top: 44px;
 }
 
 .record-flap {
@@ -489,7 +606,7 @@ a.stmt:focus-visible .stmt-name {
     top: 0;
     left: 0;
     width: 100%;
-    height: 48px;
+    height: 36px;
     overflow: visible;
 }
 
@@ -499,16 +616,11 @@ a.stmt:focus-visible .stmt-name {
     stroke-width: 1;
 }
 
-.record-group {
+.record-lines {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
     min-width: 0;
-    padding-top: var(--space-md);
-}
-
-.record-group--core {
-    padding-top: 56px;
 }
 
 .record-line {
@@ -543,6 +655,23 @@ a.record-link {
     border-radius: 2px;
 }
 
+.record-other {
+    align-self: start;
+    min-height: 24px;
+    padding: 0 var(--space-sm);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.record-other:hover {
+    border-color: var(--color-primary);
+    color: var(--color-link);
+}
+
 .model-leaders {
     position: absolute;
     inset: 0;
@@ -552,8 +681,9 @@ a.record-link {
 
 .leader {
     fill: none;
-    stroke: var(--color-border-control);
-    stroke-width: 0.8;
+    stroke: var(--color-primary);
+    stroke-opacity: 0.45;
+    stroke-width: 1;
 }
 
 .disclaimer p {
@@ -562,7 +692,8 @@ a.record-link {
     color: var(--color-text-light);
 }
 
-/* Below this width the bands follow the letter in one column, with the same content */
+/* Below this width each band follows its sheet of the letter in one column, with the same
+   content; the rust marks stay, the curves go */
 @media (max-width: 1023px) {
     .landing {
         height: auto;
@@ -595,50 +726,54 @@ a.record-link {
 
     .model {
         --leaders: none;
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: none;
-        row-gap: var(--space-lg);
-    }
-
-    .model > *,
-    .band-label,
-    .band-side--left,
-    .band-side--right,
-    .record {
-        grid-column: 1;
-        grid-row: auto;
-    }
-
-    .record {
-        order: -1;
         display: flex;
         flex-direction: column;
-        gap: var(--space-md);
+        gap: var(--space-lg);
     }
 
-    .record-group--core {
-        padding-top: 52px;
-    }
+    .band-label.band-row-1 { order: 10; }
+    .record-sheet.band-row-1 { order: 11; }
+    .band-side.band-row-1 { order: 12; }
+    .band-label.band-row-2 { order: 20; }
+    .record-sheet.band-row-2 { order: 21; }
+    .band-side.band-row-2 { order: 22; }
+    .band-label.band-row-3 { order: 30; }
+    .record-sheet.band-row-3 { order: 31; }
+    .band-side.band-row-3 { order: 32; }
 
     .band-label {
         margin-top: var(--space-md);
     }
 
     .band-side,
-    .band-side--core.band-side--right {
+    .band-side--core.band-side--right,
+    .band-side--extension.band-side--right {
         grid-auto-flow: row;
         grid-template-columns: minmax(0, 1fr);
         gap: var(--space-lg);
-        padding-top: 0;
     }
 
-    .band-side--core .stmt-figure {
-        height: 140px;
+    .band-side--core .stmt-figure,
+    .band-side--extension .stmt-figure {
+        flex: none;
+        height: 160px;
     }
 
     .stmt--persons .stmt-figure,
-    .stmt--place .stmt-figure {
-        height: 180px;
+    .stmt--place .stmt-figure,
+    .stmt--mentionsPerson .stmt-figure,
+    .stmt--mentionsPlace .stmt-figure {
+        height: 220px;
+    }
+
+    .stmt--language .stmt-figure,
+    .band-side--record .stmt-figure {
+        height: 18px;
+    }
+
+    .subject-rows {
+        height: 160px;
+        flex: none;
     }
 }
 

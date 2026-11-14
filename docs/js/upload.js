@@ -8,7 +8,7 @@ import { enrichPersonsBatch } from './wikidata-enrichment.js';
 import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
 import { openModal, closeModal, enableModalKeyboard, isAllowedJsonPath } from './utils.js';
 import { VIEWS, LETTER_FEATURES } from './constants.js';
-import { initStartFigure, fetchListedFiles } from './start-figures.js';
+import { initStartFigure, fetchListedFiles, showOwnDataset } from './start-figures.js';
 
 // DOM Elements
 let uploadZone, fileInput, urlInput, urlSubmit;
@@ -46,7 +46,8 @@ async function init() {
     loadingText = document.getElementById('loading-text');
     datasetCards = document.querySelectorAll('.dataset-card');
     showLocalDataset();
-    initStartFigure();
+    initStartFigure({ openOwn: (view, feat) => openOwnData(view, feat) });
+    document.getElementById('own-open')?.addEventListener('click', () => openOwnData());
 
     // Config modal
     configModal = document.getElementById('config-modal');
@@ -180,7 +181,7 @@ async function handleUrlSubmit() {
                     ? `Lade Briefe... ${loaded} von ${totalHits}`
                     : `Lade Briefe... ${loaded}`);
             });
-            await showConfigDialog(data, { type: 'correspsearch', source: url });
+            await presentDataset(data, { type: 'correspsearch', source: url });
         } catch (error) {
             console.error('correspSearch load failed:', error);
             showError(`Fehler beim Laden: ${error.message}`);
@@ -193,7 +194,7 @@ async function handleUrlSubmit() {
 
     try {
         const data = await parseCMIF(url);
-        await showConfigDialog(data, { type: 'url', source: url });
+        await presentDataset(data, { type: 'url', source: url });
     } catch (error) {
         console.error('CMIF URL load failed:', error);
         showError(`Fehler beim Laden: ${error.message}`);
@@ -294,7 +295,7 @@ async function processFiles(files) {
         const data = await parseCMIFFiles(xmlFiles, (done, total) => {
             if (done % 10 === 0 || done === total) updateLoadingText(`Verarbeite Dateien... ${done} von ${total}`);
         });
-        await showConfigDialog(data, { type: 'file', source: `${data.meta.title} (${data.meta.files.loaded} Dateien)` });
+        await presentDataset(data, { type: 'file', source: `${data.meta.title} (${data.meta.files.loaded} Dateien)` });
     } catch (error) {
         console.error('CMIF files parse failed:', error);
         showError(`Fehler beim Parsen: ${error.message}`);
@@ -315,12 +316,36 @@ async function processFile(file) {
 
     try {
         const data = await parseCMIF(file);
-        await showConfigDialog(data, { type: 'file', source: file.name });
+        await presentDataset(data, { type: 'file', source: file.name });
     } catch (error) {
         console.error('CMIF file parse failed:', error);
         showError(`Fehler beim Parsen: ${error.message}`);
         hideLoading();
     }
+}
+
+// One's own data, once read: the figure takes them as a further choice and shows which parts of
+// the model they fill; the dialog that leads into the explorer opens at once as before, and
+// "Im Explorer öffnen" brings it back after it was closed
+let ownData = null;
+
+async function presentDataset(data, sourceInfo) {
+    ownData = { data, sourceInfo };
+    try {
+        // Coordinates from the table first, as the dialog adds them, so the maps can draw the places
+        await addTableCoordinates(data);
+        showOwnDataset(data, 'Eigene Daten');
+    } catch (error) {
+        // The figure is an addition; the way into the explorer must not depend on it
+        console.error('Start figure could not show the loaded data:', error);
+    }
+    await showConfigDialog(data, sourceInfo);
+}
+
+function openOwnData(view = null, feat = null) {
+    if (!ownData) return;
+    lastTrigger = document.activeElement;
+    showConfigDialog(ownData.data, { ...ownData.sourceInfo, view, feat });
 }
 
 // Show configuration dialog
