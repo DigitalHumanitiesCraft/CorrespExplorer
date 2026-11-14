@@ -327,6 +327,66 @@ button {
     font-weight: 700;
 }
 
+/* A subject with several representations shows them as a menu under its tab on hover and focus */
+.view-group {
+    position: relative;
+    display: flex;
+}
+
+.view-group > .view-group-btn::after {
+    content: '▾';
+    margin-left: var(--space-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.view-group__menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: var(--z-dropdown);
+    flex-direction: column;
+    min-width: 11rem;
+    padding: var(--space-xs);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+}
+
+.view-menu-item {
+    padding: var(--space-sm) var(--space-md);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    font-family: var(--font-base);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.view-menu-item:hover {
+    background: var(--color-bg-light);
+}
+
+.view-menu-item[aria-current="true"] {
+    background: var(--color-primary-light);
+    font-weight: 700;
+}
+
+@media (min-width: 768px) {
+    /* The menus hang below the header, so the row of subjects must not clip them */
+    .view-groups {
+        overflow: visible;
+    }
+
+    .view-group:hover .view-group__menu,
+    .view-group:focus-within .view-group__menu {
+        display: flex;
+    }
+}
+
 /* On a narrow screen the subjects take a second row below title and actions */
 @media (max-width: 767px) {
     html:has(.view-groups) {

@@ -232,7 +232,7 @@
             <main class="main-content" id="main-content" tabindex="-1">
                 <!-- Moved into the header of the active view by explore.js -->
                 <div class="view-switcher view-variants hidden" id="view-variants" role="group" aria-label="Darstellung">
-                    <button class="view-btn active hidden" data-view="overview" aria-pressed="true" aria-label="Start" data-tooltip="Start" data-tooltip-desc="Übersicht und Forschungspfade">
+                    <button class="view-btn active hidden" data-view="overview" aria-pressed="true" aria-label="Start" data-tooltip="Start" data-tooltip-desc="Bestand im Überblick">
                         <i class="fas fa-home" aria-hidden="true"></i> <span class="view-btn-text">Start</span>
                     </button>
                     <button class="view-btn" data-view="map" aria-pressed="false" aria-label="Karte" data-tooltip="Karte" data-tooltip-desc="Briefe nach Absendeort auf Karte">
@@ -321,6 +321,10 @@
                                 <h3 id="ws-places-title"><button type="button" class="ws-panel__open" data-open="places">Orte</button></h3>
                                 <div class="ws-bars" id="ws-places"></div>
                             </section>
+                            <section class="ws-panel" aria-labelledby="ws-topics-title">
+                                <h3 id="ws-topics-title"><button type="button" class="ws-panel__open" data-open="topics">Themen</button></h3>
+                                <div class="ws-bars" id="ws-topics"></div>
+                            </section>
                             <section class="ws-panel" aria-labelledby="ws-languages-title">
                                 <h3 id="ws-languages-title">Sprache</h3>
                                 <div class="ws-bars" id="ws-languages"></div>
@@ -331,16 +335,6 @@
                             </section>
                         </div>
 
-                        <!-- Research Paths (limited) -->
-                        <div class="overview-research-paths">
-                            <h3>Forschungspfade</h3>
-                            <div class="questions-grid" id="overview-questions-grid">
-                                <!-- Filled by JavaScript - max 4 questions -->
-                            </div>
-                            <button class="show-all-paths-btn hidden" id="show-all-paths-btn">
-                                <i class="fas fa-list" aria-hidden="true"></i> Alle Pfade anzeigen
-                            </button>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -1030,9 +1024,9 @@
             </div>
         </div>
         <div class="tour-step" data-step="8" data-view="overview">
-            <div class="tour-content" data-target=".overview-research-paths">
-                <h3>Forschungspfade</h3>
-                <p>Im Start-View finden Sie Forschungspfade - methodische Wege durch das Korpus. Jede Frage zeigt Schritte zur Beantwortung.</p>
+            <div class="tour-content" data-target=".overview-body">
+                <h3>Der Bestand im Überblick</h3>
+                <p>Die Grafiken der Startansicht filtern einander. Ziehen Sie in der Zeitleiste über einige Jahre oder klicken Sie eine Person, einen Ort oder eine Sprache an: Alle Felder zeigen dann diese Auswahl, und „Briefe ansehen“ öffnet ihre Briefe.</p>
                 <p>Der Abspielknopf neben einer Frage startet ihren Wissenspfad.</p>
                 <div class="tour-nav">
                     <button type="button" class="tour-prev">Zurück</button>

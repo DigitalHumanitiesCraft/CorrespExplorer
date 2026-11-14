@@ -3,8 +3,6 @@
 
 import { LETTER_FEATURES, LANGUAGE_COLORS, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
 import { escapeHtml, safeUrl, externalLink, datedYearRange, personKey, placeKey, letterRecipients } from '../utils.js';
-import { analyzeResearchQuestions, renderOverviewResearchPaths } from '../research-paths.js';
-import { startKnowledgePath } from '../knowledge-path.js';
 import { startTour } from '../demo-tour.js';
 import { state } from '../state-manager.js';
 
@@ -138,7 +136,6 @@ export function renderOverview() {
     }
 
     renderOverviewChart();
-    renderOverviewPaths();
 }
 
 /**
@@ -186,6 +183,7 @@ function renderOverviewChart() {
     renderYears(all, shown, filter);
     renderBars('ws-persons', topPersons(shown), filter.person, deps.togglePerson);
     renderBars('ws-places', topPlaces(shown), filter.place, deps.togglePlace);
+    renderBars('ws-topics', topTopics(shown), filter.subject, deps.toggleSubject);
     renderBars('ws-languages', languages(shown), filter.languages?.length === 1 ? filter.languages[0] : filter.languages ? 'other' : null, deps.toggleLanguage);
     renderBars('ws-features', features(shown), filter.features, deps.toggleFeature);
     document.querySelectorAll('.ws-panel__open').forEach(btn => { btn.onclick = () => deps.switchView(btn.dataset.open); });
@@ -205,25 +203,38 @@ function renderResult(all, shown, filter) {
 
 const usableYear = letter => (letter.year && !letter.dateImplausible ? letter.year : null);
 
-function countYears(letters) {
-    const perYear = new Map();
-    for (const letter of letters) {
-        const year = usableYear(letter);
-        if (year) perYear.set(year, (perYear.get(year) || 0) + 1);
-    }
-    return perYear;
+// The category a letter has in the charts: its language, the rest, or none
+function languageKey(letter) {
+    const code = letter.language?.code || NO_LANGUAGE;
+    return code !== NO_LANGUAGE && isRestLanguage(code) ? 'other' : code;
 }
 
-// Letters per year. The pale column is the dataset, the full one the selection. Dragging across
-// years sets the period; the caption opens the time view, the keyboard way to single years.
+// Letters per year, stacked by language where the dataset has languages. The pale column is the
+// dataset, the stack inside it the selection. Dragging across years sets the period; the keyboard
+// sets it with the slider of the sidebar.
 function renderYears(all, shown, filter) {
     const box = document.getElementById('overview-chart');
     if (!box) return;
-    const total = countYears(all);
-    const section = box.closest('.ws-panel');
-    section?.classList.toggle('hidden', total.size < 2);
+    const total = new Map();
+    for (const letter of all) {
+        const year = usableYear(letter);
+        if (year) total.set(year, (total.get(year) || 0) + 1);
+    }
+    box.closest('.ws-panel')?.classList.toggle('hidden', total.size < 2);
     if (total.size < 2) return;
-    const selected = countYears(shown);
+    const hasLanguages = all.some(letter => letter.language?.code);
+    const stacks = new Map();
+    const order = new Map();
+    for (const letter of shown) {
+        const year = usableYear(letter);
+        if (!year) continue;
+        const key = hasLanguages ? languageKey(letter) : '_all';
+        if (!stacks.has(year)) stacks.set(year, new Map());
+        stacks.get(year).set(key, (stacks.get(year).get(key) || 0) + 1);
+        order.set(key, (order.get(key) || 0) + 1);
+    }
+    // The most frequent language sits at the bottom of every column
+    const keys = [...order.entries()].sort((x, y) => y[1] - x[1]).map(([key]) => key);
     const years = [...total.keys()];
     const min = Math.min(...years);
     const max = Math.max(...years);
@@ -231,10 +242,12 @@ function renderYears(all, shown, filter) {
     let bars = '';
     for (let year = min; year <= max; year++) {
         const t = total.get(year) || 0;
-        const s = selected.get(year) || 0;
-        const inRange = !filter.years || (year >= filter.years[0] && year <= filter.years[1]);
-        bars += `<span class="overview-chart__year${inRange ? '' : ' overview-chart__year--out'}" data-year="${year}" title="${year}: ${number(s)} von ${number(t)} ${t === 1 ? 'Brief' : 'Briefen'}">
-            <span class="overview-chart__bar" style="height: ${t ? Math.max(2, t / peak * 100) : 0}%"><span class="overview-chart__fill" style="height: ${t ? s / t * 100 : 0}%"></span></span></span>`;
+        const stack = stacks.get(year) || new Map();
+        const s = [...stack.values()].reduce((sum, n) => sum + n, 0);
+        const segments = keys.filter(key => stack.get(key)).map(key =>
+            `<span class="overview-chart__seg" style="height: ${stack.get(key) / t * 100}%; background: ${key === '_all' ? 'var(--color-data)' : LANGUAGE_COLORS[key] || LANGUAGE_COLORS.other}"></span>`).join('');
+        bars += `<span class="overview-chart__year" data-year="${year}" title="${year}: ${number(s)} von ${number(t)} ${t === 1 ? 'Brief' : 'Briefen'}">
+            <span class="overview-chart__bar" style="height: ${t ? Math.max(2, t / peak * 100) : 0}%">${segments}</span></span>`;
     }
     const period = filter.years ? `${filter.years[0]}${filter.years[0] === filter.years[1] ? '' : `–${filter.years[1]}`} gewählt` : 'Zeitraum durch Ziehen wählen';
     box.innerHTML = `
@@ -285,12 +298,25 @@ function topPlaces(letters) {
     return ranked(counts, labels);
 }
 
+function topTopics(letters) {
+    const counts = new Map();
+    const labels = new Map();
+    for (const letter of letters) {
+        for (const subject of letter.mentions?.subjects || []) {
+            const key = subject.uri || subject.id || subject.label;
+            if (!key) continue;
+            counts.set(key, (counts.get(key) || 0) + 1);
+            if (!labels.has(key)) labels.set(key, subject.label || key);
+        }
+    }
+    return ranked(counts, labels);
+}
+
 // The languages with a colour of their own, then the rest and the letters without a language
 function languages(letters) {
     const counts = new Map();
     for (const letter of letters) {
-        const code = letter.language?.code || NO_LANGUAGE;
-        const key = code !== NO_LANGUAGE && isRestLanguage(code) ? 'other' : code;
+        const key = languageKey(letter);
         counts.set(key, (counts.get(key) || 0) + 1);
     }
     if (counts.size === 1 && counts.has(NO_LANGUAGE)) return [];
@@ -322,14 +348,4 @@ function renderBars(id, rows, active, toggle) {
             document.querySelector(`#${id} .ws-bar[data-key="${CSS.escape(btn.dataset.key)}"]`)?.focus();
         });
     });
-}
-
-// Research paths of the overview (US-33), analysed by research-paths.js from all letters
-function renderOverviewPaths() {
-    const container = document.getElementById('overview-questions-grid');
-    if (!container) return;
-    renderOverviewResearchPaths(container, document.getElementById('show-all-paths-btn'),
-        analyzeResearchQuestions(deps.getAllLetters(), deps.getDataIndices(), deps.getCorpusSummary()), {
-            onStartPath: startKnowledgePath
-        });
 }

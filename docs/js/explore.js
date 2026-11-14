@@ -178,6 +178,10 @@ function syncViewVariants() {
     document.querySelectorAll('.view-group-btn').forEach(btn => {
         btn.setAttribute('aria-pressed', String(btn.dataset.group === group));
     });
+    document.querySelectorAll('.view-menu-item').forEach(item => {
+        item.classList.toggle('hidden', availableViews[item.dataset.view]?.available === false);
+        item.setAttribute('aria-current', String(item.dataset.view === currentView));
+    });
 }
 
 const formatCount = n => n.toLocaleString('de-DE');
@@ -303,6 +307,7 @@ async function init() {
             getFilterState: () => ({
                 person: selectedPersonId,
                 place: selectedPlaceFilter,
+                subject: activeSubjectFilter,
                 features: [...featureFilter],
                 languages: languageSelection(),
                 years: temporalFilter && !temporalFilter.undated ? [temporalFilter.start, temporalFilter.end] : null,
@@ -310,6 +315,7 @@ async function init() {
             }),
             togglePerson: key => (selectedPersonId === key ? clearPersonFilter() : applyPersonFilter(key)),
             togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key)),
+            toggleSubject: key => (activeSubjectFilter === key ? clearSubjectFilter() : applySubjectFilter(key)),
             toggleLanguage,
             toggleFeature,
             setYearRange,
@@ -1189,6 +1195,27 @@ function handleHistoryNavigation() {
 // View switching
 
 function initViewSwitcher() {
+    // Every subject with several representations lists them in a menu under its tab, so they
+    // are found at the top of the page from every view
+    document.querySelectorAll('.view-group-btn').forEach(btn => {
+        const views = VIEW_GROUPS[btn.dataset.group];
+        if (views.length < 2) return;
+        const group = document.createElement('span');
+        group.className = 'view-group';
+        btn.replaceWith(group);
+        const menu = document.createElement('span');
+        menu.className = 'view-group__menu';
+        views.forEach(view => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'view-menu-item';
+            item.dataset.view = view;
+            item.textContent = document.querySelector(`.view-btn[data-view="${view}"] .view-btn-text`)?.textContent || view;
+            item.addEventListener('click', () => { switchView(view); btn.focus(); });
+            menu.append(item);
+        });
+        group.append(btn, menu);
+    });
     document.querySelectorAll('.view-group-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const views = VIEW_GROUPS[btn.dataset.group].filter(view => availableViews[view]?.available);
@@ -1272,7 +1299,11 @@ function switchView(view) {
     // Overview, chronik, activity and comparison use the full width without sidebar
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        const noSidebar = view === 'overview' || view === 'chronik' || view === 'activity' || view === 'comparison';
+        const noSidebar = view === 'chronik' || view === 'activity' || view === 'comparison';
+        // What describes the dataset stands in the sidebar of the start view, above its filters
+        const meta = document.querySelector('.workspace__meta');
+        if (meta && meta.parentElement !== sidebar) sidebar.prepend(meta);
+        meta?.classList.toggle('hidden', view !== 'overview');
         sidebar.classList.toggle('hidden', noSidebar);
         setSidebarOpen(false);
         document.getElementById('sidebar-toggle')?.classList.toggle('hidden', noSidebar);

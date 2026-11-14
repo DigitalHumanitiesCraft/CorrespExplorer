@@ -95,6 +95,13 @@ Aus der Prüfung von Führung und Funktion am selben Bestand:
 - Der Vergleich schreibt „1 Briefe“. Der Reiter eines Gegenstands kehrt nach „Vergleichen“ nicht zum Vergleich zurück.
 - design.md widerspricht sich an einzelnen Stellen selbst, etwa zur Kennzahlzeile der Seitenleiste und zur Zahl offener Sprachen.
 
+Richtung nach dem Durchklicken des Operators am 2026-11-14:
+
+- Der Operator will eine innovative, professionelle Oberfläche, die alle Dimensionen abbildet, und nennt den Stand zu stark eingedampft. Welche Dinge früher besser waren, ist zu klären, bevor weiter umgebaut wird. Dafür liegt ein Oberflächenplan für das ganze Werkzeug nahe, den er freigibt.
+- Die Chronik gefällt ihm nicht und ist zu überarbeiten.
+- Karte für Bestände ohne Koordinaten: entweder trägt die Quelle Ortskennungen nach, oder der Bestand bekommt eine geprüfte Ortstabelle.
+- `research-paths.js` und `knowledge-path.js` führen noch die Maschinerie der Forschungspfade, die keinen Einstieg mehr hat. Der Korb der Seitenleiste hängt an demselben Modul.
+
 Zur Arbeitsfläche:
 
 - Orte erscheinen als Rangfolge, eine kleine Karte fehlt.

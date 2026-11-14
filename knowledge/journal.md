@@ -30,6 +30,16 @@ related: [project, specification, plan]
 
 ## Einträge
 
+### 2026-11-14 Rückmeldung zur Arbeitsfläche: gestapelte Jahre, Seitenleiste, keine Forschungspfade, Menüs
+
+- Anlass: Der Operator klickte die Arbeitsfläche am Bestand von Stefan Zweig Digital durch. Seine Sätze stehen wörtlich in [design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14).
+- Entschieden (Operator): Die Forschungspfade verlassen die Oberfläche, ihre Fragen sollen in den Ansichten bearbeitbar sein. Die Startansicht wird über die Seitenleiste gefiltert. Die Unteransichten sind oben in der Kopfzeile zu finden.
+- Geändert: Die Zeitleiste der Arbeitsfläche stapelt nach Sprache, Rangfolgen stehen in neutralem Grau. Die Seitenleiste steht auf der Startansicht mit der Beschreibung des Bestands über den Filtern. Die Forschungspfade und ihr Tourschritt sind aus Markup und Übersicht entfernt, eine gespeicherte Pfadleiste kehrt nicht zurück. Die Arbeitsfläche hat ein Feld Themen. Reiter mit mehreren Darstellungen tragen ein Menü. Der Smoke-Test prüft die Pfadleiste nicht mehr.
+- Nicht geändert, mit Grund: Eine Karte für den Bestand von Stefan Zweig Digital. Die Quelle trägt für keinen Ort eine Kennung oder Koordinaten. Die mitgelieferte Koordinatentabelle stammt aus einem anderen Bestand und würde über den Namen nur gut ein Viertel der Orte treffen, die häufigen Orte in Amerika nicht. Eine solche Karte zeigte ein schiefes Bild. Im Bestand des Hugo Schuchardt Archivs steht die Karte unter Orte.
+- Belege: der Commit dieses Eintrags. `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen dreizehn Prüfungen. Sieben Browserprüfungen zu Menü, Seitenleiste, Themenfeld und entfernten Pfaden bestanden, die acht Bedienprüfungen der Arbeitsfläche weiter. Die Startansicht des Hugo Schuchardt Archivs bei 1280 Pixel ist am Bild gesehen. Stand: gebaut, noch nicht unabhängig gelesen.
+- Wer was tat: Der Operator gab Rückmeldung und Auftrag. Diese Session (Claude Fable 5.2 in Claude Code) baute und prüfte.
+- Offen: Der Operator nennt die Chronik und weitere Stellen zu stark eingedampft und will eine innovative, professionelle Oberfläche, die alle Dimensionen abbildet. Was früher besser war, ist noch nicht benannt. Die Maschinerie der Forschungspfade steht noch im Code ([plan.md](plan.md#offen-nach-der-datenprüfung-und-der-arbeitsfläche)).
+
 ### 2026-11-14 Datenprüfung am Bestand von Stefan Zweig Digital, Parserkorrekturen und Arbeitsfläche
 
 - Anlass: Der Operator sah den Bestand von Stefan Zweig Digital im Werkzeug durch, wünschte eine saubere Prüfung von Daten, Führung, Gestaltung und Funktion und beanstandete Startansicht und Listen. Er erwartete Visualisierungen, die die Daten aggregieren und in die Teilansichten führen, statt Katalogansichten. Seine Sätze stehen wörtlich in [design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14). Er entschied die Reihenfolge: zuerst die Parserfehler, dann die Arbeitsfläche.

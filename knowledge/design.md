@@ -72,6 +72,16 @@ Zur Startansicht und zu den Listen, nach der Durchsicht am Bestand von Stefan Zw
 
 > Also, ich hatte schon erwartet, dass wir viel mehr mit Informationsvisualisierungen arbeiten, die die Daten aggregieren und dann sozusagen in die Teilansichten kommen. Hier erscheinen mir Briefe und Personen so klassische Katalogansichten. […] Ich komme zu den Daten und den Metadaten, und dann möchte ich aber eigentlich eher mit Informationsvisualisierungen arbeiten, die wirklich einen großen Teil dieses Tools einnehmen.
 
+Zur Arbeitsfläche, nach dem ersten Durchklicken:
+
+> Es ist sehr viel blau. Können wir hier nicht einen Stacked Bar Chart machen? Was kann man im User Interface noch verbessern? Ich würde eher erwarten, dass ich hier auf der Sidebar diese Ansicht filtern kann. Die Forschungspfade finde ich eigentlich gar keine gute Idee. Das schaut mir, das versteht keiner. Warum nicht gleich direkt in die Daten gehen? Und alle Forschungspfade waren quasi nur der Gedanke, dass wir alle Forschungs-User-Stories entwickeln. Alle diese wollen wir mit diesen Views, die wir haben, umsetzen. Vielleicht müssen wir alle Views nochmal evoluieren und deutlich ausbauen und vielleicht noch einen weiteren View hinzusetzen, damit alle Forschungspfade mit diesen Views bearbeitbar sind.
+
+> Und wo ist die Kartenansicht? Die war eigentlich eine Kernkomponente des ganzen Projektes.
+
+> Auch die Chronik […] Das gefällt mir jetzt noch nicht. Da müssen wir noch einiges überarbeiten und verbessern. Einige Dinge waren früher besser. Also, ich glaube, wir haben das ein bisschen sehr krass eingedampft. Und diese Unterviews, Zeit, Chronik oder so, das ist ein bisschen schwer zu finden. Das muss irgendwie oben schon ein Dropdown sein, damit ich das wirklich gleich da sehe, also dass ich das immer sehen muss.
+
+> Wir wollen wirklich ein innovatives, sehr spannendes User-Interface haben, das wirklich alle Dimensionen abbildet. Wir wollen das wirklich professionell umsetzen.
+
 Daraus folgt der Aufbau dieser Stufe.
 
 - Die Kopfzeile nennt die Gegenstände einer Korrespondenz, Start, Briefe, Personen, Orte, Zeit und Themen. Bis dahin standen dort zwölf Ansichten, benannt nach ihrer Darstellungstechnik, in einer zweiten Zeile unter Titel und Aktionen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht.
@@ -86,7 +96,11 @@ Daraus folgt der Aufbau dieser Stufe.
 - Jede Grafik der Arbeitsfläche setzt einen Filter: Ziehen über Jahre den Zeitraum, eine Zeile die Person, den Ort, die Sprache oder das Merkmal. Dieselbe Zeile hebt ihn wieder auf. Alle Grafiken zeigen danach die Auswahl, der Bestand bleibt in der Zeitleiste als blasser Balken dahinter sichtbar. Über der Fläche steht, wie viele Briefe die Auswahl hat, und von dort öffnet sich die Briefliste. Die Listen sind damit das Ergebnis und nicht der Einstieg, der Überblick kommt zuerst (Shneiderman, 1996, im Hauswissen als Mantra ausgeführt).
 - Die Filter der Arbeitsfläche sind dieselben wie die der Seitenleiste und der übrigen Ansichten, beide Wege ändern denselben Zustand.
 - Die Titel der Felder Zeit, Personen und Orte öffnen ihren Gegenstand in voller Größe.
-- Die Arbeitsfläche zeigt Orte als Rangfolge, eine kleine Karte fehlt ihr noch. Die Forschungspfade stehen unter den Feldern.
+- Die Zeitleiste der Arbeitsfläche stapelt die Auswahl nach Sprache, die häufigste Sprache unten. Die Rangfolgen stehen in einem neutralen Grau, Farbe bleibt den Sprachen vorbehalten. Bis zur Rückmeldung des Operators standen alle Balken im Datenblau.
+- Auf der Startansicht steht die Seitenleiste wie in den anderen Ansichten: oben, was den Bestand beschreibt, darunter dieselben Filter. Die Grafiken und die Seitenleiste setzen dieselben Filter.
+- Die Forschungspfade sind seit 2026-11-14 aus der Oberfläche genommen (Entscheidung des Operators). Die Fragen, die sie stellten, sollen sich in den Ansichten selbst bearbeiten lassen. Dafür hat die Arbeitsfläche ein Feld Themen: Ein Thema zu wählen zeigt seine Verteilung über die Jahre, Personen und Orte.
+- Jeder Gegenstand mit mehreren Darstellungen listet sie in einem Menü unter seinem Reiter in der Kopfzeile. Die Umschaltung im Kopf der Ansicht bleibt daneben bestehen.
+- Die Arbeitsfläche zeigt Orte als Rangfolge, eine kleine Karte fehlt ihr noch.
 - About bleibt in der Kopfzeile, der Verweis auf die Wissensbasis steht auf der Projektseite.
 - Die Startseite `index.html` passt ab 900px Breite auf einen Bildschirm. Links stehen Logo, ein Satz zu dem, was das Werkzeug zeigt, und die Beispiele als Zeilen, rechts das Laden eigener Dateien und einer Adresse, darunter als Schlusszeile der Hinweis auf das Experiment mit seinem vollen Wortlaut. Die Abzeichen „Tutorial“ und „Erweitert“ und der Aufklapper zu „Erweitert“ sind entfallen, jede Zeile sagt in einem Satz, was ihr Bestand zeigt.
 - Ein Bestand unter `data/local` erscheint als drittes Beispiel, wo seine Dateiliste erreichbar ist. Die veröffentlichte Seite trägt keine solche Liste, die Zeile bleibt dort verborgen. So lässt sich der Bestand von Stefan Zweig Digital lokal als Beispiel ansehen, ohne dass seine Daten ausgeliefert werden. Ob sie ausgeliefert werden dürfen, entscheidet der Operator.

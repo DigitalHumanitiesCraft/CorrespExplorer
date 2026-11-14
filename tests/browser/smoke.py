@@ -320,14 +320,6 @@ class Smoke:
             " document.getElementById(b.getAttribute('aria-describedby'))?.textContent"
             " !== b.dataset.tooltipDesc).map(b => b.dataset.view)"
         )
-        page.click(".overview-research-paths .question-start-btn >> nth=0")
-        path_controls = page.evaluate(
-            "() => { const bar = document.getElementById('knowledge-path-bar');"
-            " return !bar.classList.contains('hidden') && bar.contains(document.getElementById('path-nav-next'))"
-            " && bar.contains(document.getElementById('path-nav-back'))"
-            " && document.querySelectorAll('[id^=path-nav]').length === 2; }"
-        )
-        page.click("#path-bar-close")
         _open_view(page, "letters")
         _open_view(page, "topics")
         _open_view(page, "activity")
@@ -337,7 +329,6 @@ class Smoke:
         ctx.close()
         assert not heading_problem, heading_problem
         assert not undescribed, f"view buttons without description: {undescribed}"
-        assert path_controls, "knowledge path controls are not one bar"
         assert years > 2, f"activity year select has {years} options"
         assert styles and "positron" in styles[0], f"map starts with {styles[:1]}"
 
@@ -401,13 +392,11 @@ class Smoke:
             )
             violations += [f"{url}: {v}" for v in found]
         ctx.close()
-        # An active knowledge path on a phone: the bar wraps its steps below the question
+        # The start view on a phone
         phone = self.browser.new_context(viewport={"width": 390, "height": 844})
         page = phone.new_page()
         page.goto(f"{self.base}explore.html?view=overview&{HSA}")
         _loaded(page)
-        page.click(".overview-research-paths .question-start-btn >> nth=0")
-        page.wait_for_timeout(800)
         page.add_script_tag(content=script)
         found = page.evaluate(
             "async () => (await axe.run(document, {runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']}))"

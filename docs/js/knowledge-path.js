@@ -62,19 +62,12 @@ export function startKnowledgePath(question) {
     focusViewHeading(question.path[0].view);
 }
 
+// Research paths have no entry point since 2026-11-14: the operator works in the data directly.
+// A path saved by an earlier visit is dropped, so its bar does not return. Deliberate shortcut:
+// the path machinery of this module is removed once the workspace is accepted.
 function loadKnowledgePath() {
     knowledgePath = null;
-    try {
-        const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null');
-        // A path started on another dataset refers to its persons and places
-        if (saved?.active && saved.dataset === deps.datasetKey && saved.path?.length) {
-            knowledgePath = saved;
-            setPathUIVisible(true);
-            updateKnowledgePathUI();
-        }
-    } catch (e) {
-        console.error('Error loading knowledge path:', e);
-    }
+    sessionStorage.removeItem(STORAGE_KEY);
 }
 
 // Storage can be blocked or full (private mode, quota); the path then lasts only for this page
