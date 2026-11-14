@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic test file: cases from the data audit of 2026-11-14. A person and an organisation
+     as senders with the person also as recipient, a place given only as the wording of the
+     letter, a read date beside a supplied one, the language of a record. All names invented. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader><fileDesc><titleStmt><title>Test Dataset: Letter Records C</title></titleStmt>
+    <publicationStmt><publisher><orgName>CorrespExplorer Test</orgName></publisher></publicationStmt>
+    <sourceDesc><p>Synthetic</p></sourceDesc></fileDesc></teiHeader>
+  <text><body><listBibl>
+    <biblFull xml:id="REC.c.1">
+      <fileDesc><titleStmt><title>C01</title></titleStmt><publicationStmt><ab>Einzelbrief</ab></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><repository>Testarchiv</repository><idno type="signature">TA/C1</idno></msIdentifier>
+          <msContents><textLang><lang xml:lang="ger">German</lang></textLang></msContents></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent">
+          <persName ref="http://d-nb.info/gnd/000000011"><surname>Empfang</surname><forename>Erika</forename></persName>
+          <orgName>Verlag Beispiel</orgName>
+          <date when="1938-05-05" xml:lang="de">5. 5. 38</date>
+          <date type="supplied" xml:lang="de">Mai 1938</date>
+          <placeName type="original">49, Musterstrasse, | London, W.1.</placeName>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="http://d-nb.info/gnd/000000011"><surname>Empfang</surname><forename>Erika</forename></persName>
+        </correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+  </listBibl></body></text>
+</TEI>

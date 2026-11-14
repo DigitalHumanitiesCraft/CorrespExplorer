@@ -119,8 +119,14 @@ function mergeRecords(letters) {
         for (const other of group) {
             if (other === lead) continue;
             dropped.add(other);
-            for (const field of ['dateText', 'place_sent', 'postmark', 'address', 'recipient', 'recipients', 'url']) {
+            for (const field of ['dateText', 'place_sent', 'postmark', 'address', 'url']) {
                 if (!letter[field] && other[field]) letter[field] = other[field];
+            }
+            // Recipients are filled only where the leading record names none at all; a record
+            // with one recipient has no `recipients` and must not take another record's list
+            if (!letter.recipient && other.recipient) {
+                letter.recipient = other.recipient;
+                if (other.recipients) letter.recipients = other.recipients;
             }
             if (other.dateInferred) letter.dateInferred = true;
         }
@@ -303,16 +309,16 @@ function extractLetter(desc, index) {
 
     const sentAction = getCorrespAction(desc, 'sent');
 
-    const sender = extractPerson(sentAction);
     const recipients = getCorrespActions(desc, 'received').flatMap(extractPersons);
     const recipient = recipients[0] || null;
-    const { place: placeSent, postmark } = extractPlace(sentAction);
+    const { sender, senders } = extractSenders(sentAction, recipients);
+    const { place: placeSent, postmark, placeText } = extractPlace(sentAction);
     const dateInfo = extractDate(sentAction);
     const address = extractAddress(desc);
     const signature = extractSignature(record);
 
     const note = desc.getElementsByTagNameNS(TEI_NS, 'note')[0];
-    const language = extractLanguage(note);
+    const language = extractLanguage(note) || extractTextLanguage(record);
     const mentions = extractMentions(note);
 
     return {
@@ -327,10 +333,13 @@ function extractLetter(desc, index) {
         // their shape
         ...(dateInfo.inferred && { dateInferred: true }),
         ...(dateInfo.text && { dateText: dateInfo.text }),
+        ...(dateInfo.wording && { dateWording: dateInfo.wording }),
         sender,
+        ...(senders.length > 1 && { senders }),
         recipient,
         ...(recipients.length > 1 && { recipients }),
         place_sent: placeSent,
+        ...(placeText && { placeText }),
         ...(postmark && { postmark }),
         ...(address && { address }),
         ...(signature && { signature }),
@@ -494,11 +503,19 @@ function extractPersons(action) {
 }
 
 /**
- * First person of a correspAction, else its first organisation
+ * The sender of a letter and everyone the source names as sending it. A record may name a person
+ * and an organisation together. Someone who is also the recipient of the same record did not
+ * write to themselves while another sender stands beside them, so the others come first; among
+ * those a person stands before an organisation.
+ * @returns {{sender: Object|null, senders: Array}}
  */
-function extractPerson(action) {
+function extractSenders(action, recipients) {
     const all = extractPersons(action);
-    return all.find(p => !p.isOrganization) || all[0] || null;
+    const key = p => p.id || p.name;
+    const received = new Set(recipients.map(key));
+    const others = all.filter(p => !received.has(key(p)));
+    const pool = others.length ? others : all;
+    return { sender: pool.find(p => !p.isOrganization) || pool[0] || null, senders: all };
 }
 
 /**
@@ -543,8 +560,14 @@ function extractPlace(action) {
     const postmark = [...new Set(stamps)].join(', ') || null;
 
     const candidates = placeNames.filter(el => !isPostmark(el));
-    const placeName = candidates.find(el => !el.getAttribute('type')) || candidates[0];
-    if (!placeName) return { place: null, postmark };
+    const isOriginal = el => /^original$/i.test(el.getAttribute('type') || '');
+    const placeName = candidates.find(el => !el.getAttribute('type')) || candidates.find(el => !isOriginal(el));
+    if (!placeName) {
+        // Only the wording stands in the source, often a full address: it is kept as text and
+        // makes no place of its own beside "London" or "Salzburg"
+        const wording = candidates.find(isOriginal);
+        return { place: null, postmark, placeText: wording ? cleanText(wording.textContent) || null : null };
+    }
 
     const ref = placeName.getAttribute('ref');
     const geonames = parseGeoNamesRef(ref);
@@ -590,9 +613,31 @@ function extractDate(action) {
     const text = cleanText(dateEl.textContent);
     return {
         ...info,
-        inferred: dateEls.some(isInferred),
-        text: !info.date && text ? text : null
+        inferred: isInferred(dateEl),
+        text: !info.date && text ? text : null,
+        // The wording behind a machine-readable date, shown where that date is implausible
+        wording: info.date && text ? text : null
     };
+}
+
+// ISO 639-2 codes of record descriptions, mapped to the codes of the label table
+const LANGUAGE_CODES_639_2 = {
+    ger: 'de', deu: 'de', eng: 'en', fre: 'fr', fra: 'fr', ita: 'it', spa: 'es', por: 'pt',
+    lat: 'la', hun: 'hu', dut: 'nl', nld: 'nl', cze: 'cs', ces: 'cs', pol: 'pl', rus: 'ru',
+    swe: 'sv', dan: 'da', nor: 'no', yid: 'yi', heb: 'he'
+};
+
+/**
+ * Language of a letter described as a record: the first language of msContents/textLang
+ */
+function extractTextLanguage(record) {
+    const textLang = record?.getElementsByTagNameNS(TEI_NS, 'textLang')[0];
+    if (!textLang) return null;
+    const lang = textLang.getElementsByTagNameNS(TEI_NS, 'lang')[0];
+    const raw = (lang?.getAttributeNS(XML_NS, 'lang') || lang?.getAttribute('xml:lang') || textLang.getAttribute('mainLang') || '').toLowerCase();
+    if (!raw) return null;
+    const code = LANGUAGE_CODES_639_2[raw] || raw;
+    return { code, label: LANGUAGE_LABELS[code] || cleanText(lang?.textContent || '') || code };
 }
 
 /**

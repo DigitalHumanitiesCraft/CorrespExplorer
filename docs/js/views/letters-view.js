@@ -230,6 +230,10 @@ export function showLetterDetail(letterId) {
     // Date with its precision marker, as in the list (ADR-002)
     html += detailRow('Datum', formatDateWithPrecision(letter), getDatePrecisionClass(letter.datePrecision, letter.dateCertainty));
     html += detailRow('Absender', buildPersonLink(letter.sender));
+    // The source names several senders, such as a person and a publishing house
+    if (letter.senders) html += detailRow('Absender laut Quelle', letter.senders.map(p => escapeHtml(p.name)).join('; '));
+    if (letter.dateImplausible && letter.dateWording) html += detailRow('Datum im Brief', escapeHtml(letter.dateWording));
+    if (letter.placeText) html += detailRow('Ortsangabe im Brief', escapeHtml(letter.placeText));
     html += detailRow('Empfänger', letterRecipients(letter).map(buildPersonLink).join('; ') || buildPersonLink(null));
     if (letter.place_sent?.name) {
         html += detailRow('Absendeort', letter.place_sent.inferred
@@ -244,7 +248,7 @@ export function showLetterDetail(letterId) {
         html += '<p class="list-legend">Eckige Klammern: von der Edition erschlossen, nicht dem Brief entnommen.</p>';
     }
     if (letter.recordsDiffer) {
-        html += '<p class="list-legend">Die Angaben oben folgen dem ersten Eintrag der Quelle mit Datum. Die übrigen Einträge stehen darunter.</p>';
+        html += '<p class="list-legend">Die Angaben oben folgen dem ersten Eintrag der Quelle mit Datum, fehlende Angaben sind aus den übrigen Einträgen ergänzt. Alle Einträge stehen darunter.</p>';
     }
     html += '</div>';
 

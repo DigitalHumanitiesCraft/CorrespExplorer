@@ -333,6 +333,22 @@ export const CMIFParserTests = {
                 assert(data.meta.date_range, 'Should have date_range');
                 assert(data.meta.uncertainty, 'Should have uncertainty stats');
             }
+        },
+
+        {
+            name: 'Briefsätze: Mitabsender, Ortswortlaut, gelesenes Datum und Sprache des Datensatzes',
+            async run() {
+                const { letters } = await parseCMIF('data/test-letter-records-c.xml');
+                const c01 = letters[0];
+                assert(c01.sender.name === 'Verlag Beispiel', `Der Verlag schreibt, nicht die Empfängerin; erhalten ${c01.sender?.name}`);
+                assert(c01.senders?.length === 2, 'Beide Absender der Quelle bleiben erhalten');
+                assert(c01.recipient.name === 'Empfang, Erika', `Empfängerin erwartet, erhalten ${c01.recipient?.name}`);
+                assert(c01.place_sent === null, 'Ein Ortswortlaut allein ist kein Absendeort');
+                assert(c01.placeText === '49, Musterstrasse, | London, W.1.', `Wortlaut bleibt als Text, erhalten ${c01.placeText}`);
+                assert(c01.date === '1938-05-05' && !c01.dateInferred, 'Ein gelesenes Datum neben einem erschlossenen bleibt ungeklammert');
+                assert(c01.dateWording === '5. 5. 38', `Wortlaut des Datums erwartet, erhalten ${c01.dateWording}`);
+                assert(c01.language?.code === 'de', `Sprache aus textLang erwartet, erhalten ${c01.language?.code}`);
+            }
         }
     ]
 };

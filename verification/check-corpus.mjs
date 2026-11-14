@@ -52,13 +52,17 @@ check('no letter id is a position fallback', letters.every(l => !/^letter-\d+/.t
 
 let postmarkAsPlace = 0, inferredPlaceLost = 0, inferredDateLost = 0, recipientsLost = 0, addressLost = 0;
 let localRefIdentified = 0, rawWhitespace = 0, postmarkLost = 0, dateTextLost = 0, addressAsPlace = 0;
+let placeWordingLost = 0, sendersLost = 0, selfAddressed = 0;
 letters.forEach((letter, i) => {
     const desc = source[i];
     const sent = action(desc, 'sent')[0];
     const places = sent ? [...sent.getElementsByTagNameNS(TEI, 'placeName')] : [];
     const stamps = places.filter(p => p.getAttribute('type') === 'postmark').map(p => clean(p.textContent));
     const real = places.filter(p => p.getAttribute('type') !== 'postmark');
-    const chosen = real.find(p => !p.getAttribute('type')) || real[0];
+    // The wording of the letter (type original) is no sending place; it is kept as placeText
+    const chosen = real.find(p => !p.getAttribute('type')) || real.find(p => p.getAttribute('type') !== 'original');
+    const wording = real.find(p => p.getAttribute('type') === 'original');
+    if (!chosen && wording && letter.placeText !== clean(wording.textContent)) placeWordingLost++;
 
     if (letter.place_sent && stamps.includes(letter.place_sent.name) && !real.some(p => clean(p.textContent) === letter.place_sent.name)) postmarkAsPlace++;
     if (stamps.length && !stamps.every(s => (letter.postmark || '').includes(s))) postmarkLost++;
@@ -66,7 +70,17 @@ letters.forEach((letter, i) => {
     if (Boolean(chosen) !== Boolean(letter.place_sent)) inferredPlaceLost++;
 
     const dates = sent ? [...sent.getElementsByTagNameNS(TEI, 'date')] : [];
-    if (dates.some(marked) && !letter.dateInferred) inferredDateLost++;
+    // Brackets follow the date element whose value is shown, not a supplied sibling
+    const DATE_ATTRS = ['when', 'from', 'to', 'notBefore', 'notAfter'];
+    const shown = dates.find(d => DATE_ATTRS.some(a => d.getAttribute(a))) || dates[0];
+    if (shown && marked(shown) !== Boolean(letter.dateInferred)) inferredDateLost++;
+    // Nobody writes to themselves while the source names another sender
+    const names = el => [...el.children].filter(c => c.localName === 'persName' || c.localName === 'orgName').length;
+    const sourceSenders = sent ? names(sent) : 0;
+    if (sourceSenders > 1 && (letter.senders || []).length !== sourceSenders) sendersLost++;
+    const rcpts = letter.recipients || (letter.recipient ? [letter.recipient] : []);
+    const key = person => person?.id || person?.name;
+    if (sourceSenders > 1 && rcpts.some(r => key(r) === key(letter.sender)) && letter.senders.some(x => !rcpts.some(r => key(r) === key(x)))) selfAddressed++;
     if (dates.length && !dates.some(d => d.getAttribute('when')) && !letter.date && !letter.dateText) dateTextLost++;
 
     const received = action(desc, 'received').flatMap(a => children(a, 'persName', 'orgName'));
@@ -86,7 +100,10 @@ letters.forEach((letter, i) => {
 check('no postmark stands as sending place', postmarkAsPlace === 0, String(postmarkAsPlace));
 check('every postmark is kept as postmark', postmarkLost === 0, String(postmarkLost));
 check('every place marked supplied or deduced is flagged inferred', inferredPlaceLost === 0, String(inferredPlaceLost));
-check('every date marked supplied is flagged inferred', inferredDateLost === 0, String(inferredDateLost));
+check('a date is flagged inferred exactly where the shown date element is marked supplied', inferredDateLost === 0, String(inferredDateLost));
+check('the wording of a place stands as text and makes no sending place', placeWordingLost === 0, String(placeWordingLost));
+check('every sender the source names is kept', sendersLost === 0, String(sendersLost));
+check('no recipient stands as sender while the source names another sender', selfAddressed === 0, String(selfAddressed));
 check('a date given only as text keeps its text', dateTextLost === 0, String(dateTextLost));
 check('every recipient of the source is in the letter', recipientsLost === 0, String(recipientsLost));
 check('every address line is kept as address', addressLost === 0, String(addressLost));
