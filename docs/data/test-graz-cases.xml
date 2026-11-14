@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Test file with three communication headers taken unchanged from the letter files of the
      edition "Joseph von Hammer-Purgstall. Korrespondenz" (GAMS, Universität Graz), fetched on
-     2026-11-14 from https://gams.uni-graz.at/o:hpe.letter.{18,201,7327}/TEI_SOURCE, edition
-     content CC BY-NC 4.0. Only correspDesc is quoted, joined here in one file. The cases: a third
+     2026-11-14 from https://gams.uni-graz.at/o:hpe.letter.{18,201,7327}/TEI_SOURCE. Publisher
+     Zentrum für Wissenschaftsgeschichte, Universität Graz, with the Institut für Digitale
+     Geisteswissenschaften, distributed by GAMS. Licence of the source, as its files state:
+     Creative Commons BY-NC 4.0, http://creativecommons.org/licenses/by-nc/4.0/. This file is
+     third-party material and excluded from the MIT and CC BY 4.0 terms of the repository.
+     Only correspDesc is quoted, joined here in one file. The cases: a third
      action "forwarded" without date and place, a person with a link into the register of the
      edition and no authority record, a date given only as an upper bound, and the placeholder
      "ohne Ort". -->
