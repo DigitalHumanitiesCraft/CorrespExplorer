@@ -383,7 +383,19 @@ Zur Themenansicht, gefiltert auf einen Ort und einen Zeitraum, über die koordin
 
 > Auch die Themenseite geht in die richtige Richtung, aber es scheint mir auch hier noch ein bisschen zu viele Strukturen zu geben. Wie können wir das Verhandeltliche verbessern? Und wäre es nicht sinnvoll, wenn diese Bereiche, diese Polygone, die hier gefunden werden, in Relation zu allen sind? Vielleicht ist hier eine Tree Map oder so etwas besser?
 
-Folge: in Arbeit. Zwei kleine echte Fassungen am selben gefilterten Bestand, eine Treemap und ein Raster aus Themen und Jahren auf gemeinsamer Skala, zur Wahl nebeneinander. Die bestehende Ansicht bleibt bis zu seiner Entscheidung.
+Zur Startseite nach dem Zusammensetzen aus dem Bestand, Tutorial gewählt, über die koordinierende Session weitergegeben. Der erste Satz ist die erste ausdrückliche Zustimmung zu dieser Seite, der Rest sind Aufträge:
+
+> Das finde ich ehrlich gesagt jetzt schon sehr gut. Was jetzt aber ist, ist, dass der Tutorial-Bestand irrsinnig langweilig ist im Vergleich zum Hugo-[Schuchardt]-Archiv. Ich würde sagen, das Hugo-[Schuchardt]-Archiv ist der Default-Eintrag, und das Tutorial wird komplett entfernt.
+> weg:
+> * Dieser Bestand trägt keine Angaben aus TEI-Briefsätzen wie Poststempel, Anschrift und Signatur. .. diese zeile
+> * "Kern des CMIF"
+> * Kern des CMIF --> das muss anders gelöst werden und und die beiden Beispiele Hugo [Schuchardt] und Stefan Zweig werden zusammengeführt, quasi in ein Element mit eigenen Daten geladen. Irgendwie muss das besser noch integriert werden mit dem Bestand.
+> * Wer schrieb wem, wann und von wo: CorrespExplorer zeigt die Metadaten einer Korrespondenz als Liste, Karte, Zeitleiste und Netzwerk. --> Diesen Text vielleicht noch optimieren und verbessern? So haben wir mit dem Icon jetzt zweimal CorrespExplorer oben. Das ist also Redundanz, das heißt, wir können das besser machen.
+> Experiment: ein Forschungsprototyp, mit Coding-Agenten nach Promptotyping entwickelt, kein betreutes Produkt. Ergebnisse vor der Weiterverwendung prüfen, Rückmeldungen in die Issues. --> Das kommt in einen sauberen Header und in einen sauberen Footer, einen, der sozusagen meinen Projekten entspricht. Damit das wirklich tip top passt
+
+Folge: in Arbeit. Das Hugo Schuchardt Archiv als erster Bestand, das Tutorial aus der Startseite, die Bandnamen und die Zeile über Fehlendes entfallen, die Wahl des Bestands und das Laden eigener Daten in einem Element, der Satz ohne den Namen, Kopf und Fuß nach der Form seiner Projektseiten. Die Datei des Tutorials und die Tour im Explorer bleiben, bis er das Löschen der Datei ausdrücklich freigibt und der Durchgang über die Ansichten die Tour erreicht.
+
+Folge zur Themenansicht: in Arbeit. Zwei kleine echte Fassungen am selben gefilterten Bestand, eine Treemap und ein Raster aus Themen und Jahren auf gemeinsamer Skala, zur Wahl nebeneinander. Die bestehende Ansicht bleibt bis zu seiner Entscheidung.
 
 ### Entscheidungen des Operators ohne wörtlichen Satz
 
