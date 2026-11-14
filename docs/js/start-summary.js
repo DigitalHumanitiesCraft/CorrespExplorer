@@ -1,6 +1,6 @@
 // Summary of a dataset for the figure of the start page: which statements of the data model its
 // letters carry, the small aggregates the figure draws for each, and the example letter with the
-// place it takes in every aggregate. One definition for every dataset: the tutorial and a local
+// place it takes in every aggregate. One definition for every dataset: one's own data and a local
 // edition are summarised in the browser from the explorer's own parser output, the Hugo
 // Schuchardt Archiv by preprocessing/build_examples.py, which ports this file rule by rule
 // (tests/browser/smoke.py compares both on the archive).

@@ -1,12 +1,17 @@
-// Topics view: one figure of what the letters are about, when, and with whom. Every subject is a
-// row whose ridge shows its letters per year on a shared time axis (a ridgeline). The rows that fit
-// the screen are the most frequent subjects, ordered from early to late peak; scrolling leads to
-// the next block of the same size, again from early to late, and the search reaches every subject.
-// Choosing a row sets the subject filter; the strip under the figure then names the correspondents,
-// places and neighbouring subjects of the choice, each a filter of its own.
-// The ridges are painted on a canvas, because a figure of some hundred rows with a path each would
-// need thousands of SVG nodes rebuilt on every scroll; the names are HTML buttons above it, so they
-// keep focus, keyboard and the accessible names, and the pointer is matched to rows by geometry.
+// Topics view: what the letters are about, when, how much, and with whom. Two figures of the same
+// subjects, chosen by the operator on 2026-11-14 ("Raster als Hauptfigur, Treemap als Anteile
+// daneben"):
+// - The grid, the default: one row per subject, one cell per year, shaded on one fixed scale for
+//   every figure; a bar at the end of the row counts all letters of the subject. The rows that fit
+//   the screen are the most frequent subjects, ordered from early to late peak; scrolling leads to
+//   the next block of the same size, and the search reaches every subject.
+// - The treemap ("Anteile"): every subject an area by its letters, grouped by the kind of subject
+//   the data carry; the course of a chosen subject stands below the map as its row of the grid.
+// Choosing a subject sets the subject filter; the strip under the figure then names the
+// correspondents, places and neighbouring subjects of the choice, each a filter of its own.
+// The grid is painted on a canvas, because some hundred rows of seventy cells would be thousands of
+// nodes rebuilt on every scroll; the names are HTML options above it, so they keep focus, keyboard
+// and accessible names, and the pointer is matched to rows and years by geometry.
 
 import { escapeHtml, foldText, debounce, isMultiYearSpan, personKey, placeKey, letterRecipients, isUnknownPlaceName } from '../utils.js';
 import { state } from '../state-manager.js';
@@ -14,18 +19,14 @@ import { renderDataTable } from './view-support.js';
 import { findEgo } from './network-view.js';
 
 export const ORDERS = ['peak', 'size', 'first'];
+export const VARIANTS = ['grid', 'treemap'];
 // Subjects that are languages (Lexvo and the language list of the HSA) against all other subjects;
 // the categories come from cmif-parser.js (categorizeSubject)
 const LANGUAGE_CATEGORIES = new Set(['lexvo', 'hsa_language']);
-// Below this figure width the names stand above their ridge instead of in a column beside it
+// Below this figure width the names stand above their cells instead of in a column beside them
 const NARROW_WIDTH = 600;
-// Marks in the strip of the chosen subject: correspondents, places, neighbouring subjects. A phone
-// shows fewer and leaves the neighbours to the dark inner ridges of the figure.
+// Marks in the strip of the chosen subject: correspondents, places, neighbouring subjects
 const MARKS = { wide: [4, 2, 2], narrow: [3, 1, 0] };
-// Three figures of the same subjects under trial until the operator chooses (2026-11-14): the
-// course of each subject (ridge, the default), its share of all (treemap) and its years on one
-// common scale (grid)
-export const VARIANTS = ['ridge', 'treemap', 'grid'];
 // Lower bounds of the four shades of the grid, one fixed scale for every figure and filter: a year
 // with 1, 2 to 3, 4 to 9, or 10 and more letters. Fixed bounds keep a shade comparable between
 // filter states; over the whole HSA the steps hold about 60, 26, 12 and 3 % of the filled cells.
@@ -46,7 +47,7 @@ let hoverIndex = -1;
 let hoverYear = null;
 let lastChosen = null;
 let tableStale = true;
-let variant = 'ridge';
+let variant = 'grid';
 // Keys of the tail opened in the treemap, null for the whole map
 let drill = null;
 const egoCache = { letters: null, ego: null, totals: null };
@@ -55,6 +56,8 @@ const el = id => document.getElementById(id);
 const fmt = n => n.toLocaleString('de-DE');
 const plural = (n, one, many) => `${fmt(n)} ${n === 1 ? one : many}`;
 const span = (a, b) => (a === b ? String(a) : `${a}–${b}`);
+// The one form of counts (design.md, rule 7): "20 von 257 Briefen", the whole alone as "257 Briefe"
+const ofLetters = (part, whole) => (part === whole ? plural(whole, 'Brief', 'Briefe') : `${fmt(part)} von ${plural(whole, 'Brief', 'Briefen')}`);
 
 /**
  * Key of a subject, the same expression the state manager filters with
@@ -261,18 +264,28 @@ export function restLabel(rest) {
 }
 
 /**
+ * What the tail holds of the whole, e.g. "zusammen 7.403 von 23.020 Nennungen"
+ * @param {Array} rest
+ * @param {number} whole - all mentions of the map
+ * @returns {string}
+ */
+export function restShare(rest, whole) {
+    const sum = rest.reduce((n, s) => n + s.total, 0);
+    return `zusammen ${fmt(sum)} von ${plural(whole, 'Nennung', 'Nennungen')}`;
+}
+
+/**
  * @param {Object} dependencies
  * @param {Function} dependencies.getFilteredLetters - letters of all filters, the chosen subject included
  * @param {Function} dependencies.getAllLetters
  * @param {Function} dependencies.toggleSubject - sets or releases the subject filter
  * @param {Function} dependencies.togglePerson - sets or releases the person filter
  * @param {Function} dependencies.togglePlace - sets or releases the place filter
- * @param {Function} dependencies.revealLetters - opens the letters of the selection in the drawer
  */
 export function initTopicsView(dependencies) {
     deps = dependencies;
-    const asked = new URLSearchParams(window.location.search).get('variant');
-    if (VARIANTS.includes(asked)) variant = asked;
+    // variant=treemap opens the map; variant=grid and no parameter open the grid
+    if (new URLSearchParams(window.location.search).get('variant') === 'treemap') variant = 'treemap';
 }
 
 // The figure shows the letters of all filters except the subject: a chosen subject stands out among
@@ -317,27 +330,26 @@ export function renderTopicsList() {
     model = {
         profiles,
         letterCount: beside.length,
+        maxTotal: profiles.subjects.reduce((m, s) => Math.max(m, s.total), 1),
         twoKinds: kinds.size > 1,
         chosen: state.filters.subject || null,
-        rows: [],
-        co: null
+        rows: []
     };
-    model.co = model.chosen ? coOccurrence(model.chosen) : null;
     applyVariant();
     measure();
     arrange();
-    if (variant !== 'treemap') renderAxis();
     renderChoice();
     renderTable();
     if (variant === 'treemap') {
         renderMap();
     } else {
+        renderAxis();
         revealChosen();
         draw();
     }
 }
 
-// Show the parts of the chosen variant; order and search serve the row figures only
+// Show the parts of the chosen figure; the order serves the grid only, the search both
 function applyVariant() {
     const map = variant === 'treemap';
     el('topics-figure')?.classList.toggle('hidden', map);
@@ -345,15 +357,16 @@ function applyVariant() {
     el('topics-map')?.classList.toggle('hidden', !map);
     el('topics-map-note')?.classList.toggle('hidden', !map);
     el('topics-order')?.classList.toggle('hidden', map);
-    el('topic-search')?.classList.toggle('hidden', map);
+    el('topics-key')?.classList.toggle('hidden', map);
+    el('topic-search')?.setAttribute('aria-controls', map ? 'topics-map-areas' : 'topics-rows');
     document.querySelectorAll('#topics-variants [data-variant]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.variant === variant)));
 }
 
-// The variant stands in the address, so a shared link opens the same figure
+// The map stands in the address, so a shared link opens it; the grid needs no parameter
 function writeVariant() {
     const url = new URL(window.location.href);
-    if (variant === 'ridge') url.searchParams.delete('variant');
-    else url.searchParams.set('variant', variant);
+    if (variant === 'treemap') url.searchParams.set('variant', 'treemap');
+    else url.searchParams.delete('variant');
     window.history.replaceState(window.history.state, '', url);
 }
 
@@ -366,37 +379,18 @@ function arrange() {
     renderRows();
 }
 
-// Letters per year that share a letter with the chosen subject, per other subject
-function coOccurrence(chosen) {
-    const co = new Map();
-    for (const letter of deps.getFilteredLetters()) {
-        const year = yearOf(letter);
-        if (year === null) continue;
-        const seen = new Set();
-        for (const s of letter.mentions?.subjects || []) {
-            const key = subjectKey(s);
-            if (key === chosen || seen.has(key)) continue;
-            seen.add(key);
-            let years = co.get(key);
-            if (!years) co.set(key, (years = new Map()));
-            years.set(year, (years.get(year) || 0) + 1);
-        }
-    }
-    return co;
-}
-
 function readInk() {
     const css = getComputedStyle(el('topics-figure'));
     const token = name => css.getPropertyValue(name).trim();
     ink = {
-        topic: token('--color-role-topic'), language: token('--color-data'), chosen: token('--color-primary'),
-        chosenBand: token('--color-primary-light'), hoverBand: token('--color-bg-light'), bg: token('--color-bg'),
-        grid: token('--color-border-light'), rule: token('--color-border-control'), cursor: token('--color-text-light'),
+        chosen: token('--color-primary'), text: token('--color-text'), grid: token('--color-border-light'),
+        rule: token('--color-border-control'), quiet: token('--color-text-light'), band: token('--color-bg-light'),
+        paper: token('--color-bg'),
         steps: [1, 2, 3, 4].map(n => token(`--tp-step-${n}`))
     };
 }
 
-// Geometry of the figure for its current size: row pitch, ridge height, name column and blocks
+// Geometry of the grid for its current size: row pitch, name column, cells, bar column and blocks
 function measure() {
     const scroll = el('topics-scroll');
     const width = scroll?.clientWidth || 0;
@@ -406,34 +400,28 @@ function measure() {
         return;
     }
     const narrow = width < NARROW_WIDTH;
-    // Narrow: the name takes the upper part of the row and the ridge stays below it; wide: the
-    // ridge rises over the rows above, as a ridgeline does, so the rows can stay close
-    // 26px leaves about twenty rows on a laptop screen, the most the first screen carries as
-    // text beside header and sidebar (density limit of the work profile)
+    // 26px leaves about twenty rows on a laptop screen, the most the first screen carries as text
+    // beside header and rail (density limit of the work profile); a phone puts the name above
     const pitch = narrow ? 38 : 26;
-    const nameW = narrow ? 0 : Math.round(Math.min(230, Math.max(140, width * 0.24)));
+    // The name column grows with the screen up to 300px, where long titles of journals fit
+    const nameW = narrow ? 0 : Math.round(Math.min(300, Math.max(150, width * 0.2)));
     const plotX0 = narrow ? 12 : nameW + 12;
-    // The grid keeps a column at the right for the bar of all letters of a subject
-    const grid = variant === 'grid';
-    const barW = grid ? (narrow ? 40 : 80) : 0;
+    const barW = narrow ? 44 : Math.round(Math.min(140, Math.max(90, width * 0.08)));
     const plotX1 = width - 16 - barW;
     geom = {
         width, height, narrow, pitch, nameW, plotX0, plotX1, barW,
-        ridge: narrow ? 20 : Math.round(pitch * 2.2),
-        // Room above the first row for the part of its ridge that rises over the row; the grid
-        // has no overlap
-        offset: narrow || grid ? 0 : Math.round(pitch * 1.2),
+        cellH: narrow ? 16 : pitch - 8,
         // A block is the rows of the first screen. It follows the window, not the figure, so that
         // the strip of a chosen subject or the open drawer, which shorten the figure, do not
-        // reorder it; the subtrahend is the height of header, axis, table line and drawer line.
-        block: Math.max(8, Math.floor((window.innerHeight - (narrow ? 300 : 246)) / pitch))
+        // reorder it; the subtrahend is the height of the bars above and below the figure.
+        block: Math.max(8, Math.floor((window.innerHeight - (narrow ? 300 : 250)) / pitch))
     };
 }
 
 function xOf(year) {
     const { yearMin, yearMax } = model.profiles;
     const { plotX0, plotX1 } = geom;
-    return plotX0 + ((year - yearMin + 0.5) / (yearMax - yearMin + 1)) * (plotX1 - plotX0);
+    return plotX0 + ((year - yearMin) / (yearMax - yearMin + 1)) * (plotX1 - plotX0);
 }
 
 function yearAt(x) {
@@ -444,17 +432,11 @@ function yearAt(x) {
     return Math.max(yearMin, Math.min(yearMax, year));
 }
 
-// Height of a count: square root of its share of the largest yearly count, so a subject with a
-// few letters a year still shows its course beside one with dozens; the key names the values
-function heightOf(count) {
-    if (!count) return 0;
-    return Math.max(1.5, geom.ridge * Math.sqrt(count / model.profiles.maxYearCount));
-}
-
 function describe(s) {
-    if (s.first === null) return `${plural(s.total, 'Brief', 'Briefe')}, ohne Jahr`;
+    const letters = ofLetters(s.total, model.letterCount);
+    if (s.first === null) return `${letters}, ohne Jahr`;
     const undated = s.undated ? `, davon ${fmt(s.undated)} ohne Jahr` : '';
-    return `${plural(s.total, 'Brief', 'Briefe')} ${span(s.first, s.last)}, die meisten ${s.peak} (${fmt(s.peakCount)})${undated}`;
+    return `${letters}, ${span(s.first, s.last)}, die meisten ${s.peak} (${fmt(s.peakCount)})${undated}`;
 }
 
 function renderRows() {
@@ -470,9 +452,10 @@ function renderRows() {
         const chosen = s.key === model.chosen;
         return `<li role="option" class="tp-row${chosen ? ' tp-row--chosen' : ''}" data-i="${i}" data-key="${escapeHtml(s.key)}" aria-selected="${chosen}" aria-label="${escapeHtml(`${s.label}: ${describe(s)}`)}" tabindex="${s.key === current ? 0 : -1}"><span class="tp-row__name">${escapeHtml(s.label)}</span></li>`;
     }).join('');
-    if (geom) list.style.setProperty('--tp-pitch', `${geom.pitch}px`);
-    if (geom) list.style.setProperty('--tp-offset', `${geom.offset}px`);
-    if (geom) list.style.setProperty('--tp-name-width', `${geom.nameW}px`);
+    if (geom) {
+        list.style.setProperty('--tp-pitch', `${geom.pitch}px`);
+        list.style.setProperty('--tp-name-width', `${geom.nameW}px`);
+    }
     let message = '';
     if (model.profiles.subjects.length === 0) message = 'Die Auswahl enthält keinen Brief mit Thema.';
     else if (rows.length === 0) message = `Kein Thema enthält „${query.trim()}“.`;
@@ -483,45 +466,45 @@ function renderRows() {
     if (focusedKey) list.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`)?.focus({ preventScroll: true });
 }
 
-// Year labels above the plot, and the keys of colour and height at its right end
+// The axis of the grid: a tick for every year, a label at round years, and over the bar column
+// the scale of the bars; the key line of the shades stands in the bar of the figure
 function renderAxis() {
     const axis = el('topics-axis');
+    const key = el('topics-key');
     if (!axis) return;
-    const { yearMin, yearMax, maxYearCount } = model.profiles;
+    const { yearMin, yearMax } = model.profiles;
     if (!geom || yearMin === null) {
         axis.innerHTML = '';
+        if (key) key.innerHTML = '';
         return;
     }
+    const cellW = (geom.plotX1 - geom.plotX0) / (yearMax - yearMin + 1);
     const step = tickStep(yearMax - yearMin + 1, geom.plotX1 - geom.plotX0);
     const ticks = [];
-    for (let y = Math.ceil(yearMin / step) * step; y <= yearMax; y += step) ticks.push(y);
-    if (!ticks.length) ticks.push(yearMin);
-    const labels = ticks.map(y => `<span class="tp-axis__year" style="left:${xOf(y).toFixed(1)}px">${y}</span>`).join('');
-    const kinds = model.twoKinds
-        ? '<span class="tp-key__item"><span class="tp-key__swatch tp-key__swatch--language"></span>Sprachen</span><span class="tp-key__item"><span class="tp-key__swatch tp-key__swatch--topic"></span>übrige Themen</span>'
-        : '';
-    // The height key: the ridge of one letter and of the largest yearly count, in proportion to
-    // the ridges and shrunk to the height of a text line
-    const glyph = n => {
-        const h = Math.max(1, (12 * heightOf(n)) / geom.ridge);
-        return `<svg width="6" height="12" aria-hidden="true"><rect class="tp-key__bar" x="1" y="${(12 - h).toFixed(1)}" width="4" height="${h.toFixed(1)}"/></svg>`;
-    };
-    const scale = maxYearCount > 1 ? `Briefe je Jahr ${glyph(1)} 1 bis ${glyph(maxYearCount)} ${fmt(maxYearCount)}` : '';
-    // The grid: one line of key for the fixed shades and the bar, in one neutral data tone
-    const sw = step => `<span class="tp-key__swatch tp-key__swatch--s${step}"></span>`;
-    const key = variant === 'grid'
-        ? `<span class="tp-key__line">Briefe je Jahr ${sw(1)} 1 ${sw(2)} 2–3 ${sw(3)} 4–9 ${sw(4)} 10 und mehr, rechts alle Briefe des Themas</span>`
-        : `${kinds}<span class="tp-key__item tp-key__scale">${scale}</span>`;
-    axis.innerHTML = `<div class="tp-axis__years">${labels}</div><div class="tp-key">${key}</div>`;
+    let path = '';
+    for (let y = yearMin; y <= yearMax; y++) {
+        const x = (xOf(y) + cellW / 2).toFixed(1);
+        const labelled = y % step === 0 || (yearMax - yearMin < step && (y === yearMin || y === yearMax));
+        path += `M${x} ${labelled ? 12 : 16}V20`;
+        if (labelled) ticks.push(`<span class="tp-axis__year" style="left:${x}px">${y}</span>`);
+    }
+    const barX = geom.plotX1 + 10;
+    axis.innerHTML = `<svg class="tp-axis__ticks" width="${geom.width}" height="20" aria-hidden="true"><path d="${path}"/></svg>${ticks.join('')}<span class="tp-axis__bar" style="left:${barX}px;width:${geom.width - 16 - barX}px">bis ${plural(model.maxTotal, 'Brief', 'Briefe')}</span>`;
+    if (key) {
+        const sw = n => `<span class="tp-key__swatch tp-key__swatch--s${n}"></span>`;
+        key.innerHTML = `<span class="tp-key__line">Briefe je Jahr ${sw(1)} 1 ${sw(2)} 2–3 ${sw(3)} 4–9 ${sw(4)} 10 und mehr <span class="tp-key__peak"></span> die meisten, Balken: alle Briefe des Themas</span>`;
+    }
 }
 
 function tickStep(years, width) {
-    // Labels at least about 80px apart: decades on a laptop over the HSA's seven decades
-    const fit = Math.max(1, Math.floor(width / 80));
+    // Labels at least about 44px apart, a year label and some air: every year where a period is
+    // short (a reader matched a cell to the wrong year when only every other year was labelled,
+    // reading test of 2026-11-14), every fifth year over the HSA's seven decades
+    const fit = Math.max(1, Math.floor(width / 44));
     return [1, 2, 5, 10, 20, 25, 50, 100].find(step => years / step <= fit) || 100;
 }
 
-// The chosen subject: its letters, who writes about it, from where, and with which subjects
+// The chosen subject: who writes about it, from where, and with which subjects
 function renderChoice() {
     const strip = el('topics-choice');
     if (!strip) return;
@@ -548,22 +531,19 @@ function renderChoice() {
             const r = 2 + 5 * Math.sqrt(e.count / max);
             const pressed = pressedKey === e.key;
             // The size of the mark carries the count; the number itself is in name and title
-            const label = escapeHtml(`${e.name}: ${plural(e.count, 'Brief', 'Briefe')}`);
+            const label = escapeHtml(`${e.name}: ${ofLetters(e.count, letters.length)}`);
             return `<button type="button" class="tp-mark" data-${attr}="${escapeHtml(e.key)}" aria-pressed="${pressed}" aria-label="${label}" title="${label}"><svg width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="${r.toFixed(1)}"/></svg><span class="tp-mark__name">${escapeHtml(e.name)}</span></button>`;
         }).join('');
     };
     const group = (label, html) => (html ? `<div class="tp-choice__group"><span class="tp-choice__label">${label}</span>${html}</div>` : '');
-    // Name and number of the chosen subject stand in its row, the sidebar mark and the drawer line;
-    // the strip adds only what they lack. On a phone the drawer line right below is the only way
-    // to the letters, the button would repeat it in a strip that has little room. The swatch of
-    // "Zusammen mit" is the key of the dark inner ridges, the letters shared with the chosen subject.
+    // Name and number of the chosen subject stand in its row and in the line of the selection at
+    // the lower edge, which also opens its letters; the strip adds only what they lack. Beside the
+    // map it carries the course of the subject, its row of the grid.
     const egoNote = ego ? ` ohne ${escapeHtml(ego.name)}` : '';
-    // Beside the treemap the strip carries the course of the chosen subject, its row of the grid
     const course = variant === 'treemap' ? courseHtml(subject) : '';
     strip.innerHTML = `${course}${group(`Korrespondenten${egoNote}`, marks(persons, 'person', state.filters.person))}
         ${group('Orte', marks(places, 'place', state.filters.place))}
-        ${group(`${variant === 'ridge' ? '<span class="tp-key__swatch tp-key__swatch--with" aria-hidden="true"></span> ' : ''}Zusammen mit`, marks(related, 'subject', null))}
-        ${geom?.narrow ? '' : `<button type="button" class="tp-choice__letters" data-act="letters" aria-label="Briefe zum Thema ${escapeHtml(subject.label)} zeigen"><i class="fas fa-list" aria-hidden="true"></i> Briefe zeigen</button>`}`;
+        ${group('Zusammen mit', marks(related, 'subject', null))}`;
     strip.classList.remove('hidden');
 }
 
@@ -577,41 +557,51 @@ function courseHtml(subject) {
 }
 
 // The treemap: every subject an area by the letters that name it, under all filters but the
-// subject; laid out by the squarified treemap of the vendored D3
+// subject; laid out by the squarified treemap of the vendored D3. A search shows the subjects it
+// finds as a map of their own, so it reaches a subject inside the tail as well.
 function renderMap() {
     const host = el('topics-map');
     const list = el('topics-map-areas');
     const groupsHost = el('topics-map-groups');
     const text = el('topics-map-text');
     if (!host || !list) return;
+    const searching = Boolean(query.trim());
     let subjects = model.profiles.subjects;
-    if (drill) {
+    if (searching) {
+        subjects = matchSubjects(subjects, query);
+    } else if (drill) {
         subjects = subjects.filter(s => drill.has(s.key));
         if (!subjects.length) {
             drill = null;
             subjects = model.profiles.subjects;
         }
     }
-    el('topics-map-back')?.classList.toggle('hidden', !drill);
+    const opened = searching || Boolean(drill);
+    el('topics-map-back')?.classList.toggle('hidden', !opened);
     const W = host.clientWidth;
     const H = host.clientHeight;
     const d3 = window.d3;
     const mentions = subjects.reduce((n, s) => n + s.total, 0);
     if (text) {
-        text.textContent = !subjects.length
+        text.textContent = !model.profiles.subjects.length
             ? 'Die Auswahl enthält keinen Brief mit Thema.'
-            : drill
-                ? `${plural(subjects.length, 'Thema', 'Themen')} mit zusammen ${plural(mentions, 'Nennung', 'Nennungen')}.`
-                : `Ein Brief nennt oft mehrere Themen, die Flächen zählen deshalb ${plural(mentions, 'Nennung', 'Nennungen')} in ${plural(model.letterCount, 'Brief', 'Briefen')}.`;
+            : searching
+                ? (subjects.length ? `${plural(subjects.length, 'Thema enthält', 'Themen enthalten')} „${query.trim()}“, zusammen ${plural(mentions, 'Nennung', 'Nennungen')}.` : `Kein Thema enthält „${query.trim()}“.`)
+                : drill
+                    ? `${plural(subjects.length, 'Thema', 'Themen')} mit zusammen ${plural(mentions, 'Nennung', 'Nennungen')}.`
+                    : `Ein Brief nennt oft mehrere Themen, die Flächen zählen deshalb ${plural(mentions, 'Nennung', 'Nennungen')} in ${plural(model.letterCount, 'Brief', 'Briefen')}.`;
     }
     if (!W || !H || !d3 || !subjects.length) {
         list.innerHTML = '';
         if (groupsHost) groupsHost.innerHTML = '';
+        model.areas = [];
         return;
     }
-    const groups = mapGroups(subjects, W * H, { singlesApart: !drill });
+    // A larger screen gives the same subjects larger areas rather than more of them: at most about
+    // a hundred areas of their own, so a wide map does not turn into a field of unnamed slivers
+    const groups = mapGroups(subjects, W * H, { singlesApart: !opened, minArea: Math.max(MIN_AREA, (W * H) / 100) });
     const grouped = groups.length > 1;
-    const sumOf = list => list.reduce((n, s) => n + s.total, 0);
+    const sumOf = items => items.reduce((n, s) => n + s.total, 0);
     const nodeOf = g => ({ group: g, children: [...g.shown.map(s => ({ s, group: g })), ...(g.rest.length ? [{ rest: g }] : [])] });
     const root = d3.hierarchy(grouped ? { children: groups.map(nodeOf) } : nodeOf(groups[0]))
         .sum(d => (d.s ? d.s.total : d.rest ? sumOf(d.rest.rest) : 0))
@@ -636,15 +626,18 @@ function renderMap() {
         const key = keyOf(d);
         const chosen = !d.rest && key === model.chosen;
         const name = d.rest ? restLabel(d.rest.rest) : d.s.label;
+        const share = d.rest ? restShare(d.rest.rest, mentions) : '';
         const label = d.rest
-            ? `${name}, zusammen ${plural(sumOf(d.rest.rest), 'Nennung', 'Nennungen')}, Enter öffnet sie`
-            : `${name}${grouped ? ` (${d.group.name})` : ''}: ${fmt(d.s.total)} von ${plural(model.letterCount, 'Brief', 'Briefen')}`;
+            ? `${name}, ${share}, Enter öffnet sie`
+            : `${name}${grouped ? ` (${d.group.name})` : ''}: ${ofLetters(d.s.total, model.letterCount)}`;
         // A name stands in an area with room for two short lines; the others name themselves on
         // hover and focus, because names broken into syllables in narrow areas read as noise
         const fits = w >= 72 && h >= 30;
+        const inner = d.rest && h >= 46 ? `${escapeHtml(name)}, ${escapeHtml(share)}` : escapeHtml(name);
         const cls = `tp-area${d.rest ? ' tp-area--rest' : ''}${chosen ? ' tp-area--chosen' : ''}`;
-        return `<li role="option" class="${cls}" data-i="${i}" data-key="${escapeHtml(key)}" aria-selected="${chosen}" aria-label="${escapeHtml(label)}" tabindex="${key === current ? 0 : -1}" style="left:${n.x0.toFixed(1)}px;top:${n.y0.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px">${fits ? `<span class="tp-area__name">${escapeHtml(name)}</span>` : ''}</li>`;
+        return `<li role="option" class="${cls}" data-i="${i}" data-key="${escapeHtml(key)}" aria-selected="${chosen}" aria-label="${escapeHtml(label)}" tabindex="${key === current ? 0 : -1}" style="left:${n.x0.toFixed(1)}px;top:${n.y0.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px">${fits ? `<span class="tp-area__name">${inner}</span>` : ''}</li>`;
     }).join('');
+    model.mapMentions = mentions;
     if (focusedKey) list.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`)?.focus();
 }
 
@@ -654,8 +647,8 @@ function showMapTooltip(li) {
     const d = model?.areas?.[Number(li.dataset.i)];
     if (!tip || !host || !d) return;
     const lines = d.rest
-        ? [restLabel(d.rest.rest), 'Ein Klick öffnet sie']
-        : [d.s.label, `${fmt(d.s.total)} von ${plural(model.letterCount, 'Brief', 'Briefen')}`, describe(d.s)];
+        ? [restLabel(d.rest.rest), restShare(d.rest.rest, model.mapMentions), 'Ein Klick öffnet sie']
+        : [d.s.label, describe(d.s)];
     tip.innerHTML = lines.map(escapeHtml).join('<br>');
     tip.classList.remove('hidden');
     const x = li.offsetLeft + li.offsetWidth / 2;
@@ -682,27 +675,19 @@ function actOnArea(li) {
     }
 }
 
-// The table of all rows costs more than the figure, so it is built when it is opened and kept
-// current only while it is open; closed, the host holds the disclosure alone
+// The table of all rows costs more than the figure, so it is built when it is shown; hidden, the
+// shared switch stands over a table of one row
 function renderTable() {
     const host = el('topics-table');
     if (!host) return;
-    if (!model.rows.length) {
-        host.innerHTML = '';
-        return;
-    }
-    if (!host.querySelector('details')?.open) {
-        if (!host.querySelector('details')) host.innerHTML = '<details class="chart-table"><summary>Daten als Tabelle</summary></details>';
-        tableStale = true;
-        return;
-    }
-    tableStale = false;
+    const shown = host.dataset.tableShown === 'true';
+    tableStale = !shown;
     const rows = model.rows.map(s => [s.label, model.twoKinds ? (s.kind === 'language' ? 'Sprache' : 'Thema') : 'Thema', s.total, s.first ?? '', s.peak ?? '', s.last ?? '']);
     renderDataTable(host, {
         caption: 'Themen mit Briefen, erstem Jahr, Jahr der meisten Briefe und letztem Jahr',
         columns: ['Thema', 'Art', 'Briefe', 'Erstes Jahr', 'Meiste Briefe', 'Letztes Jahr'],
-        rows,
-        limit: rows.length
+        rows: shown ? rows : rows.slice(0, 1),
+        limit: Math.max(1, rows.length)
     });
 }
 
@@ -714,7 +699,7 @@ function revealChosen() {
     const i = chosen ? model.index.get(chosen) : undefined;
     const scroll = el('topics-scroll');
     if (i === undefined || !scroll || !geom) return;
-    const top = geom.offset + i * geom.pitch;
+    const top = i * geom.pitch;
     if (top < scroll.scrollTop || top + geom.pitch > scroll.scrollTop + scroll.clientHeight) {
         scroll.scrollTop = Math.max(0, top - scroll.clientHeight / 2);
     }
@@ -725,11 +710,14 @@ function scheduleDraw() {
     frame = requestAnimationFrame(draw);
 }
 
+// The grid: one cell per subject and year in the shade of its step, an empty year stays empty; a
+// quiet band behind every other decade; the year of the most letters underlined; at the right a
+// bar of all letters of the subject on one linear scale for the figure, over a track of the scale
 function draw() {
     const canvas = el('topics-canvas');
     const scroll = el('topics-scroll');
-    if (!canvas || !scroll || !model || !geom || !ink) return;
-    const { width, height, pitch, ridge, plotX0, plotX1, block, narrow, offset } = geom;
+    if (!canvas || !scroll || !model || !geom || !ink || variant !== 'grid') return;
+    const { width, height, pitch, plotX0, plotX1, block, cellH } = geom;
     const dpr = window.devicePixelRatio || 1;
     if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
         canvas.width = Math.round(width * dpr);
@@ -742,103 +730,34 @@ function draw() {
     ctx.clearRect(0, 0, width, height);
     const { yearMin, yearMax } = model.profiles;
     if (yearMin === null || !model.rows.length) return;
-    // Scroll position counted from the top of the first row
-    const top = scroll.scrollTop - offset;
-    if (variant === 'grid') {
-        drawGrid(ctx, top);
-        return;
-    }
-
-    // Decades as faint lines behind the ridges; on a phone only within the ridge of each row, so
-    // they do not cross the names above the ridges
-    const decades = [];
-    for (let y = Math.ceil(yearMin / 10) * 10; y <= yearMax; y += 10) decades.push(Math.round(xOf(y)) + 0.5);
-    const grid = (y0, y1) => {
-        ctx.strokeStyle = ink.grid;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        for (const x of decades) {
-            ctx.moveTo(x, y0);
-            ctx.lineTo(x, y1);
-        }
-        ctx.stroke();
-    };
-    if (!narrow) grid(0, height);
-
-    // Rows from top to bottom, so a lower ridge covers the foot of the one above; rows below the
-    // screen whose ridge reaches into it are drawn as well
-    const first = Math.max(0, Math.floor(top / pitch) - 1);
-    const last = Math.min(model.rows.length - 1, Math.ceil((top + height + ridge) / pitch));
-    const blocked = order !== 'size';
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(narrow ? 0 : plotX0 - 4, 0, width, height);
-    ctx.clip();
-    for (let i = first; i <= last; i++) {
-        const s = model.rows[i];
-        const base = (i + 1) * pitch - top - (narrow ? 3 : 2);
-        const chosen = s.key === model.chosen;
-        const hovered = i === hoverIndex;
-        const hue = chosen ? ink.chosen : model.twoKinds && s.kind === 'language' ? ink.language : ink.topic;
-        if (blocked && i > 0 && i % block === 0) {
-            const y = Math.round(i * pitch - top) + 0.5;
-            ctx.strokeStyle = ink.rule;
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(width, y);
-            ctx.stroke();
-        }
-        if (narrow) grid(base - ridge, base);
-        ridgePath(ctx, s.years, base);
-        // An opaque fill in the colour of the row's band hides the ridges behind it
-        ctx.fillStyle = chosen ? ink.chosenBand : hovered ? ink.hoverBand : ink.bg;
-        ctx.fill();
-        ctx.globalAlpha = chosen ? 0.35 : 0.45;
-        ctx.fillStyle = hue;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.strokeStyle = hue;
-        ctx.lineWidth = chosen || hovered ? 1.75 : 1;
-        ctx.stroke();
-        // The peak as a dot: in the blocks ordered by peak the dots run from early to late
-        if (s.peak !== null) {
-            ctx.fillStyle = hue;
-            ctx.beginPath();
-            ctx.arc(xOf(s.peak), base - heightOf(s.peakCount), chosen ? 3 : 2.25, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        // On a phone the strip has no room for the neighbouring subjects, whose swatch keys this
-        const shared = narrow ? null : model.co?.get(s.key);
-        if (shared) {
-            ridgePath(ctx, shared, base);
-            ctx.fillStyle = hue;
-            ctx.fill();
-        }
-    }
-    ctx.restore();
-
-    // The year under the pointer as a thin line through all rows
-    if (hoverYear !== null) {
-        const x = Math.round(xOf(hoverYear)) + 0.5;
-        ctx.strokeStyle = ink.cursor;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-    }
-}
-
-// The grid: one cell per subject and year in the shade of its step, an empty year stays empty;
-// at the right a bar of all letters of the subject on one linear scale for the figure
-function drawGrid(ctx, top) {
-    const { width, height, pitch, plotX0, plotX1, block, narrow } = geom;
-    const { yearMin, yearMax } = model.profiles;
+    const top = scroll.scrollTop;
     const cellW = (plotX1 - plotX0) / (yearMax - yearMin + 1);
-    const cellH = narrow ? 16 : pitch - 8;
-    const maxTotal = model.profiles.subjects.reduce((m, s) => Math.max(m, s.total), 1);
     const barX0 = plotX1 + 10;
     const barLen = width - 16 - barX0;
+
+    // Every other decade on a quiet band, so the eye finds a year in seventy columns; a period of
+    // under twenty years has its year labels close enough, and a band there read as a meaning
+    // (reading test of 2026-11-14)
+    if (yearMax - yearMin >= 20) {
+        ctx.globalAlpha = 0.55;
+        ctx.fillStyle = ink.band;
+        for (let d = Math.floor(yearMin / 10) * 10; d <= yearMax; d += 10) {
+            if ((d / 10) % 2 !== 0) continue;
+            const x0 = xOf(Math.max(d, yearMin));
+            const x1 = xOf(Math.min(d + 10, yearMax + 1));
+            ctx.fillRect(x0, 0, x1 - x0, height);
+        }
+        ctx.globalAlpha = 1;
+    }
+    // Where a cell is wide enough, it carries its number: a first-time reader took a year of six
+    // letters for "10 und mehr" from the shade alone (reading test of 2026-11-14)
+    const numbered = cellW >= 22;
+    if (numbered) {
+        ctx.font = `12px ${getComputedStyle(canvas).fontFamily}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+    }
+
     const first = Math.max(0, Math.floor(top / pitch));
     const last = Math.min(model.rows.length - 1, Math.ceil((top + height) / pitch));
     const blocked = order !== 'size';
@@ -857,33 +776,36 @@ function drawGrid(ctx, top) {
             const step = shadeStep(count);
             // The chosen subject in rust at the same four steps, all others in the data tone
             if (chosen) {
-                ctx.globalAlpha = [0.35, 0.55, 0.75, 1][step - 1];
+                ctx.globalAlpha = [0.3, 0.5, 0.75, 1][step - 1];
                 ctx.fillStyle = ink.chosen;
             } else {
                 ctx.fillStyle = ink.steps[step - 1];
             }
             ctx.fillRect(plotX0 + (year - yearMin) * cellW + 0.5, y0, Math.max(1, cellW - 1), cellH);
             ctx.globalAlpha = 1;
+            if (numbered) {
+                ctx.fillStyle = step >= 3 ? ink.paper : ink.text;
+                ctx.fillText(fmt(count), plotX0 + (year - yearMin + 0.5) * cellW, y0 + cellH / 2 + 1);
+            }
         }
-        ctx.fillStyle = chosen ? ink.chosen : ink.cursor;
-        ctx.fillRect(barX0, y0 + cellH / 2 - 3, Math.max(1, (barLen * s.total) / maxTotal), 6);
+        // The year of the most letters, underlined in ink: in the blocks ordered by peak the
+        // marks run from early to late
+        if (s.peak !== null) {
+            ctx.fillStyle = ink.text;
+            ctx.fillRect(plotX0 + (s.peak - yearMin) * cellW + 0.5, y0 + cellH - 1, Math.max(2, cellW - 1), 3);
+        }
+        ctx.fillStyle = ink.grid;
+        ctx.fillRect(barX0, y0 + cellH / 2 - 3, barLen, 6);
+        ctx.fillStyle = chosen ? ink.chosen : ink.quiet;
+        ctx.fillRect(barX0, y0 + cellH / 2 - 3, Math.max(1.5, (barLen * s.total) / model.maxTotal), 6);
     }
-    // The cell under the pointer or the column of its year
+    // The cell under the pointer
     if (hoverYear !== null && hoverIndex >= first && hoverIndex <= last) {
         const y0 = hoverIndex * pitch - top + pitch - cellH - 3;
-        ctx.strokeStyle = ink.cursor;
+        ctx.strokeStyle = ink.text;
         ctx.lineWidth = 1;
         ctx.strokeRect(Math.round(plotX0 + (hoverYear - yearMin) * cellW) + 0.5, Math.round(y0) - 1.5, Math.max(2, Math.round(cellW)), cellH + 3);
     }
-}
-
-function ridgePath(ctx, years, base) {
-    const { yearMin, yearMax } = model.profiles;
-    ctx.beginPath();
-    ctx.moveTo(xOf(yearMin - 0.5), base);
-    for (let y = yearMin; y <= yearMax; y++) ctx.lineTo(xOf(y), base - heightOf(years.get(y) || 0));
-    ctx.lineTo(xOf(yearMax + 0.5), base);
-    ctx.closePath();
 }
 
 function showTooltip(i, year, anchorX) {
@@ -895,11 +817,9 @@ function showTooltip(i, year, anchorX) {
     if (year !== null) lines.push(`${s.label}, ${year}: ${plural(s.years.get(year) || 0, 'Brief', 'Briefe')}`);
     else lines.push(s.label);
     lines.push(describe(s));
-    const shared = year !== null ? model.co?.get(s.key)?.get(year) : null;
-    if (shared) lines.push(`${fmt(shared)} davon zusammen mit dem gewählten Thema`);
     tip.innerHTML = lines.map(escapeHtml).join('<br>');
     tip.classList.remove('hidden');
-    const rowTop = geom.offset + i * geom.pitch - scroll.scrollTop;
+    const rowTop = i * geom.pitch - scroll.scrollTop;
     const x = anchorX ?? geom.plotX0;
     tip.style.left = `${Math.max(4, Math.min(geom.width - tip.offsetWidth - 4, x + 12))}px`;
     const above = rowTop - tip.offsetHeight - 6;
@@ -932,17 +852,21 @@ function bind() {
         scheduleDraw();
     }, { passive: true });
 
-    // toggle does not bubble, so the host listens in the capture phase
-    el('topics-table')?.addEventListener('toggle', (e) => {
-        if (e.target.open && tableStale && model) renderTable();
-    }, true);
+    // The shared switch of the table shows a table of one row until it is first opened; then the
+    // full table is built and the focus stays on the switch
+    el('topics-table')?.addEventListener('click', (e) => {
+        if (!e.target.closest('.chart-table__switch') || !tableStale || !model) return;
+        if (el('topics-table').dataset.tableShown !== 'true') return;
+        renderTable();
+        el('topics-table').querySelector('.chart-table__switch')?.focus();
+    });
 
     // Pointer: the row under it by its band, the year by its position on the axis
     scroll.addEventListener('pointermove', (e) => {
         if (!model || !geom) return;
         const rect = scroll.getBoundingClientRect();
         const mx = e.clientX - rect.left;
-        const i = Math.floor((e.clientY - rect.top + scroll.scrollTop - geom.offset) / geom.pitch);
+        const i = Math.floor((e.clientY - rect.top + scroll.scrollTop) / geom.pitch);
         if (i < 0 || i >= model.rows.length) {
             setHover(-1, null);
             hideTooltip();
@@ -963,7 +887,7 @@ function bind() {
         if (row) deps.toggleSubject(row.dataset.key);
     });
     // One tab stop for the list; arrows, Home, End and the page keys move within it, Enter and
-    // Space choose or release the subject of the focused row
+    // Space choose or release the subject of the focused row, Escape releases the choice
     list.addEventListener('keydown', (e) => {
         const rows = [...list.querySelectorAll('.tp-row')];
         const index = rows.indexOf(document.activeElement);
@@ -1015,6 +939,11 @@ function bind() {
     const search = el('topic-search');
     const applySearch = () => {
         query = search.value;
+        if (variant === 'treemap') {
+            drill = null;
+            renderMap();
+            return;
+        }
         el('topics-scroll').scrollTop = 0;
         arrange();
         renderTable();
@@ -1023,14 +952,17 @@ function bind() {
     search?.addEventListener('input', debounce(applySearch, 150));
     search?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
-            // Enter chooses the first subject the search finds
+            // Enter chooses the first, in the map the largest, subject the search finds
             e.preventDefault();
             if (query !== search.value) applySearch();
-            const firstRow = model?.rows[0];
-            if (firstRow && firstRow.key !== model.chosen) deps.toggleSubject(firstRow.key);
+            const firstKey = variant === 'treemap'
+                ? model?.areas?.find(d => d.s)?.s.key
+                : model?.rows[0]?.key;
+            if (firstKey && firstKey !== model.chosen) deps.toggleSubject(firstKey);
         } else if (e.key === 'ArrowDown') {
             e.preventDefault();
-            el('topics-rows')?.querySelector('.tp-row[tabindex="0"]')?.focus();
+            const target = variant === 'treemap' ? '#topics-map-areas .tp-area[tabindex="0"]' : '#topics-rows .tp-row[tabindex="0"]';
+            document.querySelector(target)?.focus();
         }
     });
 
@@ -1064,7 +996,7 @@ function bind() {
         }
         if (e.key === 'Escape') {
             if (model?.chosen) deps.toggleSubject(model.chosen);
-            else if (drill) el('topics-map-back')?.click();
+            else if (drill || query) el('topics-map-back')?.click();
             e.preventDefault();
             return;
         }
@@ -1083,8 +1015,13 @@ function bind() {
     areas?.addEventListener('focusin', previewArea);
     areas?.addEventListener('pointerleave', hideMapTooltip);
     areas?.addEventListener('focusout', (e) => { if (!areas.contains(e.relatedTarget)) hideMapTooltip(); });
+    // Back to all subjects: closes an opened tail and clears the search
     el('topics-map-back')?.addEventListener('click', () => {
         drill = null;
+        if (search && query) {
+            search.value = '';
+            query = '';
+        }
         renderMap();
         el('topics-map-areas')?.querySelector('.tp-area')?.focus();
     });
@@ -1095,16 +1032,14 @@ function bind() {
     el('topics-choice')?.addEventListener('click', (e) => {
         const btn = e.target.closest('button');
         if (!btn) return;
-        if (btn.dataset.act === 'letters') deps.revealLetters();
-        else if (btn.dataset.act === 'release' && model?.chosen) deps.toggleSubject(model.chosen);
-        else if (btn.dataset.person) deps.togglePerson(btn.dataset.person);
+        if (btn.dataset.person) deps.togglePerson(btn.dataset.person);
         else if (btn.dataset.place) deps.togglePlace(btn.dataset.place);
         else if (btn.dataset.subject) deps.toggleSubject(btn.dataset.subject);
     });
 
-    // Refit when the figure changes size while visible (window, sidebar, drawer, breakpoint)
+    // Refit when the figure changes size while visible (window, rail, drawer, breakpoint)
     new ResizeObserver(() => {
-        if (!model || !el('topics-view')?.classList.contains('active')) return;
+        if (!model || variant !== 'grid' || !el('topics-view')?.classList.contains('active')) return;
         const before = geom ? `${geom.block}/${geom.narrow}/${geom.width}` : '';
         measure();
         if (!geom) return;

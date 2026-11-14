@@ -65,14 +65,8 @@
     margin: 0;
 }
 
-.meta-source__changes summary {
-    cursor: pointer;
-    color: var(--color-link);
-}
-
-.meta-source__changes p {
+.meta-source__changes {
     margin: var(--space-xs) 0 0;
-    max-width: 60ch;
 }
 
 .workspace__meta .tutorial-start-btn {
@@ -130,6 +124,20 @@
     flex: 1;
 }
 
+/* The head of the time part: its label and the one sentence that says how selecting works */
+.dash-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+.dash-hint {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
 /* The label opens the view in full, as on the start page: the name, then what the part shows */
 .dash-open {
     align-self: flex-start;
@@ -181,7 +189,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    min-height: 0;
+    min-height: 72px;
 }
 
 .dash-years {

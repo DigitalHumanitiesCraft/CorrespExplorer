@@ -4,6 +4,8 @@
 import { assert } from './test-runner.js';
 import { licenceName, partnerCounts, mentionCounts, placeCounts, yearLanguageCounts } from '../views/overview-view.js';
 import { mapFrame, frameProjection } from '../mini-figures.js';
+import { countOf, languageOrder, languageCategory, dominantLanguages } from '../selection-ui.js';
+import { LANGUAGE_COLORS, NO_LANGUAGE, computeLanguageColors } from '../constants.js';
 
 const assertEqual = (actual, expected, label) => assert(actual === expected, `${label}: ${actual} statt ${expected}`);
 const person = (id, name = id) => ({ id, name });
@@ -87,6 +89,38 @@ export const DashboardTests = {
                 assertEqual(counts.size, 1, 'ein Jahr');
                 assertEqual([...counts.get(1900).values()].reduce((a, b) => a + b, 0), 3, 'drei Briefe 1900');
                 assertEqual(counts.get(1900).get('_none'), 1, 'ein Brief ohne Sprache');
+            }
+        },
+        {
+            name: 'countOf: eine Form für alle Zählangaben, ungefiltert nur die Gesamtzahl',
+            run() {
+                assertEqual(countOf(774, 774, 'Orte', 'Orten'), '774 Orte', 'ungefiltert');
+                assertEqual(countOf(95, 774, 'Orte', 'Orten'), '95 von 774 Orten', 'gefiltert');
+                assertEqual(countOf(1030, 1031, 'Personen'), '1.030 von 1.031 Personen', 'Tausenderpunkt');
+            }
+        },
+        {
+            name: 'languageOrder und dominantLanguages: Reihenfolge der Farben, Sprache einer Marke nach ihren Briefen',
+            run() {
+                const saved = { ...LANGUAGE_COLORS };
+                computeLanguageColors([
+                    { language: { code: 'fr' } }, { language: { code: 'de' } }, { language: { code: 'de' } }
+                ]);
+                const order = languageOrder(new Map([['fr', 1], ['de', 2], ['other', 0], [NO_LANGUAGE, 3]]));
+                assertEqual(order.join(','), `de,fr,${NO_LANGUAGE}`, 'Häufigkeit im Bestand, ohne leere Gruppen, ohne Angabe zuletzt');
+                assertEqual(languageCategory('xx'), 'other', 'Sprache ohne eigene Farbe gehört zum Rest');
+                assertEqual(languageCategory(null), NO_LANGUAGE, 'ohne Sprache');
+                const dominant = dominantLanguages([
+                    { place: 'a', language: { code: 'fr' } },
+                    { place: 'a', language: { code: 'de' } },
+                    { place: 'a', language: { code: 'fr' } },
+                    { place: 'b', language: { code: 'de' } },
+                    { place: 'b', language: { code: 'fr' } }
+                ], l => [l.place]);
+                assertEqual(dominant.get('a'), 'fr', 'häufigste Sprache');
+                assertEqual(dominant.get('b'), 'de', 'Gleichstand geht an die frühere Farbe');
+                Object.keys(LANGUAGE_COLORS).forEach(key => delete LANGUAGE_COLORS[key]);
+                Object.assign(LANGUAGE_COLORS, saved);
             }
         },
         {

@@ -158,12 +158,13 @@ export function renderFilterNotice(viewId) {
  * @returns {Object<string, string>}
  */
 /**
- * Text alternative of a chart: a collapsed table of the values the chart shows, below the chart.
+ * Text alternative of a chart: a table of the values the chart shows, below the chart, shown on
+ * one quiet switch named by `label`.
  * Screen readers and keyboard users get every value without pointing at marks, and everyone can
  * read exact numbers. Every cell is escaped. The scrolling region takes focus, so the keyboard can
  * scroll it (axe scrollable-region-focusable). Without rows the host is emptied.
  * @param {HTMLElement|null} host - container below the chart
- * @param {{caption: string, columns: string[], rows: Array<Array<string|number>>, limit?: number}} table
+ * @param {{caption: string, columns: string[], rows: Array<Array<string|number>>, limit?: number, label?: string}} table
  */
 export function renderDataTable(host, { caption, columns, rows, limit = 500, label = 'Daten als Tabelle' }) {
     if (!host) return;

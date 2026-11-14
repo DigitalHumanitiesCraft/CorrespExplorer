@@ -1,24 +1,29 @@
 /* Start page (index.html only)
- * One figure fills the screen below logo, sentence and links: a letter record of the chosen
- * dataset in the middle, the statements of the data model in three bands around it, each a small
- * aggregate and a link into its view (start-figures.js). The note on the experiment closes the
- * page. design.md, Startseite. */
+ * Under the shared header (css/site-frame.css) one line says what the page shows, then the choice
+ * of the holding and one figure fills the screen: the letter of the holding at the left and the
+ * small views of the explorer, composed from what the holding carries (start-figures.js). The
+ * shared footer follows below the first screen. design.md, Startseite. */
 
-/* The start page has no fixed header, so the offset every other page keeps for it is not needed */
+/* The start page has no fixed header of the explorer, so the offset other pages keep is not needed */
 body:has(.landing) {
     padding-top: 0;
 }
 
-/* A fixed height lets the bands share the screen; below 680px the page grows and scrolls instead */
+/* The first screen is the header and this area; below 680px the page grows and scrolls instead.
+   The footer of the project sites follows under it */
 .landing {
-    height: max(100dvh, 680px);
+    height: max(calc(100dvh - var(--site-head-height)), 620px);
     display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    gap: var(--space-lg);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--space-md);
     width: 100%;
     max-width: 120rem;
     margin: 0 auto;
-    padding: var(--space-lg) var(--space-2xl);
+    padding: var(--space-md) var(--space-2xl) var(--space-lg);
+}
+
+.landing:focus {
+    outline: none;
 }
 
 /* Files dragged anywhere onto the page are taken (upload.js); the frame says so while they hover */
@@ -27,53 +32,25 @@ body:has(.landing) {
     outline-offset: -8px;
 }
 
+/* The mark of the tool without its name, which the header carries, and the one line beside it */
 .landing-intro {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    display: flex;
     align-items: center;
-    column-gap: var(--space-2xl);
+    gap: var(--space-lg);
 }
 
-.landing-title {
-    margin: 0;
-    line-height: 0;
-}
-
-/* The logo file has wide transparent bands above and below the mark; the aspect ratio crops them */
-.landing-logo {
-    display: block;
-    width: clamp(200px, 19vw, 380px);
+.landing-mark {
+    flex: none;
+    width: 48px;
     height: auto;
-    aspect-ratio: 1920 / 600;
-    object-fit: cover;
 }
 
 .landing-lead {
     margin: 0;
-    max-width: 60ch;
+    max-width: 80ch;
     font-size: var(--font-size-lg);
     line-height: var(--line-height-tight);
     color: var(--color-text);
-}
-
-.landing-nav {
-    align-self: start;
-    display: flex;
-    gap: var(--space-sm);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
-.landing-nav a {
-    display: inline-block;
-    min-height: 24px;
-    padding: var(--space-xs) var(--space-sm);
-    color: inherit;
-}
-
-.landing-nav a:hover,
-.landing-nav a:focus-visible {
-    color: var(--color-link);
 }
 
 .landing-figure {
@@ -89,13 +66,6 @@ body:has(.landing) {
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-md) var(--space-lg);
-}
-
-.dataset-lead {
-    font-size: var(--font-size-sm);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-text-light);
 }
 
 /* A segmented control: the chosen dataset is filled in the selection colour, the others are
@@ -154,6 +124,10 @@ body:has(.landing) {
     cursor: pointer;
 }
 
+.figure-bar.is-loading-own .figure-open {
+    display: none;
+}
+
 .figure-open::after {
     content: ' \2192';
 }
@@ -162,51 +136,25 @@ body:has(.landing) {
     background: var(--color-primary-light);
 }
 
-/* One's own data: a quiet control at the end of the line, its panel floats over the figure */
-.own-data {
-    position: relative;
-    margin-left: auto;
-}
-
-.own-data summary {
-    min-height: 32px;
-    padding: var(--space-xs) var(--space-md);
-    border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-sm);
-    color: var(--color-text);
-    cursor: pointer;
-    list-style: none;
-}
-
-.own-data summary::-webkit-details-marker {
-    display: none;
-}
-
-.own-data[open] summary,
-.own-data summary:hover {
-    border-color: var(--color-primary);
-    color: var(--color-link);
-}
-
+/* One's own data: opened in place under the choice by the entry "Eigene Daten" */
 .own-data-panel {
-    position: absolute;
-    top: calc(100% + var(--space-sm));
-    right: 0;
-    z-index: var(--z-dropdown);
-    display: grid;
-    gap: var(--space-md);
-    width: min(28rem, calc(100vw - 2 * var(--space-lg)));
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md) var(--space-lg);
     padding: var(--space-lg);
-    border: 1px solid var(--color-border-control);
+    border: 1px dashed var(--color-border-control);
     border-radius: var(--radius-md);
-    background: var(--color-bg);
 }
 
 .own-data-panel p {
     margin: 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
+}
+
+.own-data-panel .url-input-wrapper {
+    flex: 1 1 24rem;
 }
 
 /* Visually hidden but focusable, so keyboard users reach the file picker; its label shows the focus */
@@ -290,13 +238,6 @@ body:has(.landing) {
     color: var(--color-text-light);
 }
 
-/* What the holding lacks, said once above the figure */
-.model-missing {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
 /* The figure. The letter at the left, one row per band the dataset fills; rows and the widths of
    the figures in a band come from the composition (start-compose.js, set by start-figures.js) */
 .model {
@@ -324,15 +265,6 @@ body:has(.landing) {
     flex-direction: column;
     gap: var(--space-xs);
     min-height: 0;
-}
-
-/* Small capitals with slight tracking, the form of group names in the explorer (design.md) */
-.band-label {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-text-light);
 }
 
 .band-figures {
@@ -523,10 +455,6 @@ body:has(.landing) {
     fill: var(--color-text);
 }
 
-.mini-label--quiet {
-    fill: var(--color-text-light);
-}
-
 .mini-track {
     fill: var(--color-bg-light);
 }
@@ -627,6 +555,28 @@ rect.mini-hit.is-pickable:hover {
 .record-sheet:first-of-type,
 .record-sheet--core {
     padding-top: 40px;
+}
+
+/* On hover and focus a sheet names the part of the model its lines belong to, so the page needs
+   no band headings (the operator removed them on 2026-11-14) */
+.record-sheet::before {
+    content: attr(data-caption);
+    position: absolute;
+    top: -0.75em;
+    left: var(--space-md);
+    z-index: var(--z-raised);
+    padding: 0 var(--space-xs);
+    background: var(--color-bg);
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.04em;
+    color: var(--color-text-light);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.record-sheet:hover::before,
+.record-sheet:focus-within::before {
+    opacity: 1;
 }
 
 .record-flap {
@@ -740,12 +690,6 @@ a.record-link {
     background: var(--color-primary-light);
 }
 
-.disclaimer p {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
 /* Below this width each band follows its sheet of the letter in one column, with the same
    content; the numbered tags carry the connection, as on wide screens */
 @media (max-width: 1023px) {
@@ -756,26 +700,7 @@ a.record-link {
     }
 
     .landing-intro {
-        grid-template-columns: minmax(0, 1fr);
-        row-gap: var(--space-md);
-    }
-
-    .landing-logo {
-        width: 100%;
-        max-width: 380px;
-    }
-
-    .landing-nav {
-        margin-left: calc(-1 * var(--space-sm));
-    }
-
-    .own-data {
-        margin-left: 0;
-    }
-
-    .own-data-panel {
-        right: auto;
-        left: 0;
+        align-items: flex-start;
     }
 
     .model {

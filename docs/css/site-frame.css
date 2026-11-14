@@ -1,0 +1,120 @@
+/* Header and footer of the tool in the shared form of the DHCraft project sites
+ * (assets/dhcraft/dhcraft-components.css, copied unchanged from the repository brand-assets).
+ * Those building blocks sit in the cascade layer dh; the tool's own unlayered rules in base.css
+ * (links, body font, and the reset of margin and padding on every element) win over every
+ * layered rule, so this file restates the spacing and colours the header and the footer need.
+ * The fonts of header and footer are the shared ones (Sora, Instrument Sans), the page body keeps
+ * the tool's fonts and palette (knowledge/design.md). Meant for every page of the tool;
+ * index.html takes it first. */
+
+/* Height of the header, which a page with a full first screen subtracts */
+:root {
+    --site-head-height: 57px;
+}
+
+.site-head {
+    position: relative;
+    z-index: var(--z-sticky);
+    height: var(--site-head-height);
+    flex-wrap: nowrap;
+    padding: var(--dh-space-2) var(--dh-gutter);
+    font-family: var(--dh-font-text);
+    color: var(--color-text);
+}
+
+/* Header text takes the tool's text colours, so the page keeps one palette of text (design.md);
+   the shared form would use its own ink and soft ink, two more tones beside the tool's */
+.site-head .dh-brand {
+    color: var(--color-text);
+    font-family: var(--dh-font-display);
+    font-size: var(--font-size-lg);
+    text-decoration: none;
+}
+
+.site-head .dh-brand:hover {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+/* The status of the tool, said once in the header and explained in the footer */
+.site-status {
+    padding: 2px var(--space-sm);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    text-decoration: none;
+}
+
+.site-status:hover {
+    color: var(--color-text);
+    text-decoration: underline;
+}
+
+.site-head .dh-nav {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.site-head .dh-nav a {
+    padding: var(--dh-space-2) var(--dh-space-3);
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    text-decoration: none;
+}
+
+.site-head .dh-nav a:hover,
+.site-head .dh-nav a:focus-visible {
+    color: var(--color-text);
+    text-decoration: underline;
+}
+
+.site-foot {
+    margin: 0;
+    font-family: var(--dh-font-text);
+    font-size: var(--font-size-sm);
+}
+
+.site-foot .dh-foot__frame {
+    max-inline-size: 120rem;
+    padding: var(--dh-space-6) var(--dh-gutter) var(--dh-space-5);
+}
+
+.site-foot .dh-foot__licence {
+    padding-block-start: var(--dh-space-4);
+}
+
+.site-foot a,
+.site-foot a:hover {
+    color: inherit;
+}
+
+.site-foot .dh-foot__links a {
+    text-decoration: none;
+}
+
+.site-foot .dh-foot__links a:hover,
+.site-foot .dh-foot__links a:focus-visible {
+    text-decoration: underline;
+}
+
+.site-foot .dh-foot__licence a,
+.site-foot .dh-foot__brand a {
+    text-decoration: underline;
+}
+
+/* The notice of the experiment, the first line under brand and links */
+.site-notice {
+    grid-column: 1 / -1;
+    margin: 0;
+    max-width: 80ch;
+    color: var(--dh-paper);
+}
+
+/* On narrow screens the navigation takes its own line, as in the shared form */
+@media (max-width: 767px) {
+    .site-head {
+        height: auto;
+        flex-wrap: wrap;
+    }
+}

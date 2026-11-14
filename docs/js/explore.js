@@ -384,8 +384,7 @@ async function init() {
             getAllLetters: () => allLetters,
             toggleSubject: key => (activeSubjectFilter === key ? clearSubjectFilter() : applySubjectFilter(key)),
             togglePerson: key => (selectedPersonId === key ? clearPersonFilter() : applyPersonFilter(key)),
-            togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key)),
-            revealLetters
+            togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key))
         });
         initPlacesView({
             getFilteredLetters: () => filteredLetters,
@@ -1248,7 +1247,7 @@ function updateUrlState() {
         const value = urlParams.get(key);
         if (value) newParams.set(key, value);
     }
-    // The variant of the topics figure under trial, set by the topics view itself
+    // The second figure of the topics view (variant=treemap), set by the topics view itself
     if (newParams.get('view') === 'topics' && urlParams.get('variant')) newParams.set('variant', urlParams.get('variant'));
     const sharedQuery = correspSearchShareUrl(datasetSource);
     if (sharedQuery) newParams.set('cs', sharedQuery);
@@ -1506,8 +1505,10 @@ function openRailPanel(name, anchor) {
     // on a phone the panel stands in the off-canvas sidebar itself
     const from = (anchor || button)?.getBoundingClientRect();
     const fromFigure = Boolean(anchor && !anchor.closest('.sidebar'));
-    if (fromFigure) document.body.append(panel); else if (!panel.closest('.sidebar')) button?.after(panel);
-    if (from && (fromFigure || window.matchMedia('(min-width: 768px)').matches)) {
+    const floating = fromFigure || window.matchMedia('(min-width: 768px)').matches;
+    // A floating panel leaves the sidebar, whose stacking and scrolling would cover and clip it
+    if (floating) document.body.append(panel); else if (!panel.closest('.sidebar')) button?.after(panel);
+    if (from && floating) {
         const rail = document.querySelector('.sidebar').getBoundingClientRect();
         const left = fromFigure ? from.left : rail.right + 6;
         const top = fromFigure ? from.bottom + 6 : from.top;

@@ -108,8 +108,10 @@ export function dominantLanguages(letters, keysOf) {
  * @param {function(string): void} options.onToggle - toggles one category
  * @param {function(HTMLElement): void} options.onRest - opens the list of the rest languages
  * @param {function(HTMLElement, string): void} [options.tip] - shows a tooltip at an element
+ * @param {Array<{label: string, color: string}>} [options.others] - colours of the page that are
+ *   no language (the topics), named after the languages so the key explains every colour once
  */
-export function renderLanguageKey(host, { counts, totals, chosen, onToggle, onRest, tip }) {
+export function renderLanguageKey(host, { counts, totals, chosen, onToggle, onRest, tip, others = [] }) {
     const restOnly = Boolean(chosen?.length) && chosen.every(code => code !== NO_LANGUAGE && isRestLanguage(code));
     const pressed = key => Boolean(chosen) && (key === 'other' ? restOnly : !restOnly && chosen.includes(key));
     const total = [...counts.values()].reduce((a, b) => a + b, 0) || 1;
@@ -156,6 +158,13 @@ export function renderLanguageKey(host, { counts, totals, chosen, onToggle, onRe
             button.addEventListener('blur', () => tip(null));
         }
         row.append(button);
+    });
+    others.forEach(({ label, color }) => {
+        const other = document.createElement('span');
+        other.className = 'language-key__other';
+        other.style.setProperty('--language', color);
+        other.textContent = label;
+        row.append(other);
     });
     host.replaceChildren(row);
     if (focused) host.querySelector(`.language-key__mark[data-key="${CSS.escape(focused)}"]`)?.focus();

@@ -434,6 +434,42 @@ class Smoke:
         assert released is None, f"the pressed row did not release {released}"
         assert person, "Enter on the circle chose no person"
 
+    def dashboard_time_scale(self) -> None:
+        # The time profile of the start view keeps its scale and its language colours at short and
+        # tall windows and after the language key toggles a language and releases it: the tallest
+        # pale column fills the plot, no stack rises above it, and the stacks carry several colours.
+        # A plot taller than its box once cut every bar at the top, leaving one blue
+        probe = (
+            "() => { const svg = document.querySelector('#dash-years svg');"
+            " const v = d => [...(d || '').matchAll(/v([\\d.]+)/g)].map(m => +m[1]);"
+            " const fills = [...svg.querySelectorAll('path[fill]')].filter(p => p.getAttribute('d'));"
+            " return { plot: +svg.getAttribute('height') - 5,"
+            " pale: Math.max(...v(svg.querySelector('.dash-pale').getAttribute('d'))),"
+            " stack: Math.max(...fills.flatMap(p => v(p.getAttribute('d')))), colours: fills.length }; }"
+        )
+        problems = []
+        for width, height in ((1280, 800), (1280, 520), (1720, 1000)):
+            ctx = self.browser.new_context(viewport={"width": width, "height": height})
+            page = ctx.new_page()
+            page.goto(f"{self.base}explore.html?view=overview&{HSA}&tour=0")
+            _loaded(page)
+            page.wait_for_timeout(400)
+            states = [("loaded", page.evaluate(probe))]
+            if width == 1280 and height == 800:
+                page.click('.language-key__mark[data-key="fr"]')
+                page.wait_for_timeout(300)
+                french = page.evaluate(probe)
+                page.click('.language-key__mark[data-key="fr"]')
+                page.wait_for_timeout(300)
+                states.append(("released", page.evaluate(probe)))
+                if french["colours"] != 1 or french["stack"] >= french["pale"]:
+                    problems.append(f"French alone: {french}")
+            ctx.close()
+            for name, r in states:
+                if abs(r["pale"] - r["plot"]) > 1 or r["stack"] > r["pale"] + 0.5 or r["colours"] < 2:
+                    problems.append(f"{width}x{height} {name}: {r}")
+        assert not problems, "; ".join(problems)
+
     def reduced_motion_network(self) -> None:
         ctx = self.browser.new_context(
             viewport={"width": 1366, "height": 900}, reduced_motion="reduce"
@@ -457,7 +493,7 @@ class Smoke:
         ctx = self.context()
         page = ctx.new_page()
         page.goto(self.base + "index.html")
-        page.click(".own-data summary")
+        page.click('[data-choice="own"]')
         page.fill("#url-input", CS_QUERY)
         page.click("#url-submit")
         page.click("#config-skip-btn", timeout=60_000)
@@ -491,10 +527,10 @@ class Smoke:
             " const mine = summarizeLetters(letters);"
             " return Object.keys(mine).filter(k => canon(mine[k]) !== canon(file[k])); }"
         )
-        page.click('[data-choice="hsa"]')
+        # The archive is the default holding; a statement it does not carry takes no place
         page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
         network = page.get_attribute(".stmt--persons a.stmt-label", "href")
-        absent = page.locator(".stmt--postmark.is-absent").count()
+        absent = page.locator(".stmt--postmark").count()
         # "anderer Brief" steps to the next prepared letter and writes it into the address
         first = page.inner_text(".record-sender")
         page.click(".record-other")
@@ -508,10 +544,13 @@ class Smoke:
         page.goto(self.base + "index.html?dataset=hsa&letter=unknown")
         page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
         fallback = page.inner_text(".record-sender")
+        # The tutorial left the start page; its address falls back to the archive
+        page.goto(self.base + "index.html?dataset=demo")
+        page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
         ctx.close()
         assert not differs, f"examples.json differs from start-summary.js in {differs}"
         assert network == "explore.html?json=data/hsa-letters.json&view=network", network
-        assert absent == 1, "the archive shows a postmark statement it does not carry"
+        assert absent == 0, "the archive shows a postmark statement it does not carry"
         assert stepped != first and restored == stepped, f"letter {first} -> {stepped} -> {restored}"
         assert fallback == first, f"unknown letter shows {fallback}"
 
@@ -599,6 +638,10 @@ def _checks(
         (
             "start view: a subject filters circle, map and drawer, the circle chooses by keyboard",
             smoke.dashboard_filters,
+        ),
+        (
+            "start view: the time profile keeps scale and colours across sizes and a language toggle",
+            smoke.dashboard_time_scale,
         ),
         ("network does not move under reduced motion", smoke.reduced_motion_network),
         (

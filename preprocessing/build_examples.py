@@ -17,7 +17,7 @@ Usage, from the repository root, after hsa-letters.json changed:
 
 Design decisions: the summary is defined once, in docs/js/start-summary.js, and this script ports
 it rule by rule, because the archive's JSON is too large to summarise on every visit of the start
-page. The tutorial and a local edition are summarised in the browser from the explorer's own
+page. One's own data and a local edition are summarised in the browser from the explorer's own
 parser output, so no second XML reading exists. tests/browser/smoke.py runs the JavaScript
 summary over the same JSON in the browser and compares it with this file. Single-file script
 with the standard library only (script regime); the file carries no generation date, so an

@@ -288,8 +288,9 @@
     stroke-width: 1px;
 }
 
+/* The language of a correspondent's letters with the centre, set per mark by network-view.js */
 .ego-mark--filled {
-    fill: var(--color-data);
+    fill: var(--ego-language, var(--color-data));
     fill-opacity: 0.85;
 }
 

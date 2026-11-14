@@ -1,7 +1,8 @@
-/* Topics view (views/topics-view.js): one ridge of letters per year for every subject.
-   Colours follow design.md: --color-role-topic for subjects, --color-data for subjects that are
-   languages where a dataset has both, --color-primary only for the chosen subject and for what can
-   be pressed. The ridges lie on a canvas above the row buttons, which carry name, focus and pointer. */
+/* Topics view (views/topics-view.js): the grid of subjects by years and the treemap of shares.
+   Colours follow design.md: one neutral data tone from --color-data for every subject, because hues
+   mean the language of letters in every other figure; --color-primary only for the chosen subject
+   and for what can be pressed. The cells lie on a canvas above the row options, which carry name,
+   focus and pointer. */
 
 #topics-view.active {
     min-height: 0;
@@ -9,40 +10,18 @@
 
 /* The four shades of the grid, from the data tone. Wider apart than the heatmap scale
    (--color-scale-*), whose upper two steps a first-time reader could not tell apart in the grid
-   (reading test of 2026-11-14: a year of six letters read as "10 und mehr"). */
+   (reading test of 2026-11-14: a year of six letters read as "10 und mehr"); the top step leans
+   towards ink, so the darkest shade stays apart from the one below it. */
 #topics-view {
-    --tp-step-1: color-mix(in srgb, var(--color-data) 20%, var(--color-bg));
-    --tp-step-2: color-mix(in srgb, var(--color-data) 45%, var(--color-bg));
-    --tp-step-3: color-mix(in srgb, var(--color-data) 72%, var(--color-bg));
-    --tp-step-4: color-mix(in srgb, var(--color-data) 65%, var(--color-text));
+    --tp-step-1: color-mix(in srgb, var(--color-data) 18%, var(--color-bg));
+    --tp-step-2: color-mix(in srgb, var(--color-data) 40%, var(--color-bg));
+    --tp-step-3: color-mix(in srgb, var(--color-data) 66%, var(--color-bg));
+    --tp-step-4: color-mix(in srgb, var(--color-data) 55%, var(--color-text));
 }
 
-.tp-tools {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-sm) var(--space-md);
-}
-
-/* The switch of the figures under trial stands apart from the order by a hairline */
 .tp-variants {
     display: flex;
     gap: 2px;
-    padding-right: var(--space-md);
-    border-right: 1px solid var(--color-border-light);
-}
-
-.tp-order {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 2px;
-}
-
-.tp-order__label {
-    margin-right: var(--space-xs);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
 }
 
 .tp-btn {
@@ -71,8 +50,27 @@
     font-weight: 600;
 }
 
+/* The figure fills the space under the header; strip and table follow below it */
+.tp-stage {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 var(--space-xs);
+}
+
+/* The controls of the figure in one line at its top: search, order, key */
+.tp-bar {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-lg);
+    padding: var(--space-sm) var(--space-lg) var(--space-xs);
+}
+
 .tp-search {
-    width: 11rem;
+    width: 13rem;
     max-width: 100%;
     min-height: 28px;
     padding: var(--space-xs) var(--space-sm);
@@ -84,81 +82,94 @@
     color: var(--color-text);
 }
 
-/* The figure fills the space under the header; strip and table follow below it */
-.tp-stage {
-    flex: 1;
-    min-height: 0;
+.tp-order {
     display: flex;
-    flex-direction: column;
-    padding: 0 0 var(--space-xs);
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
 }
 
-/* Keys of colour and height on the first line, the years over the plot on the second */
+.tp-order__label {
+    margin-right: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.tp-key {
+    flex: 1 1 auto;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+/* One line of key that wraps like text */
+.tp-key__line {
+    display: block;
+    text-align: right;
+}
+
+.tp-key__swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: var(--space-xs);
+    border-radius: 2px;
+    vertical-align: -1px;
+}
+
+.tp-key__swatch--s1 { background: var(--tp-step-1); }
+.tp-key__swatch--s2 { background: var(--tp-step-2); }
+.tp-key__swatch--s3 { background: var(--tp-step-3); }
+.tp-key__swatch--s4 { background: var(--tp-step-4); }
+
+/* The mark of the year of the most letters, as the canvas draws it under the cell */
+.tp-key__peak {
+    display: inline-block;
+    width: 12px;
+    height: 3px;
+    margin-left: var(--space-sm);
+    background: var(--color-text);
+    vertical-align: 1px;
+}
+
+/* The years: a tick for every year, a label at round years, the scale over the bar column */
 .tp-axis {
+    position: relative;
     flex: none;
-    display: flex;
-    flex-direction: column;
+    height: 22px;
     border-bottom: 1px solid var(--color-border-light);
 }
 
-.tp-axis__years {
-    position: relative;
-    order: 2;
-    height: 18px;
+.tp-axis__ticks {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.tp-axis__ticks path {
+    stroke: var(--color-border-control);
+    stroke-width: 1;
 }
 
 .tp-axis__year {
     position: absolute;
+    top: 0;
     transform: translateX(-50%);
     font-size: var(--font-size-xs);
+    line-height: 12px;
     color: var(--color-text-light);
     font-variant-numeric: tabular-nums;
+    background: var(--color-bg);
+    padding: 0 2px;
 }
 
-.tp-key {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    align-items: flex-end;
-    gap: 0 var(--space-md);
-    padding: var(--space-xs) var(--space-lg) 0;
+.tp-axis__bar {
+    position: absolute;
+    top: 0;
     font-size: var(--font-size-xs);
+    line-height: 14px;
     color: var(--color-text-light);
-}
-
-.tp-key__item {
-    display: inline-flex;
-    align-items: flex-end;
-    gap: var(--space-xs);
-}
-
-.tp-key__swatch {
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-}
-
-.tp-key__swatch--topic {
-    background: color-mix(in srgb, var(--color-role-topic) 55%, var(--color-bg));
-    border: 1px solid var(--color-role-topic);
-}
-
-.tp-key__swatch--language {
-    background: color-mix(in srgb, var(--color-data) 55%, var(--color-bg));
-    border: 1px solid var(--color-data);
-}
-
-.tp-key__swatch--with {
-    display: inline-block;
-    background: var(--color-role-topic);
-}
-
-.tp-key__bar {
-    fill: var(--color-text-light);
-}
-
-.tp-key__scale svg {
-    margin-left: var(--space-xs);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
 }
 
 .tp-figure {
@@ -177,18 +188,17 @@
 .tp-rows {
     list-style: none;
     margin: 0;
-    padding: var(--tp-offset, 0) 0 0;
+    padding: 0;
 }
 
 .tp-row {
     display: flex;
     align-items: flex-end;
-    height: var(--tp-pitch, 20px);
-    padding: 0 0 2px var(--space-lg);
+    height: var(--tp-pitch, 26px);
+    padding: 0 0 4px var(--space-lg);
     font-size: var(--font-size-xs);
     line-height: 1.2;
     color: var(--color-text);
-    text-align: left;
     cursor: pointer;
 }
 
@@ -215,14 +225,14 @@
     padding-left: calc(var(--space-lg) - 3px);
 }
 
-.tp-rows--narrow .tp-row.tp-row--chosen {
-    padding-left: 9px;
-}
-
-/* Narrow: the name stands on the upper part of the row, the ridge below it */
+/* Narrow: the name stands on the upper part of the row, the cells below it */
 .tp-rows--narrow .tp-row {
     align-items: flex-start;
     padding: 2px var(--space-sm) 0 12px;
+}
+
+.tp-rows--narrow .tp-row.tp-row--chosen {
+    padding-left: 9px;
 }
 
 .tp-rows--narrow .tp-row__name {
@@ -281,7 +291,6 @@
     color: var(--color-text-light);
 }
 
-.tp-choice__letters,
 .tp-mark {
     display: inline-flex;
     align-items: center;
@@ -297,22 +306,12 @@
     flex-shrink: 0;
 }
 
-.tp-choice__letters {
-    margin-left: auto;
-}
-
-.tp-choice__letters:hover,
 .tp-mark:hover {
     background: var(--color-bg-light);
     color: var(--color-primary-dark);
 }
 
 .tp-mark circle {
-    fill: var(--color-role-topic);
-}
-
-.tp-mark[data-person] circle,
-.tp-mark[data-place] circle {
     fill: var(--color-data);
 }
 
@@ -343,30 +342,13 @@
     max-height: 30vh;
 }
 
-/* Grid: one line of key that wraps like text, with the four fixed shades of the data tone */
-.tp-key__line {
-    display: block;
-    text-align: right;
-}
-
-.tp-key__line .tp-key__swatch {
-    vertical-align: -1px;
-    margin-left: var(--space-xs);
-}
-
-/* Grid: the four fixed shades of the data tone */
-.tp-key__swatch--s1 { display: inline-block; background: var(--tp-step-1); }
-.tp-key__swatch--s2 { display: inline-block; background: var(--tp-step-2); }
-.tp-key__swatch--s3 { display: inline-block; background: var(--tp-step-3); }
-.tp-key__swatch--s4 { display: inline-block; background: var(--tp-step-4); }
-
-/* Treemap: areas in one neutral data tone; the kind of subject is a group with its name, not a
+/* Treemap: areas in the neutral data tone; the kind of subject is a group with its name, not a
    hue, because hues mean the language of letters in every other figure */
 .tp-map {
     position: relative;
     flex: 1;
     min-height: 240px;
-    margin: var(--space-sm) var(--space-lg) 0;
+    margin: var(--space-xs) var(--space-lg) 0;
 }
 
 .tp-map__areas {
@@ -405,7 +387,7 @@
     overflow-wrap: break-word;
 }
 
-/* The tail: the same tone, paler, so it reads as many small subjects together */
+/* The tail: paler, so it reads as many small subjects together */
 .tp-area--rest {
     background: var(--color-bg-light);
     color: var(--color-text-light);
@@ -452,7 +434,8 @@
     cursor: pointer;
 }
 
-/* The course of the chosen subject beside the treemap: its row of the grid */
+/* The course of the chosen subject below the map: its row of the grid, in the steps the grid
+   gives the chosen row */
 .tp-course {
     flex: 1 1 16rem;
     flex-wrap: nowrap;
@@ -465,12 +448,16 @@
 }
 
 .tp-course__base { fill: var(--color-border-light); }
-.tp-course__s1 { fill: var(--color-primary); fill-opacity: 0.35; }
-.tp-course__s2 { fill: var(--color-primary); fill-opacity: 0.55; }
+.tp-course__s1 { fill: var(--color-primary); fill-opacity: 0.3; }
+.tp-course__s2 { fill: var(--color-primary); fill-opacity: 0.5; }
 .tp-course__s3 { fill: var(--color-primary); fill-opacity: 0.75; }
 .tp-course__s4 { fill: var(--color-primary); }
 
 @media (max-width: 767px) {
+    .tp-bar {
+        padding-inline: 12px;
+    }
+
     .tp-search {
         width: 100%;
     }
@@ -485,6 +472,10 @@
         white-space: nowrap;
     }
 
+    .tp-key__line {
+        text-align: left;
+    }
+
     /* The figure keeps a readable height; strip and table follow below it within the view */
     .tp-stage {
         overflow-y: auto;
@@ -497,21 +488,6 @@
 
     .tp-map {
         margin-inline: 12px;
-    }
-
-    .tp-variants {
-        flex-basis: 100%;
-        padding-right: 0;
-        border-right: none;
-    }
-
-    .tp-key__line {
-        text-align: left;
-    }
-
-    .tp-key {
-        justify-content: flex-start;
-        padding-inline: 12px;
     }
 
     .tp-choice {

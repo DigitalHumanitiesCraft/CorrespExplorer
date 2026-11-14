@@ -1,8 +1,8 @@
-// Test Suite: topics view, the pure parts (profiles per subject, peak, order, search, marks, and
-// the treemap and grid variants: tail rule, groups, shade steps)
+// Test Suite: topics view, the pure parts: profiles per subject, peak, order of the grid's rows,
+// search, marks, the grid's shade steps, and the treemap's tail rule, groups and tail labels
 
 import { assert } from './test-runner.js';
-import { subjectProfiles, orderSubjects, matchSubjects, topEntries, shadeStep, splitTail, mapGroups, restLabel } from '../views/topics-view.js';
+import { subjectProfiles, orderSubjects, matchSubjects, topEntries, shadeStep, splitTail, mapGroups, restLabel, restShare } from '../views/topics-view.js';
 
 const assertEqual = (actual, expected, label) => assert(actual === expected, `${label}: ${actual} statt ${expected}`);
 const subject = (key, label, category = 'hsa_subject') => ({ uri: key, label, category });
@@ -137,16 +137,17 @@ export const TopicsTests = {
             }
         },
         {
-            name: 'restLabel: nennt Zahl und Spanne der Briefe',
+            name: 'restLabel und restShare: nennen Zahl, Spanne und Anteil der Nennungen',
             run() {
                 const s = total => ({ total });
                 assertEqual(restLabel([s(1), s(1)]), '2 weitere Themen mit je einem Brief', 'Einzelbriefe');
                 assertEqual(restLabel([s(1)]), '1 weiteres Thema mit einem Brief', 'eins');
                 assertEqual(restLabel([s(1), s(2), s(2)]), '3 weitere Themen mit je 1 bis 2 Briefen', 'Spanne');
+                assertEqual(restShare([s(1), s(2), s(2)], 23020), 'zusammen 5 von 23.020 Nennungen', 'Anteil am Ganzen');
             }
         },
         {
-            name: 'Varianten: HSA in Paris 1882 bis 1892 stimmt mit einer unabhängigen Zählung überein',
+            name: 'Raster und Anteile: HSA in Paris 1882 bis 1892 stimmt mit einer unabhängigen Zählung überein',
             async run() {
                 const data = await (await fetch('data/hsa-letters.json')).json();
                 // The operator's filter: sending place Paris (GeoNames 2988507), years 1882 to 1892

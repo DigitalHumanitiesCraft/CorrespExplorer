@@ -55,12 +55,13 @@ async function init() {
     setupEventListeners();
     enableModalKeyboard();
 
-    // about.html links here with ?demo=true, because the tutorial dataset has to pass the upload
-    // dialog before explore.html can show it
+    // about.html links here with ?demo=true
     const startParams = new URLSearchParams(window.location.search);
     if (startParams.get('demo') === 'true') {
-        const demoCard = document.querySelector('.dataset-card[data-demo="true"]');
-        if (demoCard) handleDatasetSelect(demoCard);
+        // The tutorial left the start page; links to it (about.html) open it in the explorer,
+        // which loads it itself (loadDemoDataset in cmif-parser.js)
+        window.location.replace('explore.html?demo=true&view=overview');
+        return;
     } else if (startParams.get('files')) {
         // The figure links a view of a local edition through here, so view and feat pass on
         loadFileList(startParams.get('files'), { view: startParams.get('view'), feat: startParams.get('feat') });
@@ -334,12 +335,18 @@ async function presentDataset(data, sourceInfo) {
     try {
         // Coordinates from the table first, as the dialog adds them, so the maps can draw the places
         await addTableCoordinates(data);
-        showOwnDataset(data, 'Eigene Daten');
+        showOwnDataset(data, ownName(data, sourceInfo));
     } catch (error) {
         // The figure is an addition; the way into the explorer must not depend on it
         console.error('Start figure could not show the loaded data:', error);
     }
     await showConfigDialog(data, sourceInfo);
+}
+
+// The name of one's own holding in the choice: the title of the file, else its name or address
+function ownName(data, sourceInfo) {
+    const name = (data.meta?.title || sourceInfo?.source || 'Eigene Daten').trim();
+    return name.length > 40 ? `${name.slice(0, 39)}…` : name;
 }
 
 function openOwnData(view = null, feat = null) {

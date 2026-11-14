@@ -35,9 +35,8 @@ const ROW_HEIGHT = { subject: 50, place: 26 };
 // Width of a handle of the period, and the reach within which the pointer grabs it
 const HANDLE = 8;
 // At most this many rows of subjects or places by name, so a tall screen gives them room, not
-// number; the places stay fewer, so a dataset with many sidebar filters keeps its first screen
-// near the density limits of the interface yardstick
-const ROW_LIMIT = { subject: 8, place: 6 };
+// number
+const ROW_LIMIT = { subject: 8, place: 10 };
 
 /**
  * @param {Object} dependencies
@@ -363,11 +362,8 @@ function sourceLines(meta, total) {
         add(document.createTextNode(note));
     }
     if (links.childNodes.length) lines.push(links);
-    if (meta.modifications) {
-        const details = element('details', 'meta-source__changes');
-        details.append(element('summary', '', 'Bearbeitet'), element('p', '', meta.modifications));
-        lines.push(details);
-    }
+    // The change note stands open in the panel of the holding, which is itself on demand (rule 4)
+    if (meta.modifications) lines.push(element('p', 'meta-source__changes', `Bearbeitet: ${meta.modifications}`));
     return lines;
 }
 
@@ -488,7 +484,9 @@ function yearGeometry(box) {
     const width = box.clientWidth;
     const height = box.clientHeight;
     const span = model.last - model.first + 1;
-    return { width, height, band: width / span, plot: Math.max(height - 5, 10) };
+    // The plot never claims more height than the box has, so a short window scales the bars down
+    // instead of cutting every bar at the top edge, where only its lowest colour would remain
+    return { width, height, band: width / span, plot: height - 5 };
 }
 
 function renderYears(filter) {
@@ -499,7 +497,7 @@ function renderYears(filter) {
     view.time.counts = counts;
     view.time.filter = filter.years;
     const { width, height, band, plot } = yearGeometry(box);
-    if (width < 2 || height < 2) return;
+    if (width < 2 || plot < 10) return;
     const gap = band >= 4 ? 1 : 0;
     const w = Math.max(band - gap, 0.5);
     const scale = plot / model.peak;
@@ -707,6 +705,7 @@ function renderLanguages(filter) {
         chosen: filter.languages,
         onToggle: key => deps.toggleLanguage(key),
         onRest: button => deps.openLanguageList?.(button),
+        others: model.hasSubjects ? [{ label: 'Thema', color: view.colors.topic }] : [],
         tip: (el, text) => {
             if (!el) return hideTip();
             const board = document.getElementById('dashboard');

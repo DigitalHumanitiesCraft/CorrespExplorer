@@ -10,6 +10,7 @@ import { formatDateWithPrecision } from '../formatters.js';
 import { state } from '../state-manager.js';
 import { showLetterDetail } from './letters-view.js';
 import { readTokens, renderDataTable } from './view-support.js';
+import { dominantLanguages, languageColor } from '../selection-ui.js';
 
 // Node colours per network type, as custom properties of tokens.css
 const TYPE_COLOR_TOKEN = {
@@ -1696,6 +1697,14 @@ function renderEgoNetwork() {
 
     const model = centreId ? buildEgoNetwork(letters, centreId) : null;
     renderLevelSwitch(model, hasMentions);
+    // A correspondent stands in the colour of the most frequent language of its letters with the
+    // centre, as on the start view and in the space-time view (design.md, rule 5)
+    const languageOf = centreId ? dominantLanguages(letters, letter => {
+        const from = personKey(letter.sender);
+        const to = letterRecipients(letter).map(personKey);
+        if (from === centreId) return to.filter(k => k && k !== centreId);
+        return to.includes(centreId) && from ? [from] : [];
+    }) : new Map();
 
     if (!model || model.inner.length === 0) {
         egoDrawn = null;
@@ -1824,6 +1833,7 @@ function renderEgoNetwork() {
             ? d3.select(this).append('rect').attr('x', -r).attr('y', -r).attr('width', 2 * r).attr('height', 2 * r)
             : d3.select(this).append('circle').attr('r', r);
         shape.attr('class', `ego-mark ${d.ring === 'centre' ? 'ego-mark--centre' : 'ego-mark--filled'}`);
+        if (d.ring !== 'centre') shape.style('--ego-language', languageColor(languageOf.get(d.id) || 'other'));
     });
 
     // Names: the strongest correspondents, then (second level) the most mentioned persons

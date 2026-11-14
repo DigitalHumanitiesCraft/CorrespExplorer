@@ -9,7 +9,7 @@
 // (start-summary.js) or from data/examples.json, its port for the Hugo Schuchardt Archiv.
 
 import { computeLanguageColors, languageLabel, NO_LANGUAGE } from './constants.js';
-import { loadDemoDataset, parseCMIFFiles } from './cmif-parser.js';
+import { parseCMIFFiles } from './cmif-parser.js';
 import { formatSingleDate } from './formatters.js';
 import { summarizeLetters, recordOf, STATEMENTS, letterTime } from './start-summary.js';
 import { composeFigure } from './start-compose.js';
@@ -50,14 +50,6 @@ const loadEgoModule = lazy('./views/network-view.js');
 const loadTimeModule = lazy('./views/timeline-view.js');
 
 const DATASETS = {
-    demo: {
-        name: 'Tutorial',
-        load: async () => {
-            const letters = (await loadDemoDataset()).letters;
-            return { summary: summarizeLetters(letters), letters };
-        },
-        explore: params => `explore.html?demo=true&tour=0&${params}`
-    },
     hsa: {
         name: 'Hugo Schuchardt Archiv',
         // The archive's letters stay off this page (17 MB); its summary and example letters come
@@ -80,7 +72,10 @@ const DATASETS = {
     }
 };
 
+// The three parts of the model. They name the groups in the text alternative and, on hover and
+// focus, the sheets of the letter; the page itself carries no band headings
 const BAND_LABELS = { core: 'Kern des CMIF', extension: 'Erweiterungen im CMIF', record: 'TEI-Briefsätze' };
+const SHEET_CAPTIONS = { core: 'Was jedes CMIF trägt', extension: 'Was die Edition im CMIF ergänzt', record: 'Was ein TEI-Briefsatz ergänzt' };
 // Share of the height each band takes, and of the width each figure takes in its band
 const BAND_WEIGHT = { core: 1.25, extension: 1, record: 0.85 };
 const FIGURE_WEIGHT = { circle: 1, map: 1.15, ranking: 0.8, letters: 2, profile: 2, ring: 1, profiles: 1.6, bar: 1, years: 1.6, histogram: 1, shares: 1.3 };
@@ -101,7 +96,7 @@ const STATEMENT_VIEWS = {
     mentionsPlace: { name: 'Erwähnte Orte', view: 'letters', action: 'Briefliste', count: s => `${format(s.mentioned.places.distinct)} Orte` },
     mentionsSubject: { name: 'Themen', view: 'topics', action: 'Themen', count: s => `${format(s.mentioned.subjects.distinct)} Themen` },
     postmark: { name: 'Poststempel', view: 'letters', feat: 'postmark', action: 'Briefliste', count: s => `${format(s.coverage.postmark)} Briefe` },
-    records: { name: 'Einträge je Brief', view: 'letters', feat: 'records', action: 'Briefliste', count: s => `${format(s.coverage.records)} mehrfach verzeichnet` },
+    records: { name: 'Einträge je Brief', view: 'letters', feat: 'records', action: 'Briefliste', count: s => (s.recordsDiffer ? `${format(s.recordsDiffer)} mit abweichenden Einträgen` : '') },
     features: { name: 'Merkmale der Überlieferung', view: 'letters', action: 'Briefliste', count: () => '' }
 };
 
@@ -128,7 +123,6 @@ let requestedLetter = null;
 let options = {};
 let model = null;
 let status = null;
-let missingLine = null;
 let textAlternative = null;
 // Per drawn figure: draw() and mark(record); a resize redraws, a letter only marks
 let figures = [];
@@ -167,7 +161,6 @@ export function initStartFigure(settings = {}) {
     options = settings;
     model = document.getElementById('model');
     status = document.getElementById('model-status');
-    missingLine = document.getElementById('model-missing');
     textAlternative = document.getElementById('model-text');
     if (!model) return;
     document.querySelectorAll('.dataset-choice [data-choice]').forEach(bindChoice);
@@ -178,10 +171,11 @@ export function initStartFigure(settings = {}) {
     const params = new URLSearchParams(window.location.search);
     const asked = params.get('dataset');
     requestedLetter = params.get('letter');
-    const pressed = document.querySelector('.dataset-choice [aria-pressed="true"]');
-    // A dataset that cannot be read (the local edition on the published site) falls back silently
-    const start = DATASETS[asked] ? asked : pressed?.dataset.choice || 'demo';
-    choose(start, { fallback: start === 'demo' ? null : 'demo' });
+    // The Hugo Schuchardt Archiv is the default; an unknown holding in the address (the former
+    // tutorial among them) and one that cannot be read (the local edition on the published site)
+    // fall back to it silently
+    const start = DATASETS[asked] && asked !== 'own' ? asked : 'hsa';
+    choose(start, { fallback: start === 'hsa' ? null : 'hsa' });
 }
 
 /**
@@ -192,20 +186,42 @@ export function initStartFigure(settings = {}) {
 export function showOwnDataset(data, name) {
     DATASETS.own = { name, own: true, load: async () => ({ summary: summarizeLetters(data.letters), letters: data.letters }) };
     loaded.delete('own');
-    let button = document.querySelector('.dataset-choice [data-choice="own"]');
-    if (!button) {
-        button = document.createElement('button');
-        button.type = 'button';
-        button.dataset.choice = 'own';
-        bindChoice(button);
-        document.querySelector('.dataset-choice')?.append(button);
-    }
-    button.textContent = name;
+    const button = document.querySelector('.dataset-choice [data-choice="own"]');
+    if (button) button.textContent = name;
+    showOwnPanel(false);
     choose('own');
 }
 
+// "Eigene Daten" without loaded data opens the file choice, the drop target and the address field
+// in place of the figure; with loaded data it chooses them, and a second press opens the panel
+// again for other data
 function bindChoice(button) {
-    button.addEventListener('click', () => choose(button.dataset.choice));
+    button.addEventListener('click', () => {
+        const key = button.dataset.choice;
+        if (key === 'own' && (!DATASETS.own || current === 'own')) {
+            const panel = document.getElementById('own-data-panel');
+            showOwnPanel(panel?.classList.contains('hidden'));
+            return;
+        }
+        showOwnPanel(false);
+        choose(key);
+    });
+}
+
+function showOwnPanel(open) {
+    const panel = document.getElementById('own-data-panel');
+    const button = document.querySelector('.dataset-choice [data-choice="own"]');
+    if (!panel) return;
+    panel.classList.toggle('hidden', !open);
+    button?.setAttribute('aria-expanded', String(Boolean(open)));
+    // While the panel is open no holding is chosen, so the way into the explorer steps back
+    document.querySelector('.figure-bar')?.classList.toggle('is-loading-own', Boolean(open));
+    if (open) {
+        document.querySelectorAll('.dataset-choice [data-choice]').forEach(b => b.setAttribute('aria-pressed', String(b === button)));
+        panel.querySelector('.upload-btn')?.focus?.();
+    } else if (current) {
+        document.querySelectorAll('.dataset-choice [data-choice]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.choice === current)));
+    }
 }
 
 async function choose(key, { fallback = null } = {}) {
@@ -278,25 +294,18 @@ function render(entry, dataset) {
         element.className = `band band--${band.key}`;
         element.style.gridRow = String(row + 1);
         element.setAttribute('aria-label', BAND_LABELS[band.key]);
-        const label = document.createElement('p');
-        label.className = 'band-label';
-        label.textContent = BAND_LABELS[band.key];
         const row1 = document.createElement('div');
         row1.className = 'band-figures';
         // Widths from the figures this dataset gets, so freed space goes to what is there
         row1.style.gridTemplateColumns = band.items.map(item => `minmax(0, ${FIGURE_WEIGHT[item.figure]}fr)`).join(' ');
         band.items.forEach(item => row1.append(statement(item, context)));
-        element.append(label, row1);
+        element.append(row1);
         // The sheet first, so in one column (narrow screens) each band follows its part of the letter
         parts.push(sheet(band.key, row, composition), element);
     });
     // Heights from the bands this dataset fills
     model.style.gridTemplateRows = composition.bands.map(b => `minmax(0, ${BAND_WEIGHT[b.key]}fr)`).join(' ');
     model.dataset.bands = composition.bands.map(b => b.key).join(' ');
-    if (missingLine) {
-        missingLine.textContent = composition.sentence;
-        missingLine.classList.toggle('hidden', !composition.sentence);
-    }
 
     if (!prefersReducedMotion()) {
         model.classList.add('is-changing');
@@ -479,9 +488,10 @@ function letterMark(marks, anchor) {
         at(x, y) {
             group.style.display = '';
             group.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
-            // The tag turns inwards near the right and top edge, so it stays in the figure
+            // At the left edge of a list the tag stands before the mark, clear of the names; elsewhere
+            // above right, turning inwards near the right and top edge so it stays in the figure
             const width = Number(marks.ownerSVGElement?.getAttribute('width')) || Infinity;
-            tag.setAttribute('transform', `translate(${x > width - 24 ? -11 : 11} ${y < 22 ? 11 : -11})`);
+            tag.setAttribute('transform', x < 24 ? 'translate(-17 0)' : `translate(${x > width - 24 ? -11 : 11} ${y < 22 ? 11 : -11})`);
             return group;
         },
         hide() {
@@ -666,7 +676,8 @@ function drawPlaces(kind) {
 function drawRanking(context, key) {
     const { data, marks, width, height, summary } = context;
     const list = key === 'place' ? summary.placesTop || [] : summary.mentioned?.places?.top || [];
-    const rows = Math.max(1, Math.min(list.length, Math.floor(height / 30)));
+    // At most three names: the ranking says where the letters come from, not every place
+    const rows = Math.max(1, Math.min(list.length, 3, Math.floor(height / 30)));
     const rowHeight = height / Math.max(rows, 1);
     const max = list[0]?.[1] || 1;
     const items = [];
@@ -898,30 +909,34 @@ function drawPostmarks({ data, marks, width, height, summary }) {
 }
 
 // How the records of one letter relate: letters by the number of records the edition keeps of
-// them, and how many of the merged letters have records that differ
+// them, from three records on in one row (how many differ stands in the title)
+const RECORDS_FOLD = 3;
 function drawRecords({ data, marks, width, height, summary }) {
-    const counts = summary.recordCounts || [];
+    const counts = [];
+    (summary.recordCounts || []).forEach(([records, n]) => {
+        if (records < RECORDS_FOLD) counts.push([records, n, String(records)]);
+        else if (counts.length && counts[counts.length - 1][0] === RECORDS_FOLD) counts[counts.length - 1][1] += n;
+        else counts.push([RECORDS_FOLD, n, `${RECORDS_FOLD} und mehr`]);
+    });
     const rows = Math.max(counts.length, 1);
-    const rowHeight = Math.min(30, (height - 18) / rows);
+    const rowHeight = Math.min(30, height / rows);
     const max = Math.max(1, ...counts.map(([, n]) => n));
     const items = [];
     const where = new Map();
-    counts.forEach(([records, n], i) => {
+    counts.forEach(([records, n, label0], i) => {
         const y = i * rowHeight;
         const label = node('text', { x: INSET, y: y + 12, class: 'mini-label' });
-        label.textContent = `${records} ${records === 1 ? 'Eintrag' : 'Einträge'}: ${format(n)} ${n === 1 ? 'Brief' : 'Briefe'}`;
+        label.textContent = `${label0} ${records === 1 ? 'Eintrag' : 'Einträge'}: ${format(n)} ${n === 1 ? 'Brief' : 'Briefe'}`;
         items.push(label, node('rect', { x: INSET, y: y + 16, width: Math.max(((width - INSET) * n) / max, 1), height: 3, class: 'mini-bar' }));
         where.set(records, y + 10);
     });
-    if (summary.recordsDiffer) {
-        const note = node('text', { x: INSET, y: rows * rowHeight + 12, class: 'mini-label mini-label--quiet' });
-        note.textContent = `${format(summary.recordsDiffer)} mit abweichenden Einträgen`;
-        items.push(note);
-    }
     data.replaceChildren(...items);
     marks.replaceChildren();
     const mark = letterMark(marks, 'records');
-    return next => (where.has(next?.records) && next.records > 1 ? mark.at(10, where.get(next.records)) : mark.hide());
+    return next => {
+        const row = next?.records >= RECORDS_FOLD ? RECORDS_FOLD : next?.records;
+        return where.has(row) && row > 1 ? mark.at(10, where.get(row)) : mark.hide();
+    };
 }
 
 // The properties of the transmission as one list of shares, each with its count
@@ -983,6 +998,9 @@ function sheet(band, row, composition) {
     element.className = `record-sheet record-sheet--${band}`;
     element.style.gridRow = String(row + 1);
     element.dataset.band = band;
+    element.dataset.caption = SHEET_CAPTIONS[band];
+    // The caption of a sheet appears on hover and focus; keyboard users reach it through the
+    // numbered lines inside, which are focusable
     if (row === 0) {
         const flap = node('svg', { class: 'record-flap', viewBox: '0 0 100 20', preserveAspectRatio: 'none', 'aria-hidden': 'true' });
         flap.append(node('path', { d: 'M0 0 L50 18 L100 0', 'vector-effect': 'non-scaling-stroke' }));

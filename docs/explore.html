@@ -314,7 +314,12 @@
                              selection holds says the letters drawer below the view -->
                         <div class="overview-body dashboard" id="dashboard">
                             <section class="dash-part dash-part--time" id="dash-time" aria-label="Zeit und Sprache">
-                                <button type="button" class="dash-open" data-open="timeline" aria-describedby="dash-open-timeline"><span class="dash-name">Zeit</span></button>
+                                <div class="dash-head">
+                                    <button type="button" class="dash-open" data-open="timeline" aria-describedby="dash-open-timeline"><span class="dash-name">Zeit</span></button>
+                                    <!-- Selecting is said once for the whole dashboard; fresh readers saw the period
+                                         handles but not that persons, places, topics and languages can be clicked -->
+                                    <p class="dash-hint">Klicken oder Ziehen wählt aus und filtert alle Ansichten</p>
+                                </div>
                                 <span class="visually-hidden" id="dash-open-timeline">öffnet die Zeitleiste</span>
                                 <div class="dash-years-box" id="dash-years-box">
                                     <div class="dash-figure dash-years" id="dash-years" tabindex="0" role="group"></div>
@@ -516,27 +521,28 @@
                 <div id="topics-view" class="tab-content">
                     <div class="view-header view-header--inset">
                         <h2 class="view-header__title">Themen</h2>
-                        <p class="view-header__description">Jede Zeile ist ein Thema, ihre Kurve zeigt seine Briefe je Jahr. Pfeiltasten wechseln die Zeile, Enter filtert nach dem Thema. Die Werte stehen auch als Tabelle unter der Figur.</p>
+                        <p class="view-header__description">Jede Zeile ist ein Thema, jede Zelle ein Jahr, ihre Tönung die Zahl der Briefe, der Balken am Ende alle Briefe des Themas. Anteile zeigt jedes Thema als Fläche nach seinen Briefen. Pfeiltasten wechseln, Enter wählt ein Thema, Escape gibt es frei. Die Werte stehen auch als Tabelle unter der Figur.</p>
                         <div class="view-header__actions">
-                            <div class="tp-tools">
-                                <!-- Variants under trial until the operator chooses (2026-11-14); the course of the rows is the default -->
-                                <div class="tp-variants" id="topics-variants" role="group" aria-label="Darstellung der Themen">
-                                    <button type="button" class="tp-btn" data-variant="ridge" aria-pressed="true">Verlauf</button>
-                                    <button type="button" class="tp-btn" data-variant="treemap" aria-pressed="false">Anteile</button>
-                                    <button type="button" class="tp-btn" data-variant="grid" aria-pressed="false">Raster</button>
-                                </div>
-                                <div class="tp-order" id="topics-order" role="group" aria-labelledby="topics-order-label">
-                                    <span class="tp-order__label" id="topics-order-label">Ordnen nach</span>
-                                    <button type="button" class="tp-btn" data-order="peak" aria-pressed="true">Höhepunkt</button>
-                                    <button type="button" class="tp-btn" data-order="size" aria-pressed="false">Umfang</button>
-                                    <button type="button" class="tp-btn" data-order="first" aria-pressed="false">Erstem Auftreten</button>
-                                </div>
-                                <input type="search" id="topic-search" class="tp-search" placeholder="Thema suchen" aria-label="Thema suchen" aria-controls="topics-rows">
+                            <!-- The two figures the operator chose on 2026-11-14: the grid and the shares beside it -->
+                            <div class="tp-variants" id="topics-variants" role="group" aria-label="Darstellung der Themen">
+                                <button type="button" class="tp-btn" data-variant="grid" aria-pressed="true">Raster</button>
+                                <button type="button" class="tp-btn" data-variant="treemap" aria-pressed="false">Anteile</button>
                             </div>
                         </div>
                     </div>
                     <div class="tp-stage">
-                        <div class="tp-axis" id="topics-axis"></div>
+                        <!-- The controls of the figure stand in the figure (design.md, rule 10) -->
+                        <div class="tp-bar">
+                            <input type="search" id="topic-search" class="tp-search" placeholder="Thema suchen" aria-label="Thema suchen" aria-controls="topics-rows">
+                            <div class="tp-order" id="topics-order" role="group" aria-labelledby="topics-order-label">
+                                <span class="tp-order__label" id="topics-order-label">Ordnen nach</span>
+                                <button type="button" class="tp-btn" data-order="peak" aria-pressed="true">Höhepunkt</button>
+                                <button type="button" class="tp-btn" data-order="size" aria-pressed="false">Umfang</button>
+                                <button type="button" class="tp-btn" data-order="first" aria-pressed="false">Erstem Auftreten</button>
+                            </div>
+                            <div class="tp-key" id="topics-key"></div>
+                        </div>
+                        <div class="tp-axis" id="topics-axis" aria-hidden="true"></div>
                         <div class="tp-figure" id="topics-figure">
                             <div class="tp-scroll" id="topics-scroll">
                                 <ul class="tp-rows" id="topics-rows" role="listbox" aria-label="Themen"></ul>

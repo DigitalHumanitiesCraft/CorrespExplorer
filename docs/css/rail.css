@@ -343,6 +343,26 @@
     outline-offset: 1px;
 }
 
+.language-key__other {
+    display: flex;
+    flex: none;
+    align-items: flex-end;
+    gap: var(--space-xs);
+    margin-left: var(--space-md);
+    padding-bottom: 4px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.language-key__other::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    margin-bottom: 3px;
+    border-radius: 2px;
+    background: var(--language);
+}
+
 @media (max-width: 767px) {
     .language-key {
         flex-wrap: wrap;
