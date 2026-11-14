@@ -30,6 +30,16 @@ related: [project, specification, plan]
 
 ## Einträge
 
+### 2026-11-14 Raum-Zeit und Korrespondenzkreis gebaut, Richtung auf das gemeinsame Briefmodell
+
+- Anlass: Der Operator gab die Richtung auf vier große Ansichten frei und ließ sie mit Subagenten bauen, gab an jeder Stufe Rückmeldung am Bildschirm und entschied am Ende, dass das Werkzeug das Sichtwerkzeug für das gemeinsame Briefmodell des Projekts GOSSIP wird. Seine Sätze stehen wörtlich in [design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14).
+- Entschieden (Operator): Push freigegeben. Säulen der Raum-Zeit-Ansicht nach Sprache gefärbt. Startseite als eine Figur des Datenmodells. Richtung auf das gemeinsame Briefmodell ([plan.md](plan.md#richtung-sichtwerkzeug-für-das-gemeinsame-briefmodell)).
+- Gebaut: Die Raum-Zeit-Ansicht unter Orte, mit den Orten auf einer Grundfläche mit Länderumrissen, der Zeit als Höhe, einem Profil je Ort in den Sprachfarben, drei festen Blickrichtungen und freiem Drehen. Die Szene liegt auf einer Zeichenfläche, weil der Neuaufbau einiger tausend SVG-Elemente je Bild das Drehen langsam machte. Das Netzwerk als Korrespondenzkreis um eine Person: Abstand zur Mitte nach Zahl der Briefe, Winkel nach Beginn des Briefwechsels, Linien nur zwischen Korrespondenten untereinander, die Erwähnten als äußerer Ring, das ganze Netzwerk als zweite Betriebsart. Der Schalter zwischen den Darstellungen eines Gegenstands steht neben dem Titel. Das Menü unter einem Reiter schließt nach einer Wahl.
+- Entschieden (bauende Session): Im Kreis tragen nicht alle Punkte einen Namen, damit alle Korrespondenten im Bild stehen. Der Ausschnitt der Grundfläche folgt den Orten mit dem Großteil der Briefe, Orte außerhalb stehen hohl am Rand. Die Länderumrisse sind Natural Earth, gemeinfrei, unter `docs/vendor/natural-earth/` mit Herkunftsvermerk.
+- Belege: Commit `e9cd779` und der Commit dieses Eintrags. `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen dreizehn Prüfungen. Gegenzählungen an `hsa-letters.json`: ein Ort in einem Jahr in Marke, Jahreswahl und Briefliste gleich, die Zahlen der beiden Stufen des Kreises für zwei Mittelpunkte und einen Zeitraum. Drehen der Raum-Zeit-Figur vor und nach dem Umbau gemessen, siebzehn gegen sechzig Bilder je Sekunde. Stand: gebaut, von der bauenden Session am Bild gesehen, nicht unabhängig gelesen, nicht gepusht.
+- Wer was tat: Der Operator gab Richtung, Rückmeldung und Entscheidungen. Zwei Subagenten (Claude Opus 5.5) bauten je eine Ansicht nach Auftrag dieser Session. Diese Session (Claude Fable 5.2 in Claude Code) schrieb die Raum-Zeit-Ansicht auf die Zeichenfläche um, baute Umrisse, Profile, Sprachfarben, Achsentitel, Drehhinweis und den Schalter und prüfte die Ergebnisse.
+- Offen: die unabhängige Durchsicht vor dem Push, Tastatur, Zoom und reduzierte Bewegung im Browser, die Startseite, die weiteren Bauabschnitte des Entwurfs.
+
 ### 2026-11-14 Parser an den Grazer Fällen: weitere Handlungen, Datumsgrenzen, Registerkennungen, Entsprechungen
 
 - Anlass: Die Session des Projekts GOSSIP fragte im Auftrag des Operators, was das Werkzeug mit den Briefdaten von fünf Grazer Editionen kann. Die Antwort am Code nannte vier Lücken, der Operator beauftragte ihre Behebung.

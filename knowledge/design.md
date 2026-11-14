@@ -88,6 +88,26 @@ Zur Richtung des ganzen Werkzeugs, nach der Arbeit am Parser:
 
 Auf den Vorschlag, den Entwurf auf vier große Ansichten umzuschreiben und die Raum-Zeit-Ansicht zuerst zu bauen: „ja. oder besser mit subagents!“ Der Entwurf steht in [plan.md](plan.md#entwurf-vier-große-ansichten-über-einer-gemeinsamen-auswahl).
 
+Zur Raum-Zeit-Ansicht, nach dem ersten Blick:
+
+> Das finde ich jetzt wirklich sehr gut, aber vielleicht können wir das noch optimieren und verbessern. Und vielleicht könntet ihr es auch noch irgendwie performanter machen.
+
+> hier wäre es gut, wenn ich die Karte darunter sehe, und es sind ein bisschen viele Kugeln, die sich überschneiden.
+
+> Bei den Orten: Das ist eigentlich ganz cool, aber es sollte klar sein, dass man vielleicht einen Button braucht, damit man gleich die Ansicht von oben auf die Karte wieder hat. Man sollte irgendwie genau wissen, dass die Visualisierung dann sagt, dass man sie dann auch drehen kann. Es muss auch irgendwie klar sein, was diese Achse dann ausdrückt. Und können wir mit Farben auch noch arbeiten? Jetzt ist einfach alles nur immer blau.
+
+Auf die ausgezählten Möglichkeiten: „ja, färbe die Säulen nach der Sprache“.
+
+Zum Netzwerk in der ersten Fassung mit zwei Bögen:
+
+> Ja, diese Netzwerke, die schauen immer so aus. Ich bin mir nicht sicher, ob das wirklich die beste Netzwerkvisualisierung ist. Das können wir hier noch optimieren und verbessern. Und diese Auswahl zwischen Liste, Netzwerk und Vergleichen sollte irgendwie präsenter sein. Ich glaube, dass wir hier wieder zu viele Ebenen auch haben. Also im Bild 24 von 282 im Briefwechsel: Das sollte noch besser irgendwie integriert werden.
+
+Zur Startseite:
+
+> Vielleicht könnten wir hier mit einer sehr innovativen, kreativen und ästhetisch anspruchenden Visualisierung die Funktion oder eine besondere Funktion des [CorrespExplorer] darstellen. Wir überlegen uns, was das Coolste wäre: dass wir alles, was wir hier im Screenshot haben, zusammenführen in eine ästhetisch anspruchende Informationsvisualisierung. Die vermittelt, was der [CorrespExplorer] alles kann und welche Art von Daten man damit darstellen kann. Sie berücksichtigt wirklich das Datenmodell von [correspSearch] auch gleich direkt und die dementsprechenden Erweiterungen, weil Hugo [Schuchardt] ja einen weiteren Datenbestand hat.
+
+Zur Richtung, auf die Frage, ob CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell von GOSSIP werden soll: „ja das sollten wir auch gleich zusammen denken! da wollte ich hin“. Was daraus folgt, steht in [plan.md](plan.md#richtung-sichtwerkzeug-für-das-gemeinsame-briefmodell).
+
 Daraus folgt der Aufbau dieser Stufe.
 
 - Die Kopfzeile nennt die Gegenstände einer Korrespondenz, Start, Briefe, Personen, Orte, Zeit und Themen. Bis dahin standen dort zwölf Ansichten, benannt nach ihrer Darstellungstechnik, in einer zweiten Zeile unter Titel und Aktionen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht.

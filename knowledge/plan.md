@@ -191,6 +191,35 @@ Nicht geprüft sind der Wissenskorb mit Einträgen, die dunkle Grundkarte, der E
 
 ## Vorhaben
 
+### Richtung: Sichtwerkzeug für das gemeinsame Briefmodell
+
+Der Operator hat am 2026-11-14 entschieden, dass CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell wird, das im Projekt GOSSIP für die Briefe von fünf Grazer Editionen entsteht ([design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14)). Der Modellentwurf steht im Vault unter „Modellierung von Briefkorrespondenz“ und ist dort als Entwurf gekennzeichnet, seine fachliche Prüfung steht aus. Dieser Abschnitt hält fest, was das Werkzeug von den sieben Bereichen des Entwurfs schon trägt und was ihm fehlt. Er ist eine Lesart der bauenden Session und vom Operator nicht einzeln bestätigt.
+
+| Bereich des Entwurfs | Im Werkzeug | Fehlt |
+|---|---|---|
+| Nachweis | Jeder Brief ist ein Nachweis mit Kennung und Datei. Einträge gleicher Signatur werden zusammengeführt, Übereinstimmungen über Bestände benannt | Nachweis und Mitteilung als getrennte Einheiten, eine ausdrückliche Gleichsetzung zweier Nachweise |
+| Dokument | Signatur, Poststempel, Anschrift | Textzeugen wie Abschrift und Druck, Aufbewahrung |
+| Text und Segment | nichts, das Werkzeug liest Metadaten | Die Funktion der Stelle, an der eine Erwähnung steht, also Brieftext, Übersetzung, Beilage oder Kommentar der Edition |
+| Kommunikation | Versand und Empfang mit mehreren Beteiligten und Körperschaften, weitere Handlungen wie die Weiterleitung | Ort und Zeit des Empfangs, Sicherheit einer Rolle |
+| Entität und Identifizierung | Normdatum, Kennung im Register der Edition, Stufe der Identifizierung | Die Identifizierung als eigene belegte Zuordnung, Sicherheit an Person und Ort, unbekannte Beteiligte ohne gemeinsame Person |
+| Aussage und Beleg | nichts | Aussagen über Dritte mit Zuschreibung, Textstelle und Prüfstand |
+| Digitale Repräsentation | Link in die Edition, Datei, Lizenz des Verzeichnisses | Quellenstand und Version |
+
+Von den Ansichten, die der Entwurf vorschlägt, trägt das Werkzeug das Netzwerk mit benannter Beziehung, die Zeitleiste mit Zeitraum und Datumsgrenze und die Karte der Absendeorte. Die Erschließungsübersicht entsteht mit der Startfigur. Es fehlen die Belegansicht, die Karte mit erwähnten Orten und der Vergleich der Textschichten.
+
+Was sich mit den vorhandenen Daten bauen lässt
+
+- Erwähnte Orte als zweite Schicht in Karte und Raum-Zeit, am Hugo Schuchardt Archiv.
+- Der Schalter zwischen dem, was der Nachweis nennt, und dem, was erwähnt wird, als Stufe in jeder Ansicht und nicht nur im Netzwerk.
+- Der Bestand als Filter und Farbe, sobald mehrere Dateien geladen sind.
+
+Was eine Entscheidung oder Daten von GOSSIP braucht
+
+- Die Form der Lieferung. CMIF trägt weder Aussagen noch die Funktion einer Textstelle. Naheliegend ist ein beschriebenes JSON-Profil des Forschungsbestands, das GOSSIP ausgibt und das Werkzeug neben CMIF und TEI liest. Zu entscheiden ist es im Projekt GOSSIP.
+- Die Aussagen als weitere Stufe: Beziehungen zwischen Personen nach ihrer Art im Korrespondenzkreis, der Beleg mit Zitat und Prüfstand in der Briefliste der Auswahl.
+- Die Unterscheidung von Brieftext und Kommentar an jeder Erwähnung.
+- Die Regel für den weitergereichten Brief und die Gleichsetzung zweier Nachweise, beide beim Operator offen.
+
 ### Entwurf: vier große Ansichten über einer gemeinsamen Auswahl
 
 Der Operator hat diese Richtung am 2026-11-14 freigegeben und den Bau mit Subagenten beauftragt ([design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14)). Sie löst den Entwurf einer Bühne mit Kontextstreifen vom selben Tag ab, dessen Aufbau des Bildschirms unten weiter gilt. Vorbild sind die Entscheidungen am Werkzeug des Projekts GOSSIP, die dort nach seinen Bildschirmdurchsichten getroffen wurden.
