@@ -23,35 +23,52 @@ related: [project, specification, plan]
 
 ## Open
 
-Stand vom 2026-11-14, Ende der Session. Alles Gebaute ist auf main eingecheckt, das Arbeitsverzeichnis ist sauber, alle Prüfungen bestehen am letzten Commit. Nichts vom 2026-11-14 ist vom Operator abgenommen. `origin/main` steht auf `2f78951` vom Mittag desselben Tages, die öffentliche Demo zeigt höchstens diesen Stand. Der Operator hat den Push freigegeben, er ist nicht erfolgt: Vorher fehlt eine unabhängige Durchsicht der neuen Ansichten am gebauten `docs/`, und auf einer Folie des Operators für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der Demo.
+Stand vom 2026-11-15, kurz nach Mitternacht, kontrolliertes Ende der Session auf Wunsch des Operators („Ich möchte jetzt alles kontrolliert beenden und schlafen gehen“). Alles Gebaute ist auf main eingecheckt, am letzten Commit bestehen die Modultests und alle Smoke-Prüfungen. `origin/main` steht auf `2f78951` vom Mittag des 2026-11-14, nichts vom Abend ist öffentlich. Der Operator hat den Push freigegeben, er ist nicht erfolgt: Vorher fehlen eine unabhängige Durchsicht am gebauten `docs/` und sein Blick auf die Ansichten, die er seit ihrem Umbau nicht gesehen hat. Seine Sätze stehen wörtlich in [design.md](design.md#rückmeldungen-des-operators).
 
-Gebaut von Subagenten, von der bauenden Session am Bild gelesen und mit den Prüfungen bestätigt, nicht unabhängig geprüft und nicht abgenommen:
+Zuerst, in dieser Folge, auf seinen Auftrag an alle Projekte („kuratieren, destillieren, refactoren, handoff“), jeder Schritt mit eigenem Commit:
 
-- Startansicht als Dashboard kleiner echter Ansichten, Block zum Bestand in der Seitenleiste.
-- Briefliste mit Zeilen relativ zur zentralen Person, Jahresgruppen und Jahresprofil.
-- Zeit als eine Ansicht: Jahresprofil, darunter der gewählte Zeitraum nach Monaten oder als einzelne Briefe.
-- Startfigur, Briefe der Auswahl, Themenansicht, Korrekturen der Raum-Zeit-Ansicht, Zeichen für einen gesetzten Filter (frühere Einträge).
+1. Distillieren. Die Wissensdokumente beschreiben den Stand vom frühen Abend. Nachzuziehen sind die Startseite (aus dem Bestand zusammengesetzt, ein Schalter für Bestände und eigene Daten, Kopf und Fuß in der Form seiner Projektseiten), die Startansicht des Explorers (schmale Schiene, Legende als Sprachfilter, Farbe nach Sprache), die Briefliste, Zeit als eine Ansicht, die Themenansicht (Raster und Anteile), die [gemeinsamen Regeln](design.md#gemeinsame-regeln-aller-ansichten), der eine Ort für Filterzustand und Briefzahl, die Entscheidung gegen das Tutorial.
+2. Kuratieren gegen Code und Daten, auch [testing.md](testing.md) (Zahl der Prüfungen, neue Testdateien) und [architecture.md](architecture.md) (neue Module `mini-figures.js`, `selection-ui.js`, `start-compose.js`, `site-frame.css`, `rail.css`, `assets/dhcraft/`).
+3. Refactoren, erst auflisten, dann entfernen: `activity-view.js` und die Regeln `.timeline-*`, `.chronik-*`, `.activity-*` in `explore.css`, die Maschinerie der Forschungspfade, tote Regeln in `base.css` und `components.css`, alles, was am Tutorial hängt (Tour in `demo-tour.js`, `demo=true` in `explore.js` und `upload.js`, zwei Smoke-Prüfungen, fünf Testdateien, `about.html`, README), die Eintragungsstellen einer Ansicht, doppelte Helfer. Die Datei `docs/data/demo-showcase.xml` löscht nur der Operator oder eine Session auf sein ausdrückliches Wort.
+4. Übergabe.
 
-Die Wissensdokumente beschreiben Startansicht, Briefliste und Zeit noch als in Arbeit. Nachzuziehen sind [design.md](design.md), [specification.md](specification.md) (US-32 entfällt, US-34 geändert, Sortierungen der Briefliste), [architecture.md](architecture.md) (`mini-figures.js`, `letters.css`, `time.css`, `dashboard.css`, `activity-view.js` unbenutzt) und [testing.md](testing.md) (siebzehn Smoke-Prüfungen, neue Testdateien).
+Beauftragt und nicht gebaut:
+
+- Ein Durchgang über alle Ansichten nach den gemeinsamen Regeln („Können wir das jetzt auch noch mal vereinheitlichen mit dem anderen Feedback, das wir haben?“). Der Agent der geteilten Teile wurde beim kontrollierten Ende angehalten, sein Abschlussbericht mit der Liste je Ansicht stand beim Schreiben aus. Was von den geteilten Teilen eingecheckt ist, zeigt der Code: Schiene, Legende als Sprachfilter, der gemeinsame Schalter für die Tabelle, der Ort für Filterzustand und Briefzahl in `selection-ui.js`. Ob jede Ansicht sie schon benutzt, ist nicht geprüft.
+- Briefe, Personen und Orte als ein Register mit Facetten, zuerst als kleine echte Fassung am Hugo Schuchardt Archiv neben den bestehenden Ansichten („Können wir Briefe, Personen und Orte sinnvoll in eine Ansicht zusammenführen …?“). Derselbe Schritt führt Liste und Vergleich zusammen.
+- Kopf und Fuß der Startseite auch für `explore.html` und `about.html`, die Bausteine liegen in `site-frame.css` und `assets/dhcraft/`. Er hat danach nicht ausdrücklich verlangt.
+- Der feste Aufgabensatz mit berechneten Antworten als Skript im Repository, und die Raum-Zeit-Ansicht in der Liste der Ansichten des Smoke-Tests.
+
+Vom Operator gesehen und gutgeheißen, entfällt nur auf sein Wort:
+
+- Die Startansicht des Explorers im Stand von `b189cb5` („Ja, das finde ich gut“).
+- Die Startseite als Figur („Das finde ich ehrlich gesagt jetzt schon sehr gut“), mit seinen Aufträgen dazu, die in `d38b4c8` gebaut sind und die er noch nicht gesehen hat.
+- Das Raster als Themenansicht mit der Treemap als Anteile (seine Wahl), gebaut, von ihm im Endstand nicht gesehen.
 
 Wartet auf den Operator:
 
-- Die Form des Netzwerks, fünf Fragen in [network-figures.md](network-figures.md). Am Netzwerk wird erst nach seiner Entscheidung weitergebaut.
-- Liste und Vergleich zusammenlegen, von ihm gewünscht, nicht begonnen.
-- Was von der Chronik endgültig entfällt: die Schalter Ausführlich und Kompakt, die Porträts, die Wochentagszeilen und der Satz zum briefreichsten Tag sind aus der Oberfläche genommen. Er hatte am selben Tag gesagt, es sei zu stark eingedampft worden.
-- Ob der Zeitraum feiner als ein Jahr wählbar wird, ob die Signatur in der Briefzeile bleibt, ob das Jahresprofil der Briefliste eine Lesezeile bekommt, ob die Dichtegrenze für Listen und für die Startfigur gilt, ob jede kleine Ansicht des Dashboards ihren eigenen Filter auslässt, dazu die älteren Fragen der Bau-Agenten in [plan.md](plan.md).
-- Die Abnahme aller Stufen am Bildschirm und danach der Push.
+- Die Form des Netzwerks, fünf Fragen in [network-figures.md](network-figures.md).
+- Ob die Datei des Tutorials gelöscht wird, ob der Dialog nach dem Laden eigener Daten entfällt, ob der Fuß unter dem ersten Bildschirm bleibt, ob das Raster eine fünfte Stufe bekommt und die Restfläche der Treemap so groß bleiben soll, was von der Chronik endgültig entfällt, ob der Zeitraum feiner als ein Jahr wählbar wird, die Signatur in der Briefzeile, dazu die älteren Fragen in [plan.md](plan.md).
+- Die Abnahme aller Ansichten am Bildschirm und danach der Push. Auf einer Folie für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der öffentlichen Demo.
 
 Offen ohne Entscheidung:
 
-- Die Grundkarte der Kartenansicht wird beim Öffnen jeder Ansicht von außen angefragt (`map-view.js`, `initMapView`), entgegen ADR-006 in der Sache.
-- Tote Regeln und Module nach den Umbauten: `activity-view.js`, die Regeln `.timeline-*`, `.chronik-*`, `.activity-*` in `explore.css`, einzelne Regeln in `base.css` und `components.css`, der Text von Tourschritt 8, der Dialog der Anreicherung nennt noch Porträts.
+- Die Grundkarte der Kartenansicht wird beim Öffnen jeder Ansicht von außen angefragt, entgegen ADR-006 in der Sache.
+- In den Themenzeilen der Startansicht stehen drei Farbfamilien ohne Erklärung, die Zahl der Briefe steht allein in der Fußzeile (Befund der koordinierenden Session am Bild).
 - Im Korrespondenzkreis trifft ein Klick auf eine breite Linie zuweilen die schmale daneben. Ein Ort des Hugo Schuchardt Archivs steht unter zwei Kennungen.
-- Der feste Aufgabensatz liegt nicht im Repository, nur in den Berichten der Agenten ([testing.md](testing.md)). Die Raum-Zeit-Ansicht fehlt in der Liste der Ansichten des Smoke-Tests.
-- Ältere Journaleinträge verlinken Anker, die es nach der Distillation nicht mehr gibt.
-- Alles Weitere nach Gegenstand in [plan.md](plan.md).
+- Nichts vom Abend ist bei 200 Prozent Zoom oder mit einem Screenreader geprüft.
 
 ## Einträge
+
+### 2026-11-15 Kontrolliertes Ende: Startseite, Startansicht, Themen, gemeinsame Regeln
+
+- Anlass: Urteile des Operators am späten Abend des 2026-11-14 zu Startseite, Startansicht, Zeit und Themen, über die koordinierende Session weitergegeben, und sein Wunsch, kontrolliert zu enden.
+- Entschieden (Operator): Das Hugo Schuchardt Archiv ist der erste Bestand der Startseite, das Tutorial entfällt. Bandnamen und die Zeile über Fehlendes entfallen. Bestände und eigene Daten stehen in einem Element. Kopf und Fuß folgen der Form seiner Projektseiten. Die Themenansicht ist das Raster mit der Treemap als Anteile. Die Startansicht des Explorers im Stand von `b189cb5` ist gutgeheißen.
+- Gebaut, je von einem Subagenten (Claude Opus 5.5): die Startseite aus dem zusammengesetzt, was ein Bestand trägt (`start-compose.js`), mit nummerierten Marken statt Linien und einem Schalter für die Bestände (`d38b4c8`). Die Startansicht mit schmaler Schiene, der Legende als Sprachfilter und Farbe nach Sprache (`b189cb5`, weitergeführt bis zum Commit dieses Eintrags). Die Themenansicht als Raster aus Themen und Jahren auf fester Skala und als Treemap, die Kammlinie entfernt.
+- Geschrieben: die gemeinsamen Regeln aller Ansichten in [design.md](design.md#gemeinsame-regeln-aller-ansichten), als Zusammenfassung seiner Urteile durch die koordinierende und die bauende Session, von ihm nicht einzeln bestätigt.
+- Nicht getan: der Durchgang über alle Ansichten, das Register aus Briefen, Personen und Orten, die vier Promptotyping-Schritte bis auf diese Übergabe. Der Agent der geteilten Teile wurde angehalten, bevor er fertig war.
+- Belege: die genannten Commits. Am Commit dieses Eintrags `test.html?test=true` ohne Fehlschlag und `tests/browser/smoke.py` mit allen Prüfungen. Lesetests frischer Leser an Startseite und Raster in den Berichten der Agenten, drei Gegenzählungen je Ansicht an `hsa-letters.json`. Diese Session hat die Ergebnisse am Bild gelesen und die Prüfungen am zusammengeführten Stand laufen lassen. Stand: gebaut, nicht unabhängig geprüft, bis auf die genannten Zustimmungen nicht abgenommen.
+- Offen: der Abschnitt Open oben.
 
 ### 2026-11-14 Startansicht als Dashboard, Briefliste, Zeit als eine Ansicht
 
