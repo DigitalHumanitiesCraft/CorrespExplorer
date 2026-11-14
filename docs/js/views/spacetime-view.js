@@ -499,7 +499,7 @@ function draw() {
         }
         // The axis says what it measures, above its upper end
         // kept inside the figure where the axis stands at its left or upper edge
-        axis += `<text class="st-axis-title" x="${Math.max(90, a1.X).toFixed(1)}" y="${Math.max(12, a1.Y - 12).toFixed(1)}" text-anchor="end">Jahr der Briefe</text>`;
+        axis += `<text class="st-axis-title" x="${Math.max(90, a1.X).toFixed(1)}" y="${Math.max(62, a1.Y - 12).toFixed(1)}" text-anchor="end">Jahr der Briefe</text>`;
         overlay.push(axis);
         // The year under the pointer as a level through the whole figure, so it reads against the axis
         if (hoverYear !== null) {
@@ -914,6 +914,14 @@ function bind() {
     document.querySelectorAll('#spacetime-view [data-cam]').forEach(btn => { btn.title = purposes[btn.dataset.cam] || ''; });
     // Zoom stands at the figure it acts on; in the header it made the line wrap as soon as a
     // choice lengthened the title, and the figure jumped under the pointer
+    // The three views are the main control of the figure and stand in it, at the upper left
+    // where the eye enters; at the right end of the header they were found late and the
+    // tooltip of a mark covered them (operator, 2026-11-14)
+    const cams = el('spacetime-cams');
+    if (cams) {
+        cams.classList.add('st-cams');
+        svg.after(cams);
+    }
     const zoom = document.querySelector('#spacetime-controls [aria-label="Zoom"]');
     if (zoom) {
         zoom.classList.add('st-zoom');
@@ -1049,7 +1057,7 @@ function bind() {
     });
 
     el('spacetime-view')?.addEventListener('click', (e) => {
-        if (!e.target.closest('#spacetime-controls, .st-zoom')) return;
+        if (!e.target.closest('#spacetime-controls, .st-zoom, .st-cams')) return;
         const btn = e.target.closest('button');
         if (!btn) return;
         if (btn.dataset.zoom) zoomAt(Number(btn.dataset.zoom));

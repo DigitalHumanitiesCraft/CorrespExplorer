@@ -33,11 +33,11 @@ related: [project, architecture, specification, uncertainty-specification]
 
 # Daten
 
-CorrespExplorer verarbeitet Korrespondenz-Metadaten im Correspondence Metadata Interchange Format (CMIF), die Nutzende als Datei oder URL einbringen. Das Repository bündelt dazu einen vorprozessierten Beispieldatensatz aus dem Hugo Schuchardt Archiv, einen synthetischen Tutorial-Datensatz und kleine Testdateien.
+CorrespExplorer liest Briefmetadaten im Correspondence Metadata Interchange Format (CMIF) und in TEI-Briefsätzen mit `correspDesc`, als Datei, als Dateiliste oder über eine Adresse. Dieses Dokument beschreibt, was das Werkzeug liest und was es dabei verwirft, was die Datensätze tragen, mit denen es entwickelt wird, und wie sich das gemeinsame Brief- und Aussagemodell des Projekts GOSSIP dazu verhält. Was die Ansichten aus den Daten machen, steht in [specification.md](specification.md), die Behandlung unsicherer Angaben in [uncertainty-specification.md](uncertainty-specification.md).
 
 ## Gegenstand
 
-Das Material beschreibt Briefe über ihre Metadaten, also Absender, Empfänger, Absendeort, Datum und in erweiterten Datensätzen erwähnte Personen, Orte, Themen und die Briefsprache. Brieftexte enthält es nicht, jeder Brief verweist auf seine Edition.
+Das Material beschreibt Briefe über ihre Metadaten, also Absender, Empfänger, Absendeort, Datum und in erweiterten Datensätzen erwähnte Personen, Orte, Themen und die Briefsprache. TEI-Briefsätze tragen dazu Poststempel, Anschrift, Signatur und erschlossene Angaben. Brieftexte enthält das Material nicht, jeder Brief verweist, wo die Quelle es angibt, auf seine Edition.
 
 ## Quellen
 
@@ -49,22 +49,23 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 
 | Datei | Inhalt | Rolle |
 |---|---|---|
-| `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 mit allen Erwähnungstypen des CMIF-v2-Entwurfs (Themen, Personen, Orte, Organisationen, Werke) und Sprachangaben | Tutorial-Datensatz der Startseite mit Onboarding-Tour |
-| `docs/data/hsa.xml` | CMIF-Export des Hugo Schuchardt Archivs, byte-gleich mit `data/hsa/CMIF.xml` (geprüft mit `cmp` am 2026-10-29) | Ausgelieferte Kopie der CMIF-Datei. Die Vorprozessierung liest `data/hsa/CMIF.xml` (`build_hsa_data.py`, `meta.source_file`) |
-| `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes, teiHeader-Metadaten und Änderungsvermerk `meta.modifications` | Erweiterter Beispieldatensatz der Startseite |
-| `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs aus Wikidata, für Genf aus GeoNames (siehe [Herkunft](#herkunft-von-docsdatageonames_coordinatesjson)) | Ergänzung von Orten ohne Koordinaten beim Upload |
-| `docs/data/test-uncertainty.xml` | Synthetische Unsicherheitsfälle | Testdatei, siehe [Testdatensätze](#testdatensätze) |
-| `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs, Tabellenformeln) | Testdatei der Suites Security und Basket |
-| `docs/data/test-correspsearch.json`, `docs/data/test-correspsearch-empty.json` | Antworten der correspSearch-API v2.0 vom 2026-11-05 auf `d=1890-01-01&x=1` und `d=1066-01-01&x=1`, unverändert gespeichert | Testdateien der Suite correspSearch, CC BY 4.0 laut ihrem teiHeader, Herausgeber Berlin-Brandenburgische Akademie der Wissenschaften |
+| `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 mit allen Erwähnungstypen des CMIF-v2-Entwurfs (Themen, Personen, Orte, Organisationen, Werke) und Sprachangaben | Tutorial-Datensatz mit geführter Tour, Vorgabe der Startfigur |
+| `docs/data/hsa.xml` | CMIF-Export des Hugo Schuchardt Archivs, byte-gleich mit `data/hsa/CMIF.xml` (geprüft mit `cmp` am 2026-10-29) | Ausgelieferte Kopie der CMIF-Datei. Die Vorprozessierung liest `data/hsa/CMIF.xml` |
+| `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes, teiHeader-Metadaten und Änderungsvermerk `meta.modifications` | Referenzdatensatz der Entwicklung und der festen Aufgaben ([specification.md](specification.md)) |
+| `docs/data/examples.json` | Zusammenfassung des HSA für die Startfigur, erzeugt aus `hsa-letters.json` ([Erzeugte Daten](#erzeugte-daten)) | Startfigur für das Archiv |
+| `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs aus Wikidata, für Genf aus GeoNames ([Herkunft](#herkunft-von-docsdatageonames_coordinatesjson)) | Ergänzung von Orten ohne Koordinaten beim Laden |
 | `docs/data/schoenbach.xml` | Lokale Kopie der Schönbach-Briefe | Kleiner Realdatensatz |
-| `docs/data/test-letter-records.xml`, `docs/data/test-letter-records-b.xml` | Synthetische Briefsätze in TEI (`biblFull` je Brief) mit Poststempel, erschlossenem Ort und Datum, Datum nur als Text, mehreren Empfängern, internem Personenverweis, Anschrift und Signatur, und eine zweite Datei derselben erfundenen Edition | Testdateien der Suite CMIF Parser, im Projekt erstellt, CC BY 4.0 |
-| `docs/data/test-graz-cases.xml`, `docs/data/test-parallel-a.xml`, `docs/data/test-parallel-b.xml` | Echte Einträge aus drei Grazer Editionen, unverändert übernommen: drei `correspDesc` der Hammer-Purgstall-Korrespondenz (Weiterleitung als dritte Handlung, Person mit Registerkennung ohne Normdatum, Datum nur als obere Grenze, „ohne Ort“) und derselbe Brief von Boltzmann an Brentano im CMIF beider Bestände | Testdateien der Suite CMIF Parser, Herkunft und Lizenz im Kopf jeder Datei und unter Rechte und Lizenzen |
+| `docs/data/test-uncertainty.xml` | Synthetische Unsicherheitsfälle | Testdatei, Fallliste in [uncertainty-specification.md](uncertainty-specification.md#test-cases) |
+| `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs, Tabellenformeln) | Testdatei der Suites Security und Basket |
+| `docs/data/test-correspsearch.json`, `docs/data/test-correspsearch-empty.json` | Antworten der correspSearch-API v2.0 vom 2026-11-05 auf `d=1890-01-01&x=1` und `d=1066-01-01&x=1`, unverändert gespeichert | Testdateien der Suite correspSearch |
+| `docs/data/test-letter-records.xml`, `-b.xml`, `-c.xml` | Synthetische Briefsätze in TEI (`biblFull` je Brief): Poststempel, erschlossener Ort und erschlossenes Datum, Datum nur als Text, mehrere Empfänger, interner Personenverweis, Anschrift und Signatur, eine zweite Datei derselben erfundenen Edition und die Fälle der Datenprüfung vom 2026-11-14 (Person und Körperschaft als Absender, Ortswortlaut, gelesenes neben ergänztem Datum, Sprache aus `textLang`) | Testdateien der Suite CMIF Parser, im Projekt erstellt |
+| `docs/data/test-graz-cases.xml`, `test-parallel-a.xml`, `test-parallel-b.xml` | Echte Einträge aus drei Grazer Editionen, unverändert übernommen: drei `correspDesc` der Hammer-Purgstall-Korrespondenz (Weiterleitung als dritte Handlung, Person mit Registerkennung ohne Normdatum, Datum nur als obere Grenze, „ohne Ort“) und derselbe Brief von Boltzmann an Brentano im CMIF beider Bestände | Testdateien der Suite CMIF Parser, Herkunft und Lizenz im Kopf jeder Datei und unter [Rechte und Lizenzen](#rechte-und-lizenzen) |
 
 ### Hugo Schuchardt Archiv
 
-Das Hugo Schuchardt Archiv (HSA) der Universität Graz (https://gams.uni-graz.at/context:hsa) ist ein ego-zentriertes Netzwerk um den Sprachwissenschaftler Hugo Schuchardt mit Briefen an ihn und von ihm. Es nutzt das LOD Academy CMIF Vocabulary für die erweiterten Metadatentypen und VIAF als vorherrschendes Normdatensystem für Personen. Eigene kontrollierte Vokabulare für Themen und Sprachen ergänzen Lexvo-URIs. Die CMIF-Datei steht unter CC BY 4.0, siehe [Rechte und Lizenzen](#rechte-und-lizenzen).
+Das Hugo Schuchardt Archiv (HSA) der Universität Graz (https://gams.uni-graz.at/context:hsa) ist ein ego-zentriertes Netzwerk um den Sprachwissenschaftler Hugo Schuchardt mit Briefen an ihn und von ihm. Es nutzt das LOD Academy CMIF Vocabulary für die erweiterten Metadatentypen und VIAF als vorherrschendes Normdatensystem für Personen. Eigene kontrollierte Vokabulare für Themen und Sprachen ergänzen Lexvo-URIs. Die CMIF-Datei steht unter CC BY 4.0. Es ist der Datensatz, an dem das Werkzeug entwickelt und geprüft wird, weil er als einziger gebündelter Realdatensatz Themen, Erwähnungen, Sprachen und Koordinaten zugleich trägt.
 
-Kennzahlen der gebündelten Datei aus `meta` von `hsa-letters.json`, Stand der Vorprozessierung vom 2026-10-29 (`meta.generated`). Sie gleichen bis auf `generated` dem vorigen Lauf vom 2025-12-18:
+Kennzahlen der gebündelten Datei aus `meta` von `hsa-letters.json`, Stand der Vorprozessierung vom 2026-10-29 (`meta.generated`):
 
 | Metrik | Wert |
 |---|---|
@@ -82,13 +83,17 @@ Kennzahlen der gebündelten Datei aus `meta` von `hsa-letters.json`, Stand der V
 | HSA-Languages | 200 | `gams.uni-graz.at/o:hsa.languages#L.{id}` |
 | Lexvo | 148 | `lexvo.org/id/iso639-3/{code}` |
 
-Die Zählungen in `meta` und `indices` erfassen nur Personen mit Normdaten-ID und Orte mit GeoNames-ID. Die Oberfläche zählt seit 2026-10-29 überall gleich aus den Briefen (`summarizeCorpus()` in `research-paths.js`): Personen über `personKey` als Absender oder Empfänger, Orte über `placeKey` ohne Platzhalter für unbekannte Orte (`isKnownPlace()` in `utils.js`). Sidebar („Personen“, „Orte“) und Übersicht zeigen für das HSA deshalb dieselben 1.031 Personen (852 mit Normdaten-ID, 179 nur mit Namen) und 774 Absendeorte. Der Platzhalter „Unbekannt“ ohne GeoNames-ID bei 576 Briefen zählt nicht als Ort. Die Karte der Startseite nennt die 852 Personen mit Normdaten-ID ausdrücklich so. Gezählt am 2026-10-29 aus `docs/data/hsa-letters.json`.
+Die Zählungen in `meta` und `indices` erfassen nur Personen mit Normdaten-ID und Orte mit GeoNames-ID. Die Oberfläche zählt aus den Briefen (`summarizeCorpus()` in `research-paths.js`): Personen über `personKey` als Absender oder Empfänger, Orte über `placeKey` ohne Platzhalter für unbekannte Orte (`isKnownPlace()` in `utils.js`). Für das HSA ergibt das 1.031 Personen (852 mit Normdaten-ID, 179 nur mit Namen) und 774 Absendeorte. Der Platzhalter „Unbekannt“ ohne GeoNames-ID bei 576 Briefen zählt nicht als Ort. Gezählt aus `docs/data/hsa-letters.json` am 2026-10-29 und am 2026-11-14 mit einem eigenen Skript nachgezählt ([testing.md](testing.md#feste-aufgaben)).
 
-Die häufigsten Korrespondenten sind Leo Spitzer (447 Briefe, VIAF 46804188), Julio de Urquijo Ybarra (243, VIAF 18030027), Georges Lacombe (235, VIAF 34446283), Theodor Gartner (222, VIAF 59114592) und Edward Spencer Dodgson (181, VIAF 27433725). Die häufigsten Absendeorte sind Graz (2.371, GeoNames 2778067), Wien (855, 2761369), Paris (781, 2988507), Leipzig (247, 2879139) und Berlin (237, 2950159). Graz als Schuchardts Wirkungsort stellt rund ein Fünftel aller Briefe.
+Die häufigsten Absender nach `letters_sent` des Personenindex sind Leo Spitzer (447 Briefe, VIAF 71397982), Julio de Urquijo Ybarra (243, VIAF 18030027), Georges Lacombe (235, VIAF 34446283), Theodor Gartner (222, VIAF 59114592) und Edward Spencer Dodgson (181, VIAF 27433725). Nach Briefen in beiden Richtungen, wie der Korrespondenzkreis um Schuchardt zählt, stehen Lacombe (524), Urquijo Ybarra (521) und Spitzer (447) vorn. Bis 2026-11-14 nannte dieses Dokument für Spitzer die VIAF-Nummer 46804188, die in keiner der beiden HSA-Dateien vorkommt. Die häufigsten Absendeorte sind Graz (2.371, GeoNames 2778067), Paris (781, 2988507), Wien, Leipzig (247, 2879139) und Berlin (237, 2950159). Graz als Schuchardts Wirkungsort stellt rund ein Fünftel aller Briefe.
 
-Die CMIF-Datei des HSA schreibt VIAF-URIs in zwei Formen. Absender und Empfänger (`persName/@ref`) stehen als `https://viaf.org/viaf/{id}`, erwähnte Personen (`ref[@type="…#mentionsPerson"]/@target`) als Kurzform `https://viaf.org/{id}`. Gezählt in `data/hsa/CMIF.xml` am 2026-10-29: Von 17.413 Erwähnungen von Personen tragen 11.652 die Kurzform (280 davon mit Leerzeichen am Ende), 29 die doppelte Form `https://viaf.org/https://viaf.org/viaf/{id}/`, eine den Namen statt der ID (`https://viaf.org/Luigi Pigorini`) und 5.731 eine HSA-interne Personen-URI (`http://schuchardt.uni-graz.at/id/person/{id}`, Typ `hsa_person`). Bis zum 2026-10-29 erkannten `build_hsa_data.py` und `parseAuthorityRef()` nur `viaf/{id}`, deshalb trugen 11.653 der 17.413 Erwähnungen in `hsa-letters.json` die ID `null`. Beide erkennen seither auch die Kurzform, nach der Neuerzeugung bleibt allein die Erwähnung von Luigi Pigorini ohne ID. Die Indizes blieben dabei unverändert, weil erwähnte Personen in keinen Index eingehen.
+Wien steht in den Daten unter zwei GeoNames-IDs, 2761368 bei 761 Briefen und 2761369 bei 94 Briefen, mit leicht verschiedenen Koordinaten. Das Werkzeug zählt sie als zwei Orte, Karte und Raum-Zeit zeigen zwei Punkte. Bis 2026-11-14 nannte dieses Dokument Wien mit 855 Briefen unter 2761369. Ob die Edition hier zwei Orte meint, etwa Stadt und Gemeinde, ist an der Quelle nicht geprüft.
 
-Die CMIF-Datei des HSA schreibt für Ladinisch `target="None"` mit dem Text „Ladinisch“ (`data/hsa/CMIF.xml`, zwei Briefe), die Vorprozessierung übernimmt den Code unverändert nach `indices.languages`. Bis zum 2026-10-29 nutzte die Oberfläche denselben String `None` für Briefe ohne Sprachangabe und zeigte Ladinisch deshalb als „Ohne Angabe“. Seither tragen Briefe ohne Sprache den internen Code `NO_LANGUAGE` (`_none`, `constants.js`), und `languageLabel()` zeigt für `None` die Bezeichnung aus den Daten. Der Quellwert selbst bleibt unverändert.
+Die CMIF-Datei des HSA schreibt VIAF-URIs in zwei Formen. Absender und Empfänger (`persName/@ref`) stehen als `https://viaf.org/viaf/{id}`, erwähnte Personen (`ref[@type="…#mentionsPerson"]/@target`) als Kurzform `https://viaf.org/{id}`. Gezählt in `data/hsa/CMIF.xml` am 2026-10-29: Von 17.413 Erwähnungen von Personen tragen 11.652 die Kurzform (280 davon mit Leerzeichen am Ende), 29 die doppelte Form `https://viaf.org/https://viaf.org/viaf/{id}/`, eine den Namen statt der ID (`https://viaf.org/Luigi Pigorini`) und 5.731 eine HSA-interne Personen-URI (`http://schuchardt.uni-graz.at/id/person/{id}`). `build_hsa_data.py` und `parseAuthorityRef()` erkennen beide Formen, nach der Neuerzeugung vom 2026-10-29 bleibt allein die Erwähnung von Luigi Pigorini ohne ID.
+
+Die CMIF-Datei des HSA schreibt für Ladinisch `target="None"` mit dem Text „Ladinisch“ (zwei Briefe), die Vorprozessierung übernimmt den Code unverändert. Briefe ohne Sprache tragen im Werkzeug den internen Code `NO_LANGUAGE` (`_none`, `constants.js`), `languageLabel()` zeigt für `None` die Bezeichnung aus den Daten.
+
+Der HSA trägt keine Merkmale von Briefsätzen (Poststempel, Anschrift, Signatur, Mehrfacheinträge, erschlossene Angaben) und keine Zeiträume oder Datumsgrenzen. Was die Unsicherheitsbehandlung an ihm zählt, steht in [uncertainty-specification.md](uncertainty-specification.md#hsa-dataset-analysis).
 
 ### Externe CMIF-Quellen
 
@@ -97,77 +102,38 @@ Diese Quellen wurden beim Aufbau des Werkzeugs als ladbar erfasst. Ob eine URL w
 | Quelle | URL | Eigenschaften |
 |---|---|---|
 | Schnitzler-CMIF (GitHub) | https://github.com/arthur-schnitzler/schnitzler-cmif, Raw-Muster `https://raw.githubusercontent.com/arthur-schnitzler/schnitzler-cmif/main/{dateiname}.xml` | Getestet mit `1971_Schnitzler_Reinhardt.xml` (104 Briefe, 1902–1921), GND für Personen, Orte ohne GeoNames |
-| correspSearch Storage (GitHub) | https://github.com/correspSearch/csStorage, Raw-Muster `https://raw.githubusercontent.com/correspSearch/csStorage/dev/{ordner}/{datei}.xml` | CMIF-Dateien ohne eigenes Hosting, etwa avhumboldt, wvhumboldt, forster, hofmannsthal, droste-huelshoff, lasker-schueler, rilke, wieland, feuerbach, helmholtz. Beispiele `.../dev/avhumboldt/Spiker.xml`, `.../dev/rilke-kappus.xml` |
-| correspSearch API v2.0 | https://correspsearch.net/api/v2.0/tei-json.xql | Parameter laut Dokumentation (https://correspsearch.net/en/api.html, abgerufen 2026-10-29) `s` (Personen-URI), `p` (GeoNames-URI), `d` (Datum oder Zeitraum), `o`, `e`, `c`, `a` und `x` (Seite ab 1). Die Antworten liefern je Seite 10 Briefe, die Dokumentation nennt 100. Das URL-Feld der Startseite lädt solche URLs, geprüft am 2026-10-29 mit `d=1890-01-01` (87 Briefe auf 9 Seiten) |
+| correspSearch Storage (GitHub) | https://github.com/correspSearch/csStorage, Raw-Muster `https://raw.githubusercontent.com/correspSearch/csStorage/dev/{ordner}/{datei}.xml` | CMIF-Dateien ohne eigenes Hosting, etwa avhumboldt, wvhumboldt, forster, hofmannsthal, rilke, wieland |
+| correspSearch API v2.0 | https://correspsearch.net/api/v2.0/tei-json.xql | Parameter laut Dokumentation (https://correspsearch.net/en/api.html, abgerufen 2026-10-29) `s`, `p`, `d`, `o`, `e`, `c`, `a` und `x` (Seite ab 1). Die Antworten liefern je Seite 10 Briefe, die Dokumentation nennt 100 |
 | Leibniz-Briefportal | https://leibniz-briefportal.de | CMIF-Export, GND für Personen |
-| Carl-Maria-von-Weber-Gesamtausgabe | https://weber-gesamtausgabe.de/cmif_v1.xml (empfohlen), `cmif_v2.xml` (CMIF-v2-Entwurf) | Umfangreicher Bestand, GND für Personen, CC BY 4.0 |
-| Edvard-Munch-Korrespondenz (NorKorr) | https://dataverse.no/api/access/datafile/191809, Datensatz https://dataverse.no/dataset.xhtml?persistentId=doi:10.18710/TAFUSV | Großer Datensatz aus der Edition eMunch.no, GeoNames für Orte, geeignet für Lasttests |
+| Carl-Maria-von-Weber-Gesamtausgabe | https://weber-gesamtausgabe.de/cmif_v1.xml (empfohlen), `cmif_v2.xml` (CMIF-v2-Entwurf) | GND für Personen, CC BY 4.0 |
+| Edvard-Munch-Korrespondenz (NorKorr) | https://dataverse.no/api/access/datafile/191809 | Großer Datensatz, GeoNames für Orte, geeignet für Lasttests |
+
+### Grazer Editionen im Projekt GOSSIP
+
+Das Projekt GOSSIP arbeitet mit den CMIF-Dateien von fünf Grazer Editionen (Hammer-Purgstall, Schuchardt, Rollett, Boltzmann, Brentano). Ihre Eigenheiten beschreibt `knowledge/data.md` im Repository `gossip`. Das Werkzeug wurde am 2026-11-14 an Einträgen von dreien davon geprüft ([Testdateien](#datensätze-im-repository)). Was dabei als Lücke des Parsers galt und behoben ist, steht unter [Was der Parser liest](#was-der-parser-liest), was weiter fehlt, in [plan.md](plan.md#daten-und-parser).
 
 ### Stefan Zweig Digital (TEI auf Briefebene, kein CMIF)
 
-Stefan Zweig Digital (Literaturarchiv Salzburg, Hosting GAMS der Universität Graz) veröffentlicht kein CMIF. Die Briefmetadaten liegen als TEI je Konvolut im öffentlichen Repository https://github.com/chpollin/SZD unter `data/Correspondence/konvolute/`, Branch `master`, geprüft an Commit `74e08d03` (2026-09-30), und auf GAMS als Datastream `https://gams.uni-graz.at/{PID}/TEI_SOURCE`. Jeder Brief ist ein `biblFull` mit eigenem `profileDesc/correspDesc`, Signatur (`idno type="signature"`) und GAMS-PID (`idno type="PID"`, etwa `o:szd.985`). Das Werkzeug bündelt diese Daten nicht, weil die Dateien kein `licence`-Element tragen und die Rechte beim Literaturarchiv Salzburg liegen (README des SZD-Repositorys). Sie werden zur Laufzeit geladen.
+Stefan Zweig Digital (Literaturarchiv Salzburg, Hosting GAMS der Universität Graz) veröffentlicht kein CMIF. Die Briefmetadaten liegen als TEI je Konvolut im öffentlichen Repository https://github.com/chpollin/SZD unter `data/Correspondence/konvolute/`, Branch `master`, geprüft an Commit `74e08d03` (2026-09-30). Jeder Brief ist ein `biblFull` mit eigenem `profileDesc/correspDesc`, Signatur (`idno type="signature"`) und GAMS-PID (`idno type="PID"`). Das Werkzeug bündelt diese Daten nicht, weil die Dateien kein `licence`-Element tragen und die Rechte beim Literaturarchiv Salzburg liegen. Sie werden lokal geladen ([Mehrere Dateien als ein Bestand](#mehrere-dateien-als-ein-bestand)).
 
-Ladewege, geprüft am 2026-11-13 mit `curl`: GAMS antwortet ohne `Access-Control-Allow-Origin`, ein Browser kann die GAMS-URL deshalb nicht laden. Raw-URLs des GitHub-Repositorys (`https://raw.githubusercontent.com/chpollin/SZD/master/data/Correspondence/konvolute/{datei}.xml`) erlauben CORS und laden ein Konvolut. Den ganzen Bestand lädt man als lokale Dateien.
+Ladewege, geprüft am 2026-11-13 mit `curl`: GAMS antwortet ohne `Access-Control-Allow-Origin`, ein Browser kann die GAMS-URL nicht laden. Raw-URLs des GitHub-Repositorys erlauben CORS und laden ein Konvolut.
 
-Befund des ersten Ladeversuchs mit dem unveränderten Parser (Repository `promptotyping-paper`, Commit `ec8b860`, `verification/szd-cmif-2026-11-13/`, am 2026-11-13 an den Ausgabedateien nachgeprüft):
+Was der Bestand trägt, gezählt mit `verification/check-corpus.mjs` am genannten Commit:
 
-- 303 Dateien, 2.135 `correspDesc` in 301 Dateien, zwei Dateien ohne Brief. 1.786 Briefe tragen `correspDesc/@type="toZweig"`, 333 `fromZweig`, 16 keinen Typ.
-- Kein Ort trägt eine GeoNames-ID. Personen und Körperschaften tragen GND-URIs, teils ohne Schema (`d-nb.info/gnd/…`), teils projektinterne Verweise wie `#SZDPER.2137`.
-- Ein `correspAction type="sent"` enthält bis zu drei `placeName`. `@type="postmark"` (135) bezeichnet einen Poststempel, dessen Text oft ein Datum ist („5. 9. 1927“), `@type="original"` (45) die Ortsangabe der Vorlage, `@ana="deduced"` (527) einen erschlossenen Ort.
-- Datumsangaben stehen doppelt (`xml:lang` de und en). `date/@type="supplied"` (80) und `@ana="supplied/verified"` (250) kennzeichnen ergänzte Datierungen, 71 Datumselemente tragen nur Text ohne `@when`.
-- 671 `address/addrLine` unter `correspAction type="sent"` geben die Postanschrift des Empfängers wieder, etwa „Salzburg, Kapuzinerberg 5“ bei 194 Briefen an Zweig. Sie sind kein Absendeort.
-- 343 Briefe haben mehr als einen Empfänger. Personennamen stehen als `surname` und `forename` mit Zeilenumbruch.
-- `correspDesc` trägt kein `@ref` und kein `@key`, die ID steht als `xml:id` am umgebenden `biblFull`.
+- 303 Dateien, 2.135 `correspDesc` in 301 Dateien. Die 2.135 Einträge tragen 1.633 verschiedene Signaturen, weil die Edition denselben Brief in der Datei jedes beteiligten Konvoluts verzeichnet. Der Parser führt Einträge gleicher Signatur zusammen, außer ihre Datierungen widersprechen sich ([ADR-009](specification.md#adr-009-einträge-gleicher-signatur-sind-ein-brief)), das ergibt 1.637 Briefe.
+- Kein Ort trägt eine GeoNames-ID oder Koordinaten. Personen und Körperschaften tragen GND-URIs, teils ohne Schema, teils projektinterne Verweise wie `#SZDPER.2137`.
+- Ein `correspAction type="sent"` enthält bis zu drei `placeName`: `@type="postmark"` für einen Poststempel, `@type="original"` für den Wortlaut der Vorlage, `@ana="deduced"` für einen erschlossenen Ort. 671 `address/addrLine` geben die Postanschrift des Empfängers wieder.
+- Datumsangaben stehen doppelt (`xml:lang` de und en). `date/@type="supplied"` und `@ana="supplied/verified"` kennzeichnen ergänzte Datierungen, 71 Datumselemente tragen nur Text ohne `@when`.
+- 35 Briefe tragen ein Jahr zwischen 2008 und 2030, etwa `when="2030-08-12"` zum Text „12. 8. 30“. Das zweistellige Jahr ist in der Quelle ins falsche Jahrhundert aufgelöst ([ADR-010](specification.md#adr-010-unplausible-jahre-kennzeichnen-nicht-korrigieren)). Der Zeitraum der übrigen Briefe ist 1901 bis 1947.
+- Bei einigen Personen sind `surname` und `forename` vertauscht ausgezeichnet, einige Körperschaften sind als `persName` zerlegt. Mehrere Personen tragen die Normdatennummer einer anderen Person und zählen deshalb unter deren Namen. Der Parser gibt die Auszeichnung wieder, wie sie steht.
 
-Befunde der Iteration vom 2026-11-13 und 2026-11-14, gezählt mit `verification/check-corpus.mjs` am selben Commit des SZD-Repositorys:
-
-- Einträge sind keine Briefe. Die Edition verzeichnet denselben Brief in der Datei jedes beteiligten Konvoluts. Die 2.135 `correspDesc` tragen 1.633 verschiedene Signaturen, 400 Signaturen kommen in zwei bis fünf Einträgen vor. Der Parser führt Einträge gleicher Signatur zu einem Brief zusammen, außer ihre Datierungen widersprechen sich (`mergeRecords()`, [ADR-009](specification.md#adr-009-einträge-gleicher-signatur-sind-ein-brief)). Das ergibt 1.637 Briefe. Bei 90 davon nennen die Einträge verschiedene Absender, Empfänger oder Orte. Zwei Signaturen bleiben getrennt: eine steht für ein Bündel dreier Briefe verschiedener Jahre, bei der anderen trägt ein Eintrag das falsche Jahrhundert.
-- 35 Briefe tragen ein Jahr zwischen 2008 und 2030, etwa `when="2030-08-12"` zum Text „12. 8. 30“ und zum Titel „12. August 1930“, darunter zwölf Briefe an Sigmund Freud. Das zweistellige Jahr ist in der Quelle ins falsche Jahrhundert aufgelöst. Der Parser kennzeichnet solche Ausreißer und nimmt sie von der Zeitachse, korrigiert sie aber nicht (`flagImplausibleYears()`, [ADR-010](specification.md#adr-010-unplausible-jahre-kennzeichnen-nicht-korrigieren)). Der Zeitraum der übrigen Briefe ist 1901 bis 1947.
-- Bei einigen Personen sind `surname` und `forename` vertauscht ausgezeichnet (`surname` „Romain“, `forename` „Rolland“), einige Körperschaften sind als `persName` mit `surname` und `forename` zerlegt. Dieselbe Person erscheint dadurch unter zwei Namen. Der Parser gibt die Auszeichnung wieder, wie sie steht.
-- Zehn Dateien schreiben den Reihentitel „Stefan Zweig digitale“. Der zusammengeführte Bestand trägt den häufigsten Reihentitel.
-- Wo ein `correspAction` nur ein `placeName type="original"` trägt, steht dessen Wortlaut als Absendeort, etwa „Kapuzinerberg 5 | Salzburg“. Solche Einträge erscheinen in der Ortsliste neben „Salzburg“.
-- 71 Datierungen stehen nur als Text ohne `@when`, etwa „12. V. 1938“. Sie bleiben als Text sichtbar und stehen nicht auf der Zeitachse, weil das Werkzeug Datumsnotationen nicht normalisiert.
-
-## Rechte und Lizenzen
-
-Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY 4.0 (`README.md`). Forschungsdaten Dritter sind davon ausgenommen und behalten die Lizenz, die ihre Herausgeber angeben. Maßgeblich ist die Angabe in `publicationStmt/availability/licence` der jeweiligen CMIF-Datei. Stand der Prüfung 2026-10-29.
-
-| Datei | Herkunft | Lizenzangabe | Beleg |
-|---|---|---|---|
-| `docs/data/hsa.xml`, identisch `data/hsa/CMIF.xml` | CMIF-Export des Hugo Schuchardt Archivs, Publisher Zentrum für Informationsmodellierung der Universität Graz, Stand 2025-01-28 | CC BY 4.0 | `licence target="https://creativecommons.org/licenses/by/4.0/"` im teiHeader, Quelle https://gams.uni-graz.at/context:hsa/CMIF. Am 2026-11-14 an der Quelle nachgelesen: Publisher und `licence` des CMIF auf GAMS stimmen mit der gebündelten Datei überein. Die Startansicht zeigt Publisher, Lizenz mit Link, den Link zur Quelle und den Änderungsvermerk, am gerenderten Zustand geprüft |
-| `docs/data/hsa-letters.json` | Mit `build_hsa_data.py` aus `data/hsa/CMIF.xml` abgeleitet und dabei geändert | CC BY 4.0 der Quelle | `meta.teiHeader` übernimmt Publisher, Herausgabe, Lizenztext, Lizenz-URL und Bibliographie. `meta.modifications` nennt die Änderungen, die Übersicht zeigt ihn neben dem Lizenzlink, `about.html` und README erwähnen ihn |
-| `docs/data/schoenbach.xml` | Lokale Kopie des CMIF der Edition „Fünf Briefe aus dem Nachlass von Anton Emanuel Schönbach“ am ACDH-OEAW | CC0 | `licence target="https://creativecommons.org/publicdomain/zero/1.0/"` im teiHeader |
-| `docs/data/test-graz-cases.xml` | Drei `correspDesc` aus den Briefdateien `o:hpe.letter.18`, `201` und `7327` der Edition „Joseph von Hammer-Purgstall. Korrespondenz“ auf GAMS, abgerufen am 2026-11-14 | CC BY-NC 4.0 der Edition, abweichend von der Lizenz des Repositorys | `licence target="http://creativecommons.org/licenses/by-nc/4.0/"` in den Briefdateien, Kommentar im Kopf der Testdatei. Der Auszug bleibt und wird mit `docs/` ausgeliefert. CC BY-NC 4.0 erlaubt die Weitergabe mit Namensnennung zu nicht kommerziellen Zwecken, die Testdatei eines frei zugänglichen Forschungswerkzeugs fällt nach Einschätzung der bauenden Session darunter. Zitiert sind drei Kopfdatensätze ohne Brieftext. Der Operator überließ die Entscheidung am 2026-11-14 der Session. Das Werkzeug erscheint unter dem Namen eines Unternehmens. Die Einordnung als nicht kommerzielle Nutzung ist deshalb eine Auslegung der Session und keine Rechtsauskunft, der Operator sieht sie bei der Abnahme vor einem Push |
-| `docs/data/test-parallel-a.xml`, `docs/data/test-parallel-b.xml` | Je ein Eintrag aus dem CMIF von „Ludwig Boltzmann. Leben und Briefe“ und des Franz Brentano Archivs Graz auf GAMS | CC BY 4.0 | `licence`-Element der beiden CMIF-Dateien, Kommentar im Kopf der Testdateien |
-| `docs/data/demo-showcase.xml`, `docs/data/test-uncertainty.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | teiHeader der Dateien |
-| `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 wie die übrigen synthetischen Dateien | Diese Tabelle. Das `licence`-Element der Datei bleibt absichtlich feindliche Eingabe der Sicherheits-Suite und trägt deshalb keine gültige Angabe |
-| `data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata, per SPARQL über die GeoNames-ID (P1566) abgefragt | Wikidata-Daten stehen unter CC0 | `meta.source` der Datei |
-| `docs/data/geonames_coordinates.json` | Mit `resolve_geonames_wikidata.py --served` aus `data/geonames_coordinates.json` abgeleitet, ergänzt um die GeoNames-IDs der gebündelten CMIF-Dateien, von `upload.js` geladen | Wikidata CC0, der Eintrag für Genf (2660646) aus GeoNames unter CC BY 4.0 | `meta` der Datei, Feld `source: "geonames"` am Eintrag |
-
-Externe Quellen, die Nutzende zur Laufzeit laden, sind nicht im Repository gebündelt. Ihre Lizenz steht im teiHeader der geladenen Datei, die Übersicht zeigt sie an. Die correspSearch-API gibt ihre Ergebnisse laut API-Dokumentation (https://correspsearch.net/en/api.html, abgerufen 2026-10-29) unter CC BY 4.0 aus, die zu nennenden Datengeber stehen in `teiHeader//respStmt`.
-
-### Herkunft von docs/data/geonames_coordinates.json
-
-Bis zum 2026-10-29 lag hier eine Handtabelle mit 58 europäischen Städten aus Commit `d2bc2eb` (2025-11-27) ohne Quellenangabe. Ein Abgleich mit dem GeoNames-RDF-Dienst (`https://sws.geonames.org/{id}/about.rdf`) ergab 13 Einträge, die einer GeoNames-ID Namen und Koordinaten einer anderen Stadt zuordneten, etwa Genf (2660646) mit den Werten von Bern. Der Tutorial-Datensatz zeigte Genf deshalb bei Bern (Befund 9).
-
-Auf Entscheidung des Operators ersetzt die Wikidata-Tabelle der Vorprozessierung die Handtabelle. `python preprocessing/resolve_geonames_wikidata.py --served` schreibt `docs/data/geonames_coordinates.json` im Format `{meta, coordinates}`.
-
-- Alle Einträge von `data/geonames_coordinates.json` gehen unverändert über. Sie stammen aus Wikidata, Koordinate P625 des Objekts mit der GeoNames-ID P1566.
-- IDs der gebündelten CMIF-Dateien in `docs/data/` außer `hsa.xml`, die der Tabelle fehlen, löst das Skript ebenso über Wikidata auf (Döbling 2600996, Zdislavice 3061643, Blansko 3079273).
-- Genf (2660646) ist bei Wikidata mit einer anderen GeoNames-ID verknüpft (7285902). Für solche IDs liest das Skript Koordinaten und Namen aus dem GeoNames-RDF-Dienst und markiert den Eintrag mit `source: "geonames"`. `meta.added_for_bundled_cmif` nennt die ergänzten IDs.
-
-Geprüft am 2026-10-29: Jeder Eintrag der neuen Tabelle wurde mit dem GeoNames-RDF-Datensatz seiner ID verglichen. Alle Namen bezeichnen denselben Ort. Siedlungen liegen bis auf eine Ausnahme unter 10 km von der GeoNames-Koordinate entfernt, Lagos (2332459) mit 42 km, weil das Wikidata-Objekt den Bundesstaat Lagos meint. Größere Abstände betreffen Länder, Regionen und Gewässer, deren Mittelpunkt bei Wikidata und GeoNames verschieden gesetzt ist. Zwei IDs antworteten beim Lauf nicht und wurden einzeln nachgeprüft (Burgdorf, Riva del Garda). Im Tutorial-Datensatz liegt Genf seither bei 46,20 N 6,15 O.
-
-### Entschieden am 2026-10-29
-
-- `hsa-letters.json` trägt einen ausdrücklichen Änderungsvermerk in `meta.modifications`, den `build_hsa_data.py` bei jedem Lauf mitschreibt. Die Oberfläche zeigt ihn dort, wo die Lizenz steht.
-- `test-hostile.xml` steht wie die übrigen synthetischen Testdateien unter CC BY 4.0. Die Angabe steht in dieser Wissensbasis, weil das `licence`-Element der Datei Testeingabe bleibt.
+Die Rückmeldung dieser Befunde an die Edition liegt beim Operator ([plan.md](plan.md#daten-und-parser)).
 
 ## Modell
 
 ### CMIF-Struktur
 
-Der `teiHeader` beschreibt das Briefverzeichnis selbst (`titleStmt` mit Titel und Editor, `publicationStmt` mit Publisher, Lizenz, Datum und `idno type="URL"`, `sourceDesc/bibl` mit bibliographischer Angabe). `profileDesc` enthält je Brief ein `correspDesc`.
+Der `teiHeader` beschreibt das Briefverzeichnis selbst (`titleStmt` mit Titel und Editor, `publicationStmt` mit Publisher, Lizenz, Datum und `idno type="URL"`, `sourceDesc/bibl`). `profileDesc` enthält je Brief ein `correspDesc`.
 
 ```xml
 <correspDesc ref="https://example.org/letter/123" source="#uuid" key="123">
@@ -188,115 +154,171 @@ Der `teiHeader` beschreibt das Briefverzeichnis selbst (`titleStmt` mit Titel un
 </correspDesc>
 ```
 
-| Element und Attribut | Bedeutung |
-|---|---|
-| `correspDesc/@ref` | URL des Briefs in der Edition, etwa `https://gams.uni-graz.at/o:hsa.letter.654` |
-| `correspDesc/@key` | Briefnummer in der Edition |
-| `correspDesc/@source` | Verweis auf `bibl/@xml:id` im teiHeader |
-| `correspAction/@type` | `sent` oder `received`, ein Brief führt mindestens je eine Aktion |
-| `persName/@ref`, `placeName/@ref` | Normdaten-URI der Person oder des Orts |
-| `date/@when` | Datum mit Tag-, Monats- oder Jahrespräzision (`YYYY-MM-DD`, `YYYY-MM`, `YYYY`) |
-| `date/@from`, `date/@to` | Zeitraum |
-| `date/@notBefore`, `date/@notAfter` | Terminus post und ante quem |
-| `note/ref[@type="hasLanguage"]` | Briefsprache als ISO-Code oder Lexvo-URI |
-| `note/ref[@type="mentionsSubject"]` | Thema, `@target` verweist auf ein kontrolliertes Vokabular, der Textinhalt ist die Bezeichnung |
-| `note/ref[@type="mentionsPerson"]` | Erwähnte Person außerhalb von Absender und Empfänger |
-| `note/ref[@type="mentionsPlace"]` | Erwähnter Ort außerhalb der Absende- und Empfangsorte |
+### Was der Parser liest
 
-Unsicherheitsangaben (`cert`, `[NN]`, Regionen statt Orte) beschreibt [uncertainty-specification.md](uncertainty-specification.md).
+`docs/js/cmif-parser.js` mit den Helfern aus `docs/js/utils.js` ist die maßgebliche Beschreibung. Die Tabelle gibt den Stand des Codes vom 2026-11-14 wieder.
+
+| Quelle | Was das Werkzeug daraus macht | Ort im Code |
+|---|---|---|
+| ID des Briefs | `correspDesc/@ref`, sonst `@key`, sonst `xml:id` des `correspDesc` oder des umgebenden Briefsatzes, zuletzt die Position | `extractLetter()` |
+| `correspAction type="sent"` | alle Personen und Körperschaften als `senders`, der erste als `sender`. Wer zugleich Empfänger ist, steht hinter den übrigen Absendern zurück | `extractSenders()` |
+| `correspAction type="received"` | alle Empfänger aller empfangenden Handlungen als `recipients`, der erste als `recipient` | `extractLetter()` |
+| weitere `correspAction` (etwa `forwarded`) | `furtherActions` mit Typ, Personen und Ort oder Datum nur, wo die Handlung eigene trägt. Ihre Personen sind keine Korrespondenten | `extractFurtherActions()` |
+| `persName/@ref` | Normdatum, wenn VIAF, GND (auch ohne `gnd/` im Pfad), Library of Congress oder BnF erkannt wird. Eine andere URL gilt als Verweis ohne Normdatum | `parseAuthorityRef()`, `personFromElement()` |
+| `persName/@corresp`, interner `@ref` | `localRef`, Schlüssel der Person, wo kein Normdatum steht | `personFromElement()`, `personKey()` |
+| `placeName` im Versand | Absendeort ist das erste ungetypte `placeName`, sonst das erste, das weder Poststempel noch Wortlaut der Vorlage ist. Steht nur ein `placeName type="original"`, bleibt sein Wortlaut als `placeText` und ergibt keinen Ort. Eckige Klammern um den ganzen Namen sind Markierung und nicht Teil des Namens | `extractPlace()` |
+| Poststempel | `placeName` oder `note` mit `@type` postmark, postalStamp oder Poststempel werden `postmark`, nie Absendeort | `extractPlace()` |
+| `address/addrLine` | `address`, nie Absendeort | `extractAddress()` |
+| `date` | Das erste Datumselement mit maschinenlesbarem Attribut zählt. `@when` ergibt Tag, Monat oder Jahr. `@from` und `@to` am selben Tag gelten als ein Tag. `@from`/`@to` oder beide Grenzen ergeben einen Zeitraum mit dem Jahr des Anfangs. Eine einzelne Grenze (`@notBefore` oder `@notAfter` allein) ergibt `dateBound`, das Datum bleibt erhalten, das Jahr leer. Ein Datum nur als Text bleibt als `dateText`. „ohne Datum“, „o. D.“ und ähnliche Platzhalter gelten als undatiert | `extractDate()`, `classifyDate()` |
+| `@cert` am Datum | `dateCertainty`, Vorgabe `high` | `classifyDate()` |
+| `@evidence`, `@type`/`@ana` mit supplied, deduced, inferred, conjecture, eckige Klammern | `dateInferred`, `place_sent.inferred` | `isInferred()` |
+| `note/ref` hasLanguage | Sprache als Code und Bezeichnung, sonst die erste Sprache aus `msContents/textLang` des Briefsatzes | `extractLanguage()`, `extractTextLanguage()` |
+| `note/ref` mentionsPerson, mentionsPlace, mentionsSubject, mentionsOrg, mentionsBibl | erwähnte Personen (Name aus dem Text, `@target` über `parseAuthorityRef()`), Orte (GeoNames-ID), Themen (URI, Bezeichnung, Kategorie), Organisationen und Werke | `extractMentions()` |
+| Signatur, Mehrfacheinträge | `signature` aus `idno type="signature"`. Einträge gleicher Signatur ohne widersprechende Datierung werden ein Brief mit `records` und `recordsDiffer` | `extractSignature()`, `mergeRecords()` |
+| mehrere Dateien | `file` je Brief, `parallels` für Briefe verschiedener Dateien mit gleichem identifiziertem Absender, gleichen identifizierten Empfängern und gleichem Tag | `markParallels()` |
+| unplausible Jahre | `dateImplausible`, das Jahr wird leer, das Datum bleibt | `flagImplausibleYears()` |
+
+Was der Parser nicht liest:
+
+- `cert` an Person und Ort, nur am Datum.
+- Ort und Datum des Empfangs. Keiner der geprüften Bestände trägt sie.
+- `@subtype` an `note/ref`, also auch nicht die Familie einer Aussage im CMIF von GOSSIP ([Gemeinsames Brief- und Aussagemodell](#gemeinsames-brief--und-aussagemodell)).
+- Ob eine Erwähnung im Brieftext oder im Kommentar der Edition steht. CMIF drückt das nicht aus.
+- Eine ausdrückliche Gleichsetzung zweier Einträge als ein Brief, weil kein Austauschprofil sie festlegt.
+- Ein Datum, das nur im Titel eines Eintrags oder an anderer Stelle der Briefdatei steht. Ein Datum nur als Text wird nicht normalisiert.
+- Notizen zu weiteren Beteiligten und ungetypte Notizen am Absender.
+
+Jahre unter 1400 und über 2100 und Zeiträume über mehrere Jahre stehen auf keiner Zeitachse (`datedYearRange()` und `isMultiYearSpan()` in `utils.js`, dieselbe Regel in Raum-Zeit und Themen), weil Erfassungsfehler wie 0 oder 20250 die Achse sonst sprengen. Bis 2026-11-14 schrieb dieses Dokument die Regel `explore.js` zu.
 
 ### Internes Datenmodell
 
-Der Parser erzeugt Briefe als Hauptentitäten und Indizes für Personen, Orte, Sprachen und Themen, beschrieben in [architecture.md](architecture.md#datenmodell). Drei Eigenheiten der Parser-Ausgabe führten bei der Implementierung der Forschungspfade zu falschen Annahmen und sind deshalb festgehalten.
+Der Parser erzeugt Briefe als Hauptentitäten und Indizes für Personen, Orte, Sprachen und Themen. Felder und Indexformen beschreibt [architecture.md](architecture.md#datenmodell). Drei Eigenheiten führten bei der Implementierung zu falschen Annahmen und sind deshalb festgehalten.
 
-- Personen tragen `letter_count` als Zahl der Briefe, an denen sie beteiligt sind, dazu `as_sender` und `as_recipient` je Rolle. Nennt ein Brief dieselbe Person als Absender und Empfänger, zählt er in `letter_count` einmal (seit 2026-11-14, vorher die Summe der Rollen). Ein Feld `letters_sent` gibt es nicht.
-- Themen tragen ihre Bezeichnung in `label`. Code, der `name` erwartet, greift auf `s.label || s.name` zurück.
-- CMIF speichert Sprachen oft als URI (`http://lexvo.org/id/iso639-3/deu`). `LANGUAGE_LABELS` in `constants.js` ist die einzige Bezeichnungstabelle für Parser und Ansichten, für Codes außerhalb der Tabelle gilt die Bezeichnung aus den Daten (`languageLabel()`), beim Parsen der Text des `ref`-Elements.
+- Personen des Parsers tragen `letter_count` als Zahl der Briefe, an denen sie beteiligt sind, dazu `as_sender` und `as_recipient`. Die HSA-Datei trägt stattdessen `letters_sent` und `letters_received` und nur Personen mit Normdaten-ID. Code, der Zählungen braucht, rechnet sie deshalb aus den Briefen.
+- Themen tragen ihre Bezeichnung in `label`.
+- CMIF speichert Sprachen oft als URI (`http://lexvo.org/id/iso639-3/deu`). `LANGUAGE_LABELS` in `constants.js` ist die einzige Bezeichnungstabelle für Parser und Ansichten.
+
+## Gemeinsames Brief- und Aussagemodell
+
+CorrespExplorer soll das Sichtwerkzeug für das gemeinsame Briefmodell werden, das das Projekt GOSSIP für die Briefe der fünf Grazer Editionen entwickelt (Entscheidung des Operators vom 2026-11-14, [project.md](project.md)). Das Modell steht in `knowledge/data.md` des Repositorys `gossip`, Abschnitt „Letter and statement model“. Es ist der Vorschlag eines KI-Agenten, am 2026-11-14 auf Entscheidung des Operators gekürzt und von keiner Fachwissenschaftlerin und keinem Fachwissenschaftler geprüft. Die Benennungen und Erfassungen sind ungeprüft.
+
+Das Modell kennt vier Dinge.
+
+| Ding | Was es ist |
+|---|---|
+| Brief | der Eintrag der Edition mit Adresse, Absender, Empfänger, Ort und Datum, wie `correspDesc` sie gibt. Zeugen, Faksimiles und Textvarianten bleiben bei der Edition |
+| Stelle | eine zitierbare Passage des Brieftexts oder des Kommentars, in der eine dritte Person genannt wird, in TEI ein `rs` mit Kennung |
+| Person | wen eine Stelle meint. Die Identifizierung ist eine eigene Aussage und darf fehlen |
+| Aussage | was eine Stelle mit einer dritten Person tut, in TEI eine `annotation` in `standOff`, die auf die Stelle zeigt |
+
+Jede Aussage hat vier Pflichtfelder.
+
+| Feld | Werte |
+|---|---|
+| Verweis | die Stelle und ihre Art: `name`, `titel`, `verwandtschaft`, `gruppe`, `pronomen` |
+| Familie | wie die dritte Person in die Mitteilung eingeht: `ueber`, `durch`, `an`, `fuer`, `mit`. Ein Gruß trägt stattdessen `gruss` und zählt nicht als Aussage |
+| Stimme | wer spricht: `absender`, `wiedergegeben`, `edition` |
+| Stand | `ungeprueft`, `bestaetigt`, `abgelehnt`, mit der Quelle der Aussage |
+
+GOSSIP gibt die Aussagen in zwei Formen aus, als JSON und als CMIF-Datei. Im CMIF ist jede Aussage ein `ref` in `correspDesc/note` mit dem Typ, den der Entwurf von CMIF 2 für erwähnte Personen nutzt, der Stelle als `@target` und der Familie als `@subtype`. Ziel und Subtyp sind Erweiterungen, die GOSSIP vorschlägt. Das Modell trägt noch nicht die Identität einer Person über Briefe hinweg, die Beziehung zwischen Absender und Empfänger und die Zählung weitergeleiteter Briefe.
+
+Was das Werkzeug davon heute liest, nach dem Code und nicht an einer Ausgabe von GOSSIP geprüft:
+
+- Brief: vollständig, soweit `correspDesc` ihn trägt.
+- Person: als Beteiligte und als Erwähnte, mit Normdatum oder Registerkennung.
+- Stelle: nichts. Das Werkzeug kennt keine Textstelle.
+- Aussage: Das CMIF von GOSSIP liest es als erwähnte Personen. Der Name kommt aus dem Text des `ref`, `@target` geht durch `parseAuthorityRef()`. Eine Stellenkennung ist kein Normdatum und wird deshalb als Kennung vom Typ `unknown` gehalten. Daraus folgt nach dem Code, dass jede Stelle als eigene erwähnte Person zählt, dieselbe Person an zwei Stellen also als zwei. `@subtype`, also die Familie, verwirft der Parser. Stimme und Stand trägt das CMIF nicht, das JSON liest das Werkzeug nicht.
+
+Das Werkzeug zeigt deshalb keinen Prüfstand von Aussagen, weder bestätigt noch vorgeschlagen. Welche Lieferform es lesen soll und welche Figuren die Aussagen zeigen, ist offen ([plan.md](plan.md#gemeinsames-briefmodell)).
+
+## Erzeugte Daten
+
+### docs/data/examples.json
+
+`preprocessing/build_examples.py` liest `docs/data/hsa-letters.json` und schreibt `docs/data/examples.json` mit einem Eintrag `data/hsa-letters.json`: welche Aussagen des Datenmodells die Briefe tragen und wie viele, die kleinen Aggregate der Startfigur (Korrespondenzkreis mit dem äußeren Ring der Erwähnten, Absendeorte und erwähnte Orte mit Koordinaten, Briefe je Jahr und Sprache, Verläufe der häufigsten Themen, Hosts der Editionslinks) und zwölf Beispielbriefe mit ihrer Stelle in jedem Aggregat. Die Regeln sind einmal in `docs/js/start-summary.js` definiert, das Skript überträgt sie Regel für Regel, weil die Datei des Archivs zu groß ist, um sie bei jedem Aufruf der Startseite im Browser zusammenzufassen. Tutorial und lokal eingebundene Bestände fasst der Browser selbst zusammen.
+
+Die Datei trägt kein Erzeugungsdatum, ein unveränderter Quellstand ergibt eine unveränderte Datei. Dass die Datei mit der Definition in JavaScript übereinstimmt, prüft der Smoke-Test ([testing.md](testing.md#browser-smoke-test)). Nach jeder Neuerzeugung von `hsa-letters.json` ist `uv run preprocessing/build_examples.py` zu wiederholen.
+
+### Länderumrisse
+
+`docs/vendor/natural-earth/countries-110m.geo.json` sind Länderumrisse im Maßstab 1:110 Millionen von Natural Earth (gemeinfrei), eine GeoJSON-Umwandlung aus dem npm-Paket world-atlas, Version 2. Herkunft und Weg in `docs/vendor/natural-earth/PROVENANCE.md`. Raum-Zeit-Ansicht und Startfigur zeichnen daraus nur die äußeren Ringe und lesen keine Namen.
+
+## Grenzen
+
+- Normdatenabdeckung: Personen und Orte ohne URI lassen sich nur über Name oder Registerkennung zusammenführen. Varianten derselben Person erscheinen dann getrennt, alle Einträge „Unbekannt“ eines Bestands bilden eine Person.
+- Eine Registerkennung, die nur aus einem Fragment besteht (`#P.7`), ist in ihrer Edition eindeutig. Werden zwei Editionen mit solchen Kennungen zusammen geladen, können zwei Personen zusammenfallen.
+- Ego-zentrierte Bestände: Ein Nachlass wie das HSA zeigt das Netzwerk aus der Perspektive einer Person. Beziehungen zwischen anderen Korrespondenten fehlen strukturell.
+- Kein geprüfter Bestand nennt Empfangsorte. Karte und Raum-Zeit zeigen, woher geschrieben wird, und keine Wege.
+- Themen und Erwähnungen trägt unter den geprüften Beständen nur das HSA. Dem Bestand von Stefan Zweig Digital fehlen für Karte und Raum-Zeit die Ortskennungen.
+- Unvollständige Daten werden ihrem Jahr zugeordnet, undatierte Briefe und Briefe mit einer einzelnen Datumsgrenze stehen neben der Zeitachse.
 
 ## Normdaten und Anschlüsse
 
-Normdaten-URIs sind der primäre Schlüssel für Abgleich und Aggregation, Anzeigenamen dienen nur der Darstellung, weil Editionen denselben Namen verschieden schreiben (Entscheidung in [specification.md](specification.md#adr-001-normdaten-uris-als-primärer-schlüssel)).
+Normdaten-URIs sind der primäre Schlüssel für Abgleich und Aggregation, Anzeigenamen dienen nur der Darstellung ([ADR-001](specification.md#adr-001-normdaten-uris-als-primärer-schlüssel)).
 
-| Entität | System | URL-Muster |
-|---|---|---|
-| Person | VIAF | `viaf.org/viaf/{id}`, Kurzform `viaf.org/{id}` (erwähnte Personen im HSA) |
-| Person | GND der Deutschen Nationalbibliothek | `d-nb.info/gnd/{id}` |
-| Person | Library of Congress | `id.loc.gov/authorities/names/{id}` |
-| Person | Bibliothèque nationale de France | `data.bnf.fr/ark:/12148/{id}` |
-| Ort | GeoNames | `sws.geonames.org/{id}` |
-| Sprache | ISO 639-1 | `de`, `fr`, `en` |
-| Sprache | Lexvo | `lexvo.org/id/iso639-3/{code}` |
+| Entität | System | URL-Muster | Erkannt in |
+|---|---|---|---|
+| Person | VIAF | `viaf.org/viaf/{id}`, Kurzform `viaf.org/{id}` | `parseAuthorityRef()` |
+| Person | GND | `d-nb.info/gnd/{id}`, auch `d-nb.info/{id}` | `parseAuthorityRef()` |
+| Person | Library of Congress | `id.loc.gov/authorities/names/{id}` | `parseAuthorityRef()` |
+| Person | Bibliothèque nationale de France | `data.bnf.fr/ark:/12148/{id}` | `parseAuthorityRef()` |
+| Ort | GeoNames | `sws.geonames.org/{id}` | `parseGeoNamesRef()` |
+| Sprache | ISO 639-1 und Lexvo | `de`, `lexvo.org/id/iso639-3/{code}` | `extractLanguageCode()` |
 
-GeoNames liefert die Koordinaten für die Karte. Fehlen sie, löst `resolve_geonames_wikidata.py` in der Vorprozessierung und die Wikidata-Anreicherung im Browser Koordinaten auf. Für Personen mit VIAF- oder GND-URI holt die Wikidata-Anreicherung Porträts, Lebensdaten und Berufe.
-
-## Verzerrungen
-
-- Normdatenabdeckung: Personen und Orte ohne URI lassen sich nur über den Namen zusammenführen. Varianten derselben Person erscheinen dann getrennt.
-- Ego-zentrierte Bestände: Ein Nachlass wie das HSA zeigt das Netzwerk aus der Perspektive einer Person. Beziehungen zwischen anderen Korrespondenten fehlen strukturell.
-- Datierung: Unvollständige Daten werden einem Jahr zugeordnet, undatierte Briefe stehen außerhalb der Zeitachse (siehe [design.md](design.md#visualisierungslogik)).
+GeoNames liefert keine Koordinaten im CMIF. Sie kommen aus `docs/data/geonames_coordinates.json` und auf ausdrückliche Aktion aus Wikidata ([ADR-006](specification.md#adr-006-externe-dienste-nur-auf-ausdrückliche-aktion)). Für Personen mit VIAF- oder GND-URI holt die Wikidata-Anreicherung auf Klick Porträts, Lebensdaten und Berufe.
 
 ## Workflow
 
-### Parsing im Browser
+### Laden im Browser
 
-`cmif-parser.js` parst hochgeladene oder per URL geladene Dateien mit `DOMParser`. Alle Elemente werden über den TEI-Namespace `http://www.tei-c.org/ns/1.0` mit `getElementsByTagNameNS` abgefragt, sonst bleiben sie unsichtbar. Für das Jahr prüft der Parser `when`, dann `from`, dann `notBefore` und nimmt die ersten vier Zeichen, ohne Datum ergibt sich `null`. `parseAuthorityRef()` erkennt VIAF, GND, LC, BNF, GeoNames und Lexvo per regulärem Ausdruck mit Capturing Group und gibt unbekannte URLs vollständig mit Typ `unknown` zurück. Jahre unter 1400 oder über 2100 werden in der Ansicht verworfen, weil Erfassungs- oder Parsingfehler wie 0 oder 20250 die Zeitachse sonst sprengen (`explore.js`).
+`cmif-parser.js` parst hochgeladene oder per URL geladene Dateien mit `DOMParser`. Alle Elemente werden über den TEI-Namespace `http://www.tei-c.org/ns/1.0` abgefragt. URLs der correspSearch-API v2.0 lädt `correspsearch-api.js` seitenweise bis zu einer Obergrenze.
 
-### Vorprozessierung erweiterter Datensätze
-
-Erweiterte Datensätze wie das HSA werden in Python vorprozessiert (`preprocessing/build_hsa_data.py`), weil Größe und Quelle das Laden im Browser ausschließen. Der Ablauf steht in [architecture.md](architecture.md#datenfluss). Eingabe ist `data/hsa/CMIF.xml`, Ausgabe `docs/data/hsa-letters.json`. `build_hsa_data.py` und `analyze_hsa_cmif.py` brauchen das Paket `lxml` (`from lxml import etree`), `resolve_geonames_wikidata.py` nur die Standardbibliothek. `preprocessing/requirements.txt` hält die Version von `lxml` fest (`pip install -r preprocessing/requirements.txt`).
+- GitHub-Raw-URLs erlauben CORS. Bei einem CORS-Fehler lässt sich die Datei herunterladen und als Datei laden.
+- Dateien über etwa 5 MB können das sessionStorage-Limit überschreiten. Die Fehlermeldung nennt dann die Zahl der Briefe und verweist auf das vorprozessierte HSA (`upload.js`).
+- Orte ohne Koordinaten erscheinen in der Ortsliste, aber nicht auf Karte und Raum-Zeit.
 
 ### Mehrere Dateien als ein Bestand
 
-Editionen, die je Korrespondenz eine Datei veröffentlichen, lädt `parseCMIFFiles()` als einen Bestand: mehrere Dateien im Dateidialog oder per Drag-and-Drop, oder eine Dateiliste `index.html?files=data/….json` mit `{"files": ["a.xml", …]}`, deren Pfad derselben Regel wie `?json=` folgt und deren Dateinamen den Ordner der Liste nicht verlassen. Eine Datei ohne Briefe oder ohne gültiges XML wird übersprungen und in `meta.files.skipped` genannt. `meta.files` trägt die Zahl der Dateien und der Einträge, die Übersicht nennt sie neben der Quelle. Der Kopf des Bestands nennt nur, was alle Dateien teilen, der Titel fällt auf den häufigsten Reihentitel (`seriesStmt/title`) zurück.
+Editionen, die je Korrespondenz eine Datei veröffentlichen, lädt `parseCMIFFiles()` als einen Bestand: mehrere Dateien im Dateidialog oder per Drag-and-Drop, oder eine Dateiliste `index.html?files=data/….json` mit `{"files": ["a.xml", …]}`, deren Dateinamen den Ordner der Liste nicht verlassen. Eine Datei ohne Briefe oder ohne gültiges XML wird übersprungen und in `meta.files.skipped` genannt. Der Kopf des Bestands nennt nur, was alle Dateien teilen.
 
-Für Bestände, die nicht ins Repository gehören, bindet `python verification/serve_local_corpus.py <Ordner>` einen Ordner außerhalb des Repositorys unter `data/local/` ein und erzeugt die Dateiliste, der Explorer lädt ihn dann über `index.html?files=data/local/files.json`.
+Für Bestände, die nicht ins Repository gehören, bindet `python verification/serve_local_corpus.py <Ordner>` einen Ordner außerhalb des Repositorys unter `data/local/` ein und erzeugt die Dateiliste. Startseite und Explorer bieten den Bestand dann als drittes Beispiel an.
 
-### Laden externer CMIF-Dateien
+### Vorprozessierung
 
-- GitHub-Raw-URLs (`https://raw.githubusercontent.com/{user}/{repo}/{branch}/{pfad}.xml`) erlauben CORS.
-- Bei einem CORS-Fehler die Datei herunterladen und per Drag-and-Drop hochladen.
-- Dateien über etwa 5 MB können das sessionStorage-Limit überschreiten. Die Fehlermeldung nennt dann die Zahl der Briefe, nicht die Dateigröße, und verweist auf einen kleineren Datensatz oder das vorprozessierte HSA (`upload.js`).
-- Orte ohne Koordinaten erscheinen in der Ortsansicht, aber nicht auf der Karte. Ein Hinweis in der Ortsansicht nennt ihre Zahl und bietet die Auflösung über Wikidata an.
+Das HSA wird in Python vorprozessiert (`preprocessing/build_hsa_data.py`, Eingabe `data/hsa/CMIF.xml`, Ausgabe `docs/data/hsa-letters.json`), weil seine Größe das Laden im Browser über sessionStorage ausschließt. `build_hsa_data.py` und `analyze_hsa_cmif.py` brauchen `lxml` (`preprocessing/requirements.txt`), `resolve_geonames_wikidata.py` und `build_examples.py` nur die Standardbibliothek. Die Vorprozessierung kennt die Regeln für Briefsätze nicht, das HSA braucht sie nicht.
+
+## Rechte und Lizenzen
+
+Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY 4.0 (`README.md`). Forschungsdaten Dritter behalten die Lizenz, die ihre Herausgeber angeben, maßgeblich ist `publicationStmt/availability/licence` der jeweiligen Datei.
+
+| Datei | Herkunft | Lizenzangabe | Beleg |
+|---|---|---|---|
+| `docs/data/hsa.xml`, identisch `data/hsa/CMIF.xml` | CMIF-Export des Hugo Schuchardt Archivs, Publisher Zentrum für Informationsmodellierung der Universität Graz, Stand 2025-01-28 | CC BY 4.0 | `licence` im teiHeader. Am 2026-11-14 an der Quelle https://gams.uni-graz.at/context:hsa/CMIF nachgelesen: Publisher und Lizenz stimmen überein |
+| `docs/data/hsa-letters.json`, `docs/data/examples.json` | Mit `build_hsa_data.py` und `build_examples.py` aus der CMIF-Datei abgeleitet und dabei geändert | CC BY 4.0 der Quelle | `meta.modifications` nennt die Änderungen, die Übersicht zeigt ihn neben dem Lizenzlink |
+| `docs/data/schoenbach.xml` | CMIF der Edition „Fünf Briefe aus dem Nachlass von Anton Emanuel Schönbach“ am ACDH-OEAW | CC0 | `licence` im teiHeader |
+| `docs/data/test-graz-cases.xml` | Drei `correspDesc` aus den Briefdateien `o:hpe.letter.18`, `201` und `7327` der Edition „Joseph von Hammer-Purgstall. Korrespondenz“ auf GAMS, abgerufen am 2026-11-14 | CC BY-NC 4.0 der Edition, abweichend von der Lizenz des Repositorys | Kommentar im Kopf der Datei. Der Auszug wird mit `docs/` ausgeliefert. Dass die Testdatei eines frei zugänglichen Forschungswerkzeugs unter einem Unternehmensnamen als nicht kommerzielle Nutzung gilt, ist eine Auslegung der bauenden Session vom 2026-11-14 und keine Rechtsauskunft. Der Operator überließ die Entscheidung der Session und sieht sie vor einem Push |
+| `docs/data/test-parallel-a.xml`, `test-parallel-b.xml` | Je ein Eintrag aus dem CMIF von „Ludwig Boltzmann. Leben und Briefe“ und des Franz Brentano Archivs Graz | CC BY 4.0 | `licence` der beiden CMIF-Dateien |
+| `docs/data/demo-showcase.xml`, `test-uncertainty.xml`, `test-letter-records*.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | teiHeader oder diese Tabelle |
+| `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | Diese Tabelle. Das `licence`-Element der Datei bleibt absichtlich feindliche Eingabe |
+| `data/geonames_coordinates.json`, `docs/data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata über die GeoNames-ID (P1566) | Wikidata CC0, der Eintrag für Genf (2660646) aus GeoNames unter CC BY 4.0 | `meta` der Datei, Feld `source: "geonames"` am Eintrag |
+| `docs/vendor/natural-earth/countries-110m.geo.json` | Natural Earth über world-atlas | gemeinfrei, Build-Skripte ISC | `PROVENANCE.md` daneben |
+
+Externe Quellen, die Nutzende zur Laufzeit laden, sind nicht gebündelt, ihre Lizenz steht im teiHeader der geladenen Datei und in der Übersicht. Die correspSearch-API gibt ihre Ergebnisse laut Dokumentation unter CC BY 4.0 aus.
+
+### Herkunft von docs/data/geonames_coordinates.json
+
+Bis zum 2026-10-29 lag hier eine Handtabelle mit 58 Städten ohne Quellenangabe, von denen 13 einer GeoNames-ID Namen und Koordinaten einer anderen Stadt zuordneten (Genf mit den Werten von Bern). Auf Entscheidung des Operators ersetzt die Wikidata-Tabelle der Vorprozessierung die Handtabelle. `python preprocessing/resolve_geonames_wikidata.py --served` übernimmt alle Einträge von `data/geonames_coordinates.json`, löst die IDs der übrigen gebündelten CMIF-Dateien über Wikidata auf und liest für IDs, die Wikidata einer anderen GeoNames-ID zuordnet (Genf), Koordinaten und Namen aus dem GeoNames-RDF-Dienst. Am 2026-10-29 wurde jeder Eintrag mit dem GeoNames-RDF-Datensatz seiner ID verglichen. Siedlungen liegen bis auf Lagos (42 km, das Wikidata-Objekt meint den Bundesstaat) unter 10 km von der GeoNames-Koordinate.
 
 ## Testdatensätze
 
-Die Tests laden die lokalen Dateien `test-uncertainty.xml`, `test-hostile.xml` und für Erwähnungen `demo-showcase.xml` über `parseCMIF`, die Suite Research Paths zusätzlich `hsa-letters.json` für die Indexform der Vorprozessierung ([testing.md](testing.md)). Die externen Datensätze der folgenden Tabelle dienten der manuellen Prüfung beim Aufbau.
+Welche Dateien welche Suite lädt, steht in [testing.md](testing.md). Die folgenden externen Datensätze dienten der manuellen Prüfung beim Aufbau im November 2025.
 
 | ID | Name | Briefe | Zeitraum | Quelle |
 |---|---|---|---|---|
-| uncertainty | Uncertainty Test | 23 | 1900 | CorrespExplorer, `docs/data/test-uncertainty.xml` |
 | hebel | Hebel-Briefe | 25 | 1791–1826 | TU Darmstadt, https://tueditions.ulb.tu-darmstadt.de/g/pa000018-0077 |
 | rollett | Rollett-Korrespondenz | 328 | 1877–1897 | Universität Graz, https://gams.uni-graz.at/context:rollett/CMI |
 | humboldt-spiker | Humboldt-Spiker | 156 | 1827–1846 | correspSearch, https://correspsearch.net/storage/avhumboldt/Spiker.xml |
 | humboldt-duvinage | Humboldt-Duvinage | 67 | 1835–1857 | correspSearch, https://correspsearch.net/storage/avhumboldt/Duvinage.xml |
 | schoenbach | Schönbach-Briefe | 5 | 1888–1911 | ACDH-OEAW, https://raw.githubusercontent.com/acdh-oeaw/schoenbach/main/cmif_schoenbach.xml |
 
-### Datenabdeckung
-
-| Merkmal | Uncertainty | Hebel | Rollett | H-Spiker | H-Duvinage | Schönbach |
-|---|---|---|---|---|---|---|
-| GND-IDs | teils | ja | ja | ja | ja | ja |
-| GeoNames | teils | ja | ja | ja | ja | ja |
-| Sprache | teils | ja | nein | nein | nein | nein |
-| Themen | nein | nein | nein | nein | nein | nein |
-| Exakte Daten | teils | teils | ja | teils | teils | ja |
-| Alle Orte bekannt | nein | nein | ja | ja | ja | ja |
-| Alle Personen bekannt | nein | ja | nein | ja | ja | ja |
-
-### Eigenheiten je Datensatz
-
-- Uncertainty Test: synthetisch, 23 Fälle in vier Sektionen (Datum 001–007, Person 008–013, Ort 014–018, Sonderfälle 019–023), darunter `cert="low"`, `[NN]`, Teilnamen, Personen ohne Normdaten und mit GND statt VIAF, Regionen, Organisation als Absender, kombinierte Unsicherheiten, Sprach- und Themenfelder. Die Fallliste führt [uncertainty-specification.md](uncertainty-specification.md#test-cases).
-- Hebel: ein großer Teil der Briefe ohne Absendeort, `cert="low"` und Zeitbereiche wie „Sommer 1799?“, einziger externer Datensatz mit Sprachangabe.
-- Rollett: größter der externen Testdatensätze, internationale Wissenschaftlerkorrespondenz, `[NN]` für unbekannte Absender, Konzentration auf 1896–1897.
-- Humboldt-Spiker: wechselnde Absendeorte, asymmetrische Korrespondenz, `cert="low"` mit `evidence="conjecture"`.
-- Humboldt-Duvinage: französische Datumsnotation, nur Berlin und Potsdam als Orte, Duplikat bei `key="4"`, viele Briefe ohne präzises Datum.
-- Schönbach: minimal, gute Verlinkung zu HTML-Editionen, Orte in Böhmen und der Steiermark.
-
-### Prüfreihenfolge
-
-1. Uncertainty, alle Unsicherheitsfälle systematisch
-2. Schönbach, minimal und schnell, alle Ansichten mit wenig Daten
-3. Hebel, Sprachfilter und viele fehlende Orte
-4. Humboldt-Spiker, mittlere Größe und Datierungsunsicherheit
-5. Humboldt-Duvinage, wenige Orte und fehlende Daten
-6. Rollett, Netzwerk mit vielen Knoten und `[NN]`-Behandlung
+Eigenheiten: Hebel hat viele Briefe ohne Absendeort, `cert="low"` und Zeitbereiche. Rollett nutzt `[NN]` für unbekannte Absender. Humboldt-Spiker trägt `cert="low"` mit `evidence="conjecture"`. Humboldt-Duvinage hat französische Datumsnotation und ein Duplikat bei `key="4"`. Schönbach ist minimal und gut zu HTML-Editionen verlinkt.

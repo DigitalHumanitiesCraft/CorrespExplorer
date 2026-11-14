@@ -21,308 +21,139 @@ related: [specification, architecture, uncertainty-specification]
 
 # Design
 
-Die Oberfläche soll Forschungsdaten schnell lesbar machen und dabei einen ruhigen, papiernahen Charakter tragen, der aus dem Logo abgeleitet ist. Dieses Dokument hält fest, welche Gestaltungsregeln gelten und warum. Die Werte selbst (Farben, Abstände, Schriftgrößen, Radien, Schatten, Übergänge, Ebenen, Breakpoints) stehen allein in `docs/css/tokens.css`, Ladereihenfolge und Zuständigkeit der Stylesheets in `docs/css/CONTEXT-MAP.md`, die daraus abgeleiteten Handlungsregeln für Agenten in `CLAUDE.md`.
+CorrespExplorer ist ein Forschungswerkzeug, dessen Oberfläche aus wenigen großen Figuren über einer gemeinsamen Auswahl besteht, mit ruhigem, papiernahem Charakter aus dem Logo. Dieses Dokument beschreibt den Aufbau, wie er am 2026-11-14 im Code steht, die Gestaltungsregeln und ihre Gründe und die Rückmeldungen des Operators, aus denen er entstanden ist. Die Werte (Farben, Abstände, Schriftgrößen, Radien, Schatten, Ebenen, Breakpoints) stehen allein in `docs/css/tokens.css`, Ladereihenfolge und Zuständigkeit der Stylesheets in `docs/css/CONTEXT-MAP.md`. Nichts vom Stand des 2026-11-14 ist vom Operator abgenommen.
 
-## Prinzipien
+## Haltung
 
-- Klare Hierarchie, damit Forschungsdaten schnell erfassbar sind.
-- Rahmen geben Tiefe und Abgrenzung. Reguläre Elemente (Karten, Knöpfe, Eingaben, Leisten) tragen einen Rahmen und keinen Schatten.
-- Die Akzentfarbe wird sparsam eingesetzt, für Aktionen, Auswahl und Hervorhebung. Als Flächenfarbe großer Bereiche ist Rostrot zu aggressiv für eine Arbeitsumgebung.
-- Lesbarkeit geht vor Ästhetik. Auf Daten liegen keine Texturen, Halbtonraster oder dekorativen Verläufe.
-- Nur unsichere Werte werden markiert, exakte bleiben ohne Zeichen ([Markierung nur an unsicheren Werten](#markierung-nur-an-unsicheren-werten)).
-- Daten ändern sich ohne Animation, weil Bewegung bei der Analyse ablenkt.
+- Die Oberfläche lässt die Daten sprechen. Eine Figur nimmt den größten Teil des Bildschirms ein, Kopf und Seitenleiste beschriften nicht, was ihre Bedienelemente selbst sagen.
+- Die Gliederung folgt den Gegenständen einer Korrespondenz, nicht der Darstellungstechnik.
+- Überblick zuerst, Belege auf Anforderung (Shneiderman, 1996, im Hauswissen als Mantra ausgeführt). Die Briefe einer Auswahl sind von jeder Figur aus einen Klick entfernt.
+- Nur unsichere Werte werden markiert, Lücken stehen als Lücken da und heißen Anreicherungspotential.
+- Lesbarkeit geht vor Ästhetik. Auf Daten liegen keine Texturen oder dekorativen Verläufe, Daten ändern sich ohne Animation.
 
-Schatten erhalten nur schwebende Elemente (Dialoge, Demo-Tour, Toasts, Dropdowns, Tooltips, Karten-Popups und Kartensteuerung, mobile Sidebar), weil ein Schatten anzeigt, dass ein Element über der Seite liegt. Auf regulären Elementen erzeugt er Gewicht ohne Ebeneninformation. Gesetzt werden Schatten ausschließlich in `shadows.css` mit den Tokens `--shadow-*`, andere Stylesheets setzen höchstens `box-shadow: none`. Verläufe sind nur funktional erlaubt, etwa für gemischte Rollen in einer Legende oder die Jahresskala des Netzwerks.
+## Aufbau
 
-## CSS-Architektur
+### Gegenstände, Darstellungen und Auswahl
 
-Ladereihenfolge und Inhalt der Stylesheets beschreibt `docs/css/CONTEXT-MAP.md`. Für die Gestaltung gelten zusätzlich diese Regeln.
+Die Kopfzeile des Explorers nennt den Bestand und die Gegenstände Start, Briefe, Personen, Orte, Zeit und Themen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht. Jeder Gegenstand mit mehreren Darstellungen listet sie in einem Menü unter seinem Reiter, und der Reiter öffnet die zuletzt benutzte.
 
-- `components.css` ist die einzige Quelle für `.btn`, `.btn-primary`, `.btn-secondary`, die Dialoggrundform ([Dialoge](#dialoge)) und den Kopfbereich der Ansichten ([Kopfbereich der Ansichten](#kopfbereich-der-ansichten)). Kein Stylesheet importiert `tokens.css` oder `components.css` erneut.
-- Ebenen stehen nur als Skala `--z-*` aus `tokens.css`, `--z-raised` für Ebenen innerhalb einer Komponente. Kein Stylesheet setzt einen z-index als Zahl.
-- Übergänge nennen ihre Eigenschaften über `--transition-properties` statt `transition: all` und ihre Dauer über `--transition-fast`, `--transition-base` oder `--transition-slow`.
-- Sichtbarkeit schaltet die Klasse `.hidden` aus `base.css`, nie das Attribut `hidden`. Wo zwei Gründe eine Fläche ausblenden, hält ein Datenattribut den einen fest, so `data-available` an der Themenliste der Sidebar, die in der Themenansicht und ohne Themen verborgen ist. Erwähnungsfluss (`mentions-view.js`), Netzwerk (`network-view.js`) und Ortsansicht (`places-view.js`) schalten einzelne Elemente noch über `style.display`.
-- Eine Komponente mit eigenen Breakpoints (Ansichtsleiste in `style.css`, Netzwerksteuerung in `explore.css`) führt diese direkt hinter ihren Grundregeln, weil eine spätere Grundregel gleicher Spezifität eine frühere Media Query überschreibt. So hatten bis 2026-11-05 die Grundregeln der Ansichtsleiste die Telefonregeln aufgehoben.
+| Gegenstand | Darstellungen |
+|---|---|
+| Start | Arbeitsfläche |
+| Briefe | Briefliste |
+| Personen | Liste, Netzwerk, Erwähnungen, Vergleichen |
+| Orte | Karte, Raum-Zeit, Liste, Vergleichen |
+| Zeit | Jahre, Tage, Chronik, Vergleichen |
+| Themen | Themen |
 
-## Gliederung nach Gegenstand (Stufe vom 2026-11-14)
+Der Schalter zwischen den Darstellungen steht im Kopf der Ansicht neben dem Titel. Der Titel sagt, was gerade zu sehen ist, unter einem Filter als Anteil. „Vergleichen“ ist eine Handlung des Gegenstands und vergleicht, was er listet. Die zwölf älteren Adressen (`view=`) und `spacetime` bleiben gültig.
 
-Der Operator hat den Stand nach dem Farbumbau am Bildschirm durchgesehen und die Gliederung beanstandet. Seine Sätze stehen hier wörtlich, damit sie jeden weiteren Umbau überleben. Sie stammen aus einer diktierten Eingabe, „Fuse“ lese ich als „Views“.
+Die Seitenleiste steht neben Karte, Raum-Zeit, Listen, Briefen, Jahren, Themen, Netzwerk und Erwähnungen. Oben steht als ein Satz aus entfernbaren Marken, was ausgewählt ist, darunter der Zeitraum als Regler, die Qualitätsfilter, die Merkmale der Überlieferung mit Zahl und die Sprachen mit ihrer Farbe. Die Gruppen tragen keine sichtbaren Überschriften, sie nennen sich durch ihre Bedienelemente. Auf der Startansicht steht über den Filtern, was den Bestand beschreibt. Der Wissenskorb erscheint erst mit dem ersten Eintrag. Chronik, Tage und Vergleich stehen ohne Seitenleiste in voller Breite und nennen einen aktiven Filter in einem Satz. Unter 768px liegt die Seitenleiste außerhalb des Bildschirms und öffnet über den Filterknopf der Kopfzeile.
 
-Zur Startansicht und zum Kopf:
+Gebaut und noch nicht eingecheckt: Ein aktiver Filter zeigt sich am Titel der Ansicht in der Farbe der Auswahl, an einer Linie am oberen Rand des Hauptbereichs und an einem getönten Block „Gefiltert nach …“ in der Seitenleiste.
 
-> Warum sind hier zwei Ebenen, und es sind ein bisschen viele Strukturen, oder? Auch hier haben wir das Problem, dass wir zu viele Ebenen haben. Warum wird so viel Fläche nicht verwendet? Sind es nicht ein bisschen zu viele Fuse? Es sind sehr viele Fenster. Das heißt: Was würde man sinnvoll zusammenführen können, und wo kann man jetzt etwas lernen?
+Unter jeder Ansicht außer der Briefliste liegt der Briefauszug, eine Zeile mit der Zahl der Auswahl („312 von 11.576 Briefen“). Sie öffnet die Briefe der Auswahl über der Ansicht, die ihren Zustand behält, mit einem Griff für die Höhe, Escape zum Schließen und „Alle in der Liste“ als Weg in die volle Briefliste. Die Zeilen und der Dialog sind die der Briefliste. Die Wahl, den Auszug über die Ansicht zu legen statt neben sie, traf die bauende Session nach dem Entwurf, den der Operator freigab.
 
-Zur Karte und zur Seitenleiste:
+### Startfigur
 
-> Also hier fallen mir auch wieder zu viele Ebenen ein. Also, ich finde, wir haben zu viele Strukturen, auch in der Sidebar, und auch zu viele Ebenen. Die Cards oben (Datensatz, Briefe, Personenorte) sind ein bisschen sehr mächtig. Brauchen wir hier wirklich Untertitel, also Datensatz, Filter, Zeitraum? Wir wollen das User-Interface mehr sprechen lassen.
+Die Startseite `index.html` ist eine Figur: ein Brief des gewählten Bestands, aufgefaltet in das Datenmodell, das der Explorer liest. Drei Bänder tragen die Angaben, oben der Kern des CMIF (Absender und Empfänger, Absendeort, Datum, Link zur Edition), in der Mitte die Erweiterungen im CMIF (erwähnte Personen und Orte, Themen, Sprache), unten die TEI-Briefsätze (Poststempel, Anschrift, Signatur, Mehrfacheinträge, erschlossene Angaben). Jede Angabe ist eine kleine echte Figur des Bestands im Idiom ihrer Ansicht, mit einer Zeile, die die Ansicht öffnet: der Korrespondenzkreis, der Ring der Erwähnten, die Orte auf Länderumrissen, die Jahre in den Sprachfarben, die Sprachen als Balken, die Themen als kleine Verläufe, Anteile als Balken. Der Beispielbrief steht in der Mitte als drei Blätter eines Umschlags, seine Marken stehen rostrot in jeder Figur. Ein Klick auf eine Marke macht einen ihrer Briefe zum Beispiel, „anderer Brief“ geht zum nächsten. Eine Angabe, die der Bestand nicht trägt, bleibt leer und benannt an ihrem Platz.
 
-Zur Startseite des Werkzeugs und zu den Beispielen, am selben Tag:
+Über der Figur stehen die Wahl des Bestands (Tutorial, Hugo Schuchardt Archiv und, wo lokal eingebunden, Stefan Zweig Digital), „Im Explorer öffnen“ und „Eigene Daten laden“. Eigene Daten füllen zuerst die Figur. Der Hinweis auf das Experiment steht als Schlusszeile. Gebaut von der bauenden Session nach der Rückmeldung des Operators zur Startseite, die Bänder und ihre Namen sind ihre Wahl.
 
-> Ich glaube, wir können die Startseite insgesamt ein bisschen innovativer machen und so, dass alles auf einer Seite sichtbar ist, oder?
+### Startansicht des Explorers
 
-> Ich würde den Feature-Demosatz weggeben und da eben den Stefan-Zweig-Datensatz nehmen, damit wir den quasi nochmal ausarbeiten, statt dem Tutorial oder zusätzlich zum Tutorial. […] Also, wir arbeiten das Tutorial nochmal sauber aus, und wir fügen quasi Stefan Zweig als Beispiel hinzu.
+Die Startansicht ist eine Arbeitsfläche aus Grafiken, die einander filtern: die Briefe pro Jahr über die volle Breite, gestapelt nach Sprache mit der häufigsten unten, darunter Personen, Orte, Themen, Sprachen und Überlieferung als Rangfolgen in neutralem Grau. Eine Zeile setzt ihren Filter und hebt ihn wieder auf, Ziehen über Jahre setzt den Zeitraum. Der Bestand bleibt in der Zeitleiste als blasser Balken hinter der Auswahl sichtbar. Die Titel Zeit, Personen, Orte und Themen öffnen ihren Gegenstand. Daneben steht die Beschreibung des Bestands mit Kennzahlen, Quelle, Lizenz, Änderungsvermerk und drei neutralen Angaben zur Datenlage.
 
-Zur Karte und zur Sprachliste, nach der Stufe:
+In Arbeit, Ergebnis noch nicht vorliegend: eine Startansicht als Übersicht aus kleinen echten Ansichten mit einem knappen Block zum Bestand.
 
-> Warum ist 3 + 3 > 7? Was kann man hier noch optimieren und klarer machen? Ist es klar, nach welchen Kriterien ich sortieren kann? Sind das alles Sprachen? Wird das Aufklappen der weiteren Sprachen wirklich sehr gut umgesetzt? Warum haben manche dann nur Grau? Wie kann man das lösen, grundsätzlich, weil wir unterschiedliche Daten hier reinbekommen? Ein bisschen generalisierter: Warum nur die Kategorien, warum nicht andere?
+### Briefe
 
-Zur Startansicht und zu den Listen, nach der Durchsicht am Bestand von Stefan Zweig Digital. „Staat“ lese ich als „Start“:
+Die Briefliste nennt ihre Zahl über der Liste und hat keinen sichtbaren Titel. Ein Brief steht ab 1024px in einer Zeile mit Korrespondenten, den Angaben der Quelle und dem Datum. Eine Zeile hat ein Ziel, den Dialog, und den Stern zum Korb. Poststempel, Anschrift und Signatur stehen als benannte Angaben in der Zeile, Erschlossenes in eckigen Klammern mit einer Legendenzeile darüber. Der Dialog zeigt alles, was die Quelle zu dem Brief verzeichnet, auch was die Zeile schon sagt (Entscheidung des Operators vom 2026-11-14), mit Link zur Quelle und Weg zu correspSearch.
 
-> Ich bin der Meinung, dass hier viel mehr von der Seite genutzt werden kann. Ich könnte mir vorstellen, alles an Informationen in eine seitliche Sidebar zu legen, schon wie wir das gehabt hatten. Der Staat erschlägt einen ja ein bisschen. Wieso kann im Staat nicht auch eine Übersicht über die Fuse sein, quasi kleine Bereiche? Wir haben jetzt Briefe, Personenorte und Zeit als Bereiche. Diese vier Bereiche sollten quasi vier Quadranten sein, wo ich auch schon sehe: Das sind die Visualisierungen. Dort kann ich dann tiefer hineingehen, und ich sehe schon mal eine Art aggregierte Form des Wissens von dort. […] Wo gibt es einen Bereich, wo alle Metadaten zu dem Datenbestand genannt sind […]? Quasi die aggregierten Metadaten.
+In Arbeit, Ergebnis noch nicht vorliegend: eine Briefansicht mit Zeilen relativ zur zentralen Person, Gruppen nach Jahren und einem schmalen Verlauf als Navigation.
 
-> Also, ich hatte schon erwartet, dass wir viel mehr mit Informationsvisualisierungen arbeiten, die die Daten aggregieren und dann sozusagen in die Teilansichten kommen. Hier erscheinen mir Briefe und Personen so klassische Katalogansichten. […] Ich komme zu den Daten und den Metadaten, und dann möchte ich aber eigentlich eher mit Informationsvisualisierungen arbeiten, die wirklich einen großen Teil dieses Tools einnehmen.
+### Personen und der Korrespondenzkreis
 
-Zur Arbeitsfläche, nach dem ersten Durchklicken:
+Das Netzwerk öffnet als Korrespondenzkreis um eine Person, um die gewählte Person oder ohne Wahl um die Person mit den meisten Korrespondenten. Jeder Korrespondent steht in einem Abstand zur Mitte nach der Zahl der Briefe und in einem Winkel nach seinem ersten datierten Brief, Jahresmarken am Rand machen den Winkel lesbar. Linien verbinden nur Korrespondenten, die einander schreiben, ihre Breite folgt der Zahl der Briefe. Ein Schalter neben dem Titel wählt die Stufe, Korrespondenz oder Erwähnte, jede mit ihrer Zahl, und als dritten Wert „Gesamt“, das ganze Netzwerk als Kräftelayout mit den Arten Briefwechsel, Zeitgenossen und Themen. In der Stufe Erwähnte stehen die Personen, die in den Briefen genannt werden, ohne Korrespondenten der Mitte zu sein, auf einem äußeren Ring, hohl, wer im Bestand nie einen Brief schreibt. Ein Klick auf einen Korrespondenten wählt die Briefe zwischen ihm und der Mitte.
 
-> Es ist sehr viel blau. Können wir hier nicht einen Stacked Bar Chart machen? Was kann man im User Interface noch verbessern? Ich würde eher erwarten, dass ich hier auf der Sidebar diese Ansicht filtern kann. Die Forschungspfade finde ich eigentlich gar keine gute Idee. Das schaut mir, das versteht keiner. Warum nicht gleich direkt in die Daten gehen? Und alle Forschungspfade waren quasi nur der Gedanke, dass wir alle Forschungs-User-Stories entwickeln. Alle diese wollen wir mit diesen Views, die wir haben, umsetzen. Vielleicht müssen wir alle Views nochmal evoluieren und deutlich ausbauen und vielleicht noch einen weiteren View hinzusetzen, damit alle Forschungspfade mit diesen Views bearbeitbar sind.
+Der Operator bezweifelt die Form des Kreises ([Rückmeldungen](#rückmeldungen-des-operators)). Ein recherchierender Agent untersucht, welche Netzwerkvisualisierungen zu Briefdaten passen, sein Ergebnis liegt noch nicht vor.
 
-> Und wo ist die Kartenansicht? Die war eigentlich eine Kernkomponente des ganzen Projektes.
+Entschieden von der bauenden Session, vom Operator nicht bestätigt: Nicht alle Punkte tragen einen Namen, damit alle Korrespondenten im Bild stehen. Eine Liste unter dem Kreis führt alle mit Namen.
 
-> Auch die Chronik […] Das gefällt mir jetzt noch nicht. Da müssen wir noch einiges überarbeiten und verbessern. Einige Dinge waren früher besser. Also, ich glaube, wir haben das ein bisschen sehr krass eingedampft. Und diese Unterviews, Zeit, Chronik oder so, das ist ein bisschen schwer zu finden. Das muss irgendwie oben schon ein Dropdown sein, damit ich das wirklich gleich da sehe, also dass ich das immer sehen muss.
+Die Liste der Korrespondenten führt Zeilen mit Name, Zahl, Stern und Knopf zu den Details, „Körperschaft“ und „ohne Normdatensatz“ als Wort. Der Personen-Dialog zeigt zuerst, was der Datensatz sagt, Wikidata nur auf Klick. Die Darstellung „Erwähnungen“ ist ein Sankey-Fluss von Absendern über die gewählte Person zu den Erwähnten.
 
-> Wir wollen wirklich ein innovatives, sehr spannendes User-Interface haben, das wirklich alle Dimensionen abbildet. Wir wollen das wirklich professionell umsetzen.
+### Orte: Karte und Raum-Zeit
 
-Zur Richtung des ganzen Werkzeugs, nach der Arbeit am Parser:
+Die Karte zeigt die Absendeorte auf der hellen Grundkarte von OpenFreeMap, umgefärbt in die Papiertöne. Kreisgröße und Zahl folgen den Briefen, auch in Clustern. Ein Ort trägt die Farbe seiner häufigsten Sprache oder einheitlich die Datenfarbe. Ist die Grundkarte nicht erreichbar, stehen die Orte auf einfarbiger Fläche. Die Marker sind nicht einzeln fokussierbar, der Tastaturweg ist die Ortsliste.
 
-> aber können wir das nicht professionalisieren. wir haben doch beim gossip schon viel gelernt. also was waren die guten views. Wir brauchen auf jeden Fall etwas mit Netzwerk, mit Karte, Space-Time, die Themen. Irgendwie kommt mir vor, dass wir den [CorrespExplorer] vielleicht noch besser denken können. Ich glaube, dass wir den innovativer denken können.
+Die Raum-Zeit-Ansicht stellt die Absendeorte nach ihren Koordinaten auf eine Grundfläche mit Länderumrissen und die Jahre als Höhe darüber. Jeder Ort ist eine Säule, jedes Jahr ein Profil, dessen Breite die Zahl der Briefe und dessen Farbe die häufigste Sprache des Jahrs zeigt. Von oben liest sich die Figur als Karte, von vorn als Zeitleiste je Ort. Drei feste Blickrichtungen (Schräg, Zeit von vorn, Karte von oben) setzen auch Zoom und Verschiebung zurück, Ziehen und Pfeiltasten drehen frei, Umschalt mit Pfeiltasten verschiebt, Plus und Minus zoomen. Der erste Klick wählt den Ort, der zweite ein Jahr dieses Orts, das an der Achse steht. Escape löst erst das Jahr, dann den Ort. Unter einem Mauszeiger mit mehreren Marken gewinnt die Marke, deren Mitte im Verhältnis zu ihrer Größe am nächsten liegt. Eine Breitenskala gilt für alle Filter. Eine Liste der Orte mit Suche steht unter der Figur, jede Zeile bietet ihre Jahre als Auswahl. Unter 760px Breite und bei einem Zeitraum von einem Jahr zeigt die Figur nur die Sicht von oben.
 
-Auf den Vorschlag, den Entwurf auf vier große Ansichten umzuschreiben und die Raum-Zeit-Ansicht zuerst zu bauen: „ja. oder besser mit subagents!“ Der Entwurf steht in [plan.md](plan.md#entwurf-vier-große-ansichten-über-einer-gemeinsamen-auswahl).
+Entschieden von der bauenden Session, vom Operator nicht bestätigt: Der Ausschnitt der Grundfläche folgt den Orten, die den Großteil der Briefe halten, Orte außerhalb stehen hohl am Rand. Nur die belebtesten Orte tragen die Linie vom Grund zu ihrem ersten Jahr.
 
-Zur Raum-Zeit-Ansicht, nach dem ersten Blick:
+Die Bedienung wurde am 2026-11-14 nach einer unabhängigen Bedienprüfung umgebaut ([testing.md](testing.md#bedienprüfung-der-raum-zeit-ansicht)). Gebaut und noch nicht eingecheckt: Die drei Knöpfe der Blickrichtungen stehen in der Figur oben links statt im Kopf der Ansicht.
 
-> Das finde ich jetzt wirklich sehr gut, aber vielleicht können wir das noch optimieren und verbessern. Und vielleicht könntet ihr es auch noch irgendwie performanter machen.
+### Zeit
 
-> hier wäre es gut, wenn ich die Karte darunter sehe, und es sind ein bisschen viele Kugeln, die sich überschneiden.
+Die Jahre sind ein Balkendiagramm, gestapelt nach Sprache. Eine Schraffur zeigt den Anteil unscharf oder erschlossen datierter Briefe eines Jahrs. Ein Balken ohne Jahr steht abgesetzt rechts und nennt seine Gruppen (ohne Datum, nur als Text datiert, unplausibles Jahr), der Balken „Spanne“ daneben die Briefe mit Zeiträumen über mehrere Jahre und filtert nicht (Entscheidung E5). Jede Sprache der Legende ist ein Schalter. Ein Klick auf ein Jahr setzt den Zeitraum auf dieses Jahr und öffnet den Briefauszug, die Zeitleiste bleibt.
 
-> Bei den Orten: Das ist eigentlich ganz cool, aber es sollte klar sein, dass man vielleicht einen Button braucht, damit man gleich die Ansicht von oben auf die Karte wieder hat. Man sollte irgendwie genau wissen, dass die Visualisierung dann sagt, dass man sie dann auch drehen kann. Es muss auch irgendwie klar sein, was diese Achse dann ausdrückt. Und können wir mit Farben auch noch arbeiten? Jetzt ist einfach alles nur immer blau.
+Die Tage sind eine Kalender-Heatmap je Jahr mit Monatsnamen und einem Satz zum dichtesten Jahr, Monat und Tag. Die Zellen bleiben 12 x 12px und berufen sich auf die Ausnahme „wesentliche Darstellung“ von WCAG 2.2 SC 2.5.8 (Entscheidung E6 vom 2026-11-05, eine Auslegung und keine Messung). Jede Zelle ist per Tastatur erreichbar.
 
-Auf die ausgezählten Möglichkeiten: „ja, färbe die Säulen nach der Sprache“.
+Die Chronik zeigt den Verlauf der Briefwechsel als Zeitstrahl mit Stelle im Briefwechsel und Lücken ab zwei Jahren, in drei Layouts. Sie ist vom Operator beanstandet und nicht überarbeitet.
 
-Zum Netzwerk in der ersten Fassung mit zwei Bögen:
+In Arbeit, Ergebnis noch nicht vorliegend: Jahre, Tage und Chronik zu einer Ansicht ohne Untermenü zusammengelegt.
 
-> Ja, diese Netzwerke, die schauen immer so aus. Ich bin mir nicht sicher, ob das wirklich die beste Netzwerkvisualisierung ist. Das können wir hier noch optimieren und verbessern. Und diese Auswahl zwischen Liste, Netzwerk und Vergleichen sollte irgendwie präsenter sein. Ich glaube, dass wir hier wieder zu viele Ebenen auch haben. Also im Bild 24 von 282 im Briefwechsel: Das sollte noch besser irgendwie integriert werden.
+### Themen
 
-Zur Startseite:
-
-> Vielleicht könnten wir hier mit einer sehr innovativen, kreativen und ästhetisch anspruchenden Visualisierung die Funktion oder eine besondere Funktion des [CorrespExplorer] darstellen. Wir überlegen uns, was das Coolste wäre: dass wir alles, was wir hier im Screenshot haben, zusammenführen in eine ästhetisch anspruchende Informationsvisualisierung. Die vermittelt, was der [CorrespExplorer] alles kann und welche Art von Daten man damit darstellen kann. Sie berücksichtigt wirklich das Datenmodell von [correspSearch] auch gleich direkt und die dementsprechenden Erweiterungen, weil Hugo [Schuchardt] ja einen weiteren Datenbestand hat.
-
-Zur Richtung, auf die Frage, ob CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell von GOSSIP werden soll: „ja das sollten wir auch gleich zusammen denken! da wollte ich hin“. Was daraus folgt, steht in [plan.md](plan.md#richtung-sichtwerkzeug-für-das-gemeinsame-briefmodell).
-
-Daraus folgt der Aufbau dieser Stufe.
-
-- Die Kopfzeile nennt die Gegenstände einer Korrespondenz, Start, Briefe, Personen, Orte, Zeit und Themen. Bis dahin standen dort zwölf Ansichten, benannt nach ihrer Darstellungstechnik, in einer zweiten Zeile unter Titel und Aktionen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht.
-- Die Darstellungen eines Gegenstands wählt eine Umschaltung in der Kopfzeile der Ansicht. Personen haben Liste, Netzwerk und Erwähnungen, Orte haben Karte und Liste, die Zeit hat Jahre, Chronik und Tage. „Vergleichen“ steht bei Personen und Orten als Handlung neben der Umschaltung und öffnet den Vergleich für das, was der Gegenstand listet. Der Reiter eines Gegenstands öffnet die zuletzt benutzte Darstellung.
-- Die Kopfzeile einer Ansicht sagt, was gerade zu sehen ist, etwa die Zahl der Orte oder unter einem Filter den Anteil. Den Namen des Gegenstands trägt der Reiter. Die Briefliste nennt ihre Zahl in der Zeile über der Liste und führt deshalb keinen sichtbaren Titel, die Startansicht beginnt mit den Kennzahlen des Datensatzes, dessen Namen die Kopfzeile trägt. Titel, eigene Bedienelemente einer Ansicht und die Umschaltung teilen sich ab 768px eine Zeile und brechen um, wo sie nicht passen.
-- Erklärende Zeilen unter dem Titel sind nicht mehr sichtbar und bleiben für Screenreader im Dokument. Was eine Grafik kodiert, steht an der Grafik, die Kreisgröße der Karte in ihrer Legende.
-- Die Seitenleiste zeigt keine Überschriften. Ein Regler mit Jahreszahlen, Häkchen mit ihren Aussagen und eine Liste von Sprachen nennen sich selbst. Die Gruppennamen bleiben für Screenreader erhalten. Die drei Kennzahlen stehen als eine Zeile Text ohne Kacheln, der Knopf „Filter aufheben“ erscheint nur unter einem Filter.
-- Die Sprachen der Seitenleiste tragen das Farbfeld, das sie in Zeitleiste und Karte haben. Die Liste ist damit zugleich deren Legende.
-- Die kurze Themenliste der Seitenleiste entfällt. Ein Thema wählt man in der Themenansicht, es erscheint dann als Filtermarke. Der Abschnitt des Wissenskorbs erscheint in der Seitenleiste erst mit dem ersten Eintrag.
-- Korb, Export und About stehen ohne Rahmen neben den Reitern.
-- Die Startansicht ist eine Arbeitsfläche aus Grafiken, die einander filtern. Links steht in einer Spalte, was den Bestand beschreibt: Kennzahlen, Datenlage, Merkmale der Überlieferung, Quelle und Lizenz. Rechts stehen die Briefe pro Jahr über die volle Breite, darunter die häufigsten Personen und Orte, die Sprachen und die Überlieferung als Rangfolgen.
-- Jede Grafik der Arbeitsfläche setzt einen Filter: Ziehen über Jahre den Zeitraum, eine Zeile die Person, den Ort, die Sprache oder das Merkmal. Dieselbe Zeile hebt ihn wieder auf. Alle Grafiken zeigen danach die Auswahl, der Bestand bleibt in der Zeitleiste als blasser Balken dahinter sichtbar. Über der Fläche steht, wie viele Briefe die Auswahl hat, und von dort öffnet sich die Briefliste. Die Listen sind damit das Ergebnis und nicht der Einstieg, der Überblick kommt zuerst (Shneiderman, 1996, im Hauswissen als Mantra ausgeführt).
-- Die Filter der Arbeitsfläche sind dieselben wie die der Seitenleiste und der übrigen Ansichten, beide Wege ändern denselben Zustand.
-- Die Titel der Felder Zeit, Personen und Orte öffnen ihren Gegenstand in voller Größe.
-- Die Zeitleiste der Arbeitsfläche stapelt die Auswahl nach Sprache, die häufigste Sprache unten. Die Rangfolgen stehen in einem neutralen Grau, Farbe bleibt den Sprachen vorbehalten. Bis zur Rückmeldung des Operators standen alle Balken im Datenblau.
-- Auf der Startansicht steht die Seitenleiste wie in den anderen Ansichten: oben, was den Bestand beschreibt, darunter dieselben Filter. Die Grafiken und die Seitenleiste setzen dieselben Filter.
-- Die Forschungspfade sind seit 2026-11-14 aus der Oberfläche genommen (Entscheidung des Operators). Die Fragen, die sie stellten, sollen sich in den Ansichten selbst bearbeiten lassen. Dafür hat die Arbeitsfläche ein Feld Themen: Ein Thema zu wählen zeigt seine Verteilung über die Jahre, Personen und Orte.
-- Jeder Gegenstand mit mehreren Darstellungen listet sie in einem Menü unter seinem Reiter in der Kopfzeile. Die Umschaltung im Kopf der Ansicht bleibt daneben bestehen.
-- Die Arbeitsfläche zeigt Orte als Rangfolge, eine kleine Karte fehlt ihr noch.
-- About bleibt in der Kopfzeile, der Verweis auf die Wissensbasis steht auf der Projektseite.
-- Die Startseite `index.html` passt ab 900px Breite auf einen Bildschirm. Links stehen Logo, ein Satz zu dem, was das Werkzeug zeigt, und die Beispiele als Zeilen, rechts das Laden eigener Dateien und einer Adresse, darunter als Schlusszeile der Hinweis auf das Experiment mit seinem vollen Wortlaut. Die Abzeichen „Tutorial“ und „Erweitert“ und der Aufklapper zu „Erweitert“ sind entfallen, jede Zeile sagt in einem Satz, was ihr Bestand zeigt.
-- Ein Bestand unter `data/local` erscheint als drittes Beispiel, wo seine Dateiliste erreichbar ist. Die veröffentlichte Seite trägt keine solche Liste, die Zeile bleibt dort verborgen. So lässt sich der Bestand von Stefan Zweig Digital lokal als Beispiel ansehen, ohne dass seine Daten ausgeliefert werden. Ob sie ausgeliefert werden dürfen, entscheidet der Operator.
-- Ein Cluster der Karte trägt die Zahl seiner Briefe, nach der sich auch seine Größe richtet. Bis 2026-11-14 zählte die Zahl die Orte im Cluster, ein Kreis mit „3“ konnte größer sein als einer mit „7“.
-- Die Sprachliste der Seitenleiste klappt dort, wo die Farben enden. Offen stehen die Sprachen mit eigener Farbe, alle anderen liegen unter „Übrige Sprachen“ mit dem Grau der Grafiken. Bis 2026-11-14 klappte die Liste nach acht Sprachen, zwei offene Sprachen trugen dadurch dasselbe Grau wie der Rest.
-
-Die Gliederung nach Darstellungstechnik ist derselbe Fehler, den das Hauswissen für Arbeitsoberflächen beschreibt, Ansichten nach technischen Kategorien statt nach dem, womit die Zielgruppe arbeitet. Die Zählung von Überschriften, Rahmen und Textstilen hatte ihn nicht gezeigt, weil sie bis zu dieser Stufe nur den Inhaltsbereich der aktiven Ansicht erfasste und Kopf und Seitenleiste ausließ. Sie zählt seither den ganzen ersten Bildschirm.
-
-Die Adressen der zwölf Darstellungen (`view=`) bleiben gültig, geteilte Links führen weiter an ihr Ziel.
+Neu gebaut am 2026-11-14 (Commit `34fedd9`), nicht abgenommen. Die Themen sind eine Figur über die Zeit: Jedes Thema ist eine Zeile, deren Kamm seine Briefe je Jahr auf einer gemeinsamen Zeitachse zeigt. Die Zeilen, die auf den Bildschirm passen, sind die häufigsten Themen, geordnet nach dem Jahr ihres Höhepunkts, Scrollen führt zum nächsten Block, die Suche erreicht jedes Thema, Sprachen stehen getrennt von den übrigen Themen. Eine Zeile zu wählen setzt den Themenfilter. Das gewählte Thema steht rostrot, die anderen Themen zeigen die Briefe, die sie mit ihm teilen, und alle Zeilen bleiben stehen. Ein Streifen unter der Figur nennt Korrespondenten, Orte und benachbarte Themen der Wahl, jede ein eigener Filter. Die Kämme liegen auf einer Zeichenfläche, die Namen sind Knöpfe darüber, mit Pfeiltasten und Enter bedienbar.
 
 ## Farben
 
-Die Palette ist aus dem Logo abgeleitet, die Werte stehen in `tokens.css`. Der Operator hat sie am 2026-11-14 als Erscheinung des Projekts bestätigt. Hier steht, welche Farbe wofür gilt.
+Die Palette aus Papier, Tinte und Rostrot ist aus dem Logo abgeleitet und vom Operator am 2026-11-14 als Erscheinung des Projekts bestätigt. Die Werte stehen in `tokens.css`.
 
-- `--color-bg` (Papier) ist der globale Hintergrund, `--color-bg-light` (Manila) der Grund von Steuerleisten, Feldern und der Zeile unter dem Mauszeiger.
-- `--color-text` ist Haupttext und Kontur, `--color-text-light` Nebentext und Hinweise.
-- `--color-border` zieht die kräftigen Konturen. `--color-border-light` dient nur für Trennlinien und ist für Bedienelemente zu blass. `--color-border-control` ist der Rand von Eingaben und Knöpfen ohne eigene Füllung und erreicht den nach WCAG 1.4.11 nötigen Kontrast.
-- `--color-primary` (Rostrot) ist die Interaktionsfarbe. Sie steht an dem, was sich anklicken lässt oder ausgewählt ist, also an gefüllten Knöpfen, Links, dem aktiven Reiter, der Auswahl und dem Fokusrahmen. Daten, Kennzahlen, Überschriften und Symbole ohne eigene Funktion tragen sie seit 2026-11-14 nicht mehr, weil ein Ziel umso schwerer zu finden ist, je mehr andere Elemente seine Farbe teilen (Wolfe & Horowitz, 2017). Die Anwendung dieses Befunds aus der Suchforschung auf eine Oberfläche ist eine eigene Übertragung. `--color-primary-dark` ist Hover und als `--color-link` die Farbe der Links, weil `--color-primary` auf `--color-bg-light` den Kontrast für Text verfehlt.
-- `--color-data` (Tintenblau) ist die Farbe einzelner Datenreihen, also der Balken, der Skala der Heatmap, der Kartenpunkte und der Personen im Netzwerk. `--color-secondary` hat denselben Wert und bleibt die zweite Farbe der Startseite. Die Trennung von Interaktionsfarbe und Datenfarbe folgt dem Muster Functional Color Semantics des Hauswissens.
-- `--color-success`, `--color-warning`, `--color-info` und `--color-error` sind Statusfarben. Warning und Info wurden am 2026-10-29 abgedunkelt, damit sie als Text auf `--color-bg` und `--color-bg-light` AA erreichen.
-- Helle Tönungen für Hover und Statusflächen (`--color-*-light`) mischt `color-mix()` aus den Grundfarben. Hinter Dialogen und dem mobilen Menü liegt `--color-backdrop`, hinter der Demo-Tour `--color-overlay`.
+- `--color-bg` (Papier) ist der Hintergrund, `--color-bg-light` (Manila) der Grund von Steuerleisten, Feldern und der Zeile unter dem Mauszeiger.
+- `--color-text` ist Haupttext und Kontur, `--color-text-light` Nebentext.
+- `--color-border-light` dient nur für Trennlinien, `--color-border-control` ist der Rand von Eingaben und Knöpfen und erreicht den Kontrast nach WCAG 1.4.11.
+- `--color-primary` (Rostrot) ist die Interaktionsfarbe: gefüllte Knöpfe, aktiver Reiter, Auswahl, Fokusrahmen und die Marken des Beispielbriefs der Startfigur. Daten, Kennzahlen, Überschriften und Symbole ohne Funktion tragen sie nicht, weil ein Ziel umso schwerer zu finden ist, je mehr andere Elemente seine Farbe teilen (Wolfe & Horowitz, 2017). Die Anwendung dieses Befunds aus der Suchforschung auf eine Oberfläche ist eine eigene Übertragung. `--color-link` ist die dunklere Stufe, weil Rostrot auf Manila den Kontrast für Text verfehlt.
+- `--color-data` (Tintenblau) ist die Farbe einzelner Datenreihen ohne Sprache: Kartenpunkte im einheitlichen Modus, Personen im Netzwerk, Stufen der Heatmap (`--color-scale-1` bis `--color-scale-4`). Die Trennung von Interaktions- und Datenfarbe folgt dem Muster Functional Color Semantics des Hauswissens.
+- Rangfolgen der Startansicht stehen in neutralem Grau, Farbe bleibt den Sprachen vorbehalten.
+- `--color-success`, `--color-warning`, `--color-info`, `--color-error` sind Statusfarben und die Farben der Unsicherheit.
 
-Die Landing-Page zeigt `assets/logo-no-background.png`, das Seitensymbol aller Seiten ist `assets/logo-no-background-no-text.png`.
-
-### Datenvisualisierung
-
-Grafiken nehmen ihre Farben aus Tokens. D3-Attribute, die `var()` nicht auflösen, lesen die Werte über `readTokens()` aus `views/view-support.js`.
-
-- Die Karte färbt Land, Parks und Wald in `--color-map-land` und Wasser in `--color-map-water`. Cluster stehen in `--color-data`, einzelne Orte in der Farbe ihrer häufigsten Briefsprache oder, nach Umschalten, einheitlich in `--color-data`. Die Legende führt die Sprachen mit eigener Farbe und einen Eintrag für alle weiteren.
-- Im Netzwerk stehen Personen in `--color-role-sender`, das denselben Wert wie `--color-data` hat, Themen in `--color-warning` und Organisationen im Farbmodus nach Art in `--color-primary`. Kanten sind `--color-text-light`, hervorgehoben `--color-text`, der Knotenrand `--color-bg`. Der Farbmodus nach Eintrittsjahr nutzt die sequentielle D3-Skala `interpolateYlGnBu` mit einer Verlaufslegende.
-- Der Erwähnungsfluss zeigt Absender links in `--color-role-sender`, die gewählte Person in der Mitte in `--color-primary`, weil sie die Auswahl ist, und erwähnte Personen rechts im warmen Grau `--color-role-mentioned`.
-- Die Timeline stapelt ihre Balken nach Sprache in den [Sprachfarben](#sprachfarben), ohne Sprachdaten bleiben sie einfarbig in `--color-data`. Zwischen zwei Segmenten liegt eine Linie in `--color-bg`. Der Balken „Spanne“ steht in `--color-text-light`.
-
-#### Aktivitäts-Heatmap
-
-Die Heatmap nutzt eine sequentielle Skala zur Datenfarbe. Stufe 0 (kein Brief) ist `--color-bg-light`, die Stufen 1 bis 4 sind `--color-scale-1` bis `--color-scale-4` und reichen bis `--color-data`. Die unterste Stufe ist so kräftig gemischt, dass sie sich von der leeren Zelle abhebt. Bis 2026-11-14 lief die Skala zur Primärfarbe und davor über Grüntöne außerhalb der Palette. Die Klassen `.activity-level-0` bis `.activity-level-4` stehen in `explore.css`.
-
-Die Zellen bleiben 12 x 12px und unterschreiten damit die Zielgröße von 24 x 24px nach WCAG 2.2 SC 2.5.8. Das Werkzeug beruft sich auf die Ausnahme „wesentliche Darstellung“, weil ein Tageskalender über Jahrzehnte nur als dichtes Raster lesbar ist. Bei 24px würde der Kalender des HSA viermal so groß und müsste in beide Richtungen scrollen. Jede Zelle bleibt per Tastatur (Roving Tabindex, Pfeiltasten) und Tooltip erreichbar. Die Ausnahme ist eine Auslegung der Norm und keine Messung (Entscheidung E6 vom 2026-11-05).
-
-Das Jahr der Heatmap wählt eine Auswahlliste mit Knöpfen für das vorige und das nächste Jahr, jede Option nennt die tagesgenauen Briefe des Jahrs. Bis 2026-11-05 stand ein Knopf je Jahr über der Heatmap, beim HSA mehrere Dutzend.
+Grafiken nehmen ihre Farben aus Tokens. D3-Attribute und Zeichenflächen, die `var()` nicht auflösen, lesen die Werte über `readTokens()` aus `views/view-support.js` oder beim Zeichnen aus dem berechneten Stil.
 
 ### Sprachfarben
 
-Der Farbton allein trägt nur wenige Kategorien. In einer Suchaufgabe unter kontrollierten Bedingungen waren sieben Farben die Grenze für schnelles Erkennen (Healey, 1996), und Fehler nehmen mit der Größe der Palette zu (Gramazio et al., 2017). Die häufigsten Sprachen eines Datensatzes erhalten deshalb je eine Farbe aus `LANGUAGE_PALETTE` in `docs/js/constants.js`, in der Reihenfolge ihrer Briefzahl. Alle übrigen teilen das warme Grau von „Weitere Sprachen“, Briefe ohne Sprache ein helleres. `computeLanguageColors()` setzt die Zuordnung beim Laden, `isRestLanguage()` sagt, ob eine Sprache zum Rest gehört. Die Sprachfarben sind die einzigen Datenfarben außerhalb von `tokens.css`.
+Der Farbton allein trägt nur wenige Kategorien. In einer Suchaufgabe unter kontrollierten Bedingungen waren sieben Farben die Grenze für schnelles Erkennen (Healey, 1996), und Fehler nehmen mit der Größe der Palette zu (Gramazio et al., 2017). Die häufigsten Sprachen eines Datensatzes erhalten deshalb je eine Farbe aus `LANGUAGE_PALETTE` in `docs/js/constants.js`, in der Reihenfolge ihrer Briefzahl, alle übrigen ein gemeinsames warmes Grau, Briefe ohne Sprache ein helleres. Dieselbe Zuordnung gilt in Zeitleiste, Karte, Raum-Zeit, Startansicht, Startfigur und Seitenleiste, deren Sprachliste damit zugleich die Legende ist. Sie klappt dort, wo die Farben enden, die übrigen Sprachen liegen unter „Übrige Sprachen“.
 
-Die Palette besteht aus sechs Farben der Okabe-Ito-Reihe (Okabe & Ito, 2008), die für Lesende mit Farbfehlsichtigkeit entworfen ist. Ihr Gelb fehlt, weil es auf dem Papierton verschwindet, ihr Schwarz, weil Tinte die Textfarbe ist. Nachbarn in der Reihenfolge unterscheiden sich in der Helligkeit, die häufiger erkannt wird als ein Unterschied im Farbton (Szafir, 2018). Eine aus der Logofarbe abgeleitete, gedämpfte Reihe wurde am 2026-11-14 erwogen und verworfen, weil Farben einer Tonfamilie und entsättigte Farben schwerer zu benennen und zu trennen sind (Heer & Stone, 2012). Ebenso verworfen ist die frühere Lösung mit einer kräftigen Farbe für die häufigste Sprache und Pastelltönen für alle anderen. Für das Zusammenfassen unter „Weitere Sprachen“ liegt keine Studie vor, die Grenze bei sechs Farben ist eine eigene Setzung. Einzeln bleiben diese Sprachen im Filter der Seitenleiste, im Tooltip und in der Tabelle. Ein Klick auf das graue Segment setzt den Sprachfilter auf alle Sprachen des Rests. Jede Sprache der Legende ist ein Schalter, der denselben Filter für die ganze Zeitleiste setzt und beim zweiten Druck aufhebt. Er ist der Tastaturweg zu dem, was ein Segment mit dem Zeiger bietet.
+Die Palette besteht aus sechs Farben der Okabe-Ito-Reihe (Okabe & Ito, 2008), die für Lesende mit Farbfehlsichtigkeit entworfen ist. Ihr Gelb fehlt, weil es auf dem Papierton verschwindet, ihr Schwarz, weil Tinte die Textfarbe ist. Nachbarn in der Reihenfolge unterscheiden sich in der Helligkeit (Szafir, 2018). Eine aus der Logofarbe abgeleitete Reihe wurde am 2026-11-14 verworfen, weil Farben einer Tonfamilie schwerer zu benennen und zu trennen sind (Heer & Stone, 2012). Die Grenze bei sechs Farben ist eine eigene Setzung, für das Zusammenfassen des Rests liegt keine Studie vor. Mehrere Farben erreichen auf dem Papierton den Kontrast von 3:1 für Grafikteile nicht, das Werkzeug stützt sich auf die Tabellen unter den Grafiken, nach dem Understanding-Dokument zu WCAG 1.4.11 genügt das.
 
-Mehrere der Farben erreichen auf `--color-bg` den Kontrast von 3:1 für Grafikteile nicht. Das Werkzeug stützt sich hier auf die Tabelle „Daten als Tabelle“, die dieselben Werte in Textform führt, nach dem Understanding-Dokument zu WCAG 1.4.11 genügt das. Die Quellenangaben stehen unter [Quellen der Farbentscheidungen](#quellen-der-farbentscheidungen).
+Fehlen Sprachdaten ganz, bleiben die Balken einfarbig in der Datenfarbe, und die Legende sagt „Keine Sprachdaten im Korpus“.
 
-Fehlen Sprachdaten ganz (`hasLanguageData` prüft, ob ein Brief `language.code` trägt), wären gestapelte Balken mit einer einzigen Kategorie irreführend. Die Balken bleiben dann einfarbig, Tooltip und Tabelle der Timeline nennen keine Sprachen, und die Legende sagt in einer Zeile „Keine Sprachdaten im Korpus“.
+### Unsicherheit
 
-### Unsicherheits-Indikatoren
+Unsicherheit spricht in allen Ansichten dieselbe visuelle Sprache. Symbole, Tooltip-Texte und Klassen je Stufe stehen in [uncertainty-specification.md](uncertainty-specification.md#ui-display).
 
-Unsicherheit spricht in allen Ansichten dieselbe visuelle Sprache. Symbole, Tooltip-Texte und CSS-Klassen je Präzisionsstufe stehen in [uncertainty-specification.md](uncertainty-specification.md#ui-display), hier steht die Farbcodierung.
+- Unvollständiges Datum in `--color-warning`, Zeitraum in `--color-text-light` mit Symbol, unsichere Datierung (`cert="low"`) in `--color-error`, unbekanntes Datum kursiv.
+- Erschlossenes in eckigen Klammern und gedämpft, ein Datum nur als Text kursiv, ein unplausibles Jahr mit dem Wort „unplausibel“, eine einzelne Grenze als „nicht nach 1848“.
+- Exakte Daten und der Normalfall eines Datensatzes bleiben unmarkiert. Ein Ort ohne GeoNames-ID trägt keine Marke, fehlen allen Orten die Koordinaten, sagt die Ansicht das in einem Satz.
 
-- Unvollständiges Datum (nur Jahr oder Monat) in `--color-warning`.
-- Zeitraum in `--color-text-light` mit seinem Symbol.
-- Unsichere Datierung (`cert="low"`) in `--color-error`.
-- Unbekanntes Datum in `--color-text-light`, kursiv.
-- Erschlossene Werte in eckigen Klammern und gedämpft (`.date-inferred`, `.place-inferred`), ein nur als Text überliefertes Datum kursiv (`.date-text`), ein unplausibles Jahr mit dem Wort „unplausibel“ (`.date-implausible`).
-- In der Timeline zeigt eine diagonale Schraffur (`.timeline-uncertainty-overlay`) den Anteil unscharf oder erschlossen datierter Briefe eines Jahrs als Höhe des schraffierten Bereichs.
+## Zeichenflächen für große Szenen
 
-Symbole stehen vor dem Datumswert, Tooltips erklären sie bei Hover, die Legende der Timeline nennt die Zahl der betroffenen Briefe. Die früheren Werte Amber (1.9:1 auf `--color-bg`) und ein helles Rot erreichten den für Symbole nötigen Kontrast von 3:1 nicht. Die Legende auf `about.html` nutzt dieselben Tokens über `.color-warning`, `.color-info` (auf `--color-secondary`), `.color-error` und `.color-muted` in `base.css`.
+Raum-Zeit und Themen zeichnen ihre Daten auf eine Zeichenfläche (`canvas`), weil der Neuaufbau einiger tausend SVG-Elemente je Bild Drehen und Scrollen langsam machte. Gemessen an der Raum-Zeit-Figur vom 2026-11-14: siebzehn gegen sechzig Bilder je Sekunde beim Drehen. Für solche Szenen gilt dasselbe Muster.
 
-## Typografie
+- Die Daten liegen auf der Zeichenfläche, Beschriftungen, Achsen und Bedienelemente stehen als SVG-Text oder HTML-Knöpfe darüber, damit Fokus, Tastatur und zugängliche Namen erhalten bleiben.
+- Der Zeiger wird über die Geometrie der letzten Zeichnung den Marken zugeordnet, nicht über Elemente.
+- Während Ziehen oder Kamerafahrt entfallen Trefferflächen und Beschriftungen, gezeichnet wird höchstens einmal je Bild.
+- Farben kommen aus den Tokens, gelesen beim Zeichnen.
+- Unter reduzierter Bewegung springt die Kamera ohne Übergang.
+- Jede Szene hat eine Liste oder Tabelle als Tastaturweg zu denselben Daten.
 
-Die Schriftfamilien und die Größenskala stehen als `--font-*` und `--font-size-*` in `tokens.css`.
+## Typografie, Abstände, Bewegung
 
-- Überschriften stehen in `--font-headings` (Merriweather) und `--color-text`. Der Name des Werkzeugs in der Kopfzeile ist ein Link zur Startseite und steht in `--color-primary`.
-- Fließtext steht in `--font-base` auf `--font-size-base` mit Zeilenhöhe 1.6.
-- Kleine Bezeichnungen über Kennzahlen und Gruppen stehen in Versalien mit leichtem Zeichenabstand.
-- Zahlen in Kennzahlen und Tabellen nutzen gleich breite Ziffern (`font-variant-numeric: tabular-nums`). `--font-mono` bleibt Code und Kennungen vorbehalten, etwa den Einträgen eines Briefs in der Quelle (`.letter-records__id`).
-- Keine Schrift unterschreitet `--font-size-xs`, auch nicht in Zählern, Badges und Icons kleiner Kreise. Bis 2026-11-05 zogen einige Regeln 1 bis 4px davon ab (Achsenbeschriftung der Timeline, Korbzähler, Legenden).
+Schriftfamilien und Größenskala stehen als `--font-*` und `--font-size-*` in `tokens.css`. Überschriften stehen in Merriweather, Fließtext in der Grundschrift mit Zeilenhöhe 1.6, Zahlen in Kennzahlen und Tabellen mit gleich breiten Ziffern und Tausenderpunkt. Keine Schrift unterschreitet `--font-size-xs`. Abstände nutzen die Skala `--space-*`, Rundungen `--radius-*`.
 
-Überschriften folgen der Dokumentgliederung, `h1` (visuell versteckt) für die Seite, `h2` für den Kopf jeder Ansicht des Explorers, darunter `h3` und `h4` in den Detailbereichen. Größe und Abstand der `h2` setzt die Komponente `.view-header`, nicht die Ebene.
+Rahmen geben Abgrenzung, Schatten erhalten nur schwebende Elemente (Dialoge, Tour, Toasts, Menüs, Tooltips, Kartenpopups, mobile Seitenleiste), gesetzt allein in `shadows.css`. Listen sind Zeilen mit Haarlinie statt Kacheln, weil Kacheln bei gleichartigen Einträgen in großer Zahl Platz kosten und den Vergleich erschweren (Laubheimer, 2016, eine Praxisempfehlung ohne Messung). Bewegung beschränkt sich auf Hover-Übergänge, das Einblenden von Dialogen und kurze Kamerafahrten. Bei `prefers-reduced-motion: reduce` setzt `base.css` Übergänge auf ihren Endzustand, `motionMs()` liefert 0ms, das Netzwerk berechnet sein Layout vor dem Zeichnen.
 
-## Abstände und Radien
-
-Abstände nutzen ausschließlich die Skala `--space-*`, Rundungen `--radius-*`. Kleine Elemente und Tags erhalten `--radius-sm`, Karten und Knöpfe `--radius-md`, Dialoge `--radius-lg`, Pillen, Chips und runde Badges `--radius-full`.
-
-## Animationen
-
-Bewegung bleibt sparsam. Erlaubt sind Hover-Übergänge von Farbe, Hintergrund und Rand, das Einblenden von Dialogen und das Erscheinen von Tooltips. Ausgeschlossen sind Bounce-Effekte, gleitende Animationen bei Datenänderungen und Ladeanzeigen, die länger als zwei Sekunden ohne Rückmeldung laufen.
-
-Reduzierte Bewegung (WCAG 2.3.3) wird respektiert. Bei `prefers-reduced-motion: reduce` setzt `base.css` Übergänge und Animationen auf ihren Endzustand. In D3 liefert `motionMs()` dann 0ms für Übergänge und Zoom, `settleWithoutMotion()` berechnet das Kräftelayout des Wissenskorbs vorab und zeichnet es einmal. Das Netzwerk des Explorers berechnet sein Layout immer vor dem Zeichnen. Die Demo-Tour scrollt ohne Glättung. Ein gezogener Knoten bewegt sich weiter mit, weil diese Bewegung der Hand folgt. Die Helfer stehen in `utils.js`.
-
-## Komponenten
-
-### Kacheln, Zeilen, Knöpfe und Eingaben
-
-- Kacheln (`.stat-card`, `.dataset-card`) tragen einen Rahmen, `--radius-md` und keinen Schatten. Sie stehen für wenige, eigenständige Objekte.
-- Einträge einer Liste (`.letter-card`, `.person-card`, `.entity-card`, die Forschungspfade) sind Zeilen auf dem Papierton, getrennt durch eine Haarlinie in `--color-border-light`. Unter dem Mauszeiger liegt `--color-bg-light`, eine gewählte Zeile trägt `--color-primary-light` und einen rostroten Streifen am linken Rand. Bis 2026-11-14 war jeder Eintrag eine gefüllte Kachel mit 2px-Rahmen. Bei gleichartigen Einträgen in großer Zahl kostet das Platz und erschwert den Vergleich, die Praxisliteratur empfiehlt dafür Listen (Laubheimer, 2016), eine Messung der Suchzeit liegt dazu nicht vor. Die Klassennamen sind aus der Zeit der Kacheln geblieben.
-- `.btn-primary` ist rostrot gefüllt mit weißer Schrift und bleibt der Haupthandlung vorbehalten. `.btn-secondary` hat Text in `--color-text` und einen Rand in `--color-border-control`, erst unter dem Mauszeiger wird er rostrot.
-- Eingaben und Knöpfe ohne eigene Füllung tragen ihren Rand in `--color-border-control`. Eingaben behalten den sichtbaren Fokusrahmen, kein Seiten-CSS setzt `outline: none` auf `:focus`.
-- Knöpfe, die als Text erscheinen (Namen in Listen, Pfadschritte, Themen in der Sidebar), setzen Rahmen und Hintergrund zurück und übernehmen Schrift und Farbe.
-
-### Dialoge
-
-Alle Seiten nutzen eine Dialogform aus `components.css`. `.modal` ist der Hintergrund, `.modal-content` der Kasten, `.modal-lg` weitet ihn für Listen. Der Kasten bleibt in der Bildschirmhöhe, es scrollt nur `.modal-body`. Er trägt die dicke Kontur `--border-modal` und dazu den Schatten aus `shadows.css`, weil er über der Seite schwebt. Dynamisch erzeugte Dialoge (gemeinsame Briefe im Vergleich, Briefe einer Erwähnung) nutzen dieselben Klassen und `openModal()`. Bis 2026-11-05 gab es drei Grundformen in `components.css`, `explore.css` und `upload.css` und zwei Klassensysteme (`.modal`, `.modal-overlay`).
-
-`enableModalKeyboard()` in `utils.js` regelt die Tastatur für alle Seiten. Escape schließt den obersten offenen Dialog über seinen Schließen-Knopf, beim Öffnen springt der Fokus auf diesen Knopf, Tab bleibt im Dialog, beim Schließen kehrt der Fokus auf das auslösende Element zurück. Die Dialoge tragen `role="dialog"`, `aria-modal` und `aria-labelledby` auf ihre Überschrift. Die Demo-Tour verhält sich ebenso, der Fokus liegt auf dem Hauptknopf des aktiven Schritts, Tab bleibt im Schritt, Escape beendet die Tour. Die mobile Sidebar schließt mit Escape und gibt den Fokus an ihren Schalter zurück.
-
-Toasts liegen über den Dialogen, damit eine Meldung aus einem Dialog sichtbar und schließbar bleibt. Die Demo-Tour hebt ihr Zielelement mit Rahmen und abdunkelndem Schatten hervor. Das Element bleibt dabei unter dem Tour-Dialog und nimmt keine Klicks an, damit „Weiter“ immer erreichbar ist. Ein Ziel außerhalb des Bildschirms wird nicht hervorgehoben.
-
-Karten-Popups lassen rechts im Kopf Platz für den Schließen-Knopf von MapLibre (`padding-right` an `.popup-header`), damit der Stern zum Korb klickbar bleibt.
-
-Der Dialog eines Briefs wiederholt Datum, Absender, Empfänger, Ort und Sprache der Zeile. Er zeigt alles, was die Quelle zu dem Brief verzeichnet, und bleibt deshalb vollständig (Entscheidung des Operators vom 2026-11-14).
-
-### Kopfbereich der Ansichten
-
-Alle Darstellungen des Explorers beginnen mit derselben Komponente `.view-header` aus `components.css`. Seit der [Stufe vom 2026-11-14](#gliederung-nach-gegenstand-stufe-vom-2026-11-14) ist ihr sichtbarer Teil eine Zeile aus Titel und Umschaltung der Darstellung.
-
-- `.view-header__title` ist die `h2` und nennt, was die Ansicht gerade zeigt (`updateViewTitle()` in `explore.js`). `.view-header__description` bleibt als Beschreibung für Screenreader im Dokument und ist nicht sichtbar. `.view-header__actions` ist ein optionaler Bereich für Hinweise, Suche und Moduswahl. Die Umschaltung `#view-variants` hängt `explore.js` in den Kopf der aktiven Ansicht.
-- Titel und Beschreibung stehen links. Weitere Kinder wie die Kennzahlen und die Quellenzeile der Übersicht reihen sich darunter ein.
-- Die Aktionen stehen ab 768px rechts neben Titel und Beschreibung und nehmen höchstens die halbe Breite ein, darunter brechen sie unter die Beschreibung um. Die Spalte darf schrumpfen, ihre Elemente umbrechen dann innerhalb der Spalte.
-- Einen Aktionsbereich haben Aktivität (Hinweis „Experimentell“), Erwähnungsfluss (Personensuche) und Chronik (Layoutwahl und Wikidata-Anreicherung). Was der Vergleich vergleicht, folgt aus dem Gegenstand, von dem aus er geöffnet wurde, seine frühere Moduswahl ist nicht mehr sichtbar.
-- `.view-header--inset` gilt für Ansichten ohne gepolsterten Container (Karte, Korrespondenten, Briefe, Erwähnungsfluss). Der Kopf trägt dort selbst den Innenabstand und schließt mit einer Linie in `--color-border-light` statt mit Außenabstand ab.
-- Die Überschriften tragen keine Icons, damit alle Köpfe gleich beginnen. Der Zusatz „(angereichert)“ der Chronik hängt per `::after` am Titel.
-- Auf der Karte liegen Steuerung und Legende auf `.map-stage`, die ab 768px den Platz unter dem Kopf füllt. Auf Telefonen behalten Karte und Listen ihre feste Höhe, die Seite scrollt um die Höhe des Kopfes.
-
-## Layout und Breakpoints
-
-Die Breakpoints stehen als `--breakpoint-*` in `tokens.css`, die Sidebarbreite als `--sidebar-width`. Media Queries können keine Custom Properties auswerten und wiederholen daher die Werte. Abfragen für Telefone lauten `max-width: 767px`, damit genau 768px das Tablet-Layout erhält, die Tablet-Abfrage lautet `max-width: 1024px`. Ausnahmen richten sich nach der verbleibenden Inhaltsbreite neben der Sidebar, so `max-width: 1600px` für das zweispaltige Entitäten-Layout in `components.css`.
-
-- Unter 768px liegt die Sidebar außerhalb des Bildschirms, höchstens 85 % der Bildschirmbreite breit, und ein Filter-Schalter in der Navigation öffnet sie (`#sidebar-toggle`, `aria-expanded`). Der Inhalt nimmt die volle Breite, der Ansichtswechsel wird zur scrollbaren Icon-Leiste, vom Datensatztitel bleibt nur der Pfeil zurück.
-- Von 768px bis 899px zeigen die Navigationslinks nur ihr Icon, der Text bleibt für Screenreader erhalten.
-- Ab 768px hat die Sidebar `--sidebar-width`, bis 1024px eine schmalere feste Breite, der Inhalt füllt den Rest.
-
-Ab 768px hat die Kopfzeile der Arbeitsansicht eine Zeile mit Datensatztitel, den Gegenständen und den Aktionen, darunter zwei Zeilen mit den Gegenständen in der zweiten (`grid-template-areas` in `style.css`). Die Höhe steht in `--navbar-height`.
-
-Die Umschaltung der Darstellung bricht unter 768px um, statt ihre letzten Einträge zu verbergen. Die geschlossene Seitenleiste ist dort nicht sichtbar und nicht in der Tab-Folge.
-
-Der Wissenskorb stapelt Liste und Auswertung bis 1024px, die Liste nimmt dann die volle Breite. Breite Darstellungen (Timeline, Aktivitäts-Heatmap, Erwähnungsfluss) scrollen in ihrem eigenen Container, die Seite selbst bleibt ohne horizontalen Überlauf (geprüft 2026-10-29 bei 390px, am 2026-11-05 für alle zwölf Ansichten bei 1440, 1024, 768 und 390px mit Playwright).
-
-## Visualisierungslogik
-
-### Markierung nur an unsicheren Werten
-
-Exakte Daten bleiben ohne Markierung, damit gute Daten kein visuelles Rauschen erzeugen. Nur Unsicherheiten erhalten Farbe und Symbol nach [Unsicherheits-Indikatoren](#unsicherheits-indikatoren). `formatters.js` liefert die Klassen aus `datePrecision`. Die Entscheidung steht in [specification.md](specification.md#adr-002-unsicherheit-sichtbar-machen), die Regeln für Datensätze, deren Normalfall ein unmarkierter Wert ist, unter [Briefsätze und Überlieferung](#briefsätze-und-überlieferung-iteration-november-2026).
-
-### Undatierte Briefe als abgesetzter Balken
-
-Briefe ohne Jahr stehen in einem eigenen Balken rechts der Timeline und werden keinem Platzhalterjahr zugeordnet, das die Zeitachse verzerren würde. Die Trennung macht die Datenlage sichtbar. Ein Klick oder Enter auf den Balken (`role="button"`) filtert auf diese Briefe, unter dem Jahresregler steht dann „Nur Briefe ohne Datum“. Sind alle Briefe datiert, zeigt ein gestrichelter Platzhalter mit Häkchen diesen Zustand an. Briefe, die über mehrere Jahre datiert sind, stehen in keinem Jahresbalken, sondern im Balken „Spanne“ daneben, der nur informiert und nicht filtert, weil der Jahresfilter nach dem Anfangsjahr wählt (Entscheidung E5).
-
-### Karte
-
-- Grundkarte ist der helle Stil von OpenFreeMap (Positron), umgefärbt mit `--color-map-land` für Land, Parks und Wald und `--color-map-water` für Wasser (`applyPaperBasemap()` in `explore.js`). Die Farben ändern nur die Darstellung des geladenen Stils, es wird keine weitere Ressource geladen. Fehlt eine Ebene in einer späteren Fassung von Positron, bleibt ihre Originalfarbe. Der dunkle Stil bleibt über den Ebenen-Knopf erreichbar. Bis 2026-11-05 startete die Karte dunkel, danach kurz grau.
-- Ist die Grundkarte nicht erreichbar, zeigt die Karte die Orte auf einer einfarbigen Fläche in `--color-bg-light` und meldet das in einem Toast.
-- Orte sind Kreise, deren Größe der Briefzahl folgt, Cluster tragen ihre Zahl innen.
-- Die Marker sind Teil der MapLibre-Fläche und nicht einzeln fokussierbar. Der Tastaturweg zu denselben Orten ist die Darstellung „Liste“ in der Umschaltung der Ansicht Orte.
-
-### Netzwerk
-
-Das Netzwerk startet im Modus Briefwechsel. Eine Kante verbindet zwei Personen, die einander schrieben, ihre Breite folgt der Zahl der Briefe in beide Richtungen, der Tooltip nennt beide Richtungen (Entscheidung E8 vom 2026-11-05). Beim HSA entsteht ein Stern um den Nachlassgeber, „Ego ausblenden“ zeigt die Verbindungen der übrigen Personen.
-
-Die Standardschwelle für eine Kante (Briefe `minLetters`, gemeinsame Jahre `minYears`, bei Themen gemeinsame Briefe `minCooccurrence`) ist der höchste Wert bis zum Vorgabewert in `NETWORK_DEFAULTS`, bei dem der Datensatz noch eine Kante zeigt. Große Datensätze behalten so eine lesbare Schwelle, kleine wie der Tutorial-Datensatz zeigen ein Netz statt einer leeren Fläche. Die frühere Regel nach der Zeitspanne ließ den Tutorial-Datensatz (über 20 Jahre, wenige Briefe je Absender) leer.
-
-Knoten sind einfache Kreise, deren Größe der Briefzahl folgt, weil Symbole bei vielen Personen unlesbar werden. Die Deckkraft der Kanten sinkt mit ihrer Zahl. Der Farbmodus nach Eintrittsjahr färbt jeden Korrespondenten nach dem Jahr seines ersten Briefs und macht frühe und späte Teilnehmer und die Entwicklung des Netzwerks sichtbar. Beschriftung, Ego-Hinweis und Farbwahl nach Art regelt [Briefsätze und Überlieferung](#briefsätze-und-überlieferung-iteration-november-2026).
-
-### Timeline
-
-Die Balken sind nach Sprache gestapelt ([Sprachfarben](#sprachfarben)), die Schraffur zeigt den Anteil unscharfer und erschlossener Datierungen ([Unsicherheits-Indikatoren](#unsicherheits-indikatoren)). Beim Hover hellt sich der Balken auf, ein Tooltip nennt Zahl und Gründe. Die Jahreszahlen der Achse stehen schräg in `--font-size-xs`.
-
-### Listen
-
-Listen verzichten auf wechselnd gefärbte Zeilen, weil sie unruhig wirken. Zahlen stehen rechtsbündig. Ein Brief steht ab 1024px in einer Zeile mit Korrespondenten, den Angaben der Quelle und dem Datum, darunter in zwei bis drei Zeilen. Die Korrespondentenliste führt keine Kreise mit Initialen mehr, weil sie keine Angabe trugen, die der Name nicht trägt. Eine Zeile hat ein Ziel und den Stern zum Korb, die Korrespondentenzeile zusätzlich den Knopf zu den Details. Der Link zur Quelle und der Weg zu correspSearch stehen im Dialog. Der Stern ist ein Umriss, bis der Eintrag im Korb liegt, der Zustand hängt damit nicht an der Farbe allein. Bei eingeklappter Seitenleiste nennt ein Hinweis unter dem Kopf jeder Ansicht den aktiven Filter (`renderFilterNotice()`).
-
-## Interaktionsmuster
-
-### Transparente Datenlage
-
-Fehlende Daten werden ausdrücklich als „unbekannt“ markiert, Tooltips erklären die Symbole. Forschende brauchen diese Transparenz, um die Reichweite ihrer Schlüsse einzuschätzen. Texte über Lücken in Partnerdaten folgen [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten) und beschreiben sie als Anreicherungspotential.
-
-### Progressive Disclosure
-
-Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige Metadaten in Dialog oder Panel. Bei großen Datensätzen würde die gleichzeitige Anzeige aller Details überfordern. Was man für die Arbeit braucht, bleibt dabei sichtbar oder über einen Filter erreichbar ([Briefsätze und Überlieferung](#briefsätze-und-überlieferung-iteration-november-2026)).
-
-### Startansicht und Navigation
-
-Die Zahl dessen, was eine Ansicht zeigt, steht in ihrer Titelzeile, unter einem Filter als Anteil („95 von 774 Orten“). Die Karte nennt die Orte, die sie zeichnet, der Vergleich nennt, was er vergleicht. Die Seitenleiste wiederholt diese Zahlen seit 2026-11-14 nicht mehr, ihr Abschnitt mit den drei Kennzahlen ist ausgeblendet. Kennzahlen und Datenlage entstehen aus einer Zusammenfassung beim Laden (`summarizeCorpus()`, `datasetQuality()`).
-
-Die Sprachliste der Sidebar zeigt die Sprachen mit eigener Farbe, so viele wie die Sprachpalette trägt, und fasst die übrigen in der aufklappbaren Gruppe „Übrige Sprachen“ zusammen. Eine Sprache, der die übrigen Filter keinen Brief lassen, verlässt die Liste, bis ein Filter sie wieder trifft. Die kurze Themenliste der Sidebar ist seit 2026-11-14 nicht mehr sichtbar.
-
-Die Navigation zeigt die Gegenstände der Korrespondenz mit ihrem Namen, ab 768px in einer Zeile mit Datensatztitel und Aktionen, darunter in einer zweiten Zeile. Auch bei 360px sind alle Reiter beschriftet. Bis 2026-11-14 standen dort zwölf Ansichten, bis 2026-11-10 unter 1600px nur als Icons, was der Operator beanstandet hatte.
-
-Das Hinweisfeld der Startseite nennt das Werkzeug ein Experiment, sagt, was es zeigt, dass es kein fertiges oder betreutes Produkt ist und wohin Rückmeldungen gehören, ohne Tooltip.
-
-Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die sechs Einstiegskacheln zu einzelnen Ansichten hat der Operator am 2026-11-14 gestrichen, weil die Ansichtsleiste direkt darüber in dieselben Ansichten führt. Die Chips heißen nach dem, was sie zählen („auf den Tag datiert“, „mit Normdatensatz“, „mit Koordinaten“), und stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen. Was die Übersicht für Briefsätze zusätzlich zeigt, steht unter [Briefsätze und Überlieferung](#briefsätze-und-überlieferung-iteration-november-2026).
-
-### Wissenspfade
-
-Ein gestarteter Forschungspfad erscheint als eine Leiste unter der Navigation mit Frage, nummerierten Schritten, Zurück, Weiter (im letzten Schritt Abschließen) und Beenden. Den Korb zählen Navigation und Sidebar, die Leiste wiederholt ihn nicht. Bis 2026-11-05 gab es zusätzlich eine zweite Pfadnavigation unter der Ansicht und einen Zähler „Items“ in der Leiste.
-
-### Forschungspfade
-
-In der Übersicht ist ein Forschungspfad eine Zeile mit Frage, einem Satz zu dem, was der Datensatz dazu enthält, und dem Startknopf. Die Schritte erscheinen erst in der Leiste des gestarteten Pfads, mit ihrer Aktion als sichtbarem Text, weil Tooltips Hover verlangen und wesentliche Information verstecken. Bis 2026-11-14 zeigte jede Zeile zusätzlich eine Vorschau der häufigsten Einträge und die Schritte als Knöpfe und hatte damit mehr Ebenen, als der Maßstab des Hauswissens je Eintrag erlaubt. Der Operator hat die Kürzung an diesem Tag entschieden. Fragen, die der Datensatz nicht beantworten kann, stehen nicht als gesperrte Zeilen zwischen den Pfaden. Sie stehen im aufklappbaren Abschnitt „Anreicherungspotential“ (`details.questions-enrichment`) mit der fehlenden Angabe und dem CMIF-Element, das sie ergänzen würde.
+Regeln für Stylesheets: `components.css` ist die einzige Quelle für Knöpfe, Dialoggrundform und Ansichtskopf. Ebenen nur als `--z-*`, Übergänge über `--transition-*`. Sichtbarkeit schaltet die Klasse `.hidden`, Erwähnungsfluss, Netzwerk und Ortsliste schalten einzelne Elemente noch über `style.display` ([plan.md](plan.md#aufräumen)).
 
 ## Barrierefreiheit
 
@@ -332,72 +163,150 @@ In der Übersicht ist ein Forschungspfad eine Zeile mit Frage, einem Satz zu dem
 |---|---|---|
 | Text auf BG | 14.3:1 | AAA |
 | Primary auf BG | 5.1:1 | AA |
-| Primary auf BG Light | 4.45:1 | verfehlt AA, dort `--color-primary-dark` (5.86:1), etwa Links in `.info-box`, `.link-list` und `.feature-item` der About-Seite |
-| Primary auf Warning Light | 4.3:1 | verfehlt AA, dort `--color-primary-dark` (5.65:1), etwa Hinweisfeld und Tooltip-Auslöser der Startseite |
+| Primary auf BG Light | 4.45:1 | verfehlt AA, dort `--color-primary-dark` (5.86:1) |
 | Data auf BG | 7.2:1 | AAA |
 | Link (Primary Dark) auf BG und BG Light | 6.7:1 und 5.9:1 | AA |
 | Link gegen umgebenden Text | 2.1:1 | unter 3:1, Links im Fließtext sind deshalb unterstrichen (WCAG 1.4.1, Technik G183) |
 | Text Light auf BG und BG Light | 7.0:1 und 6.1:1 | AA |
-| Role Mentioned auf BG | 4.9:1 | AA, das frühere kühle Grau erreichte 4.2:1 |
-| Warning auf BG und BG Light | 6.1:1 und 5.3:1 | AA |
-| Info auf BG und BG Light | 6.7:1 und 5.9:1 | AA |
-| Border Control auf BG und BG Light | 3.9:1 und 3.4:1 | erfüllt 1.4.11, Rand von Eingaben und Knöpfen |
-| Border Light auf BG | 1.4:1 | nur für Trennlinien, bis 2026-11-05 auch Rand von Suchfeldern und Schrittknöpfen |
-| BG Light auf Text (Hinweis im dunklen Tooltip) | 12.5:1 | AAA, vorher Text Light mit Deckkraft 0.8, etwa 1.8:1 |
+| Warning und Info auf BG | 6.1:1 und 6.7:1 | AA |
+| Border Control auf BG und BG Light | 3.9:1 und 3.4:1 | erfüllt 1.4.11 |
+| Border Light auf BG | 1.4:1 | nur für Trennlinien |
 
-Die Werte sind nach der WCAG-Formel für relative Leuchtdichte am 2026-10-29 berechnet, die Zeilen zu Border Control, Border Light und Tooltip-Hinweis am 2026-11-05, die Zeilen zu Data, Link, Text Light und Role Mentioned am 2026-11-14.
+Berechnet nach der WCAG-Formel am 2026-10-29, 2026-11-05 und 2026-11-14. Die verblassten Säulen der Raum-Zeit-Figur erreichten vor dem Umbau vom 2026-11-14 nur 1.1 bis 1.4 zu 1, die stärkere Abblendung danach ist nicht nachgemessen.
+
+### Fokus, Tastatur, Struktur
+
+- Alle interaktiven Elemente haben einen sichtbaren Fokus, global ein 3px-Umriss in `--color-primary`. Ziele sind mindestens 24 x 24px, Ausnahme sind die Zellen der Heatmap.
+- Jede Figur hat einen Tastaturweg zu denselben Daten: die Ortsliste für Karte und Raum-Zeit, die Liste unter dem Korrespondenzkreis, die Namen als Knöpfe in Themen, die Legende der Zeitleiste für die Sprachsegmente, die Tabelle „Daten als Tabelle“ unter Zeitleiste, Netzwerk, Erwähnungsfluss und Heatmap.
+- Dialoge, Tour, mobile Seitenleiste und Briefauszug schließen mit Escape und geben den Fokus zurück. Dialoge tragen `role="dialog"`, `aria-modal` und `aria-labelledby` und halten den Fokus.
+- `explore.html` hat ein `h1` vor der Seitenleiste, die Ansichtstitel sind `h2`. Erklärende Zeilen unter den Titeln sind unsichtbar und bleiben für Screenreader im Dokument.
+- Unter 768px sind alle Reiter beschriftet, der Schalter der Darstellungen bricht um, die geschlossene Seitenleiste verlässt die Tab-Folge. Kein Dokument scrollt seitlich, breite Grafiken scrollen in ihrem eigenen Bereich.
 
 ### Quellen der Farbentscheidungen
 
-Die Befunde hat ein lesender Agent am 2026-11-14 aus den Volltexten zusammengetragen, die bauende Session hat sie übernommen und die Kontrastwerte nachgerechnet. Alle genannten Farbstudien schließen Menschen mit Farbfehlsichtigkeit aus, für sie sprechen hier nur Okabe und Ito und die Begründung der WCAG.
+Die Befunde hat ein lesender Agent am 2026-11-14 aus den Volltexten zusammengetragen, die bauende Session hat sie übernommen. Alle genannten Farbstudien schließen Menschen mit Farbfehlsichtigkeit aus, für sie sprechen hier nur Okabe und Ito und die Begründung der WCAG.
 
 - Gramazio, C. C., Laidlaw, D. H., & Schloss, K. B. (2017). Colorgorical: Creating discriminable and preferable color palettes for information visualization. *IEEE Transactions on Visualization and Computer Graphics*, 23(1), 521–530. https://doi.org/10.1109/TVCG.2016.2598918
 - Healey, C. G. (1996). Choosing Effective Colours for Data Visualization. *Proceedings IEEE Visualization '96*, 263–270. https://doi.org/10.1109/VISUAL.1996.568118
 - Heer, J., & Stone, M. (2012). Color Naming Models for Color Selection, Image Editing and Palette Design. *CHI '12*. Modellmetriken ohne Nutzertest der Paletten.
 - Laubheimer, P. (2016). Cards: UI-Component Definition. Nielsen Norman Group. https://www.nngroup.com/articles/cards-component/. Praxisempfehlung ohne berichtete Messung.
-- Okabe, M., & Ito, K. (2008). Color Universal Design (CUD). How to make figures and presentations that are friendly to Colorblind people. https://jfly.uni-koeln.de/color/. Praxisrichtlinie, die Farbwerte der Palette sind die verbreitet veröffentlichten und nicht aus dem Text der Quelle gelesen.
+- Okabe, M., & Ito, K. (2008). Color Universal Design (CUD). https://jfly.uni-koeln.de/color/. Praxisrichtlinie, die Farbwerte der Palette sind die verbreitet veröffentlichten und nicht aus dem Text der Quelle gelesen.
 - Szafir, D. A. (2018). Modeling Color Difference for Visualization Design. *IEEE Transactions on Visualization and Computer Graphics*, 24(1), 392–401. https://doi.org/10.1109/TVCG.2017.2744359
 - Wolfe, J. M., & Horowitz, T. S. (2017). Five factors that guide attention in visual search. *Nature Human Behaviour*, 1, 0058. https://doi.org/10.1038/s41562-017-0058. Review der Laborforschung mit einfachen Displays.
 - W3C. Understanding SC 1.4.1 Use of Color, Technique G183 und Understanding SC 1.4.11 Non-text Contrast, WCAG 2.2.
 
-### Fokus
+## Rückmeldungen des Operators
 
-Alle interaktiven Elemente haben einen sichtbaren Fokus. `base.css` setzt ihn global als 3px-Umriss in `--color-primary`, bei Knöpfen und Eingaben enger anliegend, Eingaben färben zusätzlich ihren Rand. Der vorherige Fokus der Eingaben (Schatten mit 10 % Deckkraft) erreichte nur 1.15:1 und wurde am 2026-10-29 ersetzt.
+Die Sätze des Operators stehen hier wörtlich und vollständig, in der Folge, in der er sie gab, damit sie jeden Umbau überleben. Die Sätze vom 2026-11-14 stammen aus diktierten Eingaben, „Fuse“ ist als „Views“ zu lesen, „Staat“ als „Start“, Namen in eckigen Klammern sind ergänzt. Jeder Satz trägt eine Zeile dazu, was daraus folgte und ob es am Bildschirm steht. „Am Bildschirm“ heißt im Code vom 2026-11-14 vorhanden, abgenommen hat der Operator nichts davon.
 
-- Versteckte Checkboxen zeichnen den Fokus auf ihrem sichtbaren Kästchen (`.config-checkbox input:focus-visible ~ .checkmark`).
-- Die Kartenfläche zeigt den Fokus innen (`.maplibregl-canvas:focus-visible`), SVG-Knoten in Netzwerk und Erwähnungsfluss als Kontur (`stroke`).
-- Die Tooltips der Ansichtsknöpfe erscheinen auch bei Tastaturfokus.
-- `base.css` stellt `.visually-hidden` für Statusmeldungen und unsichtbare Überschriften und `.skip-link` für den Sprunglink bereit.
-- Interaktive Elemente sind mindestens 24 x 24px groß und schrumpfen in Flex-Zeilen nicht (`flex-shrink: 0`). Ausnahme sind die Zellen der [Aktivitäts-Heatmap](#aktivitäts-heatmap).
+### 2026-11-13 und 2026-11-14, Iteration an den Briefen von Stefan Zweig Digital
 
-### Struktur und Textalternativen
+> Wir können den CorrespExplorer in dieser Phase jetzt nochmal extra optimieren und genau anpassen und customizen, sodass er mit diesen Zweigdaten auch wirklich sehr gut umgehen kann. Das heißt: wirklich die Views nochmal durchdenken, anpassen, implementieren und umsetzen
 
-Auf `explore.html` steht die Seitenüberschrift `h1` vor der Sidebar, deren Abschnitte sind `h2`, ihre Filtergruppen `h3`, die Ansichtstitel `h2`. Bis 2026-11-05 standen `h4` und `h5` der Sidebar vor dem `h1`. Die Navigation ist das einzige Navigations-Landmark, die Ansichtsleiste darin eine Gruppe (`role="group"`).
+Folge: Parser für Briefsätze, Zusammenführung nach Signatur, Merkmale der Überlieferung in allen Ansichten. Am Bildschirm.
 
-Unter Timeline, Netzwerk, Erwähnungsfluss und Aktivitäts-Heatmap steht eine aufklappbare Tabelle „Daten als Tabelle“ mit den dargestellten Werten (`renderDataTable()` in `views/view-support.js`, Klasse `.chart-table` in `components.css`). Sie enthält die Briefe je Jahr mit Sprachen, die Verbindungen des Netzwerks mit ihrer Stärke, alle Erwähnungspaare um die gewählte Person, auch jenseits der sichtbaren Knoten, und die tagesgenauen Briefe je Monat. Die Tabelle ist eingeklappt, damit die Grafik oben bleibt, ihr Scrollbereich ist fokussierbar und benannt. Die Karte braucht keine, weil die Ortsansicht dieselben Orte als Liste führt.
+> Ich möchte das, was wir haben, auch am Design und dem User Interface verbessern und optimieren und auch refactorn an dieser Stelle. Wir sollten uns dann wirklich überlegen: Wie können wir das evolvieren?
 
-## Briefsätze und Überlieferung (Iteration November 2026)
+Folge: Refactoring in Ansichtsmodule, Umbau von Farbrollen und Listen. Am Bildschirm.
 
-Anforderungen des Operators, wörtlich, vom 2026-11-13 und 2026-11-14:
+> Ich möchte bei den Zweigbriefen, die wir hier alle verarbeiten möchten, das in allen Views durchgehen. Das heißt, du sollst Software und Subagents da hinschicken, die wirklich den Browser mit konkreten Aufgaben bedienen. Die sollten uns dann immer wieder Feedback geben, ob das jetzt wirklich besser geworden ist.
 
-- „Wir können den CorrespExplorer in dieser Phase jetzt nochmal extra optimieren und genau anpassen und customizen, sodass er mit diesen Zweigdaten auch wirklich sehr gut umgehen kann. Das heißt: wirklich die Views nochmal durchdenken, anpassen, implementieren und umsetzen“
-- „Ich möchte das, was wir haben, auch am Design und dem User Interface verbessern und optimieren und auch refactorn an dieser Stelle. Wir sollten uns dann wirklich überlegen: Wie können wir das evolvieren?“
-- „Ich möchte bei den Zweigbriefen, die wir hier alle verarbeiten möchten, das in allen Views durchgehen. Das heißt, du sollst Software und Subagents da hinschicken, die wirklich den Browser mit konkreten Aufgaben bedienen. Die sollten uns dann immer wieder Feedback geben, ob das jetzt wirklich besser geworden ist.“
-- Festgehaltene Vorlieben aus dem Auftrag: wenige Ebenen, nichts hinter Aufklappern, was man braucht, ist sichtbar oder über einen Filter erreichbar.
+Folge: zwei Runden Aufgabenprüfung durch Browser-Agenten, seit 2026-11-14 der feste Aufgabensatz ([testing.md](testing.md#feste-aufgaben)). Arbeitsweise, kein Bildschirmelement.
 
-Daraus gelten die folgenden Regeln. Sie werden von Eigenschaften der Daten ausgelöst und gelten für jeden Datensatz, der sie trägt.
+Festgehaltene Vorlieben aus dem Auftrag: wenige Ebenen, nichts hinter Aufklappern, was man braucht, ist sichtbar oder über einen Filter erreichbar. Folge: Regeln für Briefsätze (Normalfall unmarkiert, Merkmale als Filter). Am Bildschirm.
 
-- Der Normalfall bleibt unmarkiert. Ein Ort ohne GeoNames-ID trägt weder „(Region)“ noch Kursivschrift. Fehlen allen Orten die Koordinaten, sagt die Ortsansicht das in einem Satz, statt jeden Ort mit „?“ zu markieren. Nur in gemischten Datensätzen trägt der einzelne Ort die Marke.
-- Erschlossenes steht in eckigen Klammern, in Liste, Dialog, Chronik und Korb gleich, mit einer Legendenzeile über der Briefliste. Ein Tooltip ist nie der einzige Ort einer Erklärung.
-- Poststempel, Anschrift und Signatur stehen als benannte Angaben in der Briefzeile, mit kleinem Versal-Label, und brechen auf schmalen Bildschirmen um.
-- Die Briefliste nennt ihre Zahl über der Liste, auch für eine Suche und für null Treffer, und wächst auf Wunsch in Schritten, statt still abzubrechen. Ein Klick auf einen Brief öffnet den Dialog mit allen Angaben. Die frühere aufgeklappte Zeile entfällt, weil sie nur Absender und Empfänger wiederholte.
-- Jedes Merkmal der Überlieferung ist ein Filter der Seitenleiste mit Zahl (Gruppe „Überlieferung“). Ein Qualitätsfilter, der alle oder keine Briefe behielte, wird nicht gezeigt. Ein aktiver Überlieferungsfilter erscheint als Filtermarke wie Person und Ort.
-- Die Übersicht nennt Dateien, Einträge und Briefe neben der Quelle, und die Merkmale der Überlieferung stehen neben den Chips der Datenlage als Knöpfe in die Briefliste. Kein Einstieg führt in eine Ansicht, die der Datensatz nicht füllt. Die Überschrift „Was möchten Sie erkunden?“ entfällt.
-- In der Korrespondentenliste stehen „Körperschaft“ und „ohne Normdatensatz“ als Wort in der Zeile, die Auswahl „Anzeigen“ bietet nur Arten, die der Datensatz enthält. Der Personendialog zeigt für jede Person zuerst, was der Datensatz sagt (Briefe, Zeitraum, häufigste Gegenüber, Absendeorte, Nachweis), externe Dienste folgen danach.
-- Im Netzwerk stehen Beschriftungen nach Knotengröße ohne Überlappung im Bild, das Layout ist vor dem Zeichnen berechnet. Ist eine Person an mindestens der Hälfte der Briefe beteiligt, sagt ein Satz das und nennt die Zahl der Verbindungen ohne sie, der Schalter „Ego ausblenden“ steht daneben. Die Farbwahl unterscheidet Person und Organisation, wo der Datensatz Organisationen hat.
-- In der Zeitleiste teilen erschlossene Datierungen die Schraffur der unscharfen, die Legende nennt nur vorhandene Gründe. Der Balken ohne Jahr nennt seine Gruppen (ohne Datum, nur als Text datiert, unplausibles Jahr), wo der Datensatz mehr als fehlende Daten kennt, und jede Zahl führt zu genau diesen Briefen.
-- In der Aktivität nennt ein Satz das dichteste Jahr, den dichtesten Monat und Tag, die Heatmap trägt Monatsnamen. Die Jahreszahlen zählen wie die Zeitleiste.
-- Die Chronik zeigt den Verlauf der Briefwechsel. Jeder Eintrag nennt seine Stelle im Briefwechsel der beiden Personen und Lücken ab zwei Jahren. Die Marke des ersten Briefs ist eine Fahne, der Stern gehört dem Korb.
-- Ansichten ohne Seitenleiste (Aktivität, Chronik, Vergleich) nennen einen aktiven Filter in einem Satz mit dem Knopf „Filter aufheben“. Derselbe Satz steht im Exportdialog.
+### 2026-11-14, Gliederung, Startseite, Datenprüfung und Arbeitsfläche
 
-Der Plan wurde dem Operator am 2026-11-13 als Text vorgelegt (acht Punkte von Laden bis Kennzeichnung) und am 2026-11-14 mit der Erweiterung auf alle Ansichten beauftragt. Seine Beurteilung am laufenden Explorer steht aus. Die Messung der Dichte im ersten Bildschirm liegt in mehreren Ansichten weiter über den Grenzwerten des Maßstabs, vor allem wegen der Seitenleiste, siehe [plan.md](plan.md#e11-entlastung-der-oberfläche).
+> Warum sind hier zwei Ebenen, und es sind ein bisschen viele Strukturen, oder? Auch hier haben wir das Problem, dass wir zu viele Ebenen haben. Warum wird so viel Fläche nicht verwendet? Sind es nicht ein bisschen zu viele Fuse? Es sind sehr viele Fenster. Das heißt: Was würde man sinnvoll zusammenführen können, und wo kann man jetzt etwas lernen?
+
+Folge: Kopfzeile nach Gegenständen statt zwölf Ansichten nach Technik, Schalter im Kopf der Ansicht. Am Bildschirm.
+
+> Also hier fallen mir auch wieder zu viele Ebenen ein. Also, ich finde, wir haben zu viele Strukturen, auch in der Sidebar, und auch zu viele Ebenen. Die Cards oben (Datensatz, Briefe, Personenorte) sind ein bisschen sehr mächtig. Brauchen wir hier wirklich Untertitel, also Datensatz, Filter, Zeitraum? Wir wollen das User-Interface mehr sprechen lassen.
+
+Folge: Seitenleiste ohne sichtbare Überschriften, Kacheln ausgeblendet, die Zahl steht im Titel der Ansicht. Am Bildschirm.
+
+> Ich glaube, wir können die Startseite insgesamt ein bisschen innovativer machen und so, dass alles auf einer Seite sichtbar ist, oder?
+
+Folge: Startseite auf einem Bildschirm, später durch die Startfigur ersetzt. Am Bildschirm als Startfigur.
+
+> Ich würde den Feature-Demosatz weggeben und da eben den Stefan-Zweig-Datensatz nehmen, damit wir den quasi nochmal ausarbeiten, statt dem Tutorial oder zusätzlich zum Tutorial. […] Also, wir arbeiten das Tutorial nochmal sauber aus, und wir fügen quasi Stefan Zweig als Beispiel hinzu.
+
+Folge: Stefan Zweig Digital als drittes Beispiel, nur wo lokal eingebunden, weil die Daten keine Lizenz nennen (Entscheidung der bauenden Session). Das Tutorial ist nicht neu ausgearbeitet. Teilweise am Bildschirm.
+
+> Warum ist 3 + 3 > 7? Was kann man hier noch optimieren und klarer machen? Ist es klar, nach welchen Kriterien ich sortieren kann? Sind das alles Sprachen? Wird das Aufklappen der weiteren Sprachen wirklich sehr gut umgesetzt? Warum haben manche dann nur Grau? Wie kann man das lösen, grundsätzlich, weil wir unterschiedliche Daten hier reinbekommen? Ein bisschen generalisierter: Warum nur die Kategorien, warum nicht andere?
+
+Folge: Cluster der Karte zählen Briefe, die Sprachliste klappt, wo die Farben enden. Kategorien aus den Daten abzuleiten ist nicht gebaut ([plan.md](plan.md#auswahl-und-briefe)). Teilweise am Bildschirm.
+
+> Ich bin der Meinung, dass hier viel mehr von der Seite genutzt werden kann. Ich könnte mir vorstellen, alles an Informationen in eine seitliche Sidebar zu legen, schon wie wir das gehabt hatten. Der Staat erschlägt einen ja ein bisschen. Wieso kann im Staat nicht auch eine Übersicht über die Fuse sein, quasi kleine Bereiche? Wir haben jetzt Briefe, Personenorte und Zeit als Bereiche. Diese vier Bereiche sollten quasi vier Quadranten sein, wo ich auch schon sehe: Das sind die Visualisierungen. Dort kann ich dann tiefer hineingehen, und ich sehe schon mal eine Art aggregierte Form des Wissens von dort. […] Wo gibt es einen Bereich, wo alle Metadaten zu dem Datenbestand genannt sind […]? Quasi die aggregierten Metadaten.
+
+Folge: Startansicht als Arbeitsfläche aus Grafiken, die einander filtern, die Metadaten des Bestands in einer Spalte. Am Bildschirm.
+
+> Also, ich hatte schon erwartet, dass wir viel mehr mit Informationsvisualisierungen arbeiten, die die Daten aggregieren und dann sozusagen in die Teilansichten kommen. Hier erscheinen mir Briefe und Personen so klassische Katalogansichten. […] Ich komme zu den Daten und den Metadaten, und dann möchte ich aber eigentlich eher mit Informationsvisualisierungen arbeiten, die wirklich einen großen Teil dieses Tools einnehmen.
+
+Folge: Arbeitsfläche, später die vier großen Ansichten mit dem Briefauszug. Briefe und Personenliste stehen weiter als Darstellungen. Teilweise am Bildschirm.
+
+> Es ist sehr viel blau. Können wir hier nicht einen Stacked Bar Chart machen? Was kann man im User Interface noch verbessern? Ich würde eher erwarten, dass ich hier auf der Sidebar diese Ansicht filtern kann. Die Forschungspfade finde ich eigentlich gar keine gute Idee. Das schaut mir, das versteht keiner. Warum nicht gleich direkt in die Daten gehen? Und alle Forschungspfade waren quasi nur der Gedanke, dass wir alle Forschungs-User-Stories entwickeln. Alle diese wollen wir mit diesen Views, die wir haben, umsetzen. Vielleicht müssen wir alle Views nochmal evoluieren und deutlich ausbauen und vielleicht noch einen weiteren View hinzusetzen, damit alle Forschungspfade mit diesen Views bearbeitbar sind.
+
+Folge: Zeitleiste der Startansicht nach Sprache gestapelt, Seitenleiste auf der Startansicht, Forschungspfade aus der Oberfläche genommen, ein Feld Themen. Die Zuordnung jeder Story zu einer Ansicht steht seit 2026-11-14 in [specification.md](specification.md). Die Maschinerie der Pfade steht noch im Code. Am Bildschirm.
+
+> Und wo ist die Kartenansicht? Die war eigentlich eine Kernkomponente des ganzen Projektes.
+
+Folge: Die Karte steht unter Orte, für Bestände mit Koordinaten. Für Stefan Zweig Digital fehlt sie, weil die Quelle keine Ortskennungen trägt ([plan.md](plan.md#orte-und-raum-zeit)). Am Bildschirm für das HSA.
+
+> Auch die Chronik […] Das gefällt mir jetzt noch nicht. Da müssen wir noch einiges überarbeiten und verbessern. Einige Dinge waren früher besser. Also, ich glaube, wir haben das ein bisschen sehr krass eingedampft. Und diese Unterviews, Zeit, Chronik oder so, das ist ein bisschen schwer zu finden. Das muss irgendwie oben schon ein Dropdown sein, damit ich das wirklich gleich da sehe, also dass ich das immer sehen muss.
+
+Folge: Menü unter jedem Reiter mit Darstellungen. Die Chronik ist nicht überarbeitet, was früher besser war, ist nicht benannt. Teilweise am Bildschirm.
+
+> Wir wollen wirklich ein innovatives, sehr spannendes User-Interface haben, das wirklich alle Dimensionen abbildet. Wir wollen das wirklich professionell umsetzen.
+
+Folge: Entwurf der vier großen Ansichten über einer Auswahl. Am Bildschirm, nicht abgenommen.
+
+### 2026-11-14, nach der Arbeit am Parser
+
+> aber können wir das nicht professionalisieren. wir haben doch beim gossip schon viel gelernt. also was waren die guten views. Wir brauchen auf jeden Fall etwas mit Netzwerk, mit Karte, Space-Time, die Themen. Irgendwie kommt mir vor, dass wir den [CorrespExplorer] vielleicht noch besser denken können. Ich glaube, dass wir den innovativer denken können.
+
+Folge: die vier großen Ansichten Netzwerk, Karte, Raum-Zeit und Themen ([plan.md](plan.md#richtung)). Alle vier am Bildschirm, nicht abgenommen. Die Form des Netzwerks bezweifelt der Operator.
+
+Auf den Vorschlag, den Entwurf auf vier große Ansichten umzuschreiben und die Raum-Zeit-Ansicht zuerst zu bauen: „ja. oder besser mit subagents!“
+
+Folge: Bau von Raum-Zeit und Korrespondenzkreis durch je einen Subagenten. Arbeitsweise.
+
+> Das finde ich jetzt wirklich sehr gut, aber vielleicht können wir das noch optimieren und verbessern. Und vielleicht könntet ihr es auch noch irgendwie performanter machen.
+
+Folge: Raum-Zeit auf einer Zeichenfläche. Am Bildschirm.
+
+> hier wäre es gut, wenn ich die Karte darunter sehe, und es sind ein bisschen viele Kugeln, die sich überschneiden.
+
+Folge: Länderumrisse auf der Grundfläche, Profile je Jahr statt Kugeln. Am Bildschirm.
+
+> Bei den Orten: Das ist eigentlich ganz cool, aber es sollte klar sein, dass man vielleicht einen Button braucht, damit man gleich die Ansicht von oben auf die Karte wieder hat. Man sollte irgendwie genau wissen, dass die Visualisierung dann sagt, dass man sie dann auch drehen kann. Es muss auch irgendwie klar sein, was diese Achse dann ausdrückt. Und können wir mit Farben auch noch arbeiten? Jetzt ist einfach alles nur immer blau.
+
+Folge: Knopf „Karte von oben“ unter drei festen Blickrichtungen, Drehhinweis, Achsentitel, Sprachfarben. Am Bildschirm.
+
+Auf die ausgezählten Möglichkeiten: „ja, färbe die Säulen nach der Sprache“.
+
+Folge: Profile in der Farbe der häufigsten Sprache je Jahr. Am Bildschirm.
+
+> Ja, diese Netzwerke, die schauen immer so aus. Ich bin mir nicht sicher, ob das wirklich die beste Netzwerkvisualisierung ist. Das können wir hier noch optimieren und verbessern. Und diese Auswahl zwischen Liste, Netzwerk und Vergleichen sollte irgendwie präsenter sein. Ich glaube, dass wir hier wieder zu viele Ebenen auch haben. Also im Bild 24 von 282 im Briefwechsel: Das sollte noch besser irgendwie integriert werden.
+
+Folge: Korrespondenzkreis statt zweier Bögen, der Schalter der Darstellungen neben dem Titel, die Zahlen der Stufen im Stufenschalter. Am Bildschirm, ob die Zahlzeile damit integriert ist, hat niemand geprüft.
+
+> Vielleicht könnten wir hier mit einer sehr innovativen, kreativen und ästhetisch anspruchenden Visualisierung die Funktion oder eine besondere Funktion des [CorrespExplorer] darstellen. Wir überlegen uns, was das Coolste wäre: dass wir alles, was wir hier im Screenshot haben, zusammenführen in eine ästhetisch anspruchende Informationsvisualisierung. Die vermittelt, was der [CorrespExplorer] alles kann und welche Art von Daten man damit darstellen kann. Sie berücksichtigt wirklich das Datenmodell von [correspSearch] auch gleich direkt und die dementsprechenden Erweiterungen, weil Hugo [Schuchardt] ja einen weiteren Datenbestand hat.
+
+Folge: die Startfigur in drei Bändern ([Startfigur](#startfigur)). Am Bildschirm. Der Name des mittleren Bands und das Dichteprofil sind offen ([plan.md](plan.md#startfigur)).
+
+Auf die Frage, ob CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell von GOSSIP werden soll: „ja das sollten wir auch gleich zusammen denken! da wollte ich hin“.
+
+Folge: neue Ausrichtung des Projekts ([project.md](project.md)). Das Werkzeug liest noch keine Aussagen, nichts davon steht am Bildschirm.
+
+### 2026-11-14, zum Korrespondenzkreis
+
+Der Satz ist so überliefert, wie die koordinierende Session ihn weitergab, mit ihren Auslassungen:
+
+> Ich glaube, die Form von Netzwerk passt noch nicht ganz … was hier überhaupt in Beziehung gestellt wird
+
+Folge: Ein recherchierender Agent untersucht, welche Netzwerkvisualisierungen zu Briefdaten passen. Ergebnis ausstehend, am Bildschirm unverändert der Korrespondenzkreis.
+
+### Entscheidungen des Operators ohne wörtlichen Satz
+
+Diese Entscheidungen stehen im Journal mit ihrem Tag und sind hier nur mit ihrer Wirkung genannt: die Palette aus dem Logo bleibt (2026-11-14), die Einstiegskacheln der Übersicht entfallen (2026-11-14), der Brief-Dialog bleibt vollständig (2026-11-14), die Forschungspfade verlassen die Oberfläche, die Startansicht wird über die Seitenleiste gefiltert, die Unteransichten sind oben zu finden (2026-11-14), keine Ampel für die Datenlage (2026-10-29), die Ausnahme für die Zellen der Heatmap (E6, 2026-11-05).

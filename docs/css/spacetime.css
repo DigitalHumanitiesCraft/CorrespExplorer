@@ -134,6 +134,28 @@
     stroke-linejoin: round;
 }
 
+/* The three views at the upper left corner of the figure, larger than the other controls */
+.st-cams {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    z-index: var(--z-raised);
+    border: 1px solid var(--color-border-control);
+    background: var(--color-bg);
+}
+
+.st-cams .st-btn {
+    min-height: 36px;
+    padding: var(--space-xs) var(--space-md);
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+}
+
+.st-cams .st-btn[aria-pressed="true"] {
+    background: var(--color-primary);
+    color: var(--color-bg);
+}
+
 /* Zoom at the lower right corner of the figure */
 .st-zoom {
     position: absolute;

@@ -18,7 +18,7 @@ related: [specification, data, design, architecture]
 
 How CorrespExplorer handles incomplete or uncertain research data.
 
-Related: [specification.md](specification.md#adr-002-unsicherheit-sichtbar-machen), [data.md](data.md), [design.md](design.md#unsicherheits-indikatoren), [architecture.md](architecture.md)
+Related: [specification.md](specification.md#adr-002-unsicherheit-sichtbar-machen), [data.md](data.md), [design.md](design.md#unsicherheit), [architecture.md](architecture.md)
 
 User documentation: [about.html](../docs/about.html) (section "Umgang mit Unsicherheit")
 
@@ -68,7 +68,7 @@ The Hugo Schuchardt Archive CMIF uses only implicit uncertainty. Counts from `do
 | `[NN]` in correspondents | No | 0; in `hsa.xml` three mentions of two persons carry `[NN]` |
 | Correspondents without authority ID | Yes | 179 of 1,031 persons (by `personKey`), 524 letters as sender |
 
-The preprocessed letters carry `datePrecision` and `dateCertainty`, but no `precision` on `sender`, `recipient` and `place_sent`. Person and place markers therefore stay empty for the HSA dataset, including the 576 letters from `Unbekannt`; the same file uploaded as CMIF is classified by the parser. This gap is listed in [plan.md](plan.md#vorhaben).
+The preprocessed letters carry `datePrecision` and `dateCertainty`, but no `precision` on `sender`, `recipient` and `place_sent`. Person and place markers therefore stay empty for the HSA dataset, including the 576 letters from `Unbekannt`; the same file uploaded as CMIF is classified by the parser. This gap is listed in [plan.md](plan.md#daten-und-parser).
 
 ---
 
@@ -76,14 +76,14 @@ The preprocessed letters carry `datePrecision` and `dateCertainty`, but no `prec
 
 ### 1. Date Precision
 
-`classifyDate()` in `utils.js` classifies a TEI date for the CMIF parser and the correspSearch loader. The primary date is `when`, else `from`, else `notBefore`; `dateTo` is `to` or `notAfter`; the year is the first four characters of the primary date.
+`classifyDate()` in `utils.js` classifies a TEI date for the CMIF parser and the correspSearch loader. `from` and `to` on the same day count as that day. A single bound (`notBefore` or `notAfter` alone) keeps the bound as the date, sets `dateBound` and leaves the year empty, so the letter stands beside the time axis (since 2026-11-14). Otherwise the primary date is `when`, else `from`, else `notBefore`; `dateTo` is `to` or `notAfter`; the year is the first four characters of the primary date.
 
 | Level | Detection | HSA Count |
 |-------|-----------|-----------|
-| day | `when` as `YYYY-MM-DD` | 10,991 |
+| day | `when` as `YYYY-MM-DD`, or `from` equal to `to` | 10,991 |
 | month | `when` as `YYYY-MM` | 115 |
 | year | `when` as `YYYY` | 166 |
-| range | `from` and `to`, or `notBefore` or `notAfter` | 0 |
+| range | `from` and `to`, `notBefore` and `notAfter`, or a single bound (then without year) | 0 |
 | unknown | No date attribute | 304 |
 
 Certainty is read from `cert` (default `high`) independently of the precision level. HSA: 11,576 `high`, 0 `low`.
@@ -132,7 +132,7 @@ Of the 774 HSA places with GeoNames ID, 635 carry coordinates and 139 do not (`m
 | uncertain (`cert="low"`) | date as for its precision, e.g. "15.6.1900" | `fa-question-circle` ("Unsichere Datierung (cert=low)"), replaces the other icons | `.date-uncertain` |
 | unknown | "unbekannt" | `fa-question` ("Datum unbekannt") | `.date-unknown` |
 
-A range without `dateTo` shows the single date without icon. Colours of icons and classes come from tokens, see [design.md](design.md#unsicherheits-indikatoren); the classes are defined in `tokens.css` and `explore.css`.
+A range without `dateTo` shows the single date without icon. Colours of icons and classes come from tokens, see [design.md](design.md#unsicherheit); the classes are defined in `tokens.css` and `explore.css`.
 
 ### Map Display
 
@@ -140,7 +140,7 @@ Do not fake coordinates. Places without coordinates appear in the places view, n
 
 ### Person Display
 
-`formatPersonName()` and `getPersonInitials()` in `formatters.js`:
+`formatPersonName()` and `getPersonInitials()` in `formatters.js`. Since 2026-11-14 the list of correspondents shows no initials; they appear only in the card layout of the chronicle.
 
 | Precision | Display | Avatar |
 |-----------|---------|--------|
@@ -160,7 +160,7 @@ Added on 2026-11-14 for TEI that describes each letter in its own record. Every 
 | Value supplied by the edition | `@evidence`, a `@type` or `@ana` token `supplied`, `deduced`, `inferred`, `conjecture…`, or square brackets around the whole value (`isInferred()`) | `dateInferred`, `place_sent.inferred` | value in square brackets, class `.date-inferred` or `.place-inferred`, legend line above the letter list |
 | Date only as text | `date` without machine-readable attribute | `dateText`, `date` stays null | the text in italics, off the time axis |
 | Postmark | `placeName` or `note` with `@type` postmark, postalStamp or Poststempel | `postmark` | labelled value "Poststempel", never the sending place |
-| Wording of the place on the letter | `placeName type="original"` | sending place only when no untyped `placeName` exists | as the source gives it |
+| Wording of the place on the letter | `placeName type="original"` | never the sending place; where it is the only `placeName` besides postmarks, its text is kept as `placeText` and the letter has no sending place (since 2026-11-14) | the wording as the source gives it, not in the place list |
 | Postal address | `address/addrLine` inside `correspDesc` | `address` | labelled value "Anschrift", never the sending place |
 | Reference inside the edition | `persName/@ref` or `orgName/@ref` that is no http(s) URL of a known authority, such as `#ID` | `localRef`, precision `named` | "ohne Normdatensatz" |
 | Year far from all others | a gap of 40 years or more separates less than a twentieth of the dated letters from the rest (`flagImplausibleYears()`) | `dateImplausible`, `year` null, `date` kept | date as the source gives it with the word "unplausibel", off the time axis, sorted with the undated letters |
@@ -193,7 +193,7 @@ Default: Show all data including uncertain entries.
 
 ## Statistics Display
 
-The sidebar shows letters, persons and places with an icon whose tooltip names the share without exact value (`updateQualityIcons()` in `explore.js`). The figures come from `datasetQuality()` in `research-paths.js`, the same source as the data-situation chips of the overview, so uploads and preprocessed datasets count alike. The icon is hidden when the share is zero. Until 2026-11-05 the icons read `meta.uncertainty` of the preprocessing.
+Since 2026-11-14 the section of the sidebar with these counts (`#sidebar-dataset`) stays hidden; `updateQualityIcons()` in `explore.js` still fills its icons, and the shares appear as the neutral data-situation figures of the start view. The icons give letters, persons and places a tooltip that names the share without exact value. The figures come from `datasetQuality()` in `research-paths.js`, the same source as the data-situation chips of the overview, so uploads and preprocessed datasets count alike. The icon is hidden when the share is zero. Until 2026-11-05 the icons read `meta.uncertainty` of the preprocessing.
 
 - Letters: every letter without day precision, "{n} ohne tagesgenaues Datum ({p}%)"
 - Persons: senders and recipients without authority id, counted by `personKey`, "{n} Personen ohne Normdatei-ID ({p}%)"
@@ -225,7 +225,7 @@ JSON example (one element of the exported array, case 005 of `test-uncertainty.x
 }
 ```
 
-The example omits the remaining columns (`recipient_name`, `recipient_id`, `recipient_precision`, `language`, `url`).
+The example omits the remaining columns of `LETTER_EXPORT_COLUMNS`, among them the columns of letter records (`date_text`, `date_inferred`, `date_implausible`, `place_inferred`, `date_bound` and others).
 
 ---
 

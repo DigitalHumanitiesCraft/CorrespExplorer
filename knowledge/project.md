@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2026-10-28
-updated: 2026-11-10
+updated: 2026-11-14
 authors: [Christopher Pollin]
 template:
   name: Vorlage Projekt-Wissensdokument
@@ -28,54 +28,46 @@ related: [data, specification, architecture, design, plan]
 
 # Project
 
-CorrespExplorer ist ein Werkzeug im Browser zur interaktiven Exploration von Korrespondenz-Metadaten im Correspondence Metadata Interchange Format (CMIF). Es lädt beliebige CMIF-Dateien und bringt einen Beispieldatensatz aus dem Hugo Schuchardt Archiv und einen synthetischen Tutorial-Datensatz mit. Die Anwendung ist unter https://dhcraft.org/CorrespExplorer erreichbar.
-
-## Datengrundlage
-
-Das Werkzeug arbeitet auf CMIF-Dateien, die Editionen und Archive veröffentlichen und die der Webservice correspSearch der Berlin-Brandenburgischen Akademie der Wissenschaften aggregiert. Nutzende laden eine Datei hoch oder geben eine URL an. Als Beispiel dient der vorprozessierte Briefbestand des Hugo Schuchardt Archivs der Universität Graz mit Themen, erwähnten Personen und Orten und Briefsprachen. Ein synthetischer Datensatz führt durch die Funktionen. Die Korrespondenzdaten behalten die Lizenzen, die ihre Herausgeber im teiHeader angeben. Quellen, Datenmodell und Testdatensätze beschreibt [data.md](data.md).
-
-## Übergeordneter Kontext
-
-CorrespExplorer begann im Oktober 2025 als HerData, ein Prototyp zu Frauen in Goethes Korrespondenz, und wurde am 2025-11-26 zu einem generischen Explorer für CMIF-Dateien umgebaut (`9a01c32`). Das Repository dient als Fallstudie in einem Paper über Promptotyping. Es gehört zur Werkzeugfamilie ResearchTools von Digital Humanities Craft.
+CorrespExplorer ist ein Werkzeug im Browser, das Briefmetadaten als wenige große Figuren über einer gemeinsamen Auswahl zeigt: wer wem schrieb, wann, von wo und worüber, und welche Briefe hinter jedem Muster stehen. Am 2026-11-14 hat der Operator entschieden, dass es das Sichtwerkzeug für das gemeinsame Briefmodell wird, das das Projekt GOSSIP für die Briefe von fünf Grazer Editionen entwickelt. Die Anwendung ist unter https://dhcraft.org/CorrespExplorer erreichbar, die veröffentlichte Fassung liegt hinter dem Stand der Entwicklung zurück ([plan.md](plan.md#veröffentlichung)).
 
 ## Worum es geht
 
-Briefeditionen erschließen ihre Bestände über Metadaten zu Absendern, Empfängern, Orten, Daten und Themen. CMIF macht diese Metadaten über Editionen hinweg austauschbar, ein Werkzeug zur schnellen Exploration einer einzelnen CMIF-Datei fehlte aber. CorrespExplorer zeigt einen Bestand in koordinierten Ansichten und macht dabei die Datenlage sichtbar, also fehlende Koordinaten, unscharfe Datierungen und Personen ohne Normdaten. Die Zielgruppe sind Forschende der Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive, Bibliotheken und Editionsprojekte.
+Briefeditionen erschließen ihre Bestände über Metadaten zu Absendern, Empfängern, Orten, Daten und Themen, und Projekte wie GOSSIP fragen darüber hinaus, was die Briefe über dritte Personen sagen. CorrespExplorer soll beides lesbar machen. Seine Oberfläche besteht aus vier großen Ansichten über einer Auswahl, Netzwerk als Korrespondenzkreis einer Person, Karte, Raum-Zeit und Themen, dazu den Briefen der Auswahl unter jeder Ansicht. Die Startseite ist eine Figur des Datenmodells, gefüllt aus dem gewählten Bestand. Das Werkzeug macht die Datenlage sichtbar, also fehlende Koordinaten, unscharfe Datierungen, Personen ohne Normdaten und erschlossene Angaben. Was es für Forschende leisten soll, steht in [specification.md](specification.md).
 
-## Standards
+## Verhältnis zu GOSSIP und correspSearch
 
-Die technische Anschlussfähigkeit folgt etablierten Standards.
+GOSSIP modelliert Brief, Stelle, Person und Aussage und gibt Aussagen über Dritte mit Verweis, Familie, Stimme und Prüfstand aus. Das Modell ist der Vorschlag eines KI-Agenten, auf Entscheidung des Operators gekürzt und von keiner Fachwissenschaftlerin und keinem Fachwissenschaftler geprüft ([data.md](data.md#gemeinsames-brief--und-aussagemodell)). CorrespExplorer liest heute die Briefe dieses Modells und noch keine Aussagen. Welche Lieferform es liest und welche Figuren die Aussagen zeigen, ist offen ([plan.md](plan.md#gemeinsames-briefmodell)).
 
-- Datenformat: CMIF, ein TEI-basiertes Format der TEI Correspondence SIG auf Grundlage von `correspDesc`
-- Personen: VIAF, GND, Library of Congress und Bibliothèque nationale de France als Normdaten-URIs
-- Orte: GeoNames, ergänzt um Koordinaten aus Wikidata
-- Sprachen: ISO 639 und Lexvo-URIs
-- Anreicherung: Wikidata über SPARQL für Lebensdaten, Berufe, Porträts und Koordinaten
+correspSearch der Berlin-Brandenburgischen Akademie der Wissenschaften aggregiert CMIF-Dateien vieler Editionen. CorrespExplorer liest dieses Format und Adressen der correspSearch-API und verlinkt Personen in deren Suche. Die Startfigur legt die Angaben im Kern von CMIF, in seinen Erweiterungen und in TEI-Briefsätzen nebeneinander. CorrespExplorer bleibt ein Werkzeug zum Ansehen eines Bestands neben correspSearch.
 
-Normdaten-URIs tragen Abgleich und Aggregation, weil Editionen Namen unterschiedlich schreiben ([ADR-001](specification.md#adr-001-normdaten-uris-als-primärer-schlüssel)).
+## Datengrundlage
 
-## Technische Umsetzung
-
-Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. CMIF wird im Browser geparst, große Datensätze werden in Python vorprozessiert. Bibliotheken (MapLibre GL JS, D3 mit D3-Sankey, noUiSlider, Font Awesome) und Schriften liegen versioniert in `docs/vendor/`, extern lädt die Seite nur die Grundkarte von OpenFreeMap. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code. Die Commit-Trailer nennen die beteiligten LLM-Versionen, die README fasst sie zusammen. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md).
-
-## Funktionsumfang
-
-Die zwölf Ansichten umfassen Übersicht mit Forschungspfaden, Karte, Korrespondenten, Briefe, Timeline, Themen, Orte, Netzwerk, Erwähnungsfluss, Chronik, Aktivitäts-Heatmap und Vergleich. Sie teilen einen Filterzustand für Zeitraum, Sprache, Person, Thema und Ort, der in der URL steht und sich teilen lässt. Gefilterte Briefe lassen sich als CSV oder JSON exportieren, der Wissenskorb sammelt Briefe, Personen und Orte für eine eigene Analyseseite. Anforderungen und Stories stehen in [specification.md](specification.md).
-
-Unsicherheit in den Daten wird erkannt und markiert. Exakte Werte bleiben ohne Markierung, unvollständige Daten, Zeiträume und unsichere Datierungen tragen Symbole, undatierte Briefe stehen außerhalb der Zeitachse ([uncertainty-specification.md](uncertainty-specification.md)).
+Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität Graz entwickelt, der als vorprozessierte Datei mitkommt und als einziger gebündelter Realdatensatz Themen, Erwähnungen, Sprachen und Koordinaten zugleich trägt. Ein synthetischer Tutorial-Datensatz führt durch die Funktionen. Die Briefsätze von Stefan Zweig Digital dienen als Bestand aus vielen TEI-Dateien und werden nur lokal geladen. Einträge dreier Grazer Editionen aus dem Kreis von GOSSIP liegen als Testdateien bei. Nutzende laden eigene CMIF- und TEI-Dateien oder Adressen. Quellen, Modell, Lizenzen und Grenzen beschreibt [data.md](data.md).
 
 ## Abgrenzungen
 
-Das Projekt leistet nicht:
+- Das Werkzeug zeigt keine Brieftexte, es verlinkt auf die Edition.
+- Es ediert nicht und korrigiert keine Daten, auch keine Datierungen. Unplausible Jahre kennzeichnet es nur ([ADR-010](specification.md#adr-010-unplausible-jahre-kennzeichnen-nicht-korrigieren)).
+- Es geokodiert keine Regionen, identifiziert keine unbekannten Personen und führt Briefe verschiedener Bestände nicht zusammen ([ADR-011](specification.md#adr-011-übereinstimmung-über-bestände-benennen-nicht-zusammenführen)).
+- Es bewertet nicht die Datenqualität einer Edition ([ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten)).
+- Es erfasst und bestätigt keine Aussagen. Das geschieht in GOSSIP.
+- Es speichert hochgeladene Daten auf keinem Server.
 
-- automatische Korrektur von Datierungen
-- Geokodierung von Regionen ohne Koordinaten
-- Identifikation unbekannter Personen
-- Bewertung der Datenqualität einer Edition
-- Anzeige von Brieftexten, es verlinkt auf die Edition
-- Speicherung hochgeladener Daten auf einem Server
+## Standards
 
-Das Werkzeug macht den Zustand der Daten sichtbar und überlässt Korrektur und Bewertung den Editionen und den Forschenden.
+- Datenformat: CMIF der TEI Correspondence SIG und TEI mit `correspDesc` in Briefsätzen
+- Personen: VIAF, GND, Library of Congress und Bibliothèque nationale de France als Normdaten-URIs, sonst die Registerkennung der Edition
+- Orte: GeoNames, Koordinaten aus Wikidata
+- Sprachen: ISO 639 und Lexvo-URIs
+- Anreicherung auf ausdrückliche Aktion: Wikidata für Lebensdaten, Berufe, Porträts und Koordinaten
+
+## Technische Umsetzung
+
+Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. Daten werden im Browser geparst, große Datensätze in Python vorprozessiert. Bibliotheken und Schriften liegen versioniert in `docs/vendor/`, extern lädt die Seite nur die Grundkarte von OpenFreeMap. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code, die Commit-Trailer nennen die beteiligten LLMs. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md), Gestaltung und Rückmeldungen des Operators [design.md](design.md).
+
+## Herkunft
+
+CorrespExplorer begann im Oktober 2025 als HerData, ein Prototyp zu Frauen in Goethes Korrespondenz, und wurde am 2025-11-26 zu einem generischen Explorer für CMIF-Dateien mit zuletzt zwölf Ansichten umgebaut (`9a01c32`). Im November 2026 lernte es TEI-Briefsätze von Stefan Zweig Digital lesen, wurde nach Gegenständen statt nach Darstellungstechnik gegliedert und erhielt Raum-Zeit, Korrespondenzkreis, Briefauszug und Startfigur. Das Repository dient als Fallstudie im Aufsatz über die Promptotyping-Methode, dessen Abschnitt über das Werkzeug mit der neuen Richtung seinen Gegenstand ändert. Es gehört zur Werkzeugfamilie ResearchTools von Digital Humanities Craft. Der Verlauf steht im [Journal](journal.md).
 
 ## Begriffe
 
@@ -83,4 +75,4 @@ Die projektzentralen Begriffe definiert [INDEX.md](INDEX.md#begriffe).
 
 ## Lizenz
 
-Der Code steht unter der MIT-Lizenz (`LICENSE`), Dokumentation und Wissensdokumente unter Creative Commons Attribution 4.0 International. Forschungsdaten Dritter sind davon ausgenommen und behalten die Lizenz ihrer Herausgeber. Der gebündelte Datensatz des Hugo Schuchardt Archivs steht laut teiHeader unter CC BY 4.0 und liegt in geänderter Form vor ([data.md](data.md#rechte-und-lizenzen)). Zitierangaben stehen in `CITATION.cff` und `codemeta.json`.
+Der Code steht unter der MIT-Lizenz (`LICENSE`), Dokumentation und Wissensdokumente unter Creative Commons Attribution 4.0 International. Forschungsdaten Dritter behalten die Lizenz ihrer Herausgeber, die gebündelten Dateien und ihre Lizenzen stehen in [data.md](data.md#rechte-und-lizenzen). Zitierangaben stehen in `CITATION.cff` und `codemeta.json`.

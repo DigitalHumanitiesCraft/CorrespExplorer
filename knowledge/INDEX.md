@@ -22,42 +22,42 @@ related: [project, data, specification, architecture, design, testing, plan, jou
 
 # Index
 
-Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents, die am Werkzeug arbeiten. Sie liegt nach der Konvention unter `knowledge/` im Repository-Root, außerhalb des von GitHub Pages ausgelieferten Ordners `docs/`, und wird nicht als Teil der Website ausgeliefert. Die Seite verlinkt sie auf GitHub. Die Arbeitsregeln für Agenten stehen in `CLAUDE.md` im Repository-Root, Code-nahe Übersichten in `docs/js/CONTEXT-MAP.md`, `docs/js/views/CONTEXT-MAP.md`, `docs/js/tests/CONTEXT-MAP.md` und `docs/css/CONTEXT-MAP.md`.
-
-Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index, die übrigen Dokumente erben sie.
+Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents, die am Werkzeug arbeiten. Sie liegt unter `knowledge/` im Repository-Root, außerhalb des ausgelieferten Ordners `docs/`, und wird nicht als Teil der Website ausgeliefert ([ADR-008](specification.md#adr-008-wissensbasis-nicht-auf-der-website)). Die Arbeitsregeln für Agenten stehen in `CLAUDE.md` im Repository-Root, code-nahe Übersichten in `docs/js/CONTEXT-MAP.md`, `docs/js/views/CONTEXT-MAP.md`, `docs/js/tests/CONTEXT-MAP.md` und `docs/css/CONTEXT-MAP.md`. Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index.
 
 ## Dokumente
 
 | Pfad | Funktion | Routing Question | Aktualisierung |
 |---|---|---|---|
-| [project.md](project.md) | Charter | Was ist dieses Projekt, für wen, mit welcher Datengrundlage? | bei Änderung von Identität oder Scope |
-| [data.md](data.md) | Material | Welche CMIF-Daten verarbeitet das Werkzeug, woher kommen sie, wie sind sie modelliert? | bei neuen Datensätzen, Quellen oder Parser-Änderungen |
-| [specification.md](specification.md) | Specification | Was soll das Werkzeug tun und warum? | bei neuen Stories oder Entscheidungen |
+| [journal.md](journal.md) | Provenance | Was ist offen, und wie ist der heutige Stand entstanden? | bei jedem Übergang, `## Open` bei jeder Übergabe |
+| [project.md](project.md) | Charter | Wofür ist das Werkzeug da, wofür nicht, und woran wird es entwickelt? | bei Änderung von Zweck oder Abgrenzung |
+| [specification.md](specification.md) | Specification | Was soll das Werkzeug für Forschende leisten, was davon tut es, wie prüft man es, und warum ist es so gebaut? | bei neuen Stories, Entscheidungen und Änderungen des Funktionsumfangs |
+| [data.md](data.md) | Material | Was liest das Werkzeug, was tragen die Datensätze, wie verhält sich das gemeinsame Briefmodell dazu? | bei neuen Datensätzen, Quellen oder Parser-Änderungen |
 | [uncertainty-specification.md](uncertainty-specification.md) | Specification | Wie werden unsichere und fehlende Angaben erkannt, angezeigt und getestet? | bei Änderung der Unsicherheitsbehandlung |
-| [architecture.md](architecture.md) | Architecture | Wie ist das Werkzeug technisch aufgebaut? | bei Änderung von Modulen, Seiten oder Datenfluss |
-| [design.md](design.md) | Design | Wie sieht die Oberfläche aus und warum? | bei Änderung des Designsystems |
-| [testing.md](testing.md) | Quality Assurance | Was wird wie getestet? | bei neuen Suites oder Testregeln |
-| [plan.md](plan.md) | Planning | Welche Befunde und Vorhaben sind offen? | bei neuen Befunden und nach deren Erledigung |
-| [journal.md](journal.md) | Provenance | Was ist offen, und wie ist der heutige Stand entstanden? | bei Eingang oder Erledigung eines offenen Punkts und nach sachlich zusammengehörigen Übergängen |
+| [design.md](design.md) | Design | Wie sieht die Oberfläche aus, warum, und was hat der Operator dazu gesagt? | bei Änderung von Aufbau, Ansichten oder Gestaltungsregeln |
+| [architecture.md](architecture.md) | Architecture | Wie ist das Werkzeug gebaut, und wo setzt eine Änderung an? | bei Änderung von Modulen, Seiten oder Datenfluss |
+| [testing.md](testing.md) | Quality Assurance | Was garantieren die Prüfungen, wie laufen sie, und was bleibt ungeprüft? | bei neuen Prüfungen und nach jeder Prüfrunde |
+| [plan.md](plan.md) | Planning | Was ist offen, woher kommt es, und was wartet auf den Operator? | bei neuen Befunden, Entscheidungen und nach deren Erledigung |
+| [network-figures.md](network-figures.md) | Domain knowledge | Was lässt sich bei Briefdaten als Netz in Beziehung setzen, und welche Daten braucht es? | vor jeder Arbeit am Netzwerk |
 
 ## Ablagezonen
 
-- `knowledge/` enthält die dauerhaft gepflegten Promptotyping Documents.
-- `research-artefacts/` enthält den Paper-Entwurf zur Entstehung des Werkzeugs als Forschung und den Prompt für ein externes LLM-Review.
-- `docs/data/` enthält Beispiel- und Testdatensätze, `preprocessing/` die Python-Skripte, die erweiterte Datensätze erzeugen.
-- `verification/` enthält Prüfwerkzeuge für Bestände außerhalb des Repositorys: `check-corpus.mjs` vergleicht die Parser-Ausgabe Brief für Brief mit den Quelldateien, `serve_local_corpus.py` bindet einen lokalen Ordner für den Explorer ein. Daten liegen dort nicht.
-- `docs/vendor/` enthält die eingebundenen Bibliotheken und Schriften mit ihren Lizenzdateien ([architecture.md](architecture.md#bibliotheken)).
+- `knowledge/` enthält die Promptotyping Documents.
+- `research-artefacts/` enthält den Paper-Entwurf zur Entstehung des Werkzeugs und den Prompt für ein externes LLM-Review.
+- `docs/data/` enthält Beispiel- und Testdatensätze und die erzeugte `examples.json`, `preprocessing/` die Python-Skripte, die sie erzeugen.
+- `verification/` enthält Prüfwerkzeuge für Bestände außerhalb des Repositorys (`check-corpus.mjs`, `serve_local_corpus.py`), `tests/browser/` den Smoke-Test. Daten liegen dort nicht.
+- `docs/vendor/` enthält Bibliotheken, Schriften und die Länderumrisse mit ihren Lizenzen.
 
 ## Lesepfade
 
-- Sessionstart: `CLAUDE.md`, dann [INDEX.md](INDEX.md), den Abschnitt `## Open` am Anfang von [journal.md](journal.md), [plan.md](plan.md) und die aufgabenrelevanten Dokumente nach der Tabelle in `CLAUDE.md`. [journal.md](journal.md) bei Bedarf für Herkunft und Begründung einer Änderung.
-- Code-Änderung: [architecture.md](architecture.md), `docs/js/CONTEXT-MAP.md`, [testing.md](testing.md), bei Datenbezug [data.md](data.md) und [uncertainty-specification.md](uncertainty-specification.md).
-- Neue Funktion: [specification.md](specification.md), [design.md](design.md), dann [architecture.md](architecture.md).
-- Fehlerbehebung: [plan.md](plan.md#offene-befunde), dann [journal.md](journal.md) für den Entstehungskontext.
+- Sessionstart: `CLAUDE.md`, der Abschnitt `## Open` am Anfang von [journal.md](journal.md), dieser Index, dann [plan.md](plan.md) und die Dokumente der Aufgabe.
+- Neue Funktion oder Ansicht: [specification.md](specification.md) (Story und Aufgabe), [design.md](design.md) (Aufbau und Rückmeldungen des Operators), [architecture.md](architecture.md#wo-eine-neue-ansicht-ansetzt).
+- Daten und Parser: [data.md](data.md#was-der-parser-liest), [uncertainty-specification.md](uncertainty-specification.md), [testing.md](testing.md#korpusprüfung).
+- Prüfrunde: [testing.md](testing.md#feste-aufgaben) mit den Aufgaben der Specification, Befunde nach [plan.md](plan.md).
+- Gemeinsames Briefmodell: [data.md](data.md#gemeinsames-brief--und-aussagemodell), [plan.md](plan.md#gemeinsames-briefmodell), `knowledge/data.md` im Repository `gossip`.
 
 ## Konvention
 
-Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vorlagen (https://dhcraft.org/Promptotyping/#konvention-v0.1). Bis Oktober 2026 (Commit `29dfc15`) bestand sie aus Journal, Context Map, einer Liste bekannter Probleme und Themendokumenten, die Umstellung ist im Journal festgehalten.
+Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vorlagen (https://dhcraft.org/Promptotyping/templates/convention.md). Bis Oktober 2026 (Commit `29dfc15`) bestand sie aus Journal, Context Map, einer Liste bekannter Probleme und Themendokumenten. Am 2026-11-14 wurde sie nach der neuen Richtung des Werkzeugs distilliert ([Journal](journal.md)).
 
 ## Begriffe
 
@@ -65,34 +65,54 @@ Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vor
 
 Correspondence Metadata Interchange Format, ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch von Briefmetadaten.
 
-Verwendet in [data.md](data.md#modell), [project.md](project.md#standards).
-
 ### correspSearch
 
 Webservice der Berlin-Brandenburgischen Akademie der Wissenschaften, der CMIF-Dateien vieler Editionen aggregiert und über eine API durchsuchbar macht.
 
-Verwendet in [data.md](data.md#externe-cmif-quellen), [architecture.md](architecture.md#datenfluss).
+### Briefsatz
+
+Ein TEI-Eintrag, der einen Brief in einem eigenen Datensatz beschreibt, etwa ein `biblFull` mit `correspDesc`, Signatur, Poststempel und Anschrift. Stefan Zweig Digital veröffentlicht seine Briefmetadaten so.
+
+### Gegenstand
+
+Einer der Reiter des Explorers: Start, Briefe, Personen, Orte, Zeit, Themen. Ein Gegenstand hat eine oder mehrere Darstellungen.
+
+### Darstellung
+
+Eine Figur oder Liste zu einem Gegenstand, etwa Karte, Raum-Zeit und Liste unter Orte. Ihre Adresse ist der URL-Parameter `view`.
+
+### Auswahl
+
+Die Menge der Briefe unter allen gesetzten Filtern, als ein Satz aus entfernbaren Marken in der Seitenleiste genannt. Alle Darstellungen zeigen dieselbe Auswahl.
+
+### Briefauszug
+
+Die Briefe der Auswahl, als Zeile unter jeder Darstellung außer der Briefliste und auf Klick als Liste über ihr (`letters-drawer.js`).
+
+### Korrespondenzkreis
+
+Die Darstellung Netzwerk in ihrer Grundform: eine Person in der Mitte, ihre Korrespondenten nach Briefzahl und Beginn des Briefwechsels, auf der zweiten Stufe die Erwähnten.
+
+### Raum-Zeit
+
+Die Darstellung, die die Absendeorte nach ihren Koordinaten auf eine Grundfläche und die Jahre als Höhe darüber stellt.
+
+### Startfigur
+
+Die Startseite als eine Figur des Datenmodells, gefüllt aus dem gewählten Bestand, in drei Bändern: Kern des CMIF, Erweiterungen im CMIF, TEI-Briefsätze.
 
 ### Erweiterter Datensatz
 
-Datensatz, der über Absender, Empfänger, Ort und Datum hinaus erwähnte Personen, Orte, Themen und teiHeader-Metadaten trägt. Er wird in Python vorprozessiert und als JSON geladen, ein Standard-CMIF wird dagegen im Browser geparst.
+Datensatz, der über Absender, Empfänger, Ort und Datum hinaus erwähnte Personen, Orte, Themen und Sprachen trägt, wie das Hugo Schuchardt Archiv. Er wird in Python vorprozessiert und als JSON geladen.
 
-Verwendet in [architecture.md](architecture.md#datenfluss), [data.md](data.md#vorprozessierung-erweiterter-datensätze).
+### Aussage
 
-### Forschungspfad
-
-Folge von Ansichten und Aktionen, die eine Forschungsfrage an den geladenen Datensatz beantwortet, eingeordnet in eine epistemische Kategorie.
-
-Verwendet in [specification.md](specification.md#adr-004-epistemische-kategorien-für-forschungsfragen), [design.md](design.md#forschungspfade).
+Im gemeinsamen Briefmodell von GOSSIP das, was eine Stelle eines Briefs mit einer dritten Person tut, mit Verweis, Familie, Stimme und Prüfstand ([data.md](data.md#gemeinsames-brief--und-aussagemodell)). Das Werkzeug liest noch keine Aussagen.
 
 ### Wissenskorb
 
-Sammlung ausgewählter Briefe, Personen und Orte eines Datensatzes, im localStorage gehalten, über Tabs synchronisiert, per Link teilbar und auf einer eigenen Analyseseite ausgewertet (`wissenskorb.html`). In Oberfläche und Commits heißt er auch Datenkorb.
+Sammlung ausgewählter Briefe, Personen und Orte eines Datensatzes, im localStorage gehalten, über Tabs synchronisiert, per Link teilbar und auf `wissenskorb.html` ausgewertet. In Oberfläche und Commits heißt er auch Korb oder Datenkorb.
 
-Verwendet in [architecture.md](architecture.md#datenfluss), [`wissenskorb.html`](architecture.md#seiten).
+### Forschungspfad, Wissenspfad
 
-### Wissenspfad
-
-Ein gestarteter Forschungspfad, den eine Leiste Schritt für Schritt durch die Ansichten führt, während der Wissenskorb die Auswahl sammelt.
-
-Verwendet in [specification.md](specification.md#us-35-geführte-exploration-mit-wissenskorb), [design.md](design.md#wissenspfade).
+Eine Folge von Ansichten zu einer Forschungsfrage und ihre geführte Leiste. Seit 2026-11-14 ohne Einstieg in der Oberfläche, der Code besteht ([specification.md](specification.md#us-33-methodisch-geleitete-exploration)).

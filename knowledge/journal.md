@@ -23,12 +23,61 @@ related: [project, specification, plan]
 
 ## Open
 
-- Offene Befunde, Vorhaben und Entscheidungen führt [plan.md](plan.md). Übergabepunkte von außen sind derzeit keine offen.
-- Aus dem Refactoring vom 2026-11-14 vom Agenten gemeldet und nicht behoben: `style.display` in `mentions-view.js`, `network-view.js` und `places-view.js` gegen die Regel, Sichtbarkeit nur über `.hidden` zu schalten. Die Legende der Zeitleiste zeigt ohne Sprachdaten weiter „Keine Sprachdaten im Korpus“. `wissenskorb.css` und `test-runner.js` setzen einzelne Werte ohne Token.
-- Der Operator entscheidet, ob `docs/assets/logo.jpg` und `docs/favicon.svg` bleiben, die keine Seite einbindet (Eintrag vom 2026-11-14).
-- Die Abnahme des Refactorings, der Iteration an den Briefen von Stefan Zweig Digital und des Umbaus von Farbrollen, Sprachpalette und Listen durch den Operator steht aus (Einträge vom 2026-11-14).
+Stand der Übergabe vom 2026-11-14, spät. Nichts vom 2026-11-14 ist vom Operator abgenommen. `origin/main` steht auf `2f78951` vom Mittag desselben Tages, die öffentliche Demo zeigt also höchstens diesen Stand und nichts von der Gliederung nach Gegenstand und den neuen Ansichten. Der Operator hat den Push freigegeben, er ist nicht erfolgt, weil Umbauten liefen.
+
+Beim Schreiben dieser Übergabe arbeiteten noch drei Bau-Agenten im Arbeitsverzeichnis. Ihre Änderungen sind nicht eingecheckt, weil der Smoke-Test mit ihrem Zwischenstand nur fünf von sechzehn Prüfungen bestand (die Ansichten luden mitten im Umbau nicht). Der letzte Commit, an dem alle Prüfungen bestanden, ist `34fedd9`. Wer weitermacht, sieht zuerst mit `git status` nach, was im Arbeitsverzeichnis liegt, lässt die Prüfungen laufen und liest die Ergebnisse am Bildschirm, bevor etwas davon eingecheckt wird oder als gebaut gilt. Nicht eingecheckt sind `docs/explore.html`, `docs/js/explore.js`, `docs/css/explore.css`, `docs/css/drawer.css`, `overview-view.js`, `letters-view.js`, `letters-drawer.js`, `chronik-view.js`, `start-figures.js` und die neuen Dateien `mini-figures.js`, `dashboard.css` und `letters.css`. In `explore.js` liegen dabei auch zwei Zeilen dieser Session, die den Filterzustand an der Seite setzen.
+
+- Startansicht des Explorers als Dashboard kleiner echter Ansichten und knapper Block zum Bestand in der Seitenleiste (`overview-view.js`, `mini-figures.js`, `start-figures.js`). Auftrag des Operators auf zwei Bildschirmfotos, Ergebnis des Agenten stand aus.
+- Briefliste mit Zeilen relativ zur zentralen Person, Gruppierung nach Jahr und einem schmalen Jahresprofil als Navigation (`letters-view.js`). Ergebnis stand aus.
+- Die drei Zeitdarstellungen als eine Ansicht ohne Untermenü (`timeline-view.js`, `activity-view.js`, `chronik-view.js`). Der Agent muss für jede Funktion der Chronik angeben, wo sie bleibt. Ergebnis stand aus.
+- Die Distillation der Wissensbasis nach der neuen Richtung ist abgeschlossen und mit dieser Übergabe eingecheckt (Eintrag unten). Die bauende Session hat die Korrekturen des Schreib-Agenten gegen den Code nicht nachgeprüft, die Dokumente sind nicht unabhängig gelesen, die Stories US-40 bis US-45 sind Vorschläge. Ältere Journaleinträge verlinken Anker, die es nach der Distillation nicht mehr gibt.
+
+Von der bauenden Session gebaut, im Browser nachgespielt, nicht unabhängig geprüft:
+
+- Die drei benannten Sichten der Raum-Zeit-Figur stehen in der Figur oben links. Ein gesetzter Filter zeigt sich am Titel der Ansicht, an einer Linie am oberen Rand der Hauptfläche und an einem getönten Block „Gefiltert nach“ in der Seitenleiste.
+- Die Korrekturen der Raum-Zeit-Ansicht nach der Bedienprüfung (Eintrag unten). Derselbe Aufgabensatz ist danach nicht erneut gelaufen.
+
+Wartet auf den Operator:
+
+- Die Form des Netzwerks. Er bezweifelt den Korrespondenzkreis, die Recherche dazu liegt in [network-figures.md](network-figures.md) mit fünf Fragen an ihn. Am Netzwerk wird erst nach seiner Entscheidung weitergebaut.
+- Liste und Vergleich zusammenlegen, von ihm gewünscht, nicht begonnen.
+- Die Fragen der Bau-Agenten: Telefonkopf ohne den Reiter „Briefe“, ein geklicktes Jahr in der Zeitansicht, die Höhe der geöffneten Briefliste, der Dialog nach dem Laden eigener Daten, der Name des mittleren Bands der Startfigur, die Dichtegrenze für Startfigur und Themenansicht mit gewähltem Thema, das Glätten der Themenverläufe und ihre Blöcke.
+- Die Abnahme aller Stufen am Bildschirm und danach der Push ([plan.md](plan.md)).
+
+Offen ohne Entscheidung:
+
+- Die Grundkarte der Kartenansicht wird beim Öffnen jeder Ansicht von außen angefragt, weil die Karte beim Start angelegt wird (`map-view.js`, `initMapView`). Das widerspricht ADR-006 in der Sache.
+- Im Korrespondenzkreis trifft ein Klick auf eine breite Linie zuweilen die schmale daneben. Ein Klick ins Leere hob die Auswahl in der Raum-Zeit-Ansicht im Nachspiel nicht auf, ungeprüft, ob der Klick außerhalb der Figur lag. Ein Ort steht in den Daten des Hugo Schuchardt Archivs unter zwei Kennungen und erscheint als zwei Säulen.
+- Die zwölf Aufgaben der Bedienprüfung und ein Skript für den festen Aufgabensatz liegen nicht im Repository, nur im Bericht des Prüfagenten ([testing.md](testing.md)).
+- Alles Weitere steht nach Gegenstand geordnet in [plan.md](plan.md).
 
 ## Einträge
+
+### 2026-11-14 Übergabe: Startfigur, Briefe der Auswahl, Bedienprüfung, Themen, Netzwerk als Forschungsfrage
+
+- Anlass: Der Operator steuerte den Abend über Bildschirmfotos und kurze Aufträge und rief am Ende die Übergabe auf. Seine Sätze stehen wörtlich in [design.md](design.md).
+- Gebaut, je von einem Subagenten (Claude Opus 5.5) nach Auftrag dieser Session:
+  - Die Startseite als eine Figur des Briefdatensatzes und seines Datenmodells in drei Bändern, gefüllt aus dem gewählten Bestand, der Beispielbrief in jeder kleinen Grafik markiert, eigene Daten als weitere Auswahl (`bb86afe`, `b5c4e5e`). Die Zahlen der Figur für das Hugo Schuchardt Archiv kommen aus `docs/data/examples.json`, das `preprocessing/build_examples.py` erzeugt, ein Smoke-Check vergleicht sie mit der Rechnung im Browser.
+  - Die Briefe der Auswahl unter jeder Ansicht und ein Auswahlmodell für alle Ansichten, mit den Zustandsfeldern `partner` und `year` und dem Satz der Auswahl in der Seitenleiste (`f24c8ae`).
+  - Die Themenansicht als eine Figur der Themen über die Zeit (`34fedd9`).
+- Geprüft: Ein unabhängiger Agent prüfte die Bedienung der Raum-Zeit-Ansicht am eingecheckten Stand mit Zeiger und Tastatur an zwölf Aufgaben. Befund: In der schrägen Sicht traf ein Klick in der Mitte einer Jahresmarke in knapp einem Drittel der Fälle einen anderen Ort, ein an der Achse abgelesenes Jahr lag im Median um Jahre daneben, der Rückweg war schwer zu finden, ein Ort ließ sich nicht über den Namen finden, die Breitenskala änderte sich mit dem Filter.
+- Korrigiert von dieser Session (`f24c8ae`): Die nächstliegende Marke trifft, der erste Klick wählt den Ort und der zweite das Jahr, das Jahr unter dem Zeiger und das gewählte Jahr stehen an der Achse, Escape nimmt die Auswahl zurück, die benannten Sichten setzen Zoom und Verschiebung zurück, eine Suche steht über der Ortsliste, die Breitenskala gilt für jeden Filter, entfernte Säulen sind kräftiger. Die Fälle der Prüfung sind im Browser nachgespielt, der Aufgabensatz selbst lief nicht erneut.
+- Entschieden (Operator): Das Werkzeug wird das Sichtwerkzeug für das gemeinsame Briefmodell. Die Startseite ist eine Figur der echten Ansichten. Die Form des Netzwerks ist eine Forschungsfrage.
+- Recherchiert: Welche Netzwerkfiguren Briefdaten tragen und welche Daten jede braucht, mit Websuche und Volltextlektüre durch einen Recherche-Agenten, festgehalten in [network-figures.md](network-figures.md) als Bericht eines Agenten.
+- Arbeitsweise übernommen, auf Angebot der Research Coordination: ein fester Aufgabensatz mit Antworten, die ein Skript aus den Daten rechnet, die Kette von der Nutzergeschichte zur Aufgabe je Ansicht, und die Zuordnung jedes Befunds zu Geschichte, Gestaltung oder Daten.
+- Belege: die genannten Commits. Am Commit `34fedd9` `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen sechzehn Prüfungen, `verification/check-corpus.mjs` am Bestand von Stefan Zweig Digital ohne Fehlschlag. Beim Schreiben der Übergabe bestand der Smoke-Test mit dem nicht eingecheckten Zwischenstand der Bau-Agenten nur fünf von sechzehn Prüfungen. Messung des Drehens der Raum-Zeit-Figur und Gegenzählungen an `hsa-letters.json` in den Berichten der Agenten, die diese Session an Stichproben im Browser nachgespielt hat.
+- Wer was tat: Der Operator gab Aufträge, Rückmeldung und Entscheidungen. Subagenten bauten, prüften und recherchierten. Diese Session (Claude Fable 5.2 in Claude Code) schrieb die Aufträge, las die Ergebnisse am Bild, baute die Korrekturen der Raum-Zeit-Ansicht und die Zeichen für einen gesetzten Filter und führte die Wissensbasis.
+- Offen: der Abschnitt Open oben.
+
+### 2026-11-14 Wissensbasis nach der neuen Richtung distilliert
+
+- Anlass: Der Operator entschied am 2026-11-14, dass CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell von GOSSIP wird und aus vier großen Ansichten über einer Auswahl besteht. Die Wissensdokumente beschrieben noch einen Explorer für CMIF mit zwölf Ansichten, führten fünf angewachsene Abschnitte offener Punkte und ein Design in Schichten eines Tages. Die koordinierende Session gab die Distillation in Auftrag.
+- Zusammengeführt: Die fünf Abschnitte offener Punkte und die Entscheidung E11 sind eine Liste in [plan.md](plan.md) nach Gegenstand, mit Herkunft und Vermerk zum Operator. Der Abschnitt „Gliederung nach Gegenstand (Stufe vom 2026-11-14)“ und „Briefsätze und Überlieferung“ sind in eine Beschreibung des heutigen Aufbaus in [design.md](design.md) aufgegangen, die Sätze des Operators stehen wörtlich und vollständig unter „Rückmeldungen des Operators“, je mit Folge und Stand am Bildschirm. Die Stories US-01 bis US-39 stehen in [specification.md](specification.md) unter Epics nach dem heutigen Aufbau, je mit Stand im Werkzeug und einer festen Aufgabe am HSA. Sechs Stories (US-40 bis US-45) sind als Vorschlag für Funktionen ergänzt, die der Operator verlangt hat. [data.md](data.md) hat Abschnitte zum Parser, zum gemeinsamen Briefmodell, zu `examples.json` und zu den Länderumrissen, [testing.md](testing.md) den festen Aufgabensatz mit berechneten Antworten und die Bedienprüfung der Raum-Zeit-Ansicht, [architecture.md](architecture.md) die Stellen, an denen eine neue Ansicht ansetzt.
+- Korrigiert gegen den Code: Die VIAF-Nummer von Leo Spitzer ist 71397982 und nicht 46804188, die in keiner HSA-Datei vorkommt. Wien steht unter zwei GeoNames-IDs (2761368 und 2761369) und nicht mit allen Briefen unter einer. Die Rangfolge der Korrespondenten nannte Absender und nicht Beteiligte. Eine einzelne Datumsgrenze ergibt kein Jahr mehr (`classifyDate()` in `utils.js`), ein Ortswortlaut allein keinen Ort mehr (`extractPlace()` in `cmif-parser.js`), beides beschrieben `data.md` und `uncertainty-specification.md` noch anders. Die Grenzen 1400 und 2100 stehen in `datedYearRange()` und den Ansichten, nicht in `explore.js`. `parseAuthorityRef()` erkennt GeoNames und Lexvo nicht, dafür gibt es eigene Funktionen. Die Netzwerkansicht öffnet als Korrespondenzkreis, nicht im Modus Briefwechsel (ADR-007). Die Kacheln der Seitenleiste sind ausgeblendet, ihre Symbole werden weiter befüllt. Die Exportspalten von US-21 waren unvollständig. Der Smoke-Test hat fünfzehn Prüfungen und kennt die Raum-Zeit-Ansicht nicht.
+- Fallen gelassen, mit Grund: Offene Punkte zu den Forschungspfaden (Weiter ohne Personenwahl, zwei Streifen unter der Kopfzeile, Wiederholung der Kennzahlen), weil die Pfade keinen Einstieg mehr haben. Die Fragen von E11 (Menü „Mehr“, gekürzte Startansicht, Palette mit sechs Farben, Netzwerk mit benannten Knoten), weil die Gliederung nach Gegenstand, die Okabe-Ito-Palette und der Korrespondenzkreis sie beantwortet haben. Aus [data.md](data.md) die Tabellen „Datenabdeckung“ und „Prüfreihenfolge“ der externen Testdatensätze vom November 2025, die keine Prüfung mehr nutzt. Die Grundschrift von 16px aus E11 ist nicht weiter verfolgt.
+- Nicht geändert: ältere Journaleinträge, Code, Daten und alles unter `docs/`.
+- Belege: Antworten des Aufgabensatzes mit einem eigenen Skript aus `docs/data/hsa-letters.json` berechnet, ohne Code des Werkzeugs, Ergebnis in [testing.md](testing.md#feste-aufgaben). Der Abgleich mit dem Code lief über Lesen von `cmif-parser.js`, `utils.js`, `state-manager.js`, `explore.js`, `explore.html`, `index.html`, `constants.js`, `export.js`, der Ansichtsmodule und `tests/browser/smoke.py`. Das Modell von GOSSIP ist in `knowledge/data.md` des Repositorys `gossip` gelesen. Test-Runner und Smoke-Test sind nicht gelaufen. `git` zeigt `origin/main` auf `2f78951`, main dreißig Commits voraus.
+- Wer was tat: Ein Agent (Claude Opus 5.5 in Claude Code) im Auftrag der koordinierenden Session distillierte und rechnete. Nicht unabhängig gelesen, vom Operator nicht bestätigt.
 
 ### 2026-11-14 Raum-Zeit und Korrespondenzkreis gebaut, Richtung auf das gemeinsame Briefmodell
 
