@@ -21,8 +21,6 @@ let deps = {};
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const number = n => n.toLocaleString('de-DE');
 const ofLetters = (n, total) => countOf(n, total, total === 1 ? 'Brief' : 'Briefe', 'Briefen');
-// The mentioned persons kept around the circle, as on the start page
-const OUTER_LIMIT = 300;
 // The chords of the circle: the strongest, so a large archive does not draw thousands of curves
 const CHORD_LIMIT = 400;
 // A map is drawn where at least this share of the letters with a known place can stand on it;
@@ -185,7 +183,9 @@ function buildModel(all) {
     const centre = network.mostConnectedPerson(all);
     let ego = centre ? network.buildEgoNetwork(all, centre.id) : null;
     if (ego && ego.inner.length < 2) ego = null;
-    if (ego) ego = { ...ego, outer: ego.outer.slice(0, OUTER_LIMIT), chords: ego.chords.slice(0, CHORD_LIMIT) };
+    // The small circle keeps the correspondents only: fresh readers could not tell the grey ring
+    // of mentioned persons from a colour of the key, and the network view shows that ring in full
+    if (ego) ego = { ...ego, outer: [], chords: ego.chords.slice(0, CHORD_LIMIT) };
 
     const places = placeCounts(all);
     const located = [...places.values()].filter(p => p.lat !== null).sort((a, b) => b.count - a.count);

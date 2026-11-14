@@ -580,7 +580,8 @@ function renderMap() {
     el('topics-map-back')?.classList.toggle('hidden', !opened);
     const W = host.clientWidth;
     const H = host.clientHeight;
-    const d3 = window.d3;
+    // Without the vendored D3 (a failed load) the map stays empty and the grid keeps working
+    const d3 = typeof window.d3?.treemap === 'function' ? window.d3 : null;
     const mentions = subjects.reduce((n, s) => n + s.total, 0);
     if (text) {
         text.textContent = !model.profiles.subjects.length
