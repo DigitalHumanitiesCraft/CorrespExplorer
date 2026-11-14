@@ -16,7 +16,7 @@ template:
   version: 0.3
   url: https://dhcraft.org/Promptotyping/promptotyping-document/plan
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-plan
-related: [specification, testing, journal, handoff]
+related: [specification, testing, journal]
 ---
 
 # Plan

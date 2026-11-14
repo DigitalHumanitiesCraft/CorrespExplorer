@@ -6,7 +6,7 @@ CorrespExplorer is a browser tool for exploring correspondence metadata in CMIF.
 
 ## Knowledge base
 
-The knowledge base lives in `knowledge/` at the repository root, outside `docs/`, because GitHub Pages publishes everything under `docs/` and the knowledge base, internal notes and drafts are not served. The site links to it on GitHub. At every session start, after this file, read `knowledge/INDEX.md`, then `knowledge/handoff.md` and `knowledge/plan.md`, then the documents relevant to the task. Consult `knowledge/journal.md` when the origin or rationale of a change is needed.
+The knowledge base lives in `knowledge/` at the repository root, outside `docs/`, because GitHub Pages publishes everything under `docs/` and the knowledge base, internal notes and drafts are not served. The site links to it on GitHub. At every session start, after this file, read `knowledge/INDEX.md`, then the `## Open` section at the beginning of `knowledge/journal.md` and `knowledge/plan.md`, then the documents relevant to the task. Consult `knowledge/journal.md` when the origin or rationale of a change is needed.
 
 | Task | Read first |
 |---|---|
@@ -16,11 +16,11 @@ The knowledge base lives in `knowledge/` at the repository root, outside `docs/`
 | UI, CSS, visualisation | `knowledge/design.md`, `docs/css/tokens.css`, `docs/css/CONTEXT-MAP.md` |
 | Tests | `knowledge/testing.md`, `docs/js/tests/CONTEXT-MAP.md` |
 | Bugs and planned work | `knowledge/plan.md` |
-| Open input or hand-over | `knowledge/handoff.md` |
+| Open input or hand-over | `knowledge/journal.md`, section `## Open` |
 
 ## Working rules
 
-- Handoff: read `knowledge/handoff.md` at session start. Check source and current target of each point you use, integrate durable content first, write the journal record and remove the point completely.
+- Open points: read the `## Open` section of `knowledge/journal.md` at session start. Check source and current target of each point you use, integrate durable content first, write the journal record and remove the point from `## Open` completely.
 - Journal: write one entry per coherent transition at the top of `knowledge/journal.md`, newest first, with date only, no timestamps, using the fields of the journal template (Anlass, Befund, Entschieden, Korrigiert, Geändert, Belege) and at least one commit or other evidence. Current status, open tasks and detailed test output belong in their own documents.
 - Write-back: after a change, update the document responsible for it and every document that restates it. Code change in modules or data flow goes into `architecture.md` and the matching `CONTEXT-MAP.md`. A new feature gets its story in `specification.md`, a design change goes into `design.md`, a new data source into `data.md`, a new or fixed bug into `plan.md` and the journal, a decision into `specification.md` as a new ADR.
 - Nothing invented: dataset figures, CMIF structures, authority IDs and source URLs come from the data files or the cited source. Ask when knowledge is missing.

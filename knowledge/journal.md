@@ -16,12 +16,26 @@ template:
   version: 0.6
   url: https://dhcraft.org/Promptotyping/promptotyping-document/journal
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-journal
-related: [project, specification, plan, handoff]
+related: [project, specification, plan]
 ---
 
 # Journal: CorrespExplorer
 
+## Open
+
+- Offene Befunde, Vorhaben und Entscheidungen führt [plan.md](plan.md). Übergabepunkte von außen sind derzeit keine offen.
+- Aus dem Refactoring vom 2026-11-14 vom Agenten gemeldet und nicht behoben: `style.display` in `mentions-view.js`, `network-view.js` und `places-view.js` gegen die Regel, Sichtbarkeit nur über `.hidden` zu schalten. Die Legende der Zeitleiste zeigt ohne Sprachdaten weiter „Keine Sprachdaten im Korpus“. `wissenskorb.css` und `test-runner.js` setzen einzelne Werte ohne Token.
+- Der Operator entscheidet, ob `docs/assets/logo.jpg` und `docs/favicon.svg` bleiben, die keine Seite einbindet (Eintrag vom 2026-11-14).
+- Die Abnahme des Refactorings und der Iteration an den Briefen von Stefan Zweig Digital durch den Operator steht aus (Einträge vom 2026-11-14).
+
 ## Einträge
+
+### 2026-11-14 handoff.md im Journal aufgelöst
+
+- Anlass: Entscheidung des Operators vom 2026-11-14, dass ein Promptotyping-Repository kein `knowledge/handoff.md` mehr führt und das Journal mit dem Offenen beginnt.
+- Befund: `knowledge/handoff.md` führte keinen offenen Punkt. Das Offene stand in [plan.md](plan.md) und im Feld „Offen“ des Refactoring-Eintrags vom selben Tag.
+- Geändert: `knowledge/handoff.md` entfernt. Das Journal beginnt mit `## Open`, das auf [plan.md](plan.md) verweist und die offenen Punkte des Refactoring-Eintrags samt ausstehender Abnahme aufnimmt. `CLAUDE.md` und [INDEX.md](INDEX.md) lesen beim Sessionstart den Anfang des Journals, die Zeile des Handoffs in Register und Ablagezonen und der Eintrag in `related:` von [plan.md](plan.md) sind entfernt. Nichts wurde fallen gelassen.
+- Belege: der Commit dieses Eintrags.
 
 ### 2026-11-14 Refactoring und Kuration nach der Iteration an Briefsätzen
 

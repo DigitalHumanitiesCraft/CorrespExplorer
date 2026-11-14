@@ -17,7 +17,7 @@ template:
   version: 0.4
   url: https://dhcraft.org/Promptotyping/promptotyping-document/index
   alias: https://dhcraft.org/Promptotyping/#promptotyping-document-index
-related: [project, data, specification, architecture, design, testing, plan, handoff, journal]
+related: [project, data, specification, architecture, design, testing, plan, journal]
 ---
 
 # Index
@@ -38,12 +38,11 @@ Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index,
 | [design.md](design.md) | Design | Wie sieht die Oberfläche aus und warum? | bei Änderung des Designsystems |
 | [testing.md](testing.md) | Quality Assurance | Was wird wie getestet? | bei neuen Suites oder Testregeln |
 | [plan.md](plan.md) | Planning | Welche Befunde und Vorhaben sind offen? | bei neuen Befunden und nach deren Erledigung |
-| [handoff.md](handoff.md) | Handoff | Welche Übergabepunkte sind offen? | bei Eingang oder Verarbeitung eines Punkts |
-| [journal.md](journal.md) | Provenance | Wie ist der heutige Stand entstanden? | nach sachlich zusammengehörigen Übergängen |
+| [journal.md](journal.md) | Provenance | Was ist offen, und wie ist der heutige Stand entstanden? | bei Eingang oder Erledigung eines offenen Punkts und nach sachlich zusammengehörigen Übergängen |
 
 ## Ablagezonen
 
-- `knowledge/` enthält die dauerhaft gepflegten Promptotyping Documents einschließlich `handoff.md`.
+- `knowledge/` enthält die dauerhaft gepflegten Promptotyping Documents.
 - `research-artefacts/` enthält den Paper-Entwurf zur Entstehung des Werkzeugs als Forschung und den Prompt für ein externes LLM-Review.
 - `docs/data/` enthält Beispiel- und Testdatensätze, `preprocessing/` die Python-Skripte, die erweiterte Datensätze erzeugen.
 - `verification/` enthält Prüfwerkzeuge für Bestände außerhalb des Repositorys: `check-corpus.mjs` vergleicht die Parser-Ausgabe Brief für Brief mit den Quelldateien, `serve_local_corpus.py` bindet einen lokalen Ordner für den Explorer ein. Daten liegen dort nicht.
@@ -51,7 +50,7 @@ Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index,
 
 ## Lesepfade
 
-- Sessionstart: `CLAUDE.md`, dann [INDEX.md](INDEX.md), [handoff.md](handoff.md), [plan.md](plan.md) und die aufgabenrelevanten Dokumente nach der Tabelle in `CLAUDE.md`. [journal.md](journal.md) bei Bedarf für Herkunft und Begründung einer Änderung.
+- Sessionstart: `CLAUDE.md`, dann [INDEX.md](INDEX.md), den Abschnitt `## Open` am Anfang von [journal.md](journal.md), [plan.md](plan.md) und die aufgabenrelevanten Dokumente nach der Tabelle in `CLAUDE.md`. [journal.md](journal.md) bei Bedarf für Herkunft und Begründung einer Änderung.
 - Code-Änderung: [architecture.md](architecture.md), `docs/js/CONTEXT-MAP.md`, [testing.md](testing.md), bei Datenbezug [data.md](data.md) und [uncertainty-specification.md](uncertainty-specification.md).
 - Neue Funktion: [specification.md](specification.md), [design.md](design.md), dann [architecture.md](architecture.md).
 - Fehlerbehebung: [plan.md](plan.md#offene-befunde), dann [journal.md](journal.md) für den Entstehungskontext.
