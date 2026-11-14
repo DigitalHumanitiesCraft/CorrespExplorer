@@ -101,7 +101,7 @@ function recordSummary(letter) {
  * @param {Array} letters
  * @returns {Array}
  */
-export function mergeRecords(letters) {
+function mergeRecords(letters) {
     const groups = new Map();
     for (const letter of letters) {
         if (!letter.signature) continue;
@@ -917,7 +917,7 @@ function extractMeta(doc, letters) {
  * @param {Object} data - Parsed CMIF data
  * @param {Object} coordsCache - Object mapping geonames_id to {lat, lon}
  */
-export function enrichWithCoordinates(data, coordsCache) {
+function enrichWithCoordinates(data, coordsCache) {
     for (const letter of data.letters) {
         if (letter.place_sent?.geonames_id) {
             const coords = coordsCache[letter.place_sent.geonames_id];

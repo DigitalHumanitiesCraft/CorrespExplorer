@@ -772,108 +772,6 @@
     text-decoration: underline;
 }
 
-/* Letter Card Expansion */
-.letter-card.has-details {
-    cursor: pointer;
-}
-
-.letter-card.has-details .letter-participants {
-    display: flex;
-    align-items: center;
-}
-
-.letter-card .expand-icon {
-    margin-right: var(--space-sm);
-    color: var(--color-text-light);
-    font-size: var(--font-size-sm);
-    transition: transform var(--transition-fast);
-}
-
-.letter-card.expanded {
-    border-color: var(--color-primary);
-    background: var(--color-bg-light);
-}
-
-.letter-card.expanded .expand-icon {
-    color: var(--color-primary);
-}
-
-/* Inline Letter Details */
-.letter-details {
-    border-top: 1px solid var(--color-border);
-    margin-top: var(--space-md);
-    padding-top: var(--space-md);
-}
-
-.letter-detail-content {
-    font-size: var(--font-size-sm);
-}
-
-.letter-detail-persons {
-    display: flex;
-    gap: var(--space-xl);
-    margin-bottom: var(--space-md);
-}
-
-.detail-person {
-    color: var(--color-text);
-}
-
-.detail-person a {
-    color: var(--color-primary);
-    text-decoration: none;
-}
-
-.detail-person a:hover {
-    text-decoration: underline;
-}
-
-.letter-detail-mentions {
-    margin-bottom: var(--space-sm);
-    color: var(--color-text);
-}
-
-.mention-tag {
-    display: inline-block;
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    padding: calc(var(--space-xs) / 2) var(--space-sm);
-    margin: calc(var(--space-xs) / 2);
-    font-size: var(--font-size-xs);
-}
-
-.letter-detail-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-    margin-top: var(--space-md);
-}
-
-.detail-link {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    color: var(--color-text);
-    text-decoration: none;
-    font-size: var(--font-size-xs);
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
-}
-
-.detail-link:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-}
-
-.detail-link i {
-    color: var(--color-accent);
-}
-
 .modal-body p {
     margin-bottom: var(--space-md);
     color: var(--color-text-light);
@@ -2155,10 +2053,6 @@
     text-align: center;
 }
 
-.coverage-info {
-    display: inline-block;
-}
-
 /* Sentence on an ego-centred star with the switch that shows the other relations */
 .network-ego-note {
     display: flex;
@@ -2206,9 +2100,12 @@
 }
 
 .basket-content {
-    min-height: 200px;
+    min-height: 60px;
     max-height: 400px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
 }
 
 .basket-empty {
@@ -2785,20 +2682,6 @@ body:has(.tour-highlight) .tour-backdrop {
     color: var(--color-text);
 }
 
-.chronik-arrow {
-    flex-shrink: 0;
-    align-self: center;
-    color: var(--color-text-light);
-}
-
-.chronik-person-role {
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    color: var(--color-text-light);
-}
-
 /* Person portrait (shown when enriched) */
 .chronik-portrait {
     width: 40px;
@@ -2898,6 +2781,11 @@ body:has(.tour-highlight) .tour-backdrop {
     border-radius: var(--radius-sm);
     transition: var(--transition-fast);
     transition-property: var(--transition-properties);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font: inherit;
+    font-size: var(--font-size-sm);
 }
 
 .chronik-layout-btn:hover {
@@ -2911,13 +2799,6 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 /* The layout buttons carry their name next to the icon */
-.chronik-layout-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    font: inherit;
-    font-size: var(--font-size-sm);
-}
 
 .chronik-layout-btn:focus-visible {
     outline: 2px solid var(--color-text);
@@ -3325,11 +3206,7 @@ body:has(.tour-highlight) .tour-backdrop {
         gap: var(--space-xs);
     }
 
-    .chronik-arrow {
-        align-self: flex-start;
-        padding-left: var(--space-md);
-        transform: rotate(90deg);
-    }
+    
 
     .chronik-portrait,
     .chronik-portrait-placeholder {
@@ -4491,13 +4368,6 @@ body:has(.tour-highlight) .tour-backdrop {
 /* On --color-primary-light the accent reaches only 4.34:1, the dark variant meets AA */
 #sidebar-basket .sidebar-section-header h2 {
     color: var(--color-primary-dark);
-}
-
-.basket-content {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs);
-    min-height: 60px;
 }
 
 .basket-group {

@@ -16,6 +16,7 @@ let getAllLetters = null;
 let applyFilters = null;
 let switchView = null;
 let showUndatedLetters = null;
+let showLettersWithFeature = null;
 
 /**
  * Initialize timeline view with external dependencies
@@ -28,6 +29,7 @@ export function initTimelineView(deps) {
     applyFilters = deps.applyFilters;
     switchView = deps.switchView;
     showUndatedLetters = deps.showUndatedLetters;
+    showLettersWithFeature = deps.showLettersWithFeature;
 }
 
 /**
@@ -359,22 +361,9 @@ function focusLettersHeading() {
     heading.focus();
 }
 
-/**
- * Letter list with one group of letters without a year. The feature filter of the sidebar is
- * set through its checkbox, whose change handler in explore.js applies it. Deliberate shortcut:
- * explore.js offers no function for it yet; once it injects one, this should call it instead.
- */
+// Letter list with one group of letters without a year, under the filters already set
 function showFeatureLetters(key) {
-    const box = document.querySelector(`input[name="feature"][value="${key}"]`);
-    if (!box) {
-        showUndatedLetters();
-    } else {
-        if (!box.checked) {
-            box.checked = true;
-            box.dispatchEvent(new Event('change'));
-        }
-        switchView('letters');
-    }
+    showLettersWithFeature(key, { keepOthers: true });
     focusLettersHeading();
 }
 

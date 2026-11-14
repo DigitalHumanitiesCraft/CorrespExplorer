@@ -35,7 +35,6 @@ let getAllLetters = null;
 let applyPersonFilter = null;
 let applySubjectFilter = null;
 let switchView = null;
-let log = null;
 
 /**
  * Initialize network view with external dependencies
@@ -47,7 +46,6 @@ export function initNetworkView(deps) {
     applyPersonFilter = deps.applyPersonFilter;
     applySubjectFilter = deps.applySubjectFilter;
     switchView = deps.switchView;
-    log = deps.log || { init: () => {}, render: () => {} };
 
     setupNetworkEventHandlers();
 }
@@ -132,8 +130,6 @@ function setupNetworkEventHandlers() {
             renderNetwork();
         });
     }
-
-    log.init('Network view initialized');
 }
 
 /**
@@ -1084,7 +1080,7 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
 /**
  * Reset network zoom to identity
  */
-export function resetNetworkZoom() {
+function resetNetworkZoom() {
     if (networkSvg && networkZoom) {
         networkSvg.transition().duration(motionMs(500)).call(networkZoom.transform, d3.zoomIdentity);
     }

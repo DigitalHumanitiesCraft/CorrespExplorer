@@ -2,7 +2,7 @@
  * Canonical design system values
  * Every stylesheet uses these tokens; pages link this file first
  *
- * Design derived from logo.jpg - Retro style with rust red accent
+ * Derived from the logo: retro style with rust red accent
  */
 
 :root {
@@ -49,10 +49,10 @@
     --color-backdrop: rgba(0, 0, 0, 0.5); /* Behind dialogs and the mobile menu */
     --color-overlay: rgba(0, 0, 0, 0.7);  /* Behind the demo tour */
 
-    /* Role Colors (Map/Network) - design.md Section 2, Datenvisualisierung */
+    /* Role Colors (Map/Network) - design.md, Datenvisualisierung */
     --color-role-sender: #2c5f8d;    /* Steel Blue - Absenderin */
-    --color-map-land: #E8E4D4;       /* Basemap land, design.md 6.1 */
-    --color-map-water: #B8D4E8;      /* Basemap water, design.md 6.1 */
+    --color-map-land: #E8E4D4;       /* Basemap land, design.md, Karte */
+    --color-map-water: #B8D4E8;      /* Basemap water, design.md, Karte */
     --color-role-mentioned: #6c757d; /* Medium Gray - Erwähnt */
     --color-role-both: #2d6a4f;      /* Forest Green - Beide */
     --color-role-indirect: #adb5bd;  /* Light Gray - Indirekt (SNDB only) */
@@ -89,7 +89,7 @@
     --font-base: 'Lato', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 
-    /* Font Sizes - design.md Section 3 */
+    /* Font Sizes - design.md, Typografie */
     --font-size-xs: 12px;
     --font-size-sm: 14px;
     --font-size-base: 14px;
@@ -99,7 +99,7 @@
     --font-size-2xl: 32px;
     --font-size-3xl: 48px;
 
-    /* Line Heights - design.md: "≥ 1.4" */
+    /* Line Heights */
     --line-height-tight: 1.4;
     --line-height-base: 1.6;
     --line-height-loose: 1.8;
@@ -108,7 +108,7 @@
      * SPACING
      * ======================================== */
 
-    /* Spacing Scale - design.md Section 4 */
+    /* Spacing Scale - design.md, Abstände und Radien */
     --space-xs: 4px;
     --space-sm: 8px;
     --space-md: 12px;

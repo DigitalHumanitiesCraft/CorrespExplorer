@@ -402,7 +402,7 @@ function renderEnrichmentCard(q) {
  * @param {Array} unavailable - questions the data cannot answer yet
  * @param {{onStartPath: Function, onStepClick: Function}} deps
  */
-export function renderResearchPathCards(container, paths, unavailable, { onStartPath, onStepClick }) {
+function renderResearchPathCards(container, paths, unavailable, { onStartPath, onStepClick }) {
     const enrichment = unavailable.length > 0 ? `
         <details class="questions-enrichment">
             <summary>Anreicherungspotential (${unavailable.length})</summary>

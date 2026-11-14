@@ -12,7 +12,6 @@ let selectedMentionsPerson = null;
 // External dependencies - injected via init
 let getFilteredLetters = null;
 let showLetterDetail = null;
-let log = { init: () => {}, render: () => {} };
 
 // Below this width the side columns get short labels, the full name stays in a <title>
 const NARROW_WIDTH = 480;
@@ -24,7 +23,6 @@ const NARROW_WIDTH = 480;
 export function initMentionsView(deps) {
     getFilteredLetters = deps.getFilteredLetters;
     showLetterDetail = deps.showLetterDetail;
-    log = deps.log || { init: () => {}, render: () => {} };
 
     initMentionsFlowViewInternal();
 }
@@ -33,7 +31,6 @@ export function initMentionsView(deps) {
  * Initialize the mentions flow view
  */
 function initMentionsFlowViewInternal() {
-    log.init('Initializing Mentions Flow View');
     initMentionsPersonAutocomplete();
 }
 
@@ -618,7 +615,6 @@ function renderMentionsFlowForPerson(person) {
         svg.transition().duration(motionMs(250)).call(zoom.transform, d3.zoomIdentity);
     });
 
-    log.render(`Rendered person flow: ${layoutNodes.length} nodes, ${layoutLinks.length} links`);
 }
 
 /**

@@ -1,8 +1,10 @@
-// Helpers shared by several views: design tokens for D3 attributes and the combobox behaviour of
-// the search fields. Kept here so the views do not each carry their own copy.
+// Helpers shared by several views: the active filters in words, design tokens for D3 attributes,
+// the combobox of the search fields, the star button of the basket and the links and rows of the
+// detail dialogs. Kept here so the views do not each carry their own copy.
 
-import { escapeHtml, letterRecipients, personKey, placeKey } from '../utils.js';
-import { LETTER_FEATURES, languageLabel } from '../constants.js';
+import { escapeHtml, letterRecipients, personAuthority, personKey, placeKey, showToast } from '../utils.js';
+import { BASKET_LIMITS, LETTER_FEATURES, languageLabel } from '../constants.js';
+import { isInBasket, addToBasket, removeFromBasket } from '../basket.js';
 import { state } from '../state-manager.js';
 
 // German enumeration: "a", "a und b", "a, b und c"
@@ -259,4 +261,90 @@ export function bindCombobox(input, listbox, { onSelect, label = item => item.na
     input.addEventListener('blur', hide);
 
     return { show, hide, isOpen: () => !listbox.classList.contains('hidden') };
+}
+
+const BASKET_LABELS = {
+    letters: { one: 'Brief', limit: `höchstens ${BASKET_LIMITS.maxLetters} Briefe` },
+    persons: { one: 'Person', limit: `höchstens ${BASKET_LIMITS.maxPersons} Personen` },
+    places: { one: 'Ort', limit: `höchstens ${BASKET_LIMITS.maxPlaces} Orte` }
+};
+
+/**
+ * Toggle one basket entry from a star button. A full basket leaves the entry out and says so,
+ * instead of marking it as added. Returns whether the entry is in the basket afterwards.
+ */
+export function toggleBasketButton(btn, type, id, { pressed = true } = {}) {
+    const labels = BASKET_LABELS[type];
+    if (isInBasket(type, id)) {
+        removeFromBasket(type, id);
+        showToast(`${labels.one} aus dem Korb entfernt`);
+    } else {
+        const result = addToBasket(type, id);
+        if (result !== true) {
+            showToast(result === 'full' ? `Korb voll: ${labels.limit}` : `${labels.one} nicht hinzugefügt`);
+            return false;
+        }
+        showToast(`${labels.one} zum Korb hinzugefügt`);
+    }
+    const inBasket = isInBasket(type, id);
+    btn.classList.toggle('in-basket', inBasket);
+    btn.title = inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen';
+    if (pressed) btn.setAttribute('aria-pressed', String(inBasket));
+    return inBasket;
+}
+
+// One labelled row of a detail dialog; valueHtml is already escaped
+export function detailRow(label, valueHtml, valueClass = '') {
+    return `<div class="letter-detail-row">
+        <span class="letter-detail-label">${label}</span>
+        <span class="letter-detail-value ${valueClass}">${valueHtml}</span>
+    </div>`;
+}
+
+export function correspSearchLink(url, name, className) {
+    return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="${className}" title="Briefe von ${escapeHtml(name)} bei correspSearch">
+        <i class="fas fa-search" aria-hidden="true"></i> ${escapeHtml(name)} bei correspSearch
+    </a>`;
+}
+
+// Page of a person at the authority (VIAF or GND), or null for other systems
+export function authorityUrl(authority, id) {
+    if (!id) return null;
+    if (authority === 'viaf') return `https://viaf.org/viaf/${encodeURIComponent(id)}`;
+    if (authority === 'gnd') return `https://d-nb.info/gnd/${encodeURIComponent(id)}`;
+    return null;
+}
+
+// correspSearch search for a person; the API accepts GND and VIAF URIs as correspondent
+export function buildCorrespSearchUrl(person) {
+    const ref = personAuthority(person);
+    if (!ref) return null;
+
+    let authorityUri = null;
+    if (ref.authority === 'gnd') authorityUri = `http://d-nb.info/gnd/${ref.id}`;
+    if (ref.authority === 'viaf') authorityUri = `http://viaf.org/viaf/${ref.id}`;
+
+    return authorityUri
+        ? `https://correspsearch.net/search.xql?correspondent=${encodeURIComponent(authorityUri)}`
+        : null;
+}
+
+// Person name, linked to its authority page when it has one
+export function buildPersonLink(person) {
+    if (!person) return 'Unbekannt';
+    const name = escapeHtml(person.name);
+    const ref = personAuthority(person);
+    const url = ref && authorityUrl(ref.authority, ref.id);
+    return url
+        ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" title="In ${escapeHtml(ref.authority.toUpperCase())} ansehen">${name}</a>`
+        : name;
+}
+
+// Place name, linked to GeoNames when it has an id
+export function buildPlaceLink(place) {
+    if (!place) return 'Unbekannt';
+    const name = escapeHtml(place.name);
+    return place.geonames_id
+        ? `<a href="https://www.geonames.org/${encodeURIComponent(place.geonames_id)}" target="_blank" rel="noopener noreferrer" title="In GeoNames ansehen">${name}</a>`
+        : name;
 }

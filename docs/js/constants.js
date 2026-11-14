@@ -23,7 +23,7 @@ export const LETTER_FEATURES = [
 export const NO_LANGUAGE = '_none';
 
 // Strong language colours, for the dominant language of a corpus
-export const LANGUAGE_COLORS_STRONG = {
+const LANGUAGE_COLORS_STRONG = {
     'de': '#1e40af', // German
     'fr': '#dc2626', // French
     'it': '#16a34a', // Italian
@@ -40,7 +40,7 @@ export const LANGUAGE_COLORS_STRONG = {
 };
 
 // Pastel language colours, for all other languages
-export const LANGUAGE_COLORS_PASTEL = {
+const LANGUAGE_COLORS_PASTEL = {
     'de': '#93c5fd', // German
     'fr': '#fca5a5', // French
     'it': '#86efac', // Italian

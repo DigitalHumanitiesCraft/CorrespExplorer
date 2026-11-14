@@ -31,6 +31,7 @@ button {
     gap: var(--space-sm);
     min-width: 24px;
     min-height: 24px;
+    max-width: 100%;
 }
 
 .nav-brand-link i {
@@ -48,10 +49,6 @@ button {
     min-width: var(--space-xl);
     max-width: 20rem;
     flex-shrink: 10;
-}
-
-.nav-brand-link {
-    max-width: 100%;
 }
 
 .nav-brand .brand-text {
@@ -359,6 +356,7 @@ button {
 #map {
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
 /* Placeholder content for timeline/network; the description lines of the view headers keep their own spacing */
@@ -732,9 +730,6 @@ button {
 }
 
 /* MapLibre Map Container */
-#map {
-    position: relative;
-}
 
 .maplibregl-canvas {
     outline: none;

@@ -126,7 +126,7 @@ function getCapacityLimit(type) {
  * @param {string} type
  * @returns {boolean}
  */
-export function hasCapacity(type) {
+function hasCapacity(type) {
     if (!basket[type]) return false;
     return basket[type].length < getCapacityLimit(type);
 }
@@ -250,7 +250,7 @@ export function getBasketItems(type) {
  * Get total count of items in basket
  * @returns {number}
  */
-export function getBasketCount() {
+function getBasketCount() {
     return basket.letters.length + basket.persons.length + basket.places.length;
 }
 

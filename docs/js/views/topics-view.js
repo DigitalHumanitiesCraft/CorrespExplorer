@@ -16,7 +16,6 @@ let topicsSortOrder = 'count-desc';
 let getFilteredLetters = null;
 let getAllLetters = null;
 let applySubjectFilter = null;
-let log = null;
 
 /**
  * Initialize topics view with dependencies
@@ -25,7 +24,6 @@ export function initTopicsView(deps) {
     getFilteredLetters = deps.getFilteredLetters;
     getAllLetters = deps.getAllLetters;
     applySubjectFilter = deps.applySubjectFilter;
-    log = deps.log || { init: () => {}, event: () => {} };
 
     // Build subject index from letters
     buildSubjectIndex();
@@ -123,8 +121,6 @@ function buildSubjectIndex() {
             });
         });
     });
-
-    log.init(`Subject index built: ${Object.keys(subjectIndex).length} subjects`);
 }
 
 /**

@@ -19,7 +19,6 @@ let getAllLetters = null;
 let getDataIndices = null;
 let applyPlaceFilter = null;
 let switchView = null;
-let log = null;
 
 // Callbacks for data updates
 let onDataUpdated = null;
@@ -34,7 +33,6 @@ export function initPlacesView(deps) {
     applyPlaceFilter = deps.applyPlaceFilter;
     switchView = deps.switchView;
     onDataUpdated = deps.onDataUpdated;
-    log = deps.log || { init: () => {}, event: () => {} };
 
     buildPlacesIndex();
 
@@ -83,8 +81,6 @@ export function initPlacesView(deps) {
 
     // Update missing coordinates banner
     updateMissingCoordinatesBanner();
-
-    log.init(`Places view initialized: ${Object.keys(placesIndex).length} places`);
 }
 
 function buildPlacesIndex() {
@@ -428,7 +424,7 @@ function renderPlaceDetail(placeId) {
 /**
  * Update missing coordinates banner in Places View
  */
-export function updateMissingCoordinatesBanner() {
+function updateMissingCoordinatesBanner() {
     const banner = elements.getById('places-missing-coords-banner');
     const countSpan = elements.getById('places-missing-count');
 
