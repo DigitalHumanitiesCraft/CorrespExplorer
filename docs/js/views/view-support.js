@@ -293,6 +293,15 @@ export function toggleBasketButton(btn, type, id, { pressed = true } = {}) {
     return inBasket;
 }
 
+// After a change of view that a control inside the content triggered, keyboard focus continues
+// at the title of the new view instead of falling back to the document
+export function focusViewHeading(view) {
+    const heading = document.querySelector(`#${view}-view .view-header__title`);
+    if (!heading) return;
+    heading.tabIndex = -1;
+    heading.focus();
+}
+
 // One labelled row of a detail dialog; valueHtml is already escaped
 export function detailRow(label, valueHtml, valueClass = '') {
     return `<div class="letter-detail-row">

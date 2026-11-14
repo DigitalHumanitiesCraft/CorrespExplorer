@@ -1,11 +1,11 @@
 // Timeline View
 // Stacked bar chart showing temporal distribution of correspondence
 
-import { LANGUAGE_COLORS, LETTER_FEATURES, NO_LANGUAGE, languageLabel } from '../constants.js';
+import { LANGUAGE_COLORS, LETTER_FEATURES, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
 import { elements } from '../dom-cache.js';
 import { escapeHtml, showToast, isMultiYearSpan } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
-import { renderDataTable } from './view-support.js';
+import { focusViewHeading, renderDataTable } from './view-support.js';
 
 // Module state
 let undatedBinBound = false;  // the undated bin is static markup, its listeners are bound once
@@ -17,6 +17,7 @@ let applyFilters = null;
 let switchView = null;
 let showUndatedLetters = null;
 let showLettersWithFeature = null;
+let clearLetterSearch = null;
 
 /**
  * Initialize timeline view with external dependencies
@@ -30,6 +31,7 @@ export function initTimelineView(deps) {
     switchView = deps.switchView;
     showUndatedLetters = deps.showUndatedLetters;
     showLettersWithFeature = deps.showLettersWithFeature;
+    clearLetterSearch = deps.clearLetterSearch;
 }
 
 /**
@@ -173,8 +175,8 @@ export function renderTimeline() {
                 if (count > 0) {
                     // Segment height as percentage of the stacked bar (not the container)
                     const segmentPct = (count / data.total) * 100;
-                    // Use primary color for _total (no language data), otherwise language color
-                    const color = lang === '_total' ? 'var(--color-primary)' : (LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other);
+                    // Data colour for _total (no language data), otherwise the language colour
+                    const color = lang === '_total' ? 'var(--color-data)' : (LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other);
                     segments += `<div class="timeline-stack-segment" style="height: ${segmentPct}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
                     currentBottom += segmentPct;
                     // Only add language breakdown to tooltip if we have language data
@@ -355,10 +357,7 @@ function uncertainPhrase(imprecise, inferred) {
  * leaves the screen with the timeline, and focus would otherwise fall back to the document.
  */
 function focusLettersHeading() {
-    const heading = document.querySelector('#letters-view .view-header__title');
-    if (!heading) return;
-    heading.tabIndex = -1;
-    heading.focus();
+    focusViewHeading('letters');
 }
 
 // Letter list with one group of letters without a year, under the filters already set
@@ -396,7 +395,7 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
             const count = undatedByLang[lang] || 0;
             if (count > 0) {
                 const segmentHeight = (count / undatedLetters.length) * 100;
-                const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
+                const color = lang === '_total' ? 'var(--color-data)' : (LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other);
                 undatedSegments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
                 currentBottom += segmentHeight;
                 // '_total' is the single category of a dataset without languages, no language
@@ -466,7 +465,8 @@ function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLang
                 const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
                 const count = languageTotals[lang];
                 const label = languageLabel(lang);
-                const tooltip = (lang === NO_LANGUAGE) ? 'Keine Sprachzuordnung in den Quelldaten' : '';
+                const tooltip = lang === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten'
+                    : lang === 'other' ? 'Alle übrigen Sprachen, einzeln im Filter der Seitenleiste und in der Tabelle' : '';
                 return `<span class="timeline-legend-item"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count})</span>`;
             });
     } else {
@@ -509,11 +509,15 @@ function setupTimelineClickHandlers(container) {
                 slider.noUiSlider.set([year, year]);
             }
 
+            // A search left in the letter list would silently narrow what the segment promises
+            clearLetterSearch();
+
             // '_total' stands for all languages when the filtered letters carry no language
             // code; unchecking every box would then empty the result
             if (lang !== '_total') {
+                // The rest segment stands for every language without a colour of its own
                 document.querySelectorAll('input[name="language"]').forEach(cb => {
-                    cb.checked = (cb.value === lang);
+                    cb.checked = lang === 'other' ? isRestLanguage(cb.value) : cb.value === lang;
                 });
             }
 
@@ -540,6 +544,7 @@ function setupTimelineClickHandlers(container) {
             slider.noUiSlider.set([year, year]);
         }
 
+        clearLetterSearch();
         applyFilters();
         switchView('letters');
         focusLettersHeading();

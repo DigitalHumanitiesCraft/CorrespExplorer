@@ -7,6 +7,7 @@ import { analyzeResearchQuestions, renderOverviewResearchPaths } from '../resear
 import { startKnowledgePath } from '../knowledge-path.js';
 import { startTour } from '../demo-tour.js';
 import { state } from '../state-manager.js';
+import { focusViewHeading } from './view-support.js';
 
 let deps = {};
 
@@ -185,7 +186,9 @@ function setupEntryPointButtons() {
 
     document.querySelectorAll('.entry-point-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (btn.dataset.target) deps.switchView(btn.dataset.target);
+            if (!btn.dataset.target) return;
+            deps.switchView(btn.dataset.target);
+            focusViewHeading(btn.dataset.target);
         });
     });
 }

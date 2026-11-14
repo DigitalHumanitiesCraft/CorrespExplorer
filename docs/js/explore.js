@@ -13,7 +13,7 @@ import { loadDemoDataset, loadUrlDataset } from './cmif-parser.js';
 import { isCorrespSearchUrl, correspSearchShareUrl } from './correspsearch-api.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
-import { filterSentence } from './views/view-support.js';
+import { filterSentence, focusViewHeading } from './views/view-support.js';
 import { initOverviewView, renderOverview } from './views/overview-view.js';
 import { initMapView, updateMapPlaces, resizeMap, aggregateLettersByPlace } from './views/map-view.js';
 import { initPersonsView, renderPersonsList } from './views/persons-view.js';
@@ -247,7 +247,8 @@ async function init() {
             applyFilters,
             switchView,
             showUndatedLetters,
-            showLettersWithFeature
+            showLettersWithFeature,
+            clearLetterSearch
         });
         initTopicsView({
             getFilteredLetters: () => filteredLetters,
@@ -974,6 +975,10 @@ function updateFilterCounts() {
         const shown = more.querySelectorAll('label:not(.hidden)').length;
         more.classList.toggle('hidden', shown === 0);
         more.querySelector('summary').textContent = shown === 1 ? '1 weitere Sprache' : `${shown} weitere Sprachen`;
+        // A language filter that selects a folded language must not hide that it does
+        const all = document.querySelectorAll('input[name="language"]');
+        const checked = document.querySelectorAll('input[name="language"]:checked');
+        if (checked.length < all.length && more.querySelector('label:not(.hidden) input:checked')) more.open = true;
     }
 }
 
@@ -1227,6 +1232,7 @@ function showLettersWithFeature(key, { keepOthers = false } = {}) {
 function showLettersOfPerson(personId) {
     applyPersonFilter(personId);
     switchView('letters');
+    focusViewHeading('letters');
 }
 
 // Export

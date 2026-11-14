@@ -22,71 +22,46 @@ export const LETTER_FEATURES = [
 
 export const NO_LANGUAGE = '_none';
 
-// Strong language colours, for the dominant language of a corpus
-const LANGUAGE_COLORS_STRONG = {
-    'de': '#1e40af', // German
-    'fr': '#dc2626', // French
-    'it': '#16a34a', // Italian
-    'en': '#7c3aed', // English
-    'es': '#ea580c', // Spanish
-    'pt': '#0891b2', // Portuguese
-    'la': '#57534e', // Latin
-    'hu': '#be185d', // Hungarian
-    'nl': '#d97706', // Dutch
-    'cy': '#4f46e5', // Welsh
-    'oc': '#0d9488', // Occitan
-    [NO_LANGUAGE]: '#78716c', // no language
-    'other': '#78716c'
-};
+/**
+ * Categorical colours for languages, in the order of assignment. Six hues of the Okabe-Ito
+ * palette (Okabe & Ito 2008, Color Universal Design), chosen for readers with a colour vision
+ * deficiency; its yellow is left out because it disappears on the paper background, its black
+ * because ink is the text colour. Neighbours in this order differ in lightness, so the two or
+ * three largest segments of a stacked bar stay apart without relying on hue.
+ * Hue alone carries about seven categories (Healey 1996), so only the most frequent languages
+ * of a dataset get a colour; the rest share LANGUAGE_REST_COLOR and stay reachable by name in
+ * the sidebar filter, the tooltips and the data table. design.md, Datenvisualisierung.
+ */
+const LANGUAGE_PALETTE = ['#0072B2', '#E69F00', '#009E73', '#CC79A7', '#56B4E9', '#D55E00'];
+const LANGUAGE_REST_COLOR = '#8C8676';  // warm grey: "Übrige Sprachen"
+const LANGUAGE_NONE_COLOR = '#C9C4B4';  // lighter warm grey: letters without a language
 
-// Pastel language colours, for all other languages
-const LANGUAGE_COLORS_PASTEL = {
-    'de': '#93c5fd', // German
-    'fr': '#fca5a5', // French
-    'it': '#86efac', // Italian
-    'en': '#c4b5fd', // English
-    'es': '#fdba74', // Spanish
-    'pt': '#a5f3fc', // Portuguese
-    'la': '#d6d3d1', // Latin
-    'hu': '#f9a8d4', // Hungarian
-    'nl': '#fcd34d', // Dutch
-    'cy': '#a5b4fc', // Welsh
-    'oc': '#99f6e4', // Occitan
-    [NO_LANGUAGE]: '#d6d3d1', // no language
-    'other': '#d6d3d1'
-};
+// Live binding filled by computeLanguageColors() when a dataset is loaded. A language code
+// without an entry belongs to the rest ('other').
+export const LANGUAGE_COLORS = { other: LANGUAGE_REST_COLOR, [NO_LANGUAGE]: LANGUAGE_NONE_COLOR };
 
-// Live binding filled by computeLanguageColors() when a dataset is loaded
-export const LANGUAGE_COLORS = { ...LANGUAGE_COLORS_STRONG };
-
-// Colours by letter count: many languages in strong colours make stacked bars unreadable
+// The most frequent languages of the dataset take the palette in order of their letter count
 export function computeLanguageColors(letters) {
     const langCounts = {};
     letters.forEach(letter => {
-        const lang = letter.language?.code || NO_LANGUAGE;
-        langCounts[lang] = (langCounts[lang] || 0) + 1;
+        const lang = letter.language?.code;
+        if (lang) langCounts[lang] = (langCounts[lang] || 0) + 1;
     });
-
-    const sorted = Object.entries(langCounts).sort((a, b) => b[1] - a[1]);
 
     Object.keys(LANGUAGE_COLORS).forEach(key => delete LANGUAGE_COLORS[key]);
-
-    // The most frequent language gets its strong colour, all others a pastel tone
-    sorted.forEach(([lang], index) => {
-        if (index === 0) {
-            LANGUAGE_COLORS[lang] = LANGUAGE_COLORS_STRONG[lang] || LANGUAGE_COLORS_STRONG.other;
-        } else {
-            LANGUAGE_COLORS[lang] = LANGUAGE_COLORS_PASTEL[lang] || LANGUAGE_COLORS_PASTEL.other;
-        }
-    });
-
-    // Fallbacks for codes outside the corpus
-    LANGUAGE_COLORS.other = LANGUAGE_COLORS_PASTEL.other;
-    if (!LANGUAGE_COLORS[NO_LANGUAGE]) {
-        LANGUAGE_COLORS[NO_LANGUAGE] = LANGUAGE_COLORS_PASTEL[NO_LANGUAGE];
-    }
+    Object.entries(langCounts)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .slice(0, LANGUAGE_PALETTE.length)
+        .forEach(([lang], index) => { LANGUAGE_COLORS[lang] = LANGUAGE_PALETTE[index]; });
+    LANGUAGE_COLORS.other = LANGUAGE_REST_COLOR;
+    LANGUAGE_COLORS[NO_LANGUAGE] = LANGUAGE_NONE_COLOR;
 
     return LANGUAGE_COLORS;
+}
+
+// True for a language code that has no colour of its own and counts among the rest
+export function isRestLanguage(code) {
+    return code === 'other' || !LANGUAGE_COLORS[code];
 }
 
 // The one label table for parser and views, ISO 639-1 and the ISO 639-3 codes of Lexvo URIs
@@ -121,7 +96,7 @@ export const LANGUAGE_LABELS = {
     'eo': 'Esperanto',
     'pap': 'Papiamentu',
     [NO_LANGUAGE]: 'Ohne Angabe',
-    'other': 'Andere'
+    'other': 'Übrige Sprachen'
 };
 
 // Labels the loaded data carries for codes outside the table, such as HSA's "None" for Ladin

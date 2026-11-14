@@ -454,6 +454,15 @@ export function classifyDate({ when, from, to, notBefore, notAfter, cert } = {})
  * @param {{id?: string, name?: string}|null} person
  * @returns {string|null}
  */
+/**
+ * Search form of a text: lower case, without diacritics, ß as ss. "Muller" finds "Müller".
+ * @param {string} text
+ * @returns {string}
+ */
+export function foldText(text) {
+    return (text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss');
+}
+
 export function personKey(person) {
     return person?.id || person?.name || null;
 }

@@ -128,16 +128,24 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-headings);
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 a {
-    color: var(--color-secondary);
+    color: var(--color-link);
     text-decoration: none;
     transition: color var(--transition-fast);
 }
 
 a:hover {
+    text-decoration: underline;
+}
+
+/* A link inside a sentence differs from its text by less than 3:1, so it keeps the underline
+   (WCAG 1.4.1, technique G183). Links in lists, rows and navigation show it on hover and focus. */
+p a:not(.btn),
+.overview-source-inline a,
+.about-section li a:not(.btn) {
     text-decoration: underline;
 }
 

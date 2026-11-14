@@ -30,7 +30,7 @@
 
 /* The primary colour reaches only 4.29:1 on --color-warning-light; the dark variant meets AA */
 .disclaimer a {
-    color: var(--color-primary-dark);
+    color: var(--color-link);
     text-decoration: underline;
 }
 
@@ -56,7 +56,7 @@
 }
 
 .landing-nav a:hover {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     border-color: var(--color-primary);
 }
 
@@ -114,7 +114,7 @@
 
 .upload-icon {
     font-size: 4rem;
-    color: var(--color-primary);
+    color: var(--color-text-light);
     margin-bottom: var(--space-lg);
     opacity: 0.7;
 }
@@ -309,7 +309,7 @@
 
 .dataset-card h4 {
     font-size: var(--font-size-md);
-    color: var(--color-primary-dark);
+    color: var(--color-text);
     margin-bottom: var(--space-sm);
     padding-right: 5rem;
 }
@@ -419,7 +419,7 @@
 }
 
 .api-hint a {
-    color: var(--color-primary-dark);
+    color: var(--color-link);
     text-decoration: underline;
 }
 
@@ -520,7 +520,7 @@
 .config-stat i {
     display: block;
     font-size: var(--font-size-xl);
-    color: var(--color-primary);
+    color: var(--color-text-light);
     margin-bottom: var(--space-xs);
 }
 
@@ -540,7 +540,7 @@
 }
 
 .config-section h4 i {
-    color: var(--color-accent);
+    color: var(--color-text-light);
     margin-right: var(--space-xs);
 }
 
@@ -620,11 +620,11 @@
 /* Config Warning */
 .config-warning {
     background: var(--color-warning-light);
-    border: 1px solid var(--color-accent);
+    border: 1px solid var(--color-primary);
     border-radius: var(--radius-md);
     padding: var(--space-md);
     margin-top: var(--space-md);
-    color: var(--color-accent);
+    color: var(--color-primary);
     font-size: var(--font-size-sm);
 }
 
@@ -654,7 +654,7 @@
 
 .progress-header i {
     font-size: 1.5rem;
-    color: var(--color-primary);
+    color: var(--color-text-light);
 }
 
 .progress-bar {

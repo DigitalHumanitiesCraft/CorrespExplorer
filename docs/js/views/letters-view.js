@@ -2,7 +2,7 @@
 // dialog with all records the source holds for one letter.
 
 import { isInBasket } from '../basket.js';
-import { debounce, escapeHtml, safeUrl, openModal, closeModal, personKey, letterRecipients } from '../utils.js';
+import { debounce, escapeHtml, safeUrl, openModal, closeModal, personKey, letterRecipients, foldText } from '../utils.js';
 import { formatDateWithPrecision, formatPersonName, formatPlaceName, getDatePrecisionClass } from '../formatters.js';
 import { state } from '../state-manager.js';
 import { elements } from '../dom-cache.js';
@@ -33,7 +33,7 @@ export function initLettersView(dependencies) {
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
-            lettersSearchTerm = e.target.value.toLowerCase();
+            lettersSearchTerm = foldText(e.target.value);
             renderLettersList();
         }, 300));
     }
@@ -70,7 +70,7 @@ export function renderLettersList() {
     let letters = [...deps.getFilteredLetters()];
 
     if (lettersSearchTerm) {
-        const has = value => (value || '').toLowerCase().includes(lettersSearchTerm);
+        const has = value => foldText(value).includes(lettersSearchTerm);
         letters = letters.filter(l =>
             has(l.sender?.name) ||
             letterRecipients(l).some(r => has(r.name)) ||
@@ -103,9 +103,11 @@ export function renderLettersList() {
         const narrowed = letters.length !== allLetters.length;
         const search = lettersSearchTerm ? ` für „${lettersSearchTerm}“` : '';
         const shown = letters.length > displayLetters.length ? `, die ersten ${displayLetters.length.toLocaleString('de-DE')} angezeigt` : '';
-        result.textContent = narrowed || search
-            ? `${found} von ${total} Briefen${search}${shown}`
-            : `${total} Briefe${shown}`;
+        // No hit: the sentence of the empty state says it, a zero above it would repeat it
+        result.textContent = letters.length === 0 ? ''
+            : narrowed || search
+                ? `${found} von ${total} Briefen${search}${shown}`
+                : `${total} Briefe${shown}`;
     }
     // The brackets are explained once where they occur, not only in a tooltip
     document.getElementById('letters-legend')?.classList.toggle('hidden',
@@ -190,6 +192,8 @@ export function renderLettersList() {
     container.querySelectorAll('.letter-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('a, .btn-letter-basket')) return;
+            // The dialog returns focus to the element that had it, so the row's button takes it first
+            card.querySelector('.letter-toggle')?.focus();
             showLetterDetail(card.dataset.id);
         });
     });
@@ -310,6 +314,13 @@ export function showLetterDetail(letterId) {
         // The visible label carries the state, so no aria-pressed here
         const nowInBasket = toggleBasketButton(basketBtn, 'letters', basketBtn.dataset.letterId, { pressed: false });
         basketBtn.querySelector('.btn-basket-label').textContent = nowInBasket ? 'Im Korb' : 'Zum Korb';
+        // The star of the row behind the dialog shows the same state
+        const rowStar = elements.lettersList?.querySelector(`.btn-letter-basket[data-letter-id="${CSS.escape(basketBtn.dataset.letterId)}"]`);
+        if (rowStar) {
+            rowStar.classList.toggle('in-basket', nowInBasket);
+            rowStar.setAttribute('aria-pressed', String(nowInBasket));
+            rowStar.title = nowInBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen';
+        }
     });
 
     openModal(modal);

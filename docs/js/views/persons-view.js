@@ -3,7 +3,7 @@
 
 import { addEntityToBasket } from '../basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from '../wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, openModal, closeModal, showToast, personKey, personAuthority, letterRecipients } from '../utils.js';
+import { debounce, escapeHtml, safeUrl, openModal, closeModal, showToast, personKey, personAuthority, letterRecipients, foldText } from '../utils.js';
 import { getPersonPrecisionClass, getPersonInitials } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { authorityUrl, buildCorrespSearchUrl, detailRow } from './view-support.js';
@@ -27,7 +27,7 @@ export function initPersonsView(dependencies) {
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
-            personsSearchTerm = e.target.value.toLowerCase();
+            personsSearchTerm = foldText(e.target.value);
             renderPersonsList();
         }, 300));
     }
@@ -103,7 +103,7 @@ export function renderPersonsList() {
     persons = persons.filter(kinds[personsKind].test);
 
     if (personsSearchTerm) {
-        persons = persons.filter(p => p.name.toLowerCase().includes(personsSearchTerm));
+        persons = persons.filter(p => foldText(p.name).includes(personsSearchTerm));
     }
 
     persons.sort((a, b) => {
@@ -138,7 +138,6 @@ export function renderPersonsList() {
 
     // The card is no button: filtering, basket, details and correspSearch are separate controls
     container.innerHTML = persons.map(person => {
-        const initials = getPersonInitials(person.name, person.precision);
         const total = person.letters;
         const correspSearchUrl = buildCorrespSearchUrl(person);
         const precisionClass = getPersonPrecisionClass(person.precision);
@@ -157,7 +156,6 @@ export function renderPersonsList() {
 
         return `
             <div class="person-card ${precisionClass}" data-id="${escapeHtml(person.key)}" data-name="${name}">
-                <div class="person-avatar" aria-hidden="true">${escapeHtml(initials)}</div>
                 <div class="person-info">
                     <div class="person-name" title="${name}"><button type="button" class="person-filter-btn" data-id="${escapeHtml(person.key)}" title="Briefe von ${name} anzeigen">${name}</button>${wikidataIndicator}</div>
                     <div class="person-stats">
@@ -270,6 +268,13 @@ function showPersonDetail(personId) {
         person = Object.values(persons).find(p =>
             p.viaf === personId || p.id === personId || p.name === personId
         );
+    }
+    // A person without an authority record is in no index; the letters still name it
+    if (!person) {
+        for (const letter of deps.getAllLetters()) {
+            person = [letter.sender, ...letterRecipients(letter)].find(p => personKey(p) === personId);
+            if (person) break;
+        }
     }
     if (!person) return;
 

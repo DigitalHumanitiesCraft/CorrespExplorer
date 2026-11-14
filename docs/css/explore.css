@@ -74,7 +74,7 @@
 }
 
 .overview-stats-inline .stat-item i {
-    color: var(--color-primary);
+    color: var(--color-text-light);
 }
 
 .overview-stats-inline .stat-value {
@@ -93,8 +93,7 @@
 }
 
 .overview-source-inline a {
-    color: var(--color-primary);
-    text-decoration: none;
+    color: var(--color-link);
 }
 
 .overview-source-inline a:hover {
@@ -107,7 +106,7 @@
 
 .overview-source-inline .source-modifications summary {
     cursor: pointer;
-    color: var(--color-primary);
+    color: var(--color-link);
 }
 
 .overview-source-inline .source-modifications[open] {
@@ -209,7 +208,7 @@
 
 .entry-point-btn i {
     font-size: var(--font-size-2xl);
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 .entry-label {
@@ -226,10 +225,6 @@
 
 /* Research Paths Compact */
 .overview-research-paths {
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg);
     margin-bottom: var(--space-lg);
 }
 
@@ -256,7 +251,7 @@
 
 .show-all-paths-btn:hover {
     border-color: var(--color-primary);
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 /* Responsive */
@@ -544,34 +539,16 @@
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--color-bg-light);
-    border: 2px solid var(--color-border-light);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--color-border-light);
     cursor: pointer;
     transition: var(--transition-fast);
     transition-property: var(--transition-properties);
 }
 
 .person-card:hover {
-    border-color: var(--color-primary);
+    background: var(--color-bg-light);
 }
-
-.person-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: var(--font-size-lg);
-    flex-shrink: 0;
-}
-
 .person-info {
     flex: 1;
     min-width: 0;
@@ -624,7 +601,7 @@
 .person-count {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--color-primary-dark);
+    color: var(--color-text);
     min-width: 50px;
     text-align: right;
 }
@@ -662,18 +639,42 @@
 .letter-card {
     display: flex;
     flex-direction: column;
-    padding: var(--space-md);
-    background: var(--color-bg-light);
-    border: 2px solid var(--color-border-light);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--color-border-light);
     cursor: pointer;
     transition: var(--transition-fast);
     transition-property: var(--transition-properties);
 }
 
 .letter-card:hover {
-    border-color: var(--color-primary);
+    background: var(--color-bg-light);
+}
+
+/* One line per letter where the width allows it: correspondents, what the source records, date */
+@media (min-width: 1024px) {
+    .letter-card {
+        flex-direction: row;
+        align-items: baseline;
+        gap: var(--space-lg);
+    }
+
+    .letter-card .letter-header {
+        display: contents;
+    }
+
+    .letter-card .letter-participants {
+        flex: 2 1 0;
+        order: 1;
+    }
+
+    .letter-card .letter-meta {
+        flex: 3 1 0;
+        order: 2;
+    }
+
+    .letter-card .letter-header-actions {
+        order: 3;
+    }
 }
 
 .letter-header {
@@ -707,7 +708,7 @@
 }
 
 .letter-arrow {
-    color: var(--color-primary);
+    color: var(--color-text-light);
     margin: 0 var(--space-sm);
 }
 
@@ -742,6 +743,11 @@
     transform: scale(1.2);
 }
 
+.btn-letter-basket:not(.in-basket) i,
+.popup-basket-toggle:not(.in-basket) i {
+    font-weight: 400;
+}
+
 .btn-letter-basket.in-basket {
     color: var(--color-warning);
 }
@@ -764,7 +770,7 @@
 }
 
 .letter-meta a {
-    color: var(--color-primary-dark);
+    color: var(--color-link);
     text-decoration: none;
 }
 
@@ -806,7 +812,7 @@
 
 .export-option i {
     font-size: var(--font-size-2xl);
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 .export-option span {
@@ -952,7 +958,7 @@
 
 /* Undated letters bin - detached from main timeline */
 .timeline-undated-bin {
-    width: 50px;
+    width: 72px;
     height: 300px;
     position: relative;
     display: flex;
@@ -1148,14 +1154,14 @@
     border: none;
     background: none;
     font: inherit;
-    color: var(--color-secondary);
+    color: var(--color-link);
     text-decoration: underline;
     text-underline-offset: 2px;
     cursor: pointer;
 }
 
 .timeline-total__link:hover {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 .timeline-total__link:focus-visible {
@@ -1179,6 +1185,10 @@
     transition: var(--transition-fast);
     transition-property: var(--transition-properties);
     cursor: pointer;
+}
+
+.timeline-stack-segment + .timeline-stack-segment {
+    box-shadow: inset 0 -1px 0 var(--color-bg);
 }
 
 .timeline-stack-segment:hover {
@@ -1239,7 +1249,7 @@
 }
 
 .letter-detail-value a {
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
 }
 
@@ -1269,7 +1279,7 @@
 }
 
 .letter-detail-tag a:hover {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 .letter-detail-actions {
@@ -1395,8 +1405,8 @@
     width: 80px;
     height: 80px;
     border-radius: var(--radius-full);
-    background: var(--color-primary);
-    color: white;
+    background: var(--color-bg-light);
+    color: var(--color-text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1476,7 +1486,7 @@
 .person-places i,
 .person-professions i {
     width: 16px;
-    color: var(--color-primary);
+    color: var(--color-text-light);
 }
 
 .person-detail-section {
@@ -1503,7 +1513,7 @@
 }
 
 .person-detail-links a {
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
     font-size: var(--font-size-sm);
 }
@@ -1567,7 +1577,7 @@
 
 .btn-person-info:hover {
     border-color: var(--color-primary);
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     background: var(--color-primary-light);
 }
 
@@ -1621,7 +1631,7 @@
 }
 
 .popup-basket-toggle:hover {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 .popup-basket-toggle.in-basket {
@@ -1674,7 +1684,7 @@
 }
 
 .popup-person-link {
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
 }
 
@@ -1789,18 +1799,16 @@
         padding-left: 25px;
     }
 
+    .timeline-undated-bin {
+        height: 150px;
+    }
+
     .timeline-bar-label {
         font-size: var(--font-size-xs);
     }
 
     .person-card {
         padding: var(--space-sm);
-    }
-
-    .person-avatar {
-        width: 32px;
-        height: 32px;
-        font-size: var(--font-size-xs);
     }
 
     .person-name {
@@ -2014,7 +2022,7 @@
 }
 
 .legend-network-contemporary {
-    background: var(--color-secondary);
+    background: var(--color-data);
 }
 
 .legend-gradient {
@@ -2061,7 +2069,7 @@
     gap: var(--space-xs) var(--space-lg);
     margin-bottom: var(--space-sm);
     padding-left: var(--space-sm);
-    border-left: 3px solid var(--color-secondary);
+    border-left: 3px solid var(--color-border-control);
     font-size: var(--font-size-sm);
     color: var(--color-text);
 }
@@ -2079,12 +2087,12 @@
 .legend-hint {
     font-size: var(--font-size-xs);
     margin-top: var(--space-xs);
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
     font-style: italic;
 }
 
 .legend-hint a {
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
 }
 
@@ -2150,7 +2158,7 @@
 }
 
 .date-range-icon {
-    color: var(--color-secondary);
+    color: var(--color-text-light);
     font-size: 0.85em;
 }
 
@@ -2175,7 +2183,7 @@
 }
 
 .letter-date.date-range {
-    color: var(--color-secondary);
+    color: var(--color-text-light);
 }
 
 .letter-date.date-uncertain {
@@ -2211,7 +2219,7 @@
     height: 12px;
     border-radius: 2px;
     flex-shrink: 0;
-    background: var(--color-primary);
+    background: var(--color-text-light);
     background-image: repeating-linear-gradient(
         45deg,
         transparent,
@@ -2279,7 +2287,7 @@
 .tour-content h3 {
     margin: 0 0 var(--space-md) 0;
     font-size: var(--font-size-lg);
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 .tour-content p {
@@ -2340,7 +2348,7 @@
 .tour-prev:hover {
     background: var(--color-bg);
     border-color: var(--color-primary);
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 .tour-next,
@@ -2540,16 +2548,16 @@ body:has(.tour-highlight) .tour-backdrop {
     transform: translate(-50%, -50%);
     width: 14px;
     height: 14px;
-    background: var(--color-primary);
+    background: var(--color-data);
     border-radius: 50%;
     border: 3px solid var(--color-bg);
-    outline: 2px solid var(--color-primary);
+    outline: 2px solid var(--color-data);
 }
 
 .chronik-year-label {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--color-primary);
+    color: var(--color-text);
     background: var(--color-bg);
     padding: var(--space-xs) var(--space-sm);
     display: inline-block;
@@ -2638,7 +2646,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .chronik-context.first {
-    color: var(--color-primary-dark);
+    color: var(--color-text);
 }
 
 .chronik-persons:not(:first-child) {
@@ -2752,14 +2760,14 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .chronik-lifespan-progress {
     height: 100%;
-    background: linear-gradient(90deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    background: var(--color-data);
     border-radius: 3px;
     transition: width var(--transition-base);
 }
 
 .chronik-lifespan-age {
     font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
+    color: var(--color-text-light);
     min-width: 20px;
 }
 
@@ -2767,7 +2775,7 @@ body:has(.tour-highlight) .tour-backdrop {
 .chronik-layout-toggle {
     display: flex;
     gap: 2px;
-    background: var(--color-bg-secondary);
+    background: var(--color-bg-light);
     padding: 2px;
     border-radius: var(--radius-sm);
 }
@@ -2776,7 +2784,7 @@ body:has(.tour-highlight) .tour-backdrop {
     padding: 6px 10px;
     border: none;
     background: transparent;
-    color: var(--color-text-secondary);
+    color: var(--color-text-light);
     cursor: pointer;
     border-radius: var(--radius-sm);
     transition: var(--transition-fast);
@@ -2789,13 +2797,13 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .chronik-layout-btn:hover {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     background: var(--color-bg-light);
 }
 
 .chronik-layout-btn.active {
     background: var(--color-bg);
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 /* The layout buttons carry their name next to the icon */
@@ -2821,13 +2829,13 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .chronik-entry-compact:hover {
-    background: var(--color-bg-secondary);
+    background: var(--color-bg-light);
 }
 
 .chronik-compact-date {
     min-width: 90px;
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    color: var(--color-text-light);
 }
 
 .chronik-compact-sender,
@@ -2849,7 +2857,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .chronik-badge.first {
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 .chronik-compact-place {
@@ -2874,7 +2882,7 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .chronik-lifespan-progress-compact {
     height: 100%;
-    background: var(--color-primary);
+    background: var(--color-data);
     border-radius: 2px;
 }
 
@@ -2900,7 +2908,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .chronik-entry-timeline:hover {
-    background: var(--color-bg-secondary);
+    background: var(--color-bg-light);
 }
 
 .chronik-tl-left {
@@ -2948,7 +2956,7 @@ body:has(.tour-highlight) .tour-backdrop {
 
 /* The flag of a first letter; dark gold stays with the basket star */
 .chronik-tl-badge.first {
-    color: var(--color-primary-dark);
+    color: var(--color-text);
 }
 
 .chronik-tl-person {
@@ -2992,12 +3000,12 @@ body:has(.tour-highlight) .tour-backdrop {
     justify-content: center;
     gap: var(--space-md);
     padding: var(--space-xl);
-    color: var(--color-text-secondary);
+    color: var(--color-text-light);
 }
 
 .chronik-loading i {
     font-size: var(--font-size-xl);
-    color: var(--color-primary);
+    color: var(--color-text-light);
 }
 
 /* Empty state */
@@ -3029,12 +3037,12 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .enrichment-info li {
     margin-bottom: var(--space-xs);
-    color: var(--color-text-secondary);
+    color: var(--color-text-light);
 }
 
 .enrichment-count {
     font-weight: 500;
-    color: var(--color-primary);
+    color: var(--color-text);
     margin-top: var(--space-md);
 }
 
@@ -3062,7 +3070,7 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .progress-text {
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    color: var(--color-text-light);
     margin-bottom: var(--space-xs);
 }
 
@@ -3129,7 +3137,7 @@ body:has(.tour-highlight) .tour-backdrop {
 .log-icons {
     display: flex;
     gap: var(--space-xs);
-    color: var(--color-primary);
+    color: var(--color-text-light);
 }
 
 .log-icons i {
@@ -3158,7 +3166,7 @@ body:has(.tour-highlight) .tour-backdrop {
 .summary-item i {
     display: block;
     font-size: var(--font-size-lg);
-    color: var(--color-primary);
+    color: var(--color-text-light);
     margin-bottom: var(--space-xs);
 }
 
@@ -3225,8 +3233,7 @@ body:has(.tour-highlight) .tour-backdrop {
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-xs) var(--space-md);
-    background: var(--color-primary-light);
-    border: 1px dashed var(--color-accent);
+    border: 1px dashed var(--color-border-control);
     border-radius: var(--radius-full);
     cursor: help;
     transition: var(--transition-fast);
@@ -3239,7 +3246,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .experimental-badge i {
-    color: var(--color-accent);
+    color: var(--color-text-light);
     font-size: var(--font-size-sm);
 }
 
@@ -3248,7 +3255,7 @@ body:has(.tour-highlight) .tour-backdrop {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: var(--color-primary-dark);
+    color: var(--color-text-light);
 }
 
 .questions-grid {
@@ -3263,18 +3270,15 @@ body:has(.tour-highlight) .tour-backdrop {
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    padding: var(--space-md);
-    background: var(--color-bg);
-    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-sm);
+    border-bottom: 1px solid var(--color-border-light);
     cursor: pointer;
     transition: var(--transition-fast);
     transition-property: var(--transition-properties);
-    border: 1px solid transparent;
 }
 
 .question-card:hover {
-    border-color: var(--color-accent);
-    background: var(--color-primary-light);
+    background: var(--color-bg-light);
 }
 
 .question-icon {
@@ -3283,15 +3287,14 @@ body:has(.tour-highlight) .tour-backdrop {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-bg-light);
+    background: transparent;
     border-radius: var(--radius-md);
     color: var(--color-text-light);
     flex-shrink: 0;
 }
 
 .question-card:hover .question-icon {
-    color: var(--color-accent);
-    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
 }
 
 .question-content {
@@ -3317,8 +3320,6 @@ body:has(.tour-highlight) .tour-backdrop {
     align-items: center;
     gap: var(--space-xs);
     margin-top: var(--space-sm);
-    padding-top: var(--space-sm);
-    border-top: 1px dashed var(--color-border-light);
 }
 
 .preview-label {
@@ -3333,7 +3334,6 @@ body:has(.tour-highlight) .tour-backdrop {
     background: var(--color-bg-light);
     padding: 2px var(--space-sm);
     border-radius: var(--radius-full);
-    border: 1px solid var(--color-border-light);
     white-space: nowrap;
     max-width: 180px;
     overflow: hidden;
@@ -3342,7 +3342,6 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .question-card:hover .preview-item {
     background: var(--color-bg);
-    border-color: var(--color-primary-light);
 }
 
 .question-fix {
@@ -3353,7 +3352,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .question-fix i {
-    color: var(--color-accent);
+    color: var(--color-text-light);
     margin-right: var(--space-xs);
 }
 
@@ -3375,7 +3374,7 @@ body:has(.tour-highlight) .tour-backdrop {
     gap: 2px;
     padding: var(--space-xs) var(--space-sm);
     background: var(--color-bg-light);
-    border: 1px solid var(--color-border-light);
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: var(--transition-fast);
@@ -3406,7 +3405,7 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .path-step:hover {
     background: var(--color-primary-light);
-    border-color: var(--color-accent);
+    border-color: var(--color-primary);
 }
 
 .path-step-num {
@@ -3415,7 +3414,7 @@ body:has(.tour-highlight) .tour-backdrop {
     justify-content: center;
     width: 18px;
     height: 18px;
-    background: var(--color-accent);
+    background: var(--color-primary);
     color: white;
     border-radius: 50%;
     font-size: var(--font-size-xs);
@@ -3458,17 +3457,16 @@ body:has(.tour-highlight) .tour-backdrop {
 
 /* Questions the data cannot answer yet: enrichment potential in neutral tones (ADR-005) */
 .question-card.question-unavailable {
-    background: var(--color-bg-light);
-    border: 1px dashed var(--color-border-light);
+    color: var(--color-text-light);
     cursor: default;
 }
 
 .question-card.question-unavailable:hover {
-    border-color: var(--color-border-light);
+    background: transparent;
 }
 
 .question-card.question-unavailable .question-icon {
-    background: var(--color-bg);
+    background: transparent;
     color: var(--color-text-light);
 }
 
@@ -3600,7 +3598,7 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .activity-year-step:hover:not(:disabled) {
     border-color: var(--color-primary);
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 .activity-year-step:disabled {
@@ -3793,7 +3791,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .activity-detail-sender {
-    color: var(--color-primary);
+    color: var(--color-text);
     font-weight: 500;
 }
 
@@ -3803,7 +3801,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .activity-detail-recipient {
-    color: var(--color-secondary);
+    color: var(--color-text);
 }
 
 .activity-detail-place {
@@ -3856,13 +3854,13 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .comparison-mode-btn:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 .comparison-mode-btn.active {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
     color: white;
 }
 
@@ -3911,8 +3909,8 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .comparison-quick-btn:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 /* Ergebnis-Panels */
@@ -3948,7 +3946,7 @@ body:has(.tour-highlight) .tour-backdrop {
 .comparison-metric .metric-value {
     font-size: var(--font-size-xl);
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 .comparison-metric .metric-label {
@@ -4009,7 +4007,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .overlap-item i {
-    color: var(--color-accent);
+    color: var(--color-text-light);
     width: 20px;
 }
 
@@ -4070,7 +4068,7 @@ body:has(.tour-highlight) .tour-backdrop {
     gap: var(--space-xs);
     margin-top: var(--space-md);
     padding: var(--space-sm) var(--space-md);
-    background: var(--color-accent);
+    background: var(--color-primary);
     color: white;
     border: none;
     border-radius: var(--radius-sm);
@@ -4111,7 +4109,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .common-letter-sender {
-    color: var(--color-primary);
+    color: var(--color-text);
     font-weight: 500;
 }
 
@@ -4121,7 +4119,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .common-letter-recipient {
-    color: var(--color-secondary);
+    color: var(--color-text);
 }
 
 .common-letter-place {
@@ -4176,7 +4174,7 @@ body:has(.tour-highlight) .tour-backdrop {
     top: var(--navbar-height);
     z-index: var(--z-sticky);
     background: var(--color-bg);
-    border-bottom: 2px solid var(--color-accent);
+    border-bottom: 1px solid var(--color-border-control);
 }
 
 .path-bar-content {
@@ -4192,7 +4190,7 @@ body:has(.tour-highlight) .tour-backdrop {
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    color: var(--color-accent);
+    color: var(--color-text);
     font-weight: 500;
     flex-shrink: 1;
     min-width: 0;
@@ -4248,7 +4246,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .path-bar-step:hover {
-    border-color: var(--color-accent);
+    border-color: var(--color-primary);
 }
 
 .path-bar-step:disabled {
@@ -4262,8 +4260,8 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .path-bar-step.active,
 .path-bar-step[aria-current="step"] {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
+    background: var(--color-primary);
+    border-color: var(--color-primary);
     color: white;
 }
 
@@ -4289,7 +4287,7 @@ body:has(.tour-highlight) .tour-backdrop {
 .path-bar-step.active .path-bar-step-num,
 .path-bar-step[aria-current="step"] .path-bar-step-num {
     background: white;
-    color: var(--color-accent);
+    color: var(--color-primary-dark);
 }
 
 .path-bar-step.complete .path-bar-step-num {
@@ -4346,7 +4344,7 @@ body:has(.tour-highlight) .tour-backdrop {
     padding: 2px var(--space-md);
     background: var(--color-info-light);
     border-top: 1px solid var(--color-border-light);
-    color: var(--color-secondary);
+    color: var(--color-text-light);
     font-size: var(--font-size-xs);
 }
 
@@ -4361,13 +4359,12 @@ body:has(.tour-highlight) .tour-backdrop {
 
 /* Wissenskorb Sidebar */
 #sidebar-basket {
-    border-top: 2px solid var(--color-accent);
-    background: var(--color-primary-light);
+    border-top: 1px solid var(--color-border-light);
 }
 
 /* On --color-primary-light the accent reaches only 4.34:1, the dark variant meets AA */
 #sidebar-basket .sidebar-section-header h2 {
-    color: var(--color-primary-dark);
+    color: var(--color-text);
 }
 
 .basket-group {
@@ -4395,8 +4392,8 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .basket-group-count {
     font-weight: 600;
-    color: var(--color-primary-dark);
-    background: var(--color-primary-light);
+    color: var(--color-text);
+    background: var(--color-bg-light);
     padding: 2px 8px;
     border-radius: var(--radius-sm);
 }
@@ -4416,7 +4413,7 @@ body:has(.tour-highlight) .tour-backdrop {
 .btn-add-basket {
     width: 100%;
     padding: var(--space-sm);
-    background: var(--color-accent);
+    background: var(--color-primary);
     border: none;
     border-radius: var(--radius-sm);
     color: white;
@@ -4447,9 +4444,9 @@ body:has(.tour-highlight) .tour-backdrop {
     margin-top: var(--space-sm);
     padding: var(--space-sm);
     background: var(--color-bg);
-    border: 1px solid var(--color-accent);
+    border: 1px solid var(--color-primary);
     border-radius: var(--radius-sm);
-    color: var(--color-accent);
+    color: var(--color-primary);
     text-decoration: none;
     font-size: var(--font-size-sm);
     transition: var(--transition-fast);
@@ -4457,7 +4454,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .basket-view-link:hover {
-    background: var(--color-accent);
+    background: var(--color-primary);
     color: white;
 }
 

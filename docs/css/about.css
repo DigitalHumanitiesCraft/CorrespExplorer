@@ -33,7 +33,7 @@
     color: var(--color-text);
     margin: 0 0 var(--space-md) 0;
     padding-bottom: var(--space-sm);
-    border-bottom: 2px solid var(--color-primary);
+    border-bottom: 1px solid var(--color-border-control);
 }
 
 .about-section p {
@@ -43,7 +43,7 @@
 }
 
 .about-section a:not(.btn) {
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
 }
 
@@ -126,7 +126,7 @@
 
 .feature-item i {
     font-size: var(--font-size-2xl);
-    color: var(--color-primary);
+    color: var(--color-text);
     margin-bottom: var(--space-sm);
 }
 
@@ -153,7 +153,7 @@
 }
 
 .tech-list strong {
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 /* Footer */

@@ -344,7 +344,7 @@ function renderMentionsFlowForPerson(person) {
             .style('font-size', tokens.fontXs)
             .style('font-weight', '600')
             .style('fill', tokens.sender)
-            .text('ERWAEHNT VON');
+            .text('ERWÄHNT VON');
 
         if (!narrow) {
             labelGroup.append('text')
@@ -376,7 +376,7 @@ function renderMentionsFlowForPerson(person) {
             .style('font-size', tokens.fontXs)
             .style('font-weight', '600')
             .style('fill', tokens.mentioned)
-            .text('ERWAEHNT');
+            .text('ERWÄHNT');
 
         if (!narrow) {
             labelGroup.append('text')

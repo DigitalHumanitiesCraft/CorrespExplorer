@@ -98,7 +98,7 @@ button {
 }
 
 .nav-link:hover {
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
     border-color: var(--color-primary);
     background: var(--color-bg);
 }
@@ -189,13 +189,13 @@ button {
 }
 
 #year-range-slider .noUi-connect {
-    background: var(--color-accent);
+    background: var(--color-primary);
 }
 
 #year-range-slider .noUi-handle {
     width: 20px;
     height: 20px;
-    border: 2px solid var(--color-accent);
+    border: 2px solid var(--color-primary);
     border-radius: 50%;
     background: var(--color-bg);
     box-shadow: none;
@@ -312,7 +312,7 @@ button {
     margin-top: var(--space-sm);
     font-size: var(--font-size-xs);
     /* The sidebar is --color-bg-light, where the primary colour stays below 4.5:1 */
-    color: var(--color-primary-dark);
+    color: var(--color-link);
     text-decoration: none;
 }
 
@@ -426,9 +426,14 @@ button {
     outline-offset: -3px;
 }
 
+/* On the filled active tab the accent ring would be invisible */
+.view-btn.active:focus-visible {
+    outline-color: var(--color-bg);
+}
+
 .view-btn:hover {
     background: var(--color-bg);
-    color: var(--color-primary);
+    color: var(--color-primary-dark);
 }
 
 .view-btn.active,
@@ -690,7 +695,7 @@ button {
 .popup a {
     display: inline-block;
     margin-top: var(--space-md);
-    color: var(--color-secondary);
+    color: var(--color-link);
     text-decoration: none;
     font-size: var(--font-size-sm);
 }
@@ -772,7 +777,7 @@ button {
 }
 
 .error-message a {
-    color: var(--color-secondary);
+    color: var(--color-link);
     text-decoration: none;
     font-size: var(--font-size-lg);
     display: inline-block;

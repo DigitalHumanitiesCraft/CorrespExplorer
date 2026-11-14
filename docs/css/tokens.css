@@ -13,15 +13,17 @@
     /* Primary Colors - From Logo */
     --color-primary: #A64B3F;        /* Rust Red - Primary action, logo gear */
     --color-primary-dark: #8B3D33;   /* Dark Rust - Hover states */
-    --color-secondary: #2C5282;      /* Steel Blue - Links, Network sender */
-    --color-accent: #A64B3F;         /* Rust Red - Same as primary (logo-consistent) */
+    --color-secondary: #2C5282;      /* Ink Blue - second brand colour of the landing page */
     --color-text: #222222;           /* Ink Black - Primary text, borders */
-    --color-text-light: #555555;     /* Medium Gray - Secondary text */
-    --color-text-secondary: #555555; /* Alias for text-light */
-    --color-text-muted: #555555;     /* Alias for text-light */
+    --color-text-light: #55524A;     /* Warm grey - secondary text, 7.0:1 on --color-bg, 6.1:1 on --color-bg-light */
     --color-bg: #F5F3E8;             /* Cream/Paper - Main background */
-    --color-bg-light: #E8E4D4;       /* Manila - Cards, containers */
-    --color-bg-secondary: #E8E4D4;   /* Alias for bg-light */
+    --color-bg-light: #E8E4D4;       /* Manila - hover, panels, controls */
+
+    /* Roles: the accent marks what can be clicked or is selected, never data or decoration
+       (design.md, Farbe). Links use the dark accent, which holds 4.5:1 on both backgrounds. */
+    --color-link: var(--color-primary-dark);
+    /* Single-series marks: bars, the heatmap scale, map points and network nodes */
+    --color-data: #2C5282;
     --color-border: #222222;         /* Ink Black - Thick borders (2-3px) */
     --color-border-light: #D4D0C0;   /* Subtle borders, dividers; too faint for controls */
     --color-border-control: #7F7A69; /* Boundaries of inputs and buttons, 3.4:1 on --color-bg-light (WCAG 1.4.11) */
@@ -39,46 +41,23 @@
     --color-warning-light: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg));
     --color-error-light: color-mix(in srgb, var(--color-error) 12%, var(--color-bg));
 
-    /* Sequential scale for counts (activity heatmap), from --color-bg to --color-primary */
-    --color-scale-1: color-mix(in srgb, var(--color-primary) 25%, var(--color-bg));
-    --color-scale-2: color-mix(in srgb, var(--color-primary) 50%, var(--color-bg));
-    --color-scale-3: color-mix(in srgb, var(--color-primary) 75%, var(--color-bg));
-    --color-scale-4: var(--color-primary);
+    /* Sequential scale for counts (activity heatmap), towards --color-data; the lowest step
+       stays apart from the empty cell on --color-bg-light */
+    --color-scale-1: color-mix(in srgb, var(--color-data) 50%, var(--color-bg));
+    --color-scale-2: color-mix(in srgb, var(--color-data) 66%, var(--color-bg));
+    --color-scale-3: color-mix(in srgb, var(--color-data) 83%, var(--color-bg));
+    --color-scale-4: var(--color-data);
 
     /* Backdrops */
     --color-backdrop: rgba(0, 0, 0, 0.5); /* Behind dialogs and the mobile menu */
     --color-overlay: rgba(0, 0, 0, 0.7);  /* Behind the demo tour */
 
     /* Role Colors (Map/Network) - design.md, Datenvisualisierung */
-    --color-role-sender: #2c5f8d;    /* Steel Blue - Absenderin */
+    --color-role-sender: #2C5282;    /* Same as --color-data */
     --color-map-land: #E8E4D4;       /* Basemap land, design.md, Karte */
     --color-map-water: #B8D4E8;      /* Basemap water, design.md, Karte */
-    --color-role-mentioned: #6c757d; /* Medium Gray - Erwähnt */
-    --color-role-both: #2d6a4f;      /* Forest Green - Beide */
-    --color-role-indirect: #adb5bd;  /* Light Gray - Indirekt (SNDB only) */
-
-    /* Badge Colors */
-    --color-badge-gnd: #2d6a4f;      /* Green text */
-    --color-badge-gnd-bg: #d8f3dc;   /* Light green background */
-    --color-badge-sndb: #9b6b00;     /* Gold text */
-    --color-badge-sndb-bg: #fff3cd;  /* Light yellow background */
-
-    /* Relationship Colors (AGRELON Network) */
-    --color-relation-family: #ff0066;      /* Pink - Family relationships */
-    --color-relation-professional: #00ccff; /* Cyan - Professional relationships */
-    --color-relation-social: #ffcc00;      /* Yellow - Social relationships */
-    --color-badge-relation: #ff0066;       /* Default relation badge color */
-
-    /* Network Edge Colors - Optimized for readability on map */
-    --edge-family: #D0388C;        /* Familie (AGRELON 4xxx) - Magenta */
-    --edge-work: #147D7E;          /* Beruflich (AGRELON 3xxx) - Teal */
-    --edge-social: #2E7D32;        /* Sozial (AGRELON 1xxx+2xxx) - Green */
-    --edge-correspondence: #6C5CE7; /* Korrespondenz (Briefe) - Purple */
-
-    /* Network Edge Opacity States */
-    --edge-opacity-default: 0.6;   /* Default state - transparent */
-    --edge-opacity-hover: 1.0;     /* Hover state - fully visible */
-    --edge-opacity-pinned: 0.8;    /* Pinned state - semi-opaque */
+    --color-role-mentioned: #6E6959; /* Warm grey - Erwähnt, 4.9:1 on --color-bg */
+    --color-role-organization: #00735C; /* Green - Körperschaft beside persons in --color-data */
 
     /* ========================================
      * TYPOGRAPHY
@@ -189,35 +168,28 @@
 
 /* Date Precision */
 .date-imprecise {
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
 }
 
 .date-range {
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
 }
 
 /* Uncertainty marker with tooltip (used in HTML, not ::after) */
 
 .date-unknown {
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
     font-style: italic;
 }
 
 /* Person Precision */
 .person-unknown {
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
     font-style: italic;
 }
 
 .person-partial {
-    color: var(--color-text-muted);
-}
-
-.person-unknown .person-avatar,
-.person-partial .person-avatar {
-    background: var(--color-bg-light);
-    border: 2px dashed var(--color-border-light);
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
 }
 
 /* Place Precision */
@@ -230,7 +202,7 @@
 /* Values the edition inferred keep the editorial brackets and a muted tone */
 .place-inferred,
 .date-inferred {
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
 }
 
 /* A date the source wrote only as text, and a year far outside the dataset */
@@ -246,7 +218,7 @@
 }
 
 .place-unknown {
-    color: var(--color-text-muted);
+    color: var(--color-text-light);
     font-style: italic;
 }
 
@@ -285,8 +257,8 @@ DO NOT use hard-coded values where tokens exist.
 
 Colour contrast (WCAG AA), measured against --color-bg (#F5F3E8):
 - --color-text (#222222) 14.3:1
-- --color-secondary (#2C5282) 7.2:1, links
-- --color-primary (#A64B3F) 5.1:1, on --color-bg-light only 4.45:1, use --color-primary-dark there
+- --color-data (#2C5282) 7.2:1
+- --color-primary (#A64B3F) 5.1:1, on --color-bg-light only 4.45:1; text on it uses --color-link (--color-primary-dark)
 - --color-warning and --color-info are dark enough for text on --color-bg and --color-bg-light
 
 Spacing Convention:

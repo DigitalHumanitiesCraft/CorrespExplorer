@@ -13,7 +13,7 @@ const TYPE_COLOR_TOKEN = {
     topics: '--color-warning'
 };
 // Organisations apart from persons, in the "Farbe" mode by kind
-const ORGANIZATION_COLOR_TOKEN = '--color-primary';
+const ORGANIZATION_COLOR_TOKEN = '--color-role-organization';
 
 // Module state
 // Who wrote to whom is the basic question of a correspondence network, so it is the default type

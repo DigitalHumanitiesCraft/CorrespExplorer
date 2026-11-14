@@ -13,7 +13,7 @@
 .wissenskorb-title {
     margin: 0 0 var(--space-lg) 0;
     font-size: var(--font-size-xl);
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 /* Empty State */
@@ -192,7 +192,7 @@
 }
 
 .item-row-icon {
-    color: var(--color-primary);
+    color: var(--color-text-light);
     font-size: 0.9rem;
 }
 
@@ -243,7 +243,7 @@
 .summary-stats .stat-value {
     font-size: var(--font-size-xl);
     font-weight: 600;
-    color: var(--color-primary);
+    color: var(--color-text);
 }
 
 .summary-stats .stat-label {
@@ -486,7 +486,7 @@
 }
 
 .date-range-icon {
-    color: var(--color-secondary);
+    color: var(--color-text-light);
 }
 
 .date-uncertain-icon {
@@ -498,7 +498,7 @@
 }
 
 .details-link {
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
     padding: 5px;
 }

@@ -258,7 +258,7 @@ function placesToGeoJSON(places) {
         // Get color for dominant language
         const langColor = place.dominantLanguage
             ? (LANGUAGE_COLORS[place.dominantLanguage] || LANGUAGE_COLORS['other'])
-            : LANGUAGE_COLORS['other'];
+            : LANGUAGE_COLORS[NO_LANGUAGE];
 
         features.push({
             type: 'Feature',
@@ -276,7 +276,7 @@ function placesToGeoJSON(places) {
                 year_max: place.years.length > 0 ? Math.max(...place.years) : null,
                 top_senders: JSON.stringify(place.topSenders),
                 languages: place.languages.join(', '),
-                dominant_language: place.dominantLanguage || 'other',
+                dominant_language: place.dominantLanguage || NO_LANGUAGE,
                 dominant_language_ratio: place.dominantLanguageRatio || 0,
                 language_color: langColor
             }
@@ -320,10 +320,11 @@ function renderPlaceMarkers(places) {
 
 // Add map layers
 function addMapLayers() {
-    const primary = cssToken('--color-primary');
+    // A cluster mixes languages, so it takes a neutral tone that no language carries
+    const primary = cssToken('--color-text-light');
     const outline = cssToken('--color-bg');
 
-    // Cluster layer - always uniform color (clusters mix languages)
+    // Cluster layer
     map.addLayer({
         id: 'places-clusters',
         type: 'circle',
@@ -390,7 +391,7 @@ function addMapLayers() {
 // Get the circle color expression based on current color mode
 function getMapCircleColorExpression() {
     if (mapColorMode === 'uniform') {
-        return cssToken('--color-primary');
+        return cssToken('--color-data');
     }
 
     // Build dynamic match expression based on available languages
@@ -450,7 +451,9 @@ function updateMapLegend() {
     // Count places per dominant language
     const langCounts = {};
     Object.values(deps.getPlaceAggregation()).forEach(place => {
-        const lang = place.dominantLanguage || 'other';
+        // Languages without a colour of their own share one legend entry
+        const lang = !place.dominantLanguage ? NO_LANGUAGE
+            : LANGUAGE_COLORS[place.dominantLanguage] ? place.dominantLanguage : 'other';
         if (!langCounts[lang]) {
             langCounts[lang] = { places: 0, letters: 0 };
         }
@@ -458,10 +461,10 @@ function updateMapLegend() {
         langCounts[lang].letters += place.letter_count;
     });
 
-    // Sort by letter count
+    // By letter count; the rest and the places without a language close the list
+    const rank = lang => (lang === 'other' ? 1 : lang === NO_LANGUAGE ? 2 : 0);
     const sortedLangs = Object.entries(langCounts)
-        .sort((a, b) => b[1].letters - a[1].letters)
-        .slice(0, 8); // Show top 8 languages
+        .sort((a, b) => rank(a[0]) - rank(b[0]) || b[1].letters - a[1].letters);
 
     // Build legend HTML
     let html = '';
@@ -526,8 +529,10 @@ function setupEventHandlers() {
 // Show popup for a place
 function showPlacePopup(lngLat, props) {
     const yearRange = props.year_min && props.year_max
-        ? `${props.year_min}–${props.year_max}`
+        ? (props.year_min === props.year_max ? `${props.year_min}` : `${props.year_min}–${props.year_max}`)
         : 'unbekannt';
+    const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+    const languageNames = (props.languages || '').split(', ').filter(Boolean).map(languageLabel).join(', ');
 
     // Basket toggle state
     const placeId = props.id;
@@ -571,10 +576,10 @@ function showPlacePopup(lngLat, props) {
                 </button>
             </div>
             <div class="popup-stats">
-                <p><strong>${props.letter_count}</strong> Briefe von ${props.sender_count} Absendern</p>
+                <p><strong>${props.letter_count}</strong> ${props.letter_count === 1 ? 'Brief' : 'Briefe'} von ${plural(props.sender_count, 'Absender', 'Absendern')}</p>
                 <p class="popup-year-range">${yearRange}</p>
                 ${topSendersHtml}
-                ${props.languages ? `<p class="popup-languages"><small>Sprachen: ${escapeHtml(props.languages)}</small></p>` : ''}
+                ${languageNames ? `<p class="popup-languages"><small>Sprachen: ${escapeHtml(languageNames)}</small></p>` : ''}
             </div>
             <div class="popup-actions">
                 <button type="button" class="popup-action-btn popup-show-letters" data-place-id="${escapeHtml(placeId)}">
