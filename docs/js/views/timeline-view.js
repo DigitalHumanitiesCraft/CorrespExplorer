@@ -5,7 +5,7 @@ import { LANGUAGE_COLORS, LETTER_FEATURES, NO_LANGUAGE, isRestLanguage, language
 import { elements } from '../dom-cache.js';
 import { escapeHtml, showToast, isMultiYearSpan } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
-import { focusViewHeading, renderDataTable } from './view-support.js';
+import { renderDataTable } from './view-support.js';
 
 // Module state
 let undatedBinBound = false;  // the undated bin is static markup, its listeners are bound once
@@ -14,7 +14,7 @@ let undatedBinBound = false;  // the undated bin is static markup, its listeners
 let getFilteredLetters = null;
 let getAllLetters = null;
 let applyFilters = null;
-let switchView = null;
+let revealLetters = null;
 let showUndatedLetters = null;
 let showLettersWithFeature = null;
 let clearLetterSearch = null;
@@ -28,7 +28,7 @@ export function initTimelineView(deps) {
     getFilteredLetters = deps.getFilteredLetters;
     getAllLetters = deps.getAllLetters;
     applyFilters = deps.applyFilters;
-    switchView = deps.switchView;
+    revealLetters = deps.revealLetters;
     showUndatedLetters = deps.showUndatedLetters;
     showLettersWithFeature = deps.showLettersWithFeature;
     clearLetterSearch = deps.clearLetterSearch;
@@ -204,14 +204,14 @@ export function renderTimeline() {
 
     container.innerHTML = bars.join('');
     container.setAttribute('role', 'group');
-    container.setAttribute('aria-label', 'Briefe pro Jahr. Pfeiltasten wechseln das Jahr, Enter zeigt die Briefe des Jahres in der Briefliste, Umschalt und Enter legt sie in den Korb');
+    container.setAttribute('aria-label', 'Briefe pro Jahr. Pfeiltasten wechseln das Jahr, Enter zeigt die Briefe des Jahres unter der Grafik, Umschalt und Enter legt sie in den Korb');
 
     // The instruction names only what the chart offers: language segments exist only with languages
     const description = document.querySelector('#timeline-view .view-header__description');
     if (description) {
         description.textContent = hasLanguageData
             ? 'Klicken Sie auf ein Sprach-Segment, um nach Jahr und Sprache zu filtern.'
-            : 'Klicken Sie auf ein Jahr, um seine Briefe in der Briefliste zu sehen.';
+            : 'Klicken Sie auf ein Jahr, um seine Briefe unter der Grafik zu sehen.';
     }
 
     // Add Y-axis gridlines
@@ -353,18 +353,9 @@ function uncertainPhrase(imprecise, inferred) {
     return parts.join(', ');
 }
 
-/**
- * After a bar sent the reader to the letter list, focus goes to its heading; the bar itself
- * leaves the screen with the timeline, and focus would otherwise fall back to the document.
- */
-function focusLettersHeading() {
-    focusViewHeading('letters');
-}
-
-// Letter list with one group of letters without a year, under the filters already set
+// One group of letters without a year, under the filters already set, opened below the timeline
 function showFeatureLetters(key) {
     showLettersWithFeature(key, { keepOthers: true });
-    focusLettersHeading();
 }
 
 function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount, offAxis) {
@@ -425,7 +416,6 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
         // A year range cannot express "no date": the slider clamps values below its minimum
         undatedBin.onclick = () => {
             showUndatedLetters();
-            focusLettersHeading();
         };
     } else {
         // Show schematic placeholder when all letters are dated
@@ -550,8 +540,7 @@ function setupTimelineClickHandlers(container) {
             }
 
             applyFilters();
-            switchView('letters');
-            focusLettersHeading();
+            revealLetters();
         });
     });
 
@@ -574,8 +563,7 @@ function setupTimelineClickHandlers(container) {
 
         clearLetterSearch();
         applyFilters();
-        switchView('letters');
-        focusLettersHeading();
+        revealLetters();
     };
 
     wrappers.forEach(wrapper => {

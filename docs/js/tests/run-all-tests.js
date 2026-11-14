@@ -14,6 +14,7 @@ import { DemoTests } from './test-demo.js';
 import { CorrespSearchTests } from './test-correspsearch.js';
 import { SpacetimeTests } from './test-spacetime.js';
 import { NetworkTests } from './test-network.js';
+import { SelectionTests } from './test-selection.js';
 
 /**
  * Run all registered suites
@@ -32,6 +33,7 @@ export async function runAllTests() {
         CorrespSearchTests,
         SpacetimeTests,
         NetworkTests,
+        SelectionTests,
 
         // Infrastructure (State Management)
         StateManagerTests,

@@ -1,10 +1,26 @@
 // State manager: one filter state for all views (ADR-003), so every view and the URL see the same
 // letter set, and subscribers learn about changes without importing each other
 
-import { personKey, placeKey, letterRecipients } from './utils.js';
+import { personKey, placeKey, letterRecipients, isMultiYearSpan } from './utils.js';
 
 const LEGACY_PLACE_PREFIX = 'name:';
 import { NO_LANGUAGE, LETTER_FEATURES } from './constants.js';
+
+/**
+ * Whether a letter passed between two persons: one of them sent it and the other is among its
+ * recipients. A letter of one of them to a third person, or to both at once from a third, is not
+ * between them. The network's ties count the same letters.
+ * @param {Object} letter
+ * @param {string} a - personKey
+ * @param {string} b - personKey
+ * @returns {boolean}
+ */
+export function isLetterBetween(letter, a, b) {
+    const from = personKey(letter.sender);
+    if (from !== a && from !== b) return false;
+    const other = from === a ? b : a;
+    return letterRecipients(letter).some(r => personKey(r) === other);
+}
 
 /**
  * AppState
@@ -31,8 +47,10 @@ class AppState {
         // Filter state
         this.filters = {
             temporal: null,              // { min, max } or { undated: true }
+            year: null,                  // one year picked in a figure; leaves the period as it is
             languages: null,             // null = no filter, array = allowed codes (empty = none)
             person: null,                // personKey: authority id, else name
+            partner: null,               // second personKey: with person, only letters between the two
             subject: null,               // Subject URI, else id or label
             place: null,                 // placeKey: GeoNames id, else name
             features: null,              // null = no filter, array of LETTER_FEATURES keys (all must hold)
@@ -46,6 +64,8 @@ class AppState {
         // UI state
         this.ui = {
             currentView: 'overview',
+            // The letters drawer at the lower edge of the views; part of a shared link
+            drawerOpen: false,
 
             // Topics view
             selectedTopicId: null,
@@ -175,6 +195,8 @@ class AppState {
             temporal: null,
             languages: null,
             person: null,
+            partner: null,
+            year: null,
             subject: null,
             place: null,
             features: null,
@@ -235,6 +257,10 @@ class AppState {
                 }
             }
 
+            // A picked year holds the letters dated within it; a span over several years has no
+            // place in one year, as on the time axes of the figures
+            if (filters.year != null && (letter.year !== filters.year || isMultiYearSpan(letter))) return false;
+
             if (filters.languages) {
                 const langCode = letter.language?.code || NO_LANGUAGE;
                 if (!filters.languages.includes(langCode)) {
@@ -242,7 +268,9 @@ class AppState {
                 }
             }
 
-            if (filters.person) {
+            if (filters.person && filters.partner) {
+                if (!isLetterBetween(letter, filters.person, filters.partner)) return false;
+            } else if (filters.person) {
                 if (personKey(letter.sender) !== filters.person &&
                     !letterRecipients(letter).some(r => personKey(r) === filters.person)) {
                     return false;
@@ -311,7 +339,7 @@ class AppState {
      * Export view and every filter to URL parameters. fromURLParams reads the same names, so
      * a shared link restores the exact letter set.
      * Names: view, undated=1 | yearMin+yearMax, langs (comma list, empty = no language selected),
-     * person, subject, place, precise=1, known=1, located=1
+     * year, person, partner, subject, place, precise=1, known=1, located=1, feat, drawer=1
      * @returns {URLSearchParams} URL params
      */
     toURLParams() {
@@ -321,6 +349,7 @@ class AppState {
         if (this.ui.currentView) {
             params.set('view', this.ui.currentView);
         }
+        if (this.ui.drawerOpen) params.set('drawer', '1');
 
         // Temporal filter
         if (this.filters.temporal?.undated) {
@@ -330,6 +359,8 @@ class AppState {
             params.set('yearMax', this.filters.temporal.max);
         }
 
+        if (this.filters.year != null) params.set('year', this.filters.year);
+
         // Language filter
         if (this.filters.languages) {
             params.set('langs', this.filters.languages.join(','));
@@ -338,6 +369,7 @@ class AppState {
         // Person filter
         if (this.filters.person) {
             params.set('person', this.filters.person);
+            if (this.filters.partner) params.set('partner', this.filters.partner);
         }
 
         // Subject filter
@@ -366,9 +398,7 @@ class AppState {
      */
     fromURLParams(params) {
         const view = params.get('view');
-        if (view) {
-            this.updateUI({ currentView: view });
-        }
+        this.updateUI({ ...(view ? { currentView: view } : {}), drawerOpen: params.get('drawer') === '1' });
 
         // A year range needs both ends as integers; anything else means no time filter
         let temporal = null;
@@ -396,10 +426,15 @@ class AppState {
         const featureKeys = (params.get('feat') || '').split(',').filter(key => LETTER_FEATURES.some(f => f.key === key));
         const features = featureKeys.length ? featureKeys : null;
 
+        // A partner means something only beside a person: the letters between the two
+        const person = params.get('person') || null;
+        const year = parseInt(params.get('year'), 10);
         this.updateFilters({
             temporal,
+            year: Number.isInteger(year) ? year : null,
             languages,
-            person: params.get('person') || null,
+            person,
+            partner: person && params.get('partner') !== person ? params.get('partner') || null : null,
             subject: params.get('subject') || null,
             place,
             features,

@@ -8,10 +8,9 @@
 // rotation slow; axis and place names stay SVG text above it, and the pointer is matched to
 // columns by geometry.
 
-import { escapeHtml, isMultiYearSpan, placeKey, prefersReducedMotion } from '../utils.js';
+import { escapeHtml, foldText, isMultiYearSpan, placeKey, prefersReducedMotion } from '../utils.js';
 import { state } from '../state-manager.js';
 import { LANGUAGE_COLORS, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
-import { focusViewHeading } from './view-support.js';
 
 export const CAMERAS = {
     schraeg: { yaw: -0.55, pitch: 0.62 },
@@ -37,9 +36,10 @@ let deps = {};
 let cam = { ...CAMERAS.schraeg, zoom: 1, panX: 0, panY: 0 };
 let bound = false;
 let model = null;
-// Place key and year the reader picked with a mark or the year list; null when nothing is picked
+// Year picked with a mark or the year list of the chosen place (state.filters.year), or null
 let pickedYear = null;
-let pickedPlace = null;
+// Whether the last drawing was forced to the top view by a period of one year
+let wasFlat = false;
 // Place under the pointer or focused in the list, drawn emphasised
 let hoverPlace = null;
 let hoverYear = null;
@@ -55,7 +55,9 @@ let hitColumns = [];
 let moving = false;
 let frame = 0;
 let lastScreen = null;
-const groundCache = { letters: null, layout: null, land: null };
+const groundCache = { letters: null, layout: null, land: null, maxCount: 0, maxTotal: 0 };
+// What the reader typed into the search of the place list
+let placeQuery = '';
 
 /**
  * Letters per sending place and year, each year with its most frequent language. Letters without a year (or only a span over several years,
@@ -237,8 +239,8 @@ export function niceStep(span, count) {
  * @param {Object} dependencies
  * @param {Function} dependencies.getDataIndices
  * @param {Function} dependencies.togglePlace - sets or releases the place filter
- * @param {Function} dependencies.showLettersOfPlaceYear - letter list of one place in one year
- * @param {Function} dependencies.switchView
+ * @param {Function} dependencies.showLettersOfPlaceYear - selects one place in one year and opens its letters
+ * @param {Function} dependencies.pickYear - picks one year of the selection or releases it (null)
  */
 export function initSpacetimeView(dependencies) {
     deps = dependencies;
@@ -248,11 +250,17 @@ const el = id => document.getElementById(id);
 const fmt = n => n.toLocaleString('de-DE');
 const plural = (n, one, many) => `${fmt(n)} ${n === 1 ? one : many}`;
 const isNarrow = () => window.matchMedia?.(NARROW_QUERY).matches ?? false;
+// A period of one year leaves the time axis without extent, an oblique figure would be a flat sliver
+const isOneYear = () => Boolean(model && model.drawn > 0 && model.yearMin === model.yearMax);
+// The figure shows only the top view: on narrow screens and for a period of one year
+const isFlat = () => isNarrow() || isOneYear();
 
-// The view draws the letters of all filters except the place filter: a chosen place stands out
-// among the others instead of leaving the figure alone with one column
-function lettersBesidePlaceFilter() {
-    return state.filterLetters({ ...state.filters, place: null });
+// The view draws the letters of all filters except the place and the year picked in it: a chosen
+// place stands out among the others instead of leaving the figure alone with one column, and a
+// picked year is a level through the figure instead of flattening its time axis. The period of the
+// sidebar does narrow the figure.
+function lettersBesidePick() {
+    return state.filterLetters({ ...state.filters, place: null, year: null });
 }
 
 export function renderSpacetime() {
@@ -260,26 +268,31 @@ export function renderSpacetime() {
     if (!svg) return;
     bind();
     const placesIndex = deps.getDataIndices?.().places || {};
-    const agg = aggregatePlaceYears(lettersBesidePlaceFilter(), placesIndex);
+    const agg = aggregatePlaceYears(lettersBesidePick(), placesIndex);
     // The plane comes from the whole dataset, so the geography stays put while filters change
     const all = state.getAllLetters();
     if (groundCache.letters !== all) {
         groundCache.letters = all;
-        groundCache.layout = groundLayout(aggregatePlaceYears(all, placesIndex).places);
+        const whole = aggregatePlaceYears(all, placesIndex);
+        groundCache.layout = groundLayout(whole.places);
         groundCache.land = null;
+        // Widths and rings are scaled to the whole dataset, so the same width means the same
+        // number of letters under every filter
+        groundCache.maxCount = whole.maxCount;
+        groundCache.maxTotal = whole.maxTotal;
     }
     readInk();
     loadLand();
     const ground = groundCache.layout;
-    model = { ...agg, ground, selected: state.filters.place || null };
+    model = { ...agg, ground, selected: state.filters.place || null, maxCount: groundCache.maxCount || agg.maxCount, maxTotal: groundCache.maxTotal || agg.maxTotal };
     for (const place of model.places) Object.assign(place, ground.toGround(place.lat, place.lon));
-    if (pickedPlace !== model.selected) {
-        pickedPlace = model.selected;
-        pickedYear = null;
-    }
-    if (isNarrow()) Object.assign(cam, CAMERAS.oben);
+    pickedYear = state.filters.year ?? null;
+    // A period of one year has no height to show; the figure then is the map from above
+    const flat = isFlat();
+    if (flat) Object.assign(cam, CAMERAS.oben);
+    else if (wasFlat) Object.assign(cam, CAMERAS.schraeg, { panX: 0, panY: 0 });
+    wasFlat = flat;
     renderList();
-    renderDetail();
     renderNote();
     renderLegend();
     syncCameraButtons();
@@ -477,6 +490,13 @@ function draw() {
             lastY = q.Y;
             axis += `<line class="st-axis" x1="${(q.X - 4).toFixed(1)}" y1="${q.Y.toFixed(1)}" x2="${q.X.toFixed(1)}" y2="${q.Y.toFixed(1)}"/><text class="st-tick" x="${(q.X - 7).toFixed(1)}" y="${q.Y.toFixed(1)}" text-anchor="end" dominant-baseline="middle">${y}</text>`;
         }
+        // The year under the pointer and the picked year as numbers where their level meets the
+        // axis: read across the oblique figure, a mark lies years away from the tick beside it
+        for (const [year, cls] of [[pickedYear, 'st-tick--picked'], [hoverYear, 'st-tick--hover']]) {
+            if (year === null || year < model.yearMin || year > model.yearMax) continue;
+            const q = pr.at(corner.x, corner.z, yearToHeight(year));
+            axis += `<text class="st-tick ${cls}" x="${Math.max(34, q.X - 7).toFixed(1)}" y="${q.Y.toFixed(1)}" text-anchor="end" dominant-baseline="middle">${year}</text>`;
+        }
         // The axis says what it measures, above its upper end
         // kept inside the figure where the axis stands at its left or upper edge
         axis += `<text class="st-axis-title" x="${Math.max(90, a1.X).toFixed(1)}" y="${Math.max(12, a1.Y - 12).toFixed(1)}" text-anchor="end">Jahr der Briefe</text>`;
@@ -486,6 +506,15 @@ function draw() {
             outline(yearToHeight(hoverYear));
             ctx.strokeStyle = ink.text;
             ctx.globalAlpha = 0.35;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+        }
+        // The picked year stays as a level in the selection colour, so it reads against the axis
+        // and the other columns while the pointer is elsewhere
+        if (pickedYear !== null && pickedYear >= model.yearMin && pickedYear <= model.yearMax) {
+            outline(yearToHeight(pickedYear));
+            ctx.strokeStyle = ink.chosen;
+            ctx.globalAlpha = 0.6;
             ctx.stroke();
             ctx.globalAlpha = 1;
         }
@@ -508,7 +537,7 @@ function draw() {
         if (c.depth < dMin) dMin = c.depth;
         if (c.depth > dMax) dMax = c.depth;
     }
-    const fade = d => 0.4 + 0.6 * ((d - dMin) / (dMax - dMin || 1));
+    const fade = d => 0.58 + 0.42 * ((d - dMin) / (dMax - dMin || 1));
     columns.sort((a, b) => a.depth - b.depth);
     const hasSelection = Boolean(model.selected);
     const isEmphasised = place => place.id === model.selected || place.id === hoverPlace;
@@ -516,7 +545,7 @@ function draw() {
     const drawColumn = ({ place, i, foot, depth }) => {
         const selected = place.id === model.selected;
         const hovered = place.id === hoverPlace;
-        const alpha = selected || hovered ? 1 : fade(depth) * (hasSelection ? 0.3 : 1);
+        const alpha = selected || hovered ? 1 : fade(depth) * (hasSelection ? 0.5 : 1);
         const X = foot.X;
         const points = place.years.map(({ year, count, lang }) => ({ year, lang, Y: pr.at(place.x, place.z, yearToHeight(year)).Y, w: halfWidth(count) }));
         const bottomY = points[0].Y;
@@ -587,6 +616,10 @@ function draw() {
             }
             hitMarks.push({ i, year: p.year, X, Y: p.Y, r: Math.max(5, p.w), total: place.total });
         }
+        if (selected && points.length > 1 && Math.abs(bottomY - topY) > 24) {
+            overlay.push(`<text class="st-tick st-tick--picked" x="${(X + 10).toFixed(1)}" y="${bottomY.toFixed(1)}" dominant-baseline="middle">${points[0].year}</text>`
+                + `<text class="st-tick st-tick--picked" x="${(X + 10).toFixed(1)}" y="${topY.toFixed(1)}" dominant-baseline="middle">${points[points.length - 1].year}</text>`);
+        }
         if (selected && pickedYear !== null) {
             const picked = points.find(p => p.year === pickedYear);
             if (picked) {
@@ -629,8 +662,10 @@ function draw() {
 }
 
 /**
- * Column or year under a point of the figure. Where several lie under it the busiest place wins,
- * so thin columns of single letters do not take the pointer from a large one.
+ * Column or year under a point of the figure. Where several marks lie under it, the one whose
+ * centre is nearest in relation to its size wins: the middle of a small mark reaches it even inside
+ * the reach of a large neighbour, and the body of a large mark stays its own. Until 2026-11-14 the
+ * busiest place always won, so a place with few letters next to a busy one could not be picked.
  * @returns {{i: number, year: number|null}|null}
  */
 function hitAt(mx, my) {
@@ -638,7 +673,8 @@ function hitAt(mx, my) {
     for (const m of hitMarks) {
         const d = Math.hypot(m.X - mx, m.Y - my);
         if (d > m.r) continue;
-        if (!best || m.total > best.total || (m.total === best.total && d < best.d)) best = { i: m.i, year: m.year, total: m.total, d };
+        const score = d / m.r;
+        if (!best || score < best.score || (score === best.score && m.total > best.total)) best = { i: m.i, year: m.year, total: m.total, d, score };
     }
     if (best) return best;
     for (const c of hitColumns) {
@@ -676,7 +712,8 @@ function renderNote() {
         if (missing) parts.push(`${plural(missing, 'Brief', 'Briefe')} ohne Jahr oder ohne Ort mit Koordinaten ${missing === 1 ? 'fehlt' : 'fehlen'} in der Figur.`);
         const outside = model.places.filter(p => p.outside).length;
         if (outside) parts.push(`${plural(outside, 'Ort liegt', 'Orte liegen')} außerhalb des Ausschnitts und ${outside === 1 ? 'steht' : 'stehen'} hohl an seinem Rand.`);
-        if (isNarrow()) parts.push('Auf schmalen Bildschirmen zeigt die Figur die Orte von oben.');
+        if (isOneYear()) parts.push(`Der Zeitraum umfasst nur das Jahr ${model.yearMin}, die Figur zeigt die Orte deshalb von oben.`);
+        else if (isNarrow()) parts.push('Auf schmalen Bildschirmen zeigt die Figur die Orte von oben.');
     }
     note.textContent = parts.join(' ');
     note.classList.toggle('hidden', parts.length === 0);
@@ -702,62 +739,43 @@ function renderList() {
     const list = el('spacetime-places');
     if (!list || !model) return;
     const focusedId = list.contains(document.activeElement) ? document.activeElement.dataset.place : null;
+    const yearFocused = document.activeElement?.id === 'spacetime-year';
     const current = focusedId || model.selected || model.places[0]?.id;
     list.innerHTML = model.places.map((place, i) => {
         const selected = place.id === model.selected;
         return `<li><button type="button" class="st-place${selected ? ' st-place--sel' : ''}" data-place="${escapeHtml(place.id)}" data-p="${i}" aria-pressed="${selected}" tabindex="${place.id === current ? 0 : -1}">
             <span class="st-place__name">${escapeHtml(place.name)}</span><span class="st-place__count">${fmt(place.total)}</span>
-        </button></li>`;
+        </button>${selected ? yearChoice(place) : ''}</li>`;
     }).join('');
-    if (focusedId) list.querySelector(`[data-place="${CSS.escape(focusedId)}"]`)?.focus();
+    applyPlaceQuery();
+    if (yearFocused) el('spacetime-year')?.focus();
+    else if (focusedId) list.querySelector(`[data-place="${CSS.escape(focusedId)}"]`)?.focus();
 }
 
-// The chosen place with its years: the keyboard route to the letters of one place in one year
-function renderDetail() {
-    const detail = el('spacetime-detail');
-    if (!detail || !model) return;
-    const place = model.places.find(p => p.id === model.selected);
-    if (!place) {
-        detail.classList.add('hidden');
-        detail.innerHTML = '';
-        return;
-    }
-    const first = place.years[0].year;
-    const last = place.years[place.years.length - 1].year;
+// The years of the chosen place as a choice in its row of the place list: the keyboard route to
+// the letters of one place in one year. Choosing narrows the selection; the drawer line says how
+// many letters it holds and opens them.
+function yearChoice(place) {
     const options = place.years.map(({ year, count }) => `<option value="${year}"${year === pickedYear ? ' selected' : ''}>${year}: ${plural(count, 'Brief', 'Briefe')}</option>`).join('');
-    detail.innerHTML = `
-        <p class="st-detail__name">${escapeHtml(place.name)}</p>
-        <p class="st-detail__meta">${plural(place.total, 'Brief', 'Briefe')}, ${first === last ? first : `${first}–${last}`}</p>
-        <label class="visually-hidden" for="spacetime-year">Jahr</label>
-        <select id="spacetime-year" class="st-detail__year">
+    return `<label class="visually-hidden" for="spacetime-year">Jahr der Briefe aus ${escapeHtml(place.name)}</label>
+        <select id="spacetime-year" class="st-place__year">
             <option value=""${pickedYear === null ? ' selected' : ''}>Alle Jahre</option>${options}
-        </select>
-        <button type="button" class="btn btn-secondary btn-sm st-detail__show">Briefe zeigen</button>`;
-    detail.classList.remove('hidden');
-    detail.querySelector('select').addEventListener('change', (e) => {
-        pickedYear = e.target.value ? Number(e.target.value) : null;
-        draw();
-        if (pickedYear !== null) showTooltipAt(place, pickedYear);
-        else hideTooltip();
-    });
-    detail.querySelector('.st-detail__show').addEventListener('click', () => {
-        if (pickedYear !== null) {
-            deps.showLettersOfPlaceYear(place.id, pickedYear);
-        } else {
-            deps.switchView('letters');
-            focusViewHeading('letters');
-        }
-    });
+        </select>`;
 }
+
+// An angle brought back into one turn, -π to π
+const wrapAngle = a => ((a + Math.PI) % TAU + TAU) % TAU - Math.PI;
 
 function syncCameraButtons() {
-    const narrow = isNarrow();
+    const narrow = isFlat();
     document.querySelectorAll('#spacetime-view [data-cam]').forEach(btn => {
         const target = CAMERAS[btn.dataset.cam];
-        const pressed = Boolean(target) && Math.abs(cam.yaw - target.yaw) < 1e-3 && Math.abs(cam.pitch - target.pitch) < 1e-3;
+        const pressed = Boolean(target) && Math.abs(wrapAngle(cam.yaw - target.yaw)) < 1e-3 && Math.abs(cam.pitch - target.pitch) < 1e-3;
         btn.setAttribute('aria-pressed', String(pressed));
     });
     el('spacetime-cams')?.classList.toggle('hidden', narrow);
+    // A figure held to the top view does not turn, so the cue about turning it would mislead
+    if (narrow) el('spacetime-hint')?.classList.add('hidden');
     // Narrow: zooming out to the start also resets the pan, so the reset button would only repeat it
     document.querySelector('#spacetime-view [data-action="reset"]')?.classList.toggle('hidden', narrow);
 }
@@ -857,6 +875,24 @@ function setHover(placeId, year = null) {
     draw();
 }
 
+// Release the picked year first, then the place: one step back per press
+function releaseChoice() {
+    if (!model?.selected) return;
+    if (pickedYear !== null) deps.pickYear(null);
+    else deps.togglePlace(model.selected);
+}
+
+// Rows of the place list that match what the reader typed, by folded name
+function applyPlaceQuery() {
+    const list = el('spacetime-places');
+    if (!list) return;
+    const query = foldText(placeQuery.trim());
+    for (const item of list.children) {
+        const name = item.querySelector('.st-place__name')?.textContent || '';
+        item.classList.toggle('hidden', Boolean(query) && !foldText(name).includes(query));
+    }
+}
+
 function bind() {
     if (bound) return;
     bound = true;
@@ -871,8 +907,38 @@ function bind() {
     const hint = document.createElement('p');
     hint.id = 'spacetime-hint';
     hint.className = 'st-hint';
-    hint.innerHTML = '<i class="fas fa-sync-alt" aria-hidden="true"></i> Ziehen dreht die Figur, das Mausrad zoomt';
+    hint.innerHTML = '<i class="fas fa-sync-alt" aria-hidden="true"></i> Ziehen dreht, Umschalt und Ziehen verschiebt, Klick wählt den Ort';
     svg.after(hint);
+    // What each view is for, on its button
+    const purposes = { schraeg: 'Raum und Zeit zusammen', front: 'Zeit von vorn: Jahre waagrecht lesen', oben: 'Karte von oben: Orte finden' };
+    document.querySelectorAll('#spacetime-view [data-cam]').forEach(btn => { btn.title = purposes[btn.dataset.cam] || ''; });
+    // Zoom stands at the figure it acts on; in the header it made the line wrap as soon as a
+    // choice lengthened the title, and the figure jumped under the pointer
+    const zoom = document.querySelector('#spacetime-controls [aria-label="Zoom"]');
+    if (zoom) {
+        zoom.classList.add('st-zoom');
+        svg.after(zoom);
+    }
+    // A place known by name is found by typing it; the list alone holds hundreds of rows
+    const places = el('spacetime-places');
+    if (places) {
+        const search = document.createElement('input');
+        search.type = 'search';
+        search.id = 'spacetime-search';
+        search.className = 'st-search';
+        search.placeholder = 'Ort suchen';
+        search.setAttribute('aria-label', 'Ort suchen');
+        places.before(search);
+        search.addEventListener('input', () => { placeQuery = search.value; applyPlaceQuery(); });
+        search.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            const first = places.querySelector('li:not(.hidden) .st-place');
+            if (first) {
+                deps.togglePlace(first.dataset.place);
+                el('spacetime-figure').scrollIntoView({ block: 'nearest' });
+            }
+        });
+    }
     const under = (e) => {
         const rect = svg.getBoundingClientRect();
         return hitAt(e.clientX - rect.left, e.clientY - rect.top);
@@ -885,7 +951,7 @@ function bind() {
         if (e.button !== 0) return;
         const hit = under(e);
         drag = {
-            x: e.clientX, y: e.clientY, moved: false, pan: e.shiftKey || isNarrow(),
+            x: e.clientX, y: e.clientY, moved: false, pan: e.shiftKey || isFlat(),
             place: hit ? hit.i : null,
             year: hit ? hit.year : null
         };
@@ -933,22 +999,19 @@ function bind() {
             draw();
             syncCameraButtons();
         }
-        if (e.type !== 'pointerup' || press.moved || press.place === null) return;
+        if (e.type !== 'pointerup' || press.moved) return;
+        if (press.place === null) {
+            releaseChoice();
+            return;
+        }
         const place = model.places[press.place];
         if (!place) return;
-        if (press.year !== null) {
-            // A mark sets the place filter if it is not set and picks its year for the letters
-            pickedYear = press.year;
-            if (place.id !== model.selected) {
-                pickedPlace = place.id;
-                deps.togglePlace(place.id);
-            } else {
-                renderDetail();
-                draw();
-            }
-        } else {
-            deps.togglePlace(place.id);
-        }
+        // The first click chooses the place, whatever part of its column it hits; in the chosen
+        // column a click on a year picks that year and opens its letters. Picking place and year
+        // in one click made a miss in a dense area change both at once
+        if (place.id !== model.selected) deps.togglePlace(place.id);
+        else if (press.year !== null) deps.showLettersOfPlaceYear(place.id, press.year);
+        else deps.togglePlace(place.id);
     };
     svg.addEventListener('pointerup', endDrag);
     svg.addEventListener('pointercancel', endDrag);
@@ -961,11 +1024,16 @@ function bind() {
         zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - rect.left, e.clientY - rect.top);
     }, { passive: false });
     svg.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && model?.selected) {
+            e.preventDefault();
+            releaseChoice();
+            return;
+        }
         const step = 0.15;
         const turn = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] }[e.key];
         if (turn) {
             e.preventDefault();
-            if (e.shiftKey || isNarrow()) {
+            if (e.shiftKey || isFlat()) {
                 cam.panX -= turn[0] * 200;
                 cam.panY += turn[1] * 200;
             } else {
@@ -980,12 +1048,14 @@ function bind() {
         }
     });
 
-    el('spacetime-controls')?.addEventListener('click', (e) => {
+    el('spacetime-view')?.addEventListener('click', (e) => {
+        if (!e.target.closest('#spacetime-controls, .st-zoom')) return;
         const btn = e.target.closest('button');
         if (!btn) return;
         if (btn.dataset.zoom) zoomAt(Number(btn.dataset.zoom));
-        else if (btn.dataset.action === 'reset') moveCamera({ ...(isNarrow() ? CAMERAS.oben : CAMERAS.schraeg), zoom: 1, panX: 0, panY: 0 });
-        else if (CAMERAS[btn.dataset.cam]) moveCamera({ ...CAMERAS[btn.dataset.cam] });
+        else if (btn.dataset.action === 'reset') moveCamera({ ...(isFlat() ? CAMERAS.oben : CAMERAS.schraeg), zoom: 1, panX: 0, panY: 0 });
+        // A named view is the whole figure from that side: zoom and pan go back as well
+        else if (CAMERAS[btn.dataset.cam]) moveCamera({ ...CAMERAS[btn.dataset.cam], zoom: 1, panX: 0, panY: 0 });
     });
 
     // Place list: one tab stop, arrow keys move within it (roving tabindex), Enter or a click
@@ -993,7 +1063,15 @@ function bind() {
     const list = el('spacetime-places');
     list?.addEventListener('click', (e) => {
         const btn = e.target.closest('.st-place');
-        if (btn) deps.togglePlace(btn.dataset.place);
+        if (!btn) return;
+        deps.togglePlace(btn.dataset.place);
+        // A pointer click far down the list brings the figure back, where the choice shows
+        if (e.detail > 0) el('spacetime-figure').scrollIntoView({ block: 'nearest' });
+    });
+    // The year of the chosen place: a level in the figure and the letters of that year in the drawer
+    list?.addEventListener('change', (e) => {
+        if (e.target.id !== 'spacetime-year') return;
+        deps.pickYear(e.target.value ? Number(e.target.value) : null);
     });
     list?.addEventListener('keydown', (e) => {
         const buttons = [...list.querySelectorAll('.st-place')];

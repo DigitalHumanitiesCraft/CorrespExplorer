@@ -47,7 +47,11 @@ let getFilteredLetters = null;
 let getAllLetters = null;
 let applyPersonFilter = null;
 let applySubjectFilter = null;
-let switchView = null;
+let showLettersBetween = null;
+let revealLetters = null;
+// Centre kept while a tie between two other persons is selected: the person filter then names
+// one of the two, and the circle would otherwise turn to that person
+let pinnedCentre = null;
 
 /**
  * Initialize network view with external dependencies
@@ -58,7 +62,8 @@ export function initNetworkView(deps) {
     getAllLetters = deps.getAllLetters;
     applyPersonFilter = deps.applyPersonFilter;
     applySubjectFilter = deps.applySubjectFilter;
-    switchView = deps.switchView;
+    showLettersBetween = deps.showLettersBetween;
+    revealLetters = deps.revealLetters;
 
     setupNetworkEventHandlers();
     setupEgoControls();
@@ -622,7 +627,7 @@ export function renderNetwork() {
         egoDrawn = null;
         // The switch keeps the counts of the ego levels current under the filters
         const letters = egoScopeLetters();
-        const centreId = state.filters.person || mostConnectedPerson(letters)?.id;
+        const centreId = egoCentreId(letters);
         renderLevelSwitch(centreId ? buildEgoNetwork(letters, centreId) : null,
             letters.some(l => l.mentions?.persons?.length > 0));
         renderWholeNetwork();
@@ -870,7 +875,7 @@ function renderWholeNetwork() {
         } else {
             applyPersonFilter(d.id);
         }
-        switchView('letters');
+        revealLetters();
     };
 
     node.on('click', (event, d) => {
@@ -1527,8 +1532,14 @@ export function placeEgoLabels(people, pos, g, measure, { limit, reserved = [], 
 // without a person filter that is the filtered set itself.
 function egoScopeLetters() {
     return state.filters.person
-        ? state.filterLetters({ ...state.filters, person: null })
+        ? state.filterLetters({ ...state.filters, person: null, partner: null })
         : getFilteredLetters();
+}
+
+// The centre of the circle: the person filter, unless a tie between two other persons is selected
+function egoCentreId(letters) {
+    if (!state.filters.partner) pinnedCentre = null;
+    return pinnedCentre || state.filters.person || mostConnectedPerson(letters)?.id || null;
 }
 
 function setupEgoControls() {
@@ -1670,7 +1681,7 @@ function renderEgoNetwork() {
     const letters = egoScopeLetters();
     const hasMentions = letters.some(l => l.mentions?.persons?.length > 0);
     if (!hasMentions) egoLevel = 'correspondence';
-    const centreId = state.filters.person || mostConnectedPerson(letters)?.id || null;
+    const centreId = egoCentreId(letters);
 
     networkSimulation?.stop();
     networkSimulation = null;
@@ -1778,7 +1789,10 @@ function renderEgoNetwork() {
         return `M${a.x},${a.y}Q${mx},${my} ${b.x},${b.y}`;
     };
     const chord = svg.append('g').attr('class', 'ego-chords').attr('aria-hidden', 'true')
-        .selectAll('g').data(model.chords, c => c.key).join('g').attr('class', 'ego-chord');
+        .selectAll('g').data(model.chords, c => c.key).join('g').attr('class', 'ego-chord')
+        // The tie whose letters are the selection carries the selection colour
+        .classed('is-chosen', c => Boolean(state.filters.partner) &&
+            [c.a, c.b].includes(state.filters.person) && [c.a, c.b].includes(state.filters.partner));
     chord.append('path').attr('class', 'ego-chord__line').attr('d', chordPath).attr('stroke-width', c => chordWidth(c.letters));
     // A wider transparent stroke makes thin chords reachable for the pointer
     chord.append('path').attr('class', 'ego-chord__hit').attr('d', chordPath);
@@ -1800,7 +1814,10 @@ function renderEgoNetwork() {
         .attr('data-id', d => d.id)
         .attr('transform', d => `translate(${pos.get(d.id).x},${pos.get(d.id).y})`)
         .attr('role', 'button')
-        .attr('tabindex', d => (d.ring === 'centre' ? 0 : -1));
+        .attr('tabindex', d => (d.ring === 'centre' ? 0 : -1))
+        // A correspondent whose letters with the other chosen person are the selection
+        .classed('is-chosen', d => d.ring !== 'centre' && Boolean(state.filters.partner) &&
+            (d.id === state.filters.person || d.id === state.filters.partner));
     node.each(function (d) {
         const r = pos.get(d.id).r;
         const shape = d.isOrganization
@@ -2057,7 +2074,7 @@ function renderEgoList(model) {
         if (p.ring === 'centre') {
             nameEl = `<span class="ego-row__name ego-row__name--centre">${name}</span>`;
             count = plural(p.letters, 'Brief', 'Briefe');
-            countLabel = `Alle ${count} von und an ${p.name} in der Briefliste`;
+            countLabel = `Alle ${count} von und an ${p.name} zeigen`;
         } else if (p.ring === 'inner') {
             nameEl = `<button type="button" class="ego-row__name" data-action="centre" aria-label="${name} ins Zentrum">${name}</button>`;
             count = plural(p.letters, 'Brief', 'Briefe');
@@ -2090,9 +2107,9 @@ function showPersonLetters(person) {
     if (!egoDrawn) return;
     const { model, letters } = egoDrawn;
     if (person.ring === 'centre') {
-        // The letter list under the person filter is the existing way to all letters of a person
-        if (state.filters.person !== person.id) applyPersonFilter(person.id);
-        switchView('letters');
+        // All letters of the centre are the selection under its person filter, without a partner
+        if (state.filters.person !== person.id || state.filters.partner) applyPersonFilter(person.id);
+        revealLetters();
         return;
     }
     if (person.ring === 'inner') {
@@ -2105,19 +2122,14 @@ function showPersonLetters(person) {
     showLettersDialog(`${person.name} erwähnt in Briefen von und an ${model.centre.name}`, found);
 }
 
-// The letters exchanged between two persons
+// The letters exchanged between two persons become the selection and open below the circle. A tie
+// of the centre keeps the centre as the person; a tie between two others keeps the circle as it is
 function showTieLetters(t) {
     if (!egoDrawn) return;
-    const { letters, nameOf } = egoDrawn;
-    const pair = new Set([t.a, t.b]);
-    const found = letters.filter(l => {
-        const from = personKey(l.sender);
-        return pair.has(from) && letterRecipients(l).some(r => {
-            const to = personKey(r);
-            return to !== from && pair.has(to);
-        });
-    });
-    showLettersDialog(`Briefe zwischen ${nameOf(t.a)} und ${nameOf(t.b)}`, found);
+    const centre = egoDrawn.model.centre.id;
+    const [person, partner] = t.b === centre ? [t.b, t.a] : [t.a, t.b];
+    pinnedCentre = person === centre ? null : centre;
+    showLettersBetween(person, partner);
 }
 
 const DIALOG_LIMIT = 100;

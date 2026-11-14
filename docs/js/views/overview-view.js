@@ -179,7 +179,6 @@ function renderOverviewChart() {
     const all = deps.getAllLetters();
     const shown = deps.getFilteredLetters();
     const filter = deps.getFilterState();
-    renderResult(all, shown, filter);
     renderYears(all, shown, filter);
     renderBars('ws-persons', topPersons(shown), filter.person, deps.togglePerson);
     renderBars('ws-places', topPlaces(shown), filter.place, deps.togglePlace);
@@ -187,18 +186,6 @@ function renderOverviewChart() {
     renderBars('ws-languages', languages(shown), filter.languages?.length === 1 ? filter.languages[0] : filter.languages ? 'other' : null, deps.toggleLanguage);
     renderBars('ws-features', features(shown), filter.features, deps.toggleFeature);
     document.querySelectorAll('.ws-panel__open').forEach(btn => { btn.onclick = () => deps.switchView(btn.dataset.open); });
-}
-
-function renderResult(all, shown, filter) {
-    const box = document.getElementById('ws-result');
-    if (!box) return;
-    const count = filter.active ? `${number(shown.length)} von ${number(all.length)} Briefen in der Auswahl` : `${number(all.length)} Briefe`;
-    box.innerHTML = `<strong>${count}</strong>
-        <button type="button" class="btn btn-secondary btn-sm" id="ws-show">Briefe ansehen</button>
-        ${filter.active ? '<button type="button" class="btn btn-secondary btn-sm" id="ws-reset">Auswahl aufheben</button>' : ''}`;
-    box.querySelector('#ws-show').onclick = () => deps.switchView('letters');
-    const reset = box.querySelector('#ws-reset');
-    if (reset) reset.onclick = () => deps.resetFilters();
 }
 
 const usableYear = letter => (letter.year && !letter.dateImplausible ? letter.year : null);

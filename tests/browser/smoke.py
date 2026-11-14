@@ -292,6 +292,24 @@ class Smoke:
         assert span_visible, "timeline shows no bin for multi-year spans (case 025)"
         assert "view=places" in url, f"map hint did not open the place list: {url}"
 
+    def drawer_keeps_the_view(self) -> None:
+        # A year bar of the timeline opens the letters of that year in the drawer below the view,
+        # instead of switching to the letter list; the count comes from the data file
+        expected = _hsa_letters_between(1900, 1900)
+        ctx = self.context()
+        page = ctx.new_page()
+        page.goto(f"{self.base}explore.html?view=timeline&{HSA}")
+        _loaded(page)
+        page.click('.timeline-bar-wrapper[data-year="1900"]', position={"x": 4, "y": 4})
+        page.wait_for_selector("#letters-drawer-panel:not(.hidden)")
+        count = page.inner_text("#letters-drawer-count").split(" ")[0].replace(".", "")
+        url = page.url
+        in_list = page.evaluate("() => !!document.activeElement.closest('#letters-drawer-list')")
+        ctx.close()
+        assert "view=timeline" in url and "drawer=1" in url, f"left the view or lost the drawer: {url}"
+        assert count == str(expected), f"drawer shows {count}, data hold {expected} letters of 1900"
+        assert in_list, "focus did not move into the list of letters"
+
     def page_structure(self) -> None:
         ctx = self.context()
         page = ctx.new_page()
@@ -355,6 +373,7 @@ class Smoke:
         ctx = self.context()
         page = ctx.new_page()
         page.goto(self.base + "index.html")
+        page.click(".own-data summary")
         page.fill("#url-input", CS_QUERY)
         page.click("#url-submit")
         page.click("#config-skip-btn", timeout=60_000)
@@ -371,6 +390,46 @@ class Smoke:
         received = receiver.inner_text("#total-letters-count")
         fresh.close()
         assert received == letters, f"receiver sees {received}, sender {letters}"
+
+    def start_figure(self) -> None:
+        # The archive's summary is generated in Python (preprocessing/build_examples.py) and
+        # defined in JavaScript (start-summary.js); both must give the same figure
+        ctx = self.context()
+        page = ctx.new_page()
+        page.goto(self.base + "index.html")
+        page.wait_for_selector("#model .stmt")
+        differs = page.evaluate(
+            "async () => { const { summarizeLetters } = await import('./js/start-summary.js');"
+            " const canon = v => JSON.stringify(v, (k, x) => x && typeof x === 'object' && !Array.isArray(x)"
+            " ? Object.fromEntries(Object.entries(x).sort(([a], [b]) => (a < b ? -1 : 1))) : x);"
+            " const letters = (await (await fetch('data/hsa-letters.json')).json()).letters;"
+            " const file = (await (await fetch('data/examples.json')).json()).datasets['data/hsa-letters.json'];"
+            " const mine = summarizeLetters(letters);"
+            " return Object.keys(mine).filter(k => canon(mine[k]) !== canon(file[k])); }"
+        )
+        page.click('[data-choice="hsa"]')
+        page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
+        network = page.get_attribute(".stmt--persons a.stmt-label", "href")
+        absent = page.locator(".stmt--postmark.is-absent").count()
+        # "anderer Brief" steps to the next prepared letter and writes it into the address
+        first = page.inner_text(".record-sender")
+        page.click(".record-other")
+        page.wait_for_url("**letter=*")
+        stepped = page.inner_text(".record-sender")
+        linked = page.url
+        # The address restores dataset and letter; an unknown letter falls back to the first
+        page.goto(linked)
+        page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
+        restored = page.inner_text(".record-sender")
+        page.goto(self.base + "index.html?dataset=hsa&letter=unknown")
+        page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
+        fallback = page.inner_text(".record-sender")
+        ctx.close()
+        assert not differs, f"examples.json differs from start-summary.js in {differs}"
+        assert network == "explore.html?json=data/hsa-letters.json&view=network", network
+        assert absent == 1, "the archive shows a postmark statement it does not carry"
+        assert stepped != first and restored == stepped, f"letter {first} -> {stepped} -> {restored}"
+        assert fallback == first, f"unknown letter shows {fallback}"
 
     def axe(self, script: str) -> None:
         ctx = self.context()
@@ -442,6 +501,10 @@ def _checks(
             smoke.span_bin_and_map_hint,
         ),
         (
+            "a year bar opens its letters in the drawer, the timeline stays",
+            smoke.drawer_keeps_the_view,
+        ),
+        (
             "page structure: h1 first, described views, one path bar, light map",
             smoke.page_structure,
         ),
@@ -449,6 +512,10 @@ def _checks(
         (
             "E8: correspondence network, JSON with indices, chart tables",
             smoke.decision_e8_and_tables,
+        ),
+        (
+            "start figure: archive summary equals start-summary.js, links and absences",
+            smoke.start_figure,
         ),
     ]
     if args.online:

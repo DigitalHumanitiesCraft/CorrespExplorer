@@ -381,6 +381,17 @@ rect.ego-mark--filled {
     stroke-opacity: 0.9;
 }
 
+/* The tie whose letters are the selection, also while another person is emphasised */
+.ego-svg .ego-chord.is-chosen .ego-chord__line {
+    stroke: var(--color-primary);
+    stroke-opacity: 1;
+}
+
+.network-graph .ego-node.is-chosen .ego-mark {
+    stroke: var(--color-primary);
+    stroke-width: 2.5px;
+}
+
 .ego-svg.is-focusing .ego-label {
     opacity: 0.35;
 }

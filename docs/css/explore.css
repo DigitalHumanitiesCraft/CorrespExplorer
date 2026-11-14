@@ -782,42 +782,6 @@
     opacity: 0.5;
 }
 
-/* Person Filter Badge */
-.person-filter-active {
-    margin: 0 0 var(--space-md) 0;
-}
-
-.filter-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-md);
-    background: var(--color-primary);
-    color: white;
-    border-radius: var(--radius-lg);
-    font-size: var(--font-size-sm);
-}
-
-.filter-badge i {
-    opacity: 0.8;
-}
-
-.filter-clear {
-    min-width: 24px;
-    min-height: 24px;
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    padding: calc(var(--space-xs) / 2) var(--space-xs);
-    margin-left: var(--space-xs);
-    opacity: 0.8;
-}
-
-.filter-clear:hover {
-    opacity: 1;
-}
-
 /* Timeline View */
 .timeline-container {
     padding: var(--space-lg);
@@ -1470,15 +1434,6 @@
 }
 
 /* Topics and Places use the shared .entity-container, .view-header and .entity-card from components.css */
-
-/* Subject Filter Badge */
-.subject-filter-active {
-    margin: 0 0 var(--space-md) 0;
-}
-
-.filter-badge.subject-badge {
-    background: var(--color-success);
-}
 
 /* Map Popup Styles */
 .popup-header {
@@ -4467,14 +4422,6 @@ body:has(.tour-highlight) .tour-backdrop {
     flex-direction: column;
     gap: var(--space-lg);
     min-width: 0;
-}
-
-.workspace__result {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-sm) var(--space-md);
-    font-size: var(--font-size-lg);
 }
 
 .workspace__panels {

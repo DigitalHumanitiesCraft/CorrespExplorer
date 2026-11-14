@@ -27,6 +27,8 @@
     <link rel="stylesheet" href="css/explore.css">
     <link rel="stylesheet" href="css/network.css">
     <link rel="stylesheet" href="css/spacetime.css">
+    <link rel="stylesheet" href="css/topics.css">
+    <link rel="stylesheet" href="css/drawer.css">
 </head>
 <body>
     <a href="#main-content" class="skip-link">Zum Inhalt springen</a>
@@ -165,6 +167,8 @@
                             <i class="fas fa-undo" aria-hidden="true"></i> Filter aufheben
                         </button>
                     </div>
+                    <!-- The selection as one sentence of removable marks, filled by explore.js -->
+                    <p class="selection-sentence hidden" id="selection-sentence"></p>
 
                     <!-- Time Period Filter -->
                     <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
@@ -311,8 +315,8 @@
                         </aside>
 
                         <div class="overview-body">
-                        <!-- The charts filter each other and the letters behind them -->
-                        <div class="workspace__result" id="ws-result" role="status"></div>
+                        <!-- The charts filter each other and the letters behind them; how many letters
+                             the selection holds says the letters drawer below the view -->
                         <section class="ws-panel ws-panel--time" aria-labelledby="ws-time-title">
                             <h3 id="ws-time-title"><button type="button" class="ws-panel__open" data-open="timeline">Zeit</button></h3>
                             <div class="overview-chart" id="overview-chart"></div>
@@ -392,7 +396,6 @@
                             <svg id="spacetime-figure" tabindex="0" role="application" aria-label="Raum-Zeit-Figur der Absendeorte" aria-describedby="spacetime-keys"></svg>
                             <p id="spacetime-keys" class="visually-hidden">Pfeiltasten drehen die Figur, mit Umschalt verschieben sie sie, Plus und Minus zoomen. Die Orte mit ihren Briefzahlen stehen in der Liste nach der Figur.</p>
                             <div id="spacetime-tooltip" class="st-tooltip hidden" role="status"></div>
-                            <div id="spacetime-detail" class="st-detail hidden"></div>
                         </div>
                         <div class="st-foot-row">
                             <div id="spacetime-legend" class="st-legend"></div>
@@ -484,58 +487,33 @@
 
                 <!-- Topics View -->
                 <div id="topics-view" class="tab-content">
-                    <div class="entity-container">
-                        <div class="view-header">
-                            <h2 class="view-header__title">Themen der Korrespondenz</h2>
-                            <p class="view-header__description">Klicken Sie auf ein Thema, um Details zu sehen und zu filtern</p>
-                        </div>
-                        <div class="entity-split-layout">
-                            <!-- Topics List -->
-                            <div class="entity-list-panel">
-                                <div class="list-header">
-                                    <input type="search" id="topic-search" class="list-search" placeholder="Thema suchen..." aria-label="Thema suchen">
-                                    <div class="list-sort">
-                                        <label for="topic-sort">Sortieren:</label>
-                                        <select id="topic-sort">
-                                            <option value="count-desc">Anzahl (absteigend)</option>
-                                            <option value="count-asc">Anzahl (aufsteigend)</option>
-                                            <option value="name-asc">Name (A-Z)</option>
-                                        </select>
-                                    </div>
+                    <div class="view-header view-header--inset">
+                        <h2 class="view-header__title">Themen</h2>
+                        <p class="view-header__description">Jede Zeile ist ein Thema, ihre Kurve zeigt seine Briefe je Jahr. Pfeiltasten wechseln die Zeile, Enter filtert nach dem Thema. Die Werte stehen auch als Tabelle unter der Figur.</p>
+                        <div class="view-header__actions">
+                            <div class="tp-tools">
+                                <div class="tp-order" id="topics-order" role="group" aria-labelledby="topics-order-label">
+                                    <span class="tp-order__label" id="topics-order-label">Ordnen nach</span>
+                                    <button type="button" class="tp-btn" data-order="peak" aria-pressed="true">Höhepunkt</button>
+                                    <button type="button" class="tp-btn" data-order="size" aria-pressed="false">Umfang</button>
+                                    <button type="button" class="tp-btn" data-order="first" aria-pressed="false">Erstem Auftreten</button>
                                 </div>
-                                <div id="topics-list" class="entity-list"></div>
-                            </div>
-                            <!-- Topic Detail Panel -->
-                            <div class="entity-detail-panel" id="topic-detail-panel">
-                                <div class="entity-detail-empty" id="topic-detail-empty">
-                                    <i class="fas fa-hand-pointer" aria-hidden="true"></i>
-                                    <p>Wählen Sie ein Thema aus der Liste</p>
-                                </div>
-                                <div class="hidden" id="topic-detail-content">
-                                    <div class="entity-detail-header">
-                                        <h3 id="topic-detail-title">Thema</h3>
-                                        <span class="entity-detail-count" id="topic-detail-count">0 Briefe</span>
-                                    </div>
-                                    <div class="entity-detail-section">
-                                        <h4>Korrespondenten</h4>
-                                        <div id="topic-correspondents"></div>
-                                    </div>
-                                    <div class="entity-detail-section">
-                                        <h4>Zeitliche Verteilung</h4>
-                                        <div id="topic-timeline" class="entity-mini-timeline"></div>
-                                    </div>
-                                    <div class="entity-detail-section">
-                                        <h4>Verwandte Themen</h4>
-                                        <div id="topic-related" class="entity-tags"></div>
-                                    </div>
-                                    <div class="entity-detail-actions">
-                                        <button class="btn btn-primary" id="topic-filter-btn">
-                                            <i class="fas fa-filter" aria-hidden="true"></i> Briefe filtern
-                                        </button>
-                                    </div>
-                                </div>
+                                <input type="search" id="topic-search" class="tp-search" placeholder="Thema suchen" aria-label="Thema suchen" aria-controls="topics-rows">
                             </div>
                         </div>
+                    </div>
+                    <div class="tp-stage">
+                        <div class="tp-axis" id="topics-axis"></div>
+                        <div class="tp-figure" id="topics-figure">
+                            <div class="tp-scroll" id="topics-scroll">
+                                <ul class="tp-rows" id="topics-rows" role="listbox" aria-label="Themen"></ul>
+                            </div>
+                            <canvas id="topics-canvas" class="tp-canvas" aria-hidden="true"></canvas>
+                            <div id="topics-tooltip" class="tp-tooltip hidden" role="status"></div>
+                            <p id="topics-empty" class="tp-empty hidden"></p>
+                        </div>
+                        <div class="tp-choice hidden" id="topics-choice" aria-label="Gewähltes Thema" role="region"></div>
+                        <div id="topics-table" class="chart-table-host tp-table"></div>
                     </div>
                 </div>
 
@@ -886,6 +864,21 @@
                             <i class="fas fa-balance-scale" aria-hidden="true"></i>
                             <p>Wählen Sie oben zwei Einträge zum Vergleich.</p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- The letters of the selection under every view but the letter list (letters-drawer.js) -->
+                <div class="letters-drawer" id="letters-drawer">
+                    <div class="letters-drawer__panel hidden" id="letters-drawer-panel" role="region" aria-label="Briefe der Auswahl" tabindex="-1">
+                        <div class="letters-drawer__grip" id="letters-drawer-grip" role="separator" aria-orientation="horizontal" aria-label="Höhe der Briefliste, Pfeiltasten ändern sie" aria-controls="letters-drawer-list" aria-valuemin="96" tabindex="0"></div>
+                        <div class="letters-drawer__list" id="letters-drawer-list"></div>
+                    </div>
+                    <div class="letters-drawer__line">
+                        <button type="button" class="letters-drawer__toggle" id="letters-drawer-toggle" aria-expanded="false" aria-controls="letters-drawer-panel">
+                            <span id="letters-drawer-count"></span>
+                            <i class="fas fa-chevron-up letters-drawer__chevron" aria-hidden="true"></i>
+                        </button>
+                        <button type="button" class="letters-drawer__all hidden" id="letters-drawer-all">Alle in der Liste</button>
                     </div>
                 </div>
 

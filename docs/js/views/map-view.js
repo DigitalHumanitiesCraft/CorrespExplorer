@@ -20,7 +20,7 @@ let mapColorMode = 'language';
  * @param {Function} dependencies.getPlaceAggregation - places of the filtered letters, from aggregateLettersByPlace
  * @param {Function} dependencies.applyPlaceFilter
  * @param {Function} dependencies.applyPersonFilter
- * @param {Function} dependencies.switchView
+ * @param {Function} dependencies.revealLetters - opens the letters of the selection below the map
  */
 export function initMapView(dependencies) {
     deps = dependencies;
@@ -626,7 +626,7 @@ function setupPopupEventHandlers(popup) {
             const placeId = showLettersBtn.dataset.placeId;
             popup.remove();
             deps.applyPlaceFilter(placeId);
-            deps.switchView('letters');
+            deps.revealLetters();
         });
     }
 
@@ -639,7 +639,7 @@ function setupPopupEventHandlers(popup) {
             const personId = link.dataset.personId;
             popup.remove();
             deps.applyPersonFilter(personId);
-            deps.switchView('letters');
+            deps.revealLetters();
         });
     });
 }

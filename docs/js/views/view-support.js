@@ -12,41 +12,100 @@ function joinGerman(parts) {
     return parts.length < 2 ? parts.join('') : `${parts.slice(0, -1).join(', ')} und ${parts[parts.length - 1]}`;
 }
 
+// Display names of the keys a filter holds, resolved from the letters; the key itself is the fallback
+function personName(key, letters) {
+    for (const letter of letters) {
+        const person = [letter.sender, ...letterRecipients(letter)].find(p => personKey(p) === key);
+        if (person?.name) return person.name;
+    }
+    return key;
+}
+
+function placeName(key, letters) {
+    return letters.find(l => placeKey(l.place_sent) === key)?.place_sent?.name || key;
+}
+
+function subjectLabel(key, letters) {
+    for (const letter of letters) {
+        const subject = letter.mentions?.subjects?.find(s => (s.uri || s.id || s.label) === key);
+        if (subject?.label) return subject.label;
+    }
+    return key;
+}
+
+// Above this many languages the mark counts them instead of naming each
+const NAMED_LANGUAGES = 3;
+const QUALITY_MARKS = [
+    ['preciseDates', 'nur exakte Datierungen'],
+    ['knownPersons', 'nur identifizierte Personen'],
+    ['locatedPlaces', 'nur lokalisierte Orte']
+];
+
+/**
+ * The selection as the marks of one sentence, in a fixed order: person, place, time, language,
+ * topic, features. Each mark names one filter that can be removed on its own; its key says which.
+ * A partner joins the person with "und", every other mark follows after a comma, so the marks read
+ * as „Hugo Schuchardt und Leo Spitzer, Graz, 1900–1905, Französisch“.
+ * @param {Object} filters - same shape as state.filters
+ * @param {Array} letters - all letters of the dataset, to resolve names
+ * @returns {{key: string, label: string, joiner: string}[]}
+ */
+export function selectionMarks(filters, letters) {
+    const marks = [];
+    const add = (key, label, joiner = ', ') => marks.push({ key, label, joiner: marks.length ? joiner : '' });
+    if (filters.person) {
+        add('person', personName(filters.person, letters));
+        if (filters.partner) add('partner', personName(filters.partner, letters), ' und ');
+    }
+    if (filters.place) add('place', placeName(filters.place, letters));
+    if (filters.temporal?.undated) {
+        add('time', 'ohne Jahr');
+    } else if (filters.temporal) {
+        const { min, max } = filters.temporal;
+        add('time', min === max ? String(min) : `${min}–${max}`);
+    }
+    // A year picked in a figure, beside the period of the sidebar
+    if (filters.year != null) add('year', String(filters.year));
+    if (filters.languages) {
+        const names = filters.languages.map(languageLabel);
+        add('languages', names.length === 0 ? 'keine Sprache'
+            : names.length > NAMED_LANGUAGES ? `${names.length} Sprachen`
+                : names.join(' oder '));
+    }
+    if (filters.subject) add('subject', subjectLabel(filters.subject, letters));
+    for (const key of filters.features || []) {
+        const feature = LETTER_FEATURES.find(f => f.key === key);
+        if (feature) add(`feature:${key}`, feature.label);
+    }
+    for (const [key, label] of QUALITY_MARKS) {
+        if (filters.quality?.[key]) add(`quality:${key}`, label);
+    }
+    return marks;
+}
+
 /**
  * The active filters in words, one phrase per filter, so a view without sidebar can say what
- * narrows its letters. Names are resolved from the letters, as the sidebar badges do.
+ * narrows its letters. Names are resolved from the letters, as the sentence of the sidebar does.
  * @param {Object} filters - same shape as state.filters
  * @param {Array} letters - all letters of the dataset
  * @returns {string[]} phrases that read after "gefiltert nach"
  */
 export function describeFilters(filters, letters) {
     const parts = [];
-    if (filters.person) {
-        let name = filters.person;
-        for (const letter of letters) {
-            const person = [letter.sender, ...letterRecipients(letter)].find(p => personKey(p) === filters.person);
-            if (person?.name) { name = person.name; break; }
-        }
-        parts.push(`Person „${name}“`);
+    if (filters.person && filters.partner) {
+        parts.push(`Briefen zwischen „${personName(filters.person, letters)}“ und „${personName(filters.partner, letters)}“`);
+    } else if (filters.person) {
+        parts.push(`Person „${personName(filters.person, letters)}“`);
     }
-    if (filters.place) {
-        const name = letters.find(l => placeKey(l.place_sent) === filters.place)?.place_sent?.name || filters.place;
-        parts.push(`Absendeort „${name}“`);
-    }
-    if (filters.subject) {
-        let label = filters.subject;
-        for (const letter of letters) {
-            const subject = letter.mentions?.subjects?.find(s => (s.uri || s.id || s.label) === filters.subject);
-            if (subject?.label) { label = subject.label; break; }
-        }
-        parts.push(`Thema „${label}“`);
-    }
+    if (filters.place) parts.push(`Absendeort „${placeName(filters.place, letters)}“`);
+    if (filters.subject) parts.push(`Thema „${subjectLabel(filters.subject, letters)}“`);
     if (filters.temporal?.undated) {
         parts.push('Briefen ohne Jahr');
     } else if (filters.temporal) {
         const { min, max } = filters.temporal;
         parts.push(min === max ? `Jahr ${min}` : `Jahren ${min} bis ${max}`);
     }
+    if (filters.year != null) parts.push(`Jahr ${filters.year}`);
     if (filters.languages) {
         parts.push(filters.languages.length === 0
             ? 'keiner Sprache'

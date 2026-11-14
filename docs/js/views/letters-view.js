@@ -44,10 +44,11 @@ export function initLettersView(dependencies) {
             renderLettersList();
         });
     }
+    bindLetterRows(elements.lettersList);
 }
 
 // Date order with undated letters last in both directions (they have no place on the time axis)
-function compareByDate(a, b, direction) {
+export function compareByDate(a, b, direction) {
     // An implausible date sorts with the undated letters, as on the time axis
     const dateA = a.dateImplausible ? null : a.date;
     const dateB = b.dateImplausible ? null : b.date;
@@ -123,53 +124,7 @@ export function renderLettersList() {
         return;
     }
 
-    container.innerHTML = displayLetters.map(letter => {
-        const senderName = formatPersonName(letter.sender?.name, letter.sender?.precision);
-        // Every recipient is named in the row; an absent recipient keeps the placeholder
-        const recipients = letterRecipients(letter);
-        const recipientName = recipients.length
-            ? recipients.map(r => formatPersonName(r.name, r.precision)).join('; ')
-            : formatPersonName(null);
-        const date = formatDateWithPrecision(letter);
-        const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision, letter.place_sent?.inferred);
-        const language = letter.language?.label || '';
-        const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
-        const inBasket = isInBasket('letters', letter.id);
-        const labelled = (label, value) => value
-            ? `<span class="letter-meta__labelled"><span class="letter-meta__label">${label}</span> ${escapeHtml(value)}</span>` : '';
-        const recordNote = letter.records?.length > 1
-            ? `${letter.records.length} Einträge in der Quelle${letter.recordsDiffer ? ', Angaben weichen ab' : ''}` : '';
-
-        // The participants are the button that opens the letter; the star stays a sibling control
-        return `
-            <div class="letter-card" data-id="${escapeHtml(letter.id || '')}">
-                <div class="letter-header">
-                    <button type="button" class="letter-participants letter-toggle" aria-haspopup="dialog">
-                        <span>${senderName}</span>
-                        <span class="letter-arrow" role="img" aria-label="an"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
-                        <span>${recipientName}</span>
-                    </button>
-                    <div class="letter-header-actions">
-                        <div class="letter-date ${dateClass}">${date}</div>
-                        <button type="button" class="btn-letter-basket ${inBasket ? 'in-basket' : ''}"
-                                data-letter-id="${escapeHtml(letter.id || '')}"
-                                aria-label="Im Wissenskorb" aria-pressed="${inBasket}"
-                                title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen'}">
-                            <i class="fas fa-star" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="letter-meta">
-                    ${placeName ? `<span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${placeName}</span>` : ''}
-                    ${labelled('Poststempel', letter.postmark)}
-                    ${labelled('Anschrift', letter.address)}
-                    ${labelled('Signatur', letter.signature)}
-                    ${recordNote ? `<span class="letter-meta__note">${recordNote}</span>` : ''}
-                    ${language ? `<span><i class="fas fa-language" aria-hidden="true"></i> ${escapeHtml(language)}</span>` : ''}
-                </div>
-            </div>
-        `;
-    }).join('');
+    container.innerHTML = displayLetters.map(letterRowHtml).join('');
 
     if (letters.length > displayLetters.length) {
         const rest = letters.length - displayLetters.length;
@@ -186,22 +141,81 @@ export function renderLettersList() {
             container.querySelectorAll('.letter-toggle')[firstNew]?.focus();
         });
     }
+}
 
-    // The button and a click on the card surface open the letter with everything the source records
-    container.querySelectorAll('.letter-card').forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (e.target.closest('a, .btn-letter-basket')) return;
-            // The dialog returns focus to the element that had it, so the row's button takes it first
-            card.querySelector('.letter-toggle')?.focus();
-            showLetterDetail(card.dataset.id);
-        });
-    });
+/**
+ * One letter as a row: participants as the button that opens the letter, date, star of the basket
+ * and the named records of the source. The letter list and the letters drawer render the same row.
+ * @param {Object} letter
+ * @returns {string} escaped HTML
+ */
+export function letterRowHtml(letter) {
+    const senderName = formatPersonName(letter.sender?.name, letter.sender?.precision);
+    // Every recipient is named in the row; an absent recipient keeps the placeholder
+    const recipients = letterRecipients(letter);
+    const recipientName = recipients.length
+        ? recipients.map(r => formatPersonName(r.name, r.precision)).join('; ')
+        : formatPersonName(null);
+    const date = formatDateWithPrecision(letter);
+    const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision, letter.place_sent?.inferred);
+    const language = letter.language?.label || '';
+    const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
+    const inBasket = isInBasket('letters', letter.id);
+    const labelled = (label, value) => value
+        ? `<span class="letter-meta__labelled"><span class="letter-meta__label">${label}</span> ${escapeHtml(value)}</span>` : '';
+    const recordNote = letter.records?.length > 1
+        ? `${letter.records.length} Einträge in der Quelle${letter.recordsDiffer ? ', Angaben weichen ab' : ''}` : '';
 
-    container.querySelectorAll('.btn-letter-basket').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (btn.dataset.letterId) toggleBasketButton(btn, 'letters', btn.dataset.letterId);
-        });
+    // The participants are the button that opens the letter; the star stays a sibling control
+    return `
+        <div class="letter-card" data-id="${escapeHtml(letter.id || '')}">
+            <div class="letter-header">
+                <button type="button" class="letter-participants letter-toggle" aria-haspopup="dialog">
+                    <span>${senderName}</span>
+                    <span class="letter-arrow" role="img" aria-label="an"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+                    <span>${recipientName}</span>
+                </button>
+                <div class="letter-header-actions">
+                    <div class="letter-date ${dateClass}">${date}</div>
+                    <button type="button" class="btn-letter-basket ${inBasket ? 'in-basket' : ''}"
+                            data-letter-id="${escapeHtml(letter.id || '')}"
+                            aria-label="Im Wissenskorb" aria-pressed="${inBasket}"
+                            title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen'}">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="letter-meta">
+                ${placeName ? `<span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${placeName}</span>` : ''}
+                ${labelled('Poststempel', letter.postmark)}
+                ${labelled('Anschrift', letter.address)}
+                ${labelled('Signatur', letter.signature)}
+                ${recordNote ? `<span class="letter-meta__note">${recordNote}</span>` : ''}
+                ${language ? `<span><i class="fas fa-language" aria-hidden="true"></i> ${escapeHtml(language)}</span>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Clicks of a list of letter rows, bound once on the list so rows added later need no listener of
+ * their own: the star toggles the basket, the rest of a row opens the letter.
+ * @param {HTMLElement|null} container
+ */
+export function bindLetterRows(container) {
+    if (!container || container.dataset.rowsBound) return;
+    container.dataset.rowsBound = 'true';
+    container.addEventListener('click', (e) => {
+        const star = e.target.closest('.btn-letter-basket');
+        if (star) {
+            if (star.dataset.letterId) toggleBasketButton(star, 'letters', star.dataset.letterId);
+            return;
+        }
+        const card = e.target.closest('.letter-card');
+        if (!card || e.target.closest('a')) return;
+        // The dialog returns focus to the element that had it, so the row's button takes it first
+        card.querySelector('.letter-toggle')?.focus();
+        showLetterDetail(card.dataset.id);
     });
 }
 
@@ -336,13 +350,12 @@ export function showLetterDetail(letterId) {
         // The visible label carries the state, so no aria-pressed here
         const nowInBasket = toggleBasketButton(basketBtn, 'letters', basketBtn.dataset.letterId, { pressed: false });
         basketBtn.querySelector('.btn-basket-label').textContent = nowInBasket ? 'Im Korb' : 'Zum Korb';
-        // The star of the row behind the dialog shows the same state
-        const rowStar = elements.lettersList?.querySelector(`.btn-letter-basket[data-letter-id="${CSS.escape(basketBtn.dataset.letterId)}"]`);
-        if (rowStar) {
+        // The star of the row behind the dialog, in the letter list or the drawer, shows the same state
+        document.querySelectorAll(`.btn-letter-basket[data-letter-id="${CSS.escape(basketBtn.dataset.letterId)}"]`).forEach(rowStar => {
             rowStar.classList.toggle('in-basket', nowInBasket);
             rowStar.setAttribute('aria-pressed', String(nowInBasket));
             rowStar.title = nowInBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen';
-        }
+        });
     });
 
     openModal(modal);

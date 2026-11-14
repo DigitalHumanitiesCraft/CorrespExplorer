@@ -1,0 +1,161 @@
+/* Letters drawer (views/letters-drawer.js) and the selection sentence of the sidebar.
+   The drawer is one line at the lower edge of the main area. Open, its list stands above the line
+   and takes the height its rows need, up to a third of the main area; the view above keeps the
+   rest and refits to it (2026-11-14: a list over half the screen left the space-time figure an
+   unreadable strip). A hairline sets the line apart and an ink line the open list; neither is a box. */
+
+/* The view yields height to the drawer instead of pushing the drawer line out of the window */
+.main-content > .tab-content.active {
+    min-height: 0;
+}
+
+.letters-drawer {
+    position: relative;
+    flex: none;
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-bg);
+}
+
+.letters-drawer__line {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: 0 var(--space-lg);
+}
+
+.letters-drawer__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: 32px;
+    padding: var(--space-xs) 0;
+    background: none;
+    border: none;
+    font: inherit;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.letters-drawer__toggle:hover {
+    color: var(--color-link);
+}
+
+.letters-drawer__chevron {
+    font-size: var(--font-size-xs);
+    transition: transform var(--transition-fast);
+}
+
+.letters-drawer--open .letters-drawer__chevron {
+    transform: rotate(180deg);
+}
+
+/* A text control beside the count, there only while the list is open */
+.letters-drawer__all {
+    min-height: 24px;
+    padding: 0;
+    background: none;
+    border: none;
+    font: inherit;
+    color: var(--color-link);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.letters-drawer__panel {
+    display: flex;
+    flex-direction: column;
+    /* The grip sets --drawer-height; without it the rows decide, up to a third */
+    height: var(--drawer-height, auto);
+    max-height: var(--drawer-height, calc((100dvh - var(--navbar-height)) / 3));
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+}
+
+/* Upper edge of the open list; dragging it or the arrow keys change the height */
+.letters-drawer__grip {
+    flex: none;
+    height: var(--space-sm);
+    cursor: ns-resize;
+    touch-action: none;
+    background: linear-gradient(var(--color-border-control), var(--color-border-control)) center / 32px 2px no-repeat;
+}
+
+.letters-drawer__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 var(--space-sm);
+}
+
+.letters-drawer__empty {
+    margin: 0;
+    padding: var(--space-md) var(--space-sm);
+    color: var(--color-text-light);
+}
+
+/* End of the rendered rows; the list grows by a step when it comes into sight */
+.letters-drawer__end {
+    height: 1px;
+}
+
+/* Phones: the line stays at the lower edge of the screen while the page scrolls, and the open
+   list covers most of the screen above it */
+@media (max-width: 767px) {
+    .main-content {
+        padding-bottom: var(--space-3xl);
+    }
+
+    .letters-drawer {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: var(--z-sticky);
+    }
+
+    .letters-drawer__line {
+        padding: 0 var(--space-lg);
+    }
+
+    .letters-drawer__panel {
+        max-height: var(--drawer-height, calc((100dvh - var(--navbar-height)) * 0.6));
+    }
+
+    /* On a phone the drawer is the way to the letters on every screen, and its "Alle in der Liste"
+       opens the full list; the tab of the letter list gives way, so the drawer adds no control to
+       the crowded first screen (density limit of the network view at 360 px, 2026-11-14) */
+    .view-group-btn[data-group="letters"] {
+        display: none;
+    }
+}
+
+/* The selection as one sentence of removable marks at the top of the sidebar filters */
+.selection-sentence {
+    margin: 0 0 var(--space-md);
+    line-height: var(--line-height-base);
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+}
+
+/* The cross stands close to its word and the comma follows the cross directly; the target keeps
+   24 by 24 px, its empty right part reaches under the comma */
+.selection-mark__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 0 0 0 var(--space-xs);
+    margin-right: calc(-1 * var(--space-md));
+    vertical-align: middle;
+    background: none;
+    border: none;
+    font-size: var(--font-size-xs);
+    color: var(--color-link);
+    cursor: pointer;
+}
+
+.selection-mark__clear:hover {
+    color: var(--color-primary);
+}

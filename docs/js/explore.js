@@ -3,7 +3,7 @@
 
 import { NO_LANGUAGE, VIEWS, LETTER_FEATURES, LANGUAGE_COLORS, isRestLanguage, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
 import { initBasket, datasetKey, loadBasketFromUrl } from './basket.js';
-import { debounce, escapeHtml, isAllowedJsonPath, sameFilterParams, datedYearRange, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, letterRecipients } from './utils.js';
+import { debounce, escapeHtml, isAllowedJsonPath, sameFilterParams, datedYearRange, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, letterRecipients } from './utils.js';
 import { datasetQuality, summarizeCorpus } from './research-paths.js';
 import { datasetToJson, lettersToCsv } from './export.js';
 import { initKnowledgePath } from './knowledge-path.js';
@@ -13,7 +13,8 @@ import { loadDemoDataset, loadUrlDataset } from './cmif-parser.js';
 import { isCorrespSearchUrl, correspSearchShareUrl } from './correspsearch-api.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
-import { filterSentence, focusViewHeading, renderFilterNotice } from './views/view-support.js';
+import { filterSentence, focusViewHeading, renderFilterNotice, selectionMarks } from './views/view-support.js';
+import { initLettersDrawer, updateLettersDrawer, setDrawerOpen } from './views/letters-drawer.js';
 import { initOverviewView, renderOverview } from './views/overview-view.js';
 import { initMapView, updateMapPlaces, resizeMap, aggregateLettersByPlace } from './views/map-view.js';
 import { initSpacetimeView, renderSpacetime } from './views/spacetime-view.js';
@@ -25,7 +26,7 @@ import { initComparisonView, renderComparison as renderComparisonView } from './
 import { initChronikView, renderChronik as renderChronikView } from './views/chronik-view.js';
 import { initNetworkView as initNetworkViewModule, renderNetwork as renderNetworkView } from './views/network-view.js';
 import { initMentionsView, renderMentionsFlow as renderMentionsFlowView } from './views/mentions-view.js';
-import { initTopicsView, renderTopicsList as renderTopicsListView, getSubjectIndex } from './views/topics-view.js';
+import { initTopicsView, renderTopicsList as renderTopicsListView, topicCounts } from './views/topics-view.js';
 import { initPlacesView, renderPlacesList as renderPlacesListView } from './views/places-view.js';
 
 // Module-level copies of the loaded data and the filter inputs. state-manager.js holds the
@@ -48,7 +49,11 @@ let restoringFromHistory = false;
 let qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
 let featureFilter = new Set();
 let selectedPersonId = null;
+// Second person beside selectedPersonId: only the letters between the two
+let selectedPartnerId = null;
 let selectedPlaceFilter = null;
+// One year picked in the space-time figure; the period of the sidebar stays as it is
+let pickedYearFilter = null;
 // The subject filter is separate from the topic shown in the topics view, which only displays it
 let activeSubjectFilter = null;
 let initialLanguageFilter = null;
@@ -218,7 +223,11 @@ function updateViewTitle() {
         const years = !range ? '' : range.min === range.max ? `, ${range.min}` : `, ${range.min}–${range.max}`;
         title.textContent = partOf(filteredLetters.length, corpusTotals.letters, 'Briefe', 'Briefen') + years;
     } else if (group === 'topics') {
-        title.textContent = partOf((shown || corpusSummary).subjects.size, corpusSummary.subjects.size, 'Themen');
+        // The topics figure keeps the subjects beside a chosen one, so it counts them itself
+        const topics = topicCounts();
+        title.textContent = topics
+            ? partOf(topics.shown, topics.total, 'Themen')
+            : partOf((shown || corpusSummary).subjects.size, corpusSummary.subjects.size, 'Themen');
     } else if (group === 'overview') {
         // Not visible: the header carries the name of the dataset, the page starts with its figures
         title.textContent = elements.getById('dataset-title')?.textContent?.trim() || 'Datensatz';
@@ -330,22 +339,26 @@ async function init() {
             getPlaceAggregation: () => placeAggregation,
             applyPlaceFilter,
             applyPersonFilter,
-            switchView
+            revealLetters
         });
         initSpacetimeView({
             getDataIndices: () => dataIndices,
             togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key)),
-            // The letters of one place in one year, the other filters stay as they are
+            // The letters of one place in one year, the other filters stay as they are. The
+            // year is picked, not set as the period, so the figure keeps its time axis
             showLettersOfPlaceYear: (key, year) => {
                 clearLetterSearch();
                 selectedPlaceFilter = key;
-                temporalFilter = { start: year, end: year };
-                elements.yearRangeSlider?.noUiSlider?.set([year, year]);
-                applyFilters({ render: false });
-                switchView('letters');
-                focusViewHeading('letters');
+                pickedYearFilter = year;
+                applyFilters();
+                revealLetters();
             },
-            switchView
+            // A year chosen in the place list narrows the selection without opening the letters,
+            // because a keyboard walks through the years of a select one by one
+            pickYear: year => {
+                pickedYearFilter = year;
+                applyFilters();
+            }
         });
         initPersonsView({
             getFilteredLetters: () => filteredLetters,
@@ -363,7 +376,7 @@ async function init() {
             getFilteredLetters: () => filteredLetters,
             getAllLetters: () => allLetters,
             applyFilters,
-            switchView,
+            revealLetters,
             showUndatedLetters,
             showLettersWithFeature,
             clearLetterSearch
@@ -371,7 +384,10 @@ async function init() {
         initTopicsView({
             getFilteredLetters: () => filteredLetters,
             getAllLetters: () => allLetters,
-            applySubjectFilter
+            toggleSubject: key => (activeSubjectFilter === key ? clearSubjectFilter() : applySubjectFilter(key)),
+            togglePerson: key => (selectedPersonId === key ? clearPersonFilter() : applyPersonFilter(key)),
+            togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key)),
+            revealLetters
         });
         initPlacesView({
             getFilteredLetters: () => filteredLetters,
@@ -386,7 +402,8 @@ async function init() {
             getAllLetters: () => allLetters,
             applyPersonFilter,
             applySubjectFilter,
-            switchView
+            showLettersBetween,
+            revealLetters
         });
         initMentionsView({
             getFilteredLetters: () => state.getFilteredLetters(),
@@ -411,6 +428,19 @@ async function init() {
             switchView,
             showLetterDetail
         });
+        initLettersDrawer({
+            getFilteredLetters: () => filteredLetters,
+            getTotal: () => allLetters.length,
+            hasActiveFilter,
+            openLetterList: () => {
+                switchView('letters');
+                focusViewHeading('letters');
+            },
+            onToggle: open => {
+                state.ui.drawerOpen = open;
+                updateUrlState();
+            }
+        });
         initExport();
         // Basket of this dataset from localStorage, then items shared via ?basket_* URL parameters
         const currentDatasetKey = datasetKey(data.sourceInfo);
@@ -430,6 +460,8 @@ async function init() {
         // Every filter read from the URL applies before the first view renders
         applyFilters({ render: false });
         switchView(currentView);
+        // A shared link may carry the open drawer; it opens without taking the focus
+        if (state.ui.drawerOpen) setDrawerOpen(true);
 
         hideLoading();
         historyReady = true;
@@ -727,7 +759,9 @@ function initFilters() {
         }
         temporalFilter = null;
         selectedPersonId = null;
+        selectedPartnerId = null;
         selectedPlaceFilter = null;
+        pickedYearFilter = null;
         activeSubjectFilter = null;
         qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
         Object.values(qualityCheckboxes).forEach(cb => { if (cb) cb.checked = false; });
@@ -771,7 +805,9 @@ function applyFilters({ render = true } = {}) {
     const allLanguagesChecked = languageFilters.length === document.querySelectorAll('input[name="language"]').length;
     filterUpdates.languages = allLanguagesChecked ? null : languageFilters;
     filterUpdates.person = selectedPersonId || null;
+    filterUpdates.partner = (selectedPersonId && selectedPartnerId) || null;
     filterUpdates.place = selectedPlaceFilter || null;
+    filterUpdates.year = pickedYearFilter;
     filterUpdates.subject = activeSubjectFilter || null;
     filterUpdates.quality = { ...qualityFilter };
     filterUpdates.features = featureFilter.size ? [...featureFilter] : null;
@@ -789,10 +825,11 @@ function applyFilters({ render = true } = {}) {
     updateFeatureCounts();
     updateStatCounts();
     updateUrlState();
-    updateFilterBadges();
+    renderSelectionSentence();
     updateFilterIndicators();
     SIDEBAR_VIEWS.forEach(view => renderFilterNotice(`${view}-view`)?.classList.add('view-filter-notice--narrow'));
     announceResultCount();
+    updateLettersDrawer({ hidden: currentView === 'letters' });
 
     if (render) renderView(currentView);
     updateViewTitle();
@@ -838,27 +875,50 @@ function showLettersOfYear(year) {
     const slider = elements.yearRangeSlider?.noUiSlider;
     if (slider) slider.set([year, year]);
     temporalFilter = { start: year, end: year };
-    applyFilters({ render: false });
-    switchView('letters');
-    focusViewHeading('letters');
+    applyFilters();
+    revealLetters();
 }
 
 // Undated letters have no place on the year slider, so they get their own temporal filter
 function showUndatedLetters() {
     temporalFilter = { undated: true };
     applyFilters();
-    switchView('letters');
+    revealLetters();
 }
 
+/**
+ * The letters of the selection just set, without leaving the view: the drawer opens and takes the
+ * focus. In the letter list, which has no drawer, the list itself shows them.
+ */
+function revealLetters() {
+    if (currentView === 'letters') {
+        focusViewHeading('letters');
+        return;
+    }
+    setDrawerOpen(true, { focus: true });
+}
+
+// A new person is a new centre of the selection, so a partner chosen beside the last one goes
 function applyPersonFilter(personId) {
     clearLetterSearch();
     selectedPersonId = personId;
+    selectedPartnerId = null;
     applyFilters();
 }
 
 function clearPersonFilter() {
     selectedPersonId = null;
+    selectedPartnerId = null;
     applyFilters();
+}
+
+// The letters exchanged between two persons, from a tie of the network
+function showLettersBetween(personId, partnerId) {
+    clearLetterSearch();
+    selectedPersonId = personId;
+    selectedPartnerId = partnerId;
+    applyFilters();
+    revealLetters();
 }
 
 // Goes through the state manager like the other filters, so every view and the reset button see it
@@ -886,7 +946,7 @@ function clearSubjectFilter() {
 
 function hasActiveFilter() {
     const f = state.filters;
-    return Boolean(f.temporal || f.languages || f.person || f.place || f.subject || f.features?.length ||
+    return Boolean(f.temporal || f.languages || f.person || f.partner || f.year != null || f.place || f.subject || f.features?.length ||
         f.quality?.preciseDates || f.quality?.knownPersons || f.quality?.locatedPlaces);
 }
 
@@ -912,94 +972,76 @@ function updateFilterIndicators() {
     });
 }
 
-function personNameForKey(key) {
-    for (const letter of allLetters) {
-        if (personKey(letter.sender) === key) return letter.sender.name || key;
-        const recipient = letterRecipients(letter).find(r => personKey(r) === key);
-        if (recipient) return recipient.name || key;
-    }
-    return key;
-}
-
-function placeNameForKey(key) {
-    const letter = allLetters.find(l => placeKey(l.place_sent) === key);
-    return letter?.place_sent?.name || key;
-}
-
-function subjectLabelForKey(key) {
-    return getSubjectIndex()?.[key]?.label || dataIndices.subjects?.[key]?.label || key;
-}
-
-const FILTER_BADGE_ORDER = ['temporal-filter-display', 'person-filter-display', 'place-filter-display', 'subject-filter-display', 'feature-filter-display'];
 // Views with the filter sidebar beside them on a wide screen
 const SIDEBAR_VIEWS = ['map', 'spacetime', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'];
 
-/**
- * Removable badge of an active person, place or subject filter under the sidebar stats. The
- * badge stays while the filter is set, also when it leaves no letter, so it can be removed.
- */
-function updateFilterBadge(id, className, icon, label, onClear) {
-    let display = elements.getById(id);
-    if (!label) {
-        display?.classList.add('hidden');
-        return;
+// What removing one mark of the selection sentence releases; each goes through the same inputs as
+// the sidebar control of its kind, so slider, checkboxes and sentence always agree
+function releaseMark(key) {
+    if (key === 'person') {
+        // Of two persons the other one stays, so removing one name leaves the other's letters
+        if (selectedPartnerId) applyPersonFilter(selectedPartnerId); else clearPersonFilter();
+    } else if (key === 'partner') {
+        selectedPartnerId = null;
+        applyFilters();
+    } else if (key === 'place') {
+        clearPlaceFilter();
+    } else if (key === 'time') {
+        temporalFilter = null;
+        const slider = elements.yearRangeSlider?.noUiSlider;
+        if (slider) slider.set([slider.options.range.min, slider.options.range.max]);
+        applyFilters();
+    } else if (key === 'year') {
+        pickedYearFilter = null;
+        applyFilters();
+    } else if (key === 'languages') {
+        document.querySelectorAll('input[name="language"]').forEach(cb => { cb.checked = true; });
+        applyFilters();
+    } else if (key === 'subject') {
+        clearSubjectFilter();
+    } else if (key.startsWith('feature:')) {
+        featureFilter.delete(key.slice('feature:'.length));
+        document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = featureFilter.has(cb.value); });
+        applyFilters();
+    } else if (key.startsWith('quality:')) {
+        const name = key.slice('quality:'.length);
+        qualityFilter[name] = false;
+        const box = { preciseDates: elements.filterPreciseDates, knownPersons: elements.filterKnownPersons, locatedPlaces: elements.filterLocatedPlaces }[name];
+        if (box) box.checked = false;
+        applyFilters();
     }
-    if (!display) {
-        display = document.createElement('div');
-        display.id = id;
-        display.className = className;
-        // Person, place, subject: fixed order after the stats cards
-        const previous = FILTER_BADGE_ORDER.slice(0, FILTER_BADGE_ORDER.indexOf(id))
-            .map(prevId => document.getElementById(prevId))
-            .filter(Boolean)
-            .pop();
-        (previous || document.querySelector('#sidebar-filters .sidebar-section-header'))?.after(display);
-    }
-    display.innerHTML = `
-        <div class="filter-badge ${className.includes('subject') ? 'subject-badge' : ''}">
-            <i class="fas ${icon}" aria-hidden="true"></i>
-            <span>${escapeHtml(label)}</span>
-            <button type="button" class="filter-clear" title="Filter entfernen" aria-label="Filter entfernen: ${escapeHtml(label)}">
-                <i class="fas fa-times" aria-hidden="true"></i>
-            </button>
-        </div>
-    `;
-    display.classList.remove('hidden');
-    display.querySelector('.filter-clear').addEventListener('click', () => {
-        onClear();
-        // The badge disappears with its filter, so focus moves to the next remaining badge or
-        // the reset button instead of falling back to the document
-        const next = FILTER_BADGE_ORDER
-            .map(badgeId => document.getElementById(badgeId))
-            .find(el => el && !el.classList.contains('hidden'));
-        (next?.querySelector('.filter-clear') || elements.resetFiltersBtn)?.focus();
-    });
 }
 
-function updateFilterBadges() {
-    // The bar of letters without a year sets a filter the slider cannot show
-    updateFilterBadge('temporal-filter-display', 'person-filter-active temporal-filter-active', 'fa-calendar-times',
-        temporalFilter?.undated ? 'Nur Briefe ohne Jahr' : null, () => {
-            temporalFilter = null;
-            const slider = elements.yearRangeSlider?.noUiSlider;
-            if (slider) slider.set([slider.options.range.min, slider.options.range.max]);
-            applyFilters();
-        });
-    updateFilterBadge('person-filter-display', 'person-filter-active', 'fa-user',
-        selectedPersonId ? personNameForKey(selectedPersonId) : null, clearPersonFilter);
-    updateFilterBadge('place-filter-display', 'person-filter-active place-filter-active', 'fa-map-marker-alt',
-        selectedPlaceFilter ? placeNameForKey(selectedPlaceFilter) : null, clearPlaceFilter);
-    updateFilterBadge('subject-filter-display', 'subject-filter-active', 'fa-tag',
-        activeSubjectFilter ? subjectLabelForKey(activeSubjectFilter) : null, clearSubjectFilter);
-    // Transmission filters can be set from another view, so they show as a badge like the others
-    const featureLabels = LETTER_FEATURES.filter(f => featureFilter.has(f.key)).map(f => f.label);
-    updateFilterBadge('feature-filter-display', 'person-filter-active feature-filter-active', 'fa-filter',
-        featureLabels.length ? featureLabels.join(', ') : null, () => {
-            featureFilter.clear();
-            document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = false; });
-            applyFilters();
-        });
+/**
+ * The selection as one sentence of removable marks at the top of the sidebar filters, such as
+ * „Paris, 1900–1905, Französisch“. It replaces the separate badges of person, place, subject and
+ * features, so every filter is named once and in a fixed order. A mark stays while its filter is
+ * set, also when the filter leaves no letter, so it can be removed.
+ */
+function renderSelectionSentence() {
+    const sentence = document.getElementById('selection-sentence');
+    if (!sentence) return;
+    const marks = selectionMarks(state.filters, allLetters);
+    sentence.classList.toggle('hidden', marks.length === 0);
+    // An unchanged sentence keeps its elements, so the focus on a mark survives a repeated filter
+    const key = JSON.stringify(marks);
+    if (sentence.dataset.marks === key) return;
+    sentence.dataset.marks = key;
+    sentence.innerHTML = marks.map(mark => `${escapeHtml(mark.joiner)}<span class="selection-mark">${escapeHtml(mark.label)}<button type="button" class="selection-mark__clear" data-mark="${escapeHtml(mark.key)}" aria-label="${escapeHtml(mark.label)} entfernen" title="Entfernen"><i class="fas fa-times" aria-hidden="true"></i></button></span>`).join('');
 }
+
+document.getElementById('selection-sentence')?.addEventListener('click', (e) => {
+    const button = e.target.closest('.selection-mark__clear');
+    if (!button) return;
+    const sentence = e.currentTarget;
+    const index = [...sentence.querySelectorAll('.selection-mark__clear')].indexOf(button);
+    releaseMark(button.dataset.mark);
+    // The mark leaves with its filter, so focus goes to the mark now in its place, else the one
+    // before it, else the heading of the view, instead of falling back to the document
+    const rest = sentence.querySelectorAll('.selection-mark__clear');
+    const next = rest[Math.min(index, rest.length - 1)];
+    if (next) next.focus(); else focusViewHeading(currentView);
+});
 
 // The sidebar figures show the filtered share of the dataset, so an active filter is never silent
 function updateStatCounts() {
@@ -1113,7 +1155,9 @@ function initUrlState() {
         temporalFilter = { start: f.temporal.min, end: f.temporal.max };
     }
     selectedPersonId = f.person;
+    selectedPartnerId = f.partner;
     selectedPlaceFilter = f.place;
+    pickedYearFilter = f.year;
     activeSubjectFilter = f.subject;
     initialLanguageFilter = f.languages;
     qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false, ...f.quality };
@@ -1338,6 +1382,8 @@ function switchView(view) {
 
     renderView(view);
     updateViewTitle();
+    // The drawer keeps its state across views and stands back only for the letter list itself
+    updateLettersDrawer({ hidden: view === 'letters' });
 }
 
 // The letter list under one transmission feature, alone or added to the features already set
@@ -1346,16 +1392,14 @@ function showLettersWithFeature(key, { keepOthers = false } = {}) {
     if (!keepOthers) featureFilter.clear();
     featureFilter.add(key);
     document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = featureFilter.has(cb.value); });
-    applyFilters({ render: false });
-    switchView('letters');
-    focusViewHeading('letters');
+    applyFilters();
+    revealLetters();
 }
 
-// The letter list of one person, from a list entry or a dialog
+// The letters of one person, from a list entry or a dialog
 function showLettersOfPerson(personId) {
     applyPersonFilter(personId);
-    switchView('letters');
-    focusViewHeading('letters');
+    revealLetters();
 }
 
 // Export

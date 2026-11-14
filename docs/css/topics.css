@@ -1,0 +1,365 @@
+/* Topics view (views/topics-view.js): one ridge of letters per year for every subject.
+   Colours follow design.md: --color-role-topic for subjects, --color-data for subjects that are
+   languages where a dataset has both, --color-primary only for the chosen subject and for what can
+   be pressed. The ridges lie on a canvas above the row buttons, which carry name, focus and pointer. */
+
+#topics-view.active {
+    min-height: 0;
+}
+
+.tp-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm) var(--space-md);
+}
+
+.tp-order {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px;
+}
+
+.tp-order__label {
+    margin-right: var(--space-xs);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.tp-btn {
+    min-height: 28px;
+    padding: var(--space-xs) var(--space-sm);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-light);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
+}
+
+.tp-btn:hover {
+    color: var(--color-primary-dark);
+    background: var(--color-bg-light);
+}
+
+.tp-btn[aria-pressed="true"] {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-weight: 600;
+}
+
+.tp-search {
+    width: 14rem;
+    max-width: 100%;
+    min-height: 28px;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+}
+
+/* The figure fills the space under the header; strip and table follow below it */
+.tp-stage {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 var(--space-xs);
+}
+
+/* Keys of colour and height on the first line, the years over the plot on the second */
+.tp-axis {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.tp-axis__years {
+    position: relative;
+    order: 2;
+    height: 18px;
+}
+
+.tp-axis__year {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    font-variant-numeric: tabular-nums;
+}
+
+.tp-key {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 0 var(--space-md);
+    padding: var(--space-xs) var(--space-lg) 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.tp-key__item {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: var(--space-xs);
+}
+
+.tp-key__swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.tp-key__swatch--topic {
+    background: color-mix(in srgb, var(--color-role-topic) 55%, var(--color-bg));
+    border: 1px solid var(--color-role-topic);
+}
+
+.tp-key__swatch--language {
+    background: color-mix(in srgb, var(--color-data) 55%, var(--color-bg));
+    border: 1px solid var(--color-data);
+}
+
+.tp-key__swatch--with {
+    display: inline-block;
+    background: var(--color-role-topic);
+}
+
+.tp-key__bar {
+    fill: var(--color-text-light);
+}
+
+.tp-key__scale svg {
+    margin-left: var(--space-xs);
+}
+
+.tp-figure {
+    position: relative;
+    flex: 1;
+    min-height: 240px;
+}
+
+.tp-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.tp-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tp-row {
+    display: flex;
+    align-items: flex-end;
+    height: var(--tp-pitch, 20px);
+    padding: 0 0 2px var(--space-lg);
+    font-size: var(--font-size-xs);
+    line-height: 1.2;
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.tp-row__name {
+    display: block;
+    width: calc(var(--tp-name-width, 200px) - var(--space-lg));
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tp-row:hover {
+    background: var(--color-bg-light);
+}
+
+.tp-row:focus-visible {
+    outline-offset: -3px;
+}
+
+/* The chosen row as the chosen rows of the lists: light rust and a rust stripe at the left edge */
+.tp-row--chosen {
+    background: var(--color-primary-light);
+    border-left: 3px solid var(--color-primary);
+    padding-left: calc(var(--space-lg) - 3px);
+}
+
+.tp-rows--narrow .tp-row.tp-row--chosen {
+    padding-left: 9px;
+}
+
+/* Narrow: the name stands on the upper part of the row, the ridge below it */
+.tp-rows--narrow .tp-row {
+    align-items: flex-start;
+    padding: 2px var(--space-sm) 0 12px;
+}
+
+.tp-rows--narrow .tp-row__name {
+    width: 100%;
+}
+
+.tp-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: var(--z-raised);
+    pointer-events: none;
+}
+
+.tp-tooltip {
+    position: absolute;
+    z-index: var(--z-raised);
+    max-width: 320px;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-text);
+    color: var(--color-bg-light);
+    font-size: var(--font-size-sm);
+    border-radius: var(--radius-sm);
+    pointer-events: none;
+}
+
+.tp-empty {
+    position: absolute;
+    inset: var(--space-xl) var(--space-lg) auto;
+    margin: 0;
+    color: var(--color-text-light);
+}
+
+/* The chosen subject: a quiet strip under the figure, separated by a hairline */
+.tp-choice {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-lg);
+    padding: var(--space-sm) var(--space-lg);
+    border-top: 1px solid var(--color-border-light);
+    font-size: var(--font-size-sm);
+}
+
+.tp-choice__group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-sm);
+    min-width: 0;
+}
+
+.tp-choice__label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.tp-choice__letters,
+.tp-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 24px;
+    padding: 0 var(--space-xs);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font: inherit;
+    color: var(--color-text);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.tp-choice__letters {
+    margin-left: auto;
+}
+
+.tp-choice__letters:hover,
+.tp-mark:hover {
+    background: var(--color-bg-light);
+    color: var(--color-primary-dark);
+}
+
+.tp-mark circle {
+    fill: var(--color-role-topic);
+}
+
+.tp-mark[data-person] circle,
+.tp-mark[data-place] circle {
+    fill: var(--color-data);
+}
+
+.tp-mark[aria-pressed="true"] {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-weight: 600;
+}
+
+.tp-mark[aria-pressed="true"] circle {
+    fill: var(--color-primary);
+}
+
+.tp-mark__name {
+    max-width: 16rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tp-table {
+    flex: none;
+    padding: 0 var(--space-lg);
+}
+
+/* An open table takes at most a third of the view, the figure keeps the rest */
+.tp-table .chart-table__scroll {
+    max-height: 30vh;
+}
+
+@media (max-width: 767px) {
+    .tp-search {
+        width: 100%;
+    }
+
+    /* The three orders fit one line without their label, which stays for screen readers */
+    .tp-order__label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    /* The figure keeps a readable height; strip and table follow below it within the view */
+    .tp-stage {
+        overflow-y: auto;
+    }
+
+    .tp-figure {
+        flex: 1 0 300px;
+    }
+
+    .tp-key {
+        justify-content: flex-start;
+        padding-inline: 12px;
+    }
+
+    .tp-choice {
+        padding-inline: 12px;
+        gap: var(--space-xs) var(--space-md);
+    }
+
+    .tp-mark__name {
+        max-width: 11rem;
+    }
+}
