@@ -59,7 +59,39 @@ Code
 - Die Dialoge sind `div role="dialog"` mit eigener Fokusfalle statt `<dialog>` mit `showModal()`.
 - `explore.js` hält die Filtereingaben als Modulvariablen neben dem state-manager und gleicht beide in `applyFilters()` ab ([architecture.md](architecture.md#entwurfsmuster)). Ein Besitzer des Filterzustands würde den Abgleich ersparen.
 
-Nicht geprüft sind 200 Prozent Browser-Zoom, axe-core auf dem neuen Stand und die Ansichten Themen und Erwähnungen mit Briefsätzen.
+Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Erwähnungen mit Briefsätzen.
+
+### Offen aus den Durchsichten vom 2026-11-14
+
+Zwei unabhängige Durchsichten des Umbaus von Farbrollen und Listen ([Journal vom 2026-11-14](journal.md)) ließen offen:
+
+Bedienung
+
+- Die Sprachsegmente der Zeitleiste sind per Tastatur nicht erreichbar und bei schmaler Breite kaum zu treffen. Die Tastatur setzt nur das Jahr.
+- Der Balken ohne Datum setzt einen zeitlichen Filter, den die Seitenleiste weder als Häkchen unter „Überlieferung“ noch als Filtermarke zeigt.
+- Bei 360 Pixel zeigen Ansichtsleiste und Kopfknöpfe nur Symbole, und ein aktiver Filter ist nur in der eingeklappten Seitenleiste zu sehen.
+- Eine Briefzeile braucht bei 360 Pixel drei bis vier Textzeilen, mit langen Namen auch bei 1280 Pixel zwei. Brief- und Personenzeile tragen mehr als ein Ziel und eine weitere Aktion.
+- Der Stern der Korrespondentenliste ist kein Schalter und zeigt nicht, ob die Person im Korb liegt.
+- Das Kartenpopup schließt nicht mit Escape, sein Stern ist kleiner als die Zielgröße.
+- Nach dem Start eines Forschungspfads und nach „Alle Pfade anzeigen“ fällt der Fokus auf das Dokument.
+- Die Forschungspfade haben mehr Ebenen je Eintrag, als der Maßstab erlaubt, und die Einstiegskacheln der Übersicht führen in dieselben Ansichten wie die Leiste darüber.
+- Der Dialog eines Briefs wiederholt als Raster, was die Zeile schon zeigt, seine Knöpfe brechen bei langen Namen um.
+
+Gestaltung und Kodierung
+
+- Die Chronik, der Vergleich, die Detailbereiche von Orten und Themen und die Kennzahlen der Seitenleiste stehen weiter in Rahmen und Flächen.
+- Dieselbe Funktion sieht in verschiedenen Ansichten verschieden aus, etwa die Moduswahl in Chronik, Vergleich und Netzwerk, der Weg zu correspSearch und „Zum Korb“ in Liste und Dialogen.
+- Mehrere Sprachfarben und die unteren Stufen der Heatmap erreichen auf dem Papierton den Kontrast für Grafikteile nicht. Das Werkzeug stützt sich auf die Tabellen unter den Grafiken ([design.md](design.md#sprachfarben)).
+- Im Erwähnungsfluss liegt die rechte Spaltenüberschrift unter den Zoomknöpfen, ein Name liegt auf dem Mittelknoten.
+- Themen stehen im Netzwerk in einer Statusfarbe.
+- Der Zähler im Kopf des Wissenskorbs steht in der Interaktionsfarbe, ohne bedienbar zu sein.
+- Die Kopfzeilen von Startseite, Projektseite und Explorer unterscheiden sich, die Startseite führt einen Link „Tests“.
+
+Daten
+
+- Für die Person im Mittelpunkt der Briefe von Stefan Zweig Digital nennen Korrespondentenliste und Forschungspfad verschiedene Briefzahlen. Vermutlich zählt der Pfad gesendete und empfangene Briefe zusammen und damit Briefe doppelt, in denen die Person beides ist.
+
+Nicht geprüft sind die Korrekturen an Fokus, Suche und Stern durch eine zweite Durchsicht, der Wissenskorb mit Einträgen, die dunkle Grundkarte, der Exportdialog und die Demo-Tour im neuen Farbschema.
 
 ## Vorhaben
 

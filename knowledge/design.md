@@ -48,11 +48,11 @@ Ladereihenfolge und Inhalt der Stylesheets beschreibt `docs/css/CONTEXT-MAP.md`.
 
 Die Palette ist aus dem Logo abgeleitet, die Werte stehen in `tokens.css`. Hier steht, welche Farbe wofür gilt.
 
-- `--color-bg` (Papier) ist der globale Hintergrund, `--color-bg-light` (Manila) der Grund von Containern, Karten und Steuerleisten.
+- `--color-bg` (Papier) ist der globale Hintergrund, `--color-bg-light` (Manila) der Grund von Steuerleisten, Feldern und der Zeile unter dem Mauszeiger.
 - `--color-text` ist Haupttext und Kontur, `--color-text-light` Nebentext und Hinweise.
 - `--color-border` zieht die kräftigen Konturen. `--color-border-light` dient nur für Trennlinien und ist für Bedienelemente zu blass. `--color-border-control` ist der Rand von Eingaben und Knöpfen ohne eigene Füllung und erreicht den nach WCAG 1.4.11 nötigen Kontrast.
-- `--color-primary` (Rostrot) trägt Aktionen, Auswahl und Hervorhebung, `--color-primary-dark` Hover und Text auf `--color-bg-light`, wo `--color-primary` den Kontrast für Text verfehlt. `--color-accent` ist dieselbe Farbe.
-- `--color-secondary` (Stahlblau) färbt Links.
+- `--color-primary` (Rostrot) ist die Interaktionsfarbe. Sie steht an dem, was sich anklicken lässt oder ausgewählt ist, also an gefüllten Knöpfen, Links, dem aktiven Reiter, der Auswahl und dem Fokusrahmen. Daten, Kennzahlen, Überschriften und Symbole ohne eigene Funktion tragen sie seit 2026-11-14 nicht mehr, weil ein Ziel umso schwerer zu finden ist, je mehr andere Elemente seine Farbe teilen (Wolfe & Horowitz, 2017). Die Anwendung dieses Befunds aus der Suchforschung auf eine Oberfläche ist eine eigene Übertragung. `--color-primary-dark` ist Hover und als `--color-link` die Farbe der Links, weil `--color-primary` auf `--color-bg-light` den Kontrast für Text verfehlt.
+- `--color-data` (Tintenblau) ist die Farbe einzelner Datenreihen, also der Balken, der Skala der Heatmap, der Kartenpunkte und der Personen im Netzwerk. `--color-secondary` hat denselben Wert und bleibt die zweite Farbe der Startseite. Die Trennung von Interaktionsfarbe und Datenfarbe folgt dem Muster Functional Color Semantics des Hauswissens.
 - `--color-success`, `--color-warning`, `--color-info` und `--color-error` sind Statusfarben. Warning und Info wurden am 2026-10-29 abgedunkelt, damit sie als Text auf `--color-bg` und `--color-bg-light` AA erreichen.
 - Helle Tönungen für Hover und Statusflächen (`--color-*-light`) mischt `color-mix()` aus den Grundfarben. Hinter Dialogen und dem mobilen Menü liegt `--color-backdrop`, hinter der Demo-Tour `--color-overlay`.
 
@@ -62,14 +62,14 @@ Die Landing-Page zeigt `assets/logo-no-background.png`, das Seitensymbol aller S
 
 Grafiken nehmen ihre Farben aus Tokens. D3-Attribute, die `var()` nicht auflösen, lesen die Werte über `readTokens()` aus `views/view-support.js`.
 
-- Die Karte färbt Land, Parks und Wald in `--color-map-land` und Wasser in `--color-map-water`. Cluster stehen in `--color-primary`, einzelne Orte in der Farbe ihrer häufigsten Briefsprache oder, nach Umschalten, einheitlich in `--color-primary`.
-- Im Netzwerk stehen Personen in `--color-role-sender`, Themen in `--color-warning` und Organisationen im Farbmodus nach Art in `--color-primary`. Kanten sind `--color-text-light`, hervorgehoben `--color-text`, der Knotenrand `--color-bg`. Der Farbmodus nach Eintrittsjahr nutzt die sequentielle D3-Skala `interpolateYlGnBu` mit einer Verlaufslegende.
-- Der Erwähnungsfluss zeigt Absender links in `--color-role-sender`, die gewählte Person in der Mitte in `--color-primary` und erwähnte Personen rechts in `--color-role-mentioned`.
-- Die Timeline stapelt ihre Balken nach Sprache in den [Sprachfarben](#sprachfarben), ohne Sprachdaten bleiben sie einfarbig in `--color-primary`. Der Balken „Spanne“ steht in `--color-text-light`.
+- Die Karte färbt Land, Parks und Wald in `--color-map-land` und Wasser in `--color-map-water`. Cluster stehen in `--color-data`, einzelne Orte in der Farbe ihrer häufigsten Briefsprache oder, nach Umschalten, einheitlich in `--color-data`. Die Legende führt die Sprachen mit eigener Farbe und einen Eintrag für alle weiteren.
+- Im Netzwerk stehen Personen in `--color-role-sender`, das denselben Wert wie `--color-data` hat, Themen in `--color-warning` und Organisationen im Farbmodus nach Art in `--color-primary`. Kanten sind `--color-text-light`, hervorgehoben `--color-text`, der Knotenrand `--color-bg`. Der Farbmodus nach Eintrittsjahr nutzt die sequentielle D3-Skala `interpolateYlGnBu` mit einer Verlaufslegende.
+- Der Erwähnungsfluss zeigt Absender links in `--color-role-sender`, die gewählte Person in der Mitte in `--color-primary`, weil sie die Auswahl ist, und erwähnte Personen rechts im warmen Grau `--color-role-mentioned`.
+- Die Timeline stapelt ihre Balken nach Sprache in den [Sprachfarben](#sprachfarben), ohne Sprachdaten bleiben sie einfarbig in `--color-data`. Zwischen zwei Segmenten liegt eine Linie in `--color-bg`. Der Balken „Spanne“ steht in `--color-text-light`.
 
 #### Aktivitäts-Heatmap
 
-Die Heatmap nutzt eine sequentielle Skala aus der Primärfarbe statt der früheren Grüntöne, die außerhalb der Palette lagen. Stufe 0 (kein Brief) ist `--color-bg-light`, die Stufen 1 bis 4 sind `--color-scale-1` bis `--color-scale-4` und reichen bis `--color-primary`. Die Klassen `.activity-level-0` bis `.activity-level-4` stehen in `explore.css`.
+Die Heatmap nutzt eine sequentielle Skala zur Datenfarbe. Stufe 0 (kein Brief) ist `--color-bg-light`, die Stufen 1 bis 4 sind `--color-scale-1` bis `--color-scale-4` und reichen bis `--color-data`. Die unterste Stufe ist so kräftig gemischt, dass sie sich von der leeren Zelle abhebt. Bis 2026-11-14 lief die Skala zur Primärfarbe und davor über Grüntöne außerhalb der Palette. Die Klassen `.activity-level-0` bis `.activity-level-4` stehen in `explore.css`.
 
 Die Zellen bleiben 12 x 12px und unterschreiten damit die Zielgröße von 24 x 24px nach WCAG 2.2 SC 2.5.8. Das Werkzeug beruft sich auf die Ausnahme „wesentliche Darstellung“, weil ein Tageskalender über Jahrzehnte nur als dichtes Raster lesbar ist. Bei 24px würde der Kalender des HSA viermal so groß und müsste in beide Richtungen scrollen. Jede Zelle bleibt per Tastatur (Roving Tabindex, Pfeiltasten) und Tooltip erreichbar. Die Ausnahme ist eine Auslegung der Norm und keine Messung (Entscheidung E6 vom 2026-11-05).
 
@@ -77,7 +77,11 @@ Das Jahr der Heatmap wählt eine Auswahlliste mit Knöpfen für das vorige und d
 
 ### Sprachfarben
 
-Bei Korpora mit vielen Sprachen werden gestapelte Balken mit lauter kräftigen Farben unlesbar. Deshalb erhält nur die häufigste Sprache eine kräftige Farbe, alle übrigen Pastelltöne. `computeLanguageColors()` in `docs/js/constants.js` setzt die Farben beim Laden des Datensatzes aus `LANGUAGE_COLORS_STRONG` und `LANGUAGE_COLORS_PASTEL`, dort stehen auch die Werte je Sprache und für Briefe ohne Sprache (`NO_LANGUAGE`). Die Sprachfarben sind die einzigen Datenfarben außerhalb von `tokens.css`.
+Der Farbton allein trägt nur wenige Kategorien. In einer Suchaufgabe unter kontrollierten Bedingungen waren sieben Farben die Grenze für schnelles Erkennen (Healey, 1996), und Fehler nehmen mit der Größe der Palette zu (Gramazio et al., 2017). Die häufigsten Sprachen eines Datensatzes erhalten deshalb je eine Farbe aus `LANGUAGE_PALETTE` in `docs/js/constants.js`, in der Reihenfolge ihrer Briefzahl. Alle übrigen teilen das warme Grau von „Weitere Sprachen“, Briefe ohne Sprache ein helleres. `computeLanguageColors()` setzt die Zuordnung beim Laden, `isRestLanguage()` sagt, ob eine Sprache zum Rest gehört. Die Sprachfarben sind die einzigen Datenfarben außerhalb von `tokens.css`.
+
+Die Palette besteht aus sechs Farben der Okabe-Ito-Reihe (Okabe & Ito, 2008), die für Lesende mit Farbfehlsichtigkeit entworfen ist. Ihr Gelb fehlt, weil es auf dem Papierton verschwindet, ihr Schwarz, weil Tinte die Textfarbe ist. Nachbarn in der Reihenfolge unterscheiden sich in der Helligkeit, die häufiger erkannt wird als ein Unterschied im Farbton (Szafir, 2018). Eine aus der Logofarbe abgeleitete, gedämpfte Reihe wurde am 2026-11-14 erwogen und verworfen, weil Farben einer Tonfamilie und entsättigte Farben schwerer zu benennen und zu trennen sind (Heer & Stone, 2012). Ebenso verworfen ist die frühere Lösung mit einer kräftigen Farbe für die häufigste Sprache und Pastelltönen für alle anderen. Für das Zusammenfassen unter „Weitere Sprachen“ liegt keine Studie vor, die Grenze bei sechs Farben ist eine eigene Setzung. Einzeln bleiben diese Sprachen im Filter der Seitenleiste, im Tooltip und in der Tabelle. Ein Klick auf das graue Segment setzt den Sprachfilter auf alle Sprachen des Rests.
+
+Mehrere der Farben erreichen auf `--color-bg` den Kontrast von 3:1 für Grafikteile nicht. Das Werkzeug stützt sich hier auf die Tabelle „Daten als Tabelle“, die dieselben Werte in Textform führt, nach dem Understanding-Dokument zu WCAG 1.4.11 genügt das. Die Quellenangaben stehen unter [Quellen der Farbentscheidungen](#quellen-der-farbentscheidungen).
 
 Fehlen Sprachdaten ganz (`hasLanguageData` prüft, ob ein Brief `language.code` trägt), wären gestapelte Balken mit einer einzigen Kategorie irreführend. Die Balken bleiben dann einfarbig, Tooltip und Tabelle der Timeline nennen keine Sprachen, und die Legende sagt in einer Zeile „Keine Sprachdaten im Korpus“.
 
@@ -86,7 +90,7 @@ Fehlen Sprachdaten ganz (`hasLanguageData` prüft, ob ein Brief `language.code` 
 Unsicherheit spricht in allen Ansichten dieselbe visuelle Sprache. Symbole, Tooltip-Texte und CSS-Klassen je Präzisionsstufe stehen in [uncertainty-specification.md](uncertainty-specification.md#ui-display), hier steht die Farbcodierung.
 
 - Unvollständiges Datum (nur Jahr oder Monat) in `--color-warning`.
-- Zeitraum in `--color-secondary`.
+- Zeitraum in `--color-text-light` mit seinem Symbol.
 - Unsichere Datierung (`cert="low"`) in `--color-error`.
 - Unbekanntes Datum in `--color-text-light`, kursiv.
 - Erschlossene Werte in eckigen Klammern und gedämpft (`.date-inferred`, `.place-inferred`), ein nur als Text überliefertes Datum kursiv (`.date-text`), ein unplausibles Jahr mit dem Wort „unplausibel“ (`.date-implausible`).
@@ -98,7 +102,7 @@ Symbole stehen vor dem Datumswert, Tooltips erklären sie bei Hover, die Legende
 
 Die Schriftfamilien und die Größenskala stehen als `--font-*` und `--font-size-*` in `tokens.css`.
 
-- Überschriften stehen in `--font-headings` (Merriweather) und `--color-primary`. Die Titel der Ansichtsköpfe und der Dialoge setzen `--color-text`.
+- Überschriften stehen in `--font-headings` (Merriweather) und `--color-text`. Der Name des Werkzeugs in der Kopfzeile ist ein Link zur Startseite und steht in `--color-primary`.
 - Fließtext steht in `--font-base` auf `--font-size-base` mit Zeilenhöhe 1.6.
 - Kleine Bezeichnungen über Kennzahlen und Gruppen stehen in Versalien mit leichtem Zeichenabstand.
 - Zahlen in Kennzahlen und Tabellen nutzen gleich breite Ziffern (`font-variant-numeric: tabular-nums`). `--font-mono` bleibt Code und Kennungen vorbehalten, etwa den Einträgen eines Briefs in der Quelle (`.letter-records__id`).
@@ -118,10 +122,11 @@ Reduzierte Bewegung (WCAG 2.3.3) wird respektiert. Bei `prefers-reduced-motion: 
 
 ## Komponenten
 
-### Karten, Knöpfe und Eingaben
+### Kacheln, Zeilen, Knöpfe und Eingaben
 
-- Karten (`.stat-card`, `.dataset-card`, `.letter-card`, `.person-card`, `.entity-card`) tragen einen 2px-Rahmen, `--radius-md` und keinen Schatten. Beim Hover wechselt der Rahmen auf `--color-primary`.
-- `.btn-primary` ist rostrot gefüllt mit weißer Schrift, `.btn-secondary` hat einen rostroten Rahmen und Text in `--color-primary-dark`, weil `--color-primary` auf `--color-bg-light` (Steuerleisten, Kartenflächen) nur 4.45:1 erreicht.
+- Kacheln (`.stat-card`, `.dataset-card`, die Einstiege der Übersicht) tragen einen Rahmen, `--radius-md` und keinen Schatten. Sie stehen für wenige, eigenständige Objekte.
+- Einträge einer Liste (`.letter-card`, `.person-card`, `.entity-card`, die Forschungspfade) sind Zeilen auf dem Papierton, getrennt durch eine Haarlinie in `--color-border-light`. Unter dem Mauszeiger liegt `--color-bg-light`, eine gewählte Zeile trägt `--color-primary-light` und einen rostroten Streifen am linken Rand. Bis 2026-11-14 war jeder Eintrag eine gefüllte Kachel mit 2px-Rahmen. Bei gleichartigen Einträgen in großer Zahl kostet das Platz und erschwert den Vergleich, die Praxisliteratur empfiehlt dafür Listen (Laubheimer, 2016), eine Messung der Suchzeit liegt dazu nicht vor. Die Klassennamen sind aus der Zeit der Kacheln geblieben.
+- `.btn-primary` ist rostrot gefüllt mit weißer Schrift und bleibt der Haupthandlung vorbehalten. `.btn-secondary` hat Text in `--color-text` und einen Rand in `--color-border-control`, erst unter dem Mauszeiger wird er rostrot.
 - Eingaben und Knöpfe ohne eigene Füllung tragen ihren Rand in `--color-border-control`. Eingaben behalten den sichtbaren Fokusrahmen, kein Seiten-CSS setzt `outline: none` auf `:focus`.
 - Knöpfe, die als Text erscheinen (Namen in Listen, Pfadschritte, Themen in der Sidebar), setzen Rahmen und Hintergrund zurück und übernehmen Schrift und Farbe.
 
@@ -192,7 +197,7 @@ Die Balken sind nach Sprache gestapelt ([Sprachfarben](#sprachfarben)), die Schr
 
 ### Listen
 
-Listen verzichten auf wechselnd gefärbte Zeilen, weil sie unruhig wirken. Zahlen stehen rechtsbündig.
+Listen verzichten auf wechselnd gefärbte Zeilen, weil sie unruhig wirken. Zahlen stehen rechtsbündig. Ein Brief steht ab 1024px in einer Zeile mit Korrespondenten, den Angaben der Quelle und dem Datum, darunter in zwei bis drei Zeilen. Die Korrespondentenliste führt keine Kreise mit Initialen mehr, weil sie keine Angabe trugen, die der Name nicht trägt.
 
 ## Interaktionsmuster
 
@@ -222,7 +227,7 @@ Ein gestarteter Forschungspfad erscheint als eine Leiste unter der Navigation mi
 
 ### Forschungspfade
 
-Jeder Schritt eines Pfads zeigt seine Aktion unter der Bezeichnung statt im Tooltip, weil Tooltips Hover verlangen und wesentliche Information verstecken. Die Pfadnummern stehen auf `--color-accent`, nachdem weiße Ziffern auf hellem Grund unsichtbar waren. Fragen, die der Datensatz nicht beantworten kann, stehen nicht als gesperrte Karten zwischen den Pfaden. Sie stehen im aufklappbaren Abschnitt „Anreicherungspotential“ (`details.questions-enrichment`) mit der fehlenden Angabe und dem CMIF-Element, das sie ergänzen würde.
+Jeder Schritt eines Pfads zeigt seine Aktion unter der Bezeichnung statt im Tooltip, weil Tooltips Hover verlangen und wesentliche Information verstecken. Die Pfadnummern stehen auf `--color-primary`, nachdem weiße Ziffern auf hellem Grund unsichtbar waren. Fragen, die der Datensatz nicht beantworten kann, stehen nicht als gesperrte Karten zwischen den Pfaden. Sie stehen im aufklappbaren Abschnitt „Anreicherungspotential“ (`details.questions-enrichment`) mit der fehlenden Angabe und dem CMIF-Element, das sie ergänzen würde.
 
 ## Barrierefreiheit
 
@@ -234,14 +239,31 @@ Jeder Schritt eines Pfads zeigt seine Aktion unter der Bezeichnung statt im Tool
 | Primary auf BG | 5.1:1 | AA |
 | Primary auf BG Light | 4.45:1 | verfehlt AA, dort `--color-primary-dark` (5.86:1), etwa Links in `.info-box`, `.link-list` und `.feature-item` der About-Seite |
 | Primary auf Warning Light | 4.3:1 | verfehlt AA, dort `--color-primary-dark` (5.65:1), etwa Hinweisfeld und Tooltip-Auslöser der Startseite |
-| Secondary auf BG | 7.2:1 | AAA |
+| Data auf BG | 7.2:1 | AAA |
+| Link (Primary Dark) auf BG und BG Light | 6.7:1 und 5.9:1 | AA |
+| Link gegen umgebenden Text | 2.1:1 | unter 3:1, Links im Fließtext sind deshalb unterstrichen (WCAG 1.4.1, Technik G183) |
+| Text Light auf BG und BG Light | 7.0:1 und 6.1:1 | AA |
+| Role Mentioned auf BG | 4.9:1 | AA, das frühere kühle Grau erreichte 4.2:1 |
 | Warning auf BG und BG Light | 6.1:1 und 5.3:1 | AA |
 | Info auf BG und BG Light | 6.7:1 und 5.9:1 | AA |
 | Border Control auf BG und BG Light | 3.9:1 und 3.4:1 | erfüllt 1.4.11, Rand von Eingaben und Knöpfen |
 | Border Light auf BG | 1.4:1 | nur für Trennlinien, bis 2026-11-05 auch Rand von Suchfeldern und Schrittknöpfen |
 | BG Light auf Text (Hinweis im dunklen Tooltip) | 12.5:1 | AAA, vorher Text Light mit Deckkraft 0.8, etwa 1.8:1 |
 
-Die Werte sind nach der WCAG-Formel für relative Leuchtdichte am 2026-10-29 berechnet, die Zeilen zu Border Control, Border Light und Tooltip-Hinweis am 2026-11-05.
+Die Werte sind nach der WCAG-Formel für relative Leuchtdichte am 2026-10-29 berechnet, die Zeilen zu Border Control, Border Light und Tooltip-Hinweis am 2026-11-05, die Zeilen zu Data, Link, Text Light und Role Mentioned am 2026-11-14.
+
+### Quellen der Farbentscheidungen
+
+Die Befunde hat ein lesender Agent am 2026-11-14 aus den Volltexten zusammengetragen, die bauende Session hat sie übernommen und die Kontrastwerte nachgerechnet. Alle genannten Farbstudien schließen Menschen mit Farbfehlsichtigkeit aus, für sie sprechen hier nur Okabe und Ito und die Begründung der WCAG.
+
+- Gramazio, C. C., Laidlaw, D. H., & Schloss, K. B. (2017). Colorgorical: Creating discriminable and preferable color palettes for information visualization. *IEEE Transactions on Visualization and Computer Graphics*, 23(1), 521–530. https://doi.org/10.1109/TVCG.2016.2598918
+- Healey, C. G. (1996). Choosing Effective Colours for Data Visualization. *Proceedings IEEE Visualization '96*, 263–270. https://doi.org/10.1109/VISUAL.1996.568118
+- Heer, J., & Stone, M. (2012). Color Naming Models for Color Selection, Image Editing and Palette Design. *CHI '12*. Modellmetriken ohne Nutzertest der Paletten.
+- Laubheimer, P. (2016). Cards: UI-Component Definition. Nielsen Norman Group. https://www.nngroup.com/articles/cards-component/. Praxisempfehlung ohne berichtete Messung.
+- Okabe, M., & Ito, K. (2008). Color Universal Design (CUD). How to make figures and presentations that are friendly to Colorblind people. https://jfly.uni-koeln.de/color/. Praxisrichtlinie, die Farbwerte der Palette sind die verbreitet veröffentlichten und nicht aus dem Text der Quelle gelesen.
+- Szafir, D. A. (2018). Modeling Color Difference for Visualization Design. *IEEE Transactions on Visualization and Computer Graphics*, 24(1), 392–401. https://doi.org/10.1109/TVCG.2017.2744359
+- Wolfe, J. M., & Horowitz, T. S. (2017). Five factors that guide attention in visual search. *Nature Human Behaviour*, 1, 0058. https://doi.org/10.1038/s41562-017-0058. Review der Laborforschung mit einfachen Displays.
+- W3C. Understanding SC 1.4.1 Use of Color, Technique G183 und Understanding SC 1.4.11 Non-text Contrast, WCAG 2.2.
 
 ### Fokus
 
