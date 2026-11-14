@@ -165,7 +165,7 @@ export function renderFilterNotice(viewId) {
  * @param {HTMLElement|null} host - container below the chart
  * @param {{caption: string, columns: string[], rows: Array<Array<string|number>>, limit?: number}} table
  */
-export function renderDataTable(host, { caption, columns, rows, limit = 500 }) {
+export function renderDataTable(host, { caption, columns, rows, limit = 500, label = 'Daten als Tabelle' }) {
     if (!host) return;
     if (rows.length === 0) {
         host.innerHTML = '';
@@ -182,7 +182,7 @@ export function renderDataTable(host, { caption, columns, rows, limit = 500 }) {
     const id = host.id ? `${host.id}-table` : '';
     host.innerHTML = `
         <div class="chart-table">
-            <button type="button" class="chart-table__switch" aria-expanded="${shown}"${id ? ` aria-controls="${id}"` : ''}>${shown ? 'Tabelle ausblenden' : 'Daten als Tabelle'}</button>
+            <button type="button" class="chart-table__switch" aria-expanded="${shown}"${id ? ` aria-controls="${id}"` : ''}>${escapeHtml(shown ? 'Tabelle ausblenden' : label)}</button>
             <div class="chart-table__body${shown ? '' : ' hidden'}"${id ? ` id="${id}"` : ''}>
                 <div class="chart-table__scroll" tabindex="0" role="region" aria-label="${escapeHtml(caption)}">
                     <table>
@@ -199,7 +199,7 @@ export function renderDataTable(host, { caption, columns, rows, limit = 500 }) {
         const next = host.dataset.tableShown !== 'true';
         host.dataset.tableShown = String(next);
         button.setAttribute('aria-expanded', String(next));
-        button.textContent = next ? 'Tabelle ausblenden' : 'Daten als Tabelle';
+        button.textContent = next ? 'Tabelle ausblenden' : label;
         host.querySelector('.chart-table__body').classList.toggle('hidden', !next);
     });
 }
