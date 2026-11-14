@@ -1,7 +1,7 @@
 // Places View
 // Place browsing, filtering and coordinate resolution
 
-import { escapeHtml, debounce, showToast, placeKey, personKey } from '../utils.js';
+import { escapeHtml, debounce, showToast, placeKey, personKey, foldText } from '../utils.js';
 import { addEntityToBasket } from '../basket.js';
 import { getPlacePrecisionClass } from '../formatters.js';
 import { elements } from '../dom-cache.js';
@@ -41,7 +41,7 @@ export function initPlacesView(deps) {
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
-            placesSearchTerm = e.target.value.toLowerCase();
+            placesSearchTerm = foldText(e.target.value);
             renderPlacesList();
         }, 300));
     }
@@ -215,7 +215,7 @@ export function renderPlacesList() {
     // Apply search filter
     if (placesSearchTerm) {
         places = places.filter(place =>
-            place.name.toLowerCase().includes(placesSearchTerm)
+            foldText(place.name).includes(placesSearchTerm)
         );
     }
 

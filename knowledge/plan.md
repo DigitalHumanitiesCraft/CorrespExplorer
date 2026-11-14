@@ -77,6 +77,24 @@ Aus der Gestaltungsprüfung, die den Stand vor der Arbeitsfläche maß:
 - Mehrere Ziele sind niedriger als 24 Pixel.
 - Der Wissenskorb mit Einträgen zeigt Kacheln, zwei Reitersysteme und eine Grafik in fremden Farben. Die Projektseite beschreibt noch den alten Aufbau.
 
+Aus der Prüfung von Führung und Funktion am selben Bestand:
+
+- Der Lade-Dialog sagt nicht, was die Anreicherung bringt und wo ihr Ergebnis erscheint. Sein Schließen-Kreuz verwirft den geladenen Bestand.
+- Ein Link auf einen lokal eingebundenen Bestand führt in einem neuen Tab auf die Startseite, mit einer Begründung, die nicht zutrifft.
+- Ein Direktlink auf eine Darstellung, die der Bestand nicht füllt, landet ohne Satz in der Briefliste.
+- Browser-Zurück nach einem Klick auf ein Jahr lässt den Jahresfilter stehen.
+- In „Tage“ mit allen Jahren öffnet das Detail eines Tages weit unter dem Bildschirm, ebenso stehen Legende und Hinweis erst nach allen Jahresblöcken.
+- Der Fokus fällt nach mehreren Handlungen auf das Dokument, etwa nach einem Klick auf einen Netzknoten, nach „Briefe filtern“ eines Orts und nach dem Ende eines Wissenspfads.
+- „Person zum Korb“ im Personen-Dialog zieht den Stern der Zeile nicht nach.
+- „Zum Wissenskorb“ in der Seitenleiste legt ohne Hinweis die ganze gefilterte Menge in den Korb.
+- Die Korbseite zeigt unter „Jahre aktiv“ ein Jahr statt einer Anzahl, eine Achse mit halben Briefen und einen Reiter „Karte“ für Bestände ohne Koordinaten.
+- Die Briefsuche findet keine Jahre und nennt den Suchbegriff in gefalteter Form.
+- Für die Briefe dieses Bestands gibt es keinen Weg zur Quelle, der Dialog bietet stattdessen correspSearch an.
+- Die Chronik hat keine Sprungmarke zu einem Jahr.
+- Für Tagesgenauigkeit, Normdaten, Körperschaften und Pfade stehen je mehrere Wörter in der Oberfläche. „Ohne Datum“ und „ohne Jahr“ zählen Verschiedenes.
+- Der Vergleich schreibt „1 Briefe“. Der Reiter eines Gegenstands kehrt nach „Vergleichen“ nicht zum Vergleich zurück.
+- design.md widerspricht sich an einzelnen Stellen selbst, etwa zur Kennzahlzeile der Seitenleiste und zur Zahl offener Sprachen.
+
 Zur Arbeitsfläche:
 
 - Orte erscheinen als Rangfolge, eine kleine Karte fehlt.

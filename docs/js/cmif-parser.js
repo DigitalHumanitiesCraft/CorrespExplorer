@@ -637,7 +637,10 @@ function extractTextLanguage(record) {
     const raw = (lang?.getAttributeNS(XML_NS, 'lang') || lang?.getAttribute('xml:lang') || textLang.getAttribute('mainLang') || '').toLowerCase();
     if (!raw) return null;
     const code = LANGUAGE_CODES_639_2[raw] || raw;
-    return { code, label: LANGUAGE_LABELS[code] || cleanText(lang?.textContent || '') || code };
+    // The table names the languages it knows; for any other code the name of the source stands
+    // with the code, because a source can pair a code with the name of another language
+    const named = cleanText(lang?.textContent || '');
+    return { code, label: LANGUAGE_LABELS[code] || (named ? `${named} (${raw})` : code) };
 }
 
 /**

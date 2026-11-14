@@ -927,7 +927,7 @@ function updateFilterBadge(id, className, icon, label, onClear) {
             .map(prevId => document.getElementById(prevId))
             .filter(Boolean)
             .pop();
-        (previous || document.querySelector('.stats-cards'))?.after(display);
+        (previous || document.querySelector('#sidebar-filters .sidebar-section-header'))?.after(display);
     }
     display.innerHTML = `
         <div class="filter-badge ${className.includes('subject') ? 'subject-badge' : ''}">

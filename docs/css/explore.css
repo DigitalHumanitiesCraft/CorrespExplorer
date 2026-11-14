@@ -3644,6 +3644,7 @@ body:has(.tour-highlight) .tour-backdrop {
    ============================================ */
 
 .comparison-container {
+    width: 100%;
     padding: var(--space-lg);
     max-width: 1400px;
     margin: 0 auto;
