@@ -1,7 +1,8 @@
-// Test Suite: topics view, the pure parts (profiles per subject, peak, order, search, marks)
+// Test Suite: topics view, the pure parts (profiles per subject, peak, order, search, marks, and
+// the treemap and grid variants: tail rule, groups, shade steps)
 
 import { assert } from './test-runner.js';
-import { subjectProfiles, orderSubjects, matchSubjects, topEntries } from '../views/topics-view.js';
+import { subjectProfiles, orderSubjects, matchSubjects, topEntries, shadeStep, splitTail, mapGroups, restLabel } from '../views/topics-view.js';
 
 const assertEqual = (actual, expected, label) => assert(actual === expected, `${label}: ${actual} statt ${expected}`);
 const subject = (key, label, category = 'hsa_subject') => ({ uri: key, label, category });
@@ -97,6 +98,71 @@ export const TopicsTests = {
                 const letters = [{ p: ['x', 'x', 'y'] }, { p: ['x'] }, { p: ['z'] }];
                 const top = topEntries(letters, l => l.p.map(k => ({ key: k, name: k })), 2);
                 assertEqual(top.map(e => `${e.key}${e.count}`).join(), 'x2,y1', 'Rangfolge');
+            }
+        },
+        {
+            name: 'shadeStep: eine feste Skala für jede Figur, leere Jahre bleiben leer',
+            run() {
+                const steps = [0, 1, 2, 3, 4, 9, 10, 68].map(shadeStep).join();
+                assertEqual(steps, '0,1,2,2,3,3,4,4', 'Stufen für 0, 1, 2, 3, 4, 9, 10, 68');
+            }
+        },
+        {
+            name: 'splitTail: Flächen summieren die Nennungen, Einzelbriefe und kleine Flächen gehen in den Rest',
+            run() {
+                const s = (key, total) => ({ key, label: key, total });
+                const subjects = [s('a', 10), s('b', 5), s('c', 1), s('d', 1), s('e', 2)];
+                const split = splitTail(subjects, 1000, { minArea: 100 });
+                assertEqual(split.shown.map(x => x.key).join(), 'a,b,e', 'eigene Flächen');
+                assertEqual(split.rest.map(x => x.key).join(), 'c,d', 'Rest');
+                const sum = list => list.reduce((n, x) => n + x.total, 0);
+                assertEqual(sum(split.shown) + sum(split.rest), split.mentions, 'Summe');
+                assertEqual(split.mentions, 19, 'Nennungen');
+                // 2 of 19 mentions on 1000 px² are 105 px²: with a larger minimum it joins the rest
+                assertEqual(splitTail(subjects, 1000, { minArea: 110 }).rest.map(x => x.key).join(), 'e,c,d', 'Schwelle');
+                assertEqual(splitTail(subjects, 1000, { minArea: 10, singlesApart: false }).rest.length, 0, 'geöffneter Rest');
+            }
+        },
+        {
+            name: 'mapGroups: Gruppen nur nach der Art, die die Daten tragen, Anteil am Ganzen',
+            run() {
+                const s = (key, total, kind) => ({ key, label: key, total, kind });
+                const groups = mapGroups([s('a', 6, 'topic'), s('b', 3, 'language'), s('c', 1, 'language')], 1000, { minArea: 250 });
+                assertEqual(groups.map(g => g.name).join(), 'Sprachen,Übrige Themen', 'zwei Gruppen');
+                // b has 3 of 10 mentions of the whole map, 300 px², not 3 of 4 of its group
+                assertEqual(groups[0].shown.map(x => x.key).join(), 'b', 'Sprache mit eigener Fläche');
+                assertEqual(groups[0].rest.map(x => x.key).join(), 'c', 'Sprache im Rest');
+                assertEqual(mapGroups([s('a', 6, 'topic')], 1000).length, 1, 'eine Art, keine Gruppen');
+                assertEqual(mapGroups([s('a', 6, 'topic')], 1000)[0].name, null, 'ohne Gruppenname');
+            }
+        },
+        {
+            name: 'restLabel: nennt Zahl und Spanne der Briefe',
+            run() {
+                const s = total => ({ total });
+                assertEqual(restLabel([s(1), s(1)]), '2 weitere Themen mit je einem Brief', 'Einzelbriefe');
+                assertEqual(restLabel([s(1)]), '1 weiteres Thema mit einem Brief', 'eins');
+                assertEqual(restLabel([s(1), s(2), s(2)]), '3 weitere Themen mit je 1 bis 2 Briefen', 'Spanne');
+            }
+        },
+        {
+            name: 'Varianten: HSA in Paris 1882 bis 1892 stimmt mit einer unabhängigen Zählung überein',
+            async run() {
+                const data = await (await fetch('data/hsa-letters.json')).json();
+                // The operator's filter: sending place Paris (GeoNames 2988507), years 1882 to 1892
+                const letters = data.letters.filter(l => l.place_sent?.geonames_id === '2988507' && l.year >= 1882 && l.year <= 1892);
+                const profiles = subjectProfiles(letters);
+                const sum = profiles.subjects.reduce((n, s) => n + s.total, 0);
+                // Counted with Python over docs/data/hsa-letters.json on 2026-11-14
+                assertEqual(letters.length, 257, 'Briefe');
+                assertEqual(profiles.subjects.length, 194, 'Themen');
+                assertEqual(sum, 412, 'Nennungen, die Summe der Flächen');
+                assertEqual(profiles.subjects.filter(s => s.total === 1).length, 117, 'Themen mit einem Brief');
+                assertEqual(profiles.maxYearCount, 8, 'größte Jahreszahl');
+                const top = [...profiles.subjects].sort((a, b) => b.total - a.total)[0];
+                assertEqual(`${top.label} ${top.total}`, 'Spanisch 20', 'größtes Thema');
+                const all = subjectProfiles(data.letters).subjects;
+                assertEqual(all.reduce((n, s) => n + s.total, 0), 23020, 'Nennungen im ganzen Bestand');
             }
         },
         {

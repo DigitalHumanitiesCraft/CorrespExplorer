@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="css/topics.css">
     <link rel="stylesheet" href="css/drawer.css">
     <link rel="stylesheet" href="css/letters.css">
+    <link rel="stylesheet" href="css/rail.css">
     <link rel="stylesheet" href="css/time.css">
 </head>
 <body>
@@ -163,55 +164,66 @@
                 <!-- ========================================
                      SECTION 2: FILTER (Interaktive Elemente)
                      ======================================== -->
-                <div class="sidebar-section" id="sidebar-filters">
-                    <div class="sidebar-section-header">
-                        <h2 class="visually-hidden">Filter</h2>
-                        <button id="reset-filters" class="btn-reset-small hidden" title="Alle Filter aufheben">
-                            <i class="fas fa-undo" aria-hidden="true"></i> Filter aufheben
-                        </button>
-                    </div>
-                    <!-- The selection as one sentence of removable marks, filled by explore.js -->
-                    <p class="selection-sentence hidden" id="selection-sentence"></p>
+                <!-- The filters as a narrow rail of signs (design.md, rule 3): a sign carries its
+                     name as tooltip and accessible name, the control at the top opens the rail to
+                     full labels. Holding, period and languages open as panels beside the rail -->
+                <div class="sidebar-section rail-filters" id="sidebar-filters">
+                    <h2 class="visually-hidden">Filter</h2>
+                    <button type="button" class="rail__item rail__toggle" id="rail-toggle" aria-expanded="false" data-tip="Beschriftungen zeigen">
+                        <i class="fas fa-angles-right" aria-hidden="true"></i><span class="rail__name">Beschriftungen ausblenden</span>
+                    </button>
+                    <button type="button" class="rail__item" id="rail-info-btn" aria-expanded="false" aria-controls="rail-info" data-tip="Bestand: Datenlage, Quelle und Lizenz">
+                        <i class="fas fa-circle-info" aria-hidden="true"></i><span class="rail__name">Bestand</span>
+                    </button>
+                    <div class="rail__panel hidden" id="rail-info" role="region" aria-label="Bestand"></div>
 
-                    <!-- Time Period Filter -->
-                    <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
-                        <h3 id="filter-time-heading" class="visually-hidden">Zeitraum</h3>
+                    <button type="button" class="rail__item" id="rail-time-btn" aria-expanded="false" aria-controls="rail-time" data-tip="Zeitraum">
+                        <i class="fas fa-calendar-days" aria-hidden="true"></i><span class="rail__name">Zeitraum <span class="rail__value" id="year-range-text">-</span></span>
+                    </button>
+                    <div class="rail__panel rail__panel--slider hidden" id="rail-time" role="group" aria-labelledby="filter-time-heading">
+                        <h3 id="filter-time-heading" class="rail__panel-name">Zeitraum</h3>
                         <div id="year-range-slider"></div>
-                        <div class="year-range-display">
-                            <span id="year-range-text">-</span>
+                    </div>
+
+                    <button type="button" class="rail__item hidden" id="rail-lang-btn" aria-expanded="false" aria-controls="rail-lang" data-tip="Sprache">
+                        <i class="fas fa-language" aria-hidden="true"></i><span class="rail__name">Sprache</span>
+                    </button>
+                    <div class="rail__panel hidden" id="rail-lang">
+                        <!-- Language Filter (dynamically populated); on the start view its key is in the figure -->
+                        <div class="hidden" role="group" aria-labelledby="filter-language-heading" id="language-filter-group">
+                            <h3 id="filter-language-heading" class="rail__panel-name">Sprache</h3>
+                            <div id="language-checkboxes"></div>
                         </div>
                     </div>
 
                     <!-- Data Quality Filter -->
-                    <div class="filter-group" role="group" id="quality-filter-group">
-                        <div class="quality-checkboxes">
-                            <label class="filter-checkbox">
-                                <input type="checkbox" id="filter-precise-dates">
-                                <span>Nur exakte Datierungen</span>
-                            </label>
-                            <label class="filter-checkbox">
-                                <input type="checkbox" id="filter-known-persons">
-                                <span>Nur identifizierte Personen</span>
-                            </label>
-                            <label class="filter-checkbox">
-                                <input type="checkbox" id="filter-located-places">
-                                <span>Nur lokalisierte Orte</span>
-                            </label>
-                        </div>
+                    <div class="rail__group" role="group" id="quality-filter-group" aria-labelledby="filter-quality-heading">
+                        <h3 id="filter-quality-heading" class="rail__group-name">Datenlage</h3>
+                        <label class="filter-checkbox" data-tip="Nur exakte Datierungen">
+                            <input type="checkbox" id="filter-precise-dates">
+                            <i class="fas fa-calendar-day" aria-hidden="true"></i>
+                            <span>Nur exakte Datierungen</span>
+                            <span class="filter-count" id="count-quality-preciseDates"></span>
+                        </label>
+                        <label class="filter-checkbox" data-tip="Nur identifizierte Personen">
+                            <input type="checkbox" id="filter-known-persons">
+                            <i class="fas fa-user-check" aria-hidden="true"></i>
+                            <span>Nur identifizierte Personen</span>
+                            <span class="filter-count" id="count-quality-knownPersons"></span>
+                        </label>
+                        <label class="filter-checkbox" data-tip="Nur lokalisierte Orte">
+                            <input type="checkbox" id="filter-located-places">
+                            <i class="fas fa-location-dot" aria-hidden="true"></i>
+                            <span>Nur lokalisierte Orte</span>
+                            <span class="filter-count" id="count-quality-locatedPlaces"></span>
+                        </label>
                     </div>
 
                     <!-- Transmission features (dynamically populated, only what the dataset records) -->
-                    <div class="filter-group hidden" role="group" aria-labelledby="filter-feature-heading" id="feature-filter-group">
-                        <h3 id="filter-feature-heading" class="visually-hidden">Überlieferung</h3>
+                    <div class="rail__group hidden" role="group" aria-labelledby="filter-feature-heading" id="feature-filter-group">
+                        <h3 id="filter-feature-heading" class="rail__group-name">Überlieferung</h3>
                         <div id="feature-checkboxes"></div>
                     </div>
-
-                    <!-- Language Filter (dynamically populated) -->
-                    <div class="filter-group hidden" role="group" aria-labelledby="filter-language-heading" id="language-filter-group">
-                        <h3 id="filter-language-heading" class="filter-label">Sprache</h3>
-                        <div id="language-checkboxes"></div>
-                    </div>
-
                 </div>
 
                 <!-- ========================================
@@ -302,7 +314,7 @@
                              selection holds says the letters drawer below the view -->
                         <div class="overview-body dashboard" id="dashboard">
                             <section class="dash-part dash-part--time" id="dash-time" aria-label="Zeit und Sprache">
-                                <button type="button" class="dash-open" data-open="timeline" aria-describedby="dash-open-timeline"><span class="dash-name">Zeit</span> <span class="dash-count" id="dash-time-count"></span></button>
+                                <button type="button" class="dash-open" data-open="timeline" aria-describedby="dash-open-timeline"><span class="dash-name">Zeit</span></button>
                                 <span class="visually-hidden" id="dash-open-timeline">öffnet die Zeitleiste</span>
                                 <div class="dash-years-box" id="dash-years-box">
                                     <div class="dash-figure dash-years" id="dash-years" tabindex="0" role="group"></div>
@@ -312,19 +324,19 @@
                             </section>
                             <div class="dash-row">
                                 <section class="dash-part dash-part--persons" id="dash-persons" aria-label="Personen">
-                                    <button type="button" class="dash-open" data-open="network" aria-describedby="dash-open-network"><span class="dash-name">Personen</span> <span class="dash-count" id="dash-persons-count"></span></button>
+                                    <button type="button" class="dash-open" data-open="network" aria-describedby="dash-open-network"><span class="dash-count" id="dash-persons-count">Personen</span></button>
                                     <span class="visually-hidden" id="dash-open-network">öffnet das Netzwerk</span>
                                     <div class="dash-figure dash-canvas" id="dash-persons-figure" tabindex="0" role="group"><canvas aria-hidden="true"></canvas></div>
                                 </section>
                                 <section class="dash-part dash-part--places" id="dash-places" aria-label="Orte">
-                                    <button type="button" class="dash-open" data-open="map" aria-describedby="dash-open-places"><span class="dash-name">Orte</span> <span class="dash-count" id="dash-places-count"></span></button>
+                                    <button type="button" class="dash-open" data-open="map" aria-describedby="dash-open-places"><span class="dash-count" id="dash-places-count">Orte</span></button>
                                     <span class="visually-hidden" id="dash-open-places">öffnet die Orte</span>
                                     <div class="dash-figure dash-canvas" id="dash-places-figure" tabindex="0" role="group"><canvas aria-hidden="true"></canvas></div>
                                     <div class="dash-rows hidden" id="dash-place-rows" role="group" aria-label="Häufigste Absendeorte"></div>
                                 </section>
                                 <div class="dash-stack" id="dash-stack">
                                     <section class="dash-part dash-part--topics" id="dash-topics" aria-label="Themen">
-                                        <button type="button" class="dash-open" data-open="topics" aria-describedby="dash-open-topics"><span class="dash-name">Themen</span> <span class="dash-count" id="dash-topics-count"></span></button>
+                                        <button type="button" class="dash-open" data-open="topics" aria-describedby="dash-open-topics"><span class="dash-count" id="dash-topics-count">Themen</span></button>
                                         <span class="visually-hidden" id="dash-open-topics">öffnet die Themen</span>
                                         <div class="dash-subjects" id="dash-subjects" role="group" aria-label="Häufigste Themen"></div>
                                     </section>
@@ -507,6 +519,12 @@
                         <p class="view-header__description">Jede Zeile ist ein Thema, ihre Kurve zeigt seine Briefe je Jahr. Pfeiltasten wechseln die Zeile, Enter filtert nach dem Thema. Die Werte stehen auch als Tabelle unter der Figur.</p>
                         <div class="view-header__actions">
                             <div class="tp-tools">
+                                <!-- Variants under trial until the operator chooses (2026-11-14); the course of the rows is the default -->
+                                <div class="tp-variants" id="topics-variants" role="group" aria-label="Darstellung der Themen">
+                                    <button type="button" class="tp-btn" data-variant="ridge" aria-pressed="true">Verlauf</button>
+                                    <button type="button" class="tp-btn" data-variant="treemap" aria-pressed="false">Anteile</button>
+                                    <button type="button" class="tp-btn" data-variant="grid" aria-pressed="false">Raster</button>
+                                </div>
                                 <div class="tp-order" id="topics-order" role="group" aria-labelledby="topics-order-label">
                                     <span class="tp-order__label" id="topics-order-label">Ordnen nach</span>
                                     <button type="button" class="tp-btn" data-order="peak" aria-pressed="true">Höhepunkt</button>
@@ -527,6 +545,12 @@
                             <div id="topics-tooltip" class="tp-tooltip hidden" role="status"></div>
                             <p id="topics-empty" class="tp-empty hidden"></p>
                         </div>
+                        <div class="tp-map hidden" id="topics-map">
+                            <div class="tp-map__groups" id="topics-map-groups" aria-hidden="true"></div>
+                            <ul class="tp-map__areas" id="topics-map-areas" role="listbox" aria-label="Themen nach Zahl der Briefe"></ul>
+                            <div id="topics-map-tooltip" class="tp-tooltip hidden" role="status"></div>
+                        </div>
+                        <p class="tp-map__note hidden" id="topics-map-note"><button type="button" class="tp-map__back hidden" id="topics-map-back"><i class="fas fa-arrow-left" aria-hidden="true"></i> Alle Themen</button> <span id="topics-map-text"></span></p>
                         <div class="tp-choice hidden" id="topics-choice" aria-label="Gewähltes Thema" role="region"></div>
                         <div id="topics-table" class="chart-table-host tp-table"></div>
                     </div>
@@ -787,11 +811,16 @@
                         <div class="letters-drawer__grip" id="letters-drawer-grip" role="separator" aria-orientation="horizontal" aria-label="Höhe der Briefliste, Pfeiltasten ändern sie" aria-controls="letters-drawer-list" aria-valuemin="96" tabindex="0"></div>
                         <div class="letters-drawer__list" id="letters-drawer-list"></div>
                     </div>
+                    <!-- One place for the selection (design.md, rule 1): the count of its letters opens
+                         them, beside it the filters as removable marks and the release of all -->
                     <div class="letters-drawer__line">
                         <button type="button" class="letters-drawer__toggle" id="letters-drawer-toggle" aria-expanded="false" aria-controls="letters-drawer-panel">
                             <span id="letters-drawer-count"></span>
                             <i class="fas fa-chevron-up letters-drawer__chevron" aria-hidden="true"></i>
                         </button>
+                        <!-- The selection as one sentence of removable marks, filled by explore.js -->
+                        <p class="selection-sentence hidden" id="selection-sentence"></p>
+                        <button type="button" id="reset-filters" class="letters-drawer__reset hidden">Filter aufheben</button>
                         <button type="button" class="letters-drawer__all hidden" id="letters-drawer-all">Alle in der Liste</button>
                     </div>
                 </div>

@@ -377,6 +377,10 @@ def summarize(letters: list[dict]) -> dict:
     mentioned_places: dict[str, dict] = {}
     subject_years: dict[str, dict[int, int]] = {}
     hosts: dict[str, int] = {}
+    sending_places: dict[str, dict] = {}
+    postmark_years: dict[int, int] = {}
+    record_counts: dict[int, int] = {}
+    records_differ = 0
     scores: list[int] = []
 
     for letter in letters:
@@ -407,7 +411,18 @@ def summarize(letters: list[dict]) -> dict:
 
         place = letter.get("place_sent") or {}
         if _known_place(letter.get("place_sent")):
-            known_places.add(_place_key(place))
+            key = _place_key(place)
+            known_places.add(key)
+            entry = sending_places.setdefault(
+                key, {"key": key, "name": place.get("name") or key, "count": 0}
+            )
+            entry["count"] += 1
+        if letter.get("postmark") and letter.get("year"):
+            postmark_years[letter["year"]] = postmark_years.get(letter["year"], 0) + 1
+        records = len(letter.get("records") or []) or 1
+        record_counts[records] = record_counts.get(records, 0) + 1
+        if letter.get("recordsDiffer"):
+            records_differ += 1
         if _located(place):
             key = _place_key(place)
             entry = located.setdefault(
@@ -504,6 +519,10 @@ def summarize(letters: list[dict]) -> dict:
             sorted(languages.items(), key=lambda item: (-item[1], item[0]))
         ),
         "perYear": [[year, per_year[year]] for year in years],
+        "placesTop": [[p["name"], p["count"]] for p in _ranked(sending_places)[:5]],
+        "postmarkYears": [[y, n] for y, n in sorted(postmark_years.items())],
+        "recordCounts": [[n, c] for n, c in sorted(record_counts.items())],
+        "recordsDiffer": records_differ,
         "hosts": [
             [h, n]
             for h, n in sorted(hosts.items(), key=lambda item: (-item[1], item[0]))[:3]

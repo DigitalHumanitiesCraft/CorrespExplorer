@@ -41,7 +41,7 @@ const roundTo = (value, digits) => Math.round(value * 10 ** digits) / 10 ** digi
 const located = place => Number.isFinite(place?.lat) && Number.isFinite(place?.lon);
 
 // Time of a letter as a fractional year, the rule of letterTime() in views/network-view.js
-function letterTime(letter) {
+export function letterTime(letter) {
     if (!letter.year || letter.dateImplausible) return null;
     const m = /^(\d{1,4})-(\d{2})(?:-(\d{2}))?/.exec(letter.date || '');
     if (!m || Number(m[1]) !== letter.year) return letter.year;
@@ -73,6 +73,10 @@ export function summarizeLetters(letters) {
     const mentionedPlaces = new Map();
     const subjectYears = new Map();
     const hosts = new Map();
+    const sendingPlaces = new Map();
+    const postmarkYears = new Map();
+    const recordCounts = new Map();
+    let recordsDiffer = 0;
     const scores = [];
 
     letters.forEach(letter => {
@@ -101,7 +105,18 @@ export function summarizeLetters(letters) {
         }
 
         const place = letter.place_sent;
-        if (isKnownPlace(place)) knownPlaces.add(placeKey(place));
+        if (isKnownPlace(place)) {
+            const key = placeKey(place);
+            knownPlaces.add(key);
+            const entry = sendingPlaces.get(key) || { key, name: place.name || key, count: 0 };
+            entry.count++;
+            sendingPlaces.set(key, entry);
+        }
+        // What the letter records of an edition add: postmarks over the years, records per letter
+        if (letter.postmark && letter.year) postmarkYears.set(letter.year, (postmarkYears.get(letter.year) || 0) + 1);
+        const records = letter.records?.length || 1;
+        recordCounts.set(records, (recordCounts.get(records) || 0) + 1);
+        if (letter.recordsDiffer) recordsDiffer++;
         if (located(place)) {
             const key = placeKey(place);
             const entry = places.get(key) || { key, lat: roundTo(place.lat, 3), lon: roundTo(place.lon, 3), count: 0 };
@@ -168,6 +183,10 @@ export function summarizeLetters(letters) {
         languages: Object.fromEntries(Object.entries(languages).sort((a, b) => b[1] - a[1] || compareKeys(a[0], b[0]))),
         perYear: years.map(year => [year, perYear.get(year)]),
         hosts: [...hosts].sort((a, b) => b[1] - a[1] || compareKeys(a[0], b[0])).slice(0, 3),
+        placesTop: [...sendingPlaces.values()].sort(byCount).slice(0, 5).map(p => [p.name, p.count]),
+        postmarkYears: [...postmarkYears].sort((a, b) => a[0] - b[0]),
+        recordCounts: [...recordCounts].sort((a, b) => a[0] - b[0]),
+        recordsDiffer,
         mentioned: Object.fromEntries(Object.entries(mentioned).map(([kind, map]) => [kind, {
             distinct: map.size,
             top: [...map.values()].sort(byCount).slice(0, TOP_MENTIONS).map(m => [m.name, m.count])

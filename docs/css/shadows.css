@@ -47,6 +47,11 @@
     box-shadow: 0 0 0 9999px var(--color-overlay);
 }
 
+/* Panels of the rail float over the view */
+.rail__panel {
+    box-shadow: var(--shadow-md);
+}
+
 /* Off-canvas sidebar below the tablet breakpoint */
 @media (max-width: 767px) {
     .sidebar {

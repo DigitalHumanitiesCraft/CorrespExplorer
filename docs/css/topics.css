@@ -7,11 +7,29 @@
     min-height: 0;
 }
 
+/* The four shades of the grid, from the data tone. Wider apart than the heatmap scale
+   (--color-scale-*), whose upper two steps a first-time reader could not tell apart in the grid
+   (reading test of 2026-11-14: a year of six letters read as "10 und mehr"). */
+#topics-view {
+    --tp-step-1: color-mix(in srgb, var(--color-data) 20%, var(--color-bg));
+    --tp-step-2: color-mix(in srgb, var(--color-data) 45%, var(--color-bg));
+    --tp-step-3: color-mix(in srgb, var(--color-data) 72%, var(--color-bg));
+    --tp-step-4: color-mix(in srgb, var(--color-data) 65%, var(--color-text));
+}
+
 .tp-tools {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm) var(--space-md);
+}
+
+/* The switch of the figures under trial stands apart from the order by a hairline */
+.tp-variants {
+    display: flex;
+    gap: 2px;
+    padding-right: var(--space-md);
+    border-right: 1px solid var(--color-border-light);
 }
 
 .tp-order {
@@ -54,7 +72,7 @@
 }
 
 .tp-search {
-    width: 14rem;
+    width: 11rem;
     max-width: 100%;
     min-height: 28px;
     padding: var(--space-xs) var(--space-sm);
@@ -325,6 +343,133 @@
     max-height: 30vh;
 }
 
+/* Grid: one line of key that wraps like text, with the four fixed shades of the data tone */
+.tp-key__line {
+    display: block;
+    text-align: right;
+}
+
+.tp-key__line .tp-key__swatch {
+    vertical-align: -1px;
+    margin-left: var(--space-xs);
+}
+
+/* Grid: the four fixed shades of the data tone */
+.tp-key__swatch--s1 { display: inline-block; background: var(--tp-step-1); }
+.tp-key__swatch--s2 { display: inline-block; background: var(--tp-step-2); }
+.tp-key__swatch--s3 { display: inline-block; background: var(--tp-step-3); }
+.tp-key__swatch--s4 { display: inline-block; background: var(--tp-step-4); }
+
+/* Treemap: areas in one neutral data tone; the kind of subject is a group with its name, not a
+   hue, because hues mean the language of letters in every other figure */
+.tp-map {
+    position: relative;
+    flex: 1;
+    min-height: 240px;
+    margin: var(--space-sm) var(--space-lg) 0;
+}
+
+.tp-map__areas {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tp-area {
+    position: absolute;
+    overflow: hidden;
+    padding: 2px var(--space-xs);
+    background: color-mix(in srgb, var(--color-data) 22%, var(--color-bg));
+    font-size: var(--font-size-xs);
+    line-height: 1.25;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.tp-area:hover {
+    background: color-mix(in srgb, var(--color-data) 36%, var(--color-bg));
+}
+
+.tp-area:focus-visible {
+    outline-offset: -3px;
+}
+
+.tp-area__name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    hyphens: auto;
+    overflow-wrap: break-word;
+}
+
+/* The tail: the same tone, paler, so it reads as many small subjects together */
+.tp-area--rest {
+    background: var(--color-bg-light);
+    color: var(--color-text-light);
+}
+
+.tp-area--chosen,
+.tp-area--chosen:hover {
+    background: var(--color-primary-light);
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary-dark);
+}
+
+.tp-map__groups {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.tp-map__group {
+    position: absolute;
+    overflow: hidden;
+    font-size: var(--font-size-xs);
+    line-height: 18px;
+    color: var(--color-text-light);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.tp-map__note {
+    flex: none;
+    margin: 0;
+    padding: var(--space-xs) var(--space-lg);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.tp-map__back {
+    min-height: 24px;
+    padding: 0 var(--space-xs);
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: var(--color-link);
+    cursor: pointer;
+}
+
+/* The course of the chosen subject beside the treemap: its row of the grid */
+.tp-course {
+    flex: 1 1 16rem;
+    flex-wrap: nowrap;
+}
+
+.tp-course__cells {
+    flex: 1;
+    min-width: 8rem;
+    height: 16px;
+}
+
+.tp-course__base { fill: var(--color-border-light); }
+.tp-course__s1 { fill: var(--color-primary); fill-opacity: 0.35; }
+.tp-course__s2 { fill: var(--color-primary); fill-opacity: 0.55; }
+.tp-course__s3 { fill: var(--color-primary); fill-opacity: 0.75; }
+.tp-course__s4 { fill: var(--color-primary); }
+
 @media (max-width: 767px) {
     .tp-search {
         width: 100%;
@@ -345,8 +490,23 @@
         overflow-y: auto;
     }
 
-    .tp-figure {
+    .tp-figure,
+    .tp-map {
         flex: 1 0 300px;
+    }
+
+    .tp-map {
+        margin-inline: 12px;
+    }
+
+    .tp-variants {
+        flex-basis: 100%;
+        padding-right: 0;
+        border-right: none;
+    }
+
+    .tp-key__line {
+        text-align: left;
     }
 
     .tp-key {

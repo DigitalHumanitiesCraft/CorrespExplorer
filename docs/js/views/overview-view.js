@@ -14,12 +14,13 @@ import { readTokens } from './view-support.js';
 import * as network from './network-view.js';
 import { subjectProfiles } from './topics-view.js';
 import { loadLand, mapFrame, frameProjection, landPath, smallGeometry } from '../mini-figures.js';
+import { countOf, renderLanguageKey, languageColor, languageCategory, dominantLanguages, CHOOSABLE, OVER_MARK } from '../selection-ui.js';
 
 let deps = {};
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const number = n => n.toLocaleString('de-DE');
-const ofLetters = (n, total) => (n === total ? `${number(total)} ${total === 1 ? 'Brief' : 'Briefe'}` : `${number(n)} von ${number(total)} Briefen`);
+const ofLetters = (n, total) => countOf(n, total, total === 1 ? 'Brief' : 'Briefe', 'Briefen');
 // The mentioned persons kept around the circle, as on the start page
 const OUTER_LIMIT = 300;
 // The chords of the circle: the strongest, so a large archive does not draw thousands of curves
@@ -30,7 +31,9 @@ const MAP_SHARE = 0.5;
 // The transmission statements of a letter record, as the start page names them; shown only where
 // the dataset carries at least two, since a single share is no figure
 const DASH_FEATURES = ['postmark', 'address', 'records', 'dateInferred', 'placeInferred'];
-const ROW_HEIGHT = { subject: 44, place: 26 };
+const ROW_HEIGHT = { subject: 50, place: 26 };
+// Width of a handle of the period, and the reach within which the pointer grabs it
+const HANDLE = 8;
 // At most this many rows of subjects or places by name, so a tall screen gives them room, not
 // number; the places stay fewer, so a dataset with many sidebar filters keeps its first screen
 // near the density limits of the interface yardstick
@@ -191,6 +194,17 @@ function buildModel(all) {
     const locatedLetters = located.reduce((sum, p) => sum + p.count, 0);
     const asMap = located.length > 0 && locatedLetters >= knownLetters * MAP_SHARE;
 
+    // The colour of a correspondent or a place is the most frequent language of its letters (with
+    // the centre for a correspondent), the rule of the space-time view
+    const centreId = centre?.id;
+    const personLanguage = centre ? dominantLanguages(all, letter => {
+        const from = personKey(letter.sender);
+        const to = letterRecipients(letter).map(personKey);
+        if (from === centreId) return to.filter(k => k && k !== centreId);
+        return to.includes(centreId) && from ? [from] : [];
+    }) : new Map();
+    const placeLanguage = dominantLanguages(all, letter => (isKnownPlace(letter.place_sent) ? [placeKey(letter.place_sent)] : []));
+
     const subjects = subjectProfiles(all);
     const features = LETTER_FEATURES.filter(f => DASH_FEATURES.includes(f.key))
         .map(f => ({ ...f, total: all.filter(f.test).length }))
@@ -213,6 +227,9 @@ function buildModel(all) {
         placeMax: located.length ? located[0].count : 1,
         frame: asMap ? mapFrame(located.map(p => [p.lat, p.lon, p.count])) : null,
         asMap,
+        personLanguage,
+        placeLanguage,
+        personsTotal: deps.getCorpusSummary().persons.size,
         subjectTotals: new Map(subjects.subjects.map(s => [s.key, s])),
         hasSubjects: subjects.subjects.length > 0,
         features
@@ -238,7 +255,7 @@ function lettersBeside(dimension) {
 // What the dashboard draws per part, kept between a filter change and a resize
 const view = {
     colors: null,
-    time: { cursor: null, anchor: null, drag: null, hover: null, counts: null, filter: null },
+    time: { cursor: null, anchor: null, drag: null, hoverHandle: null, handles: null, counts: null, filter: null },
     persons: { layout: null, size: '', counts: null, mentions: null, cursor: -1, order: [] },
     places: { layout: null, size: '', counts: null, cursor: -1, order: [], land: null }
 };
@@ -254,7 +271,6 @@ export function renderOverview() {
         model = buildModel(all);
         view.persons.layout = null;
         view.places.layout = null;
-        renderDatasetBlock(meta, all);
         bindDashboard();
     }
     const started = performance.now();
@@ -263,8 +279,16 @@ export function renderOverview() {
     performance.measure('dashboard', { start: started, end: performance.now() });
 }
 
+/**
+ * The facts of the holding behind the info sign of the rail, filled once the dataset is loaded
+ */
+export function renderDatasetFacts() {
+    const meta = state.getMeta();
+    if (meta) renderDatasetBlock(meta, deps.getAllLetters());
+}
+
 // The dataset block: what it is in two lines, the data situation as three thin share bars, the
-// source in one or two small lines. The transmission features are filters right below it.
+// source in one or two small lines.
 function renderDatasetBlock(meta, all) {
     const corpus = deps.getCorpusSummary();
     const quality = deps.getCorpusQuality();
@@ -420,7 +444,8 @@ function toggle(id, hidden) {
 function renderDashboard() {
     view.colors = readTokens({
         data: '--color-data', primary: '--color-primary', pale: '--color-border-light', control: '--color-border-control',
-        text: '--color-text', light: '--color-text-light', bg: '--color-bg', land: '--color-bg-light'
+        text: '--color-text', light: '--color-text-light', bg: '--color-bg', land: '--color-bg-light',
+        topic: '--color-role-topic'
     });
     const filter = deps.getFilterState();
     if (model.years.size >= 2) renderYears(filter);
@@ -507,17 +532,22 @@ function renderYears(filter) {
     paths.forEach((d, key) => {
         if (d) parts.push(svg('path', { d, fill: model.hasLanguages ? LANGUAGE_COLORS[key] || LANGUAGE_COLORS.other : view.colors.data }));
     });
-    // The chosen period: the years outside it fade, a rust bar runs beneath it
-    const range = view.time.drag || filter.years;
-    if (range) {
-        const [a, b] = [Math.min(...range), Math.max(...range)];
-        const x0 = (a - model.first) * band;
-        const x1 = (b - model.first + 1) * band;
-        if (x0 > 0) parts.push(svg('rect', { x: 0, y: 0, width: x0, height: plot, class: 'dash-fade' }));
-        if (x1 < width) parts.push(svg('rect', { x: x1, y: 0, width: width - x1, height: plot, class: 'dash-fade' }));
-        parts.push(svg('rect', { x: x0, y: plot + 1, width: Math.max(x1 - x0, 2), height: 4, class: 'dash-chosen' }));
-    }
+    // The period as a brush over the whole axis from the start: two handles that can be grabbed,
+    // the years outside a chosen period fade and a rust bar runs beneath it
+    const range = view.time.drag || filter.years || [model.first, model.last];
+    const [a, b] = [Math.min(...range), Math.max(...range)];
+    const x0 = (a - model.first) * band;
+    const x1 = (b - model.first + 1) * band;
+    if (x0 > 0) parts.push(svg('rect', { x: 0, y: 0, width: x0, height: plot, class: 'dash-fade' }));
+    if (x1 < width) parts.push(svg('rect', { x: x1, y: 0, width: width - x1, height: plot, class: 'dash-fade' }));
     parts.push(svg('line', { x1: 0, x2: width, y1: plot + 0.5, y2: plot + 0.5, class: 'dash-baseline' }));
+    if (view.time.drag || filter.years) parts.push(svg('rect', { x: x0, y: plot + 1, width: Math.max(x1 - x0, 2), height: 4, class: 'dash-chosen' }));
+    [x0, x1].forEach((x, i) => {
+        const at = Math.min(Math.max(x, HANDLE / 2), width - HANDLE / 2);
+        parts.push(svg('line', { x1: at, x2: at, y1: 0, y2: plot, class: 'dash-handle-line' }));
+        parts.push(svg('rect', { x: at - HANDLE / 2, y: plot / 2 - 12, width: HANDLE, height: 24, rx: 3, class: `dash-handle${view.time.hoverHandle === i ? ' is-hover' : ''}` }));
+    });
+    view.time.handles = [x0, x1];
     if (view.time.cursor !== null) {
         const x = (view.time.cursor - model.first) * band;
         parts.push(svg('rect', { x: x - 1, y: 0, width: Math.max(band, 2) + 2, height: plot, class: 'dash-cursor' }));
@@ -526,13 +556,11 @@ function renderYears(filter) {
 
     const all = model.letters.length;
     const dated = [...counts.values()].reduce((sum, stack) => sum + [...stack.values()].reduce((a, b) => a + b, 0), 0);
-    // The axis names first and last year; the label names a chosen period
-    setCount('dash-time-count', filter.years ? `${filter.years[0]}${filter.years[0] === filter.years[1] ? '' : `–${filter.years[1]}`}` : '');
+    // The chosen period stands once, as a mark in the line of the selection (rule 1)
     box.setAttribute('aria-label', `Briefe pro Jahr von ${model.first} bis ${model.last}, ${number(dated)} datierte von ${number(all)} Briefen, höchstens ${number(model.peak)} in einem Jahr. Pfeiltasten wählen ein Jahr, mit Umschalt einen Zeitraum, Eingabe setzt ihn, Escape hebt ihn auf.`);
     const axis = document.getElementById('dash-axis');
     if (axis) {
-        const middle = filter.years ? 'Ziehen wählt einen anderen Zeitraum, Escape hebt ihn auf' : 'Zeitraum durch Ziehen wählen';
-        axis.replaceChildren(element('span', '', String(model.first)), element('span', 'dash-axis__hint', middle), element('span', '', String(model.last)));
+        axis.replaceChildren(element('span', '', String(model.first)), element('span', '', String(model.last)));
     }
 }
 
@@ -555,10 +583,20 @@ function bindTime() {
         const { band } = yearGeometry(box);
         showTip(box, (year - model.first + 0.5) * band, 0, yearTip(year));
     };
+    // The handle under the pointer, if any: 0 the start, 1 the end of the period
+    const handleAt = event => {
+        const x = event.clientX - box.getBoundingClientRect().left;
+        const handles = view.time.handles || [];
+        const i = handles.findIndex(h => Math.abs(h - x) <= HANDLE);
+        return i >= 0 ? i : null;
+    };
     box.addEventListener('pointerdown', event => {
         if (event.button !== 0) return;
         const year = yearAt(event);
-        view.time.drag = [year, year];
+        const handle = handleAt(event);
+        const current = view.time.filter || [model.first, model.last];
+        // A grabbed handle moves its end and keeps the other; elsewhere a new period is drawn
+        view.time.drag = handle === null ? [year, year] : handle === 0 ? [current[1], year] : [current[0], year];
         box.setPointerCapture(event.pointerId);
         event.preventDefault();
         renderYears(deps.getFilterState());
@@ -566,6 +604,12 @@ function bindTime() {
     box.addEventListener('pointermove', event => {
         const year = yearAt(event);
         tipAt(year);
+        const handle = view.time.drag ? null : handleAt(event);
+        box.classList.toggle('is-on-handle', handle !== null);
+        if (view.time.hoverHandle !== handle) {
+            view.time.hoverHandle = handle;
+            if (!view.time.drag) renderYears(deps.getFilterState());
+        }
         if (view.time.drag && view.time.drag[1] !== year) {
             view.time.drag[1] = year;
             renderYears(deps.getFilterState());
@@ -579,7 +623,14 @@ function bindTime() {
     };
     box.addEventListener('pointerup', finish);
     box.addEventListener('pointercancel', () => { view.time.drag = null; renderYears(deps.getFilterState()); });
-    box.addEventListener('pointerleave', () => { if (!view.time.drag) hideTip(); });
+    box.addEventListener('pointerleave', () => {
+        if (view.time.drag) return;
+        hideTip();
+        if (view.time.hoverHandle !== null) {
+            view.time.hoverHandle = null;
+            renderYears(deps.getFilterState());
+        }
+    });
     box.addEventListener('focus', () => {
         if (view.time.cursor === null) view.time.cursor = view.time.filter ? view.time.filter[0] : peakYear();
         view.time.anchor = view.time.cursor;
@@ -627,67 +678,43 @@ function peakYear() {
     return best;
 }
 
-// The same period again releases it
+// The same period again, or the whole axis, releases it
 function chooseYears(a, b) {
     const current = view.time.filter;
-    if (current && current[0] === a && current[1] === b) deps.releaseYears(); else deps.setYearRange(a, b);
+    const whole = a === model.first && b === model.last;
+    if (whole || (current && current[0] === a && current[1] === b)) {
+        if (current) deps.releaseYears(); else renderYears(deps.getFilterState());
+    } else {
+        deps.setYearRange(a, b);
+    }
     if (document.activeElement !== document.getElementById('dash-years')) hideTip();
 }
 
-// Languages: the share bar of the selection and its key, which is also the key of the time
-// profile above. A key entry or a segment toggles its language; the rest is one category.
+// Languages: the shared language key over the width of the time profile, also its legend. Its
+// marks are as wide as their share of the selection and toggle their language; the rest opens
+// the list of its languages beside the rail
 function renderLanguages(filter) {
     const box = document.getElementById('dash-languages');
     if (!box) return;
-    const base = lettersBeside('languages');
     const counts = new Map();
-    base.forEach(letter => {
+    lettersBeside('languages').forEach(letter => {
         const key = languageKey(letter);
         counts.set(key, (counts.get(key) || 0) + 1);
     });
-    const total = base.length || 1;
-    // The rest is chosen when every chosen language belongs to it, as the rest segment sets it
-    const chosen = filter.languages;
-    const restOnly = Boolean(chosen?.length) && chosen.every(code => code !== NO_LANGUAGE && isRestLanguage(code));
-    const pressed = key => Boolean(chosen) && (key === 'other' ? restOnly : !restOnly && chosen.includes(key));
-    const keys = model.languageOrder;
-    const label = key => (key === 'other' ? 'Übrige Sprachen' : key === NO_LANGUAGE ? 'Ohne Angabe' : languageLabel(key));
-    const bar = element('div', 'dash-share');
-    bar.setAttribute('aria-hidden', 'true');
-    keys.forEach(key => {
-        const n = counts.get(key) || 0;
-        if (!n) return;
-        // Under a language filter the languages outside it fade, so the bar says what is chosen
-        const choice = chosen ? (pressed(key) ? ' is-chosen' : ' is-outside') : '';
-        const segment = element('span', `dash-share__segment${choice}`);
-        segment.style.width = `${(n / total) * 100}%`;
-        segment.style.backgroundColor = LANGUAGE_COLORS[key] || LANGUAGE_COLORS.other;
-        segment.dataset.key = key;
-        bar.append(segment);
+    renderLanguageKey(box, {
+        counts,
+        totals: model.languageTotals,
+        chosen: filter.languages,
+        onToggle: key => deps.toggleLanguage(key),
+        onRest: button => deps.openLanguageList?.(button),
+        tip: (el, text) => {
+            if (!el) return hideTip();
+            const board = document.getElementById('dashboard');
+            const r = el.getBoundingClientRect();
+            const b = board.getBoundingClientRect();
+            showTip(board, r.left - b.left + Math.min(r.width / 2, 120), r.top - b.top, text);
+        }
     });
-    const legend = element('div', 'dash-key');
-    legend.setAttribute('role', 'group');
-    legend.setAttribute('aria-label', 'Sprachen');
-    keys.forEach(key => {
-        const n = counts.get(key) || 0;
-        const button = element('button', 'dash-key__item');
-        button.type = 'button';
-        button.dataset.key = key;
-        button.setAttribute('aria-pressed', String(pressed(key)));
-        button.setAttribute('aria-label', `${label(key)}, ${ofLetters(n, model.languageTotals.get(key) || 0)}`);
-        const swatch = element('span', 'dash-key__swatch');
-        swatch.style.backgroundColor = LANGUAGE_COLORS[key] || LANGUAGE_COLORS.other;
-        button.append(swatch, document.createTextNode(label(key)));
-        legend.append(button);
-    });
-    const focused = document.activeElement?.closest?.('#dash-languages .dash-key__item')?.dataset.key;
-    box.replaceChildren(bar, legend);
-    box.querySelectorAll('[data-key]').forEach(el => {
-        const key = el.dataset.key;
-        el.addEventListener('click', () => deps.toggleLanguage(key));
-        withTip(el, `${label(key)}: ${ofLetters(counts.get(key) || 0, model.languageTotals.get(key) || 0)}`);
-    });
-    if (focused) box.querySelector(`.dash-key__item[data-key="${CSS.escape(focused)}"]`)?.focus();
 }
 
 // The tooltip of an element, for the pointer and for the keyboard focus alike
@@ -758,12 +785,31 @@ function bindCanvas(name, figure) {
         }
         return best;
     };
+    // The mark under the pointer gets a ring and the pointer a hand, so the figure says that a
+    // click chooses (rule 8); the ring is an element over the canvas, so hovering draws nothing
+    figure.classList.add(CHOOSABLE);
+    const ring = element('span', 'dash-ring hidden');
+    ring.setAttribute('aria-hidden', 'true');
+    figure.append(ring);
+    const showRing = mark => {
+        ring.classList.toggle('hidden', !mark);
+        if (!mark) return;
+        const size = 2 * Math.max(mark.r, 3) + 8;
+        ring.style.width = `${size}px`;
+        ring.style.height = `${size}px`;
+        ring.style.left = `${mark.x - size / 2}px`;
+        ring.style.top = `${mark.y - size / 2}px`;
+    };
     figure.addEventListener('pointermove', event => {
         const mark = at(event);
-        figure.classList.toggle('is-over-mark', Boolean(mark));
+        figure.classList.toggle(OVER_MARK, Boolean(mark));
+        showRing(mark);
         if (mark) showTip(figure, mark.x, mark.y - mark.r, spec.tip(mark)); else hideTip();
     });
-    figure.addEventListener('pointerleave', () => { if (document.activeElement !== figure) hideTip(); });
+    figure.addEventListener('pointerleave', () => {
+        showRing(null);
+        if (document.activeElement !== figure) hideTip();
+    });
     figure.addEventListener('click', event => {
         const mark = at(event);
         if (!mark) return;
@@ -863,7 +909,7 @@ function renderPersons(filter) {
             ctx.beginPath();
             ctx.arc(at.x, at.y, 1.8, 0, 2 * Math.PI);
             if (mentions.get(p.id)) {
-                ctx.fillStyle = c.data;
+                ctx.fillStyle = c.light;
                 ctx.fill();
             } else {
                 ctx.strokeStyle = c.pale;
@@ -887,7 +933,7 @@ function renderPersons(filter) {
         if (n) {
             ctx.beginPath();
             ctx.arc(at.x, at.y, Math.max(1.4, r * Math.sqrt(n / p.letters)), 0, 2 * Math.PI);
-            ctx.fillStyle = c.data;
+            ctx.fillStyle = languageColor(model.personLanguage.get(p.id) || 'other');
             ctx.fill();
         }
         order.push({ key: p.id, name: p.name, x: at.x, y: at.y, r, n, total: p.letters });
@@ -916,7 +962,13 @@ function renderPersons(filter) {
     drawCursor(ctx, order[part.cursor], c);
 
     const shown = [...partners.values()].filter(Boolean).length;
-    setCount('dash-persons-count', `${number(shown)} Briefpartner`);
+    // Persons as the whole page counts them: senders and recipients of the letters
+    const persons = new Set();
+    base.forEach(letter => [letter.sender, ...letterRecipients(letter)].forEach(person => {
+        const key = personKey(person);
+        if (key) persons.add(key);
+    }));
+    setCount('dash-persons-count', countOf(persons.size, model.personsTotal, 'Personen'));
     figure.setAttribute('aria-label', `Korrespondenzkreis um ${model.centre.name}: ${number(shown)} Briefpartner in der Auswahl, ${number(ego.inner.length)} im Bestand, Abstand zur Mitte nach Briefzahl, Winkel nach dem Jahr des ersten Briefs${mentions ? ', außen die in den Briefen erwähnten Personen' : ''}. Pfeiltasten gehen die Personen nach Briefzahl durch, Eingabe wählt, Escape hebt die Wahl auf.`);
 }
 
@@ -953,8 +1005,7 @@ function renderPlaces(filter) {
     const counts = placeCounts(base);
     view.places.counts = counts;
     const shown = [...counts.values()].filter(p => p.count > 0).length;
-    // The name of the part says what is counted
-    setCount('dash-places-count', shown === model.places.size ? number(shown) : `${number(shown)} von ${number(model.places.size)}`);
+    setCount('dash-places-count', countOf(shown, model.places.size, 'Orte', 'Orten'));
     if (model.asMap) drawMap(filter, counts); else placeRows(filter, counts);
 }
 
@@ -1000,8 +1051,8 @@ function drawMap(filter, counts) {
         if (p.n) {
             ctx.beginPath();
             ctx.arc(p.x, p.y, Math.max(2, 1.2 + 9 * Math.sqrt(p.n / model.placeMax)), 0, 2 * Math.PI);
-            ctx.fillStyle = c.data;
-            ctx.globalAlpha = 0.75;
+            ctx.fillStyle = languageColor(model.placeLanguage.get(p.key) || 'other');
+            ctx.globalAlpha = 0.85;
             ctx.fill();
             ctx.globalAlpha = 1;
         }
@@ -1076,7 +1127,7 @@ function renderSubjects(filter) {
     const span = Math.max(1, (last ?? 0) - (first ?? 0) + 1);
     let max = 1;
     rows.forEach(row => model.subjectTotals.get(row.key)?.years.forEach(n => { if (n > max) max = n; }));
-    setCount('dash-topics-count', ranked.length === model.subjectTotals.size ? number(ranked.length) : `${number(ranked.length)} von ${number(model.subjectTotals.size)}`);
+    setCount('dash-topics-count', countOf(ranked.length, model.subjectTotals.size, 'Themen'));
     const focused = document.activeElement?.closest?.('#dash-subjects .dash-subject')?.dataset.key;
     box.replaceChildren(...rows.filter(Boolean).map(row => {
         const whole = model.subjectTotals.get(row.key);
@@ -1097,7 +1148,7 @@ function renderSubjects(filter) {
             });
             return d;
         };
-        profile.append(svg('path', { d: bars(whole?.years), class: 'dash-pale' }), svg('path', { d: bars(row.years), class: 'dash-subject__bars' }));
+        profile.append(svg('path', { d: bars(whole?.years), class: 'dash-pale' }), svg('path', { d: bars(row.years), fill: subjectColor(row.key) }));
         button.append(head, profile);
         button.addEventListener('click', () => deps.toggleSubject(row.key));
         withTip(button, `${row.label}: ${ofLetters(row.total || 0, whole?.total || 0)}`);
@@ -1105,6 +1156,22 @@ function renderSubjects(filter) {
     }));
     if (rows.length === 0) box.replaceChildren(element('p', 'dash-empty', 'Keine Themen in dieser Auswahl.'));
     if (focused) box.querySelector(`.dash-subject[data-key="${CSS.escape(focused)}"]`)?.focus();
+}
+
+/**
+ * The colour of a subject (rule 5): a subject named like a language of the letters takes the
+ * colour of that language, a language subject outside the coloured languages the grey of the rest,
+ * every other subject the topic colour, which stands visibly outside the language coding. Colouring
+ * by the most frequent language of a subject's letters was tried on the archive and gave nearly
+ * every subject the colour of German, so a subject called Französisch would stand in blue.
+ * @param {string} key
+ * @returns {string}
+ */
+function subjectColor(key) {
+    const subject = model.subjectTotals.get(key);
+    if (subject?.kind !== 'language') return view.colors.topic;
+    const code = [...model.languageTotals.keys()].find(k => languageLabel(k) === subject.label);
+    return languageColor(code ? languageCategory(code) : 'other');
 }
 
 // Transmission: what the letter records carry, each as its share of the selection on a thin bar,

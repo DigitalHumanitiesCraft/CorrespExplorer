@@ -13,9 +13,10 @@ import { loadDemoDataset, loadUrlDataset } from './cmif-parser.js';
 import { isCorrespSearchUrl, correspSearchShareUrl } from './correspsearch-api.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
-import { filterSentence, focusViewHeading, renderFilterNotice, selectionMarks } from './views/view-support.js';
+import { filterSentence, focusViewHeading, selectionMarks } from './views/view-support.js';
 import { initLettersDrawer, updateLettersDrawer, setDrawerOpen } from './views/letters-drawer.js';
-import { initOverviewView, renderOverview } from './views/overview-view.js';
+import { initOverviewView, renderOverview, renderDatasetFacts } from './views/overview-view.js';
+import { countOf } from './selection-ui.js';
 import { initMapView, updateMapPlaces, resizeMap, aggregateLettersByPlace } from './views/map-view.js';
 import { initSpacetimeView, renderSpacetime } from './views/spacetime-view.js';
 import { initPersonsView, renderPersonsList } from './views/persons-view.js';
@@ -194,10 +195,6 @@ function syncViewVariants() {
 }
 
 const formatCount = n => n.toLocaleString('de-DE');
-// "774 Orte", under a filter "95 von 774 Orten"
-const partOf = (part, total, one, of = one) => (part === total
-    ? `${formatCount(total)} ${one}`
-    : `${formatCount(part)} von ${formatCount(total)} ${of}`);
 
 // The header line of a view says what it currently shows; the subject itself stands in the header
 function updateViewTitle() {
@@ -214,19 +211,18 @@ function updateViewTitle() {
         // Not visible: both name what they show in their own line under the header
         title.textContent = currentView === 'network' ? 'Netzwerk der Personen' : 'Erwähnungen';
     } else if (group === 'persons') {
-        title.textContent = partOf(shown ? shown.persons.size : corpusTotals.persons, corpusTotals.persons, 'Personen');
+        title.textContent = countOf(shown ? shown.persons.size : corpusTotals.persons, corpusTotals.persons, 'Personen');
     } else if (group === 'places') {
-        title.textContent = partOf(shown ? shown.places.size : corpusTotals.places, corpusTotals.places, 'Orte', 'Orten');
+        title.textContent = countOf(shown ? shown.places.size : corpusTotals.places, corpusTotals.places, 'Orte', 'Orten');
     } else if (group === 'time') {
-        const range = datedYearRange(filteredLetters);
-        const years = !range ? '' : range.min === range.max ? `, ${range.min}` : `, ${range.min}–${range.max}`;
-        title.textContent = partOf(filteredLetters.length, corpusTotals.letters, 'Briefe', 'Briefen') + years;
+        // Count and period of the selection stand once, in the line at the lower edge (rule 1)
+        title.textContent = 'Briefe im Lauf der Zeit';
     } else if (group === 'topics') {
         // The topics figure keeps the subjects beside a chosen one, so it counts them itself
         const topics = topicCounts();
         title.textContent = topics
-            ? partOf(topics.shown, topics.total, 'Themen')
-            : partOf((shown || corpusSummary).subjects.size, corpusSummary.subjects.size, 'Themen');
+            ? countOf(topics.shown, topics.total, 'Themen')
+            : countOf((shown || corpusSummary).subjects.size, corpusSummary.subjects.size, 'Themen');
     } else if (group === 'overview') {
         // Not visible: the header carries the name of the dataset, the page starts with its figures
         title.textContent = elements.getById('dataset-title')?.textContent?.trim() || 'Datensatz';
@@ -306,6 +302,7 @@ async function init() {
         updateViewButtons();
 
         initFilters();
+        initRail();
         initViewSwitcher();
         // The view modules receive what they need from here and never import this file
         initOverviewView({
@@ -333,8 +330,10 @@ async function init() {
             toggleFeature,
             setYearRange,
             releaseYears: () => releaseMark('time'),
-            isViewAvailable: view => Boolean(availableViews[view]?.available)
+            isViewAvailable: view => Boolean(availableViews[view]?.available),
+            openLanguageList: anchor => openRailPanel('lang', anchor)
         });
+        renderDatasetFacts();
         initMapView({
             getPlaceAggregation: () => placeAggregation,
             applyPlaceFilter,
@@ -617,14 +616,16 @@ function buildLanguageFilter() {
 
     const languageKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
 
-    // The list folds where the colours end: the languages with a colour of their own stand open,
-    // the others are the grey "Übrige Sprachen" of the charts and open on demand. One cut for
-    // list, legend and map, also for a dataset with twenty languages.
+    // The list names its group where the colours end: the languages with a colour of their own
+    // first, then the grey "Übrige Sprachen" of the charts under their own name, without a fold
+    // (design.md, rule 4); the rest mark of the language key opens this list
     const restCount = languageKeys.filter(code => isRestLanguage(code)).length;
-    const more = restCount > 1 ? document.createElement('details') : null;
+    const more = restCount > 1 ? document.createElement('div') : null;
     if (more) {
         more.className = 'filter-more';
-        more.appendChild(document.createElement('summary'));
+        const name = document.createElement('p');
+        name.className = 'filter-more__name';
+        more.appendChild(name);
     }
 
     languageKeys.forEach(code => {
@@ -813,14 +814,12 @@ function applyFilters({ render = true } = {}) {
 
     updateFilterCounts();
     updateFeatureCounts();
+    updateQualityCounts();
     updateStatCounts();
     updateUrlState();
     renderSelectionSentence();
-    updateFilterIndicators();
-    // The time view marks a filter by its title, the line above the main area and its profile
-    SIDEBAR_VIEWS.filter(view => view !== 'timeline').forEach(view => renderFilterNotice(`${view}-view`)?.classList.add('view-filter-notice--narrow'));
     announceResultCount();
-    updateLettersDrawer({ hidden: currentView === 'letters' });
+    updateSelectionLine();
 
     if (render) renderView(currentView);
     updateViewTitle();
@@ -959,30 +958,19 @@ function hasActiveFilter() {
         f.quality?.preciseDates || f.quality?.knownPersons || f.quality?.locatedPlaces);
 }
 
-// Every view that shows the filtered letters marks an active filter on its button, so a list
-// shortened by a filter set elsewhere is never silent
-const FILTER_INDICATOR_VIEWS = ['letters', 'persons', 'places', 'timeline', 'network', 'mentions-flow', 'map', 'spacetime','chronik', 'activity', 'comparison', 'topics'];
-
-function updateFilterIndicators() {
-    const active = hasActiveFilter();
-    FILTER_INDICATOR_VIEWS.forEach(view => {
-        const btn = document.querySelector(`.view-btn[data-view="${view}"]`);
-        if (!btn) return;
-        let indicator = btn.querySelector('.filter-indicator');
-        if (active && !indicator) {
-            indicator = document.createElement('span');
-            indicator.className = 'filter-indicator';
-            indicator.title = 'Filter aktiv';
-            indicator.setAttribute('aria-hidden', 'true');
-            btn.appendChild(indicator);
-        } else if (!active && indicator) {
-            indicator.remove();
-        }
-    });
+/**
+ * The one place of the selection (design.md, rule 1): the line at the lower edge of every view
+ * holds the count of its letters, which opens them, the filters as removable marks and the release
+ * of all. It stands in the letter list as well, there without the count, which the list names.
+ * The dots on the buttons of the representations that once marked a filter are gone with it.
+ */
+function updateSelectionLine() {
+    const inList = currentView === 'letters';
+    updateLettersDrawer({ hidden: false });
+    document.getElementById('letters-drawer-toggle')?.classList.toggle('hidden', inList);
+    document.getElementById('letters-drawer')?.classList.toggle('hidden', inList && !hasActiveFilter());
+    if (inList) setDrawerOpen(false);
 }
-
-// Views with the filter sidebar beside them on a wide screen
-const SIDEBAR_VIEWS = ['map', 'spacetime', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'];
 
 // What removing one mark of the selection sentence releases; each goes through the same inputs as
 // the sidebar control of its kind, so slider, checkboxes and sentence always agree
@@ -1032,9 +1020,6 @@ function renderSelectionSentence() {
     if (!sentence) return;
     const marks = selectionMarks(state.filters, allLetters);
     sentence.classList.toggle('hidden', marks.length === 0);
-    // A filter narrows every view and is easily forgotten: while one is set, the page says so
-    // in the title of the view, at the upper edge of the main area and in this block
-    document.body.classList.toggle('has-filter', marks.length > 0);
     // An unchanged sentence keeps its elements, so the focus on a mark survives a repeated filter
     const key = JSON.stringify(marks);
     if (sentence.dataset.marks === key) return;
@@ -1100,11 +1085,7 @@ function updateFilterCounts() {
     if (more) {
         const shown = more.querySelectorAll('label:not(.hidden)').length;
         more.classList.toggle('hidden', shown === 0);
-        more.querySelector('summary').innerHTML = `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS.other}" aria-hidden="true"></span> Übrige Sprachen (${shown})`;
-        // A language filter that selects a folded language must not hide that it does
-        const all = document.querySelectorAll('input[name="language"]');
-        const checked = document.querySelectorAll('input[name="language"]:checked');
-        if (checked.length < all.length && more.querySelector('label:not(.hidden) input:checked')) more.open = true;
+        more.querySelector('.filter-more__name').innerHTML = `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS.other}" aria-hidden="true"></span> Übrige Sprachen (${shown})`;
     }
 }
 
@@ -1199,8 +1180,9 @@ function buildFeatureFilter() {
     const present = LETTER_FEATURES.filter(feature => allLetters.some(feature.test));
     group.classList.toggle('hidden', present.length === 0);
     container.innerHTML = present.map(feature => `
-        <label class="filter-checkbox">
+        <label class="filter-checkbox" data-tip="${escapeHtml(feature.label)}">
             <input type="checkbox" name="feature" value="${feature.key}" ${featureFilter.has(feature.key) ? 'checked' : ''}>
+            <i class="fas ${FEATURE_ICONS[feature.key] || 'fa-circle'}" aria-hidden="true"></i>
             <span>${escapeHtml(feature.label)}</span>
             <span class="filter-count" id="count-feature-${feature.key}"></span>
         </label>`).join('');
@@ -1222,8 +1204,40 @@ function updateFeatureCounts() {
         const count = state.filterLetters({ ...state.filters, features: [...others, cb.value] }).length;
         const el = document.getElementById(`count-feature-${feature.key}`);
         if (el) el.textContent = `(${count.toLocaleString('de-DE')})`;
+        // The narrow rail shows the sign only; its tooltip names the filter and its count
+        const label = cb.closest('label');
+        if (label) label.dataset.tip = `${feature.label} (${count.toLocaleString('de-DE')})`;
     });
 }
+
+// The signs of the data situation name their count in the tooltip, like the features
+const QUALITY_LABELS = { preciseDates: 'Nur exakte Datierungen', knownPersons: 'Nur identifizierte Personen', locatedPlaces: 'Nur lokalisierte Orte' };
+function updateQualityCounts() {
+    Object.entries(QUALITY_LABELS).forEach(([key, text]) => {
+        const el = document.getElementById(`count-quality-${key}`);
+        if (!el || el.closest('label')?.classList.contains('hidden')) return;
+        const count = state.filterLetters({ ...state.filters, quality: { ...state.filters.quality, [key]: true } }).length;
+        el.textContent = `(${count.toLocaleString('de-DE')})`;
+        el.closest('label').dataset.tip = `${text} (${count.toLocaleString('de-DE')})`;
+    });
+}
+
+// Signs of the transmission features in the rail; the opened rail and the tooltip name them
+const FEATURE_ICONS = {
+    undated: 'fa-calendar-xmark',
+    dateImplausible: 'fa-triangle-exclamation',
+    dateInferred: 'fa-calendar-plus',
+    dateText: 'fa-font',
+    dateBound: 'fa-arrow-right-to-bracket',
+    placeInferred: 'fa-location-crosshairs',
+    postmark: 'fa-stamp',
+    address: 'fa-address-card',
+    multiRecipients: 'fa-users',
+    records: 'fa-clone',
+    recordsDiffer: 'fa-code-compare',
+    parallels: 'fa-copy',
+    forwarded: 'fa-share'
+};
 
 function updateUrlState() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -1234,6 +1248,8 @@ function updateUrlState() {
         const value = urlParams.get(key);
         if (value) newParams.set(key, value);
     }
+    // The variant of the topics figure under trial, set by the topics view itself
+    if (newParams.get('view') === 'topics' && urlParams.get('variant')) newParams.set('variant', urlParams.get('variant'));
     const sharedQuery = correspSearchShareUrl(datasetSource);
     if (sharedQuery) newParams.set('cs', sharedQuery);
 
@@ -1389,10 +1405,7 @@ function switchView(view) {
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
         const noSidebar = view === 'comparison';
-        // What describes the dataset stands in the sidebar of the start view, above its filters
-        const meta = document.querySelector('.workspace__meta');
-        if (meta && meta.parentElement !== sidebar) sidebar.prepend(meta);
-        meta?.classList.toggle('hidden', view !== 'overview');
+        syncRail(view);
         sidebar.classList.toggle('hidden', noSidebar);
         setSidebarOpen(false);
         document.getElementById('sidebar-toggle')?.classList.toggle('hidden', noSidebar);
@@ -1400,8 +1413,8 @@ function switchView(view) {
 
     renderView(view);
     updateViewTitle();
-    // The drawer keeps its state across views and stands back only for the letter list itself
-    updateLettersDrawer({ hidden: view === 'letters' });
+    // The drawer keeps its state across views; in the letter list only the filters stay
+    updateSelectionLine();
 }
 
 // The letter list under one transmission feature, alone or added to the features already set
@@ -1457,6 +1470,131 @@ function initExport() {
 }
 
 enableModalKeyboard();
+
+// The rail of the sidebar (design.md, rule 3). Its width is kept per browser; holding, period and
+// languages open as panels beside it, one at a time, and close on Escape, outside or a second press.
+const RAIL_KEY = 'correspexplorer-rail-open';
+const RAIL_PANELS = { info: 'rail-info', time: 'rail-time', lang: 'rail-lang' };
+
+function setRailOpen(open) {
+    document.querySelector('.sidebar')?.classList.toggle('sidebar--open', open);
+    const toggle = document.getElementById('rail-toggle');
+    if (toggle) {
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.dataset.tip = open ? 'Beschriftungen ausblenden' : 'Beschriftungen zeigen';
+        toggle.setAttribute('aria-label', toggle.dataset.tip);
+        toggle.querySelector('i')?.classList.replace(open ? 'fa-angles-right' : 'fa-angles-left', open ? 'fa-angles-left' : 'fa-angles-right');
+    }
+    try { localStorage.setItem(RAIL_KEY, open ? '1' : '0'); } catch { /* the width is a convenience */ }
+}
+
+/**
+ * Open one panel of the rail beside the element that asked for it, or close it when it is open
+ * @param {'info'|'time'|'lang'} name
+ * @param {HTMLElement} [anchor] - the sign of the rail, or the rest mark of a language key
+ */
+function openRailPanel(name, anchor) {
+    const panel = document.getElementById(RAIL_PANELS[name]);
+    if (!panel) return;
+    const opening = panel.classList.contains('hidden');
+    closeRailPanels();
+    if (!opening) return;
+    panel.classList.remove('hidden');
+    const button = document.querySelector(`[aria-controls="${RAIL_PANELS[name]}"]`);
+    button?.setAttribute('aria-expanded', 'true');
+    // Beside the rail at the height of its sign, or below a mark in a figure, inside the window;
+    // on a phone the panel stands in the off-canvas sidebar itself
+    const from = (anchor || button)?.getBoundingClientRect();
+    const fromFigure = Boolean(anchor && !anchor.closest('.sidebar'));
+    if (fromFigure) document.body.append(panel); else if (!panel.closest('.sidebar')) button?.after(panel);
+    if (from && (fromFigure || window.matchMedia('(min-width: 768px)').matches)) {
+        const rail = document.querySelector('.sidebar').getBoundingClientRect();
+        const left = fromFigure ? from.left : rail.right + 6;
+        const top = fromFigure ? from.bottom + 6 : from.top;
+        panel.style.left = `${Math.max(8, Math.min(left, window.innerWidth - panel.offsetWidth - 8))}px`;
+        panel.style.top = `${Math.max(8, Math.min(top, window.innerHeight - panel.offsetHeight - 8))}px`;
+    } else {
+        panel.style.left = '';
+        panel.style.top = '';
+    }
+    panel.dataset.opener = anchor && !anchor.closest('.sidebar') ? 'figure' : 'rail';
+    railOpener = anchor || button;
+    panel.querySelector('input, button, a, [tabindex="0"]')?.focus();
+}
+
+let railOpener = null;
+
+function closeRailPanels({ focus = false } = {}) {
+    let closed = false;
+    Object.values(RAIL_PANELS).forEach(id => {
+        const panel = document.getElementById(id);
+        if (!panel || panel.classList.contains('hidden')) return;
+        panel.classList.add('hidden');
+        closed = true;
+        document.querySelector(`[aria-controls="${id}"]`)?.setAttribute('aria-expanded', 'false');
+    });
+    if (closed && focus && railOpener?.isConnected) railOpener.focus();
+    return closed;
+}
+
+function initRail() {
+    let open = false;
+    try { open = localStorage.getItem(RAIL_KEY) === '1'; } catch { /* closed by default */ }
+    setRailOpen(open);
+    document.getElementById('rail-toggle')?.addEventListener('click', () => {
+        setRailOpen(!document.querySelector('.sidebar')?.classList.contains('sidebar--open'));
+    });
+    [['rail-info-btn', 'info'], ['rail-time-btn', 'time'], ['rail-lang-btn', 'lang']].forEach(([id, name]) => {
+        document.getElementById(id)?.addEventListener('click', e => openRailPanel(name, e.currentTarget));
+    });
+    // The facts of the holding stand behind the info sign in every view
+    const meta = document.querySelector('.workspace__meta');
+    if (meta) document.getElementById('rail-info')?.append(meta);
+    document.getElementById('rail-lang-btn')?.classList.toggle('hidden', !document.querySelector('input[name="language"]'));
+    document.addEventListener('pointerdown', e => {
+        if (e.target.closest('.rail__panel, [aria-controls^="rail-"], .language-key__mark[data-key="other"]')) return;
+        closeRailPanels();
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !e.defaultPrevented && closeRailPanels({ focus: true })) e.preventDefault();
+    });
+    // The name of a sign while the rail is closed: the sidebar scrolls and clips, so the tooltip
+    // stands outside it, for the pointer and for the focus
+    const tip = document.createElement('div');
+    tip.className = 'rail-tip hidden';
+    tip.setAttribute('aria-hidden', 'true');
+    document.body.append(tip);
+    const sidebar = document.querySelector('.sidebar');
+    const show = e => {
+        const target = e.target.closest?.('[data-tip]');
+        if (!target || !sidebar?.contains(target) || sidebar.classList.contains('sidebar--open') || !window.matchMedia('(min-width: 768px)').matches) {
+            tip.classList.add('hidden');
+            return;
+        }
+        tip.textContent = target.dataset.tip;
+        tip.classList.remove('hidden');
+        const r = target.getBoundingClientRect();
+        tip.style.left = `${r.right + 8}px`;
+        tip.style.top = `${r.top + r.height / 2 - tip.offsetHeight / 2}px`;
+    };
+    const hide = () => tip.classList.add('hidden');
+    sidebar?.addEventListener('pointerover', show);
+    sidebar?.addEventListener('focusin', show);
+    sidebar?.addEventListener('pointerleave', hide);
+    sidebar?.addEventListener('focusout', hide);
+    sidebar?.addEventListener('scroll', hide);
+}
+
+/**
+ * What the rail offers in a view: where a figure carries the period (its brush) or the languages
+ * (its key), the rail does not repeat them
+ */
+function syncRail(view) {
+    closeRailPanels();
+    document.getElementById('rail-time-btn')?.classList.toggle('hidden', view === 'overview' || !elements.yearRangeSlider?.noUiSlider);
+    const hasLanguages = Boolean(document.querySelector('input[name="language"]'));
+    document.getElementById('rail-lang-btn')?.classList.toggle('hidden', !hasLanguages || view === 'overview');
+}
 
 // Narrow screens: the sidebar with dataset summary and filters is off-canvas and opened by this toggle
 function setSidebarOpen(open) {

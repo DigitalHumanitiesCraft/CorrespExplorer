@@ -19,6 +19,7 @@ import { SelectionTests } from './test-selection.js';
 import { LettersTests } from './test-letters.js';
 import { TimeTests } from './test-time.js';
 import { DashboardTests } from './test-dashboard.js';
+import { ComposeTests } from './test-compose.js';
 
 /**
  * Run all registered suites
@@ -42,6 +43,7 @@ export async function runAllTests() {
         LettersTests,
         TimeTests,
         DashboardTests,
+        ComposeTests,
 
         // Infrastructure (State Management)
         StateManagerTests,

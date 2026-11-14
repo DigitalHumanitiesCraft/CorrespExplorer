@@ -36,7 +36,8 @@
 
         <section class="landing-figure" aria-label="Datenmodell an einem Beispielbestand">
             <div class="figure-bar">
-                <div class="dataset-choice" role="group" aria-label="Bestand der Grafik">
+                <span class="dataset-lead" id="dataset-lead">Bestand</span>
+                <div class="dataset-choice" role="group" aria-labelledby="dataset-lead">
                     <button type="button" data-choice="demo" aria-pressed="true">Tutorial</button>
                     <button type="button" data-choice="hsa" aria-pressed="false">Hugo Schuchardt Archiv</button>
                     <!-- Shown only where the file list exists; the published site does not carry these data -->
@@ -63,6 +64,7 @@
             </div>
 
             <div class="error-message" id="error-message" role="alert"></div>
+            <p class="model-missing hidden" id="model-missing"></p>
             <p class="model-status hidden" id="model-status" role="status"></p>
             <div class="model" id="model" aria-describedby="model-text"></div>
             <p class="visually-hidden" id="model-text" aria-live="polite"></p>

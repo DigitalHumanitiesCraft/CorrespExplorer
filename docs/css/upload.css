@@ -91,21 +91,30 @@ body:has(.landing) {
     gap: var(--space-md) var(--space-lg);
 }
 
+.dataset-lead {
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+}
+
+/* A segmented control: the chosen dataset is filled in the selection colour, the others are
+   buttons with a border, so the names read as a choice and not as headings */
 .dataset-choice {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    overflow: hidden;
 }
 
-/* A choice is text with a line under it; the chosen one takes the accent, the colour of selection */
 .dataset-choice button {
-    min-height: 32px;
-    padding: var(--space-xs) var(--space-sm);
+    min-height: 34px;
+    padding: var(--space-xs) var(--space-lg);
     border: 0;
-    border-bottom: 2px solid transparent;
-    background: none;
-    font-family: var(--font-headings);
-    font-size: var(--font-size-md);
+    border-left: 1px solid var(--color-border-control);
+    background: var(--color-bg);
+    font-size: var(--font-size-sm);
     font-weight: 700;
     color: var(--color-text);
     cursor: pointer;
@@ -113,29 +122,44 @@ body:has(.landing) {
     transition-property: var(--transition-properties);
 }
 
+.dataset-choice button:first-child,
+.dataset-choice button.hidden + button {
+    border-left: 0;
+}
+
 .dataset-choice button:hover {
-    border-bottom-color: var(--color-border-control);
+    background: var(--color-bg-light);
 }
 
 .dataset-choice button[aria-pressed="true"] {
-    border-bottom-color: var(--color-primary);
-    color: var(--color-link);
+    background: var(--color-primary);
+    color: var(--color-bg);
 }
 
+.dataset-choice button:focus-visible {
+    outline-offset: -3px;
+}
+
+/* The way into the explorer: an action in the accent, drawn as outline so it does not look like a
+   second chosen dataset */
 .figure-open {
-    min-height: 32px;
+    min-height: 34px;
     padding: var(--space-xs) var(--space-lg);
-    border: 1px solid var(--color-primary-dark);
+    border: 1px solid var(--color-primary);
     border-radius: var(--radius-md);
-    background: var(--color-primary);
+    background: var(--color-bg);
     font-size: var(--font-size-sm);
     font-weight: 700;
-    color: var(--color-bg);
+    color: var(--color-link);
     cursor: pointer;
 }
 
+.figure-open::after {
+    content: ' \2192';
+}
+
 .figure-open:hover {
-    background: var(--color-primary-dark);
+    background: var(--color-primary-light);
 }
 
 /* One's own data: a quiet control at the end of the line, its panel floats over the figure */
@@ -266,22 +290,22 @@ body:has(.landing) {
     color: var(--color-text-light);
 }
 
-/* The figure. Columns: band labels, the statements left of the letter, the letter, the statements
-   right of it. Rows: the three bands; the first two hold pictures and share the height, the third
-   holds share bars and takes what it needs */
+/* What the holding lacks, said once above the figure */
+.model-missing {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+/* The figure. The letter at the left, one row per band the dataset fills; rows and the widths of
+   the figures in a band come from the composition (start-compose.js, set by start-figures.js) */
 .model {
-    --leaders: lines;
     position: relative;
     flex: 1;
     display: grid;
-    grid-template-columns: 7.5rem minmax(0, 1fr) minmax(14rem, 18rem) minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) minmax(0, 0.9fr) auto;
+    grid-template-columns: minmax(15rem, 17rem) minmax(0, 1fr);
     gap: var(--space-xl) var(--space-2xl);
     min-height: 0;
-}
-
-.model.is-extension-sparse {
-    grid-template-rows: minmax(0, 1fr) auto auto;
 }
 
 /* A short fade when the dataset changes; base.css ends it at once under reduced motion */
@@ -294,47 +318,32 @@ body:has(.landing) {
     opacity: 0;
 }
 
-.band-row-1 { grid-row: 1; }
-.band-row-2 { grid-row: 2; }
-.band-row-3 { grid-row: 3; }
+.band {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-height: 0;
+}
 
 /* Small capitals with slight tracking, the form of group names in the explorer (design.md) */
 .band-label {
-    grid-column: 1;
     margin: 0;
-    padding-top: var(--space-xs);
     font-size: var(--font-size-sm);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--color-text-light);
 }
 
-.band-side {
+.band-figures {
+    flex: 1;
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(0, 1fr);
-    gap: var(--space-xl);
+    gap: var(--space-2xl);
     min-height: 0;
 }
 
-.band-side--left {
-    grid-column: 2;
-}
-
-.band-side--right {
-    grid-column: 4;
-}
-
-/* Year figure and subject profiles share one width and one year axis, the link and the language
-   bar take the narrow column beside them */
-.band-side--core.band-side--right,
-.band-side--extension.band-side--right {
-    grid-auto-columns: auto;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-}
-
-/* A statement: the label line (name and one number) is the link into its view; the figure beneath
-   is no link, its marks choose a letter */
+/* A statement: its title is the link into its view, the figure beneath is no link and its marks
+   choose a letter */
 .stmt {
     display: flex;
     flex-direction: column;
@@ -343,7 +352,11 @@ body:has(.landing) {
 }
 
 .stmt-label {
-    display: block;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--space-sm);
     align-self: start;
     margin: 0;
     padding: 0;
@@ -356,118 +369,72 @@ body:has(.landing) {
     cursor: pointer;
 }
 
-p.stmt-label {
-    cursor: default;
-}
-
 .stmt-name {
-    display: block;
     font-size: var(--font-size-sm);
     font-weight: 700;
     line-height: var(--line-height-tight);
-}
-
-/* The label of a link says it is one: the name underlines and takes the accent under pointer and
-   focus, the colour of what can be clicked */
-a.stmt-label:hover .stmt-name,
-a.stmt-label:focus-visible .stmt-name,
-button.stmt-label:hover .stmt-name,
-button.stmt-label:focus-visible .stmt-name {
     color: var(--color-link);
-    text-decoration: underline;
 }
 
-.stmt-label:hover {
-    text-decoration: none;
+/* The arrow says the title leads somewhere; hover and focus name where */
+.stmt-name::after {
+    content: ' \2192';
 }
 
 .stmt-count {
-    display: block;
     font-size: var(--font-size-sm);
     line-height: var(--line-height-tight);
     color: var(--color-text-light);
     font-variant-numeric: tabular-nums;
 }
 
+.stmt-label:hover,
+.stmt-label:focus-visible {
+    text-decoration: none;
+}
+
+.stmt-label:hover .stmt-name,
+.stmt-label:focus-visible .stmt-name {
+    text-decoration: underline;
+}
+
+.stmt-label:hover::after,
+.stmt-label:focus-visible::after {
+    content: attr(data-target);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: var(--z-raised);
+    padding: 0 var(--space-xs);
+    border-radius: var(--radius-sm);
+    background: var(--color-text);
+    font-size: var(--font-size-xs);
+    color: var(--color-bg);
+    white-space: nowrap;
+}
+
 .stmt-figure {
     position: relative;
     flex: 1;
-    min-height: 24px;
+    min-height: 60px;
     margin-top: var(--space-sm);
 }
 
-.stmt-figure > svg,
-.subject-figure > svg {
+.stmt-figure > svg {
     position: absolute;
     inset: 0;
     display: block;
-    overflow: hidden;
-}
-
-/* A statement the dataset lacks keeps its place: its name and "nicht im Bestand" over an empty
-   dashed line */
-.stmt-empty {
-    display: block;
-    margin-top: var(--space-md);
-    border-top: 1px dashed var(--color-border-control);
-}
-
-.stmt--language .stmt-figure,
-.band-side--record .stmt-figure {
-    flex: none;
-    height: 18px;
-    min-height: 18px;
+    overflow: visible;
 }
 
 .stmt-key {
     display: flex;
     flex-wrap: wrap;
     gap: 0 var(--space-md);
-    margin-top: var(--space-xs);
+    margin: var(--space-xs) 0 0;
     font-size: var(--font-size-sm);
     line-height: var(--line-height-tight);
     color: var(--color-text-light);
-}
-
-.stmt-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 var(--space-md);
-    margin-top: var(--space-xs);
-    font-size: var(--font-size-sm);
-    line-height: var(--line-height-tight);
-    color: var(--color-text);
-}
-
-/* Subject profiles: a name over each small year figure */
-.subject-rows {
-    display: grid;
-    flex: 1;
-    grid-auto-rows: minmax(0, 1fr);
-    gap: var(--space-xs);
-    min-height: 0;
-    margin-top: var(--space-sm);
-}
-
-.subject-row {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-
-.subject-name {
-    overflow: hidden;
-    font-size: var(--font-size-sm);
-    line-height: var(--line-height-tight);
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    color: var(--color-text);
-}
-
-.subject-figure {
-    position: relative;
-    flex: 1;
-    min-height: 14px;
 }
 
 .mini-rim {
@@ -522,7 +489,16 @@ button.stmt-label:focus-visible .stmt-name {
     stroke-width: 0.8;
 }
 
+.mini-letter {
+    stroke: var(--color-bg);
+    stroke-width: 0.8;
+}
+
 .mini-subject {
+    fill: var(--color-data);
+}
+
+.mini-bar {
     fill: var(--color-data);
 }
 
@@ -531,8 +507,23 @@ button.stmt-label:focus-visible .stmt-name {
     stroke-width: 1;
 }
 
+.mini-cut {
+    fill: none;
+    stroke: var(--color-bg);
+    stroke-width: 2;
+}
+
 .mini-axis {
     font-size: var(--font-size-xs);
+    fill: var(--color-text-light);
+}
+
+.mini-label {
+    font-size: var(--font-size-sm);
+    fill: var(--color-text);
+}
+
+.mini-label--quiet {
     fill: var(--color-text-light);
 }
 
@@ -548,45 +539,81 @@ button.stmt-label:focus-visible .stmt-name {
     fill: transparent;
 }
 
-/* Marks that choose a letter answer the pointer; the keyboard steps with "anderer Brief" */
+/* Marks that choose a letter: the pointer turns into a hand and the mark takes a ring of the
+   selection colour; in the archive, whose letters are few, the choosable marks carry it at rest */
 .is-pickable {
     cursor: pointer;
 }
 
 circle.is-pickable:hover,
-rect.is-pickable:hover {
+rect.is-pickable:hover,
+.is-pickable--outlined {
     stroke: var(--color-primary);
     stroke-width: 1.5;
 }
 
-/* The example letter's own marks, the selection in rust; they move when the letter changes */
-.letter-mark {
+rect.mini-hit.is-pickable:hover {
     fill: var(--color-primary);
-    stroke: var(--color-bg);
-    stroke-width: 1;
-    pointer-events: none;
-}
-
-.letter-mark--hollow {
-    fill: none;
-    stroke: var(--color-primary);
-    stroke-width: 2;
-}
-
-.letter-mark--column {
-    fill: var(--color-primary);
-    fill-opacity: 0.25;
+    fill-opacity: 0.12;
     stroke: none;
 }
 
-.model.is-moving .letter-mark {
-    transition: transform 320ms ease-out;
+/* The example letter's own marks in the selection colour: a ring with a halo of paper and a dot,
+   and the tag with the number of its line in the letter. They move when the letter changes */
+.letter-mark__halo {
+    fill: none;
+    stroke: var(--color-bg);
+    stroke-width: 6;
+    stroke-opacity: 0.85;
 }
 
-/* The letter: three sheets out of one envelope, one per band and as tall as their lines */
+.letter-mark__ring {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2.5;
+}
+
+.letter-mark__dot {
+    fill: var(--color-primary);
+}
+
+.letter-tag circle {
+    fill: var(--color-primary);
+    stroke: var(--color-bg);
+    stroke-width: 1.5;
+}
+
+.letter-tag text {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    fill: var(--color-bg);
+}
+
+.letter-mark {
+    transition: opacity var(--transition-fast);
+}
+
+.model.is-moving .letter-mark {
+    transition: transform 320ms ease-out, opacity var(--transition-fast);
+}
+
+/* Pointing at a line of the letter or at its mark brings both forward, the other marks back */
+.model.is-tracing .letter-mark:not(.is-traced) {
+    opacity: 0.25;
+}
+
+.letter-mark.is-traced .letter-mark__ring {
+    stroke-width: 3.5;
+}
+
+.model.is-tracing .record-line.is-tagged:not(.is-traced) {
+    opacity: 0.45;
+}
+
+/* The letter: sheets out of one envelope, one per band and as tall as their lines */
 .record-sheet {
     position: relative;
-    grid-column: 3;
+    grid-column: 1;
     align-self: start;
     display: flex;
     flex-direction: column;
@@ -597,8 +624,9 @@ rect.is-pickable:hover {
     background: var(--color-bg-light);
 }
 
+.record-sheet:first-of-type,
 .record-sheet--core {
-    padding-top: 44px;
+    padding-top: 40px;
 }
 
 .record-flap {
@@ -606,7 +634,7 @@ rect.is-pickable:hover {
     top: 0;
     left: 0;
     width: 100%;
-    height: 36px;
+    height: 32px;
     overflow: visible;
 }
 
@@ -629,6 +657,36 @@ rect.is-pickable:hover {
     line-height: var(--line-height-tight);
     color: var(--color-text);
     overflow-wrap: anywhere;
+    transition: opacity var(--transition-fast);
+}
+
+.record-line.is-tagged {
+    cursor: default;
+}
+
+.record-line.is-tagged.is-traced {
+    color: var(--color-link);
+}
+
+/* The number of a line, the same as on its mark in the figure */
+.record-tag:empty {
+    display: none;
+}
+
+.record-tag {
+    display: inline-block;
+    min-width: 16px;
+    height: 16px;
+    margin-right: var(--space-xs);
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    font-family: var(--font-base);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    color: var(--color-bg);
+    vertical-align: 1px;
 }
 
 .record-sender {
@@ -642,11 +700,6 @@ a.record-link {
     text-decoration: underline;
 }
 
-.record-absent {
-    color: var(--color-text-light);
-    font-style: italic;
-}
-
 .record-swatch {
     display: inline-block;
     width: 10px;
@@ -655,35 +708,36 @@ a.record-link {
     border-radius: 2px;
 }
 
+.record-choice {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-control);
+}
+
+.record-hint {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-light);
+}
+
 .record-other {
     align-self: start;
-    min-height: 24px;
-    padding: 0 var(--space-sm);
-    border: 1px solid var(--color-border-control);
+    min-height: 28px;
+    padding: 0 var(--space-md);
+    border: 1px solid var(--color-primary);
     border-radius: var(--radius-md);
     background: var(--color-bg);
     font-size: var(--font-size-sm);
-    color: var(--color-text);
+    font-weight: 700;
+    color: var(--color-link);
     cursor: pointer;
 }
 
 .record-other:hover {
-    border-color: var(--color-primary);
-    color: var(--color-link);
-}
-
-.model-leaders {
-    position: absolute;
-    inset: 0;
-    overflow: visible;
-    pointer-events: none;
-}
-
-.leader {
-    fill: none;
-    stroke: var(--color-primary);
-    stroke-opacity: 0.45;
-    stroke-width: 1;
+    background: var(--color-primary-light);
 }
 
 .disclaimer p {
@@ -693,7 +747,7 @@ a.record-link {
 }
 
 /* Below this width each band follows its sheet of the letter in one column, with the same
-   content; the rust marks stay, the curves go */
+   content; the numbered tags carry the connection, as on wide screens */
 @media (max-width: 1023px) {
     .landing {
         height: auto;
@@ -725,55 +779,38 @@ a.record-link {
     }
 
     .model {
-        --leaders: none;
         display: flex;
         flex-direction: column;
         gap: var(--space-lg);
     }
 
-    .band-label.band-row-1 { order: 10; }
-    .record-sheet.band-row-1 { order: 11; }
-    .band-side.band-row-1 { order: 12; }
-    .band-label.band-row-2 { order: 20; }
-    .record-sheet.band-row-2 { order: 21; }
-    .band-side.band-row-2 { order: 22; }
-    .band-label.band-row-3 { order: 30; }
-    .record-sheet.band-row-3 { order: 31; }
-    .band-side.band-row-3 { order: 32; }
-
-    .band-label {
-        margin-top: var(--space-md);
+    /* The widths the composition sets inline hold beside the letter; in one column every figure
+       takes the full width, so the inline value has to yield */
+    .band-figures {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: var(--space-xl);
     }
 
-    .band-side,
-    .band-side--core.band-side--right,
-    .band-side--extension.band-side--right {
-        grid-auto-flow: row;
-        grid-template-columns: minmax(0, 1fr);
-        gap: var(--space-lg);
-    }
-
-    .band-side--core .stmt-figure,
-    .band-side--extension .stmt-figure {
+    .stmt-figure {
         flex: none;
+        height: 200px;
+    }
+
+    .stmt--letters .stmt-figure,
+    .stmt--profile .stmt-figure,
+    .stmt--profiles .stmt-figure,
+    .stmt--years .stmt-figure {
+        height: 170px;
+    }
+
+    .stmt--ranking .stmt-figure,
+    .stmt--histogram .stmt-figure,
+    .stmt--shares .stmt-figure {
         height: 160px;
     }
 
-    .stmt--persons .stmt-figure,
-    .stmt--place .stmt-figure,
-    .stmt--mentionsPerson .stmt-figure,
-    .stmt--mentionsPlace .stmt-figure {
-        height: 220px;
-    }
-
-    .stmt--language .stmt-figure,
-    .band-side--record .stmt-figure {
-        height: 18px;
-    }
-
-    .subject-rows {
-        height: 160px;
-        flex: none;
+    .stmt--bar .stmt-figure {
+        height: 20px;
     }
 }
 

@@ -1,0 +1,351 @@
+/* The parts every view shares (knowledge/design.md, "Gemeinsame Regeln aller Ansichten"):
+   the sidebar as a narrow rail of signs (rule 3), the line of the selection at the lower edge
+   (rule 1) and the language key that is the language filter (rule 2). */
+
+/* Rail. Closed it is a column of signs; the control at its top opens it to full labels, kept per
+   browser. Holding, period and languages open as panels beside it. On a phone the sidebar stays
+   the off-canvas panel with full labels it was. */
+.rail-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.rail__item,
+.rail-filters .filter-checkbox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    min-height: 32px;
+    margin: 0;
+    padding: var(--space-xs) var(--space-sm);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.rail__item > i,
+.rail-filters .filter-checkbox > i {
+    flex: none;
+    width: 18px;
+    text-align: center;
+    color: var(--color-text-light);
+}
+
+.rail__item:hover,
+.rail-filters .filter-checkbox:hover {
+    background: var(--color-bg);
+}
+
+.rail__item[aria-expanded="true"] {
+    background: var(--color-bg);
+    box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.rail__value {
+    color: var(--color-text-light);
+    font-variant-numeric: tabular-nums;
+}
+
+.rail__toggle {
+    margin-bottom: var(--space-xs);
+    color: var(--color-text-light);
+}
+
+/* A filter sign: the box of the checkbox lies over the whole row, so the row is its target and
+   the state shows as the selection colour of the row, not on colour alone: the pressed row also
+   carries the weight of its name and the ring of its sign */
+.rail-filters .filter-checkbox input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.rail-filters .filter-checkbox:has(input:checked) {
+    background: var(--color-primary-light);
+    box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.rail-filters .filter-checkbox:has(input:checked) > i {
+    color: var(--color-primary-dark);
+}
+
+.rail-filters .filter-checkbox:has(input:checked) > span:not(.filter-count) {
+    font-weight: 700;
+}
+
+.rail-filters .filter-checkbox:has(input:focus-visible) {
+    outline: 3px solid var(--color-primary);
+    outline-offset: -1px;
+}
+
+.rail-filters .filter-count {
+    margin-left: auto;
+    background: none;
+    padding: 0;
+    font-weight: 400;
+}
+
+.rail__group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.rail__group-name,
+.rail__panel-name {
+    margin: 0 0 2px var(--space-sm);
+    font-family: var(--font-base);
+    font-size: var(--font-size-xs);
+    font-weight: 400;
+    color: var(--color-text-light);
+}
+
+/* Panels beside the rail: they float over the view (shadow in shadows.css) */
+.rail__panel {
+    position: fixed;
+    z-index: var(--z-dropdown);
+    width: 300px;
+    max-height: calc(100dvh - var(--navbar-height) - var(--space-lg));
+    overflow-y: auto;
+    padding: var(--space-md);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+}
+
+.rail__panel--slider {
+    width: 320px;
+}
+
+.rail__panel #year-range-slider {
+    margin: var(--space-md) var(--space-sm) var(--space-sm);
+}
+
+.rail__panel label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: 26px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.rail__panel input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+}
+
+.filter-more {
+    margin-top: var(--space-sm);
+}
+
+.filter-more__name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin: 0 0 2px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+/* The facts of the holding in their panel */
+.rail__panel .workspace__meta {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+/* The tooltip of a sign while the rail is closed, for the pointer and the focus (explore.js) */
+.rail-tip {
+    position: fixed;
+    z-index: var(--z-tooltip);
+    max-width: 240px;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    background: var(--color-text);
+    color: var(--color-bg-light);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-tight);
+    pointer-events: none;
+}
+
+@media (min-width: 768px) {
+    .sidebar:not(.sidebar--open) {
+        width: 52px;
+        padding: var(--space-sm) 6px;
+    }
+
+    /* Closed, a sign stands alone; its name stays for assistive technology */
+    .sidebar:not(.sidebar--open) .rail__name,
+    .sidebar:not(.sidebar--open) .rail-filters .filter-checkbox > span,
+    .sidebar:not(.sidebar--open) .rail__group-name {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .sidebar:not(.sidebar--open) .rail__item,
+    .sidebar:not(.sidebar--open) .rail-filters .filter-checkbox {
+        justify-content: center;
+        padding: var(--space-xs) 0;
+    }
+
+    .sidebar:not(.sidebar--open) .rail__group {
+        margin-top: var(--space-xs);
+        padding-top: var(--space-xs);
+    }
+
+    /* The basket lists its entries in the opened rail; closed, the header link counts it */
+    .sidebar:not(.sidebar--open) #sidebar-basket {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .rail__toggle {
+        display: none;
+    }
+
+    .rail__panel {
+        position: static;
+        width: auto;
+        max-height: none;
+        margin: 0 0 var(--space-sm);
+    }
+}
+
+/* The line of the selection at the lower edge of every view: the count opens the letters, the
+   filters stand beside it as removable marks, then the release of all. It keeps one line, so a
+   filter set does not shift the figure above. */
+.letters-drawer__line .selection-sentence {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+}
+
+.letters-drawer__line .selection-sentence__lead {
+    display: inline;
+    margin-right: var(--space-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    color: var(--color-text-light);
+}
+
+.letters-drawer__reset {
+    flex: none;
+    min-height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-link);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* The language key that is the language filter: one row of marks over the width of a figure, each
+   as wide as its share of the selection and at least as wide as its name; the band of a mark is
+   its share, the name stands below it. A pressed mark carries the selection colour under its name,
+   marks outside a language filter fade. */
+.language-key {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    width: 100%;
+}
+
+.language-key__name {
+    flex: none;
+    align-self: flex-end;
+    padding: 0 var(--space-sm) 2px 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.language-key__mark {
+    display: flex;
+    flex-basis: auto;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 3px;
+    min-width: 0;
+    min-height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.language-key__mark::before {
+    content: "";
+    display: block;
+    height: 8px;
+    background: var(--language);
+}
+
+.language-key__label {
+    padding: 0 var(--space-xs) 2px 0;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+}
+
+.language-key__mark:hover .language-key__label {
+    border-bottom-color: var(--color-border-control);
+}
+
+.language-key__mark[aria-pressed="true"] .language-key__label {
+    border-bottom-color: var(--color-primary);
+    font-weight: 700;
+}
+
+.language-key__mark.is-outside::before {
+    opacity: 0.3;
+}
+
+.language-key__mark.is-outside .language-key__label {
+    color: var(--color-text-light);
+}
+
+.language-key__mark:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 1px;
+}
+
+@media (max-width: 767px) {
+    .language-key {
+        flex-wrap: wrap;
+        row-gap: var(--space-xs);
+    }
+}

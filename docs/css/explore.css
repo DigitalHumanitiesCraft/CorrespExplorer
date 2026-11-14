@@ -342,17 +342,6 @@
     margin-left: auto;
 }
 
-.filter-indicator {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 8px;
-    height: 8px;
-    background: var(--color-primary);
-    border-radius: 50%;
-    border: 2px solid white;
-}
-
 /* List View Header */
 .list-header {
     display: flex;
@@ -4226,13 +4215,6 @@ body:has(.tour-highlight) .tour-backdrop {
     display: none;
 }
 
-/* The language list of the sidebar is the legend of the map while the sidebar is beside it */
-@media (min-width: 768px) {
-    .map-legend-items {
-        display: none;
-    }
-}
-
 /* A select that shows "Briefe (absteigend)" names itself; its label stays for assistive technology */
 .list-sort label {
     position: absolute;
@@ -4242,12 +4224,6 @@ body:has(.tour-highlight) .tour-backdrop {
     overflow: hidden;
     clip: rect(0 0 0 0);
     white-space: nowrap;
-}
-
-/* The folded rest of the language list carries the grey it has in the charts */
-.filter-more summary .lang-swatch {
-    display: inline-block;
-    margin: 0 var(--space-xs);
 }
 
 /* The one group of the sidebar whose entries do not say what they are: "Ladinisch" or

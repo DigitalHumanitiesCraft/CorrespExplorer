@@ -168,18 +168,26 @@
     line-height: 1.4;
 }
 
-/* Text alternative below a chart: collapsed table of the shown values (renderDataTable) */
+/* Text alternative of a chart: the shown values as a table under one quiet switch, at the same
+   place in every view and without a box around it (renderDataTable, design.md rule 4) */
 .chart-table {
-    margin-top: var(--space-md);
-    border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-md);
-    background: var(--color-bg);
+    margin-top: var(--space-sm);
 }
 
-.chart-table summary {
-    padding: var(--space-sm) var(--space-md);
-    font-weight: 600;
+.chart-table__switch {
+    min-height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-link);
+    text-decoration: underline;
     cursor: pointer;
+}
+
+.chart-table__body {
+    margin-top: var(--space-xs);
 }
 
 .chart-table__scroll {

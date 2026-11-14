@@ -145,35 +145,10 @@ export function filterSentence(filters = state.filters, allLetters = state.getAl
  * @param {string} viewId - id of the view container, e.g. 'activity-view'
  */
 export function renderFilterNotice(viewId) {
-    const header = document.querySelector(`#${viewId} .view-header`);
-    if (!header) return;
-    let notice = document.getElementById(`${viewId}-filter-notice`);
-    const sentence = filterSentence();
-    if (!sentence) {
-        notice?.classList.add('hidden');
-        return notice;
-    }
-    if (!notice) {
-        notice = document.createElement('div');
-        notice.id = `${viewId}-filter-notice`;
-        notice.className = 'view-filter-notice';
-        notice.setAttribute('role', 'status');
-        header.after(notice);
-    }
-    const reset = document.getElementById('reset-filters');
-    notice.innerHTML = `<span>${escapeHtml(sentence)}</span>${reset
-        ? '<button type="button" class="view-filter-notice__clear">Filter aufheben</button>'
-        : ''}`;
-    notice.classList.remove('hidden');
-    notice.querySelector('.view-filter-notice__clear')?.addEventListener('click', () => {
-        reset.click();
-        const title = header.querySelector('.view-header__title');
-        if (title) {
-            title.tabIndex = -1;
-            title.focus();
-        }
-    });
-    return notice;
+    // The selection stands once, in the line at the lower edge of every view (design.md, rule 1);
+    // a view that still calls this only loses the notice it made earlier
+    document.getElementById(`${viewId}-filter-notice`)?.remove();
+    return null;
 }
 
 /**
@@ -196,24 +171,37 @@ export function renderDataTable(host, { caption, columns, rows, limit = 500 }) {
         host.innerHTML = '';
         return;
     }
-    const open = host.querySelector('details')?.open ? ' open' : '';
-    const shown = rows.slice(0, limit);
+    // The table is the figure's alternative, shown on demand under one quiet switch at the same
+    // place in every view, without a collapsed box (design.md, rule 4); its state survives redraws
+    const shown = host.dataset.tableShown === 'true';
+    const rowsShown = rows.slice(0, limit);
     const cell = value => (typeof value === 'number' ? value.toLocaleString('de-DE') : escapeHtml(String(value ?? '')));
     const note = rows.length > limit
         ? `<p class="chart-table__note">Die ersten ${limit.toLocaleString('de-DE')} von ${rows.length.toLocaleString('de-DE')} Zeilen.</p>`
         : '';
+    const id = host.id ? `${host.id}-table` : '';
     host.innerHTML = `
-        <details class="chart-table"${open}>
-            <summary>Daten als Tabelle</summary>
-            <div class="chart-table__scroll" tabindex="0" role="region" aria-label="${escapeHtml(caption)}">
-                <table>
-                    <caption>${escapeHtml(caption)}</caption>
-                    <thead><tr>${columns.map(c => `<th scope="col">${escapeHtml(c)}</th>`).join('')}</tr></thead>
-                    <tbody>${shown.map(row => `<tr>${row.map((v, i) => (i === 0 ? `<th scope="row">${cell(v)}</th>` : `<td${typeof v === 'number' ? ' class="chart-table__num"' : ''}>${cell(v)}</td>`)).join('')}</tr>`).join('')}</tbody>
-                </table>
+        <div class="chart-table">
+            <button type="button" class="chart-table__switch" aria-expanded="${shown}"${id ? ` aria-controls="${id}"` : ''}>${shown ? 'Tabelle ausblenden' : 'Daten als Tabelle'}</button>
+            <div class="chart-table__body${shown ? '' : ' hidden'}"${id ? ` id="${id}"` : ''}>
+                <div class="chart-table__scroll" tabindex="0" role="region" aria-label="${escapeHtml(caption)}">
+                    <table>
+                        <caption>${escapeHtml(caption)}</caption>
+                        <thead><tr>${columns.map(c => `<th scope="col">${escapeHtml(c)}</th>`).join('')}</tr></thead>
+                        <tbody>${rowsShown.map(row => `<tr>${row.map((v, i) => (i === 0 ? `<th scope="row">${cell(v)}</th>` : `<td${typeof v === 'number' ? ' class="chart-table__num"' : ''}>${cell(v)}</td>`)).join('')}</tr>`).join('')}</tbody>
+                    </table>
+                </div>
+                ${note}
             </div>
-            ${note}
-        </details>`;
+        </div>`;
+    const button = host.querySelector('.chart-table__switch');
+    button.addEventListener('click', () => {
+        const next = host.dataset.tableShown !== 'true';
+        host.dataset.tableShown = String(next);
+        button.setAttribute('aria-expanded', String(next));
+        button.textContent = next ? 'Tabelle ausblenden' : 'Daten als Tabelle';
+        host.querySelector('.chart-table__body').classList.toggle('hidden', !next);
+    });
 }
 
 export function readTokens(names) {

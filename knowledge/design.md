@@ -373,6 +373,10 @@ Zur Startansicht des Explorers als Dashboard, über die koordinierende Session w
 
 Folge: in Arbeit. Legende als Sprachfilter, schmalere Seitenleiste, Farbe in Kreis, Karte und Themen, einheitliche Zählangaben, ein Ort für Filterzustand und Briefzahl.
 
+Zur Startansicht des Explorers nach dem Straffen (schmale Schiene links, Zeitdiagramm mit Griffen an beiden Enden, der Sprachbalken mit seinen Namen als Legende, die Zahlen von Personen, Orten und Themen als Überschriften, Kreis und Karte nach Sprache gefärbt), über die koordinierende Session weitergegeben: „Ja, das finde ich gut.“
+
+Folge: Zustimmung zu diesem Stand der Startansicht, festgehalten mit dem Commit, der auf diesen Eintrag folgt. Sie gilt dem, was das Bild zeigte, am Hugo Schuchardt Archiv bei rund 1840 Pixel Breite. Sie gilt keiner anderen Ansicht und ist keine Freigabe zum Push. Schmale Schiene, Legende als Sprachbalken, Farbe nach Sprache in Kreis, Karte und Themen und die Zahlen als Überschriften entfallen von hier an nur auf sein Wort. Offen aus demselben Bild, als Befund der koordinierenden Session: Die Themenzeilen tragen drei Farbfamilien, und nichts sagt, was Grau und Violett bedeuten. Die Zahl der Briefe steht allein in der Fußzeile, die drei anderen Zahlen als Überschriften.
+
 Zur Zeitansicht, gefiltert auf einen Ort und einen Zeitraum, über die koordinierende Session weitergegeben:
 
 > Auch das geht definitiv in die richtige Richtung, aber auch hier sind gerade viel zu viele Ebenen. Es ist zu viel Struktur, und Sachen mit Ausklappen sind irgendwie unpraktisch. Können wir das jetzt auch noch mal vereinheitlichen mit dem anderen Feedback, das wir haben?
