@@ -71,7 +71,6 @@ Anlass ist das gemeinsame Datenmodell für die Briefe von fünf Grazer Editionen
 - Das maschinenlesbare Feld kann gröber sein als das lesbare Datum der Edition. Das Werkzeug zeigt den Wortlaut des `date`-Elements, wo es einen trägt. Steht die genauere Angabe an anderer Stelle der Briefdatei, liest es sie nicht.
 - `cert` an Ort und Person liest das Werkzeug nicht, nur am Datum.
 - Empfangsort und Empfangsdatum liest das Werkzeug nicht. Keiner der geprüften Bestände trägt sie.
-- `docs/data/test-graz-cases.xml` zitiert drei `correspDesc` einer Edition unter CC BY-NC 4.0. Der Operator entscheidet, ob der Auszug bleibt oder durch erfundene Einträge gleicher Struktur ersetzt wird ([data.md](data.md#rechte-und-lizenzen)).
 
 ### Offen nach der Datenprüfung und der Arbeitsfläche
 
