@@ -325,6 +325,49 @@ export const CMIFParserTests = {
         },
 
         {
+            name: 'Grazer Fälle: Weiterleitung bleibt erhalten, Datumsgrenze ohne Jahr, Registerkennung als Schlüssel',
+            async run() {
+                const { letters, indices } = await parseCMIF('data/test-graz-cases.xml');
+                const [l18, l201, l7327] = letters;
+                assert(l18.furtherActions?.length === 1 && l18.furtherActions[0].type === 'forwarded',
+                    `Eine Handlung forwarded erwartet, erhalten ${JSON.stringify(l18.furtherActions)}`);
+                assert(l18.furtherActions[0].persons[0].name === 'Hammer-Purgstall, Joseph', 'Die Person der Weiterleitung bleibt erhalten');
+                assert(!('date' in l18.furtherActions[0]) && !('place' in l18.furtherActions[0]), 'Die Weiterleitung erbt weder Datum noch Ort des Versands');
+                assert(l18.recipient.precision === 'unknown', `Der Empfänger bleibt unbekannt, erhalten ${l18.recipient.precision}`);
+                assert(!indices.persons['118545426'] || indices.persons['118545426'].letter_count === 2,
+                    `Die Weiterleitung zählt nicht als Brief der Person, erhalten ${indices.persons['118545426']?.letter_count}`);
+                const smith = 'https://gams.uni-graz.at/o:hpe.persons#P.701';
+                assert(l201.sender.id === null && l201.sender.localRef === smith && l201.sender.precision === 'named',
+                    `Registerkennung ohne Normdatum erwartet, erhalten ${JSON.stringify(l201.sender)}`);
+                assert(indices.persons[smith]?.as_sender === 1, 'Die Registerkennung ist der Schlüssel im Personenindex');
+                assert(l201.datePrecision === 'year' && l201.year === 1801, 'when="1801" ist ein Jahr');
+                assert(l7327.dateBound === 'notAfter' && l7327.date === '1848' && l7327.year === null && l7327.dateTo === null,
+                    `Obere Grenze ohne Jahr erwartet, erhalten ${JSON.stringify([l7327.dateBound, l7327.date, l7327.year, l7327.dateTo])}`);
+                assert(l7327.place_sent.precision === 'unknown', `"ohne Ort" ist kein Ort, erhalten ${l7327.place_sent.precision}`);
+                assert(l7327.sender.localRef === 'https://gams.uni-graz.at/o:hpe.persons#P.88' && l7327.sender.id === '104141581',
+                    'Normdatum und Registerkennung stehen nebeneinander, das Normdatum ist der Schlüssel');
+            }
+        },
+
+        {
+            name: 'Zwei Bestände: gleicher Absender, Empfänger und Tag werden benannt, nicht zusammengeführt',
+            async run() {
+                const sources = await Promise.all(['data/test-parallel-a.xml', 'data/test-parallel-b.xml', 'data/test-graz-cases.xml']
+                    .map(path => fetch(path).then(r => r.text())));
+                const data = await parseCMIFFiles(sources, null, ['boltzmann.xml', 'brentano.xml', 'hpe.xml']);
+                assert(data.letters.length === 5, `5 Briefe erwartet, erhalten ${data.letters.length}`);
+                const a = data.letters.find(l => l.id === '622');
+                const b = data.letters.find(l => l.file === 'brentano.xml');
+                assert(b.sender.authority === 'gnd' && b.sender.id === '118513109', `GND ohne "gnd/" wird gelesen, erhalten ${JSON.stringify(b.sender)}`);
+                assert(a.parallels?.length === 1 && a.parallels[0].id === b.id && a.parallels[0].file === 'brentano.xml',
+                    `Verweis auf den anderen Bestand erwartet, erhalten ${JSON.stringify(a.parallels)}`);
+                assert(b.parallels?.[0]?.id === '622', 'Der Verweis gilt in beide Richtungen');
+                assert(data.indices.persons['118513109'].as_sender === 2, 'Beide Einträge zählen einzeln, die Person ist eine');
+                assert(data.letters.filter(l => l.file === 'hpe.xml').every(l => !l.parallels), 'Briefe ohne Entsprechung tragen keinen Verweis');
+            }
+        },
+
+        {
             name: 'Meta: Extrahiert metadata aus echten Daten',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');

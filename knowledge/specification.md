@@ -522,3 +522,13 @@ Wahl. Trennt eine Lücke von mindestens 40 Jahren weniger als ein Zwanzigstel de
 Begründung. Eine stille Korrektur wäre eine Aussage über die Quelle, die dem Werkzeug nicht zusteht. Eine ungekennzeichnete Anzeige stellt den Fehler als gesichertes Datum dar.
 
 Effekt. Die Regel ist eine Heuristik und kann einen echten Nachzügler treffen, etwa einen einzelnen späten Brief eines Nachlasses. Der Filter „Datum unplausibel“ listet alle Betroffenen zur Prüfung an der Quelle.
+
+### ADR-011 Übereinstimmung über Bestände benennen, nicht zusammenführen
+
+Kontext. Derselbe Brief kann in zwei Beständen verzeichnet sein, etwa in der Edition des Absenders und im Archiv des Empfängers, mit verschiedenen Kennungen und ohne gemeinsame Signatur. [ADR-009](#adr-009-einträge-gleicher-signatur-sind-ein-brief) greift dann nicht. Die Übereinstimmung von identifiziertem Absender, identifizierten Empfängern und Tag kommt auch innerhalb eines Bestands vor und steht dort für zwei Briefe eines Tages, für Brief und Beilage oder für einen doppelten Eintrag.
+
+Wahl. Stimmen Briefe aus verschiedenen Dateien in diesen drei Angaben überein, nennt jeder die anderen als mögliche Entsprechung. Nichts wird zusammengeführt, beide zählen einzeln. Innerhalb einer Datei entsteht kein Verweis.
+
+Begründung. Ob zwei Einträge einen Brief meinen, ist eine Aussage über die Überlieferung, die Fachkenntnis der Editionen braucht. Das Werkzeug zeigt den Anlass der Frage und lässt die Antwort bei den Forschenden.
+
+Effekt. Zählungen über mehrere Bestände enthalten solche Briefe doppelt, der Filter „Auch in anderer Datei“ listet sie. Eine ausdrückliche Gleichsetzung in den Daten würde ein Zusammenführen erlauben, ein Austauschprofil dafür ist nicht festgelegt. Die Wahl traf die bauende Session am 2026-11-14, der Operator hat sie nicht bestätigt.

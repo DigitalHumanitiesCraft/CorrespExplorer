@@ -327,6 +327,7 @@ function renderSpanBin(spanBin, spanLetters, maxCount) {
 const OFF_AXIS = [
     { key: 'undated', label: 'ohne Datum', phrase: 'ohne Datum' },
     { key: 'dateText', label: 'Datum nur als Text', phrase: 'nur als Text datiert' },
+    { key: 'dateBound', label: 'Nur Datumsgrenze', phrase: 'nur mit einer Datumsgrenze' },
     { key: 'dateImplausible', label: 'Jahr unplausibel', phrase: 'mit unplausiblem Jahr' }
 ];
 

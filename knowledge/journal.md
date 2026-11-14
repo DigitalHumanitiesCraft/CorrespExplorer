@@ -30,6 +30,16 @@ related: [project, specification, plan]
 
 ## Einträge
 
+### 2026-11-14 Parser an den Grazer Fällen: weitere Handlungen, Datumsgrenzen, Registerkennungen, Entsprechungen
+
+- Anlass: Die Session des Projekts GOSSIP fragte im Auftrag des Operators, was das Werkzeug mit den Briefdaten von fünf Grazer Editionen kann. Die Antwort am Code nannte vier Lücken, der Operator beauftragte ihre Behebung.
+- Befund: Jede `correspAction` außer `sent` und `received` wurde verworfen. Ein Datum nur mit `notAfter` erschien als Zeitraum mit gleichem Anfang und Ende und ohne Jahr, eines nur mit `notBefore` stand im Jahr seiner Grenze. `persName/@corresp`, der Verweis in das Register der Edition, wurde nicht gelesen, Personen ohne Normdatum trugen den Namen als Schlüssel. Derselbe Brief in zwei Beständen blieb unbemerkt. Beim Bau kamen dazu: eine GND-Nummer ohne `gnd/` im Pfad galt nicht als GND, „ohne Ort“ galt als Ort, und „o. D.“ im Datumselement galt als Datum in Worten.
+- Entschieden (bauende Session, vom Operator nicht bestätigt): Weitere Handlungen bleiben mit Typ und Personen erhalten und machen niemanden zum Korrespondenten. Eine einzelne Datumsgrenze ist kein Datum auf der Zeitachse. Übereinstimmung über Bestände wird benannt und nicht zusammengeführt ([ADR-011](specification.md#adr-011-übereinstimmung-über-bestände-benennen-nicht-zusammenführen)).
+- Geändert: `cmif-parser.js`, `utils.js`, `constants.js`, `formatters.js`, `export.js`, Briefdialog und Zeitleiste. Die Regeln stehen in [uncertainty-specification.md](uncertainty-specification.md#editorial-inference-postmarks-and-implausible-years). Der Export führt sechs weitere Spalten. Drei Testdateien mit unverändert übernommenen Einträgen der Editionen ([data.md](data.md)), zwei neue Tests, eine Prüfung in `verification/check-corpus.mjs` angepasst.
+- Belege: der Commit dieses Eintrags. `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen dreizehn Prüfungen im zweiten Lauf, im ersten fiel wie schon früher eine aus. `check-corpus.mjs` am Bestand von Stefan Zweig Digital ohne Fehlschlag, die Zahl der Briefe und Personen dort unverändert, vier Einträge mit „o. D.“ zählen jetzt als undatiert. Die drei Testdateien über den Datei-Upload geladen und alle fünf Briefdialoge am Text gelesen, einer am Bild. Stand: gebaut, noch nicht unabhängig gelesen.
+- Wer was tat: Der Operator gab den Auftrag. Diese Session (Claude Fable 5.2 in Claude Code) las die Fälle aus der Wissensbasis von GOSSIP und den öffentlichen Briefdateien der Edition, baute und prüfte.
+- Offen: [plan.md](plan.md#offen-nach-der-arbeit-an-den-grazer-fällen).
+
 ### 2026-11-14 Rückmeldung zur Arbeitsfläche: gestapelte Jahre, Seitenleiste, keine Forschungspfade, Menüs
 
 - Anlass: Der Operator klickte die Arbeitsfläche am Bestand von Stefan Zweig Digital durch. Seine Sätze stehen wörtlich in [design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14).

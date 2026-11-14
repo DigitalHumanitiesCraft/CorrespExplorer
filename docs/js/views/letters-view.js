@@ -232,7 +232,8 @@ export function showLetterDetail(letterId) {
     html += detailRow('Absender', buildPersonLink(letter.sender));
     // The source names several senders, such as a person and a publishing house
     if (letter.senders) html += detailRow('Absender laut Quelle', letter.senders.map(p => escapeHtml(p.name)).join('; '));
-    if (letter.dateImplausible && letter.dateWording) html += detailRow('Datum im Brief', escapeHtml(letter.dateWording));
+    // The wording says more than the machine-readable value wherever that value is no day
+    if (letter.dateWording && (letter.dateImplausible || letter.datePrecision !== 'day')) html += detailRow('Datum im Brief', escapeHtml(letter.dateWording));
     if (letter.placeText) html += detailRow('Ortsangabe im Brief', escapeHtml(letter.placeText));
     html += detailRow('Empfänger', letterRecipients(letter).map(buildPersonLink).join('; ') || buildPersonLink(null));
     if (letter.place_sent?.name) {
@@ -240,9 +241,16 @@ export function showLetterDetail(letterId) {
             ? formatPlaceName(letter.place_sent.name, letter.place_sent.precision, true)
             : buildPlaceLink(letter.place_sent));
     }
+    // Actions besides sending and receiving, as the source states them
+    for (const action of letter.furtherActions || []) {
+        const label = action.type === 'forwarded' ? 'Weitergeleitet an' : `Weitere Handlung (${escapeHtml(action.type)})`;
+        const parts = [action.persons.map(buildPersonLink).join('; '), escapeHtml(action.place || ''), escapeHtml(action.date || '')];
+        html += detailRow(label, parts.filter(Boolean).join(', ') || 'ohne Angabe');
+    }
     if (letter.postmark) html += detailRow('Poststempel', escapeHtml(letter.postmark));
     if (letter.address) html += detailRow('Anschrift', escapeHtml(letter.address));
     if (letter.signature) html += detailRow('Signatur', escapeHtml(letter.signature));
+    if (letter.file) html += detailRow('Datei', escapeHtml(letter.file));
     if (letter.language?.label) html += detailRow('Sprache', escapeHtml(letter.language.label));
     if (letter.dateInferred || letter.place_sent?.inferred) {
         html += '<p class="list-legend">Eckige Klammern: von der Edition erschlossen, nicht dem Brief entnommen.</p>';
@@ -251,6 +259,17 @@ export function showLetterDetail(letterId) {
         html += '<p class="list-legend">Die Angaben oben folgen dem ersten Eintrag der Quelle mit Datum, fehlende Angaben sind aus den übrigen Einträgen ergänzt. Alle Einträge stehen darunter.</p>';
     }
     html += '</div>';
+
+    // A letter of another file with the same identified sender, recipients and day; the reader decides
+    if (letter.parallels?.length) {
+        html += '<div class="letter-detail-section">';
+        html += '<h4>Möglicherweise derselbe Brief in einer anderen Datei</h4>';
+        html += '<ul class="letter-records">';
+        html += letter.parallels.map(p => `<li><span class="letter-records__id">${escapeHtml(p.id)}</span> ${escapeHtml(p.file)}</li>`).join('');
+        html += '</ul>';
+        html += '<p class="list-legend">Absender, Empfänger und Tag stimmen überein. Beide Einträge bleiben getrennt und zählen einzeln.</p>';
+        html += '</div>';
+    }
 
     // Several records of the source for one letter are listed as they stand, nothing is decided between them
     if (letter.records?.length > 1) {

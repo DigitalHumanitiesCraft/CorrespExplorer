@@ -12,12 +12,15 @@ export const LETTER_FEATURES = [
     { key: 'dateImplausible', label: 'Datum unplausibel', test: l => Boolean(l.dateImplausible) },
     { key: 'dateInferred', label: 'Datum erschlossen', test: l => Boolean(l.dateInferred) },
     { key: 'dateText', label: 'Datum nur als Text', test: l => Boolean(l.dateText) },
+    { key: 'dateBound', label: 'Nur Datumsgrenze', test: l => Boolean(l.dateBound) },
     { key: 'placeInferred', label: 'Ort erschlossen', test: l => Boolean(l.place_sent?.inferred) },
     { key: 'postmark', label: 'Mit Poststempel', test: l => Boolean(l.postmark) },
     { key: 'address', label: 'Mit Anschrift', test: l => Boolean(l.address) },
     { key: 'multiRecipients', label: 'Mehrere Empfänger', test: l => (l.recipients?.length || 0) > 1 },
     { key: 'records', label: 'Mehrfach verzeichnet', test: l => (l.records?.length || 0) > 1 },
-    { key: 'recordsDiffer', label: 'Einträge weichen ab', test: l => Boolean(l.recordsDiffer) }
+    { key: 'recordsDiffer', label: 'Einträge weichen ab', test: l => Boolean(l.recordsDiffer) },
+    { key: 'parallels', label: 'Auch in anderer Datei', test: l => Boolean(l.parallels?.length) },
+    { key: 'forwarded', label: 'Weitergeleitet', test: l => Boolean(l.furtherActions?.some(a => a.type === 'forwarded')) }
 ];
 
 export const NO_LANGUAGE = '_none';

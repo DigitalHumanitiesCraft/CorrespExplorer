@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test file with three communication headers taken unchanged from the letter files of the
+     edition "Joseph von Hammer-Purgstall. Korrespondenz" (GAMS, Universität Graz), fetched on
+     2026-11-14 from https://gams.uni-graz.at/o:hpe.letter.{18,201,7327}/TEI_SOURCE, edition
+     content CC BY-NC 4.0. Only correspDesc is quoted, joined here in one file. The cases: a third
+     action "forwarded" without date and place, a person with a link into the register of the
+     edition and no authority record, a date given only as an upper bound, and the placeholder
+     "ohne Ort". -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc><titleStmt><title>Test Dataset: Graz Cases</title></titleStmt>
+      <publicationStmt><publisher><orgName>CorrespExplorer Test</orgName></publisher></publicationStmt>
+      <sourceDesc><p>Excerpts, see the comment above</p></sourceDesc></fileDesc>
+    <profileDesc>
+      <correspDesc ref="https://gams.uni-graz.at/o:hpe.letter.18">
+        <correspAction type="sent">
+          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.355" ref="https://d-nb.info/gnd/119100193">
+            <surname>Ilgen</surname>
+            <forename>Karl David</forename>
+          </persName>
+          <placeName key="#GID.1" ref="https://sws.geonames.org/2895044">Jena</placeName>
+          <date when="1797-03-14"></date>
+        </correspAction>
+        <correspAction type="received">
+          <persName>Unbekannt</persName>
+        </correspAction>
+        <correspAction type="forwarded">
+          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.2000" ref="https://d-nb.info/gnd/118545426">
+            <surname>Hammer-Purgstall</surname>
+            <forename>Joseph</forename>
+            <nameLink>von</nameLink>
+          </persName>
+        </correspAction>
+      </correspDesc>
+      <correspDesc ref="https://gams.uni-graz.at/o:hpe.letter.201">
+        <correspAction type="sent">
+          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.701">
+            <surname>Smith</surname>
+            <forename>Edward Herbert</forename>
+          </persName>
+          <placeName key="#GID.1" ref="https://sws.geonames.org/12264699">Clifton</placeName>
+          <date when="1801"></date>
+        </correspAction>
+        <correspAction type="received">
+          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.2000" ref="https://d-nb.info/gnd/118545426">
+            <surname>Hammer-Purgstall</surname>
+            <forename>Joseph</forename>
+            <nameLink>von</nameLink>
+          </persName>
+        </correspAction>
+      </correspDesc>
+      <correspDesc ref="https://gams.uni-graz.at/o:hpe.letter.7327">
+        <correspAction type="sent">
+          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.88" ref="https://d-nb.info/gnd/104141581">
+            <surname>Bland</surname>
+            <forename>Natalius</forename>
+          </persName>
+          <placeName>ohne Ort</placeName>
+          <date notAfter="1848"></date>
+        </correspAction>
+        <correspAction type="received">
+          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.2000" ref="https://d-nb.info/gnd/118545426">
+            <surname>Hammer-Purgstall</surname>
+            <forename>Joseph</forename>
+            <nameLink>von</nameLink>
+          </persName>
+        </correspAction>
+      </correspDesc>
+    </profileDesc>
+  </teiHeader>
+  <text><body><p/></body></text>
+</TEI>

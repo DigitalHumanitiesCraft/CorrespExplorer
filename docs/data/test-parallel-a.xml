@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test file with one record taken unchanged from the CMIF of "Ludwig Boltzmann. Leben und
+     Briefe" (GAMS, Universität Graz, http://gams.uni-graz.at/context:bom/CMIF, state of
+     2017-01-16, CC BY 4.0). Together with test-parallel-b.xml it is the case of one message
+     described by two holdings. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc><titleStmt><title>Test Dataset: Parallel A</title></titleStmt>
+      <publicationStmt><publisher><orgName>CorrespExplorer Test</orgName></publisher></publicationStmt>
+      <sourceDesc><p>Excerpt, see the comment above</p></sourceDesc></fileDesc>
+    <profileDesc>
+      <correspDesc source="#a0a71244-1b80-457f-8f2b-640644302fcd" key="622">
+        <correspAction type="sent">
+          <persName ref="http://d-nb.info/gnd/118513109">Ludwig Boltzmann</persName>
+          <placeName ref="http://www.geonames.org/2761369">Wien</placeName>
+          <date when="1903-11-19"/>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="http://d-nb.info/gnd/118515063">Franz von Brentano</persName>
+        </correspAction>
+      </correspDesc>
+    </profileDesc>
+  </teiHeader>
+  <text><body><p/></body></text>
+</TEI>

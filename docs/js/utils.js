@@ -384,7 +384,8 @@ export function parseAuthorityRef(url) {
     if (viafMatch) return { type: 'viaf', id: viafMatch[1] };
 
     // GND
-    const gndMatch = url.match(/d-nb\.info\/gnd\/([^\s/]+)/);
+    // Some files write the GND number directly after the host, without "gnd/"
+    const gndMatch = url.match(/d-nb\.info\/(?:gnd\/)?(\d[\dX-]*)\/?$/i);
     if (gndMatch) return { type: 'gnd', id: gndMatch[1] };
 
     // Library of Congress
@@ -416,12 +417,21 @@ export function parseGeoNamesRef(url) {
  * Classify a TEI date by its attributes, shared by the CMIF parser and the correspSearch loader.
  * Precision levels: day, month, year, range, unknown. Certainty comes from @cert (default high).
  * @param {{when?: string, from?: string, to?: string, notBefore?: string, notAfter?: string, cert?: string}} attrs
- * @returns {{date: string|null, dateTo: string|null, year: number|null, precision: string, certainty: string}}
+ * @returns {{date: string|null, dateTo: string|null, year: number|null, precision: string, certainty: string, bound?: string}}
  */
 export function classifyDate({ when, from, to, notBefore, notAfter, cert } = {}) {
     const certainty = cert || 'high';
     // correspSearch writes exact dates as from="d" to="d"; an interval of one value is that value
     if (!when && from && from === to) return classifyDate({ when: from, cert });
+    // One bound alone is an open interval: "not after 1848" names no year the letter belongs to.
+    // The bound is kept as the date and named in `bound`, the year stays empty, so the letter
+    // stands beside the time axis like a date given only in words
+    if (!when && !from && !to && Boolean(notBefore) !== Boolean(notAfter)) {
+        return {
+            date: notBefore || notAfter, dateTo: null, year: null, precision: 'range', certainty,
+            bound: notBefore ? 'notBefore' : 'notAfter'
+        };
+    }
     const dateStr = when || from || notBefore;
     const dateToStr = to || notAfter || null;
 
@@ -450,7 +460,9 @@ export function classifyDate({ when, from, to, notBefore, notAfter, cert } = {})
 }
 
 /**
- * Key of a correspondent in the person index, filters and basket: authority id, else name
+ * Key of a correspondent in the person index, filters and basket: authority id, else the id of
+ * the edition's own register, else the name. A register id that is only a fragment (#P.7) is
+ * unique within its edition, not across editions loaded together
  * @param {{id?: string, name?: string}|null} person
  * @returns {string|null}
  */
@@ -464,7 +476,7 @@ export function foldText(text) {
 }
 
 export function personKey(person) {
-    return person?.id || person?.name || null;
+    return person?.id || person?.localRef || person?.name || null;
 }
 
 /**
@@ -490,6 +502,7 @@ export function placeKey(place) {
 const UNKNOWN_PLACE_PATTERNS = [
     /^Unbekannt$/i,
     /^Unknown$/i,
+    /^ohne Ort$/i,
     /^\[?\?\]?$/
 ];
 

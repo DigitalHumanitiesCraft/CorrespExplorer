@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Test file with one record taken unchanged from the CMIF of the Franz Brentano Archiv Graz
+     (GAMS, Universität Graz, https://gams.uni-graz.at/context:bag/CMI, state of 2021,
+     CC BY 4.0). The sender's GND reference is written without "gnd/" in the source. Together
+     with test-parallel-a.xml it is the case of one message described by two holdings. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc><titleStmt><title>Test Dataset: Parallel B</title></titleStmt>
+      <publicationStmt><publisher><orgName>CorrespExplorer Test</orgName></publisher></publicationStmt>
+      <sourceDesc><p>Excerpt, see the comment above</p></sourceDesc></fileDesc>
+    <profileDesc>
+      <correspDesc ref="https://gams.uni-graz.at/o:bag.brl.1871">
+        <correspAction type="sent">
+          <persName ref="http://d-nb.info/118513109">Boltzmann, Ludwig</persName>
+          <placeName ref="https://sws.geonames.org/2761369">Wien</placeName>
+          <date when="1903-11-19"></date>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="http://d-nb.info/gnd/118515063">Brentano, Franz</persName>
+        </correspAction>
+      </correspDesc>
+    </profileDesc>
+  </teiHeader>
+  <text><body><p/></body></text>
+</TEI>

@@ -13,7 +13,8 @@ export const LETTER_EXPORT_COLUMNS = [
     'place_name', 'place_geonames', 'place_precision',
     'language', 'url',
     'date_text', 'date_inferred', 'date_implausible', 'place_inferred',
-    'recipients_all', 'signature', 'postmark', 'address', 'records', 'records_differ'
+    'recipients_all', 'signature', 'postmark', 'address', 'records', 'records_differ',
+    'date_bound', 'sender_local_ref', 'recipient_local_ref', 'further_actions', 'file', 'parallels'
 ];
 
 // Several recipients in one cell; a semicolon, because names are written "Surname, Forename"
@@ -58,7 +59,18 @@ export function letterExportRow(letter) {
         address: letter.address || '',
         // Number of source records merged into this letter, 1 for a letter described once
         records: letter.records?.length || 1,
-        records_differ: Boolean(letter.recordsDiffer)
+        records_differ: Boolean(letter.recordsDiffer),
+        // notBefore or notAfter where the source gives one bound and no date
+        date_bound: letter.dateBound || '',
+        // Id of the person in the register of the edition
+        sender_local_ref: letter.sender?.localRef || '',
+        recipient_local_ref: letter.recipient?.localRef || '',
+        // "forwarded: Name; Name" per action besides sending and receiving
+        further_actions: (letter.furtherActions || [])
+            .map(a => `${a.type}: ${a.persons.map(p => p.name).join(RECIPIENT_SEPARATOR)}`).join(' | '),
+        file: letter.file || '',
+        // Ids of letters in other files with the same identified sender, recipients and day
+        parallels: (letter.parallels || []).map(p => p.id).join(RECIPIENT_SEPARATOR)
     };
 }
 

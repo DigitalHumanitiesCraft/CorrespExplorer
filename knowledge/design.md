@@ -282,7 +282,7 @@ Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige
 
 Die Zahl dessen, was eine Ansicht zeigt, steht in ihrer Titelzeile, unter einem Filter als Anteil („95 von 774 Orten“). Die Karte nennt die Orte, die sie zeichnet, der Vergleich nennt, was er vergleicht. Die Seitenleiste wiederholt diese Zahlen seit 2026-11-14 nicht mehr, ihr Abschnitt mit den drei Kennzahlen ist ausgeblendet. Kennzahlen und Datenlage entstehen aus einer Zusammenfassung beim Laden (`summarizeCorpus()`, `datasetQuality()`).
 
-Die Sprachliste der Sidebar zeigt die acht häufigsten Sprachen des Datensatzes mit ihrem Farbfeld und fasst die übrigen in der aufklappbaren Gruppe „weitere Sprachen“ zusammen. Eine Sprache, der die übrigen Filter keinen Brief lassen, verlässt die Liste, bis ein Filter sie wieder trifft. Die kurze Themenliste der Sidebar ist seit 2026-11-14 nicht mehr sichtbar.
+Die Sprachliste der Sidebar zeigt die Sprachen mit eigener Farbe, so viele wie die Sprachpalette trägt, und fasst die übrigen in der aufklappbaren Gruppe „Übrige Sprachen“ zusammen. Eine Sprache, der die übrigen Filter keinen Brief lassen, verlässt die Liste, bis ein Filter sie wieder trifft. Die kurze Themenliste der Sidebar ist seit 2026-11-14 nicht mehr sichtbar.
 
 Die Navigation zeigt die Gegenstände der Korrespondenz mit ihrem Namen, ab 768px in einer Zeile mit Datensatztitel und Aktionen, darunter in einer zweiten Zeile. Auch bei 360px sind alle Reiter beschriftet. Bis 2026-11-14 standen dort zwölf Ansichten, bis 2026-11-10 unter 1600px nur als Icons, was der Operator beanstandet hatte.
 

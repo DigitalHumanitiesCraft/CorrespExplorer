@@ -39,7 +39,6 @@ Daten und Parser
 
 - Ein Link vom Brief in die Edition fehlt für Briefsätze. Die Quelle trägt je Brief eine PID (`idno type="PID"`), aus der sich nur mit Wissen über das Repositorium eine URL bilden lässt. Eine allgemeine Regel dafür gibt es nicht.
 - Datierungen nur als Text („12. V. 1938“) stehen nicht auf der Zeitachse, weil das Werkzeug Datumsnotationen nicht normalisiert. Ein Jahr aus solchem Text zu lesen wäre eine Deutung und braucht eine Entscheidung.
-- `textLang` der Briefsätze wird nicht als Briefsprache gelesen.
 
 Bedienung
 
@@ -58,6 +57,19 @@ Code
 - `explore.js` hält die Filtereingaben als Modulvariablen neben dem state-manager und gleicht beide in `applyFilters()` ab ([architecture.md](architecture.md#entwurfsmuster)). Ein Besitzer des Filterzustands würde den Abgleich ersparen.
 
 Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Erwähnungen mit Briefsätzen.
+
+### Offen nach der Arbeit an den Grazer Fällen
+
+Anlass ist das gemeinsame Datenmodell für die Briefe von fünf Grazer Editionen, das im Projekt GOSSIP entsteht ([journal.md](journal.md), Eintrag vom 2026-11-14).
+
+- Erwähnte Personen tragen keine Angabe, ob sie im Brieftext oder nur im Kommentar der Edition stehen. Das Werkzeug liest `mentionsPerson` ohne diese Unterscheidung, und CMIF drückt sie nicht aus.
+- Eine ausdrückliche Gleichsetzung zweier Einträge als ein Brief liest das Werkzeug nicht, weil kein Austauschprofil sie festlegt ([ADR-011](specification.md#adr-011-übereinstimmung-über-bestände-benennen-nicht-zusammenführen)).
+- Personen ohne Kennung fallen weiter über den Namen zusammen. Alle Einträge „Unbekannt“ eines Bestands bilden so eine Person im Index.
+- Eine Registerkennung, die nur aus einem Fragment besteht (`#P.7`), ist in ihrer Edition eindeutig. Werden zwei Editionen mit solchen Kennungen zusammen geladen, können zwei Personen zusammenfallen.
+- Das maschinenlesbare Feld kann gröber sein als das lesbare Datum der Edition. Das Werkzeug zeigt den Wortlaut des `date`-Elements, wo es einen trägt. Steht die genauere Angabe an anderer Stelle der Briefdatei, liest es sie nicht.
+- `cert` an Ort und Person liest das Werkzeug nicht, nur am Datum.
+- Empfangsort und Empfangsdatum liest das Werkzeug nicht. Keiner der geprüften Bestände trägt sie.
+- `docs/data/test-graz-cases.xml` zitiert drei `correspDesc` einer Edition unter CC BY-NC 4.0. Der Operator entscheidet, ob der Auszug bleibt oder durch erfundene Einträge gleicher Struktur ersetzt wird ([data.md](data.md#rechte-und-lizenzen)).
 
 ### Offen nach der Datenprüfung und der Arbeitsfläche
 

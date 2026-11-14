@@ -81,7 +81,10 @@ letters.forEach((letter, i) => {
     const rcpts = letter.recipients || (letter.recipient ? [letter.recipient] : []);
     const key = person => person?.id || person?.name;
     if (sourceSenders > 1 && rcpts.some(r => key(r) === key(letter.sender)) && letter.senders.some(x => !rcpts.some(r => key(r) === key(x)))) selfAddressed++;
-    if (dates.length && !dates.some(d => d.getAttribute('when')) && !letter.date && !letter.dateText) dateTextLost++;
+    // "o. D." and "ohne Datum" say that there is no date; they must not stand as a date in words
+    const noDate = d => /^(ohne Datum|undatiert|unbekannt|o\. ?D\.|n\. ?d\.|no date|undated|unknown)$/i.test(d.textContent.replace(/\s+/g, ' ').trim());
+    const worded = dates.some(d => !noDate(d));
+    if (dates.length && !dates.some(d => d.getAttribute('when')) && !letter.date && Boolean(letter.dateText) !== worded) dateTextLost++;
 
     const received = action(desc, 'received').flatMap(a => children(a, 'persName', 'orgName'));
     const got = letter.recipients || (letter.recipient ? [letter.recipient] : []);
@@ -104,7 +107,7 @@ check('a date is flagged inferred exactly where the shown date element is marked
 check('the wording of a place stands as text and makes no sending place', placeWordingLost === 0, String(placeWordingLost));
 check('every sender the source names is kept', sendersLost === 0, String(sendersLost));
 check('no recipient stands as sender while the source names another sender', selfAddressed === 0, String(selfAddressed));
-check('a date given only as text keeps its text', dateTextLost === 0, String(dateTextLost));
+check('a date given only as text keeps its text, a placeholder for no date does not', dateTextLost === 0, String(dateTextLost));
 check('every recipient of the source is in the letter', recipientsLost === 0, String(recipientsLost));
 check('every address line is kept as address', addressLost === 0, String(addressLost));
 check('no address stands as sending place', addressAsPlace === 0, String(addressAsPlace));

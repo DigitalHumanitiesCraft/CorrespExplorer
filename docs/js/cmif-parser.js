@@ -145,6 +145,32 @@ function mergeRecords(letters) {
 }
 
 /**
+ * Letters of different files that agree on identified sender, identified recipients and day may
+ * be one message described by two holdings, for instance by the edition of the sender and by the
+ * archive of the recipient. The agreement proves nothing: inside one file it also stands for two
+ * letters of one day or for a letter and its enclosure. So only letters of different files are
+ * paired, nothing is merged, and each letter names the others in `parallels`.
+ * @param {Array} letters - letters with `file`
+ */
+function markParallels(letters) {
+    const personId = person => person?.id ? `${person.authority}:${person.id}` : null;
+    const groups = new Map();
+    for (const letter of letters) {
+        const ids = [personId(letter.sender), ...letterRecipients(letter).map(personId).sort()];
+        if (!letter.file || letter.datePrecision !== 'day' || ids.length < 2 || ids.includes(null)) continue;
+        const key = [letter.date, ...ids].join('|');
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(letter);
+    }
+    for (const group of groups.values()) {
+        if (new Set(group.map(l => l.file)).size < 2) continue;
+        for (const letter of group) {
+            letter.parallels = group.filter(other => other.file !== letter.file).map(other => ({ id: other.id, file: other.file }));
+        }
+    }
+}
+
+/**
  * Years far from all others are slips of the source, such as a two-digit year expanded into the
  * wrong century. Where a gap of GAP_YEARS or more separates a tail of less than a twentieth of
  * the dated letters from the rest, the tail is flagged `dateImplausible` and loses its `year`, so
@@ -192,7 +218,10 @@ export async function parseCMIFFiles(sources, onProgress = null, names = null, {
         const name = names?.[i] || sources[i].name || `Datei ${i + 1}`;
         try {
             // Records are merged once, across all files
-            parts.push(await parseCMIF(sources[i], null, { merge: false }));
+            const part = await parseCMIF(sources[i], null, { merge: false });
+            // With several files every letter says which one it comes from
+            if (sources.length > 1) part.letters.forEach(letter => { letter.file = name; });
+            parts.push(part);
         } catch (error) {
             skipped.push({ name, reason: error.message });
         }
@@ -235,6 +264,7 @@ function mergeDatasets(parts, files, merge) {
 
     const recordCount = letters.reduce((sum, l) => sum + (l.records?.length || 1), 0);
     if (merge) letters = mergeRecords(letters);
+    markParallels(letters);
     // The files were flagged one by one; the joined dataset is judged as a whole
     for (const letter of letters) {
         if (!letter.dateImplausible) continue;
@@ -320,6 +350,7 @@ function extractLetter(desc, index) {
     const note = desc.getElementsByTagNameNS(TEI_NS, 'note')[0];
     const language = extractLanguage(note) || extractTextLanguage(record);
     const mentions = extractMentions(note);
+    const furtherActions = extractFurtherActions(desc);
 
     return {
         id: cleanId(id),
@@ -334,6 +365,7 @@ function extractLetter(desc, index) {
         ...(dateInfo.inferred && { dateInferred: true }),
         ...(dateInfo.text && { dateText: dateInfo.text }),
         ...(dateInfo.wording && { dateWording: dateInfo.wording }),
+        ...(dateInfo.bound && { dateBound: dateInfo.bound }),
         sender,
         ...(senders.length > 1 && { senders }),
         recipient,
@@ -343,9 +375,32 @@ function extractLetter(desc, index) {
         ...(postmark && { postmark }),
         ...(address && { address }),
         ...(signature && { signature }),
+        ...(furtherActions.length && { furtherActions }),
         language,
         mentions
     };
+}
+
+/**
+ * Actions of a letter besides sending and receiving, such as type="forwarded". They are kept as
+ * the source states them, with their persons and with a place or date only where the action
+ * carries its own. Their persons are no correspondents: the person index, the network and the
+ * counts know only sender and recipients.
+ * @returns {Array<{type: string, persons: Array, place?: string, date?: string}>}
+ */
+function extractFurtherActions(desc) {
+    return [...desc.getElementsByTagNameNS(TEI_NS, 'correspAction')]
+        .filter(action => !['sent', 'received'].includes(action.getAttribute('type')))
+        .map(action => {
+            const place = extractPlace(action).place?.name;
+            const date = extractDate(action);
+            return {
+                type: (action.getAttribute('type') || '').trim() || 'unbenannt',
+                persons: extractPersons(action),
+                ...(place && { place }),
+                ...((date.date || date.text) && { date: date.date || date.text })
+            };
+        });
 }
 
 const XML_NS = 'http://www.w3.org/XML/1998/namespace';
@@ -471,7 +526,9 @@ function personFromElement(el) {
     // person stays "named", and the reference is kept so the source value is not lost
     const parsed = parseAuthorityRef(ref);
     const authority = parsed && (parsed.type !== 'unknown' || safeUrl(ref)) ? parsed : null;
-    const localRef = ref && !authority ? { localRef: ref } : {};
+    // @corresp links a person to the register of the edition, with or without an authority record
+    const local = (el.getAttribute('corresp') || '').trim() || (ref && !authority ? ref : '');
+    const localRef = local ? { localRef: local } : {};
     if (el.localName === 'orgName') {
         return {
             name,
@@ -610,7 +667,9 @@ function extractDate(action) {
         notAfter: dateEl.getAttribute('notAfter'),
         cert: dateEl.getAttribute('cert')
     });
-    const text = cleanText(dateEl.textContent);
+    // "ohne Datum" in the date element says that there is none; it is no date in words
+    const content = cleanText(dateEl.textContent);
+    const text = /^(ohne Datum|undatiert|unbekannt|o\. ?D\.|n\. ?d\.|no date|undated|unknown)$/i.test(content || '') ? null : content;
     return {
         ...info,
         inferred: isInferred(dateEl),

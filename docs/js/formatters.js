@@ -153,6 +153,12 @@ export function formatDateWithPrecision(letter) {
         return `<span class="date-implausible" title="Jahr liegt weit außerhalb des Bestands, vermutlich ein Fehler der Quelle. Nicht auf der Zeitachse">${escapeHtml(formatSingleDate(letter.date))} <span class="date-flag">unplausibel</span></span>`;
     }
 
+    // The source gives one bound and no date
+    if (letter.dateBound) {
+        const word = letter.dateBound === 'notAfter' ? 'nicht nach' : 'nicht vor';
+        return `<span class="date-text" title="Die Quelle nennt nur eine Grenze. Nicht auf der Zeitachse">${word} ${escapeHtml(formatSingleDate(letter.date))}</span>`;
+    }
+
     const date = letter.date;
     const precision = letter.datePrecision;
     const certainty = letter.dateCertainty;
