@@ -219,6 +219,7 @@ Was eine Entscheidung oder Daten von GOSSIP braucht
 - Die Aussagen als weitere Stufe: Beziehungen zwischen Personen nach ihrer Art im Korrespondenzkreis, der Beleg mit Zitat und Prüfstand in der Briefliste der Auswahl.
 - Die Unterscheidung von Brieftext und Kommentar an jeder Erwähnung.
 - Die Regel für den weitergereichten Brief und die Gleichsetzung zweier Nachweise, beide beim Operator offen.
+- Der Abschnitt des Aufsatzes über das Werkzeug beschreibt es als Explorer für CMIF. Mit dieser Richtung ändert sich sein Gegenstand, der Aufsatz ist bis zur Wiederaufnahme der Schreibarbeit nicht angefasst.
 
 ### Entwurf: vier große Ansichten über einer gemeinsamen Auswahl
 
