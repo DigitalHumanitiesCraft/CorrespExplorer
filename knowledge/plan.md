@@ -195,6 +195,17 @@ Nicht geprüft sind der Wissenskorb mit Einträgen, die dunkle Grundkarte, der E
 
 Der Operator hat am 2026-11-14 entschieden, dass CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell wird, das im Projekt GOSSIP für die Briefe von fünf Grazer Editionen entsteht ([design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14)). Der Modellentwurf steht im Vault unter „Modellierung von Briefkorrespondenz“ und ist dort als Entwurf gekennzeichnet, seine fachliche Prüfung steht aus. Dieser Abschnitt hält fest, was das Werkzeug von den sieben Bereichen des Entwurfs schon trägt und was ihm fehlt. Er ist eine Lesart der bauenden Session und vom Operator nicht einzeln bestätigt.
 
+Stand des Modells nach Auskunft der GOSSIP-Session vom 2026-11-14, am Repository `gossip` nachgelesen (`knowledge/data.md`, Abschnitt „Letter and statement model“, Commit `d4ff199`): Der Operator hat das Modell am selben Tag gekürzt. Verbindlich sind vier Dinge, Brief, Stelle, Person und Aussage, und je Aussage vier Pflichtfelder, der Verweis mit der Art der Nennung, die Familie, die Stimme und der Prüfstand. Zeugen, Faksimiles und Textvarianten bleiben bei den Editionen. Die Tabelle unten vergleicht mit den sieben Bereichen des älteren Entwurfs und ist kein Bauplan mehr.
+
+Gegen das gekürzte Modell steht das Werkzeug so:
+
+- Brief: trägt es, mit allem, was `correspDesc` gibt.
+- Person: trägt es als Beteiligte und als Erwähnte, mit Normdatum oder Registerkennung. Die Identität einer Person über Briefe hinweg fehlt auch im Modell noch.
+- Stelle: fehlt. Das Werkzeug kennt keine Textstelle.
+- Aussage: fehlt. GOSSIP gibt die Aussagen in zwei Formen aus, als `aussagen.json` und als CMIF, in dem jede Aussage ein `ref` vom Typ `mentionsPerson` in `correspDesc/note` ist, mit der Stelle als Ziel und der Familie als `subtype`. Das Werkzeug liest solche Einträge heute als erwähnte Personen, deutet das Ziel als Kennung und verwirft den `subtype`. Der kleinste Schritt wäre, Ziel und Familie zu erhalten.
+
+Welche Figuren die Aussagen zeigen, ist offen und nicht vorwegzunehmen: Der Operator hat die textlastigen Ansichten von GOSSIP am 2026-11-14 abgelehnt, ein Visualisierungskonzept steht dort aus und braucht seine Abnahme. Die Benennungen der Familien sind vorläufig und fachlich ungeprüft, die Erfassungen stammen von LLM-Agenten und sind ungeprüft.
+
 | Bereich des Entwurfs | Im Werkzeug | Fehlt |
 |---|---|---|
 | Nachweis | Jeder Brief ist ein Nachweis mit Kennung und Datei. Einträge gleicher Signatur werden zusammengeführt, Übereinstimmungen über Bestände benannt | Nachweis und Mitteilung als getrennte Einheiten, eine ausdrückliche Gleichsetzung zweier Nachweise |
