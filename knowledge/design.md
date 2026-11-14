@@ -409,7 +409,11 @@ An alle laufenden Projekte, über die koordinierende Session weitergegeben: „w
 
 Folge: am nächsten stabilen Stand in dieser Folge, jeder Schritt mit eigenem Commit: distillieren, kuratieren, refactoren, übergeben.
 
-Folge zur Themenansicht: in Arbeit. Zwei kleine echte Fassungen am selben gefilterten Bestand, eine Treemap und ein Raster aus Themen und Jahren auf gemeinsamer Skala, zur Wahl nebeneinander. Die bestehende Ansicht bleibt bis zu seiner Entscheidung.
+Zu den drei Fassungen der Themenansicht, nach dem Vergleich am Bildschirm: „Raster als Hauptfigur, Treemap als Anteile daneben“.
+
+Folge: Entscheidung des Operators. Das Raster aus Themen und Jahren ist die Themenansicht, die Treemap steht als „Anteile“ daneben, der Verlauf als Kammlinie entfällt. In Arbeit.
+
+Folge zur Themenansicht davor: Zwei kleine echte Fassungen am selben gefilterten Bestand, eine Treemap und ein Raster aus Themen und Jahren auf gemeinsamer Skala, zur Wahl nebeneinander. Die bestehende Ansicht bleibt bis zu seiner Entscheidung.
 
 ### Entscheidungen des Operators ohne wörtlichen Satz
 
