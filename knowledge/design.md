@@ -106,6 +106,22 @@ In Arbeit, Ergebnis noch nicht vorliegend: Jahre, Tage und Chronik zu einer Ansi
 
 Neu gebaut am 2026-11-14 (Commit `34fedd9`), nicht abgenommen. Die Themen sind eine Figur über die Zeit: Jedes Thema ist eine Zeile, deren Kamm seine Briefe je Jahr auf einer gemeinsamen Zeitachse zeigt. Die Zeilen, die auf den Bildschirm passen, sind die häufigsten Themen, geordnet nach dem Jahr ihres Höhepunkts, Scrollen führt zum nächsten Block, die Suche erreicht jedes Thema, Sprachen stehen getrennt von den übrigen Themen. Eine Zeile zu wählen setzt den Themenfilter. Das gewählte Thema steht rostrot, die anderen Themen zeigen die Briefe, die sie mit ihm teilen, und alle Zeilen bleiben stehen. Ein Streifen unter der Figur nennt Korrespondenten, Orte und benachbarte Themen der Wahl, jede ein eigener Filter. Die Kämme liegen auf einer Zeichenfläche, die Namen sind Knöpfe darüber, mit Pfeiltasten und Enter bedienbar.
 
+## Gemeinsame Regeln aller Ansichten
+
+Diese Regeln fassen die Urteile des Operators vom 2026-11-14 zusammen, auf seinen Auftrag, sein Feedback über alle Ansichten zu vereinheitlichen ([Rückmeldungen](#rückmeldungen-des-operators)). Die Zusammenfassung stammt von der koordinierenden und der bauenden Session, er hat sie nicht einzeln bestätigt. Wo eine Regel etwas entfernen würde, das er gesehen und gutgeheißen hat, wird es benannt und ihm vorgelegt.
+
+1. Der Filterzustand und die Zahl der Briefe der Auswahl stehen an einem Ort, in jeder Ansicht demselben. Von dort öffnen sich die Briefe. Titel, Regler und Fußzeile wiederholen ihn nicht.
+2. Die Legende ist der Sprachfilter, überall. Eine zweite Sprachliste gibt es nicht.
+3. Die Seitenleiste ist eine schmale Schiene aus Zeichen mit Hinweis am Zeiger und zugänglichem Namen. Sie lässt sich zu vollen Beschriftungen öffnen, dort trägt jede Gruppe ihren Namen. Was den Bestand beschreibt, steht hinter einem Info-Zeichen.
+4. Keine Untermenüs und keine Aufklapper. Was nachrangig ist, bekommt einen Link oder einen Schalter. Die Tabelle als Alternative zu einer Figur ist ein ruhiger Link an derselben Stelle jeder Ansicht.
+5. Farbe bedeutet in jeder Figur dasselbe, die Sprache. Was wie eine Sprache heißt, trägt deren Farbe oder steht erkennbar außerhalb dieser Kodierung. Rostrot bleibt dem Gewählten und dem Anklickbaren vorbehalten.
+6. Die Auswahl steht in voller Farbe vor dem blassen Ganzen, in jeder Figur.
+7. Zählangaben haben eine Form, „x von y“ mit der Sache dahinter, und jede Sache wird auf der ganzen Seite gleich gezählt.
+8. Auswählen ist auf den ersten Blick erkennbar und geht in jeder Figur gleich: Zeiger und Fokus zeigen, was sich wählen lässt, ein Klick wählt, derselbe Klick oder Escape gibt frei.
+9. Eine Ansicht zeigt nur, was der Bestand trägt. Was ihm fehlt, bekommt keinen Platz und steht einmal als ruhiger Satz.
+10. Eine Kopfzeile je Ansicht: der Titel und der Schalter der Darstellungen. Bedienelemente einer Figur stehen in der Figur.
+11. Die Reihenfolge der Sprachen ist überall dieselbe, nach Häufigkeit im ganzen Bestand.
+
 ## Farben
 
 Die Palette aus Papier, Tinte und Rostrot ist aus dem Logo abgeleitet und vom Operator am 2026-11-14 als Erscheinung des Projekts bestätigt. Die Werte stehen in `tokens.css`.
@@ -356,6 +372,12 @@ Zur Startansicht des Explorers als Dashboard, über die koordinierende Session w
 > Also, das geht auf jeden Fall in die richtige Richtung. Auch jetzt ist es noch ein bisschen zu voll. Wo können wir das, was wir hier haben, noch mal optimieren und verbessern? In User Interfaces, im Design. Ich könnte mir vorstellen, dass die Sidebar noch kompakter ist, mit mehr Icons und Tooltips arbeitet und damit ein bisschen schmäler wird. Dann haben die Visualisierungen ein bisschen mehr Platz. Den mittleren Teil mit den Legenden können wir vielleicht besser zusammenführen. Vielleicht kann sie eine bestimmte Funktion beim Filtern von der Zeit übernehmen. Dieses Selektieren ist natürlich wirklich sehr gut. Das muss ja bei den Userinnen und Usern gleich beim Start klar sein, dass sie das tun können. Bei BASC, Geschrieben, Spanisch, Französisch, Biografisch usw.: Warum ist sonst immer alles nur blau? Kann man bei der Grafik, beim Netzwerk und bei den Themen das noch verbessern? Dann kann man die Anzahlen, also die Briefpartner, die Orte (286 von 774), noch irgendwie besser machen. Nochmal schauen, wo es vielleicht Redundanzen gibt. Zum Beispiel die Briefe links unten, die Anzahl: Vielleicht kann man das dort, wo die Filter sind, irgendwie zusammenführen, sodass man bei den Filterinformationen das noch besser hat, damit das noch besser zusammenspricht. Aber das geht auf jeden Fall in die richtige Richtung. So ist das wirklich cool.
 
 Folge: in Arbeit. Legende als Sprachfilter, schmalere Seitenleiste, Farbe in Kreis, Karte und Themen, einheitliche Zählangaben, ein Ort für Filterzustand und Briefzahl.
+
+Zur Zeitansicht, gefiltert auf einen Ort und einen Zeitraum, über die koordinierende Session weitergegeben:
+
+> Auch das geht definitiv in die richtige Richtung, aber auch hier sind gerade viel zu viele Ebenen. Es ist zu viel Struktur, und Sachen mit Ausklappen sind irgendwie unpraktisch. Können wir das jetzt auch noch mal vereinheitlichen mit dem anderen Feedback, das wir haben?
+
+Folge: die [gemeinsamen Regeln aller Ansichten](#gemeinsame-regeln-aller-ansichten) und ein Durchgang über Start, Briefe, Zeit, Themen, Personen und Orte. In Arbeit.
 
 ### Entscheidungen des Operators ohne wörtlichen Satz
 
