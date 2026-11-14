@@ -368,16 +368,83 @@ button {
     font-size: var(--font-size-md);
 }
 
-/* View switcher. One base block followed by its own breakpoints, so the narrow-screen rules
-   come after the rules they override. The bar scrolls when the twelve views do not fit, and the
-   thin scrollbar stays visible as the hint that more views follow. */
+/* Subjects of the correspondence in the header: start, letters, persons, places, time, topics.
+   Each opens the representation last used for it. Selected is the underline and the weight. */
+.view-groups {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-xs);
+    min-width: 0;
+    margin: 0 var(--space-lg);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.view-group-btn {
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: var(--space-sm) var(--space-md);
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: none;
+    font-family: var(--font-base);
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: var(--color-text);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.view-group-btn:hover {
+    color: var(--color-primary-dark);
+    border-bottom-color: var(--color-border-light);
+}
+
+.view-group-btn[aria-pressed="true"] {
+    border-bottom-color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* On a narrow screen the subjects take a second row below title and actions */
+@media (max-width: 767px) {
+    html:has(.view-groups) {
+        --navbar-height: 92px;
+    }
+
+    .navbar:has(.view-groups) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: "brand links" "views views";
+        align-content: center;
+    }
+
+    .navbar:has(.view-groups) .nav-brand {
+        grid-area: brand;
+    }
+
+    .navbar:has(.view-groups) .nav-links {
+        grid-area: links;
+    }
+
+    .view-groups {
+        grid-area: views;
+        margin: 0;
+    }
+
+    .view-group-btn {
+        min-height: 36px;
+        padding: var(--space-xs) var(--space-sm);
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* Switch between the representations of one subject, in the header line of the view */
 .view-switcher {
     display: flex;
     align-items: stretch;
     min-width: 0;
-    margin: 0 var(--space-md) 0 var(--space-lg);
     background: var(--color-bg-light);
-    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     overflow-x: auto;
     overflow-y: hidden;
@@ -394,10 +461,10 @@ button {
     justify-content: center;
     gap: var(--space-xs);
     min-width: 44px;
-    min-height: 40px;
-    padding: var(--space-xs) var(--space-sm);
+    min-height: 32px;
+    padding: var(--space-xs) var(--space-md);
     border: none;
-    border-right: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
     background: transparent;
     color: var(--color-text-light);
     font-family: var(--font-base);
@@ -416,24 +483,9 @@ button {
     font-size: var(--font-size-md);
 }
 
-/* Below 768 px only the icons fit, the names stay in the accessible name and the tooltip */
-.view-btn .view-btn-text {
-    display: none;
-}
-
-/* Below the width for twelve names the active view still says which one it is */
-.view-btn.active .view-btn-text {
-    display: inline;
-}
-
 /* The bar clips its overflow, so the focus ring is drawn inside the button */
 .view-btn:focus-visible {
     outline-offset: -3px;
-}
-
-/* On the filled active tab the accent ring would be invisible */
-.view-btn.active:focus-visible {
-    outline-color: var(--color-bg);
 }
 
 .view-btn:hover {
@@ -443,8 +495,9 @@ button {
 
 .view-btn.active,
 .view-btn.active:hover {
-    background: var(--color-primary);
-    color: white;
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-weight: 600;
     cursor: default;
 }
 
@@ -510,51 +563,6 @@ button {
 @media (min-width: 768px) and (max-width: 1279px) {
     .view-btn {
         padding-inline: var(--space-sm);
-    }
-}
-
-@media (min-width: 768px) {
-    /* Only the page with the view switcher has the second row */
-    html:has(.view-switcher) {
-        --navbar-height: 108px;
-    }
-
-    .navbar {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-areas: "brand links" "views views";
-        align-content: center;
-        row-gap: var(--space-sm);
-    }
-
-    .nav-brand {
-        grid-area: brand;
-        max-width: none;
-        margin-right: var(--space-lg);
-    }
-
-    .nav-links {
-        grid-area: links;
-        margin-right: 0;
-    }
-
-    .view-switcher {
-        grid-area: views;
-        justify-self: start;
-        max-width: 100%;
-        margin: 0;
-    }
-}
-
-@media (max-width: 767px) {
-    .view-switcher {
-        flex: 1;
-        margin: 0 var(--space-sm) 0 0;
-        scroll-snap-type: x proximity;
-    }
-
-    .view-btn {
-        scroll-snap-align: start;
     }
 }
 

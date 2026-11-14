@@ -44,6 +44,34 @@ Ladereihenfolge und Inhalt der Stylesheets beschreibt `docs/css/CONTEXT-MAP.md`.
 - Sichtbarkeit schaltet die Klasse `.hidden` aus `base.css`, nie das Attribut `hidden`. Wo zwei Gründe eine Fläche ausblenden, hält ein Datenattribut den einen fest, so `data-available` an der Themenliste der Sidebar, die in der Themenansicht und ohne Themen verborgen ist. Erwähnungsfluss (`mentions-view.js`), Netzwerk (`network-view.js`) und Ortsansicht (`places-view.js`) schalten einzelne Elemente noch über `style.display`.
 - Eine Komponente mit eigenen Breakpoints (Ansichtsleiste in `style.css`, Netzwerksteuerung in `explore.css`) führt diese direkt hinter ihren Grundregeln, weil eine spätere Grundregel gleicher Spezifität eine frühere Media Query überschreibt. So hatten bis 2026-11-05 die Grundregeln der Ansichtsleiste die Telefonregeln aufgehoben.
 
+## Gliederung nach Gegenstand (Stufe vom 2026-11-14)
+
+Der Operator hat den Stand nach dem Farbumbau am Bildschirm durchgesehen und die Gliederung beanstandet. Seine Sätze stehen hier wörtlich, damit sie jeden weiteren Umbau überleben. Sie stammen aus einer diktierten Eingabe, „Fuse“ lese ich als „Views“.
+
+Zur Startansicht und zum Kopf:
+
+> Warum sind hier zwei Ebenen, und es sind ein bisschen viele Strukturen, oder? Auch hier haben wir das Problem, dass wir zu viele Ebenen haben. Warum wird so viel Fläche nicht verwendet? Sind es nicht ein bisschen zu viele Fuse? Es sind sehr viele Fenster. Das heißt: Was würde man sinnvoll zusammenführen können, und wo kann man jetzt etwas lernen?
+
+Zur Karte und zur Seitenleiste:
+
+> Also hier fallen mir auch wieder zu viele Ebenen ein. Also, ich finde, wir haben zu viele Strukturen, auch in der Sidebar, und auch zu viele Ebenen. Die Cards oben (Datensatz, Briefe, Personenorte) sind ein bisschen sehr mächtig. Brauchen wir hier wirklich Untertitel, also Datensatz, Filter, Zeitraum? Wir wollen das User-Interface mehr sprechen lassen.
+
+Daraus folgt der Aufbau dieser Stufe.
+
+- Die Kopfzeile nennt die Gegenstände einer Korrespondenz, Start, Briefe, Personen, Orte, Zeit und Themen. Bis dahin standen dort zwölf Ansichten, benannt nach ihrer Darstellungstechnik, in einer zweiten Zeile unter Titel und Aktionen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht.
+- Die Darstellungen eines Gegenstands wählt eine Umschaltung in der Kopfzeile der Ansicht. Personen haben Liste, Netzwerk, Erwähnungen und Vergleich, Orte haben Karte und Liste, die Zeit hat Jahre, Chronik und Tage. Der Reiter eines Gegenstands öffnet die zuletzt benutzte Darstellung.
+- Die Kopfzeile einer Ansicht sagt, was gerade zu sehen ist, etwa die Zahl der Orte oder unter einem Filter den Anteil. Den Namen des Gegenstands trägt der Reiter. Die Briefliste nennt ihre Zahl in der Zeile über der Liste und führt deshalb keinen sichtbaren Titel.
+- Erklärende Zeilen unter dem Titel sind nicht mehr sichtbar und bleiben für Screenreader im Dokument. Was eine Grafik kodiert, steht an der Grafik, die Kreisgröße der Karte in ihrer Legende.
+- Die Seitenleiste zeigt keine Überschriften. Ein Regler mit Jahreszahlen, Häkchen mit ihren Aussagen und eine Liste von Sprachen nennen sich selbst. Die Gruppennamen bleiben für Screenreader erhalten. Die drei Kennzahlen stehen als eine Zeile Text ohne Kacheln, der Knopf „Filter aufheben“ erscheint nur unter einem Filter.
+- Die Sprachen der Seitenleiste tragen das Farbfeld, das sie in Zeitleiste und Karte haben. Die Liste ist damit zugleich deren Legende.
+- Die kurze Themenliste der Seitenleiste entfällt. Ein Thema wählt man in der Themenansicht, es erscheint dann als Filtermarke.
+- Die Startansicht nutzt die Breite. Unter Titel, Kennzahlen und Datenlage stehen links die Briefe pro Jahr als Hauptgrafik, die in die Ansicht Zeit führt, und rechts die Forschungspfade. Die Quelle mit Lizenz schließt die Seite ab.
+- About bleibt in der Kopfzeile, der Verweis auf die Wissensbasis steht auf der Projektseite.
+
+Die Gliederung nach Darstellungstechnik ist derselbe Fehler, den das Hauswissen für Arbeitsoberflächen beschreibt, Ansichten nach technischen Kategorien statt nach dem, womit die Zielgruppe arbeitet. Die Zählung von Überschriften, Rahmen und Textstilen hatte ihn nicht gezeigt, weil sie bis zu dieser Stufe nur den Inhaltsbereich der aktiven Ansicht erfasste und Kopf und Seitenleiste ausließ. Sie zählt seither den ganzen ersten Bildschirm.
+
+Die Adressen der zwölf Darstellungen (`view=`) bleiben gültig, geteilte Links führen weiter an ihr Ziel.
+
 ## Farben
 
 Die Palette ist aus dem Logo abgeleitet, die Werte stehen in `tokens.css`. Der Operator hat sie am 2026-11-14 als Erscheinung des Projekts bestätigt. Hier steht, welche Farbe wofür gilt.
@@ -144,9 +172,9 @@ Der Dialog eines Briefs wiederholt Datum, Absender, Empfänger, Ort und Sprache 
 
 ### Kopfbereich der Ansichten
 
-Alle zwölf Ansichten des Explorers beginnen mit derselben Komponente `.view-header` aus `components.css`. Sie ersetzt die früheren Kopfregeln je Ansicht, die Überschriften zwischen 16px und 32px groß, teils zentriert und mit eigenen Abständen setzten. Karte, Korrespondenten und Briefe hatten zuvor keine Überschrift. Die Seiten-CSS setzt keine eigenen Regeln für Ansichtsköpfe, nur für die Elemente in den Aktionen.
+Alle Darstellungen des Explorers beginnen mit derselben Komponente `.view-header` aus `components.css`. Seit der [Stufe vom 2026-11-14](#gliederung-nach-gegenstand-stufe-vom-2026-11-14) ist ihr sichtbarer Teil eine Zeile aus Titel und Umschaltung der Darstellung.
 
-- `.view-header__title` ist die `h2`, `.view-header__description` eine optionale Beschreibung in `--color-text-light`, `.view-header__actions` ein optionaler Bereich für Hinweise, Suche und Moduswahl, `.view-header__link` ein Verweis auf eine andere Ansicht im Kopftext.
+- `.view-header__title` ist die `h2` und nennt, was die Ansicht gerade zeigt (`updateViewTitle()` in `explore.js`). `.view-header__description` bleibt als Beschreibung für Screenreader im Dokument und ist nicht sichtbar. `.view-header__actions` ist ein optionaler Bereich für Hinweise, Suche und Moduswahl. Die Umschaltung `#view-variants` hängt `explore.js` in den Kopf der aktiven Ansicht.
 - Titel und Beschreibung stehen links. Weitere Kinder wie die Kennzahlen und die Quellenzeile der Übersicht reihen sich darunter ein.
 - Die Aktionen stehen ab 768px rechts neben Titel und Beschreibung und nehmen höchstens die halbe Breite ein, darunter brechen sie unter die Beschreibung um. Die Spalte darf schrumpfen, ihre Elemente umbrechen dann innerhalb der Spalte.
 - Einen Aktionsbereich haben Aktivität (Hinweis „Experimentell“), Erwähnungsfluss (Personensuche), Chronik (Layoutwahl und Wikidata-Anreicherung) und Vergleich (Moduswahl Personen, Zeiträume, Orte). Die übrigen Ansichten haben Titel und Beschreibung, die Übersicht Titel und Kennzahlen. Das Netzwerk führt seine Steuerung in einer eigenen Leiste unter dem Kopf.
@@ -215,9 +243,9 @@ Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige
 
 Die Kennzahlen der Sidebar (Briefe, Personen, Orte) zeigen bei aktivem Filter die gefilterte Zahl groß und darunter klein „von“ und die Gesamtzahl, ohne Filter nur die Gesamtzahl. So bleibt kein Filter unbemerkt, auch wenn sein Bedienelement eingeklappt ist. Die Kennzahlen und die Datenlage (Symbole an den Sidebar-Zahlen, Chips der Startansicht) entstehen aus einer Zusammenfassung beim Laden (`summarizeCorpus()`, `datasetQuality()`). Bis 2026-11-05 lasen die Sidebar-Symbole `meta.uncertainty` der Vorverarbeitung und zählten damit anders als die Chips.
 
-In der Themenansicht tritt die kurze Themenliste der Sidebar zurück, weil die Ansicht alle Themen mit eigener Suche zeigt. Die Sprachliste der Sidebar zeigt die acht häufigsten Sprachen des Datensatzes und fasst die übrigen in der aufklappbaren Gruppe „weitere Sprachen“ zusammen. Eine Sprache, der die übrigen Filter keinen Brief lassen, verlässt die Liste, bis ein Filter sie wieder trifft.
+Die Sprachliste der Sidebar zeigt die acht häufigsten Sprachen des Datensatzes mit ihrem Farbfeld und fasst die übrigen in der aufklappbaren Gruppe „weitere Sprachen“ zusammen. Eine Sprache, der die übrigen Filter keinen Brief lassen, verlässt die Liste, bis ein Filter sie wieder trifft. Die kurze Themenliste der Sidebar ist seit 2026-11-14 nicht mehr sichtbar.
 
-Die Navigation zeigt die zwölf Ansichten ab 768px mit Icon und sichtbarem Namen in der zweiten Zeile der Kopfzeile, darunter als Icon-Knöpfe. Die Kurzbeschreibung steht im Tooltip und über `aria-describedby` auch für Screenreader. Bis 2026-11-10 stand der Name erst ab 1600px sichtbar unter dem Icon, weil die eine Zeile neben Datensatztitel und Navigationslinks nicht reichte. Der Operator hat die Icons ohne Namen und die abgeschnittene Kopfzeile am 2026-11-10 beanstandet.
+Die Navigation zeigt die Gegenstände der Korrespondenz mit ihrem Namen, ab 768px in einer Zeile mit Datensatztitel und Aktionen, darunter in einer zweiten Zeile. Auch bei 360px sind alle Reiter beschriftet. Bis 2026-11-14 standen dort zwölf Ansichten, bis 2026-11-10 unter 1600px nur als Icons, was der Operator beanstandet hatte.
 
 Das Hinweisfeld der Startseite nennt das Werkzeug ein Experiment, sagt, was es zeigt, dass es kein fertiges oder betreutes Produkt ist und wohin Rückmeldungen gehören, ohne Tooltip.
 

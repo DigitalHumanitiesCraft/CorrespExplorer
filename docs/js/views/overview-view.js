@@ -137,6 +137,7 @@ export function renderOverview() {
         }
     }
 
+    renderOverviewChart();
     renderOverviewPaths();
 }
 
@@ -167,6 +168,37 @@ function renderFeatureChips() {
     container.querySelectorAll('[data-feature]').forEach(btn => {
         btn.addEventListener('click', () => deps.showLettersWithFeature(btn.dataset.feature));
     });
+}
+
+// Letters per year as the main figure of the start view. One button for the whole chart: the
+// years themselves are worked with in the time view, which it opens.
+function renderOverviewChart() {
+    const box = document.getElementById('overview-chart');
+    if (!box) return;
+    const perYear = new Map();
+    for (const letter of deps.getAllLetters()) {
+        if (letter.year && !letter.dateImplausible) perYear.set(letter.year, (perYear.get(letter.year) || 0) + 1);
+    }
+    box.classList.toggle('hidden', perYear.size < 2);
+    if (perYear.size < 2) return;
+    const years = [...perYear.keys()];
+    const min = Math.min(...years);
+    const max = Math.max(...years);
+    const peak = Math.max(...perYear.values());
+    const peakYear = years.find(year => perYear.get(year) === peak);
+    let bars = '';
+    for (let year = min; year <= max; year++) {
+        const count = perYear.get(year) || 0;
+        bars += `<span class="overview-chart__bar" style="height: ${count ? Math.max(2, count / peak * 100) : 0}%"></span>`;
+    }
+    const left = (peakYear - min) / (max - min) * 100;
+    box.innerHTML = `
+        <button type="button" class="overview-chart__button" aria-label="Briefe pro Jahr von ${min} bis ${max}, die meisten im Jahr ${peakYear} mit ${peak.toLocaleString('de-DE')}. Zur Ansicht Zeit">
+            <span class="overview-chart__peak" style="left: ${left}%">${peak.toLocaleString('de-DE')} Briefe ${peakYear}</span>
+            <span class="overview-chart__bars" aria-hidden="true">${bars}</span>
+            <span class="overview-chart__axis" aria-hidden="true"><span>${min}</span><span>Briefe pro Jahr</span><span>${max}</span></span>
+        </button>`;
+    box.querySelector('button').addEventListener('click', () => deps.switchView('timeline'));
 }
 
 // Research paths of the overview (US-33), analysed by research-paths.js from all letters

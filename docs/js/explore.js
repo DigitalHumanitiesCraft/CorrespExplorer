@@ -1,7 +1,7 @@
 // Explorer page: loads a dataset (?json= path or the upload in sessionStorage), keeps the filter
 // inputs and the URL state, switches between the views and wires the view modules.
 
-import { NO_LANGUAGE, VIEWS, LETTER_FEATURES, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
+import { NO_LANGUAGE, VIEWS, LETTER_FEATURES, LANGUAGE_COLORS, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
 import { initBasket, datasetKey, loadBasketFromUrl } from './basket.js';
 import { debounce, escapeHtml, isAllowedJsonPath, sameFilterParams, datedYearRange, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, letterRecipients } from './utils.js';
 import { datasetQuality, summarizeCorpus } from './research-paths.js';
@@ -58,6 +58,19 @@ let mentionedPersonsIndex = new Map();  // Used for detectAvailableViews
 
 // Available views tracking
 let availableViews = {};
+
+// The header offers the subjects of a correspondence; each groups the views that show it
+const VIEW_GROUPS = {
+    overview: ['overview'],
+    letters: ['letters'],
+    persons: ['persons', 'network', 'mentions-flow', 'comparison'],
+    places: ['map', 'places'],
+    time: ['timeline', 'activity', 'chronik'],
+    topics: ['topics']
+};
+const groupOf = view => Object.keys(VIEW_GROUPS).find(group => VIEW_GROUPS[group].includes(view));
+// The representation last used in a group, so the group button returns to it
+const lastViewOfGroup = {};
 
 // Detect which views are available based on data
 function detectAvailableViews() {
@@ -131,11 +144,57 @@ function updateViewButtons() {
         const viewInfo = availableViews[view];
 
         if (viewInfo) {
-            btn.classList.toggle('hidden', !viewInfo.available);
             btn.disabled = !viewInfo.available;
             btn.title = viewInfo.available ? '' : viewInfo.reason;
         }
     });
+    // A subject without any view the dataset can fill leaves the header
+    document.querySelectorAll('.view-group-btn').forEach(btn => {
+        btn.classList.toggle('hidden', !VIEW_GROUPS[btn.dataset.group].some(view => availableViews[view]?.available));
+    });
+    syncViewVariants();
+}
+
+// The switch shows the representations of the active subject and sits in the header of the view
+function syncViewVariants() {
+    const group = groupOf(currentView);
+    const variants = document.getElementById('view-variants');
+    if (!variants) return;
+    let shown = 0;
+    variants.querySelectorAll('.view-btn').forEach(btn => {
+        const visible = VIEW_GROUPS[group]?.includes(btn.dataset.view) && !btn.disabled;
+        btn.classList.toggle('hidden', !visible);
+        if (visible) shown++;
+    });
+    variants.classList.toggle('hidden', shown < 2);
+    document.querySelector(`#${currentView}-view .view-header`)?.append(variants);
+    document.querySelectorAll('.view-group-btn').forEach(btn => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.group === group));
+    });
+}
+
+const formatCount = n => n.toLocaleString('de-DE');
+const partOf = (part, total) => (part === total ? formatCount(total) : `${formatCount(part)} von ${formatCount(total)}`);
+
+// The header line of a view says what it currently shows; the subject itself stands in the header
+function updateViewTitle() {
+    const title = document.querySelector(`#${currentView}-view .view-header__title`);
+    if (!title || !corpusTotals) return;
+    const group = groupOf(currentView);
+    const shown = hasActiveFilter() ? summarizeCorpus(filteredLetters, dataIndices) : null;
+    if (group === 'persons') {
+        title.textContent = `${partOf(shown ? shown.persons.size : corpusTotals.persons, corpusTotals.persons)} Personen`;
+    } else if (group === 'places') {
+        title.textContent = `${partOf(shown ? shown.places.size : corpusTotals.places, corpusTotals.places)} Orte`;
+    } else if (group === 'time') {
+        const range = datedYearRange(filteredLetters);
+        title.textContent = `${partOf(filteredLetters.length, corpusTotals.letters)} Briefe${range ? `, ${range.min}–${range.max}` : ''}`;
+    } else if (group === 'topics') {
+        title.textContent = `${formatCount((shown || corpusSummary).subjects.size)} Themen`;
+    } else if (group === 'overview') {
+        const name = elements.getById('dataset-title')?.textContent?.trim();
+        if (name && name !== 'CorrespExplorer') title.textContent = name;
+    }
 }
 
 // Get first available view
@@ -498,6 +557,7 @@ function buildLanguageFilter() {
         }
         label.innerHTML = `
             <input type="checkbox" name="language" value="${escapeHtml(code)}"${!initialLanguageFilter || initialLanguageFilter.includes(code) ? ' checked' : ''}>
+            <span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" aria-hidden="true"></span>
             <span>${escapeHtml(displayLabel)}</span>
             <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${counts[code]})</span>
         `;
@@ -779,6 +839,8 @@ function applyFilters({ render = true } = {}) {
     announceResultCount();
 
     if (render) renderView(currentView);
+    updateViewTitle();
+    elements.resetFiltersBtn?.classList.toggle('hidden', !hasActiveFilter());
 }
 
 // Undated letters have no place on the year slider, so they get their own temporal filter
@@ -1153,6 +1215,13 @@ function handleHistoryNavigation() {
 // View switching
 
 function initViewSwitcher() {
+    document.querySelectorAll('.view-group-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const views = VIEW_GROUPS[btn.dataset.group].filter(view => availableViews[view]?.available);
+            const last = lastViewOfGroup[btn.dataset.group];
+            if (views.length) switchView(views.includes(last) ? last : views[0]);
+        });
+    });
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', () => switchView(btn.dataset.view));
         // The tooltip shows the description only to mouse users; a hidden text gives it to screen readers
@@ -1211,6 +1280,8 @@ function switchView(view) {
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.toggle('active', content.id === `${view}-view`);
     });
+    lastViewOfGroup[groupOf(view)] = view;
+    syncViewVariants();
 
     // Overview, chronik, activity and comparison use the full width without sidebar
     const sidebar = document.querySelector('.sidebar');
@@ -1223,9 +1294,10 @@ function switchView(view) {
     // The topics view lists and searches all topics itself, so the short list in the sidebar steps aside.
     // Visibility runs through the .hidden class only (design.md), the dataset flag says whether topics exist
     const topicsGroup = elements.topicsFilterGroup;
-    if (topicsGroup) topicsGroup.classList.toggle('hidden', view === 'topics' || topicsGroup.dataset.available !== 'true');
+    if (topicsGroup) topicsGroup.classList.add('hidden');
 
     renderView(view);
+    updateViewTitle();
 }
 
 // The letter list under one transmission feature, alone or added to the features already set

@@ -74,6 +74,21 @@ def _serve() -> tuple[ThreadingHTTPServer, str]:
     return server, f"http://127.0.0.1:{server.server_address[1]}/"
 
 
+
+# The header offers subjects; a view is reached through its subject and, where the subject has
+# several representations, through the switch in the view header
+GROUP_OF = {"overview": "overview", "letters": "letters", "persons": "persons", "network": "persons",
+            "mentions-flow": "persons", "comparison": "persons", "map": "places", "places": "places",
+            "timeline": "time", "activity": "time", "chronik": "time", "topics": "topics"}
+
+
+def _open_view(page, view: str) -> None:
+    page.click(f'.view-group-btn[data-group="{GROUP_OF[view]}"]')
+    variant = page.locator(f'.view-btn[data-view="{view}"]')
+    if variant.is_visible():
+        variant.click()
+
+
 def _loaded(page: Page) -> None:
     page.wait_for_selector("#loading-overlay.hidden", state="attached", timeout=30_000)
 
@@ -151,7 +166,7 @@ class Smoke:
         _loaded(page)
         page.wait_for_selector("#demo-tour:not(.hidden)", timeout=5000)
         page.keyboard.press("Escape")
-        focused = page.evaluate("document.activeElement.classList.contains('view-btn')")
+        focused = page.evaluate("document.activeElement.classList.contains('view-group-btn')")
         second = ctx.new_page()
         second.goto(self.base + "explore.html?view=letters&demo=true")
         _loaded(second)
@@ -175,8 +190,8 @@ class Smoke:
         page = ctx.new_page()
         page.goto(f"{self.base}explore.html?view=overview&{HSA}")
         _loaded(page)
-        page.click('.view-btn[data-view="letters"]')
-        page.click('.view-btn[data-view="map"]')
+        _open_view(page, "letters")
+        _open_view(page, "map")
         page.go_back()
         page.wait_for_timeout(800)
         url = page.url
@@ -225,9 +240,9 @@ class Smoke:
         page.wait_for_selector("#network-graph g.node")
         network_type = page.input_value("#network-type")
         network_rows = page.locator("#network-table tbody tr").count()
-        page.click('.view-btn[data-view="timeline"]')
+        _open_view(page, "timeline")
         timeline_rows = page.locator("#timeline-table tbody tr").count()
-        page.click('.view-btn[data-view="activity"]')
+        _open_view(page, "activity")
         activity_rows = page.locator("#activity-table tbody tr").count()
         page.click("#export-btn")
         with page.expect_download() as info:
@@ -267,11 +282,11 @@ class Smoke:
         page.click("#config-skip-btn")
         page.wait_for_url("**/explore.html*")
         _loaded(page)
-        page.click('.view-btn[data-view="timeline"]')
+        _open_view(page, "timeline")
         page.wait_for_timeout(500)
         span_visible = page.locator("#timeline-span-bin").is_visible()
-        page.click('.view-btn[data-view="map"]')
-        page.click('[data-switch-view="places"]')
+        _open_view(page, "map")
+        _open_view(page, "places")
         url = page.url
         ctx.close()
         assert span_visible, "timeline shows no bin for multi-year spans (case 025)"
@@ -313,20 +328,20 @@ class Smoke:
             " && document.querySelectorAll('[id^=path-nav]').length === 2; }"
         )
         page.click("#path-bar-close")
-        page.click('.view-btn[data-view="letters"]')
+        _open_view(page, "letters")
         topics_in_letters = page.locator("#topics-filter-group").is_visible()
-        page.click('.view-btn[data-view="topics"]')
+        _open_view(page, "topics")
         topics_in_topics = page.locator("#topics-filter-group").is_visible()
-        page.click('.view-btn[data-view="activity"]')
+        _open_view(page, "activity")
         years = page.locator("#activity-year-select option").count()
-        page.click('.view-btn[data-view="map"]')
+        _open_view(page, "map")
         page.wait_for_timeout(1000)
         ctx.close()
         assert not heading_problem, heading_problem
         assert not undescribed, f"view buttons without description: {undescribed}"
         assert path_controls, "knowledge path controls are not one bar"
-        assert topics_in_letters and not topics_in_topics, (
-            "sidebar topic list should step aside only in the topics view"
+        assert not topics_in_letters and not topics_in_topics, (
+            "the sidebar no longer lists topics; a topic is chosen in the topics view"
         )
         assert years > 2, f"activity year select has {years} options"
         assert styles and "positron" in styles[0], f"map starts with {styles[:1]}"

@@ -103,7 +103,7 @@
      * ======================================== */
 
     /* Layout Constants */
-    --sidebar-width: 380px;
+    --sidebar-width: 300px;
     --navbar-height: 60px;
     --max-width-content: 1200px;  /* Standard content max-width */
     --max-width-wide: 1400px;     /* Wide content max-width */

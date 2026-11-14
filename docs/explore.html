@@ -56,46 +56,13 @@
                 <span class="brand-text" id="dataset-title">CorrespExplorer</span>
             </a>
         </div>
-        <div class="view-switcher" role="group" aria-label="Ansichten">
-            <!-- Start View (Overview + Pfade kombiniert) -->
-            <button class="view-btn active" data-view="overview" aria-pressed="true" aria-label="Start" data-tooltip="Start" data-tooltip-desc="Übersicht und Forschungspfade">
-                <i class="fas fa-home" aria-hidden="true"></i> <span class="view-btn-text">Start</span>
-            </button>
-            <span class="view-separator"></span>
-            <!-- Daten-Views: Visualisierungen -->
-            <button class="view-btn" data-view="map" aria-pressed="false" aria-label="Karte" data-tooltip="Karte" data-tooltip-desc="Briefe nach Absendeort auf Karte">
-                <i class="fas fa-map" aria-hidden="true"></i> <span class="view-btn-text">Karte</span>
-            </button>
-            <button class="view-btn" data-view="persons" aria-pressed="false" aria-label="Korrespondenten" data-tooltip="Korrespondenten" data-tooltip-desc="Liste aller Absender und Empfänger">
-                <i class="fas fa-users" aria-hidden="true"></i> <span class="view-btn-text">Korrespondenten</span>
-            </button>
-            <button class="view-btn" data-view="letters" aria-pressed="false" aria-label="Briefe" data-tooltip="Briefe" data-tooltip-desc="Alle Briefe durchsuchen und filtern">
-                <i class="fas fa-envelope" aria-hidden="true"></i> <span class="view-btn-text">Briefe</span>
-            </button>
-            <button class="view-btn" data-view="timeline" aria-pressed="false" aria-label="Timeline" data-tooltip="Timeline" data-tooltip-desc="Zeitliche Verteilung der Korrespondenz">
-                <i class="fas fa-chart-line" aria-hidden="true"></i> <span class="view-btn-text">Timeline</span>
-            </button>
-            <button class="view-btn" data-view="topics" aria-pressed="false" id="topics-view-btn" aria-label="Themen" data-tooltip="Themen" data-tooltip-desc="Verschlagwortete Inhalte filtern">
-                <i class="fas fa-tags" aria-hidden="true"></i> <span class="view-btn-text">Themen</span>
-            </button>
-            <button class="view-btn" data-view="places" aria-pressed="false" id="places-view-btn" aria-label="Orte" data-tooltip="Orte" data-tooltip-desc="Korrespondenz nach Orten analysieren">
-                <i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span class="view-btn-text">Orte</span>
-            </button>
-            <button class="view-btn" data-view="network" aria-pressed="false" id="network-view-btn" aria-label="Netzwerk" data-tooltip="Netzwerk" data-tooltip-desc="Verbindungen zwischen Korrespondenten">
-                <i class="fas fa-project-diagram" aria-hidden="true"></i> <span class="view-btn-text">Netzwerk</span>
-            </button>
-            <button class="view-btn" data-view="mentions-flow" aria-pressed="false" id="mentions-flow-view-btn" aria-label="Erwähnungen" data-tooltip="Erwähnungen" data-tooltip-desc="Erwähnte Personen und Orte (Sankey)">
-                <i class="fas fa-stream" aria-hidden="true"></i> <span class="view-btn-text">Erwähnungen</span>
-            </button>
-            <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" aria-label="Chronik" data-tooltip="Chronik" data-tooltip-desc="Verlauf der Briefwechsel">
-                <i class="fas fa-scroll" aria-hidden="true"></i> <span class="view-btn-text">Chronik</span>
-            </button>
-            <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" aria-label="Aktivität" data-tooltip="Aktivität" data-tooltip-desc="Heatmap der Briefaktivität">
-                <i class="fas fa-calendar-alt" aria-hidden="true"></i> <span class="view-btn-text">Aktivität</span>
-            </button>
-            <button class="view-btn" data-view="comparison" aria-pressed="false" id="comparison-view-btn" aria-label="Vergleich" data-tooltip="Vergleich" data-tooltip-desc="Personen, Zeiträume oder Orte vergleichen">
-                <i class="fas fa-columns" aria-hidden="true"></i> <span class="view-btn-text">Vergleich</span>
-            </button>
+        <div class="view-groups" role="group" aria-label="Ansichten">
+            <button type="button" class="view-group-btn" data-group="overview" aria-pressed="true">Start</button>
+            <button type="button" class="view-group-btn" data-group="letters" aria-pressed="false">Briefe</button>
+            <button type="button" class="view-group-btn" data-group="persons" aria-pressed="false">Personen</button>
+            <button type="button" class="view-group-btn" data-group="places" aria-pressed="false">Orte</button>
+            <button type="button" class="view-group-btn" data-group="time" aria-pressed="false">Zeit</button>
+            <button type="button" class="view-group-btn" data-group="topics" aria-pressed="false">Themen</button>
         </div>
         <div class="nav-links">
             <button id="sidebar-toggle" class="nav-link sidebar-toggle" aria-controls="explore-sidebar" aria-expanded="false" aria-label="Filter anzeigen" title="Filter">
@@ -112,10 +79,6 @@
             <a href="about.html" class="nav-link" title="About">
                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                 <span class="nav-link-text">About</span>
-            </a>
-            <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/INDEX.md" class="nav-link" title="Die Wissensbasis des Werkzeugs im Repository auf GitHub">
-                <i class="fas fa-book" aria-hidden="true"></i>
-                <span class="nav-link-text">Wissensbasis</span>
             </a>
         </div>
     </nav>
@@ -161,7 +124,7 @@
                      ======================================== -->
                 <div class="sidebar-section" id="sidebar-dataset">
                     <div class="sidebar-section-header">
-                        <h2>Datensatz</h2>
+                        <h2 class="visually-hidden">Datensatz</h2>
                     </div>
 
                     <!-- Stats Cards -->
@@ -195,15 +158,15 @@
                      ======================================== -->
                 <div class="sidebar-section" id="sidebar-filters">
                     <div class="sidebar-section-header">
-                        <h2>Filter</h2>
-                        <button id="reset-filters" class="btn-reset-small" aria-label="Filter zurücksetzen" title="Filter zurücksetzen">
-                            <i class="fas fa-undo" aria-hidden="true"></i>
+                        <h2 class="visually-hidden">Filter</h2>
+                        <button id="reset-filters" class="btn-reset-small hidden" title="Alle Filter aufheben">
+                            <i class="fas fa-undo" aria-hidden="true"></i> Filter aufheben
                         </button>
                     </div>
 
                     <!-- Time Period Filter -->
                     <div class="filter-group" role="group" aria-labelledby="filter-time-heading">
-                        <h3 id="filter-time-heading">Zeitraum</h3>
+                        <h3 id="filter-time-heading" class="visually-hidden">Zeitraum</h3>
                         <div id="year-range-slider"></div>
                         <div class="year-range-display">
                             <span id="year-range-text">-</span>
@@ -230,13 +193,13 @@
 
                     <!-- Transmission features (dynamically populated, only what the dataset records) -->
                     <div class="filter-group hidden" role="group" aria-labelledby="filter-feature-heading" id="feature-filter-group">
-                        <h3 id="filter-feature-heading">Überlieferung</h3>
+                        <h3 id="filter-feature-heading" class="visually-hidden">Überlieferung</h3>
                         <div id="feature-checkboxes"></div>
                     </div>
 
                     <!-- Language Filter (dynamically populated) -->
                     <div class="filter-group hidden" role="group" aria-labelledby="filter-language-heading" id="language-filter-group">
-                        <h3 id="filter-language-heading">Briefsprache</h3>
+                        <h3 id="filter-language-heading" class="visually-hidden">Briefsprache</h3>
                         <div id="language-checkboxes"></div>
                     </div>
 
@@ -275,6 +238,45 @@
 
             <!-- Main Content -->
             <main class="main-content" id="main-content" tabindex="-1">
+                <!-- Moved into the header of the active view by explore.js -->
+                <div class="view-switcher view-variants hidden" id="view-variants" role="group" aria-label="Darstellung">
+                    <button class="view-btn active hidden" data-view="overview" aria-pressed="true" aria-label="Start" data-tooltip="Start" data-tooltip-desc="Übersicht und Forschungspfade">
+                        <i class="fas fa-home" aria-hidden="true"></i> <span class="view-btn-text">Start</span>
+                    </button>
+                    <button class="view-btn" data-view="map" aria-pressed="false" aria-label="Karte" data-tooltip="Karte" data-tooltip-desc="Briefe nach Absendeort auf Karte">
+                        <i class="fas fa-map" aria-hidden="true"></i> <span class="view-btn-text">Karte</span>
+                    </button>
+                    <button class="view-btn" data-view="persons" aria-pressed="false" aria-label="Liste der Korrespondenten" data-tooltip="Korrespondenten" data-tooltip-desc="Liste aller Absender und Empfänger">
+                        <i class="fas fa-users" aria-hidden="true"></i> <span class="view-btn-text">Liste</span>
+                    </button>
+                    <button class="view-btn" data-view="letters" aria-pressed="false" aria-label="Briefe" data-tooltip="Briefe" data-tooltip-desc="Alle Briefe durchsuchen und filtern">
+                        <i class="fas fa-envelope" aria-hidden="true"></i> <span class="view-btn-text">Briefe</span>
+                    </button>
+                    <button class="view-btn" data-view="timeline" aria-pressed="false" aria-label="Jahre, Briefe pro Jahr" data-tooltip="Timeline" data-tooltip-desc="Zeitliche Verteilung der Korrespondenz">
+                        <i class="fas fa-chart-line" aria-hidden="true"></i> <span class="view-btn-text">Jahre</span>
+                    </button>
+                    <button class="view-btn" data-view="topics" aria-pressed="false" id="topics-view-btn" aria-label="Themen" data-tooltip="Themen" data-tooltip-desc="Verschlagwortete Inhalte filtern">
+                        <i class="fas fa-tags" aria-hidden="true"></i> <span class="view-btn-text">Themen</span>
+                    </button>
+                    <button class="view-btn" data-view="places" aria-pressed="false" id="places-view-btn" aria-label="Liste der Orte" data-tooltip="Orte" data-tooltip-desc="Korrespondenz nach Orten analysieren">
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span class="view-btn-text">Liste</span>
+                    </button>
+                    <button class="view-btn" data-view="network" aria-pressed="false" id="network-view-btn" aria-label="Netzwerk" data-tooltip="Netzwerk" data-tooltip-desc="Verbindungen zwischen Korrespondenten">
+                        <i class="fas fa-project-diagram" aria-hidden="true"></i> <span class="view-btn-text">Netzwerk</span>
+                    </button>
+                    <button class="view-btn" data-view="mentions-flow" aria-pressed="false" id="mentions-flow-view-btn" aria-label="Erwähnungen" data-tooltip="Erwähnungen" data-tooltip-desc="Erwähnte Personen und Orte (Sankey)">
+                        <i class="fas fa-stream" aria-hidden="true"></i> <span class="view-btn-text">Erwähnungen</span>
+                    </button>
+                    <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" aria-label="Chronik" data-tooltip="Chronik" data-tooltip-desc="Verlauf der Briefwechsel">
+                        <i class="fas fa-scroll" aria-hidden="true"></i> <span class="view-btn-text">Chronik</span>
+                    </button>
+                    <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" aria-label="Tage, Briefe je Kalendertag" data-tooltip="Aktivität" data-tooltip-desc="Heatmap der Briefaktivität">
+                        <i class="fas fa-calendar-alt" aria-hidden="true"></i> <span class="view-btn-text">Tage</span>
+                    </button>
+                    <button class="view-btn" data-view="comparison" aria-pressed="false" id="comparison-view-btn" aria-label="Vergleich" data-tooltip="Vergleich" data-tooltip-desc="Personen, Zeiträume oder Orte vergleichen">
+                        <i class="fas fa-columns" aria-hidden="true"></i> <span class="view-btn-text">Vergleich</span>
+                    </button>
+                </div>
                 <!-- Overview View -->
                 <div id="overview-view" class="tab-content active">
                     <div class="overview-container overview-compact">
@@ -307,6 +309,10 @@
                             </button>
                         </div>
 
+                        <div class="overview-body">
+                        <!-- Main figure: letters per year, the way into the time view -->
+                        <div class="overview-chart hidden" id="overview-chart"></div>
+
                         <!-- Research Paths (limited) -->
                         <div class="overview-research-paths">
                             <h3>Forschungspfade</h3>
@@ -317,6 +323,7 @@
                                 <i class="fas fa-list" aria-hidden="true"></i> Alle Pfade anzeigen
                             </button>
                         </div>
+                        </div>
                     </div>
                 </div>
 
@@ -325,10 +332,6 @@
                     <div class="view-header view-header--inset">
                         <h2 class="view-header__title">Karte der Korrespondenz</h2>
                         <p class="view-header__description">Briefe nach Absendeort, die Kreisgröße zeigt die Zahl der Briefe</p>
-                        <!-- The markers are part of the map canvas; the place list is their keyboard path (decision E7) -->
-                        <p class="view-header__description">Mit der Tastatur erreichen Sie dieselben Orte als Liste:
-                            <button type="button" class="view-header__link" data-switch-view="places">Orte als Liste öffnen</button>
-                        </p>
                     </div>
                     <div class="map-stage">
                         <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
@@ -342,6 +345,7 @@
                         </div>
                         <div id="map-legend" class="map-legend">
                             <div class="map-legend-title">Orte nach häufigster Sprache</div>
+                            <div class="map-legend-note">Kreisgröße nach Zahl der Briefe</div>
                             <div class="map-legend-items"></div>
                         </div>
                     </div>

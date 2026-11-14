@@ -59,6 +59,20 @@ Code
 
 Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Erwähnungen mit Briefsätzen.
 
+### Offen nach der Stufe vom 2026-11-14
+
+Die Stufe „Gliederung nach Gegenstand“ ([Journal vom 2026-11-14](journal.md)) wartet auf das Urteil des Operators am Bildschirm. Bewusst noch nicht umgezogen oder aufgeräumt:
+
+- Der Vergleich steht als Darstellung unter Personen. Gedacht ist er als Handlung an zwei Personen oder Orten.
+- Die kurze Themenliste der Seitenleiste ist ausgeblendet, ihr Markup und ihr Code stehen noch.
+- Die Seitenleiste führt weiter den Abschnitt „Wissenskorb“ mit eigener Überschrift.
+- Bei einem Datensatz mit eigenem Titel steht dieser in der Kopfzeile und als Titel der Startansicht.
+- Die Knöpfe Korb, Export und About tragen einen kräftigen Rahmen neben den Reitern ohne Rahmen.
+- Die Köpfe von Chronik, Erwähnungen, Vergleich und Aktivität haben neben der Umschaltung einen eigenen Aktionsbereich in einer zweiten Zeile.
+- Die Hauptgrafik der Startansicht zeigt die Briefe pro Jahr einfarbig und führt als Ganzes in die Ansicht Zeit, ein einzelnes Jahr wählt man dort.
+- Die Zählung des ersten Bildschirms zählt unsichtbare Überschriften mit.
+- Startseite, Projektseite und Wissenskorb haben den alten Kopf.
+
 ### Offen aus den Durchsichten vom 2026-11-14
 
 Zwei unabhängige Durchsichten des Umbaus von Farbrollen und Listen ließen Befunde offen, von denen die meisten am selben Tag behoben wurden ([Journal vom 2026-11-14](journal.md)). Es bleiben:

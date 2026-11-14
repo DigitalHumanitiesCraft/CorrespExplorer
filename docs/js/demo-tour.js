@@ -100,7 +100,7 @@ function endTour() {
     // A tour opened on load found focus on body; the active view button is the next useful place
     const target = returnFocus?.isConnected && returnFocus !== document.body
         ? returnFocus
-        : document.querySelector('.view-btn[aria-pressed="true"]');
+        : document.querySelector('.view-group-btn[aria-pressed="true"]');
     target?.focus();
     returnFocus = null;
 }

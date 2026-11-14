@@ -590,9 +590,13 @@
 }
 
 .view-header__description {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }
 
 /* Inline switch to another view, styled as a link inside the header text */
@@ -616,7 +620,7 @@
 
 /* Views without a padded container (map, lists, mentions flow) carry the padding themselves */
 .view-header--inset {
-    padding: var(--space-lg);
+    padding: var(--space-sm) var(--space-lg);
     margin-bottom: 0;
     border-bottom: 1px solid var(--color-border-light);
 }
@@ -637,6 +641,23 @@
         justify-content: flex-end;
         min-width: 0;
         margin-top: 0;
+    }
+
+    .view-header > .view-header__title {
+        grid-row: 1;
+    }
+
+    /* The representation switch shares the first line with the title */
+    .view-header > .view-variants {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        justify-self: end;
+        align-self: center;
+    }
+
+    .view-header:has(.view-variants:not(.hidden)) .view-header__actions {
+        grid-row: 2;
+        grid-column: 1 / -1;
     }
 }
 

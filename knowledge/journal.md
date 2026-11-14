@@ -30,6 +30,16 @@ related: [project, specification, plan]
 
 ## Einträge
 
+### 2026-11-14 Gliederung nach Gegenstand: fünf Ansichten, Seitenleiste und Köpfe entlastet
+
+- Anlass: Der Operator sah den Stand nach dem Farbumbau am Bildschirm durch und beanstandete zwei Kopfebenen, zu viele Strukturen und Ebenen in Start, Karte und Seitenleiste, die ungenutzte Fläche und die Zahl der Ansichten. Seine Sätze stehen wörtlich in [design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14). Er schlug vor, die nächste Stufe mit der ganzen Rückmeldung zu bauen und danach wieder am Bildschirm zu urteilen.
+- Befund: Die zwölf Ansichten waren nach Darstellungstechnik benannt (Karte, Netzwerk, Heatmap), mehrere zeigten denselben Gegenstand. Kopf und Seitenleiste beschrifteten, was ihre Bedienelemente selbst sagen. Farbumbau, Zeilen und die zwei unabhängigen Durchsichten desselben Tages hatten die Kodierung verbessert und die Gliederung nicht berührt. Die Zählung im ersten Bildschirm hatte nur den Inhaltsbereich der Ansicht erfasst.
+- Entschieden: Die Kopfzeile führt Start, Briefe, Personen, Orte, Zeit und Themen, jede Ansicht schaltet ihre Darstellungen im eigenen Kopf um (Operator stimmte der Gliederung und dem Vorgehen zu). Die Forschungspfade bleiben ein eigener Teil der Startansicht, der Vergleich steht in dieser Stufe als Darstellung unter Personen. Beides hatte die bauende Session als Annahme genannt.
+- Geändert: `explore.html` (Kopfzeile, Umschaltung `#view-variants`, Seitenleiste ohne sichtbare Überschriften, Startansicht mit `#overview-chart`), `explore.js` (`VIEW_GROUPS`, `syncViewVariants()`, `updateViewTitle()`, Farbfelder der Sprachen), `views/overview-view.js` (`renderOverviewChart()`), `style.css`, `components.css`, `explore.css`, `tokens.css` (schmalere Seitenleiste), `demo-tour.js`. `tests/browser/smoke.py` erreicht eine Darstellung über ihren Gegenstand und prüft, dass die Seitenleiste keine Themen mehr listet.
+- Belege: der Commit dieses Eintrags. Bildschirmfotos aller Darstellungen beider Datensätze bei 1280 und 360 Pixel vor und nach der Stufe, mit einer Zählung über den ganzen ersten Bildschirm. Im ersten Bildschirm der Startansicht des HSA bei 1280 Pixel sanken Rahmen und Flächen von elf auf fünf und die Schachtelung von zwei auf eine Ebene, in Karte und Briefliste die Rahmen und Flächen von zehn auf sechs und von dreizehn auf sieben. Die Zahl der Überschriften zeigt die Zählung nicht richtig, weil sie auch die für Screenreader erhaltenen, unsichtbaren Überschriften mitzählt. Kein Dokument scrollt horizontal, bei 360 Pixel sind alle Reiter beschriftet. `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen dreizehn Prüfungen. Start, Karte, Briefe, Personen und Zeit sind am Bild gesehen, die Zweig-Briefe an der Startansicht. Eine unabhängige Durchsicht hat nicht stattgefunden.
+- Wer was tat: Der Operator gab Rückmeldung, Richtung und Auftrag. Diese Session (Claude Fable 5.2 in Claude Code) schlug die Gliederung vor, baute und prüfte. Die Abnahme der Stufe am Bildschirm steht aus.
+- Offen: Was diese Stufe bewusst noch nicht umzieht, führt [plan.md](plan.md#offen-nach-der-stufe-vom-2026-11-14).
+
 ### 2026-11-14 Übersicht ohne Einstiegskacheln, Forschungspfade als kurze Zeilen
 
 - Anlass: Der Operator stimmte drei Empfehlungen aus [plan.md](plan.md) zu und gab den Auftrag zur Umsetzung.
