@@ -1,11 +1,12 @@
 // Chronik View
 // Timeline display of letters with Wikidata enrichment support
 
-import { escapeHtml, safeUrl, openModal, closeModal, personKey } from '../utils.js';
+import { escapeHtml, safeUrl, openModal, closeModal, personKey, letterRecipients } from '../utils.js';
 import { formatDateWithPrecision, getPersonInitials } from '../formatters.js';
 import { enrichPerson, formatLifeDates } from '../wikidata-enrichment.js';
 import { elements } from '../dom-cache.js';
 import { state } from '../state-manager.js';
+import { renderFilterNotice } from './view-support.js';
 
 // Module state
 let chronikEnriched = false;
@@ -13,6 +14,7 @@ let chronikEnrichmentData = new Map();
 let chronikSortedLetters = [];
 let chronikRenderedCount = 0;
 let chronikLastYear;            // year of the last rendered entry, for the year markers across batches
+let chronikOffAxisLabel = 'Datum unbekannt';  // marker of the letters without a year
 let chronikObserver = null;     // loads the next batch when the sentinel at the end becomes visible
 let chronikCorrespondenceIndex = null;
 let chronikIndexSource = null;  // letter array the correspondence index was built from
@@ -86,79 +88,118 @@ function setupChronikEventHandlers() {
     }
 }
 
+// A date that can stand on the time axis; an implausible year is a slip of the source and would
+// put the letter decades away from its neighbours, so it sorts with the undated letters
+function axisDate(letter) {
+    return letter.dateImplausible ? null : letter.date || null;
+}
+
+function compareByAxisDate(a, b) {
+    return (axisDate(a) || '9999').localeCompare(axisDate(b) || '9999');
+}
+
+// A correspondence is the exchange between two persons in both directions
+function pairKey(a, b) {
+    return [a, b].sort().join('<->');
+}
+
+// Key of a person who can stand in a correspondence. An unknown person ("Unbekannt") is not one
+// correspondent: all unknown writers would share a key and form one false correspondence.
+function correspondentKey(person) {
+    return person && person.precision !== 'unknown' ? personKey(person) : null;
+}
+
 /**
- * Build correspondence index for relationship context
- * Maps sender->recipient pairs to their letter history
+ * Index of every correspondence: the letters between two persons, in either direction, in
+ * date order. A letter to several recipients belongs to the correspondence with each of them.
  * @param {Array} letters - Array of letter objects
- * @returns {Map} Index mapping "senderId->recipientId" to correspondence data
+ * @returns {Map} pair key -> {letters: [{id, year}], dated: number}
  */
 function buildCorrespondenceIndex(letters) {
     const index = new Map();
 
     for (const letter of letters) {
-        const senderId = personKey(letter.sender);
-        const recipientId = personKey(letter.recipient);
-
-        if (!senderId || !recipientId) continue;
-
-        const key = `${senderId}->${recipientId}`;
-
-        if (!index.has(key)) {
-            index.set(key, {
-                letters: [],
-                totalCount: 0
-            });
+        const senderId = correspondentKey(letter.sender);
+        if (!senderId) continue;
+        for (const recipient of letterRecipients(letter)) {
+            const recipientId = correspondentKey(recipient);
+            if (!recipientId || recipientId === senderId) continue;
+            const key = pairKey(senderId, recipientId);
+            if (!index.has(key)) index.set(key, { letters: [] });
+            index.get(key).letters.push(letter);
         }
-
-        const entry = index.get(key);
-        entry.letters.push({
-            id: letter.id,
-            year: letter.year,
-            date: letter.date
-        });
-        entry.totalCount++;
     }
 
-    // Sort letters chronologically within each correspondence
     for (const entry of index.values()) {
-        entry.letters.sort((a, b) => {
-            const dateA = a.date || '9999';
-            const dateB = b.date || '9999';
-            return dateA.localeCompare(dateB);
-        });
-        entry.firstLetterId = entry.letters[0]?.id;
+        entry.letters.sort(compareByAxisDate);
+        entry.dated = entry.letters.filter(l => axisDate(l) && l.year).length;
+        entry.letters = entry.letters.map(l => ({ id: l.id, year: axisDate(l) ? l.year : null }));
     }
 
     return index;
 }
 
 /**
- * Get correspondence context for a letter
+ * Place of a letter in the correspondence with its first recipient: its number among the
+ * dated letters, the total, and the year of the previous letter when two or more years lie
+ * between them. This course over time is what the chronicle adds to the letter list.
  * @param {Object} letter - Letter object
- * @returns {Object} Context with isFirstLetter, letterNumber, totalLetters
+ * @returns {Object|null} {number, total, dated, isFirst, isLast, previousYear}; number is null
+ *   for a letter without a place on the time axis
  */
 function getCorrespondenceContext(letter) {
     if (!chronikCorrespondenceIndex) return null;
 
-    const senderId = personKey(letter.sender);
-    const recipientId = personKey(letter.recipient);
+    const senderId = correspondentKey(letter.sender);
+    const recipientId = correspondentKey(letterRecipients(letter)[0]);
+    if (!senderId || !recipientId || senderId === recipientId) return null;
 
-    if (!senderId || !recipientId) return null;
-
-    const key = `${senderId}->${recipientId}`;
-    const entry = chronikCorrespondenceIndex.get(key);
-
+    const entry = chronikCorrespondenceIndex.get(pairKey(senderId, recipientId));
     if (!entry) return null;
 
-    // Find position of this letter in the correspondence
-    const letterIndex = entry.letters.findIndex(l => l.id === letter.id);
+    const position = entry.letters.findIndex(l => l.id === letter.id);
+    const total = entry.letters.length;
+    const own = entry.letters[position];
+    if (!own?.year) return { number: null, total, dated: entry.dated };
 
+    const previous = position > 0 ? entry.letters[position - 1] : null;
     return {
-        isFirstLetter: letter.id === entry.firstLetterId,
-        letterNumber: letterIndex + 1,
-        totalLetters: entry.totalCount,
-        direction: 'sent'
+        number: position + 1,
+        total,
+        dated: entry.dated,
+        isFirst: position === 0,
+        isLast: position === entry.dated - 1,
+        previousYear: previous?.year && own.year - previous.year >= 2 ? previous.year : null
     };
+}
+
+/**
+ * The context in words, for the cards layout. "zwischen beiden" refers to the two names in the
+ * line above, so every phrase reads without a label.
+ */
+function contextText(context) {
+    if (!context) return '';
+    if (context.total === 1) return 'Einziger Brief zwischen beiden';
+    if (context.number === null) return `Ohne Stelle in der Folge der ${context.total} Briefe zwischen beiden`;
+    if (context.isFirst) return `Erster von ${context.total} Briefen zwischen beiden`;
+    const base = context.isLast && context.dated === context.total
+        ? `Letzter von ${context.total} Briefen zwischen beiden`
+        : `${context.number}. von ${context.total} Briefen zwischen beiden`;
+    return context.previousYear ? `${base}, der erste seit ${context.previousYear}` : base;
+}
+
+// Short form for the compact and two-column layouts: "1/48", "12/48"; a flag marks the beginning
+function contextBadgeShort(context, className) {
+    if (!context || context.total < 2 || context.number === null) return '';
+    const title = escapeHtml(contextText(context));
+    const flag = context.isFirst ? '<i class="fas fa-flag" aria-hidden="true"></i> ' : '';
+    return `<span class="${className}${context.isFirst ? ' first' : ''}" title="${title}">${flag}${context.number}/${context.total}<span class="visually-hidden">, ${title}</span></span>`;
+}
+
+// Recipients as one text: most letters have one, a source may name several
+function recipientNames(letter) {
+    const names = letterRecipients(letter).map(r => r.name).filter(Boolean);
+    return names.length ? names.join(', ') : 'Unbekannt';
 }
 
 /**
@@ -359,9 +400,10 @@ export function renderChronik() {
 
     const letters = getFilteredLetters();
     chronikObserver?.disconnect();
+    renderFilterNotice('chronik-view');
 
     if (!letters || letters.length === 0) {
-        container.innerHTML = '<div class="chronik-empty">Keine Briefe im ausgewählten Zeitraum</div>';
+        container.innerHTML = '<div class="chronik-empty">Der Filter lässt keinen Brief übrig.</div>';
         chronikRenderedCount = 0;
         chronikSortedLetters = [];
         return;
@@ -374,12 +416,12 @@ export function renderChronik() {
         chronikIndexSource = allLetters;
     }
 
-    // Sort letters by date (oldest first), undated at the end
-    chronikSortedLetters = [...letters].sort((a, b) => {
-        const dateA = a.date || '9999';
-        const dateB = b.date || '9999';
-        return dateA.localeCompare(dateB);
-    });
+    // Sort letters by date (oldest first), letters without a place on the axis at the end
+    chronikSortedLetters = [...letters].sort(compareByAxisDate);
+    // Their marker says "Datum unbekannt" only when no date in words or implausible year is among them
+    chronikOffAxisLabel = chronikSortedLetters.some(l => !l.year && (l.dateText || l.dateImplausible))
+        ? 'Nicht auf der Zeitachse'
+        : 'Datum unbekannt';
 
     container.innerHTML = '';
     chronikRenderedCount = 0;
@@ -417,7 +459,7 @@ function renderYearMarker(year) {
     marker.setAttribute('aria-level', '3');
     const label = document.createElement('span');
     label.className = 'chronik-year-label';
-    label.textContent = year ? String(year) : 'Datum unbekannt';
+    label.textContent = year ? String(year) : chronikOffAxisLabel;
     marker.appendChild(label);
     return marker;
 }
@@ -476,7 +518,7 @@ function renderChronikEntry(letter) {
  */
 function renderChronikEntryCards(letter) {
     const senderName = letter.sender?.name || 'Unbekannt';
-    const recipientName = letter.recipient?.name || 'Unbekannt';
+    const recipientName = recipientNames(letter);
 
     // Get enrichment data
     const senderEnriched = getPersonEnrichment(letter.sender);
@@ -505,43 +547,42 @@ function renderChronikEntryCards(letter) {
 
     const dateDisplay = formatDateWithPrecision(letter);
     const place = letter.place_sent?.name || '';
+    const course = contextText(context);
 
-    // Context badge (first letter or position in correspondence)
-    let contextBadge = '';
-    if (context?.isFirstLetter) {
-        contextBadge = '<span class="chronik-context-badge first"><i class="fas fa-star"></i> Erster Brief</span>';
-    } else if (context?.totalLetters > 1) {
-        contextBadge = `<span class="chronik-context-badge">${context.letterNumber}. von ${context.totalLetters}</span>`;
-    }
-
-    return `
-        <div class="chronik-entry chronik-entry-cards" role="button" tabindex="0" data-letter-id="${escapeHtml(letter.id)}">
-            <div class="chronik-header">
-                <div class="chronik-date">${dateDisplay}</div>
-                ${place ? `<div class="chronik-place"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(place)}</div>` : ''}
-                ${contextBadge}
-            </div>
+    // Two lines without enrichment: date with writer and addressee, then place and the letter's
+    // place in the correspondence. The persons block appears only when Wikidata added portraits,
+    // life dates or professions, which the line above cannot hold.
+    const enrichedPersons = chronikEnriched ? `
             <div class="chronik-persons">
                 <div class="chronik-person chronik-sender">
                     ${senderPortrait}
                     <div class="chronik-person-info">
-                        <span class="chronik-person-role">Absender</span>
                         <span class="chronik-person-name">${escapeHtml(senderName)}</span>
                         ${senderBio}
                         ${senderLifespan}
                     </div>
                 </div>
-                <div class="chronik-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="chronik-person chronik-recipient">
                     ${recipientPortrait}
                     <div class="chronik-person-info">
-                        <span class="chronik-person-role">Empfänger</span>
                         <span class="chronik-person-name">${escapeHtml(recipientName)}</span>
                         ${recipientBio}
                         ${recipientLifespan}
                     </div>
                 </div>
+            </div>` : '';
+
+    return `
+        <div class="chronik-entry chronik-entry-cards" role="button" tabindex="0" data-letter-id="${escapeHtml(letter.id)}">
+            <div class="chronik-header">
+                <span class="chronik-date">${dateDisplay}</span>
+                <span class="chronik-pair">${escapeHtml(senderName)} an ${escapeHtml(recipientName)}</span>
             </div>
+            ${place || course ? `<div class="chronik-course">
+                ${place ? `<span class="chronik-place">${escapeHtml(place)}</span>` : ''}
+                ${course ? `<span class="chronik-context${context?.isFirst || context?.total === 1 ? ' first' : ''}">${context?.isFirst || context?.total === 1 ? '<i class="fas fa-flag" aria-hidden="true"></i> ' : ''}${escapeHtml(course)}</span>` : ''}
+            </div>` : ''}
+            ${enrichedPersons}
         </div>
     `;
 }
@@ -551,7 +592,7 @@ function renderChronikEntryCards(letter) {
  */
 function renderChronikEntryCompact(letter) {
     const senderName = letter.sender?.name || 'Unbekannt';
-    const recipientName = letter.recipient?.name || 'Unbekannt';
+    const recipientName = recipientNames(letter);
 
     const senderEnriched = getPersonEnrichment(letter.sender);
     const recipientEnriched = getPersonEnrichment(letter.recipient);
@@ -570,12 +611,7 @@ function renderChronikEntryCompact(letter) {
     const senderBar = buildLifespanBarCompact(senderBirthYear, senderDeathYear, senderAge);
     const recipientBar = buildLifespanBarCompact(recipientBirthYear, recipientDeathYear, recipientAge);
 
-    let contextBadge = '';
-    if (context?.isFirstLetter) {
-        contextBadge = '<span class="chronik-badge first"><i class="fas fa-star"></i></span>';
-    } else if (context?.totalLetters > 1) {
-        contextBadge = `<span class="chronik-badge">${context.letterNumber}/${context.totalLetters}</span>`;
-    }
+    const contextBadge = contextBadgeShort(context, 'chronik-badge');
 
     return `
         <div class="chronik-entry chronik-entry-compact" role="button" tabindex="0" data-letter-id="${escapeHtml(letter.id)}">
@@ -600,7 +636,7 @@ function renderChronikEntryCompact(letter) {
  */
 function renderChronikEntryTimeline(letter) {
     const senderName = letter.sender?.name || 'Unbekannt';
-    const recipientName = letter.recipient?.name || 'Unbekannt';
+    const recipientName = recipientNames(letter);
 
     const senderEnriched = getPersonEnrichment(letter.sender);
     const recipientEnriched = getPersonEnrichment(letter.recipient);
@@ -622,12 +658,7 @@ function renderChronikEntryTimeline(letter) {
     const senderBar = buildLifespanBarCompact(senderBirthYear, senderDeathYear, senderAge);
     const recipientBar = buildLifespanBarCompact(recipientBirthYear, recipientDeathYear, recipientAge);
 
-    let contextBadge = '';
-    if (context?.isFirstLetter) {
-        contextBadge = '<span class="chronik-tl-badge first"><i class="fas fa-star"></i></span>';
-    } else if (context?.totalLetters > 1) {
-        contextBadge = `<span class="chronik-tl-badge">${context.letterNumber}/${context.totalLetters}</span>`;
-    }
+    const contextBadge = contextBadgeShort(context, 'chronik-tl-badge');
 
     return `
         <div class="chronik-entry chronik-entry-timeline" role="button" tabindex="0" data-letter-id="${escapeHtml(letter.id)}">

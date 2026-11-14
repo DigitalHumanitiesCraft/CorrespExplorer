@@ -6,7 +6,7 @@ import { parseCMIF, loadDemoDataset, DEMO_DATASET_URL } from '../cmif-parser.js'
 import { shouldStartDemoTour } from '../demo-tour.js';
 import { datasetKey } from '../basket.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
-import { defaultNetworkThreshold, buildContemporariesNetwork, buildCorrespondenceNetwork, buildTopicsNetwork } from '../views/network-view.js';
+import { defaultNetworkThreshold, buildContemporariesNetwork, buildCorrespondenceNetwork, buildTopicsNetwork, findEgo, networkWithoutEgo } from '../views/network-view.js';
 import { personKey } from '../utils.js';
 import { renderDataTable } from '../views/view-support.js';
 import { assert } from './test-runner.js';
@@ -118,6 +118,37 @@ export const DemoTests = {
                 assert(host.textContent.includes('<img src=x onerror=alert(1)>') || host.textContent.includes('<b>bold</b>'), 'Name sollte als Text erscheinen');
                 renderDataTable(host, { caption: '', columns: [], rows: [] });
                 assert(host.innerHTML === '', 'Ohne Zeilen bleibt der Platz leer');
+            }
+        },
+
+        {
+            // An ego-centred dataset: the dominant person is found, hiding it keeps only the
+            // relations between the others, and organisations stay distinguishable from persons
+            name: 'Netzwerk: Ego des Datensatzes, Verbindungen ohne Ego, Organisationen als Knotenart',
+            async run() {
+                const { letters } = await parseCMIF('data/test-letter-records.xml');
+                const ego = findEgo(letters);
+                const muster = letters[0].sender;
+                assert(ego && ego.id === personKey(muster), `Ego sollte ${muster.name} sein, ist ${ego?.name}`);
+                assert(ego.count === 3 && ego.total === letters.length, `Ego an 3 von ${letters.length} Briefen, gezählt ${ego.count}`);
+
+                const full = buildCorrespondenceNetwork(letters, 1, Infinity);
+                const org = full.nodes.find(n => n.name === 'Verlag Probe');
+                assert(org?.isOrganization === true, 'Der Verlag ist als Organisation markiert');
+                assert(full.nodes.filter(n => n.isOrganization).length === 1, 'Nur der Verlag ist Organisation');
+
+                const others = networkWithoutEgo(full, ego.id, 50);
+                assert(others.links.every(l => l.source !== ego.id && l.target !== ego.id), 'Keine Kante des Ego bleibt');
+                assert(others.links.length === full.links.filter(l => l.source !== ego.id && l.target !== ego.id).length,
+                    'Alle Kanten zwischen anderen Personen bleiben');
+                assert(others.links.length > 0, 'Fixture hat Verbindungen ohne Ego');
+                const linked = new Set(others.links.flatMap(l => [l.source, l.target]));
+                assert(others.nodes.every(n => linked.has(n.id)), 'Ohne Ego bleibt kein Knoten ohne Kante');
+                assert(networkWithoutEgo(full, ego.id, 1).nodes.length === 0, 'Ein einzelner Knoten hat keine Kante und entfällt');
+
+                const { letters: hostile } = await parseCMIF('data/test-hostile.xml');
+                const egoHostile = findEgo(hostile);
+                assert(!egoHostile || egoHostile.count * 2 >= hostile.length, 'Ego nur bei mindestens der Hälfte der Briefe');
             }
         }
     ]

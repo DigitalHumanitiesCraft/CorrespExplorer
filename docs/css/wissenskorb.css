@@ -176,14 +176,14 @@
     min-width: 0;
 }
 
+/* Wraps instead of clipping: a letter to several recipients names all of them */
 .item-row-name {
     font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: 0 6px;
 }
 
 .item-row-arrow {
@@ -464,6 +464,37 @@
 
 .details-place i {
     margin-right: 4px;
+}
+
+/* Shelfmark, postmark and address of a letter: one wrapping line of named values */
+.letter-transmission {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-md);
+}
+
+/* Date markers of formatDateWithPrecision; explore.css, which carries them in the explorer, is
+   not loaded on this page */
+.date-with-precision {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.date-precision-icon {
+    color: var(--color-warning);
+}
+
+.date-range-icon {
+    color: var(--color-secondary);
+}
+
+.date-uncertain-icon {
+    color: var(--color-error);
+}
+
+.date-unknown {
+    font-style: italic;
 }
 
 .details-link {

@@ -2,10 +2,36 @@
 // Side-by-side comparison of persons, periods, or places
 
 import { languageLabel } from '../constants.js';
-import { closeModal, debounce, escapeHtml, isKnownPlace, openModal, personKey, placeKey } from '../utils.js';
+import { closeModal, debounce, escapeHtml, isKnownPlace, letterRecipients, openModal, personKey, placeKey } from '../utils.js';
 import { formatDateWithPrecision } from '../formatters.js';
 import { elements } from '../dom-cache.js';
-import { bindCombobox } from './view-support.js';
+import { state } from '../state-manager.js';
+import { bindCombobox, renderFilterNotice } from './view-support.js';
+
+// A letter involves a person as sender or as any of its recipients
+function involves(letter, key) {
+    return personKey(letter.sender) === key || letterRecipients(letter).some(r => personKey(r) === key);
+}
+
+/**
+ * First and last year of the dataset, from the letters themselves. Years the parser withheld as
+ * implausible are null and stay out, so a slip of the source does not stretch the periods.
+ */
+function datasetYears() {
+    const years = state.getAllLetters().map(l => l.year).filter(Number.isInteger);
+    if (years.length === 0) return null;
+    return { min: Math.min(...years), max: Math.max(...years) };
+}
+
+// "1919-1933" or "1919 bis 1933" typed into a period field
+function parsePeriod(text) {
+    const match = String(text).trim().match(/^(\d{3,4})\s*(?:-|–|bis)\s*(\d{3,4})$/);
+    if (!match) return null;
+    const from = parseInt(match[1], 10);
+    const to = parseInt(match[2], 10);
+    if (from > to) return null;
+    return { id: `${from}-${to}`, name: `${from}-${to}`, from, to };
+}
 
 // Module state
 let comparisonMode = 'persons';  // 'persons', 'periods', 'places'
@@ -72,8 +98,8 @@ function buildComparisonData(mode, itemA, itemB) {
     let lettersB = [];
 
     if (mode === 'persons') {
-        lettersA = letters.filter(l => personKey(l.sender) === itemA.id || personKey(l.recipient) === itemA.id);
-        lettersB = letters.filter(l => personKey(l.sender) === itemB.id || personKey(l.recipient) === itemB.id);
+        lettersA = letters.filter(l => involves(l, itemA.id));
+        lettersB = letters.filter(l => involves(l, itemB.id));
     } else if (mode === 'periods') {
         lettersA = letters.filter(l =>
             l.year >= itemA.from && l.year <= itemA.to
@@ -150,9 +176,10 @@ function calculateComparisonMetrics(letters) {
             entry.count++;
             personCounts.set(key, entry);
         }
-        if (letter.recipient?.name) {
-            const key = personKey(letter.recipient);
-            const entry = personCounts.get(key) || { name: letter.recipient.name, count: 0 };
+        for (const recipient of letterRecipients(letter)) {
+            if (!recipient?.name) continue;
+            const key = personKey(recipient);
+            const entry = personCounts.get(key) || { name: recipient.name, count: 0 };
             entry.count++;
             personCounts.set(key, entry);
         }
@@ -208,11 +235,11 @@ function findComparisonOverlap(lettersA, lettersB) {
     const personsB = new Set();
     for (const letter of lettersA) {
         if (letter.sender?.id) personsA.add(letter.sender.id);
-        if (letter.recipient?.id) personsA.add(letter.recipient.id);
+        letterRecipients(letter).forEach(r => { if (r?.id) personsA.add(r.id); });
     }
     for (const letter of lettersB) {
         if (letter.sender?.id) personsB.add(letter.sender.id);
-        if (letter.recipient?.id) personsB.add(letter.recipient.id);
+        letterRecipients(letter).forEach(r => { if (r?.id) personsB.add(r.id); });
     }
     const commonPersons = [...personsA].filter(p => personsB.has(p));
 
@@ -243,8 +270,10 @@ export function renderComparison() {
     const container = document.getElementById('comparison-view');
     if (!container) return;
 
+    renderFilterNotice('comparison-view');
     setupComparisonModeSelector();
     renderComparisonQuickSelect();
+    updatePeriodInputHint();
     if (!comparisonAutocompleteReady) {
         setupComparisonAutocomplete('a');
         setupComparisonAutocomplete('b');
@@ -282,7 +311,16 @@ function setupComparisonModeSelector() {
             const inputB = document.getElementById('comparison-input-b');
             if (inputA) inputA.value = '';
             if (inputB) inputB.value = '';
+            updatePeriodInputHint();
         };
+    });
+}
+
+// In period mode the search fields take a typed period, and the placeholder says so
+function updatePeriodInputHint() {
+    ['a', 'b'].forEach(side => {
+        const input = document.getElementById(`comparison-input-${side}`);
+        if (input) input.placeholder = comparisonMode === 'periods' ? 'z. B. 1919-1933, dann Enter' : 'Suchen...';
     });
 }
 
@@ -302,14 +340,18 @@ function renderComparisonQuickSelect() {
             .sort((a, b) => b.count - a.count)
             .slice(0, 10);
     } else if (comparisonMode === 'periods') {
-        const meta = getMeta();
-        const min = meta.date_range?.min || 1850;
-        const max = meta.date_range?.max || 1930;
-        const mid = Math.floor((min + max) / 2);
-        items = [
-            { id: `${min}-${mid}`, name: `${min}-${mid}`, from: min, to: mid },
-            { id: `${mid+1}-${max}`, name: `${mid+1}-${max}`, from: mid+1, to: max }
-        ];
+        // The two halves of the years the letters actually carry; other periods are typed in
+        const range = datasetYears();
+        if (range) {
+            const { min, max } = range;
+            const mid = Math.floor((min + max) / 2);
+            items = min === max
+                ? [{ id: `${min}-${max}`, name: `${min}-${max}`, from: min, to: max }]
+                : [
+                    { id: `${min}-${mid}`, name: `${min}-${mid}`, from: min, to: mid },
+                    { id: `${mid + 1}-${max}`, name: `${mid + 1}-${max}`, from: mid + 1, to: max }
+                ];
+        }
     } else if (comparisonMode === 'places') {
         items = placeIndexEntries(dataIndices)
             .sort((a, b) => b.count - a.count)
@@ -653,9 +695,21 @@ function setupComparisonAutocomplete(side) {
     if (!input || !dropdown) return;
 
     input.setAttribute('aria-label', `Auswahl ${side.toUpperCase()} suchen`);
+    // The letter count tells apart names a source spells in two ways
     const combobox = bindCombobox(input, dropdown, {
-        onSelect: item => selectComparisonItem(side, { id: item.id, name: item.name })
+        onSelect: item => selectComparisonItem(side, { id: item.id, name: item.name }),
+        count: item => `${item.count.toLocaleString('de-DE')} Briefe`
     });
+
+    // A typed period is taken on Enter; persons and places come from the list
+    input.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' || comparisonMode !== 'periods') return;
+        e.preventDefault();
+        const period = parsePeriod(input.value);
+        input.setCustomValidity(period ? '' : 'Bitte zwei Jahre eingeben, etwa 1919-1933.');
+        if (period) selectComparisonItem(side, period); else input.reportValidity();
+    });
+    input.addEventListener('input', () => input.setCustomValidity(''));
 
     const debouncedSearch = debounce((query) => {
         if (query.length < 2 || comparisonMode === 'periods') {

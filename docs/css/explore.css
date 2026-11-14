@@ -988,7 +988,8 @@
     overflow-x: visible;
 }
 
-/* Timeline main container for chart + undated bin */
+/* Timeline main container for chart + undated bin. It keeps its height when the data table opens:
+   as a scrolling flex item its minimum height is 0, and the column would shrink it to the axis. */
 .timeline-main {
     display: flex;
     align-items: flex-end;
@@ -996,6 +997,11 @@
     overflow-x: auto;
     overflow-y: visible;
     padding-bottom: var(--space-sm);
+    flex-shrink: 0;
+}
+
+#timeline-table {
+    flex-shrink: 0;
 }
 
 .timeline-chart {
@@ -1235,6 +1241,29 @@
 .timeline-total {
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
+    text-align: center;
+}
+
+/* Groups without a place on the axis, each opening its letters; text links inside the sentence */
+.timeline-total__link {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--color-secondary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+
+.timeline-total__link:hover {
+    color: var(--color-primary);
+}
+
+.timeline-total__link:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
 }
 
 /* Stacked bar styles - contains absolutely positioned segments */
@@ -1987,18 +2016,6 @@
     accent-color: var(--color-primary);
 }
 
-/* Node and edge counts in the view header actions */
-.network-stats {
-    column-gap: var(--space-lg);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
-.network-stats i {
-    margin-right: var(--space-xs);
-    color: var(--color-primary);
-}
-
 .network-graph {
     flex: 1;
     min-height: 400px;
@@ -2140,6 +2157,29 @@
 
 .coverage-info {
     display: inline-block;
+}
+
+/* Sentence on an ego-centred star with the switch that shows the other relations */
+.network-ego-note {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-lg);
+    margin-bottom: var(--space-sm);
+    padding-left: var(--space-sm);
+    border-left: 3px solid var(--color-secondary);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+}
+
+/* Two ids outrank the placeholder rule for paragraphs of #network-view in style.css */
+#network-view #network-ego-text {
+    margin: 0;
+    padding: 0;
+    flex: 1 1 24rem;
+    text-align: start;
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
 }
 
 .legend-hint {
@@ -2631,16 +2671,22 @@ body:has(.tour-highlight) .tour-backdrop {
     height: 1px;
 }
 
-/* Letter entries */
+/* Letter entries: a hairline per entry instead of a heavy box, so a long chronicle reads as one
+   list (round 1 review: twelve boxes in the first screen) */
 .chronik-entry {
     position: relative;
-    margin-bottom: var(--space-md);
-    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
     background: var(--color-bg);
-    border: 2px solid var(--color-border);
+    border: 1px solid var(--color-border-light);
     border-radius: var(--radius-md);
     transition: var(--transition-fast);
     transition-property: var(--transition-properties);
+}
+
+.chronik-entry:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
 }
 
 .chronik-entry:hover {
@@ -2673,10 +2719,33 @@ body:has(.tour-highlight) .tour-backdrop {
 .chronik-entry .chronik-header {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: baseline;
     gap: var(--space-xs) var(--space-md);
-    margin-bottom: var(--space-sm);
     text-align: left;
+}
+
+/* Writer and addressee in one line: "A an B" */
+.chronik-pair {
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+}
+
+/* Second line: place and the letter's place in its correspondence */
+.chronik-course {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-md);
+    margin-top: var(--space-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.chronik-context.first {
+    color: var(--color-primary-dark);
+}
+
+.chronik-persons:not(:first-child) {
+    margin-top: var(--space-sm);
 }
 
 .chronik-date {
@@ -2692,22 +2761,6 @@ body:has(.tour-highlight) .tour-backdrop {
     gap: var(--space-xs);
     font-size: var(--font-size-xs);
     color: var(--color-text-light);
-}
-
-.chronik-context-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: 2px var(--space-sm);
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-}
-
-.chronik-context-badge.first {
-    border-color: var(--color-primary);
-    color: var(--color-primary-dark);
 }
 
 .chronik-persons {
@@ -2857,6 +2910,20 @@ body:has(.tour-highlight) .tour-backdrop {
     color: var(--color-primary);
 }
 
+/* The layout buttons carry their name next to the icon */
+.chronik-layout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font: inherit;
+    font-size: var(--font-size-sm);
+}
+
+.chronik-layout-btn:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 1px;
+}
+
 /* ========================
    COMPACT LAYOUT
    ======================== */
@@ -2998,8 +3065,9 @@ body:has(.tour-highlight) .tour-backdrop {
     margin-top: 2px;
 }
 
+/* The flag of a first letter; dark gold stays with the basket star */
 .chronik-tl-badge.first {
-    color: var(--color-warning);
+    color: var(--color-primary-dark);
 }
 
 .chronik-tl-person {
@@ -3571,12 +3639,45 @@ body:has(.tour-highlight) .tour-backdrop {
     margin: 0 auto;
 }
 
-/* Stats Cards */
-.activity-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
+/* Busiest year, month and day as one sentence above the heatmap (replaced four figure boxes) */
+.activity-summary {
+    margin: 0 0 var(--space-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    max-width: 70ch;
+}
+
+/* Filter notice of the views without sidebar (activity, chronicle, comparison), set by
+   renderFilterNotice() in view-support.js under the view header */
+#activity-view .view-filter-notice,
+#chronik-view .view-filter-notice,
+#comparison-view .view-filter-notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-xs) var(--space-md);
+    margin-bottom: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-left: 3px solid var(--color-info);
+    background: var(--color-info-light);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+}
+
+.view-filter-notice__clear {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--color-info);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+
+.view-filter-notice__clear:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
 }
 
 /* Small explanatory note under controls and statistics (e.g. #activity-without-day-note) */
@@ -3643,7 +3744,8 @@ body:has(.tour-highlight) .tour-backdrop {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    padding-top: 24px;
+    /* year label and month row above the first grid */
+    padding-top: calc(26px + 12px + var(--space-xs));
     font-size: var(--font-size-xs);
     color: var(--color-text-light);
 }
@@ -3664,6 +3766,23 @@ body:has(.tour-highlight) .tour-backdrop {
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
+}
+
+/* Month names over the week columns: one slot per week, as wide as a cell plus its gap, the name
+   overflows into the following empty slots */
+.activity-month-row {
+    display: flex;
+    gap: 2px;
+    height: 12px;
+    font-size: var(--font-size-xs);
+    line-height: 12px;
+    color: var(--color-text-light);
+}
+
+.activity-month-row span {
+    flex: 0 0 12px;
+    overflow: visible;
+    white-space: nowrap;
 }
 
 .activity-year-label {
@@ -3820,13 +3939,13 @@ body:has(.tour-highlight) .tour-backdrop {
         padding: var(--space-md);
     }
 
-    .activity-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     .activity-cell {
         width: 10px;
         height: 10px;
+    }
+
+    .activity-month-row span {
+        flex-basis: 10px;
     }
 
     .activity-weekday-labels span {
@@ -4526,4 +4645,23 @@ body:has(.tour-highlight) .tour-backdrop {
 
 #places-missing-coords-banner {
     margin-bottom: var(--space-lg);
+}
+
+/* Place rows are short, so list and detail stand side by side from the laptop width on; stacked,
+   the list shrank to a few rows above an empty detail (shared breakpoint in components.css) */
+@media (min-width: 1024px) and (max-width: 1600px) {
+    #places-view .entity-split-layout {
+        grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+
+    #places-view .entity-list-panel {
+        max-height: none;
+    }
+}
+
+/* What holds for the whole place list, said once instead of marked on every row */
+.places-note {
+    margin: 0 0 var(--space-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
 }

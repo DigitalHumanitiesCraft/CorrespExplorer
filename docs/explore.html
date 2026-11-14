@@ -87,7 +87,7 @@
             <button class="view-btn" data-view="mentions-flow" aria-pressed="false" id="mentions-flow-view-btn" aria-label="Erwähnungen" data-tooltip="Erwähnungen" data-tooltip-desc="Erwähnte Personen und Orte (Sankey)">
                 <i class="fas fa-stream" aria-hidden="true"></i> <span class="view-btn-text">Erwähnungen</span>
             </button>
-            <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" aria-label="Chronik" data-tooltip="Chronik" data-tooltip-desc="Korrespondenz mit Wikidata anreichern">
+            <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" aria-label="Chronik" data-tooltip="Chronik" data-tooltip-desc="Verlauf der Briefwechsel">
                 <i class="fas fa-scroll" aria-hidden="true"></i> <span class="view-btn-text">Chronik</span>
             </button>
             <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" aria-label="Aktivität" data-tooltip="Aktivität" data-tooltip-desc="Heatmap der Briefaktivität">
@@ -300,6 +300,7 @@
                             <span class="quality-chip" id="quality-chip-places" title="Georeferenzierte Orte">
                                 <i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span>-</span>
                             </span>
+                            <span class="quality-features hidden" id="overview-features"></span>
                             <!-- Tutorial Button (nur bei Demo-Datensatz sichtbar) -->
                             <button class="tutorial-start-btn hidden" id="start-tutorial-btn" title="Interaktive Tour starten">
                                 <i class="fas fa-graduation-cap" aria-hidden="true"></i> Tutorial starten
@@ -308,8 +309,7 @@
 
                         <!-- Main Entry Points -->
                         <div class="overview-entry-points">
-                            <h3>Was möchten Sie erkunden?</h3>
-                            <div class="entry-point-grid">
+                            <div class="entry-point-grid" role="group" aria-label="Ansichten">
                                 <button class="entry-point-btn" data-target="map">
                                     <i class="fas fa-map" aria-hidden="true"></i>
                                     <span class="entry-label">Karte</span>
@@ -327,13 +327,13 @@
                                 </button>
                                 <button class="entry-point-btn" data-target="letters">
                                     <i class="fas fa-search" aria-hidden="true"></i>
-                                    <span class="entry-label">Suche</span>
-                                    <span class="entry-desc">Briefe durchsuchen</span>
+                                    <span class="entry-label">Briefe</span>
+                                    <span class="entry-desc">Durchsuchen und filtern</span>
                                 </button>
                                 <button class="entry-point-btn" data-target="chronik">
                                     <i class="fas fa-scroll" aria-hidden="true"></i>
                                     <span class="entry-label">Chronik</span>
-                                    <span class="entry-desc">Wikidata-Anreicherung</span>
+                                    <span class="entry-desc">Verlauf der Briefwechsel</span>
                                 </button>
                                 <button class="entry-point-btn" data-target="activity">
                                     <i class="fas fa-calendar-alt" aria-hidden="true"></i>
@@ -392,6 +392,10 @@
                     <div class="list-header">
                         <input type="search" id="person-search" class="list-search" placeholder="Korrespondent suchen..." aria-label="Korrespondent suchen">
                         <div class="list-sort">
+                            <label for="person-kind">Anzeigen:</label>
+                            <select id="person-kind"></select>
+                        </div>
+                        <div class="list-sort">
                             <label for="person-sort">Sortieren:</label>
                             <select id="person-sort">
                                 <option value="letters-desc">Briefe (absteigend)</option>
@@ -408,7 +412,7 @@
                 <div id="letters-view" class="tab-content">
                     <div class="view-header view-header--inset">
                         <h2 class="view-header__title">Briefe</h2>
-                        <p class="view-header__description">Alle Briefe durchsuchen und sortieren, ein Klick auf einen Brief klappt seine Details auf</p>
+                        <p class="view-header__description">Alle Briefe durchsuchen und sortieren, ein Klick auf einen Brief öffnet alles, was die Quelle zu ihm verzeichnet</p>
                     </div>
                     <div class="list-header">
                         <input type="search" id="letter-search" class="list-search" placeholder="Brief suchen..." aria-label="Brief suchen">
@@ -421,6 +425,8 @@
                             </select>
                         </div>
                     </div>
+                    <p class="list-result" id="letters-result" role="status"></p>
+                    <p class="list-legend hidden" id="letters-legend">Eckige Klammern: von der Edition erschlossen, nicht dem Brief entnommen.</p>
                     <div id="letters-list" class="entity-list"></div>
                 </div>
 
@@ -518,6 +524,7 @@
                             <h2 class="view-header__title">Absendeorte der Korrespondenz</h2>
                             <p class="view-header__description">Klicken Sie auf einen Ort, um Details zu sehen und zu filtern</p>
                         </div>
+                        <p class="places-note hidden" id="places-note"></p>
 
                         <!-- Missing Coordinates Banner -->
                         <div id="places-missing-coords-banner" class="info-banner hidden">
@@ -594,10 +601,6 @@
                         <div class="view-header">
                             <h2 class="view-header__title">Netzwerk-Analyse</h2>
                             <p class="view-header__description" id="network-info-text">Korrespondenten die in denselben Jahren aktiv sind</p>
-                            <div class="view-header__actions network-stats">
-                                <span><i class="fas fa-circle" aria-hidden="true"></i> <span id="network-node-count">0</span> Knoten</span>
-                                <span><i class="fas fa-arrows-alt-h" aria-hidden="true"></i> <span id="network-edge-count">0</span> Verbindungen</span>
-                            </div>
                         </div>
                         <div class="network-controls">
                             <div class="network-control-group">
@@ -631,6 +634,10 @@
                             <button id="network-reset-zoom" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-compress-arrows-alt" aria-hidden="true"></i> Zoom zurücksetzen
                             </button>
+                        </div>
+                        <!-- Shown for an ego-centred dataset; network-view.js moves the ego switch here -->
+                        <div class="network-ego-note hidden" id="network-ego-note">
+                            <p id="network-ego-text"></p>
                         </div>
                         <div class="network-coverage" id="network-coverage"></div>
                         <div id="network-graph" class="network-graph"></div>
@@ -677,17 +684,17 @@
                     <div class="chronik-container">
                         <div class="view-header">
                             <h2 class="view-header__title">Chronik</h2>
-                            <p class="view-header__description">Vertikaler Zeitstrahl aller Briefe in chronologischer Reihenfolge</p>
+                            <p class="view-header__description">Der Verlauf der Briefwechsel: jeder Brief in zeitlicher Folge, mit seiner Stelle im Briefwechsel der beiden Personen und den Jahren ohne Brief davor.</p>
                             <div class="view-header__actions">
-                                <div class="chronik-layout-toggle">
-                                    <button type="button" class="chronik-layout-btn active" data-layout="cards" title="Karten-Ansicht" aria-label="Karten-Ansicht">
-                                        <i class="fas fa-th-large" aria-hidden="true"></i>
+                                <div class="chronik-layout-toggle" role="group" aria-label="Darstellung">
+                                    <button type="button" class="chronik-layout-btn active" data-layout="cards">
+                                        <i class="fas fa-th-large" aria-hidden="true"></i> Ausführlich
                                     </button>
-                                    <button type="button" class="chronik-layout-btn" data-layout="compact" title="Kompakt-Ansicht" aria-label="Kompakt-Ansicht">
-                                        <i class="fas fa-list" aria-hidden="true"></i>
+                                    <button type="button" class="chronik-layout-btn" data-layout="compact">
+                                        <i class="fas fa-list" aria-hidden="true"></i> Kompakt
                                     </button>
-                                    <button type="button" class="chronik-layout-btn" data-layout="timeline" title="Timeline-Ansicht" aria-label="Timeline-Ansicht">
-                                        <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+                                    <button type="button" class="chronik-layout-btn" data-layout="timeline">
+                                        <i class="fas fa-exchange-alt" aria-hidden="true"></i> Gegenüber
                                     </button>
                                 </div>
                                 <button id="chronik-enrich-btn" class="btn btn-secondary">
@@ -713,32 +720,12 @@
                     <div class="activity-container">
                         <div class="view-header">
                             <h2 class="view-header__title">Korrespondenz-Aktivität</h2>
-                            <p class="view-header__description">GitHub-Style Heatmap der Briefaktivität</p>
+                            <p class="view-header__description">Briefe je Kalendertag, Jahr für Jahr. Ein Klick auf einen Tag zeigt seine Briefe.</p>
                             <div class="view-header__actions">
                                 <div class="experimental-badge" title="Experimenteller View zur Visualisierung von Korrespondenz-Aktivität">
                                     <i class="fas fa-flask" aria-hidden="true"></i>
                                     <span class="experimental-label">Experimentell</span>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Statistik-Karten -->
-                        <div class="activity-stats">
-                            <div class="stat-card">
-                                <div class="stat-value" id="activity-total">-</div>
-                                <div class="stat-label">Briefe mit Tagesdatum</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="activity-busiest-day">-</div>
-                                <div class="stat-label">Aktivster Tag</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="activity-busiest-year">-</div>
-                                <div class="stat-label">Aktivstes Jahr</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value" id="activity-avg-per-month">-</div>
-                                <div class="stat-label">Briefe/Monat</div>
                             </div>
                         </div>
 
@@ -753,6 +740,9 @@
                                 <i class="fas fa-chevron-right" aria-hidden="true"></i>
                             </button>
                         </div>
+
+                        <!-- Busiest year, month and day in one sentence, filled by activity-view.js -->
+                        <p id="activity-summary" class="activity-summary"></p>
 
                         <!-- Heatmap Container -->
                         <div class="activity-heatmap-wrapper">
@@ -778,6 +768,7 @@
                             <span class="activity-cell activity-level-4"></span>
                             <span class="activity-legend-label">Mehr</span>
                         </div>
+                        <p id="activity-without-day-note" class="filter-help hidden"></p>
 
                         <div id="activity-table" class="chart-table-host"></div>
 
@@ -794,7 +785,7 @@
                     <div class="comparison-container">
                         <div class="view-header">
                             <h2 class="view-header__title">Vergleichsanalyse</h2>
-                            <p class="view-header__description">Vergleiche zwei Personen, Zeiträume oder Orte</p>
+                            <p class="view-header__description">Zwei Personen, Zeiträume oder Orte nebeneinander, mit ihren Briefen, Orten und Überschneidungen.</p>
                             <div class="view-header__actions">
                                 <button class="comparison-mode-btn active" data-mode="persons">
                                     <i class="fas fa-users" aria-hidden="true"></i> Personen
@@ -864,7 +855,7 @@
                         <!-- Platzhalter -->
                         <div class="comparison-placeholder" id="comparison-placeholder">
                             <i class="fas fa-balance-scale" aria-hidden="true"></i>
-                            <p>Wähle zwei Elemente zum Vergleichen</p>
+                            <p>Wählen Sie oben zwei Einträge zum Vergleich.</p>
                         </div>
                     </div>
                 </div>
@@ -938,7 +929,7 @@
                     <button class="export-option" data-format="json">
                         <i class="fas fa-file-code" aria-hidden="true"></i>
                         <span>JSON</span>
-                        <small>Briefe mit Erwähnungen und Indizes</small>
+                        <small>Vollständige Briefdaten mit Indizes</small>
                     </button>
                 </div>
                 <p class="export-info" id="export-info"></p>

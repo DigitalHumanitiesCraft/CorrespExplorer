@@ -10,7 +10,7 @@ status: draft
 language: de
 version: 0.1
 created: 2025-12-03
-updated: 2026-11-10
+updated: 2026-11-14
 authors: [Christopher Pollin]
 template:
   name: Vorlage Index
@@ -46,6 +46,7 @@ Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index,
 - `knowledge/` enthält die dauerhaft gepflegten Promptotyping Documents einschließlich `handoff.md`.
 - `research-artefacts/` enthält den Paper-Entwurf zur Entstehung des Werkzeugs als Forschung und den Prompt für ein externes LLM-Review.
 - `docs/data/` enthält Beispiel- und Testdatensätze, `preprocessing/` die Python-Skripte, die erweiterte Datensätze erzeugen.
+- `verification/` enthält Prüfwerkzeuge für Bestände außerhalb des Repositorys: `check-corpus.mjs` vergleicht die Parser-Ausgabe Brief für Brief mit den Quelldateien, `serve_local_corpus.py` bindet einen lokalen Ordner für den Explorer ein. Daten liegen dort nicht.
 - `docs/vendor/` enthält die eingebundenen Bibliotheken und Schriften mit ihren Lizenzdateien ([architecture.md](architecture.md#bibliotheken)).
 
 ## Lesepfade

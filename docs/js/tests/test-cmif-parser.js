@@ -312,6 +312,12 @@ export const CMIFParserTests = {
                 assert(new Set(ids).size === ids.length, `Eindeutige IDs erwartet, erhalten ${ids.join(', ')}`);
                 assert(data.meta.title === 'Test Series: Letter Records', `Reihentitel erwartet, erhalten ${data.meta.title}`);
                 assert(data.meta.files.loaded === 3 && data.meta.files.skipped[0]?.name === 'leer.xml', `Dateibilanz: ${JSON.stringify(data.meta.files)}`);
+                // R05 in both copies of file b is a further record of letter R01 (same shelfmark and date)
+                const r01 = data.letters.find(l => l.id === 'REC.a.1');
+                assert(r01.records?.length === 3 && r01.recordsDiffer === true, `R01 mit 3 Einträgen, die abweichen, erhalten ${JSON.stringify(r01.records)}`);
+                assert(r01.place_sent.name === 'London', `Der erste Eintrag mit Datum führt, erhalten ${r01.place_sent.name}`);
+                assert(data.meta.files.records === 8, `8 Einträge erwartet, erhalten ${data.meta.files.records}`);
+                assert(data.letters.every(l => !l.dateImplausible), 'Kein Jahr gilt in einem kleinen Bestand als unplausibel');
                 assert(data.meta.publishers.length === 1, `Ein Herausgeber erwartet, erhalten ${JSON.stringify(data.meta.publishers)}`);
                 // R03 names her without authority id, which stays a separate key (ADR-001)
                 assert(data.indices.persons['000000001'].letter_count === 5, `Anna Muster mit GND in 5 Briefen, erhalten ${data.indices.persons['000000001'].letter_count}`);

@@ -5,7 +5,8 @@ import { parseCMIF } from '../cmif-parser.js';
 import { personKey, placeKey, personAuthority, isKnownPlace } from '../utils.js';
 import { analyzeResearchQuestions, summarizeCorpus } from '../research-paths.js';
 import { basketSelectionForView } from '../knowledge-path.js';
-import { datasetToJson, lettersToCsv, LETTER_EXPORT_COLUMNS, CSV_BOM } from '../export.js';
+import { datasetToJson, lettersToCsv, letterExportRow, LETTER_EXPORT_COLUMNS, CSV_BOM } from '../export.js';
+import { describeFilters, filterSentence } from '../views/view-support.js';
 import { assert } from './test-runner.js';
 
 const lettersOf = (letters, key) =>
@@ -112,6 +113,45 @@ export const ResearchPathTests = {
                 const letter = data.letters.find(l => l.sender?.id && l.sender?.authority);
                 const line = lettersToCsv([letter]).split('\n')[1];
                 assert(line.includes(`"${letter.sender.id}","${letter.sender.authority}"`), `Zeile ohne Normdatei: ${line}`);
+            }
+        },
+        {
+            // The export keeps the earlier columns in their order and appends the transmission fields
+            name: 'CSV-Export: Überlieferungsmerkmale als angehängte Spalten (test-letter-records.xml)',
+            async run() {
+                const header = lettersToCsv([]).slice(CSV_BOM.length).split(',');
+                assert(header.slice(0, 19).join(',') === 'id,date,date_to,year,date_precision,date_certainty,sender_name,sender_id,sender_authority,sender_precision,recipient_name,recipient_id,recipient_authority,recipient_precision,place_name,place_geonames,place_precision,language,url',
+                    `Bisherige Spalten verändert: ${header.slice(0, 19).join(',')}`);
+                const { letters } = await parseCMIF('data/test-letter-records.xml');
+                const [r01, r02, r03] = letters.map(letterExportRow);
+                assert(r01.signature === 'TA/B1.1' && r01.postmark === '9. APR 1937' && r01.address === 'Salzburg, Beispielgasse 5',
+                    `Signatur, Poststempel, Anschrift: ${JSON.stringify(r01)}`);
+                assert(r01.date_inferred === false && r01.records === 1 && r01.records_differ === false, 'Gelesenes Datum, ein Datensatz');
+                assert(r02.date_inferred === true && r02.place_inferred === true, 'Erschlossenes Datum und erschlossener Ort');
+                assert(r02.recipients_all === `${letters[1].recipients[0].name}; ${letters[1].recipients[1].name}`, `Alle Empfänger: ${r02.recipients_all}`);
+                assert(r03.date_text === 'Pfingsten 1938' && r03.date === null, 'Datum nur als Text');
+                const lines = lettersToCsv(letters).split('\n');
+                assert(lines.length === letters.length + 1, 'Eine Zeile je Brief');
+                assert(lines[1].split('","').length === LETTER_EXPORT_COLUMNS.length, 'Jede Zeile hat alle Spalten');
+                const json = JSON.parse(datasetToJson(letters, { exported: '2026-11-14' }));
+                assert(json.letters[0].postmark === '9. APR 1937' && json.letters[1].recipients.length === 2 && json.letters[2].dateText === 'Pfingsten 1938',
+                    'JSON trägt Poststempel, alle Empfänger und Datumstext');
+            }
+        },
+        {
+            // Views without sidebar and the export dialog state the filter in one sentence
+            name: 'filterSentence: aktiver Filter als Satz mit Namen statt Schlüsseln',
+            async run() {
+                const { letters } = await parseCMIF('data/test-letter-records.xml');
+                const none = { temporal: null, languages: null, person: null, place: null, subject: null, quality: {}, features: null };
+                assert(filterSentence(none, letters, letters.length) === '', 'Ohne Filter kein Satz');
+                const person = personKey(letters[0].sender);
+                const filters = { ...none, person, temporal: { min: 1937, max: 1938 }, features: ['postmark'] };
+                const parts = describeFilters(filters, letters);
+                assert(parts[0] === `Person „${letters[0].sender.name}“`, `Name statt Schlüssel erwartet: ${parts[0]}`);
+                const sentence = filterSentence(filters, letters, 1);
+                assert(sentence === `Gezeigt wird 1 von 4 Briefen, gefiltert nach Person „${letters[0].sender.name}“, Jahren 1937 bis 1938 und Merkmal „Mit Poststempel“.`,
+                    `Satz: ${sentence}`);
             }
         },
         {

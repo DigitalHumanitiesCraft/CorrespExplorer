@@ -31,6 +31,7 @@ import { isCorrespSearchUrl, correspSearchShareUrl } from './correspsearch-api.j
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
 // View modules
+import { filterSentence } from './views/view-support.js';
 import { initTimelineView, renderTimeline as renderTimelineView } from './views/timeline-view.js';
 import { initActivityView, renderActivity as renderActivityView } from './views/activity-view.js';
 import { initComparisonView, renderComparison as renderComparisonView } from './views/comparison-view.js';
@@ -1481,7 +1482,7 @@ function subjectLabelForKey(key) {
     return getSubjectIndex()?.[key]?.label || dataIndices.subjects?.[key]?.label || key;
 }
 
-const FILTER_BADGE_ORDER = ['person-filter-display', 'place-filter-display', 'subject-filter-display'];
+const FILTER_BADGE_ORDER = ['person-filter-display', 'place-filter-display', 'subject-filter-display', 'feature-filter-display'];
 
 /**
  * Removable badge of an active person, place or subject filter under the sidebar stats. The
@@ -1532,6 +1533,14 @@ function updateFilterBadges() {
         selectedPlaceFilter ? placeNameForKey(selectedPlaceFilter) : null, clearPlaceFilter);
     updateFilterBadge('subject-filter-display', 'subject-filter-active', 'fa-tag',
         activeSubjectFilter ? subjectLabelForKey(activeSubjectFilter) : null, clearSubjectFilter);
+    // Transmission filters can be set from another view, so they show as a badge like the others
+    const featureLabels = LETTER_FEATURES.filter(f => featureFilter.has(f.key)).map(f => f.label);
+    updateFilterBadge('feature-filter-display', 'person-filter-active feature-filter-active', 'fa-filter',
+        featureLabels.length ? featureLabels.join(', ') : null, () => {
+            featureFilter.clear();
+            document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = false; });
+            applyFilters();
+        });
 }
 
 // The sidebar figures show the filtered share of the dataset, so an active filter is never silent
@@ -1662,6 +1671,17 @@ function buildFeatureFilter() {
     const group = document.getElementById('feature-filter-group');
     const container = document.getElementById('feature-checkboxes');
     if (!group || !container) return;
+    // A quality filter that would keep every letter or none says nothing about this dataset
+    const qualityTests = {
+        'filter-precise-dates': l => l.datePrecision === 'day',
+        'filter-known-persons': l => Boolean(l.sender?.id && l.recipient && letterRecipients(l).every(r => r.id)),
+        'filter-located-places': l => Boolean(l.place_sent?.lat && l.place_sent?.lon)
+    };
+    for (const [id, test] of Object.entries(qualityTests)) {
+        const count = allLetters.filter(test).length;
+        document.getElementById(id)?.closest('label')?.classList.toggle('hidden', count === 0 || count === allLetters.length);
+    }
+
     const present = LETTER_FEATURES.filter(feature => allLetters.some(feature.test));
     group.classList.toggle('hidden', present.length === 0);
     container.innerHTML = present.map(feature => `
@@ -1834,6 +1854,14 @@ function initPersonsView() {
             renderPersonsList();
         });
     }
+
+    const kindSelect = document.getElementById('person-kind');
+    if (kindSelect) {
+        kindSelect.addEventListener('change', (e) => {
+            personsKind = e.target.value;
+            renderPersonsList();
+        });
+    }
 }
 
 /**
@@ -1899,6 +1927,15 @@ function renderOverview() {
             parts.push(externalLink(cmifUrl, 'CMIF'));
         }
 
+        // Several files loaded as one dataset: how many, and how records became letters
+        if (meta.files?.total > 1) {
+            const n = value => value.toLocaleString('de-DE');
+            let note = `${n(meta.files.loaded)} Dateien`;
+            if (meta.files.records > totalLetters) note += `, ${n(meta.files.records)} Einträge zu ${n(totalLetters)} Briefen zusammengeführt`;
+            if (meta.files.skipped?.length) note += `, ${n(meta.files.skipped.length)} ohne Briefe`;
+            parts.push(escapeHtml(note));
+        }
+
         sourceInlineEl.innerHTML = parts.length > 0
             ? parts.join(' <span class="source-sep">|</span> ')
             : '';
@@ -1910,9 +1947,15 @@ function renderOverview() {
     const placeQuality = percent(corpusQuality.places);
 
     // Update quality chips
-    updateQualityChip('quality-chip-dates', `${dateQuality}% Datiert`);
-    updateQualityChip('quality-chip-persons', `${personQuality}% Identifiziert`);
-    updateQualityChip('quality-chip-places', `${placeQuality}% Georeferenziert`);
+    updateQualityChip('quality-chip-dates', `${dateQuality}% auf den Tag datiert`);
+    updateQualityChip('quality-chip-persons', `${personQuality}% mit Normdatensatz`);
+    updateQualityChip('quality-chip-places', `${placeQuality}% mit Koordinaten`);
+    renderFeatureChips();
+
+    // No entry point leads into a view the dataset cannot fill
+    document.querySelectorAll('.entry-point-btn').forEach(btn => {
+        btn.classList.toggle('hidden', availableViews[btn.dataset.target]?.available === false);
+    });
 
     // Setup entry point buttons
     setupEntryPointButtons();
@@ -1944,6 +1987,35 @@ function renderOverview() {
 function updateQualityChip(chipId, label) {
     const spanEl = document.getElementById(chipId)?.querySelector('span');
     if (spanEl) spanEl.textContent = label;
+}
+
+/**
+ * What the source records about the transmission, as buttons that list exactly those letters.
+ * Only features the dataset has appear, so plain CMIF shows none.
+ */
+function renderFeatureChips() {
+    const container = document.getElementById('overview-features');
+    if (!container) return;
+    const OVERVIEW_FEATURES = ['undated', 'dateImplausible', 'dateInferred', 'placeInferred', 'recordsDiffer'];
+    const chips = LETTER_FEATURES
+        .filter(feature => OVERVIEW_FEATURES.includes(feature.key))
+        .map(feature => ({ feature, count: allLetters.filter(feature.test).length }))
+        .filter(({ count }) => count > 0);
+    container.classList.toggle('hidden', chips.length === 0);
+    container.innerHTML = chips.map(({ feature, count }) =>
+        `<button type="button" class="quality-chip quality-chip--link" data-feature="${feature.key}">${count.toLocaleString('de-DE')} ${escapeHtml(feature.label)}</button>`
+    ).join('');
+    container.querySelectorAll('[data-feature]').forEach(btn => {
+        btn.addEventListener('click', () => showLettersWithFeature(btn.dataset.feature));
+    });
+}
+
+// The letter list under exactly one transmission feature
+function showLettersWithFeature(key) {
+    featureFilter = new Set([key]);
+    document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = cb.value === key; });
+    applyFilters({ render: false });
+    switchView('letters');
 }
 
 /**
@@ -1987,6 +2059,7 @@ function renderPersonsList() {
             id: person.id,
             authority: person.authority,
             precision: person.precision,
+            isOrganization: Boolean(person.isOrganization),
             sent: 0,
             received: 0
         };
@@ -1998,6 +2071,25 @@ function renderPersonsList() {
     });
 
     let persons = Object.values(personsMap);
+
+    // The kind filter offers only kinds the list holds, each with its count
+    const kinds = {
+        all: { label: 'Alle', test: () => true },
+        identified: { label: 'Mit Normdatensatz', test: p => Boolean(p.id) },
+        named: { label: 'Ohne Normdatensatz', test: p => !p.id },
+        organizations: { label: 'Körperschaften', test: p => p.isOrganization }
+    };
+    const kindSelect = document.getElementById('person-kind');
+    if (kindSelect) {
+        const options = Object.entries(kinds)
+            .map(([key, kind]) => [key, kind.label, persons.filter(kind.test).length])
+            .filter(([key, , count]) => key === 'all' || (count > 0 && count < persons.length));
+        if (!options.some(([key]) => key === personsKind)) personsKind = 'all';
+        kindSelect.innerHTML = options.map(([key, label, count]) =>
+            `<option value="${key}" ${key === personsKind ? 'selected' : ''}>${label} (${count.toLocaleString('de-DE')})</option>`).join('');
+        kindSelect.closest('.list-sort')?.classList.toggle('hidden', options.length < 2);
+    }
+    persons = persons.filter(kinds[personsKind].test);
 
     if (personsSearchTerm) {
         persons = persons.filter(p => p.name.toLowerCase().includes(personsSearchTerm));
@@ -2060,6 +2152,8 @@ function renderPersonsList() {
                     <div class="person-stats">
                         <span><i class="fas fa-paper-plane" aria-hidden="true"></i> ${person.sent} gesendet</span>
                         <span><i class="fas fa-inbox" aria-hidden="true"></i> ${person.received} empfangen</span>
+                        ${person.isOrganization ? '<span class="person-kind">Körperschaft</span>' : ''}
+                        ${!person.id && person.precision !== 'unknown' ? '<span class="person-kind">ohne Normdatensatz</span>' : ''}
                     </div>
                 </div>
                 <div class="person-actions">
@@ -2067,12 +2161,10 @@ function renderPersonsList() {
                             title="Person zum Korb hinzufügen" aria-label="${name} zum Korb hinzufügen">
                         <i class="fas fa-star" aria-hidden="true"></i>
                     </button>
-                    ${person.id ? `
-                        <button type="button" class="btn-person-info" data-person-id="${escapeHtml(person.key)}"
-                                title="Person-Details anzeigen" aria-label="Details zu ${name}">
-                            <i class="fas fa-info-circle" aria-hidden="true"></i>
-                        </button>
-                    ` : ''}
+                    <button type="button" class="btn-person-info" data-person-id="${escapeHtml(person.key)}"
+                            title="Details anzeigen" aria-label="Details zu ${name}">
+                        <i class="fas fa-info-circle" aria-hidden="true"></i>
+                    </button>
                     ${correspSearchUrl ? `
                         <a href="${escapeHtml(correspSearchUrl)}" target="_blank" rel="noopener noreferrer" class="btn-correspsearch"
                            title="Weitere Briefe bei correspSearch suchen" aria-label="${name} bei correspSearch suchen">
@@ -2119,6 +2211,44 @@ function renderPersonsList() {
     });
 }
 
+let personsKind = 'all';
+
+/**
+ * What the loaded letters say about one correspondent: counts, period, counterparts and sending
+ * places, from all letters regardless of the active filter.
+ */
+function personFacts(key) {
+    const counterparts = new Map();
+    const places = new Map();
+    const years = [];
+    let sent = 0;
+    let received = 0;
+    const bump = (map, name) => { if (name) map.set(name, (map.get(name) || 0) + 1); };
+    for (const letter of allLetters) {
+        const recipients = letterRecipients(letter);
+        const isSender = personKey(letter.sender) === key;
+        const isRecipient = recipients.some(r => personKey(r) === key);
+        if (!isSender && !isRecipient) continue;
+        if (letter.year) years.push(letter.year);
+        if (isSender) {
+            sent++;
+            recipients.forEach(r => bump(counterparts, r.name));
+            bump(places, letter.place_sent?.name);
+        }
+        if (isRecipient) {
+            received++;
+            if (!isSender) bump(counterparts, letter.sender?.name);
+        }
+    }
+    const top = (map, n) => [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, n);
+    return {
+        sent, received,
+        period: years.length ? [Math.min(...years), Math.max(...years)] : null,
+        counterparts: top(counterparts, 5),
+        places: top(places, 5)
+    };
+}
+
 // Letters list
 
 let lettersSortOrder = 'date-desc';
@@ -2145,10 +2275,13 @@ function initLettersView() {
 
 // Date order with undated letters last in both directions (they have no place on the time axis)
 function compareByDate(a, b, direction) {
-    if (!a.date && !b.date) return 0;
-    if (!a.date) return 1;
-    if (!b.date) return -1;
-    return direction * a.date.localeCompare(b.date);
+    // An implausible date sorts with the undated letters, as on the time axis
+    const dateA = a.dateImplausible ? null : a.date;
+    const dateB = b.dateImplausible ? null : b.date;
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+    return direction * dateA.localeCompare(dateB);
 }
 
 const BASKET_LABELS = {
@@ -2181,6 +2314,11 @@ function toggleBasketButton(btn, type, id, { pressed = true } = {}) {
     return inBasket;
 }
 
+// Letters shown per step; a longer list grows on request instead of ending silently
+const LETTERS_PAGE = 200;
+let lettersLimit = LETTERS_PAGE;
+let lettersListKey = '';
+
 function renderLettersList() {
     const container = elements.lettersList;
     if (!container) return;
@@ -2205,53 +2343,66 @@ function renderLettersList() {
         }
     });
 
-    // Limit to first 500 for performance
-    const displayLetters = letters.slice(0, 500);
+    // A new filter, search or order starts again at the first step
+    const listKey = `${lettersSearchTerm}|${lettersSortOrder}|${state.toURLParams().toString()}`;
+    if (listKey !== lettersListKey) {
+        lettersListKey = listKey;
+        lettersLimit = LETTERS_PAGE;
+    }
+    const displayLetters = letters.slice(0, lettersLimit);
+
+    // The count of the list is visible above it, also for a search and for no hit at all
+    const result = document.getElementById('letters-result');
+    if (result) {
+        const total = allLetters.length.toLocaleString('de-DE');
+        const found = letters.length.toLocaleString('de-DE');
+        const narrowed = letters.length !== allLetters.length;
+        const search = lettersSearchTerm ? ` für „${lettersSearchTerm}“` : '';
+        const shown = letters.length > displayLetters.length ? `, die ersten ${displayLetters.length.toLocaleString('de-DE')} angezeigt` : '';
+        result.textContent = narrowed || search
+            ? `${found} von ${total} Briefen${search}${shown}`
+            : `${total} Briefe${shown}`;
+    }
+    // The brackets are explained once where they occur, not only in a tooltip
+    document.getElementById('letters-legend')?.classList.toggle('hidden',
+        !displayLetters.some(l => l.dateInferred || l.place_sent?.inferred));
 
     if (displayLetters.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-envelope" aria-hidden="true"></i>
-                <p>Keine Briefe gefunden</p>
+                <p>Keine Briefe gefunden. ${lettersSearchTerm ? 'Ändern Sie den Suchbegriff' : 'Ändern Sie die Filter'} oder setzen Sie die Filter in der Seitenleiste zurück.</p>
             </div>
         `;
         return;
     }
 
-    container.innerHTML = displayLetters.map((letter, index) => {
+    container.innerHTML = displayLetters.map(letter => {
         const senderName = formatPersonName(letter.sender?.name, letter.sender?.precision);
         // Every recipient is named in the row; an absent recipient keeps the placeholder
         const recipients = letterRecipients(letter);
         const recipientName = recipients.length
-            ? recipients.map(r => formatPersonName(r.name, r.precision)).join('<span class="letter-recipient-sep">, </span>')
+            ? recipients.map(r => formatPersonName(r.name, r.precision)).join('; ')
             : formatPersonName(null);
         const date = formatDateWithPrecision(letter);
         const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision, letter.place_sent?.inferred);
         const language = letter.language?.label || '';
         const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
         const inBasket = basketIsInBasket('letters', letter.id);
-        const detailsId = `letter-details-${index}`;
+        const labelled = (label, value) => value
+            ? `<span class="letter-meta__labelled"><span class="letter-meta__label">${label}</span> ${escapeHtml(value)}</span>` : '';
+        const recordNote = letter.records?.length > 1
+            ? `${letter.records.length} Einträge in der Quelle${letter.recordsDiffer ? ', Angaben weichen ab' : ''}` : '';
 
-        const hasDetails = letter.mentions?.subjects?.length > 0 ||
-                          letter.mentions?.persons?.length > 0 ||
-                          letter.mentions?.places?.length > 0 ||
-                          letter.sender?.id ||
-                          recipients.some(r => r.id);
-
-        // The participants are the expand button; the star stays a sibling control (no nesting)
-        const participants = `
-            ${hasDetails ? '<i class="fas fa-chevron-right expand-icon" aria-hidden="true"></i>' : ''}
-            ${senderName}
-            <span class="letter-arrow" role="img" aria-label="an"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
-            ${recipientName}
-        `;
-
+        // The participants are the button that opens the letter; the star stays a sibling control
         return `
-            <div class="letter-card ${hasDetails ? 'has-details' : ''}" data-id="${escapeHtml(letter.id || '')}">
+            <div class="letter-card" data-id="${escapeHtml(letter.id || '')}">
                 <div class="letter-header">
-                    ${hasDetails
-                        ? `<button type="button" class="letter-participants letter-toggle" aria-expanded="false" aria-controls="${detailsId}">${participants}</button>`
-                        : `<div class="letter-participants">${participants}</div>`}
+                    <button type="button" class="letter-participants letter-toggle" aria-haspopup="dialog">
+                        <span>${senderName}</span>
+                        <span class="letter-arrow" role="img" aria-label="an"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+                        <span>${recipientName}</span>
+                    </button>
                     <div class="letter-header-actions">
                         <div class="letter-date ${dateClass}">${date}</div>
                         <button type="button" class="btn-letter-basket ${inBasket ? 'in-basket' : ''}"
@@ -2264,30 +2415,38 @@ function renderLettersList() {
                 </div>
                 <div class="letter-meta">
                     ${placeName ? `<span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${placeName}</span>` : ''}
-                    ${letter.postmark ? `<span class="letter-meta__labelled"><span class="letter-meta__label">Poststempel</span> ${escapeHtml(letter.postmark)}</span>` : ''}
-                    ${letter.address ? `<span class="letter-meta__labelled"><span class="letter-meta__label">Anschrift</span> ${escapeHtml(letter.address)}</span>` : ''}
-                    ${letter.signature ? `<span class="letter-meta__labelled"><span class="letter-meta__label">Signatur</span> ${escapeHtml(letter.signature)}</span>` : ''}
+                    ${labelled('Poststempel', letter.postmark)}
+                    ${labelled('Anschrift', letter.address)}
+                    ${labelled('Signatur', letter.signature)}
+                    ${recordNote ? `<span class="letter-meta__note">${recordNote}</span>` : ''}
                     ${language ? `<span><i class="fas fa-language" aria-hidden="true"></i> ${escapeHtml(language)}</span>` : ''}
                     ${safeUrl(letter.url) ? `<span><a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt" aria-hidden="true"></i> Quelle</a></span>` : ''}
                 </div>
-                ${hasDetails ? `<div class="letter-details hidden" id="${detailsId}">${buildLetterDetails(letter)}</div>` : ''}
             </div>
         `;
     }).join('');
 
-    if (letters.length > 500) {
+    if (letters.length > displayLetters.length) {
+        const rest = letters.length - displayLetters.length;
         container.insertAdjacentHTML('beforeend', `
-            <div class="empty-state">
-                <p>Zeige 500 von ${letters.length} Briefen. Nutzen Sie die Suche oder Filter.</p>
-            </div>
+            <button type="button" class="btn btn-secondary list-more" id="letters-more">
+                Weitere ${Math.min(rest, LETTERS_PAGE).toLocaleString('de-DE')} von ${rest.toLocaleString('de-DE')} Briefen anzeigen
+            </button>
         `);
+        container.querySelector('#letters-more').addEventListener('click', () => {
+            const firstNew = displayLetters.length;
+            lettersLimit += LETTERS_PAGE;
+            renderLettersList();
+            // Keyboard focus continues at the first letter that was added
+            container.querySelectorAll('.letter-toggle')[firstNew]?.focus();
+        });
     }
 
-    // The toggle button and a click on the card surface expand the inline details
-    container.querySelectorAll('.letter-card.has-details').forEach(card => {
+    // The button and a click on the card surface open the letter with everything the source records
+    container.querySelectorAll('.letter-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('a, .btn-letter-basket')) return;
-            toggleLetterExpand(card);
+            showLetterDetail(card.dataset.id);
         });
     });
 
@@ -2297,52 +2456,6 @@ function renderLettersList() {
             if (btn.dataset.letterId) toggleBasketButton(btn, 'letters', btn.dataset.letterId);
         });
     });
-}
-
-function toggleLetterExpand(card) {
-    const details = card.querySelector('.letter-details');
-    const icon = card.querySelector('.expand-icon');
-    const expand = !card.classList.contains('expanded');
-    card.classList.toggle('expanded', expand);
-    card.querySelector('.letter-toggle')?.setAttribute('aria-expanded', String(expand));
-    details?.classList.toggle('hidden', !expand);
-    icon?.classList.replace(expand ? 'fa-chevron-right' : 'fa-chevron-down', expand ? 'fa-chevron-down' : 'fa-chevron-right');
-}
-
-// Inline letter details: persons with authority links, mentions, correspSearch links
-function buildLetterDetails(letter) {
-    let html = '<div class="letter-detail-content">';
-
-    html += '<div class="letter-detail-persons">';
-    html += `<span class="detail-person"><strong>Von:</strong> ${buildPersonLink(letter.sender)}</span>`;
-    html += `<span class="detail-person"><strong>An:</strong> ${letterRecipients(letter).map(buildPersonLink).join(', ') || buildPersonLink(null)}</span>`;
-    html += '</div>';
-
-    const mentionGroups = [
-        ['Themen', letter.mentions?.subjects, s => s.label],
-        ['Personen', letter.mentions?.persons, p => p.name],
-        ['Orte', letter.mentions?.places, p => p.name]
-    ];
-    for (const [label, items, text] of mentionGroups) {
-        if (!items?.length) continue;
-        html += `<div class="letter-detail-mentions"><strong>${label}:</strong> `;
-        html += items.map(item => `<span class="mention-tag">${escapeHtml(text(item))}</span>`).join(' ');
-        html += '</div>';
-    }
-
-    html += '<div class="letter-detail-links">';
-    const senderCorrespUrl = buildCorrespSearchUrl(letter.sender);
-    const recipientCorrespUrl = buildCorrespSearchUrl(letter.recipient);
-    if (senderCorrespUrl) {
-        html += correspSearchLink(senderCorrespUrl, letter.sender.name, 'detail-link');
-    }
-    if (recipientCorrespUrl && letter.recipient?.name !== letter.sender?.name) {
-        html += correspSearchLink(recipientCorrespUrl, letter.recipient.name, 'detail-link');
-    }
-    html += '</div>';
-    html += '</div>';
-
-    return html;
 }
 
 function correspSearchLink(url, name, className) {
@@ -2390,6 +2503,21 @@ function showLetterDetail(letterId) {
     if (letter.postmark) html += detailRow('Poststempel', escapeHtml(letter.postmark));
     if (letter.address) html += detailRow('Anschrift', escapeHtml(letter.address));
     if (letter.signature) html += detailRow('Signatur', escapeHtml(letter.signature));
+    html += '</div>';
+
+    // Several records of the source for one letter are listed as they stand, nothing is decided between them
+    if (letter.records?.length > 1) {
+        html += '<div class="letter-detail-section">';
+        html += `<h4>${letter.records.length} Einträge in der Quelle${letter.recordsDiffer ? ', Angaben weichen ab' : ''}</h4>`;
+        html += '<ul class="letter-records">';
+        html += letter.records.map(record => `<li><span class="letter-records__id">${escapeHtml(record.id)}</span> ${escapeHtml([
+            record.sender || 'ohne Absender',
+            `an ${record.recipients.join('; ') || 'ohne Empfänger'}`,
+            record.place || 'ohne Ort',
+            record.date || 'ohne Datum'
+        ].join(', '))}</li>`).join('');
+        html += '</ul>';
+    }
     if (letter.language?.label) {
         html += detailRow('Sprache', escapeHtml(letter.language.label));
     }
@@ -2425,11 +2553,12 @@ function showLetterDetail(letterId) {
     }
 
     const senderCorrespUrl = buildCorrespSearchUrl(letter.sender);
-    const recipientCorrespUrl = buildCorrespSearchUrl(letter.recipient);
-    if (senderCorrespUrl || recipientCorrespUrl) {
+    const recipientLinks = letterRecipients(letter)
+        .map(r => [buildCorrespSearchUrl(r), r.name]).filter(([url]) => url);
+    if (senderCorrespUrl || recipientLinks.length) {
         html += '<div class="corresp-search-links">';
         if (senderCorrespUrl) html += correspSearchLink(senderCorrespUrl, letter.sender.name, 'btn btn-corresp');
-        if (recipientCorrespUrl) html += correspSearchLink(recipientCorrespUrl, letter.recipient.name, 'btn btn-corresp');
+        html += recipientLinks.map(([url, name]) => correspSearchLink(url, name, 'btn btn-corresp')).join('');
         html += '</div>';
     }
     html += '</div>';
@@ -2528,7 +2657,8 @@ function renderPersonDetail(detail, enriched) {
         html += `<div class="person-detail-avatar" aria-hidden="true">${escapeHtml(getPersonInitials(person.name, person.precision))}</div>`;
     }
     html += '<div class="person-detail-info">';
-    html += `<h3>${escapeHtml(enriched?.name || person.name)}</h3>`;
+    // The dialog title carries the name; a second heading repeats it only for a differing Wikidata name
+    if (enriched?.name && enriched.name !== person.name) html += `<h3>${escapeHtml(enriched.name)}</h3>`;
 
     if (enriched) {
         html += `<div class="wikidata-badge" title="Daten angereichert via Wikidata">
@@ -2559,6 +2689,20 @@ function renderPersonDetail(detail, enriched) {
         </button>`;
     }
     html += '</div></div>';
+
+    // Facts from the loaded letters come first; they need no external service
+    const facts = personFacts(personId);
+    const listed = entries => entries.map(([name, count]) => `${escapeHtml(name)} (${count.toLocaleString('de-DE')})`).join(', ');
+    html += '<div class="person-detail-section">';
+    html += '<h4>Im Datensatz</h4>';
+    html += detailRow('Briefe', `${facts.sent.toLocaleString('de-DE')} gesendet, ${facts.received.toLocaleString('de-DE')} empfangen`);
+    if (facts.period) html += detailRow('Zeitraum', facts.period[0] === facts.period[1] ? String(facts.period[0]) : `${facts.period[0]} bis ${facts.period[1]}`);
+    if (facts.counterparts.length) html += detailRow('Häufigste Gegenüber', listed(facts.counterparts));
+    if (facts.places.length) html += detailRow('Absendeorte', listed(facts.places));
+    html += detailRow('Nachweis', person.isOrganization
+        ? (authorityId ? 'Körperschaft mit Normdatensatz' : 'Körperschaft ohne Normdatensatz')
+        : (authorityId ? 'Person mit Normdatensatz' : 'ohne Normdatensatz, nur mit Namen verzeichnet'));
+    html += '</div>';
 
     const authorityHref = authorityUrl(authority, authorityId);
     if (enriched) {
@@ -2674,7 +2818,8 @@ function initExport() {
         if (info) {
             info.textContent = empty
                 ? 'Der aktuelle Filter enthält keine Briefe. Ändern oder entfernen Sie Filter, um zu exportieren.'
-                : `${filteredLetters.length.toLocaleString('de-DE')} Briefe werden exportiert`;
+                // The sentence names the active filters in words, as in the views without sidebar
+                : `${filterSentence() || `Alle ${filteredLetters.length.toLocaleString('de-DE')} Briefe.`} Exportiert wird genau diese Auswahl, mit allen Angaben der Quelle zu Datierung, Empfängern, Signatur, Poststempel und Anschrift.`;
         }
         exportOptions?.forEach(option => { option.disabled = empty; });
         openModal(modal);

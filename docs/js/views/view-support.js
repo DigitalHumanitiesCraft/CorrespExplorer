@@ -1,7 +1,118 @@
 // Helpers shared by several views: design tokens for D3 attributes and the combobox behaviour of
 // the search fields. Kept here so the views do not each carry their own copy.
 
-import { escapeHtml } from '../utils.js';
+import { escapeHtml, letterRecipients, personKey, placeKey } from '../utils.js';
+import { LETTER_FEATURES, languageLabel } from '../constants.js';
+import { state } from '../state-manager.js';
+
+// German enumeration: "a", "a und b", "a, b und c"
+function joinGerman(parts) {
+    return parts.length < 2 ? parts.join('') : `${parts.slice(0, -1).join(', ')} und ${parts[parts.length - 1]}`;
+}
+
+/**
+ * The active filters in words, one phrase per filter, so a view without sidebar can say what
+ * narrows its letters. Names are resolved from the letters, as the sidebar badges do.
+ * @param {Object} filters - same shape as state.filters
+ * @param {Array} letters - all letters of the dataset
+ * @returns {string[]} phrases that read after "gefiltert nach"
+ */
+export function describeFilters(filters, letters) {
+    const parts = [];
+    if (filters.person) {
+        let name = filters.person;
+        for (const letter of letters) {
+            const person = [letter.sender, ...letterRecipients(letter)].find(p => personKey(p) === filters.person);
+            if (person?.name) { name = person.name; break; }
+        }
+        parts.push(`Person „${name}“`);
+    }
+    if (filters.place) {
+        const name = letters.find(l => placeKey(l.place_sent) === filters.place)?.place_sent?.name || filters.place;
+        parts.push(`Absendeort „${name}“`);
+    }
+    if (filters.subject) {
+        let label = filters.subject;
+        for (const letter of letters) {
+            const subject = letter.mentions?.subjects?.find(s => (s.uri || s.id || s.label) === filters.subject);
+            if (subject?.label) { label = subject.label; break; }
+        }
+        parts.push(`Thema „${label}“`);
+    }
+    if (filters.temporal?.undated) {
+        parts.push('Briefen ohne Jahr');
+    } else if (filters.temporal) {
+        const { min, max } = filters.temporal;
+        parts.push(min === max ? `Jahr ${min}` : `Jahren ${min} bis ${max}`);
+    }
+    if (filters.languages) {
+        parts.push(filters.languages.length === 0
+            ? 'keiner Sprache'
+            : `${filters.languages.length === 1 ? 'Sprache' : 'Sprachen'} ${joinGerman(filters.languages.map(languageLabel))}`);
+    }
+    for (const key of filters.features || []) {
+        const feature = LETTER_FEATURES.find(f => f.key === key);
+        if (feature) parts.push(`Merkmal „${feature.label}“`);
+    }
+    if (filters.quality?.preciseDates) parts.push('tagesgenauem Datum');
+    if (filters.quality?.knownPersons) parts.push('identifizierten Personen');
+    if (filters.quality?.locatedPlaces) parts.push('Orten mit Koordinaten');
+    return parts;
+}
+
+/**
+ * One sentence on the active filter, or an empty string without filter. Plain text, for the
+ * filter notice of the views without sidebar and for any other place that states the filter.
+ * @param {Object} [filters]
+ * @param {Array} [allLetters]
+ * @param {number} [shown] - number of letters the filter leaves
+ * @returns {string}
+ */
+export function filterSentence(filters = state.filters, allLetters = state.getAllLetters(), shown = state.getFilteredLetters().length) {
+    const parts = describeFilters(filters, allLetters);
+    if (parts.length === 0) return '';
+    const total = allLetters.length;
+    return `Gezeigt ${shown === 1 ? 'wird' : 'werden'} ${shown.toLocaleString('de-DE')} von ${total.toLocaleString('de-DE')} Briefen, gefiltert nach ${joinGerman(parts)}.`;
+}
+
+/**
+ * Notice under the header of a view without sidebar (activity, chronicle, comparison): the
+ * filter set elsewhere narrows these views too, and without the sidebar it would act unseen.
+ * The button uses the sidebar's reset button, which stays in the document while the sidebar is
+ * hidden, so no further hook into explore.js is needed. Focus then moves to the view heading,
+ * because the notice and its button disappear with the filter.
+ * @param {string} viewId - id of the view container, e.g. 'activity-view'
+ */
+export function renderFilterNotice(viewId) {
+    const header = document.querySelector(`#${viewId} .view-header`);
+    if (!header) return;
+    let notice = document.getElementById(`${viewId}-filter-notice`);
+    const sentence = filterSentence();
+    if (!sentence) {
+        notice?.classList.add('hidden');
+        return;
+    }
+    if (!notice) {
+        notice = document.createElement('div');
+        notice.id = `${viewId}-filter-notice`;
+        notice.className = 'view-filter-notice';
+        notice.setAttribute('role', 'status');
+        header.after(notice);
+    }
+    const reset = document.getElementById('reset-filters');
+    notice.innerHTML = `<span>${escapeHtml(sentence)}</span>${reset
+        ? '<button type="button" class="view-filter-notice__clear">Filter aufheben</button>'
+        : ''}`;
+    notice.classList.remove('hidden');
+    notice.querySelector('.view-filter-notice__clear')?.addEventListener('click', () => {
+        reset.click();
+        const title = header.querySelector('.view-header__title');
+        if (title) {
+            title.tabIndex = -1;
+            title.focus();
+        }
+    });
+}
 
 /**
  * Current values of design tokens from tokens.css. SVG presentation attributes and gradient stops

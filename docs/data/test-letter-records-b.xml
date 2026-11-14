@@ -36,4 +36,44 @@
       </correspDesc>
     </profileDesc>
   </teiHeader>
+  <text>
+    <body>
+      <listBibl>
+        <!-- CASE R05: second record of letter R01 of test-letter-records.xml (same shelfmark, same date),
+             as an edition lists a letter once per correspondent; it names another sending place -->
+        <biblFull xml:id="REC.b.1">
+          <fileDesc>
+            <titleStmt><title>R05</title></titleStmt>
+            <publicationStmt><ab>Einzelbrief</ab></publicationStmt>
+            <sourceDesc>
+              <msDesc>
+                <msIdentifier>
+                  <repository>Testarchiv</repository>
+                  <idno type="signature">TA/B1.1</idno>
+                </msIdentifier>
+              </msDesc>
+            </sourceDesc>
+          </fileDesc>
+          <profileDesc>
+            <correspDesc>
+              <correspAction type="sent">
+                <persName ref="http://d-nb.info/gnd/000000001">
+                  <surname>Muster</surname>
+                  <forename>Anna</forename>
+                </persName>
+                <date when="1937-04-09">9. 4. 37</date>
+                <placeName>Paris</placeName>
+              </correspAction>
+              <correspAction type="received">
+                <persName ref="http://d-nb.info/gnd/000000002">
+                  <surname>Beispiel</surname>
+                  <forename>Bruno</forename>
+                </persName>
+              </correspAction>
+            </correspDesc>
+          </profileDesc>
+        </biblFull>
+      </listBibl>
+    </body>
+  </text>
 </TEI>

@@ -221,14 +221,28 @@
 }
 
 /* Place Precision */
+/* A place known only by name is the normal case of many editions and stays unmarked;
+   its title says that it cannot stand on the map */
 .place-region {
+    color: inherit;
+}
+
+/* Values the edition inferred keep the editorial brackets and a muted tone */
+.place-inferred,
+.date-inferred {
     color: var(--color-text-muted);
+}
+
+/* A date the source wrote only as text, and a year far outside the dataset */
+.date-text {
     font-style: italic;
 }
 
-.place-region .region-hint {
-    /* No opacity: on card backgrounds the faded hint fell below 4.5:1 */
+.date-implausible .date-flag {
     font-size: var(--font-size-xs);
+    padding: 0 var(--space-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
 }
 
 .place-unknown {

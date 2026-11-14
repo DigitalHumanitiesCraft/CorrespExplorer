@@ -1,7 +1,7 @@
 // Timeline View
 // Stacked bar chart showing temporal distribution of correspondence
 
-import { LANGUAGE_COLORS, NO_LANGUAGE, languageLabel } from '../constants.js';
+import { LANGUAGE_COLORS, LETTER_FEATURES, NO_LANGUAGE, languageLabel } from '../constants.js';
 import { elements } from '../dom-cache.js';
 import { escapeHtml, showToast, isMultiYearSpan } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
@@ -48,10 +48,13 @@ export function renderTimeline() {
     const lettersToUse = filteredLetters;
     const isFiltered = filteredLetters.length < allLetters.length;
 
-    // Dated, undated and multi-year spans; a span has no year it belongs to (decision E5)
+    // Dated, undated and multi-year spans; a span has no year it belongs to (decision E5).
+    // "Undated" here means without a place on the axis: no date, a date only in words, or a year
+    // the parser withheld as implausible. The bin says which of these it holds.
     const spanLetters = lettersToUse.filter(isMultiYearSpan);
     const datedLetters = lettersToUse.filter(l => l.year && !isMultiYearSpan(l));
     const undatedLetters = lettersToUse.filter(l => !l.year);
+    const offAxis = offAxisGroups(undatedLetters);
 
     // Get all years from all letters for consistent x-axis
     const allYearsSet = new Set();
@@ -77,10 +80,13 @@ export function renderTimeline() {
     const languageTotals = {};
     let totalImprecise = 0;
 
-    // Initialize all years
+    // Initialize all years. `uncertain` counts each letter once whose date is imprecise or
+    // inferred; the two counts behind it name the reasons in tooltip, legend and table.
     for (let y = minYear; y <= maxYear; y++) {
-        yearData[y] = { total: 0, imprecise: 0, languages: {} };
+        yearData[y] = { total: 0, uncertain: 0, imprecise: 0, inferred: 0, languages: {} };
     }
+    let totalInferred = 0;
+    let totalUncertain = 0;
 
     // Check if we have actual language data (not just None/other)
     const hasLanguageData = lettersToUse.some(l => l.language?.code);
@@ -103,6 +109,15 @@ export function renderTimeline() {
         if (isImprecise) {
             yearData[year].imprecise++;
             totalImprecise++;
+        }
+        // A date the edition supplied is no reading of the source; it shares the hatching
+        if (letter.dateInferred) {
+            yearData[year].inferred++;
+            totalInferred++;
+        }
+        if (isImprecise || letter.dateInferred) {
+            yearData[year].uncertain++;
+            totalUncertain++;
         }
     });
 
@@ -137,7 +152,8 @@ export function renderTimeline() {
         const data = yearData[y];
         const totalHeight = data.total > 0 ? Math.max(4, (data.total / maxCount) * 100) : 0;
         const showLabel = (y - minYear) % labelInterval === 0 || y === maxYear;
-        const hasImprecise = data.imprecise > 0;
+        const hasImprecise = data.uncertain > 0;
+        const uncertainText = uncertainPhrase(data.imprecise, data.inferred);
 
         // Build stacked segments
         let segments = '';
@@ -145,7 +161,7 @@ export function renderTimeline() {
 
         // Add imprecise info to tooltip
         if (hasImprecise) {
-            tooltipParts.push(`<span class="tooltip-imprecise">${data.imprecise} mit unscharfem Datum</span>`);
+            tooltipParts.push(`<span class="tooltip-imprecise">${uncertainText}</span>`);
         }
 
         if (data.total > 0) {
@@ -169,12 +185,12 @@ export function renderTimeline() {
         }
 
         // Each year is a button for keyboard users; a roving tab stop keeps it one Tab for the chart
-        const barLabel = `${y}: ${data.total} Briefe${hasImprecise ? `, ${data.imprecise} mit unscharfem Datum` : ''}`;
+        const barLabel = `${y}: ${data.total} Briefe${hasImprecise ? `, ${uncertainText}` : ''}`;
         bars.push(`
-            <div class="timeline-bar-wrapper ${hasImprecise ? 'has-imprecise' : ''}" role="button" tabindex="-1" aria-label="${barLabel}" data-year="${y}" data-year-end="${y}" data-imprecise="${data.imprecise}">
+            <div class="timeline-bar-wrapper ${hasImprecise ? 'has-imprecise' : ''}" role="button" tabindex="-1" aria-label="${barLabel}" data-year="${y}" data-year-end="${y}" data-imprecise="${data.uncertain}">
                 <div class="timeline-stacked-bar" style="height: ${totalHeight}%">
                     ${segments}
-                    ${hasImprecise ? `<div class="timeline-uncertainty-overlay" style="height: ${(data.imprecise / data.total) * 100}%"></div>` : ''}
+                    ${hasImprecise ? `<div class="timeline-uncertainty-overlay" style="height: ${(data.uncertain / data.total) * 100}%"></div>` : ''}
                 </div>
                 <div class="timeline-bar-tooltip">${tooltipParts.join('<br>')}</div>
                 ${showLabel ? `<span class="timeline-bar-label">${y}</span>` : ''}
@@ -184,7 +200,15 @@ export function renderTimeline() {
 
     container.innerHTML = bars.join('');
     container.setAttribute('role', 'group');
-    container.setAttribute('aria-label', 'Briefe pro Jahr. Pfeiltasten wechseln das Jahr, Enter filtert auf das Jahr, Umschalt und Enter legt seine Briefe in den Korb');
+    container.setAttribute('aria-label', 'Briefe pro Jahr. Pfeiltasten wechseln das Jahr, Enter zeigt die Briefe des Jahres in der Briefliste, Umschalt und Enter legt sie in den Korb');
+
+    // The instruction names only what the chart offers: language segments exist only with languages
+    const description = document.querySelector('#timeline-view .view-header__description');
+    if (description) {
+        description.textContent = hasLanguageData
+            ? 'Klicken Sie auf ein Sprach-Segment, um nach Jahr und Sprache zu filtern.'
+            : 'Klicken Sie auf ein Jahr, um seine Briefe in der Briefliste zu sehen.';
+    }
 
     // Add Y-axis gridlines
     renderTimelineGridlines(container, maxCount);
@@ -207,38 +231,59 @@ export function renderTimeline() {
     }
 
     // Render undated letters bin
-    renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount);
+    renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount, offAxis);
     renderSpanBin(spanBin, spanLetters, maxCount);
 
     // Update total
     if (totalEl) {
-        const undatedInfo = (undatedLetters.length > 0 ? ` + ${undatedLetters.length} ohne Datum` : '') +
-            (spanLetters.length > 0 ? ` + ${spanLetters.length} über mehrere Jahre datiert` : '');
-        if (isFiltered) {
-            totalEl.textContent = `${datedLetters.length.toLocaleString('de-DE')} von ${allLetters.filter(l => l.year).length.toLocaleString('de-DE')} Briefen (${minYear}-${maxYear})${undatedInfo}`;
+        const fmt = n => n.toLocaleString('de-DE');
+        const spanInfo = spanLetters.length > 0 ? ` + ${spanLetters.length} über mehrere Jahre datiert` : '';
+        const dated = isFiltered
+            ? `${fmt(datedLetters.length)} von ${fmt(allLetters.filter(l => l.year).length)} Briefen (${minYear}-${maxYear})`
+            : `${fmt(datedLetters.length)} Briefe von ${minYear} bis ${maxYear}`;
+        if (offAxis.mixed) {
+            // Each group without a place on the axis is named with its count and opens exactly its letters
+            const links = offAxis.groups.map(g =>
+                `<button type="button" class="timeline-total__link" data-feature="${g.key}">${fmt(g.count)} ${escapeHtml(g.phrase)}</button>`);
+            const list = links.length > 1 ? `${links.slice(0, -1).join(', ')} und ${links[links.length - 1]}` : links[0];
+            totalEl.innerHTML = `${escapeHtml(dated)}${escapeHtml(spanInfo)}. Ohne Platz auf der Zeitachse: ${list}.`;
+            totalEl.querySelectorAll('.timeline-total__link').forEach(btn => {
+                btn.addEventListener('click', () => showFeatureLetters(btn.dataset.feature));
+            });
         } else {
-            totalEl.textContent = `${datedLetters.length.toLocaleString('de-DE')} Briefe von ${minYear} bis ${maxYear}${undatedInfo}`;
+            totalEl.textContent = `${dated}${undatedLetters.length > 0 ? ` + ${undatedLetters.length} ohne Datum` : ''}${spanInfo}`;
         }
     }
 
     // Render legend
-    renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLanguageData, totalImprecise);
+    renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLanguageData, totalUncertain, totalImprecise, totalInferred);
 
-    // Text alternative: the values of every bar, with the languages of the stack in words
+    // Text alternative: the values of every bar, with the languages of the stack in words. Columns
+    // the dataset has nothing for (inferred dates, languages) are left out.
     const languageText = languages => Object.entries(languages)
         .filter(([lang]) => lang !== '_total')
         .sort((a, b) => b[1] - a[1])
         .map(([lang, count]) => `${lang === 'other' ? 'weitere' : languageLabel(lang)} ${count}`)
         .join(', ');
+    const withInferred = totalInferred > 0;
+    const row = (label, total, imprecise, inferred, languages) => [label, total, imprecise,
+        ...(withInferred ? [inferred] : []), ...(hasLanguageData ? [languages] : [])];
     const tableRows = [];
     for (let y = minYear; y <= maxYear; y++) {
-        if (yearData[y]?.total) tableRows.push([String(y), yearData[y].total, yearData[y].imprecise, languageText(yearData[y].languages)]);
+        const d = yearData[y];
+        if (d?.total) tableRows.push(row(String(y), d.total, d.imprecise, d.inferred, languageText(d.languages)));
     }
-    if (undatedLetters.length) tableRows.push(['ohne Datum', undatedLetters.length, undatedLetters.length, languageText(undatedByLang)]);
-    if (spanLetters.length) tableRows.push(['Spanne über mehrere Jahre', spanLetters.length, spanLetters.length, '']);
+    // Letters off the axis have no date to be imprecise about, so those cells stay empty
+    if (offAxis.mixed) {
+        offAxis.groups.forEach(g => tableRows.push(row(g.label, g.count, '', '', '')));
+    } else if (undatedLetters.length) {
+        tableRows.push(row('ohne Datum', undatedLetters.length, '', '', languageText(undatedByLang)));
+    }
+    if (spanLetters.length) tableRows.push(row('Spanne über mehrere Jahre', spanLetters.length, spanLetters.length,
+        spanLetters.filter(l => l.dateInferred).length, ''));
     renderDataTable(elements.getById('timeline-table'), {
         caption: 'Briefe je Jahr',
-        columns: ['Jahr', 'Briefe', 'davon ungenau datiert', 'Sprachen'],
+        columns: ['Jahr', 'Briefe', 'davon unscharf datiert', ...(withInferred ? ['davon erschlossen'] : []), ...(hasLanguageData ? ['Sprachen'] : [])],
         rows: tableRows
     });
 
@@ -273,7 +318,67 @@ function renderSpanBin(spanBin, spanLetters, maxCount) {
     spanBin.setAttribute('title', description);
 }
 
-function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount) {
+// Reasons a letter has no place on the time axis, each with the letter-list filter that shows
+// exactly its letters (LETTER_FEATURES key, URL parameter feat=)
+const OFF_AXIS = [
+    { key: 'undated', label: 'ohne Datum', phrase: 'ohne Datum' },
+    { key: 'dateText', label: 'Datum nur als Text', phrase: 'nur als Text datiert' },
+    { key: 'dateImplausible', label: 'Jahr unplausibel', phrase: 'mit unplausiblem Jahr' }
+];
+
+/**
+ * Letters without a year, grouped by reason. `mixed` is true when the dataset gives a reason
+ * besides a missing date; only then does the timeline name the groups, so plain CMIF keeps its
+ * single "k.A." bin.
+ * @param {Array} letters - letters without year
+ * @returns {{groups: Array<{key: string, label: string, phrase: string, count: number}>, mixed: boolean}}
+ */
+function offAxisGroups(letters) {
+    const groups = OFF_AXIS
+        .map(group => ({ ...group, count: letters.filter(LETTER_FEATURES.find(f => f.key === group.key).test).length }))
+        .filter(group => group.count > 0);
+    return { groups, mixed: groups.some(group => group.key !== 'undated') };
+}
+
+// "3 mit unscharfem Datum, 2 mit erschlossenem Datum"
+function uncertainPhrase(imprecise, inferred) {
+    const parts = [];
+    if (imprecise) parts.push(`${imprecise} mit unscharfem Datum`);
+    if (inferred) parts.push(`${inferred} mit erschlossenem Datum`);
+    return parts.join(', ');
+}
+
+/**
+ * After a bar sent the reader to the letter list, focus goes to its heading; the bar itself
+ * leaves the screen with the timeline, and focus would otherwise fall back to the document.
+ */
+function focusLettersHeading() {
+    const heading = document.querySelector('#letters-view .view-header__title');
+    if (!heading) return;
+    heading.tabIndex = -1;
+    heading.focus();
+}
+
+/**
+ * Letter list with one group of letters without a year. The feature filter of the sidebar is
+ * set through its checkbox, whose change handler in explore.js applies it. Deliberate shortcut:
+ * explore.js offers no function for it yet; once it injects one, this should call it instead.
+ */
+function showFeatureLetters(key) {
+    const box = document.querySelector(`input[name="feature"][value="${key}"]`);
+    if (!box) {
+        showUndatedLetters();
+    } else {
+        if (!box.checked) {
+            box.checked = true;
+            box.dispatchEvent(new Event('change'));
+        }
+        switchView('letters');
+    }
+    focusLettersHeading();
+}
+
+function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount, offAxis) {
     if (!undatedBin) return;
 
     if (undatedLetters.length > 0) {
@@ -281,8 +386,12 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
         undatedBin.style.cursor = 'pointer';
         undatedBin.setAttribute('role', 'button');
         undatedBin.tabIndex = 0;
-        // The accessible name starts with the visible text (count, then "k.A."), WCAG 2.5.3
-        undatedBin.setAttribute('aria-label', `${undatedLetters.length} k.A., Briefe ohne Datum anzeigen`);
+        const visibleLabel = offAxis.mixed ? 'ohne Jahr' : 'k.A.';
+        const groupText = offAxis.groups.map(g => `${g.count} ${g.phrase}`).join(', ');
+        // The accessible name starts with the visible text (count, then the label), WCAG 2.5.3
+        undatedBin.setAttribute('aria-label', offAxis.mixed
+            ? `${undatedLetters.length} ohne Jahr: ${groupText}. Alle anzeigen`
+            : `${undatedLetters.length} k.A., Briefe ohne Datum anzeigen`);
         const undatedHeight = Math.max(4, (undatedLetters.length / maxCount) * 100);
         const binBar = undatedBin.querySelector('.undated-bin-bar');
         const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
@@ -290,7 +399,9 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
         // Build stacked segments for undated bin
         let undatedSegments = '';
         let currentBottom = 0;
-        let tooltipParts = [`Ohne Datum: ${undatedLetters.length} Briefe`];
+        const tooltipParts = offAxis.mixed
+            ? [`Ohne Platz auf der Zeitachse: ${undatedLetters.length} Briefe`, ...offAxis.groups.map(g => `${g.count} ${escapeHtml(g.phrase)}`)]
+            : [`Ohne Datum: ${undatedLetters.length} Briefe`];
 
         sortedLanguages.forEach(lang => {
             const count = undatedByLang[lang] || 0;
@@ -299,8 +410,8 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
                 const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
                 undatedSegments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
                 currentBottom += segmentHeight;
-                const langLabel = languageLabel(lang);
-                tooltipParts.push(`${escapeHtml(langLabel)}: ${count}`);
+                // '_total' is the single category of a dataset without languages, no language
+                if (lang !== '_total') tooltipParts.push(`${escapeHtml(languageLabel(lang))}: ${count}`);
             }
         });
 
@@ -312,7 +423,7 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
         const binCount = undatedBin.querySelector('.undated-bin-count');
         const binLabel = undatedBin.querySelector('.undated-bin-label');
         if (binCount) binCount.textContent = undatedLetters.length;
-        if (binLabel) binLabel.textContent = 'k.A.';
+        if (binLabel) binLabel.textContent = visibleLabel;
 
         if (!undatedBinBound) {
             undatedBinBound = true;
@@ -323,7 +434,10 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
         }
 
         // A year range cannot express "no date": the slider clamps values below its minimum
-        undatedBin.onclick = () => showUndatedLetters();
+        undatedBin.onclick = () => {
+            showUndatedLetters();
+            focusLettersHeading();
+        };
     } else {
         // Show schematic placeholder when all letters are dated
         undatedBin.classList.remove('hidden');
@@ -351,7 +465,7 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
 /**
  * Render timeline legend
  */
-function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLanguageData, totalImprecise) {
+function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLanguageData, totalUncertain, totalImprecise, totalInferred) {
     if (!legendEl) return;
 
     let legendItems = [];
@@ -370,8 +484,15 @@ function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLang
         legendItems.push(`<span class="timeline-legend-item timeline-legend-info" title="Dieses Korpus enthält keine Sprachmetadaten"><i class="fas fa-info-circle"></i> Keine Sprachdaten im Korpus</span>`);
     }
 
-    if (totalImprecise > 0) {
-        legendItems.push(`<span class="timeline-legend-item timeline-legend-uncertainty" title="Briefe mit unvollständigem oder unsicherem Datum"><span class="timeline-legend-hatched"></span>Unscharfes Datum (${totalImprecise})</span>`);
+    // One hatching for every date that is no exact reading of the source; the label names only
+    // the reasons the dataset has, a letter both imprecise and inferred counts once
+    if (totalUncertain > 0) {
+        const [label, title] = totalInferred === 0
+            ? ['Unscharfes Datum', 'Briefe mit unvollständigem oder unsicherem Datum']
+            : totalImprecise === 0
+                ? ['Erschlossenes Datum', 'Briefe, deren Datum die Edition erschlossen hat']
+                : ['Unscharfes oder erschlossenes Datum', `${uncertainPhrase(totalImprecise, totalInferred)}; ein Brief mit beidem zählt einmal`];
+        legendItems.push(`<span class="timeline-legend-item timeline-legend-uncertainty" title="${title}"><span class="timeline-legend-hatched"></span>${label} (${totalUncertain})</span>`);
     }
 
     legendEl.innerHTML = legendItems.join('');
@@ -409,6 +530,7 @@ function setupTimelineClickHandlers(container) {
 
             applyFilters();
             switchView('letters');
+            focusLettersHeading();
         });
     });
 
@@ -431,6 +553,7 @@ function setupTimelineClickHandlers(container) {
 
         applyFilters();
         switchView('letters');
+        focusLettersHeading();
     };
 
     wrappers.forEach(wrapper => {

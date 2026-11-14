@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-10
+updated: 2026-11-14
 authors: [Christopher Pollin]
 template:
   name: Vorlage Specification
@@ -377,6 +377,25 @@ Als Forschende möchte ich zwei Personen, Zeiträume oder Orte nebeneinander ver
 - Schnellauswahl häufiger Einträge und Suche mit Autovervollständigung
 - Die gemeinsamen Briefe öffnen sich als Liste und von dort im Brief-Dialog
 
+#### US-37 Edition aus vielen Dateien laden
+
+Als Forschende möchte ich eine Edition laden, die je Korrespondenz eine TEI-Datei veröffentlicht, um den ganzen Bestand als einen Datensatz zu erkunden.
+
+- Mehrere Dateien im Dateidialog oder per Drag-and-Drop, oder eine Dateiliste über `?files=`
+- Briefsätze mit `correspDesc` in `biblFull` werden ohne Umwandlung gelesen, die ID kommt vom Datensatz
+- Dateien ohne Briefe werden übersprungen und gezählt, die Übersicht nennt Dateien, Einträge und Briefe
+- Einträge gleicher Signatur werden zu einem Brief zusammengeführt ([ADR-009](#adr-009-einträge-gleicher-signatur-sind-ein-brief))
+
+#### US-38 Überlieferung eines Briefs sehen und filtern
+
+Als Forschende möchte ich sehen, was die Edition erschlossen hat und was der Brief selbst trägt, um Datierung und Ort eines Briefs einschätzen zu können.
+
+- Erschlossene Daten und Orte stehen in eckigen Klammern, mit einer Legende über der Liste
+- Poststempel, Anschrift und Signatur stehen benannt in der Briefzeile und im Briefdialog, nie als Absendeort
+- Alle Empfänger eines Briefs werden genannt und gezählt
+- Die Seitenleiste bietet je vorhandenem Merkmal einen Filter mit Zahl (Gruppe „Überlieferung“), der Zustand steht in der URL
+- Ein Klick auf einen Brief öffnet den Dialog mit allen Angaben und allen Einträgen der Quelle
+
 ## Funktionsumfang
 
 Die Ansichten von `explore.html` und ihre Umsetzung beschreibt [architecture.md](architecture.md#ansichten). Die Zuordnung zu den Stories:
@@ -483,3 +502,23 @@ Wahl. Die Wissensbasis liegt in `knowledge/` im Repository-Root, die Website ent
 Begründung. Eine Pages-Seite liefert nur für Lesende bestimmte Inhalte aus. Wissensdokumente, interne Notizen, Arbeitsstände und Entwürfe gehören nicht dazu, auch wenn das Repository öffentlich ist.
 
 Effekt. Vor einem Push, der die Seite ändert, wird der ausgelieferte Baum `docs/` auf solches Material geprüft.
+
+### ADR-009 Einträge gleicher Signatur sind ein Brief
+
+Kontext. Eine Edition kann denselben Brief mehrfach verzeichnen, etwa in der Datei jedes beteiligten Konvoluts. Bei Stefan Zweig Digital tragen 2.135 Einträge 1.633 verschiedene Signaturen ([data.md](data.md#stefan-zweig-digital-tei-auf-briefebene-kein-cmif)). Jede Zählung nach Einträgen überschätzt Briefe, Personenhäufigkeiten und Jahresbalken.
+
+Wahl. Einträge mit gleicher Signatur werden ein Brief, außer ihre maschinenlesbaren Datierungen widersprechen sich, weil eine Signatur auch ein Bündel bezeichnen kann. Der erste Eintrag mit Datum führt, die anderen füllen nur, was ihm fehlt. Der Brief behält alle Einträge (`records`) und den Vermerk, ob sie sich in Absender, Empfängern oder Ort unterscheiden (`recordsDiffer`).
+
+Begründung. Das Werkzeug entscheidet nicht zwischen abweichenden Einträgen, es zeigt sie. Zusammengeführt wird nur über ein Merkmal, das die Quelle selbst vergibt.
+
+Effekt. Die Übersicht nennt Einträge und Briefe, die Seitenleiste filtert „Mehrfach verzeichnet“ und „Einträge weichen ab“, der Briefdialog listet die Einträge. Entstanden in der Iteration vom November 2026, Befund eines Browser-Prüfers, an den Quelldateien bestätigt ([Journal](journal.md)).
+
+### ADR-010 Unplausible Jahre kennzeichnen, nicht korrigieren
+
+Kontext. Das Projekt korrigiert keine Daten ([project.md](project.md)). Eine Quelle kann ein zweistelliges Jahr ins falsche Jahrhundert auflösen. Wenige solche Briefe dehnen jede Zeitachse, den Zeitraum der Übersicht und jede Sortierung.
+
+Wahl. Trennt eine Lücke von mindestens 40 Jahren weniger als ein Zwanzigstel der datierten Briefe vom Rest, gelten diese Briefe als unplausibel datiert. Sie behalten ihr Datum, wie die Quelle es gibt, verlieren aber ihr Jahr, stehen also bei den Briefen ohne Platz auf der Zeitachse, und tragen das Wort „unplausibel“.
+
+Begründung. Eine stille Korrektur wäre eine Aussage über die Quelle, die dem Werkzeug nicht zusteht. Eine ungekennzeichnete Anzeige stellt den Fehler als gesichertes Datum dar.
+
+Effekt. Die Regel ist eine Heuristik und kann einen echten Nachzügler treffen, etwa einen einzelnen späten Brief eines Nachlasses. Der Filter „Datum unplausibel“ listet alle Betroffenen zur Prüfung an der Quelle.

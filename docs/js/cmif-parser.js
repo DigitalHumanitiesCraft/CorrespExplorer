@@ -3,7 +3,7 @@
 // Also handles correspSearch API responses (TEI-JSON format)
 
 import { isCorrespSearchUrl, fetchFromCorrespSearchUrl } from './correspsearch-api.js';
-import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate, cleanId, buildIndices, isUnknownPlaceName, httpErrorMessage } from './utils.js';
+import { parseAuthorityRef, parseGeoNamesRef, safeUrl, classifyDate, cleanId, buildIndices, isUnknownPlaceName, httpErrorMessage, letterRecipients } from './utils.js';
 import { LANGUAGE_LABELS } from './constants.js';
 
 const TEI_NS = 'http://www.tei-c.org/ns/1.0';
@@ -14,7 +14,7 @@ const TEI_NS = 'http://www.tei-c.org/ns/1.0';
  * @param {Function} [onProgress] - Progress callback for correspSearch API
  * @returns {Promise<Object>} Parsed data with letters, indices, and meta
  */
-export async function parseCMIF(source, onProgress = null) {
+export async function parseCMIF(source, onProgress = null, { merge = true } = {}) {
     let xmlString;
 
     if (source instanceof File) {
@@ -73,11 +73,101 @@ export async function parseCMIF(source, onProgress = null) {
         throw new Error('Die Datei ist kein gültiges XML und kann nicht als CMIF gelesen werden. Bitte prüfen Sie, ob es sich um eine wohlgeformte CMIF-XML-Datei handelt.');
     }
 
-    const letters = extractLetters(doc);
+    const records = extractLetters(doc);
+    const letters = flagImplausibleYears(merge ? mergeRecords(records) : records);
     const indices = buildIndices(letters);
     const meta = extractMeta(doc, letters);
 
     return { letters, indices, meta };
+}
+
+function recordSummary(letter) {
+    return {
+        id: letter.id,
+        sender: letter.sender?.name || null,
+        recipients: letterRecipients(letter).map(r => r.name),
+        place: letter.place_sent?.name || null,
+        date: letter.date || letter.dateText || null
+    };
+}
+
+/**
+ * An edition may describe the same letter in several records, for instance once in the file of
+ * each correspondent. Records that share a shelfmark become one letter, unless their dates
+ * contradict each other (a shelfmark can also stand for a bundle of letters). The letter keeps
+ * every record in `records`, and `recordsDiffer` says that they disagree on sender, recipients or
+ * place. Nothing is decided between them: the first record with a date leads, and the others
+ * only fill what it lacks.
+ * @param {Array} letters
+ * @returns {Array}
+ */
+export function mergeRecords(letters) {
+    const groups = new Map();
+    for (const letter of letters) {
+        if (!letter.signature) continue;
+        if (!groups.has(letter.signature)) groups.set(letter.signature, []);
+        groups.get(letter.signature).push(letter);
+    }
+    const dropped = new Set();
+    const merged = new Map();
+    for (const group of groups.values()) {
+        if (group.length < 2) continue;
+        if (new Set(group.map(l => l.date).filter(Boolean)).size > 1) continue;
+        const lead = group.find(l => l.date) || group[0];
+        const distinct = pick => new Set(group.map(pick).filter(Boolean)).size > 1;
+        const letter = { ...lead, records: group.map(recordSummary) };
+        for (const other of group) {
+            if (other === lead) continue;
+            dropped.add(other);
+            for (const field of ['dateText', 'place_sent', 'postmark', 'address', 'recipient', 'recipients', 'url']) {
+                if (!letter[field] && other[field]) letter[field] = other[field];
+            }
+            if (other.dateInferred) letter.dateInferred = true;
+        }
+        // A machine-readable date makes the text of another record redundant
+        if (letter.date) delete letter.dateText;
+        // Compared by what a reader sees: one record with and one without authority id for the
+        // same name do not disagree
+        if (distinct(l => l.sender?.name) ||
+            distinct(l => letterRecipients(l).map(r => r.name).sort().join('|')) ||
+            distinct(l => l.place_sent?.name)) {
+            letter.recordsDiffer = true;
+        }
+        merged.set(lead, letter);
+    }
+    return letters.filter(l => !dropped.has(l)).map(l => merged.get(l) || l);
+}
+
+/**
+ * Years far from all others are slips of the source, such as a two-digit year expanded into the
+ * wrong century. Where a gap of GAP_YEARS or more separates a tail of less than a twentieth of
+ * the dated letters from the rest, the tail is flagged `dateImplausible` and loses its `year`, so
+ * it stands with the undated letters instead of stretching every time axis. The date itself is
+ * shown as the source gives it; the tool corrects nothing (project.md, scope).
+ * @param {Array} letters
+ * @returns {Array} the same letters, flagged in place
+ */
+export function flagImplausibleYears(letters) {
+    const GAP_YEARS = 40;
+    // A span states its own width and is no slip; year bars already leave it out (decision E5)
+    const dated = letters.filter(l => Number.isInteger(l.year) && l.datePrecision !== 'range');
+    const years = [...new Set(dated.map(l => l.year))].sort((a, b) => a - b);
+    let cut = null;
+    for (let i = 1; i < years.length; i++) {
+        if (years[i] - years[i - 1] >= GAP_YEARS && (!cut || years[i] - years[i - 1] > cut.gap)) {
+            cut = { gap: years[i] - years[i - 1], below: years[i - 1], above: years[i] };
+        }
+    }
+    if (!cut) return letters;
+    const upper = dated.filter(l => l.year >= cut.above);
+    const lower = dated.filter(l => l.year <= cut.below);
+    const tail = upper.length <= lower.length ? upper : lower;
+    if (tail.length * 20 >= dated.length) return letters;
+    for (const letter of tail) {
+        letter.dateImplausible = true;
+        letter.year = null;
+    }
+    return letters;
 }
 
 /**
@@ -89,13 +179,14 @@ export async function parseCMIF(source, onProgress = null) {
  * @param {string[]} [names] - Names of the sources, where they are no File objects
  * @returns {Promise<Object>} Parsed data with letters, indices and meta
  */
-export async function parseCMIFFiles(sources, onProgress = null, names = null) {
+export async function parseCMIFFiles(sources, onProgress = null, names = null, { merge = true } = {}) {
     const parts = [];
     const skipped = [];
     for (let i = 0; i < sources.length; i++) {
         const name = names?.[i] || sources[i].name || `Datei ${i + 1}`;
         try {
-            parts.push(await parseCMIF(sources[i]));
+            // Records are merged once, across all files
+            parts.push(await parseCMIF(sources[i], null, { merge: false }));
         } catch (error) {
             skipped.push({ name, reason: error.message });
         }
@@ -104,7 +195,7 @@ export async function parseCMIFFiles(sources, onProgress = null, names = null) {
     if (parts.length === 0) {
         throw new Error(`Keine der ${sources.length} Dateien enthält Briefe. ${skipped[0]?.reason || ''}`.trim());
     }
-    return mergeDatasets(parts, { total: sources.length, skipped });
+    return mergeDatasets(parts, { total: sources.length, skipped }, merge);
 }
 
 // A value all parts share, else null
@@ -124,9 +215,9 @@ function mostCommon(values) {
  * Join parsed datasets into one. The header of the joined dataset states only what all files
  * share; the title falls back to the series title, then to the number of files.
  */
-function mergeDatasets(parts, files) {
+function mergeDatasets(parts, files, merge) {
     const seen = new Map();
-    const letters = [];
+    let letters = [];
     for (const part of parts) {
         for (const letter of part.letters) {
             // Fallback ids (letter-1) repeat in every file; a suffix keeps each letter addressable
@@ -136,9 +227,19 @@ function mergeDatasets(parts, files) {
         }
     }
 
+    const recordCount = letters.reduce((sum, l) => sum + (l.records?.length || 1), 0);
+    if (merge) letters = mergeRecords(letters);
+    // The files were flagged one by one; the joined dataset is judged as a whole
+    for (const letter of letters) {
+        if (!letter.dateImplausible) continue;
+        delete letter.dateImplausible;
+        letter.year = parseInt(letter.date.substring(0, 4), 10);
+    }
+    flagImplausibleYears(letters);
+
     const metas = parts.map(p => p.meta);
     const first = metas[0];
-    const years = metas.flatMap(m => [m.date_range.min, m.date_range.max]).filter(y => y !== null);
+    const years = letters.map(l => l.year).filter(y => y !== null);
     const publishers = [...new Map(metas.flatMap(m => m.publishers).map(p => [p.name, p])).values()];
     const editors = [...new Map(metas.flatMap(m => m.editors).map(e => [e.name, e])).values()];
     const title = parts.length === 1
@@ -164,7 +265,7 @@ function mergeDatasets(parts, files) {
             unique_places: new Set(letters.map(l => l.place_sent?.geonames_id).filter(Boolean)).size,
             date_range: { min: years.length ? Math.min(...years) : null, max: years.length ? Math.max(...years) : null },
             uncertainty: calculateUncertaintyStats(letters),
-            files: { total: files.total, loaded: parts.length, skipped: files.skipped }
+            files: { total: files.total, loaded: parts.length, skipped: files.skipped, records: recordCount }
         }
     };
 }
@@ -312,6 +413,9 @@ const UNKNOWN_PERSON_PATTERNS = [
     /^N\.?N\.?$/i,
     /^Unbekannt$/i,
     /^Unknown$/i,
+    /^Unidentified$/i,
+    // Bilingual placeholders such as "Unbekannt/Unidentified"
+    /^(Unbekannt|Unknown|Unidentified)\s*\/\s*(Unbekannt|Unknown|Unidentified)$/i,
     /^\?\?\?$/
 ];
 

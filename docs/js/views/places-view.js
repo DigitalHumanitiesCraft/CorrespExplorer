@@ -87,23 +87,29 @@ export function initPlacesView(deps) {
     log.init(`Places view initialized: ${Object.keys(placesIndex).length} places`);
 }
 
-/**
- * Build places index from all letters, keyed with placeKey like the parser index and the
- * place filter of the state manager (ADR-001)
- */
 function buildPlacesIndex() {
-    placesIndex = {};
-    const allLetters = getAllLetters();
+    placesIndex = indexPlaces(getAllLetters());
+}
 
-    allLetters.forEach(letter => {
+/**
+ * Index of the sending places of the given letters, keyed with placeKey like the parser index and
+ * the place filter of the state manager (ADR-001). Names stay as the source gives them: the tool
+ * does not merge or normalise places (project.md, scope).
+ * @param {Array} letters
+ * @returns {Object<string, Object>}
+ */
+export function indexPlaces(letters) {
+    const index = {};
+
+    letters.forEach(letter => {
         if (!letter.place_sent?.name) return;
 
         const placeId = placeKey(letter.place_sent);
         const hasCoordinates = letter.place_sent.lat != null && letter.place_sent.lon != null;
         const precision = letter.place_sent.precision || (hasCoordinates ? 'exact' : 'region');
 
-        if (!placesIndex[placeId]) {
-            placesIndex[placeId] = {
+        if (!index[placeId]) {
+            index[placeId] = {
                 id: placeId,
                 name: letter.place_sent.name,
                 lat: letter.place_sent.lat,
@@ -117,7 +123,7 @@ function buildPlacesIndex() {
             };
         }
 
-        const place = placesIndex[placeId];
+        const place = index[placeId];
         place.letterCount++;
         if (letter.year) place.years.push(letter.year);
         const senderId = personKey(letter.sender);
@@ -125,11 +131,63 @@ function buildPlacesIndex() {
     });
 
     // Sender count and year range over all letters describe the place itself in the list
-    Object.values(placesIndex).forEach(place => {
+    Object.values(index).forEach(place => {
         place.senderCount = place.senders.size;
         place.yearMin = place.years.length > 0 ? Math.min(...place.years) : null;
         place.yearMax = place.years.length > 0 ? Math.max(...place.years) : null;
     });
+    return index;
+}
+
+/**
+ * Whether the places of an index have coordinates: 'all', 'none' or 'mixed'. Only a mixed
+ * dataset marks the single place without coordinates; where none has any, that is the normal
+ * case and is said once for the whole list (design.md, Markierung nur an unsicheren Werten).
+ * @param {Object<string, Object>} index - from indexPlaces
+ * @returns {'all'|'none'|'mixed'}
+ */
+export function coordinateCoverage(index) {
+    const places = Object.values(index);
+    const located = places.filter(p => p.hasCoordinates).length;
+    if (located === places.length) return 'all';
+    return located === 0 ? 'none' : 'mixed';
+}
+
+/**
+ * Letters per place in a letter set, with the number whose place the edition inferred, and the
+ * letters without any sending place
+ * @param {Array} letters
+ * @returns {{counts: Object<string, {count: number, inferred: number}>, withoutPlace: number}}
+ */
+export function countLettersByPlace(letters) {
+    const counts = {};
+    let withoutPlace = 0;
+    letters.forEach(letter => {
+        if (!letter.place_sent?.name) {
+            withoutPlace++;
+            return;
+        }
+        const entry = counts[placeKey(letter.place_sent)] ||= { count: 0, inferred: 0 };
+        entry.count++;
+        if (letter.place_sent.inferred) entry.inferred++;
+    });
+    return { counts, withoutPlace };
+}
+
+/**
+ * Show the letters of a place whose sending place the edition inferred. The places view has no
+ * handle on the sidebar filter state, so it sets the existing checkbox of the feature filter and
+ * lets its own change handler apply it; the checkbox exists only when the dataset has such letters.
+ */
+function showInferredLetters(placeId) {
+    const checkbox = document.querySelector('input[name="feature"][value="placeInferred"]');
+    if (!checkbox || !applyPlaceFilter) return;
+    if (!checkbox.checked) {
+        checkbox.checked = true;
+        checkbox.dispatchEvent(new Event('change'));
+    }
+    applyPlaceFilter(placeId);
+    if (switchView) switchView('letters');
 }
 
 /**
@@ -146,22 +204,16 @@ export function renderPlacesList() {
     const container = elements.placesList;
     if (!container) return;
 
-    const filteredLetters = getFilteredLetters();
-
-    // Count letters per place in the filtered set
-    const filteredPlaceCounts = {};
-    filteredLetters.forEach(letter => {
-        if (letter.place_sent?.name) {
-            const placeId = placeKey(letter.place_sent);
-            filteredPlaceCounts[placeId] = (filteredPlaceCounts[placeId] || 0) + 1;
-        }
-    });
+    const { counts, withoutPlace } = countLettersByPlace(getFilteredLetters());
+    const coverage = coordinateCoverage(placesIndex);
+    renderPlacesNote(coverage, Object.keys(counts).length, withoutPlace);
 
     let places = Object.values(placesIndex)
-        .filter(place => filteredPlaceCounts[place.id] > 0)
+        .filter(place => counts[place.id]?.count > 0)
         .map(place => ({
             ...place,
-            filteredCount: filteredPlaceCounts[place.id] || 0
+            filteredCount: counts[place.id].count,
+            inferredCount: counts[place.id].inferred
         }));
 
     // Apply search filter
@@ -187,19 +239,22 @@ export function renderPlacesList() {
             break;
     }
 
-    // Render list with precision indicators
+    // Missing coordinates are marked per place only where other places have them
+    const markMissing = coverage === 'mixed';
     container.innerHTML = places.map(place => {
         const isActive = selectedPlaceId === place.id;
         const yearRange = place.yearMin && place.yearMax
             ? `${place.yearMin}-${place.yearMax}`
             : '';
-        const precisionClass = getPlacePrecisionClass(place.precision);
-        const noCoordIcon = !place.hasCoordinates ? '<i class="fas fa-question-circle" title="Ohne Koordinaten"></i> ' : '';
+        const precisionClass = markMissing || place.precision === 'unknown' ? getPlacePrecisionClass(place.precision) : '';
+        const noCoordIcon = markMissing && !place.hasCoordinates ? '<i class="fas fa-question-circle" title="Ohne Koordinaten"></i> ' : '';
+        const meta = [`${place.senderCount} Absender`, yearRange,
+            place.inferredCount > 0 ? `davon ${place.inferredCount} erschlossen` : ''].filter(Boolean).join(' | ');
         return `
             <div class="entity-card ${isActive ? 'active' : ''} ${precisionClass}" role="button" tabindex="0" aria-pressed="${isActive}" data-place-id="${escapeHtml(place.id)}">
                 <div class="entity-card-info">
                     <div class="entity-card-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
-                    <div class="entity-card-meta">${place.senderCount} Absender ${yearRange ? `| ${yearRange}` : ''}</div>
+                    <div class="entity-card-meta">${meta}</div>
                 </div>
                 <div class="entity-card-count">${place.filteredCount}</div>
             </div>
@@ -216,12 +271,32 @@ export function renderPlacesList() {
 
     // The open detail follows the filter like the list, otherwise its numbers would contradict the list
     if (selectedPlaceId) {
-        if (filteredPlaceCounts[selectedPlaceId]) {
+        if (counts[selectedPlaceId]) {
             renderPlaceDetail(selectedPlaceId);
         } else {
             clearPlaceDetail();
         }
     }
+}
+
+/**
+ * One sentence each for what holds for the whole list instead of for single places: that no
+ * place has coordinates, and how many letters name no sending place
+ */
+function renderPlacesNote(coverage, placeCount, withoutPlace) {
+    const note = elements.getById('places-note');
+    if (!note) return;
+    const sentences = [];
+    if (coverage === 'none' && placeCount > 0) {
+        sentences.push(`Der Datensatz nennt für keinen seiner ${Object.keys(placesIndex).length.toLocaleString('de-DE')} Absendeorte Koordinaten. Die Orte stehen deshalb nur in dieser Liste, nicht auf der Karte.`);
+    }
+    if (withoutPlace > 0) {
+        sentences.push(withoutPlace === 1
+            ? '1 Brief nennt keinen Absendeort und fehlt in dieser Liste.'
+            : `${withoutPlace.toLocaleString('de-DE')} Briefe nennen keinen Absendeort und fehlen in dieser Liste.`);
+    }
+    note.textContent = sentences.join(' ');
+    note.classList.toggle('hidden', sentences.length === 0);
 }
 
 /**
@@ -285,7 +360,16 @@ function renderPlaceDetail(placeId) {
     const titleEl = elements.getById('place-detail-title');
     const countEl = elements.getById('place-detail-count');
     if (titleEl) titleEl.textContent = place.name;
-    if (countEl) countEl.textContent = `${filteredCount} Briefe`;
+    if (countEl) {
+        // The inferred number leads to exactly those letters, through the existing feature filter
+        const inferredCount = placeLetters.filter(l => l.place_sent.inferred).length;
+        const canShow = inferredCount > 0 && document.querySelector('input[name="feature"][value="placeInferred"]');
+        countEl.innerHTML = `${filteredCount} Briefe` + (inferredCount === 0 ? ''
+            : canShow ? `, davon <button type="button" class="view-header__link place-inferred-btn" title="Briefe dieses Orts zeigen, deren Ort die Edition erschlossen hat">${inferredCount} erschlossen</button>`
+            : `, davon ${inferredCount} erschlossen`);
+        // The button is rebuilt with the count, so it is found in its container, not via the id cache
+        countEl.querySelector('.place-inferred-btn')?.addEventListener('click', () => showInferredLetters(placeId));
+    }
 
     const sendersContainer = elements.getById('place-top-senders');
     if (sendersContainer) {
@@ -321,6 +405,8 @@ function renderPlaceDetail(placeId) {
 
     const languagesContainer = elements.getById('place-languages');
     if (languagesContainer) {
+        // A dataset without language data would leave an empty section under its heading
+        languagesContainer.closest('.entity-detail-section')?.classList.toggle('hidden', Object.keys(languages).length === 0);
         languagesContainer.innerHTML = Object.entries(languages)
             .sort((a, b) => b[1] - a[1])
             .map(([code, count]) => {

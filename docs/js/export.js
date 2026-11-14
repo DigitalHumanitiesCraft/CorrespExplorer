@@ -1,16 +1,23 @@
 // Letter export as CSV and JSON (US-21, US-22). One column set for every page that exports
 // letters, so the header stays the same and an empty selection still yields a header row.
 
-import { csvCell } from './utils.js';
+import { csvCell, letterRecipients } from './utils.js';
 import { summarizeCorpus } from './research-paths.js';
 
+// Columns are only appended, so spreadsheets and scripts built on the earlier order keep working.
+// The columns after 'url' carry what a source records about the transmission of a letter.
 export const LETTER_EXPORT_COLUMNS = [
     'id', 'date', 'date_to', 'year', 'date_precision', 'date_certainty',
     'sender_name', 'sender_id', 'sender_authority', 'sender_precision',
     'recipient_name', 'recipient_id', 'recipient_authority', 'recipient_precision',
     'place_name', 'place_geonames', 'place_precision',
-    'language', 'url'
+    'language', 'url',
+    'date_text', 'date_inferred', 'date_implausible', 'place_inferred',
+    'recipients_all', 'signature', 'postmark', 'address', 'records', 'records_differ'
 ];
+
+// Several recipients in one cell; a semicolon, because names are written "Surname, Forename"
+const RECIPIENT_SEPARATOR = '; ';
 
 /**
  * One flat export row of a letter, keyed by LETTER_EXPORT_COLUMNS
@@ -38,7 +45,20 @@ export function letterExportRow(letter) {
         place_geonames: letter.place_sent?.geonames_id || '',
         place_precision: letter.place_sent?.precision || '',
         language: letter.language?.code || '',
-        url: letter.url || ''
+        url: letter.url || '',
+        date_text: letter.dateText || '',
+        // Flags say true or false, so an empty cell never stands for "not inferred"
+        date_inferred: Boolean(letter.dateInferred),
+        // The year is withheld as a slip of the source; date keeps what the source wrote
+        date_implausible: Boolean(letter.dateImplausible),
+        place_inferred: Boolean(letter.place_sent?.inferred),
+        recipients_all: letterRecipients(letter).map(r => r?.name || '').join(RECIPIENT_SEPARATOR),
+        signature: letter.signature || '',
+        postmark: letter.postmark || '',
+        address: letter.address || '',
+        // Number of source records merged into this letter, 1 for a letter described once
+        records: letter.records?.length || 1,
+        records_differ: Boolean(letter.recordsDiffer)
     };
 }
 

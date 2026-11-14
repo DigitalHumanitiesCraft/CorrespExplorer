@@ -98,8 +98,9 @@ export function formatPlaceName(name, precision, inferred = false) {
     if (precision === 'unknown') {
         return `<span class="place-unknown">${escapeHtml(name)} <i class="fas fa-question-circle" title="Unbekannter Ort"></i></span>`;
     }
+    // A place known only by name is no uncertain place; it merely cannot stand on the map
     if (precision === 'region') {
-        return `<span class="place-region">${escapeHtml(name)} <span class="region-hint">(Region)</span></span>`;
+        return `<span class="place-region" title="Ohne GeoNames-ID, nicht auf der Karte">${escapeHtml(name)}</span>`;
     }
     return escapeHtml(name);
 }
@@ -145,6 +146,11 @@ export function formatDateWithPrecision(letter) {
             return `<span class="date-text" title="Datum nur als Text überliefert, nicht auf der Zeitachse">${escapeHtml(letter.dateText)}</span>`;
         }
         return '<span class="date-unknown"><i class="fas fa-question" title="Datum unbekannt"></i> unbekannt</span>';
+    }
+
+    // A year far outside the dataset is shown as the source gives it and named as implausible
+    if (letter.dateImplausible) {
+        return `<span class="date-implausible" title="Jahr liegt weit außerhalb des Bestands, vermutlich ein Fehler der Quelle. Nicht auf der Zeitachse">${escapeHtml(formatSingleDate(letter.date))} <span class="date-flag">unplausibel</span></span>`;
     }
 
     const date = letter.date;

@@ -178,7 +178,10 @@ export const FormattersTests = {
 
                 const result = formatPlaceName(letter.place_sent.name, letter.place_sent.precision);
                 assert(result.includes('place-region'), `Should have place-region class, got ${result}`);
-                assert(result.includes('Region'), `Should show (Region) hint, got ${result}`);
+                // A name without GeoNames id is no uncertain place: no "(Region)" suffix, the title says why it is off the map
+                assert(!result.includes('(Region)') && result.includes('Ohne GeoNames-ID'), `Should stay unmarked with a title, got ${result}`);
+                const inferred = formatPlaceName('Wien', 'region', true);
+                assert(inferred.includes('[Wien]') && inferred.includes('place-inferred'), `Inferred place keeps the brackets, got ${inferred}`);
             }
         },
 

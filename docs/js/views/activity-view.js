@@ -1,7 +1,7 @@
 // Activity Heatmap View - calendar heatmap showing correspondence activity
 
-import { escapeHtml } from '../utils.js';
-import { renderDataTable } from './view-support.js';
+import { escapeHtml, isMultiYearSpan } from '../utils.js';
+import { renderDataTable, renderFilterNotice } from './view-support.js';
 
 // Module state
 let activityIndex = null;
@@ -31,27 +31,52 @@ function parseLocalDate(dateStr) {
     return new Date(y, m - 1, d);
 }
 
+// Largest entry of a count map, the first one on ties
+function largest(map) {
+    let best = { key: null, count: 0 };
+    for (const [key, count] of map) {
+        if (count > best.count) best = { key, count };
+    }
+    return best;
+}
+
 /**
  * Builds index for activity heatmap. Only day-precise letters go into day cells: a month, year
  * or range date has no day, and placing it on the first day would invent a peak (NFR-04).
+ * Years and months count like the timeline, every letter that has the year or the month, so the
+ * busiest year here and the highest bar there agree.
  * @param {Array} letters - Array of letter objects
- * @returns {Object} Index with byDate, byYear, byMonth, stats and the count of letters without a day
+ * @returns {Object} Index with byDate, byYear, the counts per year and month, the busiest day,
+ *   month and year, and the count of letters without a day cell by reason
  */
 export function buildActivityIndex(letters) {
-    const byDate = new Map();      // "YYYY-MM-DD" -> {count, ids}
-    const byYear = new Map();      // YYYY -> count of day-precise letters
-    const byMonth = new Map();     // "YYYY-MM" -> count of day-precise letters
-    const withoutDay = { month: 0, year: 0, range: 0, undated: 0 };
-    const yearsWithLetters = new Set();
+    const byDate = new Map();         // "YYYY-MM-DD" -> {count, ids}
+    const byYear = new Map();         // YYYY -> count of day-precise letters, for the year select
+    const lettersByYear = new Map();  // YYYY -> letters with this year, as in the timeline
+    const lettersByMonth = new Map(); // "YYYY-MM" -> letters dated to the day or the month
+    // undated: no date at all; text: date only as words; implausible: a year far outside the
+    // dataset (the date stays, the year is withheld, cmif-parser flagImplausibleYears)
+    const withoutDay = { month: 0, year: 0, range: 0, undated: 0, text: 0, implausible: 0 };
 
     let total = 0;
-    let maxDay = { date: null, count: 0 };
-    let maxYear = { year: null, count: 0 };
 
     for (const letter of letters) {
-        if (!letter.date || letter.datePrecision === 'unknown') {
-            withoutDay.undated++;
+        // The same test as the year bars of the timeline
+        if (letter.year && !isMultiYearSpan(letter)) {
+            lettersByYear.set(letter.year, (lettersByYear.get(letter.year) || 0) + 1);
+        }
+        if (letter.dateImplausible) {
+            withoutDay.implausible++;
             continue;
+        }
+        if (!letter.date || letter.datePrecision === 'unknown') {
+            if (letter.dateText) withoutDay.text++; else withoutDay.undated++;
+            continue;
+        }
+
+        if (letter.datePrecision === 'day' || letter.datePrecision === 'month') {
+            const month = letter.date.substring(0, 7);
+            lettersByMonth.set(month, (lettersByMonth.get(month) || 0) + 1);
         }
 
         if (letter.datePrecision !== 'day') {
@@ -60,47 +85,31 @@ export function buildActivityIndex(letters) {
         }
 
         const date = letter.date.substring(0, 10);
-        const year = letter.year;
-        const month = date.substring(0, 7);
-
         if (!byDate.has(date)) {
             byDate.set(date, { count: 0, ids: [] });
         }
         const dateEntry = byDate.get(date);
         dateEntry.count++;
         dateEntry.ids.push(letter.id);
-
-        byYear.set(year, (byYear.get(year) || 0) + 1);
-        byMonth.set(month, (byMonth.get(month) || 0) + 1);
-        yearsWithLetters.add(year);
-
-        if (dateEntry.count > maxDay.count) {
-            maxDay = { date, count: dateEntry.count };
-        }
-
+        byYear.set(letter.year, (byYear.get(letter.year) || 0) + 1);
         total++;
     }
 
-    for (const [year, count] of byYear) {
-        if (count > maxYear.count) {
-            maxYear = { year, count };
-        }
-    }
-
-    const years = Array.from(yearsWithLetters).sort((a, b) => a - b);
-    const monthCount = byMonth.size || 1;
-    const avgPerMonth = Math.round(total / monthCount * 10) / 10;
+    const day = largest(new Map([...byDate].map(([date, entry]) => [date, entry.count])));
+    const year = largest(lettersByYear);
+    const month = largest(lettersByMonth);
 
     return {
         byDate,
         byYear,
-        byMonth,
+        lettersByYear,
+        lettersByMonth,
         total,
         withoutDay,
-        maxDay,
-        maxYear,
-        years,
-        avgPerMonth
+        maxDay: { date: day.key, count: day.count },
+        maxYear: { year: year.key, count: year.count },
+        maxMonth: { month: month.key, count: month.count },
+        years: [...byYear.keys()].sort((a, b) => a - b)
     };
 }
 
@@ -118,32 +127,15 @@ export function renderActivity() {
         activitySelectedYear = 'all';
     }
 
-    // Update statistics cards
-    const totalEl = document.getElementById('activity-total');
-    const busiestDayEl = document.getElementById('activity-busiest-day');
-    const busiestYearEl = document.getElementById('activity-busiest-year');
-    const avgEl = document.getElementById('activity-avg-per-month');
-
-    if (totalEl) totalEl.textContent = activityIndex.total.toLocaleString('de-DE');
-    if (busiestDayEl) {
-        busiestDayEl.textContent = activityIndex.maxDay.date
-            ? `${activityIndex.maxDay.count} (${formatDay(activityIndex.maxDay.date, false)})`
-            : '-';
-    }
-    if (busiestYearEl) {
-        busiestYearEl.textContent = activityIndex.maxYear.year
-            ? `${activityIndex.maxYear.year} (${activityIndex.maxYear.count})`
-            : '-';
-    }
-    if (avgEl) avgEl.textContent = activityIndex.avgPerMonth;
-
-    renderWithoutDayNote(container);
+    renderFilterNotice('activity-view');
+    renderWithoutDayNote();
 
     // Render year selector
     bindYearSelector();
     renderActivityYearSelector();
 
     // Render heatmap
+    renderActivitySummary();
     renderActivityHeatmap();
     renderActivityTable();
 
@@ -164,34 +156,68 @@ function formatDay(dateStr, withWeekday = true) {
     return parseLocalDate(dateStr).toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+const MONTH_NAMES = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+const num = n => n.toLocaleString('de-DE');
+
+// "1938-05" -> "Mai 1938"; without year -> "Mai"
+function monthName(key, withYear = true) {
+    const name = MONTH_NAMES[parseInt(key.substring(5, 7), 10) - 1];
+    return withYear ? `${name} ${key.substring(0, 4)}` : name;
+}
+
 /**
- * Note on the letters dated only to month, year or a range, which have no day cell
+ * The busiest year, month and day in one sentence, in place of four figure boxes, so the
+ * question "when was most written" is answered without reading the table. With a year chosen,
+ * a second sentence names that year's total and its busiest month.
  */
-function renderWithoutDayNote(container) {
-    let note = document.getElementById('activity-without-day-note');
-    if (!note) {
-        note = document.createElement('p');
-        note.id = 'activity-without-day-note';
-        note.className = 'filter-help';
-        container.querySelector('.activity-stats')?.after(note);
+function renderActivitySummary() {
+    const el = document.getElementById('activity-summary');
+    if (!el || !activityIndex) return;
+    const { total, maxYear, maxMonth, maxDay, lettersByYear, lettersByMonth } = activityIndex;
+    if (total === 0 && !maxYear.year) {
+        el.textContent = 'Kein Brief ist tagesgenau datiert, die Heatmap bleibt leer.';
+        return;
     }
-    const { month, year, range, undated } = activityIndex.withoutDay;
-    const sum = month + year + range;
-    if (sum + undated === 0) {
+    const sentences = [`${num(total)} ${total === 1 ? 'Brief ist' : 'Briefe sind'} tagesgenau datiert.`];
+    const peaks = [];
+    if (maxYear.year) peaks.push(`im Jahr ${maxYear.year} (${num(maxYear.count)})`);
+    if (maxMonth.month) peaks.push(`im ${monthName(maxMonth.month)} (${num(maxMonth.count)})`);
+    if (maxDay.date) peaks.push(`am ${formatDay(maxDay.date, false)} (${num(maxDay.count)})`);
+    if (peaks.length) sentences.push(`Die meisten Briefe entstanden ${peaks.join(', ').replace(/, ([^,]*)$/, ' und $1')}.`);
+    if (activitySelectedYear !== 'all') {
+        const yearMonths = new Map([...lettersByMonth].filter(([key]) => key.startsWith(`${activitySelectedYear}-`)));
+        const busiest = largest(yearMonths);
+        const count = lettersByYear.get(activitySelectedYear) || 0;
+        sentences.push(`${activitySelectedYear}: ${num(count)} ${count === 1 ? 'Brief' : 'Briefe'}${busiest.key ? `, die meisten im ${monthName(busiest.key, false)} (${num(busiest.count)})` : ''}.`);
+    }
+    el.textContent = sentences.join(' ');
+}
+
+/**
+ * Note on the letters without a day cell, beside the heatmap it explains: dated only to month,
+ * year or a range, dated only in words, with an implausible year, or undated. Together with the
+ * day-precise letters they add up to the shown letters, so none goes unmentioned.
+ */
+function renderWithoutDayNote() {
+    const note = document.getElementById('activity-without-day-note');
+    if (!note || !activityIndex) return;
+    const { month, year, range, undated, text, implausible } = activityIndex.withoutDay;
+    const parts = [];
+    if (month) parts.push(`${num(month)} nur auf den Monat datiert`);
+    if (year) parts.push(`${num(year)} nur auf das Jahr datiert`);
+    if (range) parts.push(`${num(range)} auf einen Zeitraum datiert`);
+    if (text) parts.push(`${num(text)} nur als Text datiert`);
+    if (implausible) parts.push(`${num(implausible)} mit unplausiblem Jahr`);
+    if (undated) parts.push(`${num(undated)} ohne Datum`);
+    const sum = month + year + range + undated + text + implausible;
+    if (sum === 0) {
         note.classList.add('hidden');
         note.textContent = '';
         return;
     }
-    const parts = [];
-    if (month) parts.push(`${month.toLocaleString('de-DE')} auf den Monat`);
-    if (year) parts.push(`${year.toLocaleString('de-DE')} auf das Jahr`);
-    if (range) parts.push(`${range.toLocaleString('de-DE')} auf einen Zeitraum`);
-    // Day, coarser and undated letters add up to the whole dataset, so no letter goes unmentioned
-    const sentences = ['Die Heatmap zeigt nur tagesgenau datierte Briefe.'];
-    if (sum) sentences.push(`${sum.toLocaleString('de-DE')} weitere Briefe sind nur ${parts.join(', ')} datiert.`);
-    if (undated) sentences.push(`${undated.toLocaleString('de-DE')} ${undated === 1 ? 'Brief ist' : 'Briefe sind'} undatiert.`);
-    sentences.push('Sie erscheinen in keiner Tageszelle.');
-    note.textContent = sentences.join(' ');
+    const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} und ${parts[parts.length - 1]}` : parts[0];
+    note.textContent = `Die Heatmap zeigt nur tagesgenau datierte Briefe. ${sum === 1 ? 'Ein weiterer Brief fehlt in ihr' : `${num(sum)} weitere Briefe fehlen in ihr`}: ${list}.`;
     note.classList.remove('hidden');
 }
 
@@ -217,6 +243,7 @@ function selectActivityYear(value) {
     const select = document.getElementById('activity-year-select');
     if (select) select.value = String(activitySelectedYear);
     updateYearSteps();
+    renderActivitySummary();
     renderActivityHeatmap();
 }
 
@@ -287,10 +314,6 @@ function renderActivityHeatmap() {
     let html = '';
 
     for (const year of displayYears) {
-        html += `<div class="activity-year-block">
-            <div class="activity-year-label">${year}</div>
-            <div class="activity-year-grid">`;
-
         // First date of year
         const firstDay = new Date(year, 0, 1);
         const lastDay = new Date(year, 11, 31);
@@ -298,6 +321,8 @@ function renderActivityHeatmap() {
         // For each day of year
         const currentDate = new Date(firstDay);
         let weekHtml = '<div class="activity-week">';
+        // One slot per week column; a month's name stands over the week that holds its first day
+        const monthSlots = [''];
 
         // Empty cells at start (before first weekday)
         const firstWeekday = firstDay.getDay();
@@ -319,7 +344,9 @@ function renderActivityHeatmap() {
             // Start new week (Monday)
             if (adjustedWeekday === 0 && currentDate > firstDay) {
                 weekHtml += '</div><div class="activity-week">';
+                monthSlots.push('');
             }
+            if (currentDate.getDate() === 1) monthSlots[monthSlots.length - 1] = MONTHS[currentDate.getMonth()];
 
             // Only days with letters are operable; one roving tab stop keeps Tab order usable
             const label = `${formatDay(dateStr, false)}: ${count} Brief${count !== 1 ? 'e' : ''}`;
@@ -333,7 +360,11 @@ function renderActivityHeatmap() {
         }
 
         weekHtml += '</div>';
-        html += weekHtml + '</div></div>';
+        // The month row repeats what each cell's label already says, so screen readers skip it
+        html += `<div class="activity-year-block">
+            <div class="activity-year-label">${year}</div>
+            <div class="activity-month-row" aria-hidden="true">${monthSlots.map(m => `<span>${m}</span>`).join('')}</div>
+            <div class="activity-year-grid">${weekHtml}</div></div>`;
     }
 
     container.innerHTML = html;

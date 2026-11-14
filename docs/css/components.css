@@ -872,3 +872,98 @@
     width: 400px;
     max-width: 100%;
 }
+
+/* Letter list: result line, legend, labelled values of a row, paging */
+.list-result,
+.list-legend {
+    padding: 0 var(--space-lg);
+}
+
+.list-result {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.list-legend {
+    margin: 0 0 var(--space-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.list-more {
+    display: block;
+    margin: var(--space-md) auto;
+}
+
+/* The row wraps instead of running out of the card on narrow screens */
+.letter-meta {
+    flex-wrap: wrap;
+    row-gap: var(--space-xs);
+}
+
+.letter-meta .letter-meta__labelled {
+    display: inline;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.letter-meta .letter-meta__label {
+    display: inline;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.letter-meta .letter-meta__note {
+    font-style: italic;
+}
+
+.letter-toggle {
+    column-gap: 0;
+    overflow-wrap: anywhere;
+}
+
+.letter-records {
+    margin: 0;
+    padding-left: var(--space-lg);
+    font-size: var(--font-size-sm);
+}
+
+.letter-records__id {
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+/* Correspondents: kind of record in words */
+.person-kind {
+    font-size: var(--font-size-xs);
+    padding: 0 var(--space-xs);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+}
+
+/* Overview: transmission features as links into the letter list */
+.quality-features {
+    display: contents;
+}
+
+.quality-chip--link {
+    cursor: pointer;
+    color: var(--color-primary-dark);
+    border-color: var(--color-border);
+    font-family: inherit;
+}
+
+.quality-chip--link:hover {
+    border-color: var(--color-primary);
+}
+
+@media (max-width: 767px) {
+    .letter-header {
+        flex-wrap: wrap;
+    }
+}

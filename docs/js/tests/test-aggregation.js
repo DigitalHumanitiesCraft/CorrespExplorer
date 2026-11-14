@@ -11,6 +11,7 @@ import { NO_LANGUAGE, registerLanguageLabels, languageLabel } from '../constants
 import { assert } from './test-runner.js';
 import { analyzeCoordinateNeeds } from '../geonames-enrichment.js';
 import { buildActivityIndex } from '../views/activity-view.js';
+import { indexPlaces, coordinateCoverage, countLettersByPlace } from '../views/places-view.js';
 
 export const AggregationTests = {
     name: 'Data Aggregation',
@@ -51,10 +52,31 @@ export const AggregationTests = {
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 const index = buildActivityIndex(data.letters);
-                const { month, year, range, undated } = index.withoutDay;
+                const { month, year, range, undated, text, implausible } = index.withoutDay;
                 assert(undated > 0, 'Fixture sollte undatierte Briefe enthalten');
-                const sum = index.total + month + year + range + undated;
+                const sum = index.total + month + year + range + undated + text + implausible;
                 assert(sum === data.letters.length, `Summe ${sum} statt ${data.letters.length} Briefe`);
+            }
+        },
+        {
+            // Regression: the busiest year counted only day-precise letters (326) where the timeline
+            // counted every letter of the year (327)
+            name: 'buildActivityIndex: Jahre zählen wie die Timeline, Datum nur als Text ist nicht undatiert',
+            async run() {
+                const data = await parseCMIF('data/test-uncertainty.xml');
+                const index = buildActivityIndex(data.letters);
+                for (const [year, count] of index.lettersByYear) {
+                    const timeline = data.letters.filter(l => l.year === year && !isMultiYearSpan(l)).length;
+                    assert(count === timeline, `${year}: ${count} statt ${timeline} wie in der Timeline`);
+                }
+                const coarse = data.letters.find(l => l.year && l.datePrecision !== 'day' && !isMultiYearSpan(l));
+                assert(coarse && index.lettersByYear.get(coarse.year) > (index.byYear.get(coarse.year) || 0),
+                    'Ein nur auf Monat oder Jahr datierter Brief zählt im Jahr, nicht in den Tageszellen');
+                assert(index.maxYear.count === Math.max(...index.lettersByYear.values()), 'Aktivstes Jahr aus allen Briefen des Jahres');
+
+                const records = await parseCMIF('data/test-letter-records.xml');
+                const withText = buildActivityIndex(records.letters).withoutDay;
+                assert(withText.text === 1 && withText.undated === 1, `Text 1 und ohne Datum 1 erwartet: ${JSON.stringify(withText)}`);
             }
         },
         {
@@ -297,6 +319,26 @@ export const AggregationTests = {
                 assert(withoutLanguage.length > 0, 'Fixture sollte Briefe ohne Sprache enthalten');
                 assert(!withoutLanguage.includes(ladin), 'Der Brief mit Code None darf nicht als ohne Sprache gelten');
                 state.resetFilters();
+            }
+        },
+        {
+            // Places view: inferred places are counted per place, missing coordinates are a
+            // property of the whole list when no place has any, and letters without place are counted
+            name: 'Ortsansicht: erschlossene Orte je Ort, Briefe ohne Ort, Koordinatenlage der Liste',
+            async run() {
+                const { letters } = await parseCMIF('data/test-letter-records.xml');
+                const index = indexPlaces(letters);
+                assert(coordinateCoverage(index) === 'none', `Fixture ohne Koordinaten, Lage ${coordinateCoverage(index)}`);
+                assert(Object.keys(index).sort().join('|') === 'London|Salzburg|Wien', `Orte wie in der Quelle, ist ${Object.keys(index).join('|')}`);
+
+                const { counts, withoutPlace } = countLettersByPlace(letters);
+                assert(withoutPlace === 1, `Ein Brief nennt nur einen Poststempel und keinen Ort, gezählt ${withoutPlace}`);
+                assert(counts.Salzburg.count === 1 && counts.Salzburg.inferred === 1, 'Salzburg ist von der Edition erschlossen (ana="deduced")');
+                assert(counts.Wien.inferred === 1, '[Wien] steht in eckigen Klammern und gilt als erschlossen');
+                assert(counts.London.inferred === 0, 'London steht im Brief und ist nicht erschlossen');
+
+                const hsa = await (await fetch('data/hsa-letters.json')).json();
+                assert(coordinateCoverage(indexPlaces(hsa.letters)) === 'mixed', 'Das HSA mischt Orte mit und ohne Koordinaten');
             }
         }
     ]

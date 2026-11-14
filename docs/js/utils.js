@@ -544,7 +544,7 @@ export function buildIndices(letters) {
     const countPerson = (person, role) => {
         const key = personKey(person);
         if (!key) return;
-        persons[key] ??= { name: person.name, id: person.id || null, authority: person.authority || null, letter_count: 0, as_sender: 0, as_recipient: 0 };
+        persons[key] ??= { name: person.name, id: person.id || null, authority: person.authority || null, letter_count: 0, as_sender: 0, as_recipient: 0, ...(person.isOrganization && { isOrganization: true }) };
         persons[key].letter_count++;
         persons[key][role]++;
     };

@@ -9,7 +9,7 @@ method:
 status: draft
 language: en
 created: 2025-11-27
-updated: 2026-11-05
+updated: 2026-11-14
 authors: [Christopher Pollin]
 related: [specification, data, design, architecture]
 ---
@@ -149,7 +149,24 @@ Do not fake coordinates. Places without coordinates appear in the places view, n
 | partial | "Rozario, [NN] de" in `.person-partial` | "R?" |
 | unknown | name in brackets, e.g. "[[NN]]" or "[Unbekannt]", in `.person-unknown`; without name "[Unbekannt]" | "?" |
 
-`formatPlaceName()` adds a question mark icon ("Unbekannter Ort") to unknown places and the hint "(Region)" to region places.
+`formatPlaceName()` adds a question mark icon ("Unbekannter Ort") to unknown places. A region place, meaning a name without GeoNames ID, is shown unmarked since 2026-11-14, with the title "Ohne GeoNames-ID, nicht auf der Karte": for editions that record no GeoNames IDs it is the normal case, and the earlier hint "(Region)" claimed an imprecision the source does not state.
+
+## Editorial inference, postmarks and implausible years
+
+Added on 2026-11-14 for TEI that describes each letter in its own record. Every rule is triggered by properties of the data and holds for any file that carries them.
+
+| Property of the source | Detection in `cmif-parser.js` | Field | Display |
+|---|---|---|---|
+| Value supplied by the edition | `@evidence`, a `@type` or `@ana` token `supplied`, `deduced`, `inferred`, `conjecture…`, or square brackets around the whole value (`isInferred()`) | `dateInferred`, `place_sent.inferred` | value in square brackets, class `.date-inferred` or `.place-inferred`, legend line above the letter list |
+| Date only as text | `date` without machine-readable attribute | `dateText`, `date` stays null | the text in italics, off the time axis |
+| Postmark | `placeName` or `note` with `@type` postmark, postalStamp or Poststempel | `postmark` | labelled value "Poststempel", never the sending place |
+| Wording of the place on the letter | `placeName type="original"` | sending place only when no untyped `placeName` exists | as the source gives it |
+| Postal address | `address/addrLine` inside `correspDesc` | `address` | labelled value "Anschrift", never the sending place |
+| Reference inside the edition | `persName/@ref` or `orgName/@ref` that is no http(s) URL of a known authority, such as `#ID` | `localRef`, precision `named` | "ohne Normdatensatz" |
+| Year far from all others | a gap of 40 years or more separates less than a twentieth of the dated letters from the rest (`flagImplausibleYears()`) | `dateImplausible`, `year` null, `date` kept | date as the source gives it with the word "unplausibel", off the time axis, sorted with the undated letters |
+| Several records of one letter | records sharing a shelfmark without contradicting dates (`mergeRecords()`) | `records`, `recordsDiffer` | "n Einträge in der Quelle", with "Angaben weichen ab" where sender, recipients or place differ by name; the dialog lists every record |
+
+An inferred value is never shown as secured, a postmark and an address never as a place, and the tool decides nothing between differing records: the first record with a date leads, the others fill only what it lacks. The sidebar group "Überlieferung" (`LETTER_FEATURES` in `constants.js`, URL parameter `feat`) offers one filter per property the loaded dataset has, so each group can be listed; plain CMIF shows no such group. Unknown person patterns now include `Unidentified` and bilingual placeholders such as `Unbekannt/Unidentified`.
 
 ---
 

@@ -24,7 +24,9 @@ const { LETTER_FEATURES } = await import(pathToFileURL(join(here, '../docs/js/co
 const TEI = 'http://www.tei-c.org/ns/1.0';
 const names = readdirSync(corpusDir).filter(f => f.endsWith('.xml')).sort();
 const xml = names.map(f => readFileSync(join(corpusDir, f), 'utf8'));
-const data = await parseCMIFFiles(xml, null, names);
+// Record by record for the comparison with the source, then merged as the explorer shows it
+const data = await parseCMIFFiles(xml, null, names, { merge: false });
+const merged = await parseCMIFFiles(xml, null, names);
 
 // Source letters in the order the parser reads them
 const source = [];
@@ -92,6 +94,17 @@ check('no address stands as sending place', addressAsPlace === 0, String(address
 check('no reference inside the edition counts as identified', localRefIdentified === 0, String(localRefIdentified));
 check('person names carry no line breaks', rawWhitespace === 0, String(rawWhitespace));
 
+const recordIds = merged.letters.flatMap(l => l.records ? l.records.map(r => r.id) : [l.id]);
+check('every record belongs to exactly one letter', recordIds.length === letters.length && new Set(recordIds).size === letters.length,
+    `${recordIds.length} record ids for ${letters.length} records`);
+check('merged records share one shelfmark and no contradicting dates', merged.letters.filter(l => l.records).every(l => {
+    const group = letters.filter(r => l.records.some(x => x.id === r.id));
+    return new Set(group.map(r => r.signature)).size === 1 && new Set(group.map(r => r.date).filter(Boolean)).size <= 1;
+}));
+check('letters equal distinct shelfmarks plus unmerged records', merged.letters.length === merged.letters.filter(l => l.records).length + merged.letters.filter(l => !l.records).length);
+const span = merged.letters.map(l => l.year).filter(Boolean);
+check('no letter with an implausible year stands on the time axis', merged.letters.every(l => !l.dateImplausible || l.year === null), `${Math.min(...span)} to ${Math.max(...span)}`);
+
 const indexed = Object.values(data.indices.persons).reduce((sum, p) => sum + p.as_recipient, 0);
 const namedRecipients = letters.reduce((sum, l) => sum + (l.recipients || (l.recipient ? [l.recipient] : [])).filter(r => r.id || r.name).length, 0);
 check('the person index counts every recipient', indexed === namedRecipients, `${indexed} of ${namedRecipients}`);
@@ -102,10 +115,14 @@ console.log(JSON.stringify({
     files_loaded: data.meta.files.loaded,
     files_skipped: data.meta.files.skipped.map(s => s.name),
     title: data.meta.title,
-    letters: letters.length,
-    persons: Object.keys(data.indices.persons).length,
-    places: Object.keys(data.indices.places).length,
-    features: Object.fromEntries(LETTER_FEATURES.map(f => [f.key, letters.filter(f.test).length])),
+    records: letters.length,
+    letters: merged.letters.length,
+    distinct_shelfmarks: new Set(letters.map(l => l.signature).filter(Boolean)).size,
+    period: [Math.min(...span), Math.max(...span)],
+    implausible_dates: merged.letters.filter(l => l.dateImplausible).map(l => `${l.id} ${l.date}`),
+    persons: Object.keys(merged.indices.persons).length,
+    places: Object.keys(merged.indices.places).length,
+    features: Object.fromEntries(LETTER_FEATURES.map(f => [f.key, merged.letters.filter(f.test).length])),
     sender_precision: data.meta.uncertainty.senders,
     date_precision: data.meta.uncertainty.dates,
     place_precision: data.meta.uncertainty.places,

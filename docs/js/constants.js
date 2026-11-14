@@ -8,12 +8,16 @@
  * `param` is the token in the `feat` URL parameter.
  */
 export const LETTER_FEATURES = [
+    { key: 'undated', label: 'Ohne Datum', test: l => !l.date && !l.dateText },
+    { key: 'dateImplausible', label: 'Datum unplausibel', test: l => Boolean(l.dateImplausible) },
     { key: 'dateInferred', label: 'Datum erschlossen', test: l => Boolean(l.dateInferred) },
     { key: 'dateText', label: 'Datum nur als Text', test: l => Boolean(l.dateText) },
     { key: 'placeInferred', label: 'Ort erschlossen', test: l => Boolean(l.place_sent?.inferred) },
     { key: 'postmark', label: 'Mit Poststempel', test: l => Boolean(l.postmark) },
     { key: 'address', label: 'Mit Anschrift', test: l => Boolean(l.address) },
-    { key: 'multiRecipients', label: 'Mehrere Empfänger', test: l => (l.recipients?.length || 0) > 1 }
+    { key: 'multiRecipients', label: 'Mehrere Empfänger', test: l => (l.recipients?.length || 0) > 1 },
+    { key: 'records', label: 'Mehrfach verzeichnet', test: l => (l.records?.length || 0) > 1 },
+    { key: 'recordsDiffer', label: 'Einträge weichen ab', test: l => Boolean(l.recordsDiffer) }
 ];
 
 export const NO_LANGUAGE = '_none';

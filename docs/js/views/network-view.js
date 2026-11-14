@@ -1,7 +1,7 @@
 // Network View
 // Force-directed graph of who wrote to whom, of contemporaries or of topics
 
-import { debounce, motionMs, personKey, settleWithoutMotion, letterRecipients } from '../utils.js';
+import { debounce, motionMs, personKey, letterRecipients } from '../utils.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
 import { elements } from '../dom-cache.js';
 import { readTokens, renderDataTable } from './view-support.js';
@@ -12,6 +12,8 @@ const TYPE_COLOR_TOKEN = {
     contemporaries: '--color-role-sender',
     topics: '--color-warning'
 };
+// Organisations apart from persons, in the "Farbe" mode by kind
+const ORGANIZATION_COLOR_TOKEN = '--color-primary';
 
 // Module state
 // Who wrote to whom is the basic question of a correspondence network, so it is the default type
@@ -21,7 +23,8 @@ let networkMinYears = NETWORK_DEFAULTS.minYears;
 let networkMinCooccurrence = NETWORK_DEFAULTS.minCooccurrence;
 let networkMaxNodes = NETWORK_DEFAULTS.maxNodes;
 let networkColorMode = 'type'; // 'type' or 'entry' (entry year)
-let networkHideEgo = false; // Hide the ego node (most connected person)
+let networkHideEgo = false; // Hide the ego node (dominant person, else the most connected one)
+let hasOrganizations = false; // Whether the dataset names organisations as correspondents
 let networkSimulation = null;
 let networkSvg = null;
 let networkZoom = null;
@@ -154,6 +157,13 @@ function updateNetworkTypeOptions() {
         ${hasSubjects ? '<option value="topics">Themen-Netzwerk</option>' : ''}
     `;
 
+    // "By kind" promises a distinction; without organisations in the data there is none to make,
+    // so the same option is the plain single colour and says so
+    hasOrganizations = allLetters.some(l =>
+        l.sender?.isOrganization || letterRecipients(l).some(r => r?.isOrganization));
+    const typeOption = elements.getById('network-color-mode')?.querySelector('option[value="type"]');
+    if (typeOption) typeOption.textContent = hasOrganizations ? 'Person oder Organisation' : 'Einheitlich';
+
     updateNetworkThresholdLabel();
 }
 
@@ -227,7 +237,7 @@ export function buildCorrespondenceNetwork(letters, minLetters, maxNodes) {
     const pairs = new Map();
     const touch = (key, person, year) => {
         if (!personInfo.has(key)) {
-            personInfo.set(key, { id: key, name: person.name || key, letterCount: 0, firstYear: null });
+            personInfo.set(key, { id: key, name: person.name || key, letterCount: 0, firstYear: null, isOrganization: Boolean(person.isOrganization) });
         }
         const info = personInfo.get(key);
         info.letterCount++;
@@ -269,7 +279,7 @@ export function buildCorrespondenceNetwork(letters, minLetters, maxNodes) {
         }));
 
     return {
-        nodes: shown.map(p => ({ id: p.id, name: p.name, total: p.letterCount, firstYear: p.firstYear })),
+        nodes: shown.map(p => ({ id: p.id, name: p.name, total: p.letterCount, firstYear: p.firstYear, isOrganization: p.isOrganization })),
         links,
         networkType: 'correspondence',
         stats: {
@@ -303,7 +313,8 @@ export function buildContemporariesNetwork(letters, minYears, maxNodes) {
                 years: new Set(),
                 letterCount: 0,
                 firstYear: year,
-                lastYear: year
+                lastYear: year,
+                isOrganization: Boolean(letter.sender.isOrganization)
             });
         }
         const info = personInfo.get(senderId);
@@ -378,7 +389,8 @@ export function buildContemporariesNetwork(letters, minYears, maxNodes) {
         total: p.letterCount,
         yearsActive: p.years.size,
         firstYear: p.firstYear,
-        lastYear: p.lastYear
+        lastYear: p.lastYear,
+        isOrganization: p.isOrganization
     }));
 
     return {
@@ -492,6 +504,103 @@ const NETWORK_BUILDERS = {
 
 const thresholdOf = type => ({ correspondence: networkMinLetters, contemporaries: networkMinYears, topics: networkMinCooccurrence })[type];
 
+// A person on at least this share of the letters makes the dataset ego-centred: its network is a
+// star around that person, and the relations between the others need to be announced
+const EGO_SHARE = 0.5;
+// Upper bound of node labels; the placement below shows fewer where they would overlap
+const MAX_LABELS = 40;
+const LABEL_MAX_CHARS = 26;
+const LABEL_GAP = 4;
+
+/**
+ * The person who takes part in most letters, if that is at least half of them
+ * @param {Array} letters
+ * @returns {{id: string, name: string, count: number, total: number}|null}
+ */
+export function findEgo(letters) {
+    const counts = new Map();
+    letters.forEach(letter => {
+        // A person counts once per letter, also when named as sender and recipient
+        const keys = new Map();
+        [letter.sender, ...letterRecipients(letter)].forEach(person => {
+            const key = personKey(person);
+            if (key && !keys.has(key)) keys.set(key, person.name || key);
+        });
+        keys.forEach((name, key) => {
+            const entry = counts.get(key) || { id: key, name, count: 0 };
+            entry.count++;
+            counts.set(key, entry);
+        });
+    });
+    let top = null;
+    counts.forEach(entry => { if (!top || entry.count > top.count) top = entry; });
+    return top && letters.length > 0 && top.count >= letters.length * EGO_SHARE
+        ? { ...top, total: letters.length }
+        : null;
+}
+
+/**
+ * The network without one person: its edges go, persons left without any edge go too, and the
+ * node limit applies to the rest. Built from the unlimited network, so hiding the ego frees its
+ * place for persons who are linked to someone else.
+ * @param {{nodes: Array, links: Array}} data
+ * @param {string} egoId
+ * @param {number} maxNodes
+ */
+export function networkWithoutEgo(data, egoId, maxNodes) {
+    const linkedIds = links => new Set(links.flatMap(l => [l.source, l.target]));
+    let links = data.links.filter(l => l.source !== egoId && l.target !== egoId);
+    let linked = linkedIds(links);
+    let nodes = data.nodes.filter(n => n.id !== egoId && linked.has(n.id));
+    if (nodes.length > maxNodes) {
+        nodes = [...nodes].sort((a, b) => b.total - a.total).slice(0, maxNodes);
+        const shown = new Set(nodes.map(n => n.id));
+        links = links.filter(l => shown.has(l.source) && shown.has(l.target));
+        linked = linkedIds(links);
+        nodes = nodes.filter(n => linked.has(n.id));
+    }
+    return { ...data, nodes, links };
+}
+
+// The node with most edges, the former meaning of "Ego" for datasets without a dominant person
+function mostConnectedNode(data) {
+    const degree = new Map();
+    data.links.forEach(l => {
+        degree.set(l.source, (degree.get(l.source) || 0) + 1);
+        degree.set(l.target, (degree.get(l.target) || 0) + 1);
+    });
+    let best = null;
+    degree.forEach((count, id) => { if (!best || count > best.count) best = { id, count }; });
+    return best?.id || null;
+}
+
+/**
+ * Network data of the current settings. The ego is the dominant person of the filtered letters,
+ * else the most connected node. Returns the shown data and, for an ego-centred correspondence
+ * network, how many edges the network keeps without the ego.
+ */
+function networkData(letters) {
+    const build = NETWORK_BUILDERS[networkType];
+    const threshold = thresholdOf(networkType);
+    const ego = networkType === 'correspondence' ? findEgo(letters) : null;
+    // Only the correspondence network is linear in the letters; the others keep their node
+    // limit before the ego is removed, as before
+    const full = ego ? build(letters, threshold, Infinity) : null;
+    const withoutEgo = ego ? networkWithoutEgo(full, ego.id, networkMaxNodes) : null;
+
+    let data;
+    if (networkHideEgo && withoutEgo) {
+        data = { ...withoutEgo, stats: full.stats };
+    } else {
+        data = build(letters, threshold, networkMaxNodes);
+        if (networkHideEgo) {
+            const egoId = mostConnectedNode(data);
+            if (egoId) data = networkWithoutEgo(data, egoId, networkMaxNodes);
+        }
+    }
+    return { data, ego, othersLinks: withoutEgo ? withoutEgo.links.length : null };
+}
+
 /**
  * Render the network visualization
  */
@@ -499,39 +608,7 @@ export function renderNetwork() {
     const container = elements.getById('network-graph');
     if (!container) return;
 
-    const filteredLetters = getFilteredLetters();
-
-    // Build network data based on selected type
-    const data = NETWORK_BUILDERS[networkType](filteredLetters, thresholdOf(networkType), networkMaxNodes);
-
-    // Filter out ego node if requested (node with most connections)
-    let egoNodeId = null;
-    if (networkHideEgo && data.nodes.length > 0) {
-        // Count connections per node
-        const connectionCount = new Map();
-        data.nodes.forEach(n => connectionCount.set(n.id, 0));
-        data.links.forEach(l => {
-            connectionCount.set(l.source, (connectionCount.get(l.source) || 0) + 1);
-            connectionCount.set(l.target, (connectionCount.get(l.target) || 0) + 1);
-        });
-
-        // Find ego (most connected node)
-        let maxConnections = 0;
-        connectionCount.forEach((count, id) => {
-            if (count > maxConnections) {
-                maxConnections = count;
-                egoNodeId = id;
-            }
-        });
-
-        // Remove ego node and its edges
-        if (egoNodeId) {
-            data.nodes = data.nodes.filter(n => n.id !== egoNodeId);
-            data.links = data.links.filter(l =>
-                l.source !== egoNodeId && l.target !== egoNodeId
-            );
-        }
-    }
+    const { data, ego, othersLinks } = networkData(getFilteredLetters());
 
     // Color scale for entry year mode (contemporaries only)
     let yearColorScale = null;
@@ -549,6 +626,7 @@ export function renderNetwork() {
 
     // Update stats display
     updateNetworkStats(data, minYear, maxYear, yearColorScale);
+    updateEgoNote(ego, othersLinks);
 
     // Text alternative: every shown connection with its strength
     const edgeColumn = { correspondence: 'Briefe', contemporaries: 'Gemeinsame Jahre', topics: 'Gemeinsame Briefe' }[networkType];
@@ -585,6 +663,7 @@ export function renderNetwork() {
     const height = container.clientHeight || 600;
     const tokens = readTokens({
         typeColor: TYPE_COLOR_TOKEN[networkType] || TYPE_COLOR_TOKEN.contemporaries,
+        orgColor: ORGANIZATION_COLOR_TOKEN,
         edge: '--color-text-light',
         edgeActive: '--color-text',
         nodeStroke: '--color-bg',
@@ -625,6 +704,7 @@ export function renderNetwork() {
     const nodeScale = d3.scaleSqrt()
         .domain([1, maxTotal])
         .range([8, 35]);
+    const radius = d => nodeScale(d.total);
 
     // Calculate edge widths
     const edgeValueFn = networkType === 'contemporaries'
@@ -638,22 +718,42 @@ export function renderNetwork() {
 
     const typeColor = tokens.typeColor;
 
-    // Node color function
+    // Node color function: by entry year, else organisations apart from persons where the
+    // dataset names any; the legend states both colours, the tooltip the kind in words
     const getNodeColor = (d) => {
         if (yearColorScale && d.firstYear != null) {
             return yearColorScale(d.firstYear);
         }
+        if (networkColorMode === 'type' && d.isOrganization) return tokens.orgColor;
         return typeColor;
     };
+    const kindOf = d => d.isOrganization ? ' (Organisation)' : '';
 
-    // Create simulation
+    // The layout is computed before it is drawn, so a new render (such as "Ego ausblenden") shows
+    // the settled picture instead of nodes falling in from the corner. The box force keeps every
+    // node inside the visible area, which lets labels be placed against its edges.
+    const area = width * height;
     networkSimulation = d3.forceSimulation(data.nodes)
         .force('link', d3.forceLink(data.links)
             .id(d => d.id)
             .distance(80))
-        .force('charge', d3.forceManyBody().strength(-200))
-        .force('center', d3.forceCenter(width / 2, height / 2))
-        .force('collision', d3.forceCollide().radius(d => nodeScale(d.total) + 5));
+        .force('charge', d3.forceManyBody().strength(-Math.max(30, Math.min(200, area / data.nodes.length / 25))))
+        .force('x', d3.forceX(width / 2).strength(0.05))
+        .force('y', d3.forceY(height / 2).strength(0.05 * Math.min(3, width / height)))
+        .force('collision', d3.forceCollide().radius(d => radius(d) + 5))
+        .force('box', () => {
+            data.nodes.forEach(d => {
+                const r = radius(d) + 2;
+                d.x = Math.max(r, Math.min(width - r, d.x));
+                d.y = Math.max(r, Math.min(height - r, d.y));
+            });
+        })
+        .stop();
+    const settleTicks = Math.ceil(Math.log(networkSimulation.alphaMin()) / Math.log(1 - networkSimulation.alphaDecay()));
+    networkSimulation.tick(settleTicks);
+
+    const fontPx = parseFloat(tokens.fontSize) || 12;
+    placeLabels(data.nodes, radius, width, height, fontPx, labelMeasure(container, fontPx));
 
     // Dynamic edge opacity
     const baseOpacity = data.links.length > 300 ? 0.15 :
@@ -681,8 +781,8 @@ export function renderNetwork() {
         .attr('role', 'button')
         .attr('tabindex', -1)
         .attr('aria-label', d => networkType === 'contemporaries'
-            ? `${d.name}: ${d.total} Briefe, ${d.yearsActive} Jahre aktiv`
-            : `${d.name}: ${d.total} Briefe`)
+            ? `${d.name}${kindOf(d)}: ${d.total} Briefe, ${d.yearsActive} Jahre aktiv`
+            : `${d.name}${kindOf(d)}: ${d.total} Briefe`)
         .call(d3.drag()
             .on('start', dragstarted)
             .on('drag', dragged)
@@ -690,19 +790,29 @@ export function renderNetwork() {
 
     // Node circles
     node.append('circle')
-        .attr('r', d => nodeScale(d.total))
+        .attr('r', radius)
         .attr('fill', d => getNodeColor(d))
         .attr('stroke', tokens.nodeStroke)
         .attr('stroke-width', 2);
 
-    // Node labels (only for larger nodes)
-    node.filter(d => d.total > maxTotal * 0.15)
-        .append('text')
-        .text(d => d.name.length > 20 ? d.name.substring(0, 20) + '...' : d.name)
-        .attr('x', d => nodeScale(d.total) + 5)
-        .attr('y', 4)
+    // Labels in their own layer above all nodes, so no later node covers them; a halo in the
+    // background colour keeps them legible over edges
+    const labelled = data.nodes.filter(d => d.label);
+    const label = g.append('g')
+        .attr('class', 'network-labels')
+        .attr('aria-hidden', 'true')
+        .selectAll('text')
+        .data(labelled)
+        .join('text')
+        .text(d => d.label.text)
+        .attr('text-anchor', d => d.label.anchor)
         .attr('font-size', tokens.fontSize)
-        .attr('fill', tokens.label);
+        .attr('fill', tokens.label)
+        .attr('stroke', tokens.nodeStroke)
+        .attr('stroke-width', 3)
+        .attr('stroke-linejoin', 'round')
+        .attr('paint-order', 'stroke')
+        .attr('pointer-events', 'none');
 
     // Tooltips
     if (networkType === 'topics') {
@@ -712,13 +822,13 @@ export function renderNetwork() {
             .text(d => `${d.sourceName} + ${d.targetName}\n${d.count}x gemeinsam erwähnt`);
     } else if (networkType === 'correspondence') {
         node.append('title')
-            .text(d => `${d.name}\n${d.total} Briefe als Absender oder Empfänger`);
+            .text(d => `${d.name}${kindOf(d)}\n${d.total} Briefe als Absender oder Empfänger`);
         link.append('title')
             .text(d => `${d.sourceName} und ${d.targetName}\n${d.count} Briefe (${d.forward} an ${d.targetName}, ${d.backward} an ${d.sourceName})`);
     } else {
         node.append('title')
             .text(d => {
-                let text = `${d.name}\n${d.total} Briefe\n${d.yearsActive} Jahre aktiv`;
+                let text = `${d.name}${kindOf(d)}\n${d.total} Briefe\n${d.yearsActive} Jahre aktiv`;
                 if (d.firstYear) text += `\nErster Brief: ${d.firstYear}`;
                 return text;
             });
@@ -757,7 +867,7 @@ export function renderNetwork() {
         node.select('circle').attr('opacity', n =>
             connectedIds.has(n.id) ? 1 : 0.3
         );
-        node.select('text').attr('opacity', n =>
+        label.attr('opacity', n =>
             connectedIds.has(n.id) ? 1 : 0.3
         );
     };
@@ -766,7 +876,7 @@ export function renderNetwork() {
         link.attr('stroke-opacity', baseOpacity)
             .attr('stroke', tokens.edge);
         node.select('circle').attr('opacity', 1);
-        node.select('text').attr('opacity', 1);
+        label.attr('opacity', 1);
     };
 
     node.on('mouseenter', (event, d) => highlight(d));
@@ -797,8 +907,8 @@ export function renderNetwork() {
         next.focus();
     });
 
-    // Update positions on tick
-    networkSimulation.on('tick', () => {
+    // Update positions on tick; drawn once now, again while a node is dragged
+    const draw = () => {
         link
             .attr('x1', d => d.source.x)
             .attr('y1', d => d.source.y)
@@ -806,9 +916,14 @@ export function renderNetwork() {
             .attr('y2', d => d.target.y);
 
         node.attr('transform', d => `translate(${d.x},${d.y})`);
-    });
-    settleWithoutMotion(networkSimulation);
+        label
+            .attr('x', d => d.x + d.label.dx)
+            .attr('y', d => d.y + d.label.dy);
+    };
+    networkSimulation.on('tick', draw);
+    draw();
 
+    // Dragging moves the node with the hand, which reduced motion does not forbid
     function dragstarted(event, d) {
         if (!event.active) networkSimulation.alphaTarget(0.3).restart();
         d.fx = d.x;
@@ -827,18 +942,94 @@ export function renderNetwork() {
     }
 }
 
+// Text width in pixels at the label font, measured on a canvas so it works before the SVG exists
+function labelMeasure(container, fontPx) {
+    const context = document.createElement('canvas').getContext('2d');
+    if (!context) return text => text.length * fontPx * 0.6;
+    context.font = `${fontPx}px ${getComputedStyle(container).fontFamily}`;
+    return text => context.measureText(text).width;
+}
+
+function labelText(name) {
+    return name.length > LABEL_MAX_CHARS ? `${name.slice(0, LABEL_MAX_CHARS - 1)}…` : name;
+}
+
 /**
- * Update network statistics display
+ * Give the largest nodes a label where it fits: right, left, above or below the node, inside the
+ * drawing area, over no other node and no other label. Sets node.label = {text, anchor, dx, dy}.
+ */
+function placeLabels(nodes, radius, width, height, fontPx, measure) {
+    const overlaps = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+    const nodeBoxes = nodes.map(n => {
+        const r = radius(n);
+        return { node: n, x0: n.x - r, y0: n.y - r, x1: n.x + r, y1: n.y + r };
+    });
+    const placed = [];
+    nodes.forEach(n => { delete n.label; });
+    const byTotal = [...nodes].sort((a, b) => b.total - a.total);
+    for (const n of byTotal) {
+        if (placed.length >= MAX_LABELS) break;
+        const text = labelText(n.name);
+        const w = measure(text);
+        const r = radius(n) + LABEL_GAP;
+        // Baseline offsets: the text box spans from the baseline up by about 0.8 of the font size
+        const candidates = [
+            { anchor: 'start', dx: r, dy: fontPx * 0.35, x0: n.x + r },
+            { anchor: 'end', dx: -r, dy: fontPx * 0.35, x0: n.x - r - w },
+            { anchor: 'middle', dx: 0, dy: -r, x0: n.x - w / 2 },
+            { anchor: 'middle', dx: 0, dy: r + fontPx * 0.8, x0: n.x - w / 2 }
+        ];
+        for (const c of candidates) {
+            const baseline = n.y + c.dy;
+            const box = { x0: c.x0, x1: c.x0 + w, y0: baseline - fontPx * 0.85, y1: baseline + fontPx * 0.25 };
+            if (box.x0 < 2 || box.x1 > width - 2 || box.y0 < 2 || box.y1 > height - 2) continue;
+            if (placed.some(p => overlaps(p, box))) continue;
+            if (nodeBoxes.some(b => b.node !== n && overlaps(b, box))) continue;
+            placed.push(box);
+            n.label = { text, anchor: c.anchor, dx: c.dx, dy: c.dy };
+            break;
+        }
+    }
+}
+
+/**
+ * One sentence on the star: who stands in its centre and how many connections remain between
+ * the other persons, with the switch that shows them next to it
+ */
+function updateEgoNote(ego, othersLinks) {
+    const note = elements.getById('network-ego-note');
+    const text = elements.getById('network-ego-text');
+    const egoGroup = elements.getById('network-ego-group');
+    if (!note || !text || !egoGroup) return;
+
+    if (!ego) {
+        note.classList.add('hidden');
+        // Without a dominant person the switch stays among the other controls
+        const controls = egoGroup.ownerDocument.querySelector('.network-controls');
+        const resetBtn = elements.networkResetZoom;
+        if (controls && egoGroup.parentElement !== controls) controls.insertBefore(egoGroup, resetBtn || null);
+        return;
+    }
+
+    const count = n => n.toLocaleString('de-DE');
+    const share = `${ego.name} ist an ${count(ego.count)} von ${count(ego.total)} Briefen beteiligt.`;
+    text.textContent = networkHideEgo
+        ? `${share} Die Person ist ausgeblendet, das Netz zeigt die Verbindungen zwischen den anderen Personen.`
+        : othersLinks > 0
+            ? `${share} Ohne diese Person zeigt das Netz ${count(othersLinks)} ${othersLinks === 1 ? 'Verbindung' : 'Verbindungen'} zwischen anderen Personen.`
+            : `${share} Zwischen anderen Personen gibt es bei dieser Schwelle keine Verbindung.`;
+    if (egoGroup.parentElement !== note) note.append(egoGroup);
+    note.classList.remove('hidden');
+}
+
+/**
+ * Update network statistics display: one line for what is shown of how much, so no second
+ * count in the header can contradict it
  */
 function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
-    const nodeCount = elements.getById('network-node-count');
-    const edgeCount = elements.getById('network-edge-count');
     const coverageDiv = elements.getById('network-coverage');
     const infoText = elements.getById('network-info-text');
     const legendDiv = elements.getById('network-legend');
-
-    if (nodeCount) nodeCount.textContent = data.nodes.length;
-    if (edgeCount) edgeCount.textContent = data.links.length;
 
     // Update info text
     if (infoText) {
@@ -867,10 +1058,13 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
             `;
         } else {
             const color = `var(${TYPE_COLOR_TOKEN[networkType] || TYPE_COLOR_TOKEN.contemporaries})`;
+            const byKind = networkType !== 'topics' && hasOrganizations;
+            const items = byKind
+                ? `<div class="legend-item"><span class="legend-circle" style="background: ${color};"></span> Person</div>
+                   <div class="legend-item"><span class="legend-circle" style="background: var(${ORGANIZATION_COLOR_TOKEN});"></span> Organisation</div>`
+                : `<div class="legend-item"><span class="legend-circle" style="background: ${color};"></span> ${label}</div>`;
             legendDiv.innerHTML = `
-                <div class="legend-item">
-                    <span class="legend-circle" style="background: ${color};"></span> ${label}
-                </div>
+                ${items}
                 <div class="legend-size-hint"><i class="fas fa-circle"></i> ${sizeHint}</div>
                 <div class="legend-hint">Klick filtert Briefe | Hover zeigt Verbindungen</div>
             `;
@@ -879,25 +1073,11 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
 
     // Update coverage
     if (coverageDiv) {
-        if (networkType === 'topics') {
-            const pct = data.stats.totalTopics > 0
-                ? Math.round((data.stats.displayedTopics / data.stats.totalTopics) * 100) : 0;
-            coverageDiv.innerHTML = `
-                <span class="coverage-info">
-                    Anzeige: ${data.stats.displayedTopics} von ${data.stats.totalTopics} Themen (${pct}%)
-                    | ${data.stats.displayedConnections} von ${data.stats.totalConnections} Verbindungen
-                </span>
-            `;
-        } else {
-            const pct = data.stats.totalPersons > 0
-                ? Math.round((data.stats.displayedPersons / data.stats.totalPersons) * 100) : 0;
-            coverageDiv.innerHTML = `
-                <span class="coverage-info">
-                    Anzeige: ${data.stats.displayedPersons} von ${data.stats.totalPersons} Personen (${pct}%)
-                    | ${data.stats.displayedConnections} von ${data.stats.totalConnections} Verbindungen
-                </span>
-            `;
-        }
+        const count = n => n.toLocaleString('de-DE');
+        const shown = networkType === 'topics'
+            ? `${count(data.nodes.length)} von ${count(data.stats.totalTopics)} Themen`
+            : `${count(data.nodes.length)} von ${count(data.stats.totalPersons)} Personen`;
+        coverageDiv.textContent = `Sichtbar: ${shown}, ${count(data.links.length)} von ${count(data.stats.totalConnections)} Verbindungen`;
     }
 }
 

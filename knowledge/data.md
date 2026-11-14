@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-05
+updated: 2026-11-14
 authors: [Christopher Pollin]
 template:
   name: Vorlage Datengrundlage
@@ -57,6 +57,7 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 | `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs, Tabellenformeln) | Testdatei der Suites Security und Basket |
 | `docs/data/test-correspsearch.json`, `docs/data/test-correspsearch-empty.json` | Antworten der correspSearch-API v2.0 vom 2026-11-05 auf `d=1890-01-01&x=1` und `d=1066-01-01&x=1`, unverändert gespeichert | Testdateien der Suite correspSearch, CC BY 4.0 laut ihrem teiHeader, Herausgeber Berlin-Brandenburgische Akademie der Wissenschaften |
 | `docs/data/schoenbach.xml` | Lokale Kopie der Schönbach-Briefe | Kleiner Realdatensatz |
+| `docs/data/test-letter-records.xml`, `docs/data/test-letter-records-b.xml` | Synthetische Briefsätze in TEI (`biblFull` je Brief) mit Poststempel, erschlossenem Ort und Datum, Datum nur als Text, mehreren Empfängern, internem Personenverweis, Anschrift und Signatur, und eine zweite Datei derselben erfundenen Edition | Testdateien der Suite CMIF Parser, im Projekt erstellt, CC BY 4.0 |
 
 ### Hugo Schuchardt Archiv
 
@@ -116,6 +117,15 @@ Befund des ersten Ladeversuchs mit dem unveränderten Parser (Repository `prompt
 - 671 `address/addrLine` unter `correspAction type="sent"` geben die Postanschrift des Empfängers wieder, etwa „Salzburg, Kapuzinerberg 5“ bei 194 Briefen an Zweig. Sie sind kein Absendeort.
 - 343 Briefe haben mehr als einen Empfänger. Personennamen stehen als `surname` und `forename` mit Zeilenumbruch.
 - `correspDesc` trägt kein `@ref` und kein `@key`, die ID steht als `xml:id` am umgebenden `biblFull`.
+
+Befunde der Iteration vom 2026-11-13 und 2026-11-14, gezählt mit `verification/check-corpus.mjs` am selben Commit des SZD-Repositorys:
+
+- Einträge sind keine Briefe. Die Edition verzeichnet denselben Brief in der Datei jedes beteiligten Konvoluts. Die 2.135 `correspDesc` tragen 1.633 verschiedene Signaturen, 400 Signaturen kommen in zwei bis fünf Einträgen vor. Der Parser führt Einträge gleicher Signatur zu einem Brief zusammen, außer ihre Datierungen widersprechen sich (`mergeRecords()`, [ADR-009](specification.md#adr-009-einträge-gleicher-signatur-sind-ein-brief)). Das ergibt 1.637 Briefe. Bei 90 davon nennen die Einträge verschiedene Absender, Empfänger oder Orte. Zwei Signaturen bleiben getrennt: eine steht für ein Bündel dreier Briefe verschiedener Jahre, bei der anderen trägt ein Eintrag das falsche Jahrhundert.
+- 35 Briefe tragen ein Jahr zwischen 2008 und 2030, etwa `when="2030-08-12"` zum Text „12. 8. 30“ und zum Titel „12. August 1930“, darunter zwölf Briefe an Sigmund Freud. Das zweistellige Jahr ist in der Quelle ins falsche Jahrhundert aufgelöst. Der Parser kennzeichnet solche Ausreißer und nimmt sie von der Zeitachse, korrigiert sie aber nicht (`flagImplausibleYears()`, [ADR-010](specification.md#adr-010-unplausible-jahre-kennzeichnen-nicht-korrigieren)). Der Zeitraum der übrigen Briefe ist 1901 bis 1947.
+- Bei einigen Personen sind `surname` und `forename` vertauscht ausgezeichnet (`surname` „Romain“, `forename` „Rolland“), einige Körperschaften sind als `persName` mit `surname` und `forename` zerlegt. Dieselbe Person erscheint dadurch unter zwei Namen. Der Parser gibt die Auszeichnung wieder, wie sie steht.
+- Zehn Dateien schreiben den Reihentitel „Stefan Zweig digitale“. Der zusammengeführte Bestand trägt den häufigsten Reihentitel.
+- Wo ein `correspAction` nur ein `placeName type="original"` trägt, steht dessen Wortlaut als Absendeort, etwa „Kapuzinerberg 5 | Salzburg“. Solche Einträge erscheinen in der Ortsliste neben „Salzburg“.
+- 71 Datierungen stehen nur als Text ohne `@when`, etwa „12. V. 1938“. Sie bleiben als Text sichtbar und stehen nicht auf der Zeitachse, weil das Werkzeug Datumsnotationen nicht normalisiert.
 
 ## Rechte und Lizenzen
 
@@ -231,6 +241,12 @@ GeoNames liefert die Koordinaten für die Karte. Fehlen sie, löst `resolve_geon
 ### Vorprozessierung erweiterter Datensätze
 
 Erweiterte Datensätze wie das HSA werden in Python vorprozessiert (`preprocessing/build_hsa_data.py`), weil Größe und Quelle das Laden im Browser ausschließen. Der Ablauf steht in [architecture.md](architecture.md#datenfluss). Eingabe ist `data/hsa/CMIF.xml`, Ausgabe `docs/data/hsa-letters.json`. `build_hsa_data.py` und `analyze_hsa_cmif.py` brauchen das Paket `lxml` (`from lxml import etree`), `resolve_geonames_wikidata.py` nur die Standardbibliothek. `preprocessing/requirements.txt` hält die Version von `lxml` fest (`pip install -r preprocessing/requirements.txt`).
+
+### Mehrere Dateien als ein Bestand
+
+Editionen, die je Korrespondenz eine Datei veröffentlichen, lädt `parseCMIFFiles()` als einen Bestand: mehrere Dateien im Dateidialog oder per Drag-and-Drop, oder eine Dateiliste `index.html?files=data/….json` mit `{"files": ["a.xml", …]}`, deren Pfad derselben Regel wie `?json=` folgt und deren Dateinamen den Ordner der Liste nicht verlassen. Eine Datei ohne Briefe oder ohne gültiges XML wird übersprungen und in `meta.files.skipped` genannt. `meta.files` trägt die Zahl der Dateien und der Einträge, die Übersicht nennt sie neben der Quelle. Der Kopf des Bestands nennt nur, was alle Dateien teilen, der Titel fällt auf den häufigsten Reihentitel (`seriesStmt/title`) zurück.
+
+Für Bestände, die nicht ins Repository gehören, bindet `python verification/serve_local_corpus.py <Ordner>` einen Ordner außerhalb des Repositorys unter `data/local/` ein und erzeugt die Dateiliste, der Explorer lädt ihn dann über `index.html?files=data/local/files.json`.
 
 ### Laden externer CMIF-Dateien
 

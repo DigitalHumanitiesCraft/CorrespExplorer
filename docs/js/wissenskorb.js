@@ -14,7 +14,8 @@ import {
 } from './basket.js';
 
 import { BASKET_LIMITS } from './constants.js';
-import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath, ignoreMissingStyleImages, settleWithoutMotion } from './utils.js';
+import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath, ignoreMissingStyleImages, settleWithoutMotion, letterRecipients } from './utils.js';
+import { formatDateWithPrecision, formatSingleDate, formatPlaceName } from './formatters.js';
 import { lettersToCsv, letterExportRow } from './export.js';
 import { readTokens } from './views/view-support.js';
 
@@ -137,10 +138,33 @@ async function loadData(sharedJsonPath = null) {
 
 // A plain explore.html would open the last upload of this tab instead of a ?json= dataset, so the
 // links back name the dataset path. Uploads live in sessionStorage and need no parameter.
+// Coming from the explorer, the way back returns to the view and filter the user left.
 function linkBackToExplorer(jsonPath) {
-    if (!isAllowedJsonPath(jsonPath)) return;
-    const href = `explore.html?json=${encodeURIComponent(jsonPath)}`;
+    const href = explorerReferrer(jsonPath)
+        || (isAllowedJsonPath(jsonPath) ? `explore.html?json=${encodeURIComponent(jsonPath)}` : null);
+    if (!href) return;
     document.querySelectorAll('a.explorer-link').forEach(link => { link.href = href; });
+}
+
+/**
+ * The explorer page this tab came from, if it is one of this site and shows the same dataset.
+ * Its URL carries view and filters; a foreign or other page is never linked back to.
+ * @param {string|null} jsonPath - the data/*.json path of the loaded dataset, null for an upload
+ * @returns {string|null} a same-origin relative URL
+ */
+function explorerReferrer(jsonPath) {
+    if (!document.referrer) return null;
+    let url;
+    try {
+        url = new URL(document.referrer);
+    } catch {
+        return null;
+    }
+    if (url.origin !== window.location.origin || !url.pathname.endsWith('/explore.html')) return null;
+    // A dataset fetched by path here (a shared link, or one too large for sessionStorage) must be
+    // the one the referring page shows; otherwise the link back would switch the dataset
+    if (jsonPath && url.searchParams.get('json') !== jsonPath) return null;
+    return `explore.html${url.search}`;
 }
 
 function setupEventListeners() {
@@ -246,7 +270,7 @@ function resolvePersons(personIds) {
             person = Object.values(personIndex).find(p => p.name === id);
         }
 
-        const letters = allLetters.filter(l => personKey(l.sender) === id || personKey(l.recipient) === id);
+        const letters = allLetters.filter(l => personKey(l.sender) === id || letterRecipients(l).some(r => personKey(r) === id));
 
         // Always add person if found in index OR has letters
         if (person || letters.length > 0) {
@@ -341,7 +365,7 @@ function buildNetwork(persons, basketLetters) {
     };
     basketLetters.forEach(l => {
         addCorrespondent(l.sender);
-        addCorrespondent(l.recipient);
+        letterRecipients(l).forEach(addCorrespondent);
     });
 
     const networkLetters = new Map();
@@ -350,21 +374,24 @@ function buildNetwork(persons, basketLetters) {
 
     // Basket persons carry their index count, added correspondents only the letters seen here
     networkLetters.forEach(l => {
-        [personKey(l.sender), personKey(l.recipient)].forEach(id => {
+        new Set([personKey(l.sender), ...letterRecipients(l).map(personKey)]).forEach(id => {
             if (nodeMap.get(id)?.extra) nodeMap.get(id).letterCount++;
         });
     });
 
+    // A letter to several recipients joins the sender with each of them, as in the explorer
     const linkMap = new Map();
     networkLetters.forEach(letter => {
         const senderId = personKey(letter.sender);
-        const recipientId = personKey(letter.recipient);
-        if (!senderId || !recipientId || senderId === recipientId) return;
-        if (!nodeMap.has(senderId) || !nodeMap.has(recipientId)) return;
-        const [source, target] = [senderId, recipientId].sort();
-        const key = JSON.stringify([source, target]);
-        if (!linkMap.has(key)) linkMap.set(key, { source, target, count: 0 });
-        linkMap.get(key).count++;
+        letterRecipients(letter).forEach(recipient => {
+            const recipientId = personKey(recipient);
+            if (!senderId || !recipientId || senderId === recipientId) return;
+            if (!nodeMap.has(senderId) || !nodeMap.has(recipientId)) return;
+            const [source, target] = [senderId, recipientId].sort();
+            const key = JSON.stringify([source, target]);
+            if (!linkMap.has(key)) linkMap.set(key, { source, target, count: 0 });
+            linkMap.get(key).count++;
+        });
     });
 
     return { nodes: [...nodeMap.values()], links: [...linkMap.values()] };
@@ -421,23 +448,48 @@ function renderLetterList(letters) {
     elements.lettersList.innerHTML = letters.map(letter => `
         <div class="item-row" data-id="${escapeHtml(letter.id)}">
             <div class="item-row-content">
-                <div class="item-row-name">
+                <div class="item-row-name" title="${escapeHtml(`${letter.sender?.name || 'Unbekannt'} an ${recipientNames(letter)}`)}">
                     ${escapeHtml(letter.sender?.name || 'Unbekannt')}
                     <i class="fas fa-arrow-right item-row-arrow" role="img" aria-label="an"></i>
-                    ${escapeHtml(letter.recipient?.name || 'Unbekannt')}
+                    ${escapeHtml(recipientNames(letter))}
                 </div>
                 <div class="item-row-meta">
-                    ${escapeHtml(letter.date || 'o.D.')}
-                    ${letter.place_sent?.name ? ` - ${escapeHtml(letter.place_sent.name)}` : ''}
+                    ${formatDateWithPrecision(letter)}${letter.place_sent?.name ? `, ${placeHtml(letter)}` : ''}
                 </div>
+                ${transmissionHtml(letter, 'item-row-meta')}
             </div>
-            <button type="button" class="item-remove-btn" data-type="letters" data-id="${escapeHtml(letter.id)}" title="Entfernen" aria-label="Brief ${escapeHtml(letter.sender?.name || 'Unbekannt')} an ${escapeHtml(letter.recipient?.name || 'Unbekannt')}, ${escapeHtml(letter.date || 'ohne Datum')}, aus dem Korb entfernen">
+            <button type="button" class="item-remove-btn" data-type="letters" data-id="${escapeHtml(letter.id)}" title="Entfernen" aria-label="Brief ${escapeHtml(letter.sender?.name || 'Unbekannt')} an ${escapeHtml(recipientNames(letter))}, ${escapeHtml(letterDateText(letter))}, aus dem Korb entfernen">
                 <i class="fas fa-times" aria-hidden="true"></i>
             </button>
         </div>
     `).join('');
 
     setupRemoveButtons(elements.lettersList);
+}
+
+// Recipients and date as plain text, for titles and accessible names, which take no markup
+function recipientNames(letter) {
+    return letterRecipients(letter).map(r => r?.name || 'Unbekannt').join(', ') || 'Unbekannt';
+}
+
+function letterDateText(letter) {
+    if (letter.date) return `${formatSingleDate(letter.date)}${letter.dateImplausible ? ', unplausibel' : ''}`;
+    return letter.dateText || 'ohne Datum';
+}
+
+// Sending place in the explorer's notation: an inferred place keeps the editorial brackets
+function placeHtml(letter) {
+    const place = letter.place_sent;
+    return formatPlaceName(place.name, place.precision, place.inferred);
+}
+
+// What the source records about the transmission of the letter, each value with its name;
+// a letter without any of them gets no line
+function transmissionHtml(letter, className) {
+    const parts = [['Signatur', letter.signature], ['Poststempel', letter.postmark], ['Anschrift', letter.address]]
+        .filter(([, value]) => value)
+        .map(([label, value]) => `<span>${label}: ${escapeHtml(value)}</span>`);
+    return parts.length ? `<div class="${className} letter-transmission">${parts.join('')}</div>` : '';
 }
 
 function renderPlaceList(places) {
@@ -565,9 +617,10 @@ function renderTimeline(analysis) {
         .append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // Scales
+    // Scales: each year owns one unit, centred on the year, so the outer bars stay inside the
+    // axis and bars of sparse years do not overlap
     const x = d3.scaleLinear()
-        .domain([minYear, maxYear])
+        .domain([minYear - 0.5, maxYear + 0.5])
         .range([0, width]);
 
     const maxCount = Math.max(...[...yearData.values()].map(counts =>
@@ -596,8 +649,10 @@ function renderTimeline(analysis) {
 
     const stackedData = stack(stackData);
 
-    // Draw bars
-    const barWidth = Math.max(2, width / sortedYears.length - 1);
+    // Draw bars: one year wide less a gap; the former width per shown year let bars of a span
+    // with gaps overlap each other
+    const yearWidth = x(minYear + 1) - x(minYear);
+    const barWidth = Math.max(1, yearWidth - Math.min(2, yearWidth / 4));
 
     svg.selectAll('.layer')
         .data(stackedData)
@@ -612,13 +667,13 @@ function renderTimeline(analysis) {
         .attr('x', d => x(d.data.year) - barWidth / 2)
         .attr('y', d => y(d[1]))
         .attr('height', d => y(d[0]) - y(d[1]))
-        .attr('width', barWidth)
-        .attr('opacity', 0.8);
+        .attr('width', barWidth);
 
-    // X Axis
+    // X Axis: whole years only, since the domain reaches half a year beyond both ends
+    const yearTicks = x.ticks(Math.min(10, maxYear - minYear + 1)).filter(Number.isInteger);
     svg.append('g')
         .attr('transform', `translate(0,${height})`)
-        .call(d3.axisBottom(x).tickFormat(d3.format('d')));
+        .call(d3.axisBottom(x).tickValues(yearTicks).tickFormat(d3.format('d')));
 
     // Y Axis
     svg.append('g')
@@ -887,11 +942,11 @@ function renderDetails(analysis = currentAnalysis()) {
     // Apply search filter
     const searchTerm = elements.detailsSearch?.value?.toLowerCase() || '';
     if (searchTerm) {
+        // The shown date form (12.5.1938) and the ISO form both match
         letters = letters.filter(l =>
-            (l.sender?.name || '').toLowerCase().includes(searchTerm) ||
-            (l.recipient?.name || '').toLowerCase().includes(searchTerm) ||
-            (l.place_sent?.name || '').toLowerCase().includes(searchTerm) ||
-            (l.date || '').includes(searchTerm)
+            [l.sender?.name, recipientNames(l), l.place_sent?.name, l.signature, l.postmark, l.address,
+                l.dateText, l.date, l.date && formatSingleDate(l.date)]
+                .some(value => (value || '').toLowerCase().includes(searchTerm))
         );
     }
 
@@ -917,14 +972,15 @@ function renderDetails(analysis = currentAnalysis()) {
 
     container.innerHTML = letters.slice(0, DETAILS_LIMIT).map(letter => `
         <div class="details-item">
-            <div class="details-date">${escapeHtml(letter.date || 'o.D.')}</div>
+            <div class="details-date">${formatDateWithPrecision(letter)}</div>
             <div class="details-content">
                 <div class="details-correspondents">
                     ${escapeHtml(letter.sender?.name || 'Unbekannt')}
                     <i class="fas fa-arrow-right" role="img" aria-label="an"></i>
-                    ${escapeHtml(letter.recipient?.name || 'Unbekannt')}
+                    ${escapeHtml(recipientNames(letter))}
                 </div>
-                ${letter.place_sent?.name ? `<div class="details-place"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${escapeHtml(letter.place_sent.name)}</div>` : ''}
+                ${letter.place_sent?.name ? `<div class="details-place"><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${placeHtml(letter)}</div>` : ''}
+                ${transmissionHtml(letter, 'details-place')}
             </div>
             ${safeUrl(letter.url) ? `<a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer" class="details-link" title="Zum Brief" aria-label="Brief in der Edition öffnen (neues Fenster)"><i class="fas fa-external-link-alt" aria-hidden="true"></i></a>` : ''}
         </div>
