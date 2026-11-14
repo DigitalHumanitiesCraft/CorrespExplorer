@@ -271,7 +271,9 @@
                 </div>
                 <!-- Overview View -->
                 <div id="overview-view" class="tab-content active">
-                    <div class="overview-container overview-compact">
+                    <div class="overview-container workspace">
+                        <!-- Metadata of the dataset: what it is, where it comes from, how well it is recorded -->
+                        <aside class="workspace__meta" aria-label="Bestand">
                         <!-- Header with Title, Stats and Source -->
                         <div class="view-header">
                             <h2 class="view-header__title" id="overview-title">Datensatz</h2>
@@ -301,9 +303,33 @@
                             </button>
                         </div>
 
+                        </aside>
+
                         <div class="overview-body">
-                        <!-- Main figure: letters per year, the way into the time view -->
-                        <div class="overview-chart hidden" id="overview-chart"></div>
+                        <!-- The charts filter each other and the letters behind them -->
+                        <div class="workspace__result" id="ws-result" role="status"></div>
+                        <section class="ws-panel ws-panel--time" aria-labelledby="ws-time-title">
+                            <h3 id="ws-time-title"><button type="button" class="ws-panel__open" data-open="timeline">Zeit</button></h3>
+                            <div class="overview-chart" id="overview-chart"></div>
+                        </section>
+                        <div class="workspace__panels">
+                            <section class="ws-panel" aria-labelledby="ws-persons-title">
+                                <h3 id="ws-persons-title"><button type="button" class="ws-panel__open" data-open="persons">Personen</button></h3>
+                                <div class="ws-bars" id="ws-persons"></div>
+                            </section>
+                            <section class="ws-panel" aria-labelledby="ws-places-title">
+                                <h3 id="ws-places-title"><button type="button" class="ws-panel__open" data-open="places">Orte</button></h3>
+                                <div class="ws-bars" id="ws-places"></div>
+                            </section>
+                            <section class="ws-panel" aria-labelledby="ws-languages-title">
+                                <h3 id="ws-languages-title">Sprache</h3>
+                                <div class="ws-bars" id="ws-languages"></div>
+                            </section>
+                            <section class="ws-panel" aria-labelledby="ws-features-title">
+                                <h3 id="ws-features-title">Überlieferung</h3>
+                                <div class="ws-bars" id="ws-features"></div>
+                            </section>
+                        </div>
 
                         <!-- Research Paths (limited) -->
                         <div class="overview-research-paths">

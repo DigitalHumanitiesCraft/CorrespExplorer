@@ -1,8 +1,8 @@
 // Overview: figures of the whole dataset, its source and licence, the data situation as chips,
 // what the source records about the transmission, entry points and research paths.
 
-import { LETTER_FEATURES } from '../constants.js';
-import { escapeHtml, safeUrl, externalLink, datedYearRange } from '../utils.js';
+import { LETTER_FEATURES, LANGUAGE_COLORS, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
+import { escapeHtml, safeUrl, externalLink, datedYearRange, personKey, placeKey, letterRecipients } from '../utils.js';
 import { analyzeResearchQuestions, renderOverviewResearchPaths } from '../research-paths.js';
 import { startKnowledgePath } from '../knowledge-path.js';
 import { startTour } from '../demo-tour.js';
@@ -170,43 +170,158 @@ function renderFeatureChips() {
     });
 }
 
-// Letters per year as the main figure of the start view. A click on a year shows its letters;
-// the caption opens the time view, which is also the keyboard way to the single years.
+const number = n => n.toLocaleString('de-DE');
+const ROWS = 8;
+
+/**
+ * The workspace of the start view. Every chart shows the letters under the active filters and
+ * sets a filter itself: a range of years, a person, a place, a language, a transmission feature.
+ * The whole dataset stays visible behind the selection, so one sees what a filter leaves out.
+ */
 function renderOverviewChart() {
+    const all = deps.getAllLetters();
+    const shown = deps.getFilteredLetters();
+    const filter = deps.getFilterState();
+    renderResult(all, shown, filter);
+    renderYears(all, shown, filter);
+    renderBars('ws-persons', topPersons(shown), filter.person, deps.togglePerson);
+    renderBars('ws-places', topPlaces(shown), filter.place, deps.togglePlace);
+    renderBars('ws-languages', languages(shown), filter.languages?.length === 1 ? filter.languages[0] : filter.languages ? 'other' : null, deps.toggleLanguage);
+    renderBars('ws-features', features(shown), filter.features, deps.toggleFeature);
+    document.querySelectorAll('.ws-panel__open').forEach(btn => { btn.onclick = () => deps.switchView(btn.dataset.open); });
+}
+
+function renderResult(all, shown, filter) {
+    const box = document.getElementById('ws-result');
+    if (!box) return;
+    const count = filter.active ? `${number(shown.length)} von ${number(all.length)} Briefen in der Auswahl` : `${number(all.length)} Briefe`;
+    box.innerHTML = `<strong>${count}</strong>
+        <button type="button" class="btn btn-secondary btn-sm" id="ws-show">Briefe ansehen</button>
+        ${filter.active ? '<button type="button" class="btn btn-secondary btn-sm" id="ws-reset">Auswahl aufheben</button>' : ''}`;
+    box.querySelector('#ws-show').onclick = () => deps.switchView('letters');
+    const reset = box.querySelector('#ws-reset');
+    if (reset) reset.onclick = () => deps.resetFilters();
+}
+
+const usableYear = letter => (letter.year && !letter.dateImplausible ? letter.year : null);
+
+function countYears(letters) {
+    const perYear = new Map();
+    for (const letter of letters) {
+        const year = usableYear(letter);
+        if (year) perYear.set(year, (perYear.get(year) || 0) + 1);
+    }
+    return perYear;
+}
+
+// Letters per year. The pale column is the dataset, the full one the selection. Dragging across
+// years sets the period; the caption opens the time view, the keyboard way to single years.
+function renderYears(all, shown, filter) {
     const box = document.getElementById('overview-chart');
     if (!box) return;
-    const perYear = new Map();
-    for (const letter of deps.getAllLetters()) {
-        if (letter.year && !letter.dateImplausible) perYear.set(letter.year, (perYear.get(letter.year) || 0) + 1);
-    }
-    box.classList.toggle('hidden', perYear.size < 2);
-    if (perYear.size < 2) return;
-    const years = [...perYear.keys()];
+    const total = countYears(all);
+    const section = box.closest('.ws-panel');
+    section?.classList.toggle('hidden', total.size < 2);
+    if (total.size < 2) return;
+    const selected = countYears(shown);
+    const years = [...total.keys()];
     const min = Math.min(...years);
     const max = Math.max(...years);
-    const peak = Math.max(...perYear.values());
-    const peakYear = years.find(year => perYear.get(year) === peak);
-    const number = n => n.toLocaleString('de-DE');
+    const peak = Math.max(...total.values());
     let bars = '';
     for (let year = min; year <= max; year++) {
-        const count = perYear.get(year) || 0;
-        bars += `<span class="overview-chart__year" data-year="${year}" title="${year}: ${number(count)} ${count === 1 ? 'Brief' : 'Briefe'}">
-            <span class="overview-chart__bar" style="height: ${count ? Math.max(2, count / peak * 100) : 0}%"></span></span>`;
+        const t = total.get(year) || 0;
+        const s = selected.get(year) || 0;
+        const inRange = !filter.years || (year >= filter.years[0] && year <= filter.years[1]);
+        bars += `<span class="overview-chart__year${inRange ? '' : ' overview-chart__year--out'}" data-year="${year}" title="${year}: ${number(s)} von ${number(t)} ${t === 1 ? 'Brief' : 'Briefen'}">
+            <span class="overview-chart__bar" style="height: ${t ? Math.max(2, t / peak * 100) : 0}%"><span class="overview-chart__fill" style="height: ${t ? s / t * 100 : 0}%"></span></span></span>`;
     }
-    const left = (peakYear - min) / (max - min) * 100;
+    const period = filter.years ? `${filter.years[0]}${filter.years[0] === filter.years[1] ? '' : `–${filter.years[1]}`} gewählt` : 'Zeitraum durch Ziehen wählen';
     box.innerHTML = `
-        <span class="overview-chart__peak" style="left: ${left}%">${number(peak)} Briefe ${peakYear}</span>
-        <div class="overview-chart__bars" role="img" aria-label="Briefe pro Jahr von ${min} bis ${max}, die meisten im Jahr ${peakYear} mit ${number(peak)}">${bars}</div>
-        <div class="overview-chart__axis">
-            <span>${min}</span>
-            <button type="button" class="overview-chart__link">Briefe pro Jahr in der Ansicht Zeit</button>
-            <span>${max}</span>
-        </div>`;
-    box.querySelector('.overview-chart__bars').addEventListener('click', (e) => {
-        const year = Number(e.target.closest('.overview-chart__year')?.dataset.year);
-        if (year && perYear.get(year)) deps.showLettersOfYear(year);
+        <div class="overview-chart__bars" role="img" aria-label="Briefe pro Jahr von ${min} bis ${max}, höchstens ${number(peak)} in einem Jahr">${bars}</div>
+        <div class="overview-chart__axis"><span>${min}</span><span>${period}</span><span>${max}</span></div>`;
+    const yearAt = e => Number(e.target.closest('.overview-chart__year')?.dataset.year) || null;
+    const strip = box.querySelector('.overview-chart__bars');
+    let start = null;
+    strip.addEventListener('pointerdown', e => { start = yearAt(e); e.preventDefault(); });
+    strip.addEventListener('pointerup', e => {
+        const end = yearAt(e);
+        if (start && end) deps.setYearRange(Math.min(start, end), Math.max(start, end));
+        start = null;
     });
-    box.querySelector('.overview-chart__link').addEventListener('click', () => deps.switchView('timeline'));
+}
+
+function ranked(counts, labels) {
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, ROWS)
+        .map(([key, count]) => ({ key, label: labels.get(key) || key, count }));
+}
+
+// A person counts once per letter, also as sender and recipient of the same letter
+function topPersons(letters) {
+    const counts = new Map();
+    const labels = new Map();
+    for (const letter of letters) {
+        const seen = new Set();
+        for (const person of [letter.sender, ...letterRecipients(letter)]) {
+            const key = personKey(person);
+            if (!key || seen.has(key)) continue;
+            seen.add(key);
+            counts.set(key, (counts.get(key) || 0) + 1);
+            if (!labels.has(key)) labels.set(key, person.name || key);
+        }
+    }
+    return ranked(counts, labels);
+}
+
+function topPlaces(letters) {
+    const counts = new Map();
+    const labels = new Map();
+    for (const letter of letters) {
+        const key = placeKey(letter.place_sent);
+        if (!key) continue;
+        counts.set(key, (counts.get(key) || 0) + 1);
+        if (!labels.has(key)) labels.set(key, letter.place_sent.name || key);
+    }
+    return ranked(counts, labels);
+}
+
+// The languages with a colour of their own, then the rest and the letters without a language
+function languages(letters) {
+    const counts = new Map();
+    for (const letter of letters) {
+        const code = letter.language?.code || NO_LANGUAGE;
+        const key = code !== NO_LANGUAGE && isRestLanguage(code) ? 'other' : code;
+        counts.set(key, (counts.get(key) || 0) + 1);
+    }
+    if (counts.size === 1 && counts.has(NO_LANGUAGE)) return [];
+    return [...counts.entries()].sort((a, b) => b[1] - a[1])
+        .map(([key, count]) => ({ key, label: languageLabel(key), count, color: LANGUAGE_COLORS[key] || LANGUAGE_COLORS.other }));
+}
+
+function features(letters) {
+    return LETTER_FEATURES.map(feature => ({ key: feature.key, label: feature.label, count: letters.filter(feature.test).length }))
+        .filter(row => row.count > 0);
+}
+
+// Ranked rows as buttons: the row sets its filter, the pressed row releases it
+function renderBars(id, rows, active, toggle) {
+    const box = document.getElementById(id);
+    if (!box) return;
+    box.closest('.ws-panel')?.classList.toggle('hidden', rows.length === 0);
+    const peak = Math.max(1, ...rows.map(row => row.count));
+    const isActive = key => (Array.isArray(active) ? active.includes(key) : active === key);
+    box.innerHTML = rows.map(row => `
+        <button type="button" class="ws-bar" data-key="${escapeHtml(row.key)}" aria-pressed="${isActive(row.key)}">
+            <span class="ws-bar__label">${escapeHtml(row.label)}</span>
+            <span class="ws-bar__track"><span class="ws-bar__fill" style="width: ${row.count / peak * 100}%${row.color ? `; background: ${row.color}` : ''}"></span></span>
+            <span class="ws-bar__count">${number(row.count)}</span>
+        </button>`).join('');
+    box.querySelectorAll('.ws-bar').forEach(btn => {
+        btn.addEventListener('click', () => {
+            toggle(btn.dataset.key);
+            document.querySelector(`#${id} .ws-bar[data-key="${CSS.escape(btn.dataset.key)}"]`)?.focus();
+        });
+    });
 }
 
 // Research paths of the overview (US-33), analysed by research-paths.js from all letters

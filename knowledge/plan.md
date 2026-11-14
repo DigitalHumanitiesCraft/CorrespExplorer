@@ -59,6 +59,30 @@ Code
 
 Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Erwähnungen mit Briefsätzen.
 
+### Offen nach der Datenprüfung und der Arbeitsfläche
+
+Aus der Datenprüfung am Bestand von Stefan Zweig Digital ([Journal vom 2026-11-14](journal.md)):
+
+- An der Quelle zu klären, das Werkzeug kann es nur sichtbar machen: Personen mit der Normdatennummer einer anderen Person, wechselnde Namensformen derselben Person, ein Eintrag mit Jahr im falschen Jahrhundert, Sprachcodes, die ihrem Sprachnamen widersprechen.
+- Bei Einträgen ohne maschinenlesbares Datum steht oft ein Datum im Titel des Eintrags. Es zu lesen wäre eine Deutung und braucht eine Entscheidung.
+- Notizen zu weiteren Beteiligten eines Briefs und ungetypte Notizen am Absender liest das Werkzeug nicht.
+- Platzhalter wie „Unbekannt“ zählen als Personen.
+- Jeder Aufruf des Explorers fragt die Grundkarte an, auch für einen Bestand ohne Koordinaten, und meldet ihr Fehlen auf jeder Ansicht.
+
+Aus der Gestaltungsprüfung, die den Stand vor der Arbeitsfläche maß:
+
+- Der Dialog „Datensatz konfigurieren“ fragt vor dem ersten Blick auf die Daten nach der Anreicherung, setzt sie als Vorgabe und zeigt seine Dauerangabe wie einen Fehler.
+- Die Ansichten ohne Seitenleiste haben je eine andere linke Kante und Breite.
+- Eingabefelder stehen in einer anderen Schrift als der Rest, einzelne Knöpfe in einer Größe zwischen den Tokens. Zeiträume stehen teils mit Bindestrich, Datumsangaben teils mit führender Null.
+- Mehrere Ziele sind niedriger als 24 Pixel.
+- Der Wissenskorb mit Einträgen zeigt Kacheln, zwei Reitersysteme und eine Grafik in fremden Farben. Die Projektseite beschreibt noch den alten Aufbau.
+
+Zur Arbeitsfläche:
+
+- Orte erscheinen als Rangfolge, eine kleine Karte fehlt.
+- Die Zeitleiste der Arbeitsfläche ist mit dem Zeiger bedienbar, die Tastatur setzt den Zeitraum über den Regler der Seitenleiste in den anderen Ansichten.
+- Die Katalogansichten Briefe und Personen stehen weiter als Reiter neben der Arbeitsfläche.
+
 ### Offen nach der Stufe vom 2026-11-14
 
 Die Stufe „Gliederung nach Gegenstand“ wartet auf das Urteil des Operators am Bildschirm. Zwei unabhängige Durchsichten des fertigen Stands ([Journal vom 2026-11-14](journal.md)) ließen nach den Korrekturen desselben Tages offen:

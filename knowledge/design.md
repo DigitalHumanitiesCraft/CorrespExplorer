@@ -66,6 +66,12 @@ Zur Karte und zur Sprachliste, nach der Stufe:
 
 > Warum ist 3 + 3 > 7? Was kann man hier noch optimieren und klarer machen? Ist es klar, nach welchen Kriterien ich sortieren kann? Sind das alles Sprachen? Wird das Aufklappen der weiteren Sprachen wirklich sehr gut umgesetzt? Warum haben manche dann nur Grau? Wie kann man das lösen, grundsätzlich, weil wir unterschiedliche Daten hier reinbekommen? Ein bisschen generalisierter: Warum nur die Kategorien, warum nicht andere?
 
+Zur Startansicht und zu den Listen, nach der Durchsicht am Bestand von Stefan Zweig Digital. „Staat“ lese ich als „Start“:
+
+> Ich bin der Meinung, dass hier viel mehr von der Seite genutzt werden kann. Ich könnte mir vorstellen, alles an Informationen in eine seitliche Sidebar zu legen, schon wie wir das gehabt hatten. Der Staat erschlägt einen ja ein bisschen. Wieso kann im Staat nicht auch eine Übersicht über die Fuse sein, quasi kleine Bereiche? Wir haben jetzt Briefe, Personenorte und Zeit als Bereiche. Diese vier Bereiche sollten quasi vier Quadranten sein, wo ich auch schon sehe: Das sind die Visualisierungen. Dort kann ich dann tiefer hineingehen, und ich sehe schon mal eine Art aggregierte Form des Wissens von dort. […] Wo gibt es einen Bereich, wo alle Metadaten zu dem Datenbestand genannt sind […]? Quasi die aggregierten Metadaten.
+
+> Also, ich hatte schon erwartet, dass wir viel mehr mit Informationsvisualisierungen arbeiten, die die Daten aggregieren und dann sozusagen in die Teilansichten kommen. Hier erscheinen mir Briefe und Personen so klassische Katalogansichten. […] Ich komme zu den Daten und den Metadaten, und dann möchte ich aber eigentlich eher mit Informationsvisualisierungen arbeiten, die wirklich einen großen Teil dieses Tools einnehmen.
+
 Daraus folgt der Aufbau dieser Stufe.
 
 - Die Kopfzeile nennt die Gegenstände einer Korrespondenz, Start, Briefe, Personen, Orte, Zeit und Themen. Bis dahin standen dort zwölf Ansichten, benannt nach ihrer Darstellungstechnik, in einer zweiten Zeile unter Titel und Aktionen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht.
@@ -76,7 +82,11 @@ Daraus folgt der Aufbau dieser Stufe.
 - Die Sprachen der Seitenleiste tragen das Farbfeld, das sie in Zeitleiste und Karte haben. Die Liste ist damit zugleich deren Legende.
 - Die kurze Themenliste der Seitenleiste entfällt. Ein Thema wählt man in der Themenansicht, es erscheint dann als Filtermarke. Der Abschnitt des Wissenskorbs erscheint in der Seitenleiste erst mit dem ersten Eintrag.
 - Korb, Export und About stehen ohne Rahmen neben den Reitern.
-- Die Startansicht nutzt die Breite. Unter Titel, Kennzahlen und Datenlage stehen links die Briefe pro Jahr als Hauptgrafik, die in die Ansicht Zeit führt, und rechts die Forschungspfade. Die Quelle mit Lizenz schließt die Seite ab.
+- Die Startansicht ist eine Arbeitsfläche aus Grafiken, die einander filtern. Links steht in einer Spalte, was den Bestand beschreibt: Kennzahlen, Datenlage, Merkmale der Überlieferung, Quelle und Lizenz. Rechts stehen die Briefe pro Jahr über die volle Breite, darunter die häufigsten Personen und Orte, die Sprachen und die Überlieferung als Rangfolgen.
+- Jede Grafik der Arbeitsfläche setzt einen Filter: Ziehen über Jahre den Zeitraum, eine Zeile die Person, den Ort, die Sprache oder das Merkmal. Dieselbe Zeile hebt ihn wieder auf. Alle Grafiken zeigen danach die Auswahl, der Bestand bleibt in der Zeitleiste als blasser Balken dahinter sichtbar. Über der Fläche steht, wie viele Briefe die Auswahl hat, und von dort öffnet sich die Briefliste. Die Listen sind damit das Ergebnis und nicht der Einstieg, der Überblick kommt zuerst (Shneiderman, 1996, im Hauswissen als Mantra ausgeführt).
+- Die Filter der Arbeitsfläche sind dieselben wie die der Seitenleiste und der übrigen Ansichten, beide Wege ändern denselben Zustand.
+- Die Titel der Felder Zeit, Personen und Orte öffnen ihren Gegenstand in voller Größe.
+- Die Arbeitsfläche zeigt Orte als Rangfolge, eine kleine Karte fehlt ihr noch. Die Forschungspfade stehen unter den Feldern.
 - About bleibt in der Kopfzeile, der Verweis auf die Wissensbasis steht auf der Projektseite.
 - Die Startseite `index.html` passt ab 900px Breite auf einen Bildschirm. Links stehen Logo, ein Satz zu dem, was das Werkzeug zeigt, und die Beispiele als Zeilen, rechts das Laden eigener Dateien und einer Adresse, darunter als Schlusszeile der Hinweis auf das Experiment mit seinem vollen Wortlaut. Die Abzeichen „Tutorial“ und „Erweitert“ und der Aufklapper zu „Erweitert“ sind entfallen, jede Zeile sagt in einem Satz, was ihr Bestand zeigt.
 - Ein Bestand unter `data/local` erscheint als drittes Beispiel, wo seine Dateiliste erreichbar ist. Die veröffentlichte Seite trägt keine solche Liste, die Zeile bleibt dort verborgen. So lässt sich der Bestand von Stefan Zweig Digital lokal als Beispiel ansehen, ohne dass seine Daten ausgeliefert werden. Ob sie ausgeliefert werden dürfen, entscheidet der Operator.

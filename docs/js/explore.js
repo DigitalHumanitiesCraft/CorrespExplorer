@@ -298,7 +298,22 @@ async function init() {
             getCorpusQuality: () => corpusQuality,
             showLettersWithFeature,
             showLettersOfYear,
-            switchView
+            switchView,
+            getFilteredLetters: () => filteredLetters,
+            getFilterState: () => ({
+                person: selectedPersonId,
+                place: selectedPlaceFilter,
+                features: [...featureFilter],
+                languages: languageSelection(),
+                years: temporalFilter && !temporalFilter.undated ? [temporalFilter.start, temporalFilter.end] : null,
+                active: hasActiveFilter()
+            }),
+            togglePerson: key => (selectedPersonId === key ? clearPersonFilter() : applyPersonFilter(key)),
+            togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key)),
+            toggleLanguage,
+            toggleFeature,
+            setYearRange,
+            resetFilters: () => elements.resetFiltersBtn?.click()
         });
         initMapView({
             getPlaceAggregation: () => placeAggregation,
@@ -756,6 +771,38 @@ function applyFilters({ render = true } = {}) {
     if (render) renderView(currentView);
     updateViewTitle();
     elements.resetFiltersBtn?.classList.toggle('hidden', !hasActiveFilter());
+}
+
+// The filters as the charts of the start view set them. Each goes through the same state as the
+// sidebar control of its kind, so both always agree.
+function languageSelection() {
+    const boxes = [...document.querySelectorAll('input[name="language"]')];
+    const checked = boxes.filter(cb => cb.checked);
+    return checked.length === boxes.length ? null : checked.map(cb => cb.value);
+}
+
+// One language or the rest alone; the same choice again releases it
+function toggleLanguage(code) {
+    const matches = value => (code === 'other' ? isRestLanguage(value) : value === code);
+    const boxes = [...document.querySelectorAll('input[name="language"]')];
+    const only = boxes.some(cb => !cb.checked) && boxes.every(cb => cb.checked === matches(cb.value));
+    boxes.forEach(cb => { cb.checked = only || matches(cb.value); });
+    applyFilters();
+}
+
+function toggleFeature(key) {
+    if (featureFilter.has(key)) featureFilter.delete(key); else featureFilter.add(key);
+    document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = featureFilter.has(cb.value); });
+    applyFilters();
+}
+
+function setYearRange(start, end) {
+    const slider = elements.yearRangeSlider?.noUiSlider;
+    if (!slider) return;
+    slider.set([start, end]);
+    const { min, max } = slider.options.range;
+    temporalFilter = start === min && end === max ? null : { start, end };
+    applyFilters();
 }
 
 // The letters of one year, set through the year slider like a click on a bar of the time view
