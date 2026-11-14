@@ -59,12 +59,13 @@ Zur Karte und zur Seitenleiste:
 Daraus folgt der Aufbau dieser Stufe.
 
 - Die Kopfzeile nennt die Gegenstände einer Korrespondenz, Start, Briefe, Personen, Orte, Zeit und Themen. Bis dahin standen dort zwölf Ansichten, benannt nach ihrer Darstellungstechnik, in einer zweiten Zeile unter Titel und Aktionen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht.
-- Die Darstellungen eines Gegenstands wählt eine Umschaltung in der Kopfzeile der Ansicht. Personen haben Liste, Netzwerk, Erwähnungen und Vergleich, Orte haben Karte und Liste, die Zeit hat Jahre, Chronik und Tage. Der Reiter eines Gegenstands öffnet die zuletzt benutzte Darstellung.
-- Die Kopfzeile einer Ansicht sagt, was gerade zu sehen ist, etwa die Zahl der Orte oder unter einem Filter den Anteil. Den Namen des Gegenstands trägt der Reiter. Die Briefliste nennt ihre Zahl in der Zeile über der Liste und führt deshalb keinen sichtbaren Titel.
+- Die Darstellungen eines Gegenstands wählt eine Umschaltung in der Kopfzeile der Ansicht. Personen haben Liste, Netzwerk und Erwähnungen, Orte haben Karte und Liste, die Zeit hat Jahre, Chronik und Tage. „Vergleichen“ steht bei Personen und Orten als Handlung neben der Umschaltung und öffnet den Vergleich für das, was der Gegenstand listet. Der Reiter eines Gegenstands öffnet die zuletzt benutzte Darstellung.
+- Die Kopfzeile einer Ansicht sagt, was gerade zu sehen ist, etwa die Zahl der Orte oder unter einem Filter den Anteil. Den Namen des Gegenstands trägt der Reiter. Die Briefliste nennt ihre Zahl in der Zeile über der Liste und führt deshalb keinen sichtbaren Titel, die Startansicht beginnt mit den Kennzahlen des Datensatzes, dessen Namen die Kopfzeile trägt. Titel, eigene Bedienelemente einer Ansicht und die Umschaltung teilen sich ab 768px eine Zeile und brechen um, wo sie nicht passen.
 - Erklärende Zeilen unter dem Titel sind nicht mehr sichtbar und bleiben für Screenreader im Dokument. Was eine Grafik kodiert, steht an der Grafik, die Kreisgröße der Karte in ihrer Legende.
 - Die Seitenleiste zeigt keine Überschriften. Ein Regler mit Jahreszahlen, Häkchen mit ihren Aussagen und eine Liste von Sprachen nennen sich selbst. Die Gruppennamen bleiben für Screenreader erhalten. Die drei Kennzahlen stehen als eine Zeile Text ohne Kacheln, der Knopf „Filter aufheben“ erscheint nur unter einem Filter.
 - Die Sprachen der Seitenleiste tragen das Farbfeld, das sie in Zeitleiste und Karte haben. Die Liste ist damit zugleich deren Legende.
-- Die kurze Themenliste der Seitenleiste entfällt. Ein Thema wählt man in der Themenansicht, es erscheint dann als Filtermarke.
+- Die kurze Themenliste der Seitenleiste entfällt. Ein Thema wählt man in der Themenansicht, es erscheint dann als Filtermarke. Der Abschnitt des Wissenskorbs erscheint in der Seitenleiste erst mit dem ersten Eintrag.
+- Korb, Export und About stehen ohne Rahmen neben den Reitern.
 - Die Startansicht nutzt die Breite. Unter Titel, Kennzahlen und Datenlage stehen links die Briefe pro Jahr als Hauptgrafik, die in die Ansicht Zeit führt, und rechts die Forschungspfade. Die Quelle mit Lizenz schließt die Seite ab.
 - About bleibt in der Kopfzeile, der Verweis auf die Wissensbasis steht auf der Projektseite.
 

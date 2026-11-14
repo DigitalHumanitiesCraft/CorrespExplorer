@@ -329,9 +329,7 @@ class Smoke:
         )
         page.click("#path-bar-close")
         _open_view(page, "letters")
-        topics_in_letters = page.locator("#topics-filter-group").is_visible()
         _open_view(page, "topics")
-        topics_in_topics = page.locator("#topics-filter-group").is_visible()
         _open_view(page, "activity")
         years = page.locator("#activity-year-select option").count()
         _open_view(page, "map")
@@ -340,9 +338,6 @@ class Smoke:
         assert not heading_problem, heading_problem
         assert not undescribed, f"view buttons without description: {undescribed}"
         assert path_controls, "knowledge path controls are not one bar"
-        assert not topics_in_letters and not topics_in_topics, (
-            "the sidebar no longer lists topics; a topic is chosen in the topics view"
-        )
         assert years > 2, f"activity year select has {years} options"
         assert styles and "positron" in styles[0], f"map starts with {styles[:1]}"
 

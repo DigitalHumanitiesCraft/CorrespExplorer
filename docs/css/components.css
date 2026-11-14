@@ -625,39 +625,25 @@
     border-bottom: 1px solid var(--color-border-light);
 }
 
+/* From 768 px title, actions and the representation switch share one line and wrap when the
+   actions of a view need more room */
 @media (min-width: 768px) {
-    /* Actions take at most half the width so the title keeps room on tablets */
     .view-header {
-        grid-template-columns: minmax(0, 1fr) fit-content(50%);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
     }
 
-    .view-header > * {
-        grid-column: 1;
+    .view-header__title {
+        flex: 1 1 auto;
     }
 
     .view-header__actions {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-        justify-content: flex-end;
-        min-width: 0;
         margin-top: 0;
     }
 
-    .view-header > .view-header__title {
-        grid-row: 1;
-    }
-
-    /* The representation switch shares the first line with the title */
     .view-header > .view-variants {
-        grid-column: 1 / -1;
-        grid-row: 1;
-        justify-self: end;
-        align-self: center;
-    }
-
-    .view-header:has(.view-variants:not(.hidden)) .view-header__actions {
-        grid-row: 2;
-        grid-column: 1 / -1;
+        order: 3;
     }
 }
 

@@ -4492,8 +4492,10 @@ body:has(.tour-highlight) .tour-backdrop {
     }
 }
 
-/* The letter list names its count in the line above the list, so its title is not repeated */
-#letters-view .view-header__title {
+/* The letter list names its count in the line above the list and the start view opens with the
+   figures of the dataset whose name the header carries, so neither repeats a title */
+#letters-view .view-header__title,
+#overview-view .view-header__title {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -4506,4 +4508,9 @@ body:has(.tour-highlight) .tour-backdrop {
 #letters-view .view-header {
     padding: 0;
     border: none;
+}
+
+/* The basket section appears with its first entry; the header link counts and opens the basket */
+#sidebar-basket:has(.basket-empty) {
+    display: none;
 }

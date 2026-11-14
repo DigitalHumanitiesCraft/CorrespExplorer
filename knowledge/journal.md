@@ -30,6 +30,14 @@ related: [project, specification, plan]
 
 ## Einträge
 
+### 2026-11-14 Nacharbeit zur Gliederung nach Gegenstand
+
+- Anlass: Auftrag des Operators, die offenen Punkte der Stufe fertigzustellen.
+- Geändert: „Vergleichen“ ist eine Handlung bei Personen und Orten und keine vierte Darstellung der Personen, der Vergleich öffnet mit der passenden Wahl. Die ausgeblendete Themenliste der Seitenleiste ist aus Markup, `explore.js`, `dom-cache.js` und `style.css` entfernt. Titel, eigene Bedienelemente und Umschaltung einer Ansicht stehen in einer Zeile. Korb, Export und About tragen keinen Rahmen mehr. Der Abschnitt des Wissenskorbs erscheint in der Seitenleiste erst mit einem Eintrag. Die Startansicht führt keinen sichtbaren Titel, der Name des Datensatzes steht nur noch in der Kopfzeile. Der Smoke-Test prüft die Themenliste nicht mehr.
+- Belege: der Commit dieses Eintrags. Die Zählung des ersten Bildschirms unterscheidet jetzt sichtbare von unsichtbaren Überschriften: Jede Darstellung zeigt höchstens eine sichtbare Überschrift, die Briefliste keine. Vor der Stufe waren es mit Seitenleiste sechs je Ansicht mit Seitenleiste. `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen dreizehn Prüfungen, kein Dokument scrollt horizontal. Chronik, Vergleich und Personenliste sind am Bild gesehen.
+- Wer was tat: Diese Session (Claude Fable 5.2 in Claude Code) baute und prüfte. Der Operator gab den Auftrag, seine Abnahme der Stufe steht aus.
+- Offen: [plan.md](plan.md#offen-nach-der-stufe-vom-2026-11-14).
+
 ### 2026-11-14 Gliederung nach Gegenstand: fünf Ansichten, Seitenleiste und Köpfe entlastet
 
 - Anlass: Der Operator sah den Stand nach dem Farbumbau am Bildschirm durch und beanstandete zwei Kopfebenen, zu viele Strukturen und Ebenen in Start, Karte und Seitenleiste, die ungenutzte Fläche und die Zahl der Ansichten. Seine Sätze stehen wörtlich in [design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14). Er schlug vor, die nächste Stufe mit der ganzen Rückmeldung zu bauen und danach wieder am Bildschirm zu urteilen.

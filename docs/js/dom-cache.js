@@ -103,10 +103,6 @@ export const elements = {
     get languageCheckboxes() { return cache.byId('language-checkboxes'); },
 
     // Topics filter
-    get topicsFilterGroup() { return cache.byId('topics-filter-group'); },
-    get topicsQuickSearch() { return cache.byId('topics-quick-search'); },
-    get topicsQuickFilter() { return cache.byId('topics-quick-filter'); },
-    get showAllTopics() { return cache.byId('show-all-topics'); },
 
     // Views
     get mapContainer() { return cache.byId('map-container'); },

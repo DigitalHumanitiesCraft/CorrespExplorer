@@ -61,17 +61,12 @@ Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Er
 
 ### Offen nach der Stufe vom 2026-11-14
 
-Die Stufe „Gliederung nach Gegenstand“ ([Journal vom 2026-11-14](journal.md)) wartet auf das Urteil des Operators am Bildschirm. Bewusst noch nicht umgezogen oder aufgeräumt:
+Die Stufe „Gliederung nach Gegenstand“ und ihre Nacharbeit ([Journal vom 2026-11-14](journal.md)) warten auf das Urteil des Operators am Bildschirm. Es bleiben:
 
-- Der Vergleich steht als Darstellung unter Personen. Gedacht ist er als Handlung an zwei Personen oder Orten.
-- Die kurze Themenliste der Seitenleiste ist ausgeblendet, ihr Markup und ihr Code stehen noch.
-- Die Seitenleiste führt weiter den Abschnitt „Wissenskorb“ mit eigener Überschrift.
-- Bei einem Datensatz mit eigenem Titel steht dieser in der Kopfzeile und als Titel der Startansicht.
-- Die Knöpfe Korb, Export und About tragen einen kräftigen Rahmen neben den Reitern ohne Rahmen.
-- Die Köpfe von Chronik, Erwähnungen, Vergleich und Aktivität haben neben der Umschaltung einen eigenen Aktionsbereich in einer zweiten Zeile.
-- Die Hauptgrafik der Startansicht zeigt die Briefe pro Jahr einfarbig und führt als Ganzes in die Ansicht Zeit, ein einzelnes Jahr wählt man dort.
-- Die Zählung des ersten Bildschirms zählt unsichtbare Überschriften mit.
-- Startseite, Projektseite und Wissenskorb haben den alten Kopf.
+- Der Kopf der Chronik braucht bei 1280 Pixel zwei Zeilen, weil Layoutwahl und Wikidata-Knopf neben Titel und Umschaltung nicht in ihren schmalen Satzspiegel passen.
+- Der Vergleich führt neben Personen und Orten weiter die Wahl „Zeiträume“, für die es keinen Reiter gibt, von dem aus man ihn öffnet.
+- Die Hauptgrafik der Startansicht zeigt die Briefe pro Jahr einfarbig und führt als Ganzes in die Ansicht Zeit.
+- Startseite, Projektseite und Wissenskorb übernehmen die ruhigeren Kopfknöpfe aus den gemeinsamen Regeln, am Bild geprüft sind sie nicht.
 
 ### Offen aus den Durchsichten vom 2026-11-14
 

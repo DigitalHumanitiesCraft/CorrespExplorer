@@ -63,12 +63,16 @@ let availableViews = {};
 const VIEW_GROUPS = {
     overview: ['overview'],
     letters: ['letters'],
-    persons: ['persons', 'network', 'mentions-flow', 'comparison'],
+    persons: ['persons', 'network', 'mentions-flow'],
     places: ['map', 'places'],
     time: ['timeline', 'activity', 'chronik'],
     topics: ['topics']
 };
-const groupOf = view => Object.keys(VIEW_GROUPS).find(group => VIEW_GROUPS[group].includes(view));
+// The comparison is an action on persons or places and stays with the subject it was opened from
+let comparisonGroup = 'persons';
+const groupOf = view => (view === 'comparison'
+    ? comparisonGroup
+    : Object.keys(VIEW_GROUPS).find(group => VIEW_GROUPS[group].includes(view)));
 // The representation last used in a group, so the group button returns to it
 const lastViewOfGroup = {};
 
@@ -162,7 +166,8 @@ function syncViewVariants() {
     if (!variants) return;
     let shown = 0;
     variants.querySelectorAll('.view-btn').forEach(btn => {
-        const visible = VIEW_GROUPS[group]?.includes(btn.dataset.view) && !btn.disabled;
+        const compare = btn.dataset.view === 'comparison' && (group === 'persons' || group === 'places');
+        const visible = (VIEW_GROUPS[group]?.includes(btn.dataset.view) || compare) && !btn.disabled;
         btn.classList.toggle('hidden', !visible);
         if (visible) shown++;
     });
@@ -192,8 +197,8 @@ function updateViewTitle() {
     } else if (group === 'topics') {
         title.textContent = `${formatCount((shown || corpusSummary).subjects.size)} Themen`;
     } else if (group === 'overview') {
-        const name = elements.getById('dataset-title')?.textContent?.trim();
-        if (name && name !== 'CorrespExplorer') title.textContent = name;
+        // Not visible: the header carries the name of the dataset, the page starts with its figures
+        title.textContent = elements.getById('dataset-title')?.textContent?.trim() || 'Datensatz';
     }
 }
 
@@ -270,7 +275,6 @@ async function init() {
         updateViewButtons();
 
         initFilters();
-        initTopicsQuickFilter();
         initViewSwitcher();
         // The view modules receive what they need from here and never import this file
         initOverviewView({
@@ -572,109 +576,6 @@ function buildLanguageFilter() {
     });
 }
 
-// Initialize Topics Quick Filter in sidebar
-// All subjects sorted by count (for quick filter)
-let sortedSubjects = [];
-
-function initTopicsQuickFilter() {
-    if (!dataIndices?.subjects) return;
-
-    const subjects = dataIndices.subjects;
-    const subjectKeys = Object.keys(subjects);
-
-    if (subjectKeys.length === 0) return;
-
-    const filterGroup = elements.topicsFilterGroup;
-    const showAllLink = elements.showAllTopics;
-
-    if (!filterGroup) return;
-
-    // Sort all subjects by letter count
-    sortedSubjects = subjectKeys.map(id => ({
-        id,
-        label: subjects[id].label || subjects[id].name || id,
-        count: subjects[id].letter_count || subjects[id].count || 0
-    })).sort((a, b) => b.count - a.count);
-
-    // Only a dataset with topics offers the group; switchView hides it again in the topics view
-    filterGroup.dataset.available = 'true';
-    filterGroup.classList.toggle('hidden', currentView === 'topics');
-
-    // Render initial list (top 15)
-    renderTopicsQuickFilter('');
-
-    // Setup search input
-    const searchInput = elements.topicsQuickSearch;
-    if (searchInput) {
-        searchInput.addEventListener('input', debounce((e) => {
-            renderTopicsQuickFilter(e.target.value.toLowerCase());
-        }, 200));
-    }
-
-    // Show all topics link
-    if (showAllLink) {
-        showAllLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchView('topics');
-        });
-    }
-}
-
-function renderTopicsQuickFilter(searchTerm) {
-    const container = elements.topicsQuickFilter;
-    if (!container) return;
-
-    // Filter by search term
-    let filtered = sortedSubjects;
-    if (searchTerm) {
-        filtered = sortedSubjects.filter(t => t.label.toLowerCase().includes(searchTerm));
-    }
-
-    // Show top 15 (or all matches if searching)
-    const toShow = searchTerm ? filtered.slice(0, 30) : filtered.slice(0, 15);
-
-    if (toShow.length === 0) {
-        container.innerHTML = '<div class="topics-no-results">Keine Themen gefunden</div>';
-        return;
-    }
-
-    container.innerHTML = toShow.map(topic => {
-        const isActive = activeSubjectFilter === topic.id;
-        return `
-            <button type="button" class="topic-quick-item ${isActive ? 'active' : ''}" aria-pressed="${isActive}" data-topic-id="${escapeHtml(topic.id)}" title="${escapeHtml(topic.label)}">
-                <span class="topic-label">${escapeHtml(topic.label)}</span>
-                <span class="topic-count">${topic.count}</span>
-            </button>
-        `;
-    }).join('');
-
-    if (filtered.length > toShow.length) {
-        container.innerHTML += `<div class="topics-more-info">${filtered.length - toShow.length} weitere Themen...</div>`;
-    }
-
-    container.querySelectorAll('.topic-quick-item').forEach(item => {
-        item.addEventListener('click', () => {
-            if (activeSubjectFilter === item.dataset.topicId) {
-                clearSubjectFilter();
-            } else {
-                applySubjectFilter(item.dataset.topicId);
-            }
-        });
-    });
-}
-
-// Mark the quick filter entry of the active subject filter
-function updateTopicsQuickFilterState() {
-    const container = elements.topicsQuickFilter;
-    if (!container) return;
-
-    container.querySelectorAll('.topic-quick-item').forEach(item => {
-        const isActive = activeSubjectFilter === item.dataset.topicId;
-        item.classList.toggle('active', isActive);
-        item.setAttribute('aria-pressed', String(isActive));
-    });
-}
-
 // Mentioned persons, used to decide whether the mentions flow view is available
 function buildMentionedPersonsIndex(letters) {
     const mentioned = new Map();
@@ -833,7 +734,6 @@ function applyFilters({ render = true } = {}) {
     updateStatCounts();
     updateUrlState();
     updateFilterBadges();
-    updateTopicsQuickFilterState();
     updateFilterIndicators();
     SIDEBAR_VIEWS.forEach(view => renderFilterNotice(`${view}-view`)?.classList.add('view-filter-notice--narrow'));
     announceResultCount();
@@ -1223,7 +1123,13 @@ function initViewSwitcher() {
         });
     });
     document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchView(btn.dataset.view));
+        btn.addEventListener('click', () => {
+            if (btn.dataset.view !== 'comparison') return switchView(btn.dataset.view);
+            // Compare what the current subject lists: two persons or two places
+            comparisonGroup = groupOf(currentView) === 'places' ? 'places' : 'persons';
+            switchView('comparison');
+            document.querySelector(`.comparison-mode-btn[data-mode="${comparisonGroup}"]`)?.click();
+        });
         // The tooltip shows the description only to mouse users; a hidden text gives it to screen readers
         if (btn.dataset.tooltipDesc) {
             const desc = document.createElement('span');
@@ -1291,10 +1197,6 @@ function switchView(view) {
         setSidebarOpen(false);
         document.getElementById('sidebar-toggle')?.classList.toggle('hidden', noSidebar);
     }
-    // The topics view lists and searches all topics itself, so the short list in the sidebar steps aside.
-    // Visibility runs through the .hidden class only (design.md), the dataset flag says whether topics exist
-    const topicsGroup = elements.topicsFilterGroup;
-    if (topicsGroup) topicsGroup.classList.add('hidden');
 
     renderView(view);
     updateViewTitle();
