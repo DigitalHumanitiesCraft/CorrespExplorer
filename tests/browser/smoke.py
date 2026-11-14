@@ -242,8 +242,8 @@ class Smoke:
         network_rows = page.locator("#network-table tbody tr").count()
         _open_view(page, "timeline")
         timeline_rows = page.locator("#timeline-table tbody tr").count()
-        _open_view(page, "activity")
-        activity_rows = page.locator("#activity-table tbody tr").count()
+        # Days are part of the time view since 2026-11-14: its lower figure has its own table
+        activity_rows = page.locator("#tv-table tbody tr").count()
         page.click("#export-btn")
         with page.expect_download() as info:
             page.click('#export-modal .export-option[data-format="json"]')
@@ -293,14 +293,18 @@ class Smoke:
         assert "view=places" in url, f"map hint did not open the place list: {url}"
 
     def drawer_keeps_the_view(self) -> None:
-        # A year bar of the timeline opens the letters of that year in the drawer below the view,
-        # instead of switching to the letter list; the count comes from the data file
+        # A year bar of the time view chooses that year, and the view's own action opens its
+        # letters in the drawer below the view instead of switching to the letter list (since the
+        # merge of the time views a choice narrows the figure and leaves the drawer closed); the
+        # count comes from the data file
         expected = _hsa_letters_between(1900, 1900)
         ctx = self.context()
         page = ctx.new_page()
         page.goto(f"{self.base}explore.html?view=timeline&{HSA}")
         _loaded(page)
-        page.click('.timeline-bar-wrapper[data-year="1900"]', position={"x": 4, "y": 4})
+        page.click('.tv-bar[data-year="1900"]', position={"x": 2, "y": 4})
+        page.wait_for_function("new URLSearchParams(location.search).get('yearMin') === '1900'")
+        page.click("#tv-show-letters")
         page.wait_for_selector("#letters-drawer-panel:not(.hidden)")
         count = page.inner_text("#letters-drawer-count").split(" ")[0].replace(".", "")
         url = page.url
@@ -340,14 +344,15 @@ class Smoke:
         )
         _open_view(page, "letters")
         _open_view(page, "topics")
+        # view=activity opens the time view, whose years are the keyboard way to a period
         _open_view(page, "activity")
-        years = page.locator("#activity-year-select option").count()
+        years = page.locator("#timeline-chart .tv-bar").count()
         _open_view(page, "map")
         page.wait_for_timeout(1000)
         ctx.close()
         assert not heading_problem, heading_problem
         assert not undescribed, f"view buttons without description: {undescribed}"
-        assert years > 2, f"activity year select has {years} options"
+        assert years > 2, f"time view has {years} years"
         assert styles and "positron" in styles[0], f"map starts with {styles[:1]}"
 
     def topics_figure(self) -> None:
@@ -384,6 +389,50 @@ class Smoke:
         assert subject == key, f"Enter on {key} set subject {subject}"
         assert rows_chosen == expected, f"{rows_chosen} rows after choosing a subject"
         assert params.get("person") and params.get("subject") == key, f"after a correspondent: {params}"
+
+    def dashboard_filters(self) -> None:
+        # A subject row of the start view filters the circle, the map and the drawer line; the
+        # count comes from the data file. The circle chooses a person by keyboard as well
+        data = json.loads((DOCS / "data" / "hsa-letters.json").read_text(encoding="utf-8"))
+        ctx = self.context()
+        page = ctx.new_page()
+        page.goto(f"{self.base}explore.html?view=overview&{HSA}&tour=0")
+        _loaded(page)
+        page.wait_for_selector("#dash-subjects .dash-subject")
+        persons = page.inner_text("#dash-persons-count")
+        places = page.inner_text("#dash-places-count")
+        row = page.locator("#dash-subjects .dash-subject").first
+        key = row.get_attribute("data-key")
+        expected = sum(
+            1
+            for letter in data["letters"]
+            if any(
+                (s.get("uri") or s.get("id") or s.get("label")) == key
+                for s in (letter.get("mentions") or {}).get("subjects") or []
+            )
+        )
+        row.click()
+        page.wait_for_timeout(300)
+        subject = page.evaluate("new URLSearchParams(location.search).get('subject')")
+        drawer = page.inner_text("#letters-drawer-count").split(" ")[0].replace(".", "")
+        followed = (
+            page.inner_text("#dash-persons-count") != persons
+            and page.inner_text("#dash-places-count") != places
+        )
+        page.locator("#dash-subjects .dash-subject[aria-pressed='true']").click()
+        page.wait_for_timeout(300)
+        released = page.evaluate("new URLSearchParams(location.search).get('subject')")
+        page.focus("#dash-persons-figure")
+        page.keyboard.press("ArrowRight")
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(300)
+        person = page.evaluate("new URLSearchParams(location.search).get('person')")
+        ctx.close()
+        assert subject == key, f"row {key} set subject {subject}"
+        assert drawer == str(expected), f"drawer shows {drawer}, data hold {expected} letters of {key}"
+        assert followed, "circle or map did not follow the subject"
+        assert released is None, f"the pressed row did not release {released}"
+        assert person, "Enter on the circle chose no person"
 
     def reduced_motion_network(self) -> None:
         ctx = self.browser.new_context(
@@ -546,6 +595,10 @@ def _checks(
         (
             "topics: a row per subject, Enter sets the subject, a correspondent adds the person",
             smoke.topics_figure,
+        ),
+        (
+            "start view: a subject filters circle, map and drawer, the circle chooses by keyboard",
+            smoke.dashboard_filters,
         ),
         ("network does not move under reduced motion", smoke.reduced_motion_network),
         (

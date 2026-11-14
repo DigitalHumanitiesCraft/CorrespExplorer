@@ -3,19 +3,12 @@
 // keeps its state while one reads the letters. The letter list stays the full list with search and
 // order, one control away. Rows and the letter dialog are those of the letter list.
 
-import { compareByDate, letterRowHtml, bindLetterRows } from './letters-view.js';
-
-// Rows rendered per step: the list grows while it is scrolled, so a selection of the whole archive
-// opens without building some ten thousand rows at once
-const STEP = 100;
+import { sortLetters, renderLetterGroups, bindLetterRows } from './letters-view.js';
 
 let deps = {};
 let isOpen = false;
 let visible = true;
 let renderedFrom = null;
-let sorted = [];
-let shown = 0;
-let observer = null;
 
 const el = id => document.getElementById(id);
 const fmt = n => n.toLocaleString('de-DE');
@@ -55,9 +48,6 @@ export function initLettersDrawer(dependencies) {
     });
     bindLetterRows(list);
     bindGrip();
-    observer = new IntersectionObserver(entries => {
-        if (entries.some(entry => entry.isIntersecting)) appendRows();
-    }, { root: list, rootMargin: '0px 0px 300px 0px' });
 }
 
 // Lowest height the reader can give the list, and the share of the main area it may take at most;
@@ -157,28 +147,14 @@ function renderList() {
     renderedFrom = letters;
     if (same) return;
     const hadFocus = list.contains(document.activeElement);
-    // Oldest first: a selection of letters reads as a correspondence in its course
-    sorted = [...letters].sort((a, b) => compareByDate(a, b, 1));
-    shown = 0;
     list.scrollTop = 0;
-    if (sorted.length === 0) {
+    if (letters.length === 0) {
         list.innerHTML = '<p class="letters-drawer__empty">Die Auswahl enthält keinen Brief.</p>';
     } else {
-        list.innerHTML = '<div class="letters-drawer__end" aria-hidden="true"></div>';
-        appendRows();
+        // Oldest first: a selection of letters reads as a correspondence in its course. Groups and
+        // rows are those of the letter list, written as the list is scrolled
+        renderLetterGroups(list, sortLetters(letters, 'date-asc'), { order: 'date-asc' });
     }
     // Rows replaced under the focus hand it to the first new row, not to the document
     if (hadFocus) (list.querySelector('.letter-toggle') || el('letters-drawer-panel'))?.focus();
-}
-
-function appendRows() {
-    const list = el('letters-drawer-list');
-    const end = list?.querySelector('.letters-drawer__end');
-    if (!end || shown >= sorted.length) return;
-    const next = sorted.slice(shown, shown + STEP);
-    shown += next.length;
-    end.insertAdjacentHTML('beforebegin', next.map(letterRowHtml).join(''));
-    // Observed again after each step, so a short first step that leaves the end in sight continues
-    observer.unobserve(end);
-    if (shown < sorted.length) observer.observe(end);
 }

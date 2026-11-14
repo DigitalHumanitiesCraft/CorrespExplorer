@@ -21,9 +21,7 @@ import { initSpacetimeView, renderSpacetime } from './views/spacetime-view.js';
 import { initPersonsView, renderPersonsList } from './views/persons-view.js';
 import { initLettersView, renderLettersList, showLetterDetail, clearLetterSearch } from './views/letters-view.js';
 import { initTimelineView, renderTimeline as renderTimelineView } from './views/timeline-view.js';
-import { initActivityView, renderActivity as renderActivityView } from './views/activity-view.js';
 import { initComparisonView, renderComparison as renderComparisonView } from './views/comparison-view.js';
-import { initChronikView, renderChronik as renderChronikView } from './views/chronik-view.js';
 import { initNetworkView as initNetworkViewModule, renderNetwork as renderNetworkView } from './views/network-view.js';
 import { initMentionsView, renderMentionsFlow as renderMentionsFlowView } from './views/mentions-view.js';
 import { initTopicsView, renderTopicsList as renderTopicsListView, topicCounts } from './views/topics-view.js';
@@ -71,7 +69,8 @@ const VIEW_GROUPS = {
     letters: ['letters'],
     persons: ['persons', 'network', 'mentions-flow'],
     places: ['map', 'spacetime', 'places'],
-    time: ['timeline', 'activity', 'chronik'],
+    // One view from the whole period to the single letters; view=activity and view=chronik open it
+    time: ['timeline'],
     topics: ['topics']
 };
 // The comparison is an action on persons, places or periods and stays with the subject it was
@@ -333,7 +332,8 @@ async function init() {
             toggleLanguage,
             toggleFeature,
             setYearRange,
-            resetFilters: () => elements.resetFiltersBtn?.click()
+            releaseYears: () => releaseMark('time'),
+            isViewAvailable: view => Boolean(availableViews[view]?.available)
         });
         initMapView({
             getPlaceAggregation: () => placeAggregation,
@@ -375,11 +375,10 @@ async function init() {
         initTimelineView({
             getFilteredLetters: () => filteredLetters,
             getAllLetters: () => allLetters,
-            applyFilters,
             revealLetters,
             showUndatedLetters,
-            showLettersWithFeature,
-            clearLetterSearch
+            showLetterDetail,
+            setPeriod
         });
         initTopicsView({
             getFilteredLetters: () => filteredLetters,
@@ -406,15 +405,6 @@ async function init() {
             revealLetters
         });
         initMentionsView({
-            getFilteredLetters: () => state.getFilteredLetters(),
-            showLetterDetail
-        });
-        initChronikView({
-            getFilteredLetters: () => state.getFilteredLetters(),
-            getAllLetters: () => allLetters,
-            showLetterDetail
-        });
-        initActivityView({
             getFilteredLetters: () => state.getFilteredLetters(),
             showLetterDetail
         });
@@ -827,7 +817,8 @@ function applyFilters({ render = true } = {}) {
     updateUrlState();
     renderSelectionSentence();
     updateFilterIndicators();
-    SIDEBAR_VIEWS.forEach(view => renderFilterNotice(`${view}-view`)?.classList.add('view-filter-notice--narrow'));
+    // The time view marks a filter by its title, the line above the main area and its profile
+    SIDEBAR_VIEWS.filter(view => view !== 'timeline').forEach(view => renderFilterNotice(`${view}-view`)?.classList.add('view-filter-notice--narrow'));
     announceResultCount();
     updateLettersDrawer({ hidden: currentView === 'letters' });
 
@@ -865,6 +856,24 @@ function setYearRange(start, end) {
     slider.set([start, end]);
     const { min, max } = slider.options.range;
     temporalFilter = start === min && end === max ? null : { start, end };
+    applyFilters();
+}
+
+/**
+ * The period chosen in the time view is the period of the sidebar, so slider, selection sentence,
+ * title, drawer and URL name one period. A year picked in the space-time view gives way to it.
+ * The slider moves without its set event, which would apply the same filter a second time.
+ * @param {number|null} start - first year, or null to release the period
+ * @param {number} [end] - last year
+ */
+function setPeriod(start, end = start) {
+    pickedYearFilter = null;
+    const slider = elements.yearRangeSlider?.noUiSlider;
+    const whole = start == null || (start <= dateRange.min && end >= dateRange.max);
+    if (slider) slider.set(whole ? [dateRange.min, dateRange.max] : [start, end], false);
+    temporalFilter = whole ? null : { start, end };
+    // An unchanged slider fires no update, so the text leaves "Nur Briefe ohne Datum" here
+    if (elements.yearRangeText) elements.yearRangeText.textContent = whole ? `${dateRange.min} - ${dateRange.max}` : `${start} - ${end}`;
     applyFilters();
 }
 
@@ -1023,11 +1032,14 @@ function renderSelectionSentence() {
     if (!sentence) return;
     const marks = selectionMarks(state.filters, allLetters);
     sentence.classList.toggle('hidden', marks.length === 0);
+    // A filter narrows every view and is easily forgotten: while one is set, the page says so
+    // in the title of the view, at the upper edge of the main area and in this block
+    document.body.classList.toggle('has-filter', marks.length > 0);
     // An unchanged sentence keeps its elements, so the focus on a mark survives a repeated filter
     const key = JSON.stringify(marks);
     if (sentence.dataset.marks === key) return;
     sentence.dataset.marks = key;
-    sentence.innerHTML = marks.map(mark => `${escapeHtml(mark.joiner)}<span class="selection-mark">${escapeHtml(mark.label)}<button type="button" class="selection-mark__clear" data-mark="${escapeHtml(mark.key)}" aria-label="${escapeHtml(mark.label)} entfernen" title="Entfernen"><i class="fas fa-times" aria-hidden="true"></i></button></span>`).join('');
+    sentence.innerHTML = '<span class="selection-sentence__lead">Gefiltert nach</span> ' + marks.map(mark => `${escapeHtml(mark.joiner)}<span class="selection-mark">${escapeHtml(mark.label)}<button type="button" class="selection-mark__clear" data-mark="${escapeHtml(mark.key)}" aria-label="${escapeHtml(mark.label)} entfernen" title="Entfernen"><i class="fas fa-times" aria-hidden="true"></i></button></span>`).join('');
 }
 
 document.getElementById('selection-sentence')?.addEventListener('click', (e) => {
@@ -1329,22 +1341,28 @@ function renderView(view) {
         case 'overview': renderOverview(); break;
         case 'persons': renderPersonsList(); break;
         case 'letters': renderLettersList(); break;
-        case 'timeline': renderTimelineView(); break;
+        case 'timeline': renderTimelineView({ entry: timeEntry }); timeEntry = null; break;
         case 'topics': renderTopicsListView(); break;
         case 'places': renderPlacesListView(); break;
         case 'network': renderNetworkView(); break;
         case 'mentions-flow': renderMentionsFlowView(); break;
-        case 'chronik': renderChronikView(); break;
-        case 'activity': renderActivityView(); break;
         case 'comparison': renderComparisonView(); break;
         case 'map': resizeMap(); break;
         case 'spacetime': renderSpacetime(); break;
     }
 }
 
+// The representation an older link of the time view asked for, read once by its next render
+let timeEntry = null;
+
 function switchView(view) {
     // The former questions view is part of the overview
     if (view === 'questions') view = 'overview';
+    // Days and chronicle are states of the time view: whole period in bins, or the single letters
+    if (view === 'activity' || view === 'chronik') {
+        timeEntry = view;
+        view = 'timeline';
+    }
 
     currentView = view;
     state.ui.currentView = view;
@@ -1367,10 +1385,10 @@ function switchView(view) {
     lastViewOfGroup[groupOf(view)] = view;
     syncViewVariants();
 
-    // Overview, chronik, activity and comparison use the full width without sidebar
+    // The comparison uses the full width without sidebar
     const sidebar = document.querySelector('.sidebar');
     if (sidebar) {
-        const noSidebar = view === 'chronik' || view === 'activity' || view === 'comparison';
+        const noSidebar = view === 'comparison';
         // What describes the dataset stands in the sidebar of the start view, above its filters
         const meta = document.querySelector('.workspace__meta');
         if (meta && meta.parentElement !== sidebar) sidebar.prepend(meta);

@@ -1,0 +1,407 @@
+/* Time view (views/timeline-view.js): the letters per year as a profile, under it the chosen
+   period in its finest legible resolution. Colours follow design.md: language colours for data,
+   --color-primary only for what is chosen or under the pointer, --color-data without languages. */
+
+#timeline-view.active {
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.tv {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-lg) var(--space-xl) var(--space-xl);
+}
+
+.tv .view-header {
+    margin-bottom: 0;
+}
+
+/* Profile: bars per year, the bins without a year beside them */
+.tv-profile {
+    display: flex;
+    gap: var(--space-md);
+    align-items: stretch;
+    height: 150px;
+    padding-top: var(--space-md);
+}
+
+.tv-profile__plot {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    /* Room for the year labels under the bars */
+    padding-bottom: 18px;
+}
+
+.tv-bars {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    height: 100%;
+    border-bottom: 1px solid var(--color-text);
+    cursor: col-resize;
+    touch-action: none;
+    user-select: none;
+}
+
+.tv-bar {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+
+.tv-stack {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.tv-seg {
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+.tv-seg--span {
+    background: var(--color-text-light);
+}
+
+/* Imprecise or inferred dates of a year, hatched over the stack from below */
+.tv-hatch,
+.tv-swatch--hatch {
+    background: repeating-linear-gradient(45deg, transparent 0 3px, var(--color-bg) 3px 5px);
+}
+
+.tv-hatch {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+/* A chosen period stands in full colour, the rest of the dataset recedes behind it */
+.tv-bars.is-narrowed .tv-bar:not(.is-chosen) .tv-stack {
+    opacity: 0.3;
+}
+
+.tv-bar.is-chosen::after,
+.tv-bar.is-dragged::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 3px;
+    background: var(--color-primary);
+}
+
+.tv-bar:hover .tv-stack {
+    opacity: 1;
+    filter: brightness(0.9);
+}
+
+.tv-bar:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+    z-index: var(--z-raised);
+}
+
+.tv-bar__label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-top: 4px;
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.tv-grid {
+    position: absolute;
+    inset: 0 0 18px 0;
+    pointer-events: none;
+}
+
+.tv-grid__line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px solid var(--color-border-light);
+}
+
+.tv-grid__label {
+    position: absolute;
+    left: 0;
+    transform: translateY(-100%);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    line-height: 1.2;
+}
+
+.tv-bins {
+    display: flex;
+    gap: var(--space-sm);
+    padding-left: var(--space-md);
+    border-left: 1px dashed var(--color-border-light);
+}
+
+.tv-bin {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    width: 44px;
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.tv-bin--span {
+    cursor: help;
+}
+
+.tv-bin__count {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.tv-bin__bar {
+    position: relative;
+    width: 24px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-text);
+}
+
+.tv-bin__label {
+    margin-top: 4px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    white-space: nowrap;
+}
+
+.tv-bin.is-chosen .tv-bin__bar {
+    border-bottom: 3px solid var(--color-primary);
+}
+
+.tv-bin:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Legend of the colours; the switches of the languages stand in the sidebar */
+.tv-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-md);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.tv-legend__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 20px;
+}
+
+.tv-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+.tv-swatch--hatch {
+    background-color: var(--color-text-light);
+}
+
+/* The open ring stands beside the hatching only while single letters are drawn */
+.tv-swatch--ring {
+    display: none;
+    border: 2px solid var(--color-text-light);
+    border-radius: 50%;
+}
+
+.tv-legend--rings .tv-swatch--ring {
+    display: inline-block;
+}
+
+.tv-note {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+/* Lower figure */
+.tv-detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-top: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.tv-detail__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-md);
+    font-size: var(--font-size-sm);
+}
+
+.tv-unit {
+    color: var(--color-text-light);
+}
+
+.tv-quiet,
+.tv-quiet-status {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.tv-quiet {
+    min-height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.tv-quiet:hover {
+    color: var(--color-link);
+}
+
+.tv-show {
+    margin-left: auto;
+}
+
+.tv-figure {
+    position: relative;
+    width: 100%;
+    min-height: 60px;
+    touch-action: pan-y;
+}
+
+.tv-figure.is-over-mark {
+    cursor: pointer;
+}
+
+.tv-canvas {
+    display: block;
+    width: 100%;
+}
+
+.tv-axis,
+.tv-marks {
+    position: absolute;
+    inset: 0 0 auto 0;
+    pointer-events: none;
+}
+
+.tv-tick {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.tv-tick--start {
+    transform: none;
+}
+
+.tv-side {
+    position: absolute;
+    left: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    line-height: 16px;
+    white-space: nowrap;
+}
+
+.tv-more {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+/* Keyboard stand-ins of the marks: one pixel at the centre of each mark, so they carry focus and
+   name without adding anything to see; the canvas draws the focused mark with the accent ring */
+.tv-mark {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: none;
+    background: none;
+    opacity: 0;
+}
+
+.tv-empty {
+    padding: var(--space-xl) 0;
+    color: var(--color-text-light);
+}
+
+.tv-tip {
+    position: fixed;
+    z-index: var(--z-dropdown);
+    max-width: 320px;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    font-size: var(--font-size-xs);
+    color: var(--color-text);
+    pointer-events: none;
+}
+
+.tv-tip__head {
+    font-weight: 600;
+}
+
+@media (max-width: 767px) {
+    .tv {
+        padding: var(--space-md) var(--space-lg) var(--space-lg);
+    }
+
+    .tv-profile {
+        height: 110px;
+    }
+
+    .tv-bins {
+        gap: var(--space-xs);
+        padding-left: var(--space-sm);
+    }
+
+    .tv-bin {
+        width: 40px;
+    }
+
+    .tv-bin__label {
+        white-space: normal;
+        text-align: center;
+        line-height: 1.1;
+    }
+
+    .tv-bin__bar {
+        width: 16px;
+    }
+}

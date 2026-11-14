@@ -16,6 +16,9 @@ import { SpacetimeTests } from './test-spacetime.js';
 import { NetworkTests } from './test-network.js';
 import { TopicsTests } from './test-topics.js';
 import { SelectionTests } from './test-selection.js';
+import { LettersTests } from './test-letters.js';
+import { TimeTests } from './test-time.js';
+import { DashboardTests } from './test-dashboard.js';
 
 /**
  * Run all registered suites
@@ -36,6 +39,9 @@ export async function runAllTests() {
         NetworkTests,
         TopicsTests,
         SelectionTests,
+        LettersTests,
+        TimeTests,
+        DashboardTests,
 
         // Infrastructure (State Management)
         StateManagerTests,

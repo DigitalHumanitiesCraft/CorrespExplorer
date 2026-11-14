@@ -1,11 +1,15 @@
-// Letters view: the filtered letters as a list with search, order and paging, and the letter
-// dialog with all records the source holds for one letter.
+// Letters view: the filtered letters as a list grouped along the order the reader chose, with
+// search, a figure of the selection that jumps within the list, and the letter dialog with all
+// records the source holds for one letter. The letters drawer renders its list with the same
+// groups and rows (renderLetterGroups).
 
 import { isInBasket } from '../basket.js';
-import { debounce, escapeHtml, safeUrl, openModal, closeModal, personKey, letterRecipients, foldText } from '../utils.js';
+import { debounce, escapeHtml, safeUrl, openModal, closeModal, personKey, letterRecipients, foldText, isKnownPlace } from '../utils.js';
 import { formatDateWithPrecision, formatPersonName, formatPlaceName, getDatePrecisionClass } from '../formatters.js';
+import { LANGUAGE_COLORS, LETTER_FEATURES, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
 import { state } from '../state-manager.js';
 import { elements } from '../dom-cache.js';
+import { findEgo } from './network-view.js';
 import { buildCorrespSearchUrl, buildPersonLink, buildPlaceLink, correspSearchLink, detailRow, toggleBasketButton } from './view-support.js';
 
 let deps = {};
@@ -33,7 +37,7 @@ export function initLettersView(dependencies) {
 
     if (searchInput) {
         searchInput.addEventListener('input', debounce((e) => {
-            lettersSearchTerm = foldText(e.target.value);
+            lettersSearchTerm = foldText(e.target.value.trim());
             renderLettersList();
         }, 300));
     }
@@ -45,76 +49,261 @@ export function initLettersView(dependencies) {
         });
     }
     bindLetterRows(elements.lettersList);
+    bindProfile(document.getElementById('letters-profile'));
 }
 
-// Date order with undated letters last in both directions (they have no place on the time axis)
+// Places without a position on the time axis, in the order their groups close the list. The
+// labels are those of the sidebar filters, so a state carries one word everywhere
+const OFF_AXIS_ORDER = ['dateBound', 'dateText', 'dateImplausible', 'undated'];
+
+/**
+ * Why a letter has no place on the time axis, as the key of its sidebar filter, or null when it has one
+ * @param {Object} letter
+ * @returns {string|null}
+ */
+export function offAxisReason(letter) {
+    if (letter.dateImplausible) return 'dateImplausible';
+    if (!letter.date) return letter.dateText ? 'dateText' : 'undated';
+    if (letter.dateBound) return 'dateBound';
+    return null;
+}
+
+const featureLabel = key => LETTER_FEATURES.find(f => f.key === key)?.label || key;
+
+// Date order with the letters off the time axis last in both directions, grouped by their reason
 export function compareByDate(a, b, direction) {
-    // An implausible date sorts with the undated letters, as on the time axis
-    const dateA = a.dateImplausible ? null : a.date;
-    const dateB = b.dateImplausible ? null : b.date;
-    if (!dateA && !dateB) return 0;
-    if (!dateA) return 1;
-    if (!dateB) return -1;
-    return direction * dateA.localeCompare(dateB);
+    const offA = offAxisReason(a);
+    const offB = offAxisReason(b);
+    if (offA || offB) {
+        if (!offA) return -1;
+        if (!offB) return 1;
+        return OFF_AXIS_ORDER.indexOf(offA) - OFF_AXIS_ORDER.indexOf(offB);
+    }
+    return direction * a.date.localeCompare(b.date);
 }
 
-// Letters shown per step; a longer list grows on request instead of ending silently
-const LETTERS_PAGE = 200;
-let lettersLimit = LETTERS_PAGE;
-let lettersListKey = '';
+/**
+ * The person the rows are told from: the person of the person filter, else the person on at least
+ * half of all letters (findEgo). Rows then name the other party and the direction instead of
+ * repeating that person in every row.
+ * @returns {{key: string, name: string}|null}
+ */
+const egoCache = { letters: null, ego: null };
+export function rowCentre() {
+    const all = state.getAllLetters();
+    const chosen = state.filters?.person;
+    if (chosen) {
+        for (const letter of all) {
+            const person = [letter.sender, ...letterRecipients(letter)].find(p => personKey(p) === chosen);
+            if (person) return { key: chosen, name: person.name || chosen };
+        }
+        return { key: chosen, name: chosen };
+    }
+    if (egoCache.letters !== all) {
+        egoCache.letters = all;
+        egoCache.ego = findEgo(all);
+    }
+    return egoCache.ego ? { key: egoCache.ego.id, name: egoCache.ego.name } : null;
+}
+
+/**
+ * Direction of a letter seen from one person: "to" when that person wrote it, "from" when that
+ * person received it. `others` are the persons the row names, `also` further recipients beside
+ * the centre. Null for a letter the person is not part of.
+ * @param {Object} letter
+ * @param {string|null} centreKey
+ * @returns {{dir: 'to'|'from', others: Array, also: Array}|null}
+ */
+export function letterDirection(letter, centreKey) {
+    if (!centreKey) return null;
+    const recipients = letterRecipients(letter);
+    if (personKey(letter.sender) === centreKey) {
+        return { dir: 'to', others: recipients.filter(r => personKey(r) !== centreKey), also: [] };
+    }
+    const index = recipients.findIndex(r => personKey(r) === centreKey);
+    if (index < 0) return null;
+    return { dir: 'from', others: letter.sender ? [letter.sender] : [], also: recipients.filter((_, i) => i !== index) };
+}
+
+// The name a person order sorts by: the other party where the row is told from one person
+function personSortName(letter, centreKey) {
+    const direction = letterDirection(letter, centreKey);
+    const person = direction ? direction.others[0] : letter.sender;
+    return person?.name || '';
+}
+
+const placeSortName = letter => (isKnownPlace(letter.place_sent) ? letter.place_sent.name : '');
+
+const collator = new Intl.Collator('de', { sensitivity: 'base' });
+
+/**
+ * The letters in one of the orders of the list. Names sort alphabetically with letters without a
+ * name last, and by date within one name.
+ * @param {Array} letters
+ * @param {'date-desc'|'date-asc'|'person-asc'|'place-asc'} order
+ * @param {string|null} centreKey
+ * @returns {Array} a new array
+ */
+export function sortLetters(letters, order, centreKey = null) {
+    if (order === 'date-desc' || order === 'date-asc') {
+        const direction = order === 'date-desc' ? -1 : 1;
+        return [...letters].sort((a, b) => compareByDate(a, b, direction));
+    }
+    const nameOf = order === 'place-asc' ? placeSortName : l => personSortName(l, centreKey);
+    // Keys once per letter instead of once per comparison
+    return letters.map(letter => ({ letter, name: nameOf(letter) }))
+        .sort((a, b) => (!a.name - !b.name) || collator.compare(a.name, b.name) || compareByDate(a.letter, b.letter, 1))
+        .map(entry => entry.letter);
+}
+
+// Above this many letters in one year a date order splits the year into its months
+const MONTH_SPLIT = 60;
+const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+function initialOf(name) {
+    const first = foldText(name).trim()[0];
+    return first && /[a-z]/.test(first) ? first.toUpperCase() : '#';
+}
+
+/**
+ * Consecutive groups of sorted letters. A date order groups by year, a year with many letters by
+ * month, and closes with one group per reason a letter has no place on the time axis. A name order
+ * groups by the initial of the name and closes with the letters without one.
+ * @param {Array} sorted - letters in the order of sortLetters
+ * @param {string} order
+ * @param {{centreKey?: string|null, monthSplit?: number}} [options]
+ * @returns {{key: string, top: string, label: string, sub: string, letters: Array}[]}
+ */
+export function groupLetters(sorted, order, { centreKey = null, monthSplit = MONTH_SPLIT } = {}) {
+    let keyOf;
+    if (order === 'date-desc' || order === 'date-asc') {
+        const perYear = new Map();
+        sorted.forEach(l => {
+            if (!offAxisReason(l)) perYear.set(l.date.slice(0, 4), (perYear.get(l.date.slice(0, 4)) || 0) + 1);
+        });
+        keyOf = (letter) => {
+            const reason = offAxisReason(letter);
+            if (reason) return { key: `off:${reason}`, top: 'off', label: featureLabel(reason), sub: '' };
+            const year = letter.date.slice(0, 4);
+            if (perYear.get(year) <= monthSplit) return { key: year, top: year, label: year, sub: '' };
+            const month = letter.date.length >= 7 ? Number(letter.date.slice(5, 7)) : 0;
+            return { key: `${year}-${month}`, top: year, label: year, sub: MONTHS[month - 1] || 'ohne Monat' };
+        };
+    } else {
+        const place = order === 'place-asc';
+        keyOf = (letter) => {
+            const name = place ? placeSortName(letter) : personSortName(letter, centreKey);
+            if (!name) return { key: 'none', top: 'none', label: place ? 'Ohne Ort' : 'Ohne Namen', sub: '' };
+            const initial = initialOf(name);
+            return { key: initial, top: initial, label: initial === '#' ? 'Andere' : initial, sub: '' };
+        };
+    }
+    const groups = [];
+    for (const letter of sorted) {
+        const head = keyOf(letter);
+        const last = groups[groups.length - 1];
+        if (last && last.key === head.key) last.letters.push(letter);
+        else groups.push({ ...head, letters: [letter] });
+    }
+    return groups;
+}
+
+/**
+ * Columns of the figure above the list: in a date order every year from the first to the last,
+ * empty years included so the axis keeps its scale, and one column for the letters off the axis;
+ * in a name order one column per initial. Each column counts its letters by language.
+ * @param {Array} groups - result of groupLetters
+ * @param {string} order
+ * @returns {{top: string, label: string, total: number, languages: Map<string, number>}[]}
+ */
+export function selectionProfile(groups, order) {
+    const columns = new Map();
+    const column = (top, label) => {
+        if (!columns.has(top)) columns.set(top, { top, label, total: 0, languages: new Map() });
+        return columns.get(top);
+    };
+    const dated = order === 'date-desc' || order === 'date-asc';
+    if (dated) {
+        const years = groups.filter(g => g.top !== 'off').map(g => Number(g.top));
+        if (years.length) {
+            for (let y = Math.min(...years); y <= Math.max(...years); y++) column(String(y), String(y));
+        }
+    }
+    for (const group of groups) {
+        const col = column(group.top, group.top === 'off' ? 'ohne Jahr' : group.label);
+        for (const letter of group.letters) {
+            const code = letter.language?.code || NO_LANGUAGE;
+            const shade = code === NO_LANGUAGE || !isRestLanguage(code) ? code : 'other';
+            col.total++;
+            col.languages.set(shade, (col.languages.get(shade) || 0) + 1);
+        }
+    }
+    return [...columns.values()];
+}
+
+// Search fields of a letter, folded once per letter instead of on every keystroke
+const haystacks = new WeakMap();
+function haystackOf(letter) {
+    let text = haystacks.get(letter);
+    if (text === undefined) {
+        text = foldText([
+            letter.sender?.name, ...letterRecipients(letter).map(r => r.name), letter.place_sent?.name,
+            letter.address, letter.postmark, letter.signature, letter.dateText,
+            letter.language?.label || (letter.language?.code ? languageLabel(letter.language.code) : '')
+        ].filter(Boolean).join('\n'));
+        haystacks.set(letter, text);
+    }
+    return text;
+}
+
+let renderedFrom = null;
+let renderedKey = '';
 
 export function renderLettersList() {
     const container = elements.lettersList;
     if (!container) return;
 
     const allLetters = deps.getAllLetters();
-    let letters = [...deps.getFilteredLetters()];
-
-    if (lettersSearchTerm) {
-        const has = value => foldText(value).includes(lettersSearchTerm);
-        letters = letters.filter(l =>
-            has(l.sender?.name) ||
-            letterRecipients(l).some(r => has(r.name)) ||
-            has(l.place_sent?.name) || has(l.address) || has(l.postmark) || has(l.signature) || has(l.dateText)
-        );
+    const filtered = deps.getFilteredLetters();
+    // The same letters in the same order keep their rows, scroll position and focus: switching
+    // back to the list or a filter set to the value it has hands out a new array of the same letters
+    const key = `${lettersSearchTerm}|${lettersSortOrder}`;
+    if (key === renderedKey && renderedFrom && filtered.length === renderedFrom.length && filtered.every((l, i) => l === renderedFrom[i])) {
+        // A star set in the drawer meanwhile shows here as well
+        container.querySelectorAll('.btn-letter-basket[data-letter-id]').forEach(star => {
+            const inBasket = isInBasket('letters', star.dataset.letterId);
+            star.classList.toggle('in-basket', inBasket);
+            star.setAttribute('aria-pressed', String(inBasket));
+        });
+        return;
     }
+    renderedFrom = filtered;
+    renderedKey = key;
 
-    letters.sort((a, b) => {
-        switch (lettersSortOrder) {
-            case 'date-desc': return compareByDate(a, b, -1);
-            case 'date-asc': return compareByDate(a, b, 1);
-            case 'sender-asc': return (a.sender?.name || '').localeCompare(b.sender?.name || '');
-            default: return 0;
-        }
-    });
+    const letters = lettersSearchTerm ? filtered.filter(l => haystackOf(l).includes(lettersSearchTerm)) : filtered;
+    const centre = rowCentre();
+    const sorted = sortLetters(letters, lettersSortOrder, centre?.key);
 
-    // A new filter, search or order starts again at the first step
-    const listKey = `${lettersSearchTerm}|${lettersSortOrder}|${state.toURLParams().toString()}`;
-    if (listKey !== lettersListKey) {
-        lettersListKey = listKey;
-        lettersLimit = LETTERS_PAGE;
-    }
-    const displayLetters = letters.slice(0, lettersLimit);
-
-    // The count of the list is visible above it, also for a search and for no hit at all
+    // The count stands once, above the list: the whole dataset or the part filter and search leave
     const result = document.getElementById('letters-result');
     if (result) {
         const total = allLetters.length.toLocaleString('de-DE');
-        const found = letters.length.toLocaleString('de-DE');
-        const narrowed = letters.length !== allLetters.length;
-        const search = lettersSearchTerm ? ` für „${lettersSearchTerm}“` : '';
-        const shown = letters.length > displayLetters.length ? `, die ersten ${displayLetters.length.toLocaleString('de-DE')} angezeigt` : '';
+        const count = letters.length === allLetters.length
+            ? `${total} ${allLetters.length === 1 ? 'Brief' : 'Briefe'}`
+            : `${letters.length.toLocaleString('de-DE')} von ${total} Briefen`;
         // No hit: the sentence of the empty state says it, a zero above it would repeat it
-        result.textContent = letters.length === 0 ? ''
-            : narrowed || search
-                ? `${found} von ${total} Briefen${search}${shown}`
-                : `${total} Briefe${shown}`;
+        result.innerHTML = letters.length === 0 ? ''
+            : `${escapeHtml(count)}${centre ? `<span class="lv-centre"> mit ${escapeHtml(centre.name)}: „von“ nennt den Absender, „an“ den Empfänger</span>` : ''}`;
     }
     // The brackets are explained once where they occur, not only in a tooltip
     document.getElementById('letters-legend')?.classList.toggle('hidden',
-        !displayLetters.some(l => l.dateInferred || l.place_sent?.inferred));
+        !letters.some(l => l.dateInferred || l.place_sent?.inferred));
 
-    if (displayLetters.length === 0) {
+    const profileHost = document.getElementById('letters-profile');
+    if (sorted.length === 0) {
+        profileHost?.classList.add('hidden');
+        lists.get(container)?.observer.disconnect();
+        lists.delete(container);
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-envelope" aria-hidden="true"></i>
@@ -124,77 +313,326 @@ export function renderLettersList() {
         return;
     }
 
-    container.innerHTML = displayLetters.map(letterRowHtml).join('');
-
-    if (letters.length > displayLetters.length) {
-        const rest = letters.length - displayLetters.length;
-        container.insertAdjacentHTML('beforeend', `
-            <button type="button" class="btn btn-secondary list-more" id="letters-more">
-                Weitere ${Math.min(rest, LETTERS_PAGE).toLocaleString('de-DE')} anzeigen (noch ${rest.toLocaleString('de-DE')} nicht angezeigt)
-            </button>
-        `);
-        container.querySelector('#letters-more').addEventListener('click', () => {
-            const firstNew = displayLetters.length;
-            lettersLimit += LETTERS_PAGE;
-            renderLettersList();
-            // Keyboard focus continues at the first letter that was added
-            container.querySelectorAll('.letter-toggle')[firstNew]?.focus();
-        });
+    const list = renderLetterGroups(container, sorted, {
+        order: lettersSortOrder,
+        centre,
+        onPosition: tops => markProfile(profileHost, tops)
+    });
+    if (profileHost) {
+        profileHost.classList.remove('hidden');
+        profile.columns = selectionProfile(list.groups, lettersSortOrder);
+        profile.dated = lettersSortOrder.startsWith('date');
+        profile.list = list;
+        profile.tops = new Set();
+        drawProfile(profileHost);
     }
 }
 
+// Rows rendered per step: a group is laid out as an empty stretch of its estimated height, and its
+// rows are written when that stretch comes near the visible part of the list. A selection of the
+// whole archive opens without building some ten thousand rows, and the scroll bar and a jump to a
+// year still reach every letter.
+const CHUNK = 50;
+const lists = new WeakMap();
+
 /**
- * One letter as a row: participants as the button that opens the letter, date, star of the basket
- * and the named records of the source. The letter list and the letters drawer render the same row.
- * @param {Object} letter
- * @returns {string} escaped HTML
+ * Render sorted letters as groups of rows into a scrolling container. Used by the letter list and
+ * the letters drawer, so both show the same groups and rows.
+ * @param {HTMLElement} container - the element that scrolls
+ * @param {Array} sorted - letters in their final order
+ * @param {{order?: string, centre?: {key: string, name: string}|null, onPosition?: function(Set<string>): void}} [options]
+ * @returns {{groups: Array, jumpTo: function(string, {focus?: boolean}=): void}}
  */
-export function letterRowHtml(letter) {
-    const senderName = formatPersonName(letter.sender?.name, letter.sender?.precision);
-    // Every recipient is named in the row; an absent recipient keeps the placeholder
-    const recipients = letterRecipients(letter);
-    const recipientName = recipients.length
-        ? recipients.map(r => formatPersonName(r.name, r.precision)).join('; ')
-        : formatPersonName(null);
-    const date = formatDateWithPrecision(letter);
-    const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision, letter.place_sent?.inferred);
-    const language = letter.language?.label || '';
+export function renderLetterGroups(container, sorted, { order = 'date-asc', centre = rowCentre(), onPosition = null } = {}) {
+    lists.get(container)?.observer.disconnect();
+    const groups = groupLetters(sorted, order, { centreKey: centre?.key });
+    const list = {
+        groups,
+        centre,
+        compactDate: order.startsWith('date'),
+        onPosition,
+        current: null,
+        observer: null,
+        jumpTo: (top, options) => jumpTo(container, top, options)
+    };
+    lists.set(container, list);
+    const idBase = `${container.id || 'letters'}-group`;
+    container.classList.add('lv-scroll');
+    container.classList.toggle('lv-scroll--pairs', !centre);
+    container.classList.toggle('lv-scroll--compact', list.compactDate);
+    container.classList.toggle('lv-scroll--plain', !sorted.some(l => hasNotes(l, centre?.key)));
+    container.innerHTML = `<ol class="lv-groups">${groups.map((group, gi) => {
+        const chunks = [];
+        for (let start = 0; start < group.letters.length; start += CHUNK) {
+            chunks.push(`<li class="lv-pending" aria-hidden="true" data-group="${gi}" data-start="${start}" style="--rows: ${Math.min(CHUNK, group.letters.length - start)}"></li>`);
+        }
+        return `<li class="lv-group" data-top="${escapeHtml(group.top)}">
+            <div class="lv-label" id="${idBase}-${gi}"><span class="lv-label__main">${escapeHtml(group.label)}</span>${group.sub ? `<span class="lv-label__sub">${escapeHtml(group.sub)}</span>` : ''}</div>
+            <ol class="lv-rows" aria-labelledby="${idBase}-${gi}">${chunks.join('')}</ol>
+        </li>`;
+    }).join('')}</ol>`;
+
+    list.observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => { if (entry.isIntersecting) fillChunk(container, entry.target); });
+    }, { root: container, rootMargin: '600px 0px' });
+    container.querySelectorAll('.lv-pending').forEach(p => list.observer.observe(p));
+    container.scrollTop = 0;
+    // The first rows are written at once, so focus can move to the first letter right away
+    const first = container.querySelector('.lv-pending');
+    if (first) fillChunk(container, first);
+
+    if (!container.dataset.positionBound) {
+        container.dataset.positionBound = 'true';
+        let frame = 0;
+        const report = () => {
+            if (frame) return;
+            frame = requestAnimationFrame(() => { frame = 0; reportPosition(container); });
+        };
+        container.addEventListener('scroll', report, { passive: true });
+        // A list rendered while its view was hidden reports once it has a height
+        new ResizeObserver(report).observe(container);
+    }
+    requestAnimationFrame(() => reportPosition(container));
+    return list;
+}
+
+function fillChunk(container, pending) {
+    const list = lists.get(container);
+    if (!list || !pending.isConnected) return;
+    list.observer.unobserve(pending);
+    const group = list.groups[Number(pending.dataset.group)];
+    const start = Number(pending.dataset.start);
+    const rows = group.letters.slice(start, start + CHUNK)
+        .map(letter => letterRowHtml(letter, { centre: list.centre, compactDate: list.compactDate })).join('');
+    const parent = pending.parentElement;
+    pending.outerHTML = rows;
+    // The stretch left for the rows not yet written follows the height rows really take
+    if (!list.measured) {
+        const shown = parent.querySelectorAll('.letter-card');
+        const height = parent.getBoundingClientRect().height;
+        // A list rendered while its view is hidden has no height yet; it measures on a later step
+        if (shown.length && height > 0) {
+            list.measured = true;
+            container.style.setProperty('--lv-row-height', `${height / shown.length}px`);
+        }
+    }
+    // Rows written change the offsets; the figure follows once the frame is laid out
+    if (!list.positionFrame) {
+        list.positionFrame = requestAnimationFrame(() => { list.positionFrame = 0; reportPosition(container); });
+    }
+}
+
+// The groups in sight, by their column in the figure; groups are in document order, so the first
+// one in sight is found by halving
+function reportPosition(container) {
+    const list = lists.get(container);
+    if (!list?.onPosition) return;
+    const groupEls = container.querySelectorAll('.lv-group');
+    const top = container.scrollTop;
+    const bottom = top + container.clientHeight;
+    let lo = 0;
+    let hi = groupEls.length - 1;
+    while (lo < hi) {
+        const mid = (lo + hi) >> 1;
+        const el = groupEls[mid];
+        if (el.offsetTop + el.offsetHeight <= top) lo = mid + 1;
+        else hi = mid;
+    }
+    const tops = new Set();
+    for (let i = lo; i < groupEls.length && groupEls[i].offsetTop < bottom; i++) tops.add(groupEls[i].dataset.top);
+    const key = [...tops].join('|');
+    if (key === list.current) return;
+    list.current = key;
+    list.onPosition(tops);
+}
+
+/**
+ * Scroll the list to the first group of a column of the figure. With focus, the keyboard continues
+ * at the first letter of that group.
+ */
+function jumpTo(container, top, { focus = false } = {}) {
+    const groupEl = container.querySelector(`.lv-group[data-top="${CSS.escape(top)}"]`);
+    if (!groupEl) return;
+    const first = groupEl.querySelector('.lv-pending');
+    if (first) fillChunk(container, first);
+    const settle = (frames) => {
+        container.scrollTop = groupEl.offsetTop;
+        // Rows written above the target in the frames after the jump can move it; follow it briefly
+        if (frames > 0) requestAnimationFrame(() => settle(frames - 1));
+    };
+    settle(3);
+    if (focus) groupEl.querySelector('.letter-toggle')?.focus({ preventScroll: true });
+}
+
+const profile = { columns: [], dated: true, list: null, tops: new Set() };
+
+// Gap in pixels a year label needs beside the next one
+const TICK_SPACE = 64;
+const TICK_STEPS = [1, 2, 5, 10, 20, 25, 50, 100];
+
+function drawProfile(host) {
+    const columns = profile.columns;
+    const max = Math.max(1, ...columns.map(c => c.total));
+    const axisColumns = columns.filter(c => c.top !== 'off').length;
+    const width = host.clientWidth || 600;
+    const step = profile.dated
+        ? TICK_STEPS.find(s => (width / Math.max(1, axisColumns)) * s >= TICK_SPACE) || 100
+        : 1;
+    const colourOf = code => LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other;
+    const hasLanguages = columns.some(c => [...c.languages.keys()].some(code => code !== NO_LANGUAGE));
+    // Bottom to top in the order of the language colours, the most frequent language at the base
+    const order = Object.keys(LANGUAGE_COLORS);
+    const rank = code => (order.indexOf(code) < 0 ? order.length : order.indexOf(code));
+
+    // The figure is one listbox: its columns are options, so it takes one tab stop and no control
+    // per year (the density limit counts controls in the first screen)
+    host.innerHTML = `<div class="lv-profile__bars">${columns.map((col, i) => {
+        const off = col.top === 'off';
+        const tick = off || !profile.dated || Number(col.top) % step === 0
+            ? `<span class="lv-bar__tick" aria-hidden="true">${escapeHtml(col.label)}</span>` : '';
+        if (col.total === 0) return `<span class="lv-bar lv-bar--empty" aria-hidden="true">${tick}</span>`;
+        const segments = hasLanguages
+            ? [...col.languages].sort((a, b) => rank(a[0]) - rank(b[0]))
+                .map(([code, n]) => `<span class="lv-bar__seg" style="flex-grow: ${n}; background: ${colourOf(code)}"></span>`).join('')
+            : `<span class="lv-bar__seg lv-bar__seg--plain" style="flex-grow: 1"></span>`;
+        const name = `${off ? 'Ohne Platz auf der Zeitachse' : col.label}: ${col.total.toLocaleString('de-DE')} ${col.total === 1 ? 'Brief' : 'Briefe'}`;
+        return `<span class="lv-bar${off ? ' lv-bar--off' : ''}" role="option" id="letters-profile-${i}" aria-selected="false" data-top="${escapeHtml(col.top)}" aria-label="${escapeHtml(name)}" title="${escapeHtml(name)}">
+            <span class="lv-bar__stack" style="height: ${Math.max(4, (col.total / max) * 100)}%">${segments}</span>${tick}
+        </span>`;
+    }).join('')}</div>`;
+    host.removeAttribute('aria-activedescendant');
+    // A figure drawn again for a new width keeps the mark of where the list is
+    markProfile(host, profile.tops);
+    host.setAttribute('aria-label', profile.dated
+        ? 'Briefe je Jahr. Pfeiltasten wählen ein Jahr, Enter springt in der Liste dorthin.'
+        : 'Briefe je Anfangsbuchstabe. Pfeiltasten wählen einen Buchstaben, Enter springt in der Liste dorthin.');
+}
+
+function markProfile(host, tops) {
+    profile.tops = tops;
+    host?.querySelectorAll('.lv-bar[data-top]').forEach(bar => bar.classList.toggle('is-current', tops.has(bar.dataset.top)));
+}
+
+// The column the keyboard stands on, announced through aria-activedescendant
+function setActiveColumn(host, bar) {
+    host.querySelectorAll('.lv-bar.is-active').forEach(b => { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
+    if (!bar) return;
+    bar.classList.add('is-active');
+    bar.setAttribute('aria-selected', 'true');
+    host.setAttribute('aria-activedescendant', bar.id);
+}
+
+// One tab stop for the figure: arrow keys move between its columns, Enter or Space jumps to the
+// column's letters and hands the keyboard to the first of them; a click jumps there as well
+function bindProfile(host) {
+    if (!host || host.dataset.bound) return;
+    host.dataset.bound = 'true';
+    host.addEventListener('click', (e) => {
+        const bar = e.target.closest('.lv-bar[data-top]');
+        if (!bar || !profile.list) return;
+        setActiveColumn(host, bar);
+        profile.list.jumpTo(bar.dataset.top);
+    });
+    // Focus starts on the column the list shows
+    host.addEventListener('focus', () => {
+        if (!host.querySelector('.lv-bar.is-active')) {
+            setActiveColumn(host, host.querySelector('.lv-bar.is-current') || host.querySelector('.lv-bar[data-top]'));
+        }
+    });
+    host.addEventListener('keydown', (e) => {
+        const bars = [...host.querySelectorAll('.lv-bar[data-top]')];
+        const index = bars.findIndex(b => b.classList.contains('is-active'));
+        if ((e.key === 'Enter' || e.key === ' ') && index >= 0 && profile.list) {
+            e.preventDefault();
+            profile.list.jumpTo(bars[index].dataset.top, { focus: true });
+            return;
+        }
+        const next = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: bars.length - 1 }[e.key];
+        if (next === undefined) return;
+        e.preventDefault();
+        setActiveColumn(host, bars[Math.max(0, Math.min(bars.length - 1, next))]);
+    });
+    // The year labels thin out by the width the figure has
+    let width = 0;
+    new ResizeObserver(entries => {
+        const now = Math.round(entries[0].contentRect.width);
+        if (now && Math.abs(now - width) > 40 && profile.columns.length) {
+            width = now;
+            drawProfile(host);
+            if (profile.list) reportPosition(elements.lettersList);
+        }
+    }).observe(host);
+}
+
+const forwardedTo = letter => (letter.furtherActions || []).filter(a => a.type === 'forwarded').flatMap(a => a.persons);
+
+// Whether a row has anything in its last column; a list without any drops that column
+function hasNotes(letter, centreKey) {
+    return Boolean(letter.postmark || letter.address || letter.signature || letter.records?.length > 1
+        || forwardedTo(letter).length || letterDirection(letter, centreKey)?.also.length);
+}
+
+const namesHtml = persons => (persons.length
+    ? persons.map(p => formatPersonName(p.name, p.precision)).join('; ')
+    : formatPersonName(null));
+
+/**
+ * One letter as a row: star of the basket, date, the persons as the button that opens the letter,
+ * place, language and what the source records beyond that. The columns line up across rows.
+ * Told from one person (rowCentre), a row names the other party with "von" or "an".
+ * @param {Object} letter
+ * @param {{centre?: {key: string}|null, compactDate?: boolean}} [options] - compactDate leaves the
+ *   year of a plain day date to the label of its group
+ * @returns {string} escaped HTML of an li element
+ */
+export function letterRowHtml(letter, { centre = null, compactDate = false } = {}) {
+    const direction = letterDirection(letter, centre?.key);
+    const who = direction
+        ? `<span class="lv-dir">${direction.dir === 'to' ? 'an' : 'von'}</span> <span class="lv-name">${namesHtml(direction.others)}</span>`
+        : `<span class="lv-name">${formatPersonName(letter.sender?.name, letter.sender?.precision)}</span>
+           <span class="letter-arrow" role="img" aria-label="an"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+           <span class="lv-name">${namesHtml(letterRecipients(letter))}</span>`;
+
+    const plainDay = compactDate && letter.datePrecision === 'day' && !letter.dateInferred
+        && letter.dateCertainty !== 'low' && !offAxisReason(letter) && /^\d{4}-\d{2}-\d{2}$/.test(letter.date || '');
+    const date = plainDay
+        ? `${Number(letter.date.slice(8, 10))}.${Number(letter.date.slice(5, 7))}.`
+        : formatDateWithPrecision(letter);
     const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
-    const inBasket = isInBasket('letters', letter.id);
-    const labelled = (label, value) => value
-        ? `<span class="letter-meta__labelled"><span class="letter-meta__label">${label}</span> ${escapeHtml(value)}</span>` : '';
+    const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision, letter.place_sent?.inferred);
+    const code = letter.language?.code;
+    const language = code
+        ? `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" aria-hidden="true"></span>${escapeHtml(letter.language.label || languageLabel(code))}`
+        : '';
+
+    const labelled = (label, valueHtml) => (valueHtml
+        ? `<span class="letter-meta__labelled"><span class="letter-meta__label">${label}</span> ${valueHtml}</span>` : '');
+    const forwarded = forwardedTo(letter);
     const recordNote = letter.records?.length > 1
         ? `${letter.records.length} Einträge in der Quelle${letter.recordsDiffer ? ', Angaben weichen ab' : ''}` : '';
+    const inBasket = isInBasket('letters', letter.id);
 
-    // The participants are the button that opens the letter; the star stays a sibling control
-    return `
-        <div class="letter-card" data-id="${escapeHtml(letter.id || '')}">
-            <div class="letter-header">
-                <button type="button" class="letter-participants letter-toggle" aria-haspopup="dialog">
-                    <span>${senderName}</span>
-                    <span class="letter-arrow" role="img" aria-label="an"><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
-                    <span>${recipientName}</span>
-                </button>
-                <div class="letter-header-actions">
-                    <div class="letter-date ${dateClass}">${date}</div>
-                    <button type="button" class="btn-letter-basket ${inBasket ? 'in-basket' : ''}"
-                            data-letter-id="${escapeHtml(letter.id || '')}"
-                            aria-label="Im Wissenskorb" aria-pressed="${inBasket}"
-                            title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen'}">
-                        <i class="fas fa-star" aria-hidden="true"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="letter-meta">
-                ${placeName ? `<span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${placeName}</span>` : ''}
-                ${labelled('Poststempel', letter.postmark)}
-                ${labelled('Anschrift', letter.address)}
-                ${labelled('Signatur', letter.signature)}
-                ${recordNote ? `<span class="letter-meta__note">${recordNote}</span>` : ''}
-                ${language ? `<span><i class="fas fa-language" aria-hidden="true"></i> ${escapeHtml(language)}</span>` : ''}
-            </div>
-        </div>
-    `;
+    // The persons are the button that opens the letter; the star stays a sibling control
+    return `<li class="letter-card" data-id="${escapeHtml(letter.id || '')}">
+        <button type="button" class="btn-letter-basket ${inBasket ? 'in-basket' : ''}"
+                data-letter-id="${escapeHtml(letter.id || '')}"
+                aria-label="Im Wissenskorb" aria-pressed="${inBasket}"
+                title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen'}">
+            <i class="fas fa-star" aria-hidden="true"></i>
+        </button>
+        <span class="lv-date letter-date ${dateClass}">${date}</span>
+        <button type="button" class="letter-toggle lv-who" aria-haspopup="dialog">${who}</button>
+        <span class="lv-place">${placeName}</span>
+        <span class="lv-lang">${language}</span>
+        <span class="letter-meta lv-notes">${[
+            direction?.also.length ? labelled('Auch an', namesHtml(direction.also)) : '',
+            forwarded.length ? labelled('Weitergeleitet an', namesHtml(forwarded)) : '',
+            labelled('Poststempel', escapeHtml(letter.postmark || '')),
+            labelled('Anschrift', escapeHtml(letter.address || '')),
+            labelled('Signatur', escapeHtml(letter.signature || '')),
+            recordNote ? `<span class="letter-meta__note">${recordNote}</span>` : ''
+        ].join('')}</span>
+    </li>`;
 }
 
 /**

@@ -25,10 +25,13 @@
     <!-- Page-specific CSS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/explore.css">
+    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/network.css">
     <link rel="stylesheet" href="css/spacetime.css">
     <link rel="stylesheet" href="css/topics.css">
     <link rel="stylesheet" href="css/drawer.css">
+    <link rel="stylesheet" href="css/letters.css">
+    <link rel="stylesheet" href="css/time.css">
 </head>
 <body>
     <a href="#main-content" class="skip-link">Zum Inhalt springen</a>
@@ -281,69 +284,59 @@
                 <!-- Overview View -->
                 <div id="overview-view" class="tab-content active">
                     <div class="overview-container workspace">
-                        <!-- Metadata of the dataset: what it is, where it comes from, how well it is recorded -->
+                        <!-- What the dataset is, where it comes from and how it is recorded; explore.js
+                             moves this block into the sidebar of the start view, above the filters -->
                         <aside class="workspace__meta" aria-label="Bestand">
-                        <!-- Header with Title, Stats and Source -->
-                        <div class="view-header">
-                            <h2 class="view-header__title" id="overview-title">Datensatz</h2>
-                            <div class="overview-stats-inline" id="overview-stats-inline">
-                                <!-- Filled by JavaScript: Briefe | Zeitraum | Personen | Orte -->
-                            </div>
-                            <div class="overview-source-inline" id="overview-source-inline">
-                                <!-- Filled by JavaScript: Quelle | Lizenz -->
-                            </div>
-                        </div>
-
-                        <!-- Data situation chips, neutral by design (ADR-005) -->
-                        <div class="quality-bar-inline">
-                            <span class="quality-chip" id="quality-chip-dates" title="Exakte Datierungen">
-                                <i class="fas fa-calendar" aria-hidden="true"></i> <span>-</span>
-                            </span>
-                            <span class="quality-chip" id="quality-chip-persons" title="Identifizierte Personen">
-                                <i class="fas fa-user-check" aria-hidden="true"></i> <span>-</span>
-                            </span>
-                            <span class="quality-chip" id="quality-chip-places" title="Georeferenzierte Orte">
-                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span>-</span>
-                            </span>
-                            <span class="quality-features hidden" id="overview-features"></span>
-                            <!-- Tutorial Button (nur bei Demo-Datensatz sichtbar) -->
+                            <h2 class="visually-hidden" id="overview-title">Datensatz</h2>
+                            <p class="meta-what" id="meta-what"></p>
+                            <div class="meta-shares" id="meta-shares"></div>
+                            <div class="meta-source" id="meta-source"></div>
+                            <!-- Tutorial button, only with the tutorial dataset -->
                             <button class="tutorial-start-btn hidden" id="start-tutorial-btn" title="Interaktive Tour starten">
                                 <i class="fas fa-graduation-cap" aria-hidden="true"></i> Tutorial starten
                             </button>
-                        </div>
-
                         </aside>
 
-                        <div class="overview-body">
-                        <!-- The charts filter each other and the letters behind them; how many letters
-                             the selection holds says the letters drawer below the view -->
-                        <section class="ws-panel ws-panel--time" aria-labelledby="ws-time-title">
-                            <h3 id="ws-time-title"><button type="button" class="ws-panel__open" data-open="timeline">Zeit</button></h3>
-                            <div class="overview-chart" id="overview-chart"></div>
-                        </section>
-                        <div class="workspace__panels">
-                            <section class="ws-panel" aria-labelledby="ws-persons-title">
-                                <h3 id="ws-persons-title"><button type="button" class="ws-panel__open" data-open="persons">Personen</button></h3>
-                                <div class="ws-bars" id="ws-persons"></div>
+                        <!-- The dashboard: the views in small, showing the selection and setting the same
+                             filters as the sidebar; each label opens its view in full. How many letters the
+                             selection holds says the letters drawer below the view -->
+                        <div class="overview-body dashboard" id="dashboard">
+                            <section class="dash-part dash-part--time" id="dash-time" aria-label="Zeit und Sprache">
+                                <button type="button" class="dash-open" data-open="timeline" aria-describedby="dash-open-timeline"><span class="dash-name">Zeit</span> <span class="dash-count" id="dash-time-count"></span></button>
+                                <span class="visually-hidden" id="dash-open-timeline">öffnet die Zeitleiste</span>
+                                <div class="dash-years-box" id="dash-years-box">
+                                    <div class="dash-figure dash-years" id="dash-years" tabindex="0" role="group"></div>
+                                    <div class="dash-axis" id="dash-axis"></div>
+                                </div>
+                                <div class="dash-languages" id="dash-languages"></div>
                             </section>
-                            <section class="ws-panel" aria-labelledby="ws-places-title">
-                                <h3 id="ws-places-title"><button type="button" class="ws-panel__open" data-open="places">Orte</button></h3>
-                                <div class="ws-bars" id="ws-places"></div>
-                            </section>
-                            <section class="ws-panel" aria-labelledby="ws-topics-title">
-                                <h3 id="ws-topics-title"><button type="button" class="ws-panel__open" data-open="topics">Themen</button></h3>
-                                <div class="ws-bars" id="ws-topics"></div>
-                            </section>
-                            <section class="ws-panel" aria-labelledby="ws-languages-title">
-                                <h3 id="ws-languages-title">Sprache</h3>
-                                <div class="ws-bars" id="ws-languages"></div>
-                            </section>
-                            <section class="ws-panel" aria-labelledby="ws-features-title">
-                                <h3 id="ws-features-title">Überlieferung</h3>
-                                <div class="ws-bars" id="ws-features"></div>
-                            </section>
-                        </div>
-
+                            <div class="dash-row">
+                                <section class="dash-part dash-part--persons" id="dash-persons" aria-label="Personen">
+                                    <button type="button" class="dash-open" data-open="network" aria-describedby="dash-open-network"><span class="dash-name">Personen</span> <span class="dash-count" id="dash-persons-count"></span></button>
+                                    <span class="visually-hidden" id="dash-open-network">öffnet das Netzwerk</span>
+                                    <div class="dash-figure dash-canvas" id="dash-persons-figure" tabindex="0" role="group"><canvas aria-hidden="true"></canvas></div>
+                                </section>
+                                <section class="dash-part dash-part--places" id="dash-places" aria-label="Orte">
+                                    <button type="button" class="dash-open" data-open="map" aria-describedby="dash-open-places"><span class="dash-name">Orte</span> <span class="dash-count" id="dash-places-count"></span></button>
+                                    <span class="visually-hidden" id="dash-open-places">öffnet die Orte</span>
+                                    <div class="dash-figure dash-canvas" id="dash-places-figure" tabindex="0" role="group"><canvas aria-hidden="true"></canvas></div>
+                                    <div class="dash-rows hidden" id="dash-place-rows" role="group" aria-label="Häufigste Absendeorte"></div>
+                                </section>
+                                <div class="dash-stack" id="dash-stack">
+                                    <section class="dash-part dash-part--topics" id="dash-topics" aria-label="Themen">
+                                        <button type="button" class="dash-open" data-open="topics" aria-describedby="dash-open-topics"><span class="dash-name">Themen</span> <span class="dash-count" id="dash-topics-count"></span></button>
+                                        <span class="visually-hidden" id="dash-open-topics">öffnet die Themen</span>
+                                        <div class="dash-subjects" id="dash-subjects" role="group" aria-label="Häufigste Themen"></div>
+                                    </section>
+                                    <section class="dash-part dash-part--features" id="dash-features" aria-label="Überlieferung">
+                                        <button type="button" class="dash-open" data-open="letters" aria-describedby="dash-open-letters"><span class="dash-name">Überlieferung</span></button>
+                                        <span class="visually-hidden" id="dash-open-letters">öffnet die Briefliste</span>
+                                        <div class="dash-rows" id="dash-feature-rows" role="group" aria-label="Angaben der Briefsätze"></div>
+                                    </section>
+                                </div>
+                            </div>
+                            <div class="dash-tip hidden" id="dash-tip" aria-hidden="true"></div>
+                            <p class="visually-hidden" id="dash-live" aria-live="polite"></p>
                         </div>
                     </div>
                 </div>
@@ -446,42 +439,64 @@
                             <select id="letter-sort">
                                 <option value="date-desc">Datum (neueste)</option>
                                 <option value="date-asc">Datum (älteste)</option>
-                                <option value="sender-asc">Absender (A-Z)</option>
+                                <option value="person-asc">Person (A–Z)</option>
+                                <option value="place-asc">Ort (A–Z)</option>
                             </select>
                         </div>
                     </div>
                     <p class="list-result" id="letters-result" role="status"></p>
                     <p class="list-legend hidden" id="letters-legend">Eckige Klammern: von der Edition erschlossen, nicht dem Brief entnommen.</p>
+                    <!-- The selection per year or initial; a column jumps to its letters (letters-view.js) -->
+                    <div class="lv-profile hidden" id="letters-profile" role="listbox" tabindex="0"></div>
                     <div id="letters-list" class="entity-list"></div>
                 </div>
 
                 <!-- Timeline View -->
+                <!-- Time: the letters per year above, the chosen period in its finest legible
+                     resolution below (timeline-view.js); the former views Jahre, Tage and Chronik -->
                 <div id="timeline-view" class="tab-content">
-                    <div class="timeline-container">
+                    <div class="tv">
                         <div class="view-header">
-                            <h2 class="view-header__title">Zeitliche Verteilung der Korrespondenz</h2>
-                            <p class="view-header__description">Klicken Sie auf ein Sprach-Segment, um nach Jahr und Sprache zu filtern.</p>
+                            <h2 class="view-header__title">Zeit</h2>
+                            <p class="view-header__description">Oben die Briefe je Jahr, nach Sprache gestapelt. Ziehen oder Pfeiltasten wählen einen Zeitraum. Darunter der Zeitraum, bei wenigen Briefen jeder Brief einzeln auf der Zeitachse, die Briefe der zentralen Person über, die an sie unter der Achse.</p>
                         </div>
-                        <div class="timeline-main">
-                            <div id="timeline-chart" class="timeline-chart"></div>
-                            <div id="timeline-undated-bin" class="timeline-undated-bin hidden">
-                                <span class="undated-bin-count"></span>
-                                <div class="undated-bin-bar"></div>
-                                <span class="undated-bin-label">k.A.</span>
-                                <div class="undated-bin-tooltip"></div>
+                        <div class="tv-profile">
+                            <div class="tv-profile__plot">
+                                <div class="tv-grid" id="tv-grid" aria-hidden="true"></div>
+                                <div id="timeline-chart" class="tv-bars" role="group"></div>
                             </div>
-                            <div id="timeline-span-bin" class="timeline-undated-bin timeline-span-bin hidden">
-                                <span class="undated-bin-count"></span>
-                                <div class="undated-bin-bar"></div>
-                                <span class="undated-bin-label">Spanne</span>
-                                <div class="undated-bin-tooltip"></div>
+                            <div class="tv-bins">
+                                <button type="button" id="timeline-undated-bin" class="tv-bin hidden">
+                                    <span class="tv-bin__count"></span>
+                                    <span class="tv-bin__bar"></span>
+                                    <span class="tv-bin__label"></span>
+                                </button>
+                                <div id="timeline-span-bin" class="tv-bin tv-bin--span hidden" tabindex="0" role="img">
+                                    <span class="tv-bin__count"></span>
+                                    <span class="tv-bin__bar"></span>
+                                    <span class="tv-bin__label"></span>
+                                </div>
                             </div>
                         </div>
-                        <div class="timeline-footer">
-                            <div id="timeline-stack-legend" class="timeline-stack-legend"></div>
-                            <span class="timeline-total" id="timeline-total"></span>
+                        <div id="timeline-stack-legend" class="tv-legend"></div>
+                        <div class="tv-detail">
+                            <div class="tv-detail__head">
+                                <span id="tv-unit" class="tv-unit"></span>
+                                <button type="button" id="chronik-enrich-btn" class="tv-quiet" title="Fragt Wikidata nach den Lebensdaten der Personen mit Normdaten, erst nach Ihrer Bestätigung">Lebensdaten der Personen aus Wikidata laden</button>
+                                <span id="chronik-enrich-status" class="tv-quiet-status hidden">Lebensdaten aus Wikidata geladen</span>
+                                <button type="button" id="tv-show-letters" class="btn btn-secondary tv-show"></button>
+                            </div>
+                            <div id="tv-figure" class="tv-figure">
+                                <canvas id="tv-canvas" class="tv-canvas" aria-hidden="true"></canvas>
+                                <div id="tv-axis" class="tv-axis" aria-hidden="true"></div>
+                                <div id="tv-marks" class="tv-marks" role="group"></div>
+                                <div id="tv-empty" class="tv-empty hidden"></div>
+                            </div>
+                            <div id="tv-detail-note" class="tv-note hidden"></div>
                         </div>
+                        <div id="tv-table" class="chart-table-host"></div>
                         <div id="timeline-table" class="chart-table-host"></div>
+                        <div id="tv-tip" class="tv-tip hidden" role="tooltip"></div>
                     </div>
                 </div>
 
@@ -682,107 +697,6 @@
                         <div class="content-placeholder" id="mentions-flow-placeholder">
                             <i class="fas fa-search" aria-hidden="true"></i>
                             <p>Suche eine Person um deren Erwähnungen zu sehen</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chronik View -->
-                <div id="chronik-view" class="tab-content">
-                    <div class="chronik-container">
-                        <div class="view-header">
-                            <h2 class="view-header__title">Chronik</h2>
-                            <p class="view-header__description">Der Verlauf der Briefwechsel: jeder Brief in zeitlicher Folge, mit seiner Stelle im Briefwechsel der beiden Personen und den Jahren ohne Brief davor.</p>
-                            <div class="view-header__actions">
-                                <div class="chronik-layout-toggle" role="group" aria-label="Darstellung">
-                                    <button type="button" class="chronik-layout-btn active" data-layout="cards">
-                                        <i class="fas fa-th-large" aria-hidden="true"></i> Ausführlich
-                                    </button>
-                                    <button type="button" class="chronik-layout-btn" data-layout="compact">
-                                        <i class="fas fa-list" aria-hidden="true"></i> Kompakt
-                                    </button>
-                                    <button type="button" class="chronik-layout-btn" data-layout="timeline">
-                                        <i class="fas fa-exchange-alt" aria-hidden="true"></i> Gegenüber
-                                    </button>
-                                </div>
-                                <button id="chronik-enrich-btn" class="btn btn-secondary">
-                                    <i class="fas fa-magic" aria-hidden="true"></i> Mit Wikidata anreichern
-                                </button>
-                                <span id="chronik-enrich-status" class="chronik-enrich-status hidden">
-                                    <i class="fas fa-check-circle" aria-hidden="true"></i> Angereichert
-                                </span>
-                            </div>
-                        </div>
-                        <div class="chronik-timeline" id="chronik-timeline">
-                            <!-- Timeline content rendered by JavaScript -->
-                        </div>
-                        <div class="chronik-loading hidden" id="chronik-loading">
-                            <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
-                            <span>Lade Wikidata-Informationen...</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Activity Heatmap View -->
-                <div id="activity-view" class="tab-content">
-                    <div class="activity-container">
-                        <div class="view-header">
-                            <h2 class="view-header__title">Korrespondenz-Aktivität</h2>
-                            <p class="view-header__description">Briefe je Kalendertag, Jahr für Jahr. Ein Klick auf einen Tag zeigt seine Briefe.</p>
-                            <div class="view-header__actions">
-                                <div class="experimental-badge" title="Experimenteller View zur Visualisierung von Korrespondenz-Aktivität">
-                                    <i class="fas fa-flask" aria-hidden="true"></i>
-                                    <span class="experimental-label">Experimentell</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Year choice: one select instead of one button per year -->
-                        <div class="activity-year-selector" id="activity-year-selector">
-                            <label for="activity-year-select">Jahr</label>
-                            <button type="button" class="activity-year-step" data-step="-1" aria-label="Vorheriges Jahr">
-                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
-                            </button>
-                            <select id="activity-year-select" class="activity-year-select"></select>
-                            <button type="button" class="activity-year-step" data-step="1" aria-label="Nächstes Jahr">
-                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                            </button>
-                        </div>
-
-                        <!-- Busiest year, month and day in one sentence, filled by activity-view.js -->
-                        <p id="activity-summary" class="activity-summary"></p>
-
-                        <!-- Heatmap Container -->
-                        <div class="activity-heatmap-wrapper">
-                            <div class="activity-weekday-labels">
-                                <span>Mo</span>
-                                <span>Di</span>
-                                <span>Mi</span>
-                                <span>Do</span>
-                                <span>Fr</span>
-                                <span>Sa</span>
-                                <span>So</span>
-                            </div>
-                            <div id="activity-heatmap" class="activity-heatmap"></div>
-                        </div>
-
-                        <!-- Legende -->
-                        <div class="activity-legend">
-                            <span class="activity-legend-label">Weniger</span>
-                            <span class="activity-cell activity-level-0"></span>
-                            <span class="activity-cell activity-level-1"></span>
-                            <span class="activity-cell activity-level-2"></span>
-                            <span class="activity-cell activity-level-3"></span>
-                            <span class="activity-cell activity-level-4"></span>
-                            <span class="activity-legend-label">Mehr</span>
-                        </div>
-                        <p id="activity-without-day-note" class="filter-help hidden"></p>
-
-                        <div id="activity-table" class="chart-table-host"></div>
-
-                        <!-- Detail-Panel für ausgewählten Tag -->
-                        <div id="activity-details" class="activity-details hidden">
-                            <h3 id="activity-details-date">-</h3>
-                            <div id="activity-details-list" class="activity-details-list"></div>
                         </div>
                     </div>
                 </div>

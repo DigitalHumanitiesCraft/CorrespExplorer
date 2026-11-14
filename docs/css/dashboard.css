@@ -1,0 +1,524 @@
+/* Start view: the dataset block of the sidebar and the dashboard of small views. The dashboard
+   fills the screen above the letters drawer (time over the full width, below it persons, places
+   and subjects with the transmission side by side); on a phone the parts stack. Colour roles as
+   in design.md: data in --color-data and the language colours, the dataset pale behind it, rust
+   only for what is chosen or can be clicked. */
+
+/* The dataset block, quiet and compact: what the dataset is, the data situation, the source */
+.workspace__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border-light);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+}
+
+.meta-what {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.meta-what__line {
+    display: block;
+}
+
+.meta-shares {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meta-share {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+/* A neutral share without a judging colour (ADR-005) */
+.meta-share__track {
+    display: block;
+    height: 4px;
+    background: var(--color-border-light);
+}
+
+.meta-share__fill {
+    display: block;
+    height: 100%;
+    background: var(--color-text-light);
+}
+
+.meta-source {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.meta-source__line {
+    margin: 0;
+}
+
+.meta-source__changes summary {
+    cursor: pointer;
+    color: var(--color-link);
+}
+
+.meta-source__changes p {
+    margin: var(--space-xs) 0 0;
+    max-width: 60ch;
+}
+
+.workspace__meta .tutorial-start-btn {
+    align-self: flex-start;
+    margin-left: 0;
+}
+
+/* The overview fills the height above the drawer */
+.overview-container.workspace {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    max-width: none;
+    margin: 0;
+    padding: var(--space-md) var(--space-lg) var(--space-sm);
+}
+
+#overview-view.active {
+    overflow: hidden;
+}
+
+.dashboard {
+    position: relative;
+    display: grid;
+    flex: 1;
+    grid-template-rows: minmax(0, 2fr) minmax(0, 3fr);
+    gap: var(--space-lg);
+    min-width: 0;
+    min-height: 0;
+}
+
+.dash-row {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: var(--space-xl);
+    min-height: 0;
+}
+
+.dash-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    min-height: 0;
+}
+
+.dash-part {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.dash-part--topics {
+    flex: 1;
+}
+
+/* The label opens the view in full, as on the start page: the name, then what the part shows */
+.dash-open {
+    align-self: flex-start;
+    max-width: 100%;
+    margin: 0 0 var(--space-xs);
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.dash-name {
+    font-weight: 700;
+}
+
+.dash-count {
+    color: var(--color-text-light);
+    font-variant-numeric: tabular-nums;
+}
+
+.dash-open:hover .dash-name,
+.dash-open:focus-visible .dash-name {
+    color: var(--color-link);
+    text-decoration: underline;
+}
+
+.dash-figure {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+.dash-figure:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.dash-canvas canvas,
+.dash-years > svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+.dash-canvas.is-over-mark {
+    cursor: pointer;
+}
+
+/* Time: letters per year, the dataset pale behind the selection */
+.dash-years-box {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.dash-years {
+    cursor: crosshair;
+    touch-action: none;
+    user-select: none;
+}
+
+.dash-pale {
+    fill: var(--color-border-light);
+}
+
+.dash-fade {
+    fill: var(--color-bg);
+    fill-opacity: 0.7;
+}
+
+.dash-chosen {
+    fill: var(--color-primary);
+}
+
+.dash-baseline {
+    stroke: var(--color-border-control);
+    stroke-width: 1;
+}
+
+.dash-cursor {
+    fill: none;
+    stroke: var(--color-text);
+    stroke-width: 1.5;
+}
+
+.dash-axis {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-top: 2px;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Languages: the share bar of the selection and its key, also the key of the time profile */
+.dash-languages {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+}
+
+.dash-share {
+    display: flex;
+    height: 8px;
+    background: var(--color-border-light);
+}
+
+.dash-share__segment {
+    display: block;
+    height: 100%;
+    cursor: pointer;
+}
+
+.dash-share__segment + .dash-share__segment {
+    box-shadow: inset 1px 0 0 var(--color-bg);
+}
+
+.dash-share__segment.is-chosen {
+    box-shadow: inset 0 -3px 0 var(--color-primary);
+}
+
+.dash-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-md);
+}
+
+.dash-key__item {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 24px;
+    padding: 0 2px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.dash-key__item:hover {
+    border-bottom-color: var(--color-border-control);
+}
+
+.dash-key__item[aria-pressed="true"] {
+    border-bottom-color: var(--color-primary);
+    font-weight: 700;
+}
+
+.dash-key__swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+/* Rows: subjects as small year profiles, places by name and the transmission as shares */
+.dash-subjects,
+.dash-rows {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.dash-part--features .dash-rows {
+    flex: none;
+}
+
+.dash-subject {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 0 40px;
+    max-height: 88px;
+    padding: 2px var(--space-xs);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.dash-subject__head {
+    display: flex;
+    line-height: var(--line-height-tight);
+}
+
+.dash-subject__label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.dash-subject__profile {
+    display: block;
+    flex: 1;
+    width: 100%;
+    min-height: 10px;
+}
+
+.dash-subject__bars {
+    fill: var(--color-data);
+}
+
+.dash-row-item {
+    display: grid;
+    flex: 1 0 26px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-sm);
+    max-height: 40px;
+    padding: 1px var(--space-xs);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.dash-row-item__label {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* The dataset as the pale track, the selection on the same scale in a neutral tone; colour is
+   kept for the languages */
+.dash-row-item__track {
+    position: relative;
+    height: 8px;
+}
+
+.dash-row-item__whole,
+.dash-row-item__fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+}
+
+.dash-row-item__whole {
+    background: var(--color-border-light);
+}
+
+.dash-row-item__fill {
+    background: var(--color-text-light);
+}
+
+/* A transmission statement: its name and count, below it its share of the selection */
+.dash-feature {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 3px;
+    padding: 3px var(--space-xs) 5px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    text-align: left;
+    cursor: pointer;
+}
+
+.dash-feature__head {
+    line-height: var(--line-height-tight);
+}
+
+.dash-feature__track {
+    display: block;
+    height: 6px;
+    background: var(--color-border-light);
+}
+
+.dash-feature__fill {
+    display: block;
+    height: 100%;
+    background: var(--color-text-light);
+}
+
+.dash-subject:hover,
+.dash-row-item:hover,
+.dash-feature:hover {
+    background: var(--color-bg-light);
+}
+
+.dash-subject[aria-pressed="true"],
+.dash-row-item[aria-pressed="true"],
+.dash-feature[aria-pressed="true"] {
+    background: var(--color-primary-light);
+    box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.dash-subject[aria-pressed="true"] .dash-subject__label,
+.dash-row-item[aria-pressed="true"] .dash-row-item__label,
+.dash-feature[aria-pressed="true"] .dash-feature__label {
+    font-weight: 700;
+}
+
+.dash-empty {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+/* One tooltip for the dashboard, for the pointer and for the keyboard cursor alike */
+.dash-tip {
+    position: absolute;
+    z-index: var(--z-tooltip);
+    max-width: 280px;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    background: var(--color-text);
+    color: var(--color-bg-light);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-tight);
+    pointer-events: none;
+}
+
+/* A phone: the parts stack and the page scrolls, every figure with a height of its own */
+@media (max-width: 767px) {
+    #overview-view.active {
+        overflow-y: auto;
+    }
+
+    .overview-container.workspace {
+        padding: var(--space-md);
+    }
+
+    .dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xl);
+    }
+
+    .dash-row {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xl);
+    }
+
+    .dash-years-box {
+        flex: none;
+        height: 150px;
+    }
+
+    .dash-part--persons .dash-figure {
+        flex: none;
+        height: 300px;
+    }
+
+    .dash-part--places .dash-figure {
+        flex: none;
+        height: 240px;
+    }
+
+    /* The rows take their own height here; the script fits six of them */
+    .dash-subjects,
+    .dash-part--places .dash-rows {
+        flex: none;
+    }
+
+    .dash-subject {
+        flex: none;
+        height: 48px;
+    }
+
+    .dash-row-item {
+        flex: none;
+        height: 32px;
+    }
+}

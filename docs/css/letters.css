@@ -1,0 +1,365 @@
+/* Letter list (views/letters-view.js) and the list of the letters drawer, which renders the same
+   groups and rows. Groups follow the order of the list, a year or a month in a date order, an
+   initial in a name order; their label stands in a margin column and stays in sight while its
+   letters scroll past. Rows align in columns, so the eye can run down dates, places or languages.
+   Groups are set apart by a hairline, rows by whitespace only. */
+
+/* The scrolling list is the reference of the groups' offsets, which the figure and the jumps read */
+.lv-scroll {
+    position: relative;
+    --lv-label-width: 4.5rem;
+    /* Estimated height of a row not yet written; letters-view.js replaces it by the measured one */
+    --lv-row-height: 26px;
+}
+
+#letters-list.lv-scroll {
+    padding: 0 var(--space-lg) var(--space-lg) var(--space-md);
+}
+
+.lv-groups,
+.lv-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lv-group {
+    display: grid;
+    grid-template-columns: var(--lv-label-width) minmax(0, 1fr);
+    column-gap: var(--space-md);
+    border-top: 1px solid var(--color-border-light);
+}
+
+.lv-group:first-child {
+    border-top: none;
+}
+
+/* The quiet label of a group: no heading, it names the value the rows of the group share */
+.lv-label {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    padding: var(--space-xs) 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-light);
+    font-variant-numeric: tabular-nums;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+}
+
+.lv-label__main {
+    display: block;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.lv-label__sub {
+    display: block;
+}
+
+/* Room for rows not yet written, so the scroll bar and a jump reach every letter */
+.lv-pending {
+    height: calc(var(--rows) * var(--lv-row-height));
+}
+
+/* Columns: star, date, persons, place, language, what the source records beyond that. Every row of
+   a list has the same tracks, so the columns line up across rows and groups. */
+.lv-scroll {
+    --lv-date: 6rem;
+    --lv-who: minmax(9rem, 3fr);
+    --lv-where: minmax(6rem, 2fr);
+    --lv-notes: minmax(0, 4fr);
+}
+
+/* A date order leaves the year of a plain date to the label of its group */
+.lv-scroll--compact {
+    --lv-date: 5.5rem;
+}
+
+/* Rows that name sender and recipients need more room for the persons */
+.lv-scroll--pairs {
+    --lv-who: minmax(14rem, 5fr);
+    --lv-notes: minmax(0, 3fr);
+}
+
+/* A list whose letters record nothing beyond place and language keeps its columns close together
+   instead of spreading them over the width */
+.lv-scroll--plain {
+    --lv-who: minmax(9rem, 22rem);
+    --lv-where: minmax(6rem, 14rem);
+    --lv-notes: 0;
+}
+
+.lv-scroll--pairs.lv-scroll--plain {
+    --lv-who: minmax(14rem, 32rem);
+}
+
+.lv-rows .letter-card {
+    display: grid;
+    grid-template-columns: 24px var(--lv-date) var(--lv-who) var(--lv-where) 8rem var(--lv-notes);
+    column-gap: var(--space-md);
+    align-items: baseline;
+    max-width: 84rem;
+    padding: 2px var(--space-xs);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    transition-property: var(--transition-properties);
+}
+
+.lv-rows .letter-card:hover {
+    background: var(--color-bg-light);
+}
+
+.lv-scroll--plain .lv-notes {
+    display: none;
+}
+
+.lv-rows .btn-letter-basket {
+    align-self: start;
+    padding: 0;
+}
+
+/* Long dates (a span, a date in words) wrap inside their column instead of running into the next */
+.lv-rows .letter-date {
+    white-space: normal;
+    font-variant-numeric: tabular-nums;
+}
+
+.lv-rows .date-with-precision {
+    display: inline;
+}
+
+/* The persons read as text; names wrap instead of being cut */
+.lv-rows .lv-who {
+    display: block;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.lv-name {
+    font-weight: 600;
+}
+
+.lv-dir {
+    display: inline-block;
+    min-width: 2em;
+    font-weight: 400;
+    color: var(--color-text-light);
+}
+
+.lv-rows .letter-arrow {
+    margin: 0 var(--space-xs);
+}
+
+.lv-place,
+.lv-lang {
+    min-width: 0;
+    color: var(--color-text-light);
+    overflow-wrap: anywhere;
+}
+
+.lv-lang {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+}
+
+/* The records beyond place and language run as one line of text that wraps, not as a stack */
+.lv-notes.letter-meta {
+    display: block;
+    min-width: 0;
+    font-size: var(--font-size-sm);
+}
+
+.lv-notes.letter-meta > span {
+    display: inline;
+    margin-right: var(--space-md);
+}
+
+.list-result .lv-centre {
+    font-weight: 400;
+    color: var(--color-text-light);
+}
+
+/* Phones: a row takes two lines. The persons with the star before and the date after them, below
+   place, language and the rest */
+@media (max-width: 767px) {
+    .lv-scroll {
+        --lv-label-width: 3.5rem;
+    }
+
+    #letters-list.lv-scroll {
+        padding: 0 var(--space-sm) var(--space-lg);
+    }
+
+    .lv-group {
+        column-gap: var(--space-sm);
+    }
+
+    .lv-label {
+        font-size: var(--font-size-xs);
+    }
+
+    .lv-rows .letter-card {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        column-gap: var(--space-sm);
+        row-gap: 0;
+        padding: var(--space-xs) 0;
+    }
+
+    .lv-rows .btn-letter-basket {
+        order: 0;
+        align-self: baseline;
+    }
+
+    /* Star, persons and date fill the first line exactly, so the rest begins the second */
+    .lv-rows .lv-who {
+        order: 1;
+        flex: 0 0 calc(100% - 24px - 5rem - 2 * var(--space-sm));
+    }
+
+    .lv-rows .letter-date {
+        order: 2;
+        flex: 0 0 5rem;
+        text-align: right;
+    }
+
+    /* The second line starts under the persons */
+    .lv-rows .lv-place {
+        order: 3;
+        flex-basis: auto;
+        margin-left: calc(24px + var(--space-sm));
+    }
+
+    .lv-place:empty {
+        display: none;
+    }
+
+    .lv-place:empty ~ .lv-lang {
+        margin-left: calc(24px + var(--space-sm));
+    }
+
+    .lv-rows .lv-lang {
+        order: 4;
+    }
+
+    .lv-rows .lv-notes {
+        order: 5;
+        flex-basis: 100%;
+        margin-left: calc(24px + var(--space-sm));
+    }
+
+    .lv-rows .lv-notes:empty {
+        display: none;
+    }
+}
+
+/* The figure above the list: the letters of the selection per year (per initial in a name order),
+   stacked by language in the colours they have everywhere. A rust line under the columns marks
+   where the list is; a column jumps there. */
+.lv-profile {
+    padding: var(--space-sm) var(--space-lg) calc(var(--space-lg) + var(--font-size-xs)) calc(var(--space-md) + 4.5rem + var(--space-md));
+}
+
+.lv-profile__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    height: 48px;
+}
+
+.lv-bar {
+    position: relative;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.lv-bar--empty {
+    cursor: default;
+}
+
+/* The letters off the time axis stand apart from the years, as on the time view */
+.lv-bar--off {
+    flex: 0 0 3rem;
+    margin-left: var(--space-md);
+}
+
+.lv-bar__stack {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 100%;
+}
+
+.lv-bar__seg {
+    flex-basis: 0;
+    min-height: 0;
+}
+
+.lv-bar__seg--plain {
+    background: var(--color-data);
+}
+
+.lv-bar:hover .lv-bar__stack {
+    opacity: 0.8;
+}
+
+.lv-bar__tick {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    padding-top: var(--space-xs);
+    transform: translateX(-50%);
+    font-size: var(--font-size-xs);
+    line-height: 1;
+    color: var(--color-text-light);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.lv-bar.is-current::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 2px;
+    background: var(--color-primary);
+}
+
+@media (max-width: 767px) {
+    .lv-profile {
+        padding: var(--space-xs) var(--space-sm) calc(var(--space-lg) + var(--font-size-xs)) calc(var(--space-sm) + 3.5rem + var(--space-sm));
+    }
+
+    .lv-profile__bars {
+        height: 36px;
+    }
+
+    .lv-bar--off {
+        flex-basis: 2.5rem;
+        margin-left: var(--space-sm);
+    }
+}
+
+/* The column the keyboard stands on while the figure has focus */
+.lv-profile:focus-visible {
+    outline-offset: var(--space-xs);
+}
+
+.lv-profile:focus-visible .lv-bar.is-active {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+}

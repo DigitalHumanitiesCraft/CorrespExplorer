@@ -1,329 +1,276 @@
-// Timeline View
-// Stacked bar chart showing temporal distribution of correspondence
+// Time view: one figure from the whole period down to the single letters. Above, the letters per
+// year of the selection as a profile in the language colours; dragging over it, or the arrow keys,
+// choose a period. Below, the chosen period at the finest resolution that stays legible for its
+// length: bins of months, quarters, half years or years when the period holds many letters, the
+// single letters as marks on a true time axis when it holds few, so a gap between two letters is a
+// distance. With a central person the letters from that person stand above the axis and the
+// letters to that person below it, so the exchange reads as a dialogue. This view absorbs the
+// former representations Jahre, Tage and Chronik (US-05, US-28 to US-32, US-34).
+//
+// The chosen period is the period of the sidebar (state.filters.temporal): one period for slider,
+// selection sentence, title, letters drawer and URL. The profile draws the selection under every
+// filter except the period, as the space-time view draws all years beside a picked one, so the
+// period stands as chosen against the whole and can be moved or released there.
 
-import { LANGUAGE_COLORS, LETTER_FEATURES, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
-import { elements } from '../dom-cache.js';
-import { escapeHtml, showToast, isMultiYearSpan } from '../utils.js';
+import { LANGUAGE_COLORS, LETTER_FEATURES, NO_LANGUAGE, languageLabel } from '../constants.js';
+import { escapeHtml, showToast, isMultiYearSpan, letterRecipients, personKey } from '../utils.js';
 import { addLettersToBasket } from '../basket.js';
-import { renderDataTable } from './view-support.js';
+import { state } from '../state-manager.js';
+import { renderDataTable, readTokens } from './view-support.js';
+import { rowCentre, letterDirection } from './letters-view.js';
+import { initChronikView, correspondenceContext, contextText, personAge, lifeDatesOf } from './chronik-view.js';
 
-// Module state
-let undatedBinBound = false;  // the undated bin is static markup, its listeners are bound once
+// Above this many letters on the axis the lower figure counts letters in bins instead of drawing
+// each one; a period of one year always shows its letters (the busiest year of the Hugo Schuchardt
+// Archiv holds 510). A setting of this view, chosen so that marks of 7px stay apart on a wide screen.
+export const LETTER_LIMIT = 600;
+// Bin lengths in months, from the finest; the finest whose bins keep MIN_BIN_PX on screen is used
+const BIN_STEPS = [1, 3, 6, 12];
+const MIN_BIN_PX = 3;
+// A column of letter marks stops at this many; the rest is named as "+n" above it
+const MAX_ROWS = 24;
+const DAY_MS = 86400000;
+const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+const MONTHS_SHORT = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+const fmt = n => n.toLocaleString('de-DE');
 
-// External dependencies - injected via init
-let getFilteredLetters = null;
-let getAllLetters = null;
-let applyFilters = null;
-let revealLetters = null;
-let showUndatedLetters = null;
-let showLettersWithFeature = null;
-let clearLetterSearch = null;
+let deps = {};
+// The resolution and marks of the last drawing, for hit tests, keys and the table
+let scene = null;
+let hoverKey = null;
+let resizeObserver = null;
+let lastWidth = 0;
+// After a period was chosen from the lower figure, the focus continues there after the redraw
+let focusDetailAfterRender = false;
 
 /**
- * Initialize timeline view with external dependencies
- * @param {Object} deps - External dependencies from explore.js
+ * @param {Object} dependencies
+ * @param {Function} dependencies.getFilteredLetters - letters under every filter, the period included
+ * @param {Function} dependencies.getAllLetters
+ * @param {Function} dependencies.setPeriod - (start, end) chooses a period of years; (null) releases it
+ * @param {Function} dependencies.revealLetters - opens the letters of the selection in the drawer
+ * @param {Function} dependencies.showUndatedLetters
+ * @param {Function} dependencies.showLetterDetail
  */
-export function initTimelineView(deps) {
-    // Inject dependencies
-    getFilteredLetters = deps.getFilteredLetters;
-    getAllLetters = deps.getAllLetters;
-    applyFilters = deps.applyFilters;
-    revealLetters = deps.revealLetters;
-    showUndatedLetters = deps.showUndatedLetters;
-    showLettersWithFeature = deps.showLettersWithFeature;
-    clearLetterSearch = deps.clearLetterSearch;
+export function initTimelineView(dependencies) {
+    deps = dependencies;
+    initChronikView({
+        getFilteredLetters: deps.getFilteredLetters,
+        getAllLetters: deps.getAllLetters,
+        onEnriched: () => renderDetail()
+    });
+    document.getElementById('tv-show-letters')?.addEventListener('click', () => deps.revealLetters());
+    bindDetail();
+}
+
+// Dates as day numbers (days since 1970-01-01 in UTC), so a time zone never shifts a day
+
+const dayNumber = (y, m, d) => Date.UTC(y, m - 1, d) / DAY_MS;
+
+function dateParts(text) {
+    const match = /^(-?\d{1,4})(?:-(\d{2}))?(?:-(\d{2}))?/.exec(String(text || ''));
+    if (!match) return null;
+    return { y: Number(match[1]), m: match[2] ? Number(match[2]) : null, d: match[3] ? Number(match[3]) : null };
+}
+
+function partsStart({ y, m, d }) {
+    return dayNumber(y, m || 1, d || 1);
+}
+
+// Day after the last day the parts cover
+function partsEnd({ y, m, d }) {
+    if (d) return dayNumber(y, m, d) + 1;
+    if (m) return dayNumber(y, m + 1, 1);
+    return dayNumber(y + 1, 1, 1);
 }
 
 /**
- * Render the timeline view
+ * Where a letter stands on the time axis: the days its date covers, from start up to end
+ * (exclusive). A day is one day, a month or year date covers the month or year, a range its span.
+ * Null for a letter without a place on the axis: no date, a date only in words, a single date
+ * bound, an implausible year or a span over several years (decision E5).
+ * @param {Object} letter
+ * @returns {{start: number, end: number, exact: boolean}|null}
  */
-export function renderTimeline() {
-    const container = elements.timelineChart;
-    const totalEl = elements.getById('timeline-total');
-    const legendEl = elements.getById('timeline-stack-legend');
-    const undatedBin = elements.getById('timeline-undated-bin');
-    const spanBin = elements.getById('timeline-span-bin');
-    if (!container) return;
-
-    const filteredLetters = getFilteredLetters();
-    const allLetters = getAllLetters();
-
-    // Use filtered letters
-    const lettersToUse = filteredLetters;
-    const isFiltered = filteredLetters.length < allLetters.length;
-
-    // Dated, undated and multi-year spans; a span has no year it belongs to (decision E5).
-    // "Undated" here means without a place on the axis: no date, a date only in words, or a year
-    // the parser withheld as implausible. The bin says which of these it holds.
-    const spanLetters = lettersToUse.filter(isMultiYearSpan);
-    const datedLetters = lettersToUse.filter(l => l.year && !isMultiYearSpan(l));
-    const undatedLetters = lettersToUse.filter(l => !l.year);
-    const offAxis = offAxisGroups(undatedLetters);
-
-    // Get all years from all letters for consistent x-axis
-    const allYearsSet = new Set();
-    allLetters.forEach(letter => {
-        if (letter.year && !isMultiYearSpan(letter)) allYearsSet.add(letter.year);
-    });
-    const allYearsSorted = Array.from(allYearsSet).sort((a, b) => a - b);
-
-    if (allYearsSorted.length === 0 && undatedLetters.length === 0 && spanLetters.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Keine Jahresdaten verfügbar</p></div>';
-        undatedBin?.classList.add('hidden');
-        spanBin?.classList.add('hidden');
-        renderDataTable(elements.getById('timeline-table'), { caption: '', columns: [], rows: [] });
-        return;
+export function axisInterval(letter) {
+    if (!letter?.date || !letter.year || letter.dateImplausible || letter.dateBound || isMultiYearSpan(letter)) return null;
+    if (letter.datePrecision === 'unknown') return null;
+    const from = dateParts(letter.date);
+    if (!from) return null;
+    const start = partsStart(from);
+    let end = partsEnd(from);
+    if (letter.datePrecision === 'range' && letter.dateTo) {
+        const to = dateParts(letter.dateTo);
+        if (to) end = Math.max(start + 1, partsEnd(to));
     }
-
-    // Without any year the loops below render no bar (minYear above maxYear)
-    const minYear = allYearsSorted.length ? allYearsSorted[0] : 1;
-    const maxYear = allYearsSorted.length ? allYearsSorted[allYearsSorted.length - 1] : 0;
-
-    // Build stacked data by year and language, tracking uncertainty
-    const yearData = {};
-    const languageTotals = {};
-    let totalImprecise = 0;
-
-    // Initialize all years. `uncertain` counts each letter once whose date is imprecise or
-    // inferred; the two counts behind it name the reasons in tooltip, legend and table.
-    for (let y = minYear; y <= maxYear; y++) {
-        yearData[y] = { total: 0, uncertain: 0, imprecise: 0, inferred: 0, languages: {} };
-    }
-    let totalInferred = 0;
-    let totalUncertain = 0;
-
-    // Check if we have actual language data (not just None/other)
-    const hasLanguageData = lettersToUse.some(l => l.language?.code);
-
-    // Count letters per year per language, tracking date precision
-    datedLetters.forEach(letter => {
-        const year = letter.year;
-        // If no language data in corpus, use a single category
-        const lang = hasLanguageData ? (letter.language?.code || NO_LANGUAGE) : '_total';
-        const langKey = hasLanguageData ? (LANGUAGE_COLORS[lang] ? lang : 'other') : '_total';
-        const isImprecise = letter.datePrecision === 'range' ||
-                           letter.datePrecision === 'year' ||
-                           letter.datePrecision === 'month' ||
-                           letter.dateCertainty === 'low';
-
-        yearData[year].total++;
-        yearData[year].languages[langKey] = (yearData[year].languages[langKey] || 0) + 1;
-        languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
-
-        if (isImprecise) {
-            yearData[year].imprecise++;
-            totalImprecise++;
-        }
-        // A date the edition supplied is no reading of the source; it shares the hatching
-        if (letter.dateInferred) {
-            yearData[year].inferred++;
-            totalInferred++;
-        }
-        if (isImprecise || letter.dateInferred) {
-            yearData[year].uncertain++;
-            totalUncertain++;
-        }
-    });
-
-    // Count undated letters by language
-    const undatedByLang = {};
-    undatedLetters.forEach(letter => {
-        const lang = hasLanguageData ? (letter.language?.code || NO_LANGUAGE) : '_total';
-        const langKey = hasLanguageData ? (LANGUAGE_COLORS[lang] ? lang : 'other') : '_total';
-        undatedByLang[langKey] = (undatedByLang[langKey] || 0) + 1;
-        languageTotals[langKey] = (languageTotals[langKey] || 0) + 1;
-    });
-
-    // Find max for scaling (include undated and span counts)
-    let maxCount = Math.max(undatedLetters.length, spanLetters.length);
-    for (let y = minYear; y <= maxYear; y++) {
-        if (yearData[y].total > maxCount) maxCount = yearData[y].total;
-    }
-    if (maxCount === 0) maxCount = 1;
-
-    // Sort languages by total count for consistent stacking order
-    const sortedLanguages = Object.entries(languageTotals)
-        .sort((a, b) => b[1] - a[1])
-        .map(([lang]) => lang);
-
-    // Calculate label interval - show roughly 15 labels
-    const yearSpan = maxYear - minYear + 1;
-    const labelInterval = Math.max(1, Math.ceil(yearSpan / 15));
-
-    // Render stacked bars
-    const bars = [];
-    for (let y = minYear; y <= maxYear; y++) {
-        const data = yearData[y];
-        const totalHeight = data.total > 0 ? Math.max(4, (data.total / maxCount) * 100) : 0;
-        const showLabel = (y - minYear) % labelInterval === 0 || y === maxYear;
-        const hasImprecise = data.uncertain > 0;
-        const uncertainText = uncertainPhrase(data.imprecise, data.inferred);
-
-        // Build stacked segments
-        let segments = '';
-        let tooltipParts = [`${y}: ${data.total} Briefe`, `<span class="tooltip-hint">Shift+Klick: zum Korb</span>`];
-
-        // Add imprecise info to tooltip
-        if (hasImprecise) {
-            tooltipParts.push(`<span class="tooltip-imprecise">${uncertainText}</span>`);
-        }
-
-        if (data.total > 0) {
-            let currentBottom = 0;
-            sortedLanguages.forEach(lang => {
-                const count = data.languages[lang] || 0;
-                if (count > 0) {
-                    // Segment height as percentage of the stacked bar (not the container)
-                    const segmentPct = (count / data.total) * 100;
-                    // Data colour for _total (no language data), otherwise the language colour
-                    const color = lang === '_total' ? 'var(--color-data)' : (LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other);
-                    segments += `<div class="timeline-stack-segment" style="height: ${segmentPct}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
-                    currentBottom += segmentPct;
-                    // Only add language breakdown to tooltip if we have language data
-                    if (lang !== '_total') {
-                        const langLabel = languageLabel(lang);
-                        tooltipParts.push(`${escapeHtml(langLabel)}: ${count}`);
-                    }
-                }
-            });
-        }
-
-        // Each year is a button for keyboard users; a roving tab stop keeps it one Tab for the chart
-        const barLabel = `${y}: ${data.total} Briefe${hasImprecise ? `, ${uncertainText}` : ''}`;
-        bars.push(`
-            <div class="timeline-bar-wrapper ${hasImprecise ? 'has-imprecise' : ''}" role="button" tabindex="-1" aria-label="${barLabel}" data-year="${y}" data-year-end="${y}" data-imprecise="${data.uncertain}">
-                <div class="timeline-stacked-bar" style="height: ${totalHeight}%">
-                    ${segments}
-                    ${hasImprecise ? `<div class="timeline-uncertainty-overlay" style="height: ${(data.uncertain / data.total) * 100}%"></div>` : ''}
-                </div>
-                <div class="timeline-bar-tooltip">${tooltipParts.join('<br>')}</div>
-                ${showLabel ? `<span class="timeline-bar-label">${y}</span>` : ''}
-            </div>
-        `);
-    }
-
-    container.innerHTML = bars.join('');
-    container.setAttribute('role', 'group');
-    container.setAttribute('aria-label', 'Briefe pro Jahr. Pfeiltasten wechseln das Jahr, Enter zeigt die Briefe des Jahres unter der Grafik, Umschalt und Enter legt sie in den Korb');
-
-    // The instruction names only what the chart offers: language segments exist only with languages
-    const description = document.querySelector('#timeline-view .view-header__description');
-    if (description) {
-        description.textContent = hasLanguageData
-            ? 'Klicken Sie auf ein Sprach-Segment, um nach Jahr und Sprache zu filtern.'
-            : 'Klicken Sie auf ein Jahr, um seine Briefe unter der Grafik zu sehen.';
-    }
-
-    // Add Y-axis gridlines
-    renderTimelineGridlines(container, maxCount);
-
-    // Responsive bar width based on year span
-    const barWrappers = container.querySelectorAll('.timeline-bar-wrapper');
-    if (yearSpan > 0 && yearSpan <= 20) {
-        // Wider bars for narrow time ranges
-        const maxWidth = Math.min(60, Math.max(20, Math.floor(800 / yearSpan)));
-        barWrappers.forEach(w => {
-            w.style.maxWidth = `${maxWidth}px`;
-            w.style.minWidth = `${Math.max(12, maxWidth - 10)}px`;
-        });
-    } else {
-        // Reset to default for large ranges
-        barWrappers.forEach(w => {
-            w.style.maxWidth = '';
-            w.style.minWidth = '';
-        });
-    }
-
-    // Render undated letters bin
-    renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount, offAxis);
-    renderSpanBin(spanBin, spanLetters, maxCount);
-
-    // Update total
-    if (totalEl) {
-        const fmt = n => n.toLocaleString('de-DE');
-        const spanInfo = spanLetters.length > 0 ? ` + ${spanLetters.length} über mehrere Jahre datiert` : '';
-        const dated = isFiltered
-            ? `${fmt(datedLetters.length)} von ${fmt(allLetters.filter(l => l.year).length)} Briefen (${minYear}-${maxYear})`
-            : `${fmt(datedLetters.length)} Briefe von ${minYear} bis ${maxYear}`;
-        if (offAxis.mixed) {
-            // Each group without a place on the axis is named with its count and opens exactly its letters
-            const links = offAxis.groups.map(g =>
-                `<button type="button" class="timeline-total__link" data-feature="${g.key}">${fmt(g.count)} ${escapeHtml(g.phrase)}</button>`);
-            const list = links.length > 1 ? `${links.slice(0, -1).join(', ')} und ${links[links.length - 1]}` : links[0];
-            totalEl.innerHTML = `${escapeHtml(dated)}${escapeHtml(spanInfo)}. Ohne Platz auf der Zeitachse: ${list}.`;
-            totalEl.querySelectorAll('.timeline-total__link').forEach(btn => {
-                btn.addEventListener('click', () => showFeatureLetters(btn.dataset.feature));
-            });
-        } else {
-            totalEl.textContent = `${dated}${undatedLetters.length > 0 ? ` + ${undatedLetters.length} ohne Datum` : ''}${spanInfo}`;
-        }
-    }
-
-    // Render legend
-    renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLanguageData, totalUncertain, totalImprecise, totalInferred);
-
-    // Text alternative: the values of every bar, with the languages of the stack in words. Columns
-    // the dataset has nothing for (inferred dates, languages) are left out.
-    const languageText = languages => Object.entries(languages)
-        .filter(([lang]) => lang !== '_total')
-        .sort((a, b) => b[1] - a[1])
-        .map(([lang, count]) => `${lang === 'other' ? 'weitere' : languageLabel(lang)} ${count}`)
-        .join(', ');
-    const withInferred = totalInferred > 0;
-    const row = (label, total, imprecise, inferred, languages) => [label, total, imprecise,
-        ...(withInferred ? [inferred] : []), ...(hasLanguageData ? [languages] : [])];
-    const tableRows = [];
-    for (let y = minYear; y <= maxYear; y++) {
-        const d = yearData[y];
-        if (d?.total) tableRows.push(row(String(y), d.total, d.imprecise, d.inferred, languageText(d.languages)));
-    }
-    // Letters off the axis have no date to be imprecise about, so those cells stay empty
-    if (offAxis.mixed) {
-        offAxis.groups.forEach(g => tableRows.push(row(g.label, g.count, '', '', '')));
-    } else if (undatedLetters.length) {
-        tableRows.push(row('ohne Datum', undatedLetters.length, '', '', languageText(undatedByLang)));
-    }
-    if (spanLetters.length) tableRows.push(row('Spanne über mehrere Jahre', spanLetters.length, spanLetters.length,
-        spanLetters.filter(l => l.dateInferred).length, ''));
-    renderDataTable(elements.getById('timeline-table'), {
-        caption: 'Briefe je Jahr',
-        columns: ['Jahr', 'Briefe', 'davon unscharf datiert', ...(withInferred ? ['davon erschlossen'] : []), ...(hasLanguageData ? ['Sprachen'] : [])],
-        rows: tableRows
-    });
-
-    // Add click handlers
-    setupTimelineClickHandlers(container);
+    return { start, end, exact: end - start === 1 };
 }
 
 /**
- * Render the undated letters bin
+ * The resolution of the lower figure for the letters of a period
+ * @param {number} count - letters on the axis
+ * @param {number} months - length of the period in months
+ * @param {number} width - width of the figure in px
+ * @returns {{level: 'letters'|'bins', binMonths: number|null}}
  */
-/**
- * Bin for letters dated to a span over several years, beside the undated bin. It informs and does
- * not filter: the year filter selects by start year, which a span does not stand for.
- */
-function renderSpanBin(spanBin, spanLetters, maxCount) {
-    if (!spanBin) return;
-    if (spanLetters.length === 0) {
-        spanBin.classList.add('hidden');
-        return;
-    }
-    const startYears = spanLetters.map(l => l.year);
-    const endYears = spanLetters.map(l => parseInt(String(l.dateTo).substring(0, 4), 10));
-    const widest = `${Math.min(...startYears)} bis ${Math.max(...endYears)}`;
-    spanBin.classList.remove('hidden');
-    spanBin.querySelector('.undated-bin-count').textContent = spanLetters.length;
-    spanBin.querySelector('.undated-bin-label').textContent = 'Spanne';
-    const bar = spanBin.querySelector('.undated-bin-bar');
-    bar.style.height = `${Math.max(4, (spanLetters.length / maxCount) * 100)}%`;
-    bar.innerHTML = '<div class="timeline-stack-segment" style="height: 100%; background: var(--color-text-light); bottom: 0%;"></div>';
-    const description = `${spanLetters.length} Briefe über mehrere Jahre datiert, zwischen ${widest}. Sie stehen in keinem Jahresbalken.`;
-    spanBin.querySelector('.undated-bin-tooltip').textContent = description;
-    spanBin.setAttribute('title', description);
+export function timeResolution(count, months, width) {
+    if (count <= LETTER_LIMIT || months <= 12) return { level: 'letters', binMonths: null };
+    const binMonths = BIN_STEPS.find(step => width / Math.ceil(months / step) >= MIN_BIN_PX) || 12;
+    return { level: 'bins', binMonths };
 }
 
-// Reasons a letter has no place on the time axis, each with the letter-list filter that shows
-// exactly its letters (LETTER_FEATURES key, URL parameter feat=)
+/**
+ * The side of the axis a letter stands on: 'out' when the central person wrote it, 'in' when that
+ * person received it, 'other' for a letter between two other persons, 'all' without central person
+ * @param {Object} letter
+ * @param {string|null} centreKey - personKey of the central person
+ * @returns {'out'|'in'|'other'|'all'}
+ */
+export function letterSide(letter, centreKey) {
+    if (!centreKey) return 'all';
+    const direction = letterDirection(letter, centreKey);
+    if (!direction) return 'other';
+    return direction.dir === 'to' ? 'out' : 'in';
+}
+
+/**
+ * The letters of a period that stand on the time axis inside it
+ * @param {Array} letters
+ * @param {{start: number, end: number}} period - first and last year
+ * @returns {Array}
+ */
+export function periodLetters(letters, { start, end }) {
+    const from = dayNumber(start, 1, 1);
+    const to = dayNumber(end + 1, 1, 1);
+    return letters.filter(letter => {
+        const iv = axisInterval(letter);
+        return iv && iv.start >= from && iv.end <= to;
+    });
+}
+
+/**
+ * The first stretch of the selection that the single letters fit into, from its first year on,
+ * the place where the former chronicle began; at least one year
+ * @param {Array} letters
+ * @param {number} [limit]
+ * @returns {{start: number, end: number}|null}
+ */
+export function chronicleStart(letters, limit = LETTER_LIMIT) {
+    const perYear = new Map();
+    letters.forEach(letter => {
+        if (axisInterval(letter)) perYear.set(letter.year, (perYear.get(letter.year) || 0) + 1);
+    });
+    const years = [...perYear.keys()].sort((a, b) => a - b);
+    if (!years.length) return null;
+    let sum = 0;
+    let end = years[0];
+    for (const year of years) {
+        if (year !== years[0] && sum + perYear.get(year) > limit) break;
+        sum += perYear.get(year);
+        end = year;
+    }
+    return { start: years[0], end };
+}
+
+function monthOfDay(day) {
+    const date = new Date(day * DAY_MS);
+    return { y: date.getUTCFullYear(), m: date.getUTCMonth() + 1 };
+}
+
+/**
+ * Letters counted in bins of a period. A letter counts in a bin when its date lies wholly inside
+ * it: a month date in a bin of months, a year date only in a bin of a year. The others are counted
+ * by precision as not placed at this resolution, so no date is spread over time it does not name.
+ * @param {Array<{letter: Object, iv: Object, side: string}>} entries
+ * @param {{startYear: number, endYear: number, binMonths: number}} grid
+ * @returns {{bins: Array<{index: number, startMonth: number, total: number, sides: Object, langs: Object}>, unplaced: Object}}
+ */
+export function binLetters(entries, { startYear, endYear, binMonths }) {
+    const months = (endYear - startYear + 1) * 12;
+    const count = Math.ceil(months / binMonths);
+    const bins = Array.from({ length: count }, (_, index) => ({
+        index, startMonth: index * binMonths, total: 0,
+        sides: { out: 0, in: 0, other: 0, all: 0 }, langs: { out: {}, in: {}, other: {}, all: {} }
+    }));
+    const unplaced = {};
+    const monthIndex = day => {
+        const { y, m } = monthOfDay(day);
+        return (y - startYear) * 12 + m - 1;
+    };
+    for (const { letter, iv, side, lang } of entries) {
+        const first = monthIndex(iv.start);
+        const last = monthIndex(iv.end - 1);
+        if (first < 0 || last >= months) continue;
+        if (Math.floor(first / binMonths) !== Math.floor(last / binMonths)) {
+            const key = letter.datePrecision || 'range';
+            unplaced[key] = (unplaced[key] || 0) + 1;
+            continue;
+        }
+        const bin = bins[Math.floor(first / binMonths)];
+        bin.total++;
+        bin.sides[side]++;
+        bin.langs[side][lang] = (bin.langs[side][lang] || 0) + 1;
+    }
+    return { bins, unplaced };
+}
+
+// The colour key of a letter: a language with its own colour, the grey rest, or one data colour
+// for a dataset without languages
+function languageKey(letter, hasLanguages) {
+    if (!hasLanguages) return '_total';
+    const code = letter.language?.code || NO_LANGUAGE;
+    return LANGUAGE_COLORS[code] ? code : 'other';
+}
+
+function colourOf(key) {
+    return key === '_total' ? null : (LANGUAGE_COLORS[key] || LANGUAGE_COLORS.other);
+}
+
+// The period chosen in this view or the sidebar, or a year picked in the space-time view
+function chosenPeriod() {
+    const f = state.filters;
+    if (f.year != null) return { start: f.year, end: f.year };
+    if (f.temporal && !f.temporal.undated) return { start: f.temporal.min, end: f.temporal.max };
+    return null;
+}
+
+// The selection under every filter except the period, cached while the filters stay the same
+const profileCache = { key: null, source: null, letters: [] };
+function profileLetters() {
+    const filters = { ...state.filters, temporal: null, year: null };
+    const key = JSON.stringify(filters);
+    const source = state.getAllLetters();
+    if (profileCache.key !== key || profileCache.source !== source) {
+        profileCache.key = key;
+        profileCache.source = source;
+        profileCache.letters = state.filterLetters(filters);
+    }
+    return profileCache.letters;
+}
+
+/**
+ * Render the time view: the profile, then the lower figure. The entry names the representation
+ * an older link asked for: 'chronik' opens the single letters from the beginning of the selection.
+ * @param {{entry?: string|null}} [options]
+ */
+export function renderTimeline({ entry = null } = {}) {
+    if (entry === 'chronik' && !chosenPeriod()) {
+        const start = chronicleStart(deps.getFilteredLetters());
+        if (start) {
+            // setPeriod applies the filters, which renders this view again
+            deps.setPeriod(start.start, start.end);
+            return;
+        }
+    }
+    const started = performance.now();
+    renderProfile();
+    renderDetail();
+    // Time from a change of period to the redrawn view, read by the measurement of the report
+    document.getElementById('timeline-view')?.setAttribute('data-render-ms', String(Math.round(performance.now() - started)));
+}
+
+// Profile
+
 const OFF_AXIS = [
     { key: 'undated', label: 'ohne Datum', phrase: 'ohne Datum' },
     { key: 'dateText', label: 'Datum nur als Text', phrase: 'nur als Text datiert' },
@@ -333,10 +280,7 @@ const OFF_AXIS = [
 
 /**
  * Letters without a year, grouped by reason. `mixed` is true when the dataset gives a reason
- * besides a missing date; only then does the timeline name the groups, so plain CMIF keeps its
- * single "ohne Datum" bin.
- * @param {Array} letters - letters without year
- * @returns {{groups: Array<{key: string, label: string, phrase: string, count: number}>, mixed: boolean}}
+ * besides a missing date; only then are the groups named, so plain CMIF keeps its single bin.
  */
 function offAxisGroups(letters) {
     const groups = OFF_AXIS
@@ -345,309 +289,955 @@ function offAxisGroups(letters) {
     return { groups, mixed: groups.some(group => group.key !== 'undated') };
 }
 
-// "3 mit unscharfem Datum, 2 mit erschlossenem Datum"
 function uncertainPhrase(imprecise, inferred) {
     const parts = [];
-    if (imprecise) parts.push(`${imprecise} mit unscharfem Datum`);
-    if (inferred) parts.push(`${inferred} mit erschlossenem Datum`);
+    if (imprecise) parts.push(`${fmt(imprecise)} mit unscharfem Datum`);
+    if (inferred) parts.push(`${fmt(inferred)} mit erschlossenem Datum`);
     return parts.join(', ');
 }
 
-// One group of letters without a year, under the filters already set, opened below the timeline
-function showFeatureLetters(key) {
-    showLettersWithFeature(key, { keepOthers: true });
+const isImprecise = letter => ['range', 'year', 'month'].includes(letter.datePrecision) || letter.dateCertainty === 'low';
+
+function renderProfile() {
+    const container = document.getElementById('timeline-chart');
+    if (!container) return;
+    const letters = profileLetters();
+    const allLetters = deps.getAllLetters();
+    const period = chosenPeriod();
+    const undatedChosen = Boolean(state.filters.temporal?.undated);
+
+    const spanLetters = letters.filter(isMultiYearSpan);
+    const datedLetters = letters.filter(l => l.year && !isMultiYearSpan(l));
+    const undatedLetters = letters.filter(l => !l.year);
+    const offAxis = offAxisGroups(undatedLetters);
+
+    // The axis spans the years of the whole dataset, so it stays put under every filter
+    const years = [...new Set(allLetters.filter(l => l.year && !isMultiYearSpan(l)).map(l => l.year))].sort((a, b) => a - b);
+    const minYear = years.length ? years[0] : 1;
+    const maxYear = years.length ? years[years.length - 1] : 0;
+    const hasLanguages = letters.some(l => l.language?.code);
+
+    const yearData = {};
+    for (let y = minYear; y <= maxYear; y++) yearData[y] = { total: 0, uncertain: 0, imprecise: 0, inferred: 0, languages: {} };
+    const languageTotals = {};
+    let totals = { uncertain: 0, imprecise: 0, inferred: 0 };
+    datedLetters.forEach(letter => {
+        const data = yearData[letter.year];
+        if (!data) return;
+        const key = languageKey(letter, hasLanguages);
+        data.total++;
+        data.languages[key] = (data.languages[key] || 0) + 1;
+        languageTotals[key] = (languageTotals[key] || 0) + 1;
+        const imprecise = isImprecise(letter);
+        if (imprecise) { data.imprecise++; totals.imprecise++; }
+        // A date the edition supplied is no reading of the source; it shares the hatching
+        if (letter.dateInferred) { data.inferred++; totals.inferred++; }
+        if (imprecise || letter.dateInferred) { data.uncertain++; totals.uncertain++; }
+    });
+    const undatedByLang = {};
+    undatedLetters.forEach(letter => {
+        const key = languageKey(letter, hasLanguages);
+        undatedByLang[key] = (undatedByLang[key] || 0) + 1;
+        languageTotals[key] = (languageTotals[key] || 0) + 1;
+    });
+    const order = Object.entries(languageTotals).sort((a, b) => b[1] - a[1]).map(([key]) => key);
+
+    let maxCount = Math.max(1, undatedLetters.length, spanLetters.length);
+    for (let y = minYear; y <= maxYear; y++) maxCount = Math.max(maxCount, yearData[y].total);
+
+    // About one year label per 48px of width
+    const yearSpan = Math.max(0, maxYear - minYear + 1);
+    const width = container.clientWidth || 600;
+    const labelEvery = niceYearStep(Math.max(1, Math.ceil(yearSpan / Math.max(2, Math.floor(width / 100)))));
+
+    const bars = [];
+    for (let y = minYear; y <= maxYear; y++) {
+        const data = yearData[y];
+        const height = data.total ? Math.max(3, (data.total / maxCount) * 100) : 0;
+        let bottom = 0;
+        const segments = order.map(key => {
+            const count = data.languages[key] || 0;
+            if (!count) return '';
+            const share = (count / data.total) * 100;
+            const colour = colourOf(key) || 'var(--color-data)';
+            const segment = `<span class="tv-seg" style="height: ${share}%; bottom: ${bottom}%; background: ${colour}"></span>`;
+            bottom += share;
+            return segment;
+        }).join('');
+        const hatch = data.uncertain ? `<span class="tv-hatch" style="height: ${(data.uncertain / data.total) * 100}%"></span>` : '';
+        const chosen = period && y >= period.start && y <= period.end;
+        const label = `${y}: ${fmt(data.total)} ${data.total === 1 ? 'Brief' : 'Briefe'}${data.uncertain ? `, ${uncertainPhrase(data.imprecise, data.inferred)}` : ''}`;
+        const showLabel = (y % labelEvery === 0) || (yearSpan <= 3);
+        bars.push(`<span class="tv-bar${chosen ? ' is-chosen' : ''}" role="button" tabindex="-1" data-year="${y}" aria-label="${escapeHtml(label)}" aria-pressed="${Boolean(chosen)}">`
+            + `<span class="tv-stack" style="height: ${height}%">${segments}${hatch}</span>`
+            + (showLabel ? `<span class="tv-bar__label" aria-hidden="true">${y}</span>` : '')
+            + '</span>');
+    }
+    container.innerHTML = bars.join('');
+    container.classList.toggle('is-narrowed', Boolean(period) || undatedChosen);
+    container.setAttribute('aria-label', 'Briefe je Jahr. Pfeiltasten wechseln das Jahr, Enter wählt es als Zeitraum, Umschalt mit Pfeiltasten erweitert den Zeitraum, Escape hebt ihn auf, Umschalt und Enter legt die Briefe des Jahrs in den Korb');
+    renderGridlines(document.getElementById('tv-grid'), maxCount);
+
+    renderUndatedBin(undatedLetters, undatedByLang, order, maxCount, offAxis, undatedChosen);
+    renderSpanBin(spanLetters, maxCount);
+    renderLegend(order, languageTotals, hasLanguages, totals);
+    bindProfile(container, letters);
+
+    // Text alternative: every year with its values, then the letters off the axis
+    const withInferred = totals.inferred > 0;
+    const languageText = languages => Object.entries(languages).filter(([key]) => key !== '_total')
+        .sort((a, b) => b[1] - a[1]).map(([key, count]) => `${key === 'other' ? 'weitere' : languageLabel(key)} ${count}`).join(', ');
+    const row = (label, total, imprecise, inferred, languages) => [label, total, imprecise,
+        ...(withInferred ? [inferred] : []), ...(hasLanguages ? [languages] : [])];
+    const rows = [];
+    for (let y = minYear; y <= maxYear; y++) {
+        const d = yearData[y];
+        if (d.total) rows.push(row(String(y), d.total, d.imprecise, d.inferred, languageText(d.languages)));
+    }
+    if (offAxis.mixed) offAxis.groups.forEach(g => rows.push(row(g.label, g.count, '', '', '')));
+    else if (undatedLetters.length) rows.push(row('ohne Datum', undatedLetters.length, '', '', languageText(undatedByLang)));
+    if (spanLetters.length) rows.push(row('Spanne über mehrere Jahre', spanLetters.length, spanLetters.length, spanLetters.filter(l => l.dateInferred).length, ''));
+    renderDataTable(document.getElementById('timeline-table'), {
+        caption: 'Briefe je Jahr, ohne den gewählten Zeitraum',
+        columns: ['Jahr', 'Briefe', 'davon unscharf datiert', ...(withInferred ? ['davon erschlossen'] : []), ...(hasLanguages ? ['Sprachen'] : [])],
+        rows
+    });
+    nameTable('timeline-table', 'Briefe je Jahr als Tabelle');
 }
 
-function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLanguages, maxCount, offAxis) {
-    if (!undatedBin) return;
+// Two tables stand under the view; each summary says which figure it gives in numbers
+function nameTable(id, text) {
+    const summary = document.querySelector(`#${id} summary`);
+    if (summary) summary.textContent = text;
+}
 
-    if (undatedLetters.length > 0) {
-        undatedBin.classList.remove('hidden', 'all-dated');
-        undatedBin.style.cursor = 'pointer';
-        undatedBin.setAttribute('role', 'button');
-        undatedBin.tabIndex = 0;
-        const visibleLabel = offAxis.mixed ? 'ohne Jahr' : 'ohne Datum';
-        const groupText = offAxis.groups.map(g => `${g.count} ${g.phrase}`).join(', ');
-        // The accessible name starts with the visible text (count, then the label), WCAG 2.5.3
-        undatedBin.setAttribute('aria-label', offAxis.mixed
-            ? `${undatedLetters.length} ohne Jahr: ${groupText}. Alle anzeigen`
-            : `${undatedLetters.length} ohne Datum, Briefe anzeigen`);
-        const undatedHeight = Math.max(4, (undatedLetters.length / maxCount) * 100);
-        const binBar = undatedBin.querySelector('.undated-bin-bar');
-        const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
+// Label steps of 1, 2, 5, 10, 20, 25, 50 years, so labels fall on round years
+function niceYearStep(raw) {
+    return [1, 2, 5, 10, 20, 25, 50, 100].find(step => step >= raw) || raw;
+}
 
-        // Build stacked segments for undated bin
-        let undatedSegments = '';
-        let currentBottom = 0;
-        const tooltipParts = offAxis.mixed
-            ? [`Ohne Platz auf der Zeitachse: ${undatedLetters.length} Briefe`, ...offAxis.groups.map(g => `${g.count} ${escapeHtml(g.phrase)}`)]
-            : [`Ohne Datum: ${undatedLetters.length} Briefe`];
-
-        sortedLanguages.forEach(lang => {
-            const count = undatedByLang[lang] || 0;
-            if (count > 0) {
-                const segmentHeight = (count / undatedLetters.length) * 100;
-                const color = lang === '_total' ? 'var(--color-data)' : (LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other);
-                undatedSegments += `<div class="timeline-stack-segment" style="height: ${segmentHeight}%; background: ${color}; bottom: ${currentBottom}%;" data-lang="${escapeHtml(lang)}" data-count="${count}"></div>`;
-                currentBottom += segmentHeight;
-                // '_total' is the single category of a dataset without languages, no language
-                if (lang !== '_total') tooltipParts.push(`${escapeHtml(languageLabel(lang))}: ${count}`);
-            }
-        });
-
-        binBar.style.height = `${undatedHeight}%`;
-        binBar.innerHTML = undatedSegments;
-        binTooltip.innerHTML = tooltipParts.join('<br>');
-
-        // Set count above bar and label below
-        const binCount = undatedBin.querySelector('.undated-bin-count');
-        const binLabel = undatedBin.querySelector('.undated-bin-label');
-        if (binCount) binCount.textContent = undatedLetters.length;
-        if (binLabel) binLabel.textContent = visibleLabel;
-
-        if (!undatedBinBound) {
-            undatedBinBound = true;
-            undatedBin.addEventListener('mousemove', (e) => {
-                binTooltip.style.left = `${e.clientX}px`;
-                binTooltip.style.top = `${e.clientY - binTooltip.offsetHeight - 10}px`;
-            });
-        }
-
-        // A year range cannot express "no date": the slider clamps values below its minimum
-        undatedBin.onclick = () => {
-            showUndatedLetters();
-        };
-    } else {
-        // Show schematic placeholder when all letters are dated
-        undatedBin.classList.remove('hidden');
-        undatedBin.classList.add('all-dated');
-        undatedBin.removeAttribute('role');
-        undatedBin.removeAttribute('tabindex');
-        undatedBin.removeAttribute('aria-label');
-        const binBar = undatedBin.querySelector('.undated-bin-bar');
-        const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
-        const binLabel = undatedBin.querySelector('.undated-bin-label');
-        const binCount = undatedBin.querySelector('.undated-bin-count');
-
-        if (binBar) {
-            binBar.innerHTML = '';
-            binBar.style.height = '0';
-        }
-        if (binCount) binCount.innerHTML = '<i class="fas fa-check"></i>';
-        if (binLabel) binLabel.textContent = 'ohne Datum';
-        if (binTooltip) binTooltip.textContent = 'Alle Briefe datiert';
-        undatedBin.onclick = null;
-        undatedBin.style.cursor = 'default';
+function renderGridlines(host, maxCount) {
+    if (!host) return;
+    if (maxCount <= 1) {
+        host.innerHTML = '';
+        return;
     }
+    const raw = maxCount / 3;
+    const magnitude = Math.pow(10, Math.floor(Math.log10(raw)));
+    const normalized = raw / magnitude;
+    const step = Math.max(1, (normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10) * magnitude);
+    const lines = [];
+    for (let value = step; value < maxCount; value += step) {
+        const pct = (value / maxCount) * 100;
+        lines.push(`<span class="tv-grid__line" style="bottom: ${pct}%"></span><span class="tv-grid__label" style="bottom: ${pct}%">${fmt(value)}</span>`);
+    }
+    host.innerHTML = lines.join('');
+}
+
+function renderUndatedBin(undated, byLang, order, maxCount, offAxis, chosen) {
+    const bin = document.getElementById('timeline-undated-bin');
+    if (!bin) return;
+    if (!undated.length) {
+        bin.classList.add('hidden');
+        return;
+    }
+    bin.classList.remove('hidden');
+    bin.classList.toggle('is-chosen', chosen);
+    const label = offAxis.mixed ? 'ohne Jahr' : 'ohne Datum';
+    const groups = offAxis.groups.map(g => `${fmt(g.count)} ${g.phrase}`).join(', ');
+    bin.setAttribute('aria-label', offAxis.mixed
+        ? `${fmt(undated.length)} ${label}: ${groups}. Briefe zeigen`
+        : `${fmt(undated.length)} ${label}, Briefe zeigen`);
+    bin.dataset.tip = offAxis.mixed ? `Ohne Platz auf der Zeitachse: ${groups}` : `${fmt(undated.length)} Briefe ohne Datum`;
+    let bottom = 0;
+    bin.querySelector('.tv-bin__bar').innerHTML = order.map(key => {
+        const count = byLang[key] || 0;
+        if (!count) return '';
+        const share = (count / undated.length) * 100;
+        const segment = `<span class="tv-seg" style="height: ${share}%; bottom: ${bottom}%; background: ${colourOf(key) || 'var(--color-data)'}"></span>`;
+        bottom += share;
+        return segment;
+    }).join('');
+    bin.querySelector('.tv-bin__bar').style.height = `${Math.max(3, (undated.length / maxCount) * 100)}%`;
+    bin.querySelector('.tv-bin__count').textContent = fmt(undated.length);
+    bin.querySelector('.tv-bin__label').textContent = label;
 }
 
 /**
- * Render timeline legend
+ * Bin for letters dated to a span over several years. It informs and does not filter: the period
+ * selects by start year, which a span does not stand for (decision E5).
  */
-function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLanguageData, totalUncertain, totalImprecise, totalInferred) {
-    if (!legendEl) return;
+function renderSpanBin(spans, maxCount) {
+    const bin = document.getElementById('timeline-span-bin');
+    if (!bin) return;
+    if (!spans.length) {
+        bin.classList.add('hidden');
+        return;
+    }
+    const first = Math.min(...spans.map(l => l.year));
+    const last = Math.max(...spans.map(l => parseInt(String(l.dateTo).substring(0, 4), 10)));
+    bin.classList.remove('hidden');
+    bin.querySelector('.tv-bin__count').textContent = fmt(spans.length);
+    bin.querySelector('.tv-bin__label').textContent = 'Spanne';
+    const bar = bin.querySelector('.tv-bin__bar');
+    bar.style.height = `${Math.max(3, (spans.length / maxCount) * 100)}%`;
+    bar.innerHTML = '<span class="tv-seg tv-seg--span" style="height: 100%; bottom: 0"></span>';
+    const text = `${fmt(spans.length)} Briefe über mehrere Jahre datiert, zwischen ${first} und ${last}. Sie stehen in keinem Jahr.`;
+    bin.dataset.tip = text;
+    bin.setAttribute('aria-label', text);
+}
 
-    let legendItems = [];
+// The legend names the colours; the language filter itself stands in the sidebar, whose list of
+// languages is the legend of every figure (design.md, Sprachfarben). A second set of switches here
+// counted against the controls of the first screen on a phone.
+function renderLegend(order, totals, hasLanguages, uncertain) {
+    const legend = document.getElementById('timeline-stack-legend');
+    if (!legend) return;
+    const items = hasLanguages
+        ? order.filter(key => totals[key] > 0 && key !== '_total').map(key => {
+            const title = key === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten'
+                : key === 'other' ? 'Alle übrigen Sprachen, einzeln im Filter der Seitenleiste' : '';
+            return `<span class="tv-legend__item"${title ? ` title="${title}"` : ''}><span class="tv-swatch" style="background: ${colourOf(key)}"></span>${escapeHtml(languageLabel(key))}</span>`;
+        })
+        : ['<span class="tv-legend__item">Keine Sprachdaten im Korpus</span>'];
+    // One mark for every date that is no exact reading of the source: hatching in the profile, an
+    // open ring with its span below
+    if (uncertain.uncertain > 0) {
+        const label = uncertain.inferred === 0 ? 'Unscharfes Datum'
+            : uncertain.imprecise === 0 ? 'Erschlossenes Datum' : 'Unscharfes oder erschlossenes Datum';
+        items.push(`<span class="tv-legend__item" title="${escapeHtml(uncertainPhrase(uncertain.imprecise, uncertain.inferred))}"><span class="tv-swatch tv-swatch--hatch"></span><span class="tv-swatch tv-swatch--ring"></span>${label}</span>`);
+    }
+    legend.innerHTML = items.join('');
+}
 
-    if (hasLanguageData) {
-        legendItems = sortedLanguages
-            .filter(lang => languageTotals[lang] > 0 && lang !== '_total')
-            .map(lang => {
-                const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS.other;
-                const count = languageTotals[lang];
-                const label = languageLabel(lang);
-                const tooltip = lang === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten'
-                    : lang === 'other' ? 'Alle übrigen Sprachen, einzeln im Filter der Seitenleiste und in der Tabelle' : '';
-                return `<button type="button" class="timeline-legend-item timeline-legend-btn" data-lang="${escapeHtml(lang)}" aria-pressed="${isOnlyLanguage(lang)}"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count.toLocaleString('de-DE')})</button>`;
-            });
+// Choose the years from a to b, or release the period when exactly that year is chosen again
+function commitYears(a, b, { toggle = true } = {}) {
+    const start = Math.min(a, b);
+    const end = Math.max(a, b);
+    const period = chosenPeriod();
+    if (toggle && start === end && period && period.start === start && period.end === end) {
+        deps.setPeriod(null);
     } else {
-        legendItems.push(`<span class="timeline-legend-item timeline-legend-info" title="Dieses Korpus enthält keine Sprachmetadaten"><i class="fas fa-info-circle"></i> Keine Sprachdaten im Korpus</span>`);
+        deps.setPeriod(start, end);
     }
-
-    // One hatching for every date that is no exact reading of the source; the label names only
-    // the reasons the dataset has, a letter both imprecise and inferred counts once
-    if (totalUncertain > 0) {
-        const [label, title] = totalInferred === 0
-            ? ['Unscharfes Datum', 'Briefe mit unvollständigem oder unsicherem Datum']
-            : totalImprecise === 0
-                ? ['Erschlossenes Datum', 'Briefe, deren Datum die Edition erschlossen hat']
-                : ['Unscharfes oder erschlossenes Datum', `${uncertainPhrase(totalImprecise, totalInferred)}; ein Brief mit beidem zählt einmal`];
-        legendItems.push(`<span class="timeline-legend-item timeline-legend-uncertainty" title="${title}"><span class="timeline-legend-hatched"></span>${label} (${totalUncertain})</span>`);
-    }
-
-    legendEl.innerHTML = legendItems.join('');
-
-    // The segments of a bar are too small for a pointer on a narrow screen and out of reach of
-    // the keyboard; the legend sets the same language filter for the whole chart
-    legendEl.querySelectorAll('.timeline-legend-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const lang = btn.dataset.lang;
-            const release = isOnlyLanguage(lang);
-            languageBoxes().forEach(cb => { cb.checked = release || matchesLanguage(cb.value, lang); });
-            applyFilters();
-            legendEl.querySelector(`.timeline-legend-btn[data-lang="${CSS.escape(lang)}"]`)?.focus();
-        });
-    });
 }
 
-function languageBoxes() {
-    return [...document.querySelectorAll('input[name="language"]')];
-}
+function bindProfile(container, letters) {
+    const bars = [...container.querySelectorAll('.tv-bar')];
+    const period = chosenPeriod();
+    const start = (period && bars.find(b => Number(b.dataset.year) === period.start))
+        || bars.find(b => b.querySelector('.tv-seg')) || bars[0];
+    if (start) start.tabIndex = 0;
 
-// The grey rest stands for every language without a colour of its own
-function matchesLanguage(code, lang) {
-    return lang === 'other' ? isRestLanguage(code) : code === lang;
-}
-
-// True when the language filter of the sidebar selects exactly this legend entry
-function isOnlyLanguage(lang) {
-    const boxes = languageBoxes();
-    const checked = boxes.filter(cb => cb.checked);
-    return checked.length > 0 && checked.length < boxes.length
-        && boxes.every(cb => cb.checked === matchesLanguage(cb.value, lang));
-}
-
-/**
- * Setup click handlers for timeline bars
- */
-function setupTimelineClickHandlers(container) {
-    const filteredLetters = getFilteredLetters();
-
-    // Click handlers for segments (language + year filter)
-    container.querySelectorAll('.timeline-stack-segment').forEach(segment => {
-        segment.style.cursor = 'pointer';
-        segment.addEventListener('click', (e) => {
-            e.stopPropagation();
-
-            const wrapper = segment.closest('.timeline-bar-wrapper');
-            const year = parseInt(wrapper.dataset.year);
-            const lang = segment.dataset.lang;
-
-            // Set year filter
-            const slider = elements.yearRangeSlider;
-            if (slider && slider.noUiSlider) {
-                slider.noUiSlider.set([year, year]);
-            }
-
-            // A search left in the letter list would silently narrow what the segment promises
-            clearLetterSearch();
-
-            // '_total' stands for all languages when the filtered letters carry no language
-            // code; unchecking every box would then empty the result
-            if (lang !== '_total') {
-                // The rest segment stands for every language without a colour of its own
-                languageBoxes().forEach(cb => { cb.checked = matchesLanguage(cb.value, lang); });
-            }
-
-            applyFilters();
-            revealLetters();
-        });
-    });
-
-    // Click on bar wrapper (not segment) filters by year only
-    const wrappers = [...container.querySelectorAll('.timeline-bar-wrapper')];
-    const activateYear = (wrapper, toBasket) => {
-        const year = parseInt(wrapper.dataset.year, 10);
-
-        // Shift: add all letters of this year to the basket
-        if (toBasket) {
-            const yearLetters = filteredLetters.filter(l => l.year === year);
-            showToast(addLettersToBasket(yearLetters.map(l => l.id)));
-            return;
-        }
-
-        const slider = elements.yearRangeSlider;
-        if (slider && slider.noUiSlider) {
-            slider.noUiSlider.set([year, year]);
-        }
-
-        clearLetterSearch();
-        applyFilters();
-        revealLetters();
+    const barAt = (clientX) => {
+        const rect = container.getBoundingClientRect();
+        const index = Math.floor(((clientX - rect.left) / rect.width) * bars.length);
+        return bars[Math.max(0, Math.min(bars.length - 1, index))];
+    };
+    const preview = (a, b) => {
+        const lo = Math.min(a, b);
+        const hi = Math.max(a, b);
+        bars.forEach(bar => bar.classList.toggle('is-dragged', Number(bar.dataset.year) >= lo && Number(bar.dataset.year) <= hi));
     };
 
-    wrappers.forEach(wrapper => {
-        wrapper.addEventListener('click', (e) => {
-            if (e.target.classList.contains('timeline-stack-segment')) return;
-            activateYear(wrapper, e.shiftKey);
-        });
-
-        const tooltip = wrapper.querySelector('.timeline-bar-tooltip');
-        if (tooltip) {
-            wrapper.addEventListener('mousemove', (e) => {
-                tooltip.style.left = `${e.clientX}px`;
-                tooltip.style.top = `${e.clientY - tooltip.offsetHeight - 10}px`;
-            });
+    let drag = null;
+    container.onpointerdown = (e) => {
+        if (e.button !== 0) return;
+        const bar = barAt(e.clientX);
+        if (!bar) return;
+        drag = { from: Number(bar.dataset.year), to: Number(bar.dataset.year), shift: e.shiftKey };
+        container.setPointerCapture(e.pointerId);
+        preview(drag.from, drag.to);
+        e.preventDefault();
+    };
+    container.onpointermove = (e) => {
+        const bar = barAt(e.clientX);
+        if (!drag) {
+            showTip(bar?.getAttribute('aria-label'), e.clientX, e.clientY);
+            return;
         }
-    });
+        hideTip();
+        drag.to = Number(bar.dataset.year);
+        preview(drag.from, drag.to);
+    };
+    const finish = (commit) => {
+        if (!drag) return;
+        const { from, to, shift } = drag;
+        drag = null;
+        bars.forEach(bar => bar.classList.remove('is-dragged'));
+        if (!commit) return;
+        if (shift && from === to) {
+            // Shift and click: the letters of the year into the basket, as before
+            showToast(addLettersToBasket(letters.filter(l => l.year === from && !isMultiYearSpan(l)).map(l => l.id)));
+            return;
+        }
+        commitYears(from, to);
+    };
+    container.onpointerup = () => finish(true);
+    container.onpointercancel = () => finish(false);
+    container.onpointerleave = () => { if (!drag) hideTip(); };
 
-    // Roving tab stop: the first year with letters, arrows move between years
-    const start = wrappers.find(w => w.querySelector('.timeline-stack-segment')) || wrappers[0];
-    if (start) start.tabIndex = 0;
     container.onkeydown = (e) => {
-        const wrapper = e.target.closest?.('.timeline-bar-wrapper');
-        if (!wrapper) return;
+        const bar = e.target.closest?.('.tv-bar');
+        if (!bar) return;
+        const year = Number(bar.dataset.year);
         if (e.key === 'Enter' || e.key === ' ') {
             // Handled here instead of the global role="button" handler, which drops the Shift key
             e.preventDefault();
             e.stopPropagation();
-            activateYear(wrapper, e.shiftKey);
+            if (e.shiftKey) {
+                showToast(addLettersToBasket(letters.filter(l => l.year === year && !isMultiYearSpan(l)).map(l => l.id)));
+            } else {
+                refocusYear = year;
+                commitYears(year, year);
+            }
             return;
         }
-        const index = wrappers.indexOf(wrapper);
-        const targets = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: wrappers.length - 1 };
+        if (e.key === 'Escape' && chosenPeriod()) {
+            e.preventDefault();
+            refocusYear = year;
+            deps.setPeriod(null);
+            return;
+        }
+        const index = bars.indexOf(bar);
+        const targets = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: bars.length - 1 };
         if (!(e.key in targets)) return;
         e.preventDefault();
-        const next = wrappers[Math.max(0, Math.min(wrappers.length - 1, targets[e.key]))];
-        wrapper.tabIndex = -1;
+        const next = bars[Math.max(0, Math.min(bars.length - 1, targets[e.key]))];
+        if (e.shiftKey && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+            // Shift extends the period from its far end, or from the year in focus
+            const current = chosenPeriod();
+            const nextYear = Number(next.dataset.year);
+            const anchor = !current ? year : (year === current.end ? current.start : current.end);
+            refocusYear = nextYear;
+            commitYears(anchor, nextYear, { toggle: false });
+            return;
+        }
+        bar.tabIndex = -1;
         next.tabIndex = 0;
         next.focus();
+        showTipFor(next, next.getAttribute('aria-label'));
     };
+    container.onfocusout = () => hideTip();
+
+    if (refocusYear != null) {
+        const target = bars.find(b => Number(b.dataset.year) === refocusYear);
+        refocusYear = null;
+        if (target) {
+            bars.forEach(b => { b.tabIndex = -1; });
+            target.tabIndex = 0;
+            target.focus();
+        }
+    }
+
+    const undated = document.getElementById('timeline-undated-bin');
+    if (undated && !undated.dataset.bound) {
+        undated.dataset.bound = '1';
+        undated.addEventListener('click', () => deps.showUndatedLetters());
+        undated.addEventListener('pointermove', e => showTip(undated.dataset.tip, e.clientX, e.clientY));
+        undated.addEventListener('pointerleave', hideTip);
+    }
+    const span = document.getElementById('timeline-span-bin');
+    if (span && !span.dataset.bound) {
+        span.dataset.bound = '1';
+        span.addEventListener('pointermove', e => showTip(span.dataset.tip, e.clientX, e.clientY));
+        span.addEventListener('pointerleave', hideTip);
+    }
+}
+
+// The year bar that takes the focus again after a keyboard choice redrew the profile
+let refocusYear = null;
+
+// Tooltip, one for both figures; its text is set as text, never as markup
+
+function showTip(text, x, y) {
+    const tip = document.getElementById('tv-tip');
+    if (!tip || !text) {
+        hideTip();
+        return;
+    }
+    const lines = Array.isArray(text) ? text : [text];
+    tip.replaceChildren(...lines.filter(Boolean).map((line, i) => {
+        const div = document.createElement('div');
+        if (i === 0) div.className = 'tv-tip__head';
+        div.textContent = line;
+        return div;
+    }));
+    tip.classList.remove('hidden');
+    const width = tip.offsetWidth;
+    const height = tip.offsetHeight;
+    const left = Math.max(4, Math.min(window.innerWidth - width - 4, x - width / 2));
+    const top = y - height - 12 < 4 ? y + 16 : y - height - 12;
+    tip.style.left = `${left}px`;
+    tip.style.top = `${top}px`;
+}
+
+function showTipFor(el, text) {
+    const rect = el.getBoundingClientRect();
+    showTip(text, rect.left + rect.width / 2, rect.top);
+}
+
+function hideTip() {
+    document.getElementById('tv-tip')?.classList.add('hidden');
+}
+
+// Lower figure
+
+const SIDE_ORDER = { out: 0, in: 1, other: 2, all: 0 };
+
+function dateLabel(letter, iv) {
+    const parts = dateParts(letter.date);
+    let text;
+    if (letter.datePrecision === 'range' && letter.dateTo) {
+        const to = dateParts(letter.dateTo);
+        text = `${partsLabel(parts)} bis ${partsLabel(to)}`;
+    } else {
+        text = partsLabel(parts);
+    }
+    const notes = [];
+    if (!iv.exact && letter.datePrecision !== 'range') notes.push(parts.m ? 'nur Monat bekannt' : 'nur Jahr bekannt');
+    if (letter.dateCertainty === 'low') notes.push('unsicher');
+    if (letter.dateInferred) notes.push('erschlossen');
+    return notes.length ? `${text}, ${notes.join(', ')}` : text;
+}
+
+function partsLabel(p) {
+    if (!p) return '';
+    if (p.d) return `${p.d}.${p.m}.${p.y}`;
+    if (p.m) return `${MONTHS[p.m - 1]} ${p.y}`;
+    return String(p.y);
+}
+
+function personLabel(person, letter) {
+    const name = person?.name || 'Unbekannt';
+    const age = person ? personAge(person, letter) : null;
+    return age != null ? `${name} (${age})` : name;
+}
+
+function letterTip(letter, iv) {
+    const recipients = letterRecipients(letter);
+    const to = recipients.length ? recipients.map(r => personLabel(r, letter)).join('; ') : 'Unbekannt';
+    return [
+        dateLabel(letter, iv),
+        `${personLabel(letter.sender, letter)} an ${to}`,
+        letter.place_sent?.name || '',
+        contextText(correspondenceContext(letter))
+    ];
+}
+
+function binLabel(bin, binMonths, startYear) {
+    const year = startYear + Math.floor(bin.startMonth / 12);
+    const month = bin.startMonth % 12;
+    if (binMonths === 12) return String(year);
+    if (binMonths === 6) return `${month === 0 ? '1.' : '2.'} Halbjahr ${year}`;
+    if (binMonths === 3) return `${month / 3 + 1}. Quartal ${year}`;
+    return `${MONTHS[month]} ${year}`;
+}
+
+const UNIT = { 1: 'je Monat', 3: 'je Quartal', 6: 'je Halbjahr', 12: 'je Jahr' };
+const NO_BIN = { 1: 'Keinem Monat', 3: 'Keinem Quartal', 6: 'Keinem Halbjahr', 12: 'Keinem Jahr' };
+const PRECISION_PHRASE = { month: 'nur auf den Monat', year: 'nur auf das Jahr', range: 'auf einen Zeitraum', day: 'auf einen Tag' };
+
+function sideNames(centre) {
+    if (!centre) return null;
+    const life = lifeDatesOf(centrePerson(centre));
+    const name = life ? `${centre.name} (${life})` : centre.name;
+    return { out: `von ${name}`, in: `an ${name}`, other: 'zwischen anderen' };
+}
+
+// The person object of the centre, for life dates and ages
+function centrePerson(centre) {
+    for (const letter of deps.getAllLetters()) {
+        const person = [letter.sender, ...letterRecipients(letter)].find(p => personKey(p) === centre.key);
+        if (person) return person;
+    }
+    return null;
+}
+
+function renderDetail() {
+    const figure = document.getElementById('tv-figure');
+    const canvas = document.getElementById('tv-canvas');
+    const caption = document.getElementById('tv-unit');
+    if (!figure || !canvas || !document.getElementById('timeline-view')?.classList.contains('active')) return;
+
+    const letters = deps.getFilteredLetters();
+    const hasLanguages = letters.some(l => l.language?.code);
+    const centre = rowCentre();
+    const entries = [];
+    for (const letter of letters) {
+        const iv = axisInterval(letter);
+        if (iv) entries.push({ letter, iv, side: letterSide(letter, centre?.key), lang: languageKey(letter, hasLanguages) });
+    }
+    entries.sort((a, b) => a.iv.start - b.iv.start || a.iv.end - b.iv.end);
+
+    const empty = document.getElementById('tv-empty');
+    const showButton = document.getElementById('tv-show-letters');
+    showButton?.classList.toggle('hidden', letters.length === 0);
+    if (showButton) showButton.textContent = letters.length === 1 ? 'Den Brief zeigen' : `${fmt(letters.length)} Briefe zeigen`;
+    if (!entries.length) {
+        scene = null;
+        canvas.classList.add('hidden');
+        document.getElementById('tv-axis').innerHTML = '';
+        document.getElementById('tv-marks').innerHTML = '';
+        document.getElementById('tv-detail-note').classList.add('hidden');
+        if (caption) caption.textContent = '';
+        empty.textContent = letters.length
+            ? 'Kein Brief der Auswahl hat einen Platz auf der Zeitachse.'
+            : 'Die Auswahl enthält keinen Brief.';
+        empty.classList.remove('hidden');
+        renderDataTable(document.getElementById('tv-table'), { caption: '', columns: [], rows: [] });
+        return;
+    }
+    empty.classList.add('hidden');
+    canvas.classList.remove('hidden');
+
+    const period = chosenPeriod();
+    const startYear = period ? period.start : monthOfDay(entries[0].iv.start).y;
+    const endYear = period ? period.end : Math.max(...entries.map(e => monthOfDay(e.iv.end - 1).y));
+    const axis = { start: dayNumber(startYear, 1, 1), end: dayNumber(endYear + 1, 1, 1), startYear, endYear };
+    const width = Math.max(240, figure.clientWidth);
+    lastWidth = figure.clientWidth;
+    const months = (endYear - startYear + 1) * 12;
+    const resolution = timeResolution(entries.length, months, width);
+    const sides = centre ? ['out', 'in', ...(entries.some(e => e.side === 'other') ? ['other'] : [])] : ['all'];
+    const names = sideNames(centre);
+
+    scene = resolution.level === 'letters'
+        ? layoutLetters(entries, axis, width, sides)
+        : layoutBins(entries, axis, width, sides, resolution.binMonths);
+    scene.names = names;
+    scene.sides = sides;
+    scene.ticks = axisTicks(scene, axis);
+    drawScene(canvas, scene);
+    renderAxis(scene);
+    renderMarks(scene);
+    if (caption) caption.textContent = scene.level === 'letters' ? 'Einzelne Briefe' : `Briefe ${UNIT[scene.binMonths]}`;
+
+    // What the bins cannot place, so no letter of the selection goes unmentioned
+    const note = document.getElementById('tv-detail-note');
+    const unplaced = Object.entries(scene.unplaced || {}).filter(([, n]) => n > 0);
+    if (unplaced.length) {
+        const parts = unplaced.map(([key, n]) => `${fmt(n)} ${PRECISION_PHRASE[key] || 'unscharf'} datiert`);
+        note.textContent = `${NO_BIN[scene.binMonths]} zuzuordnen: ${parts.join(', ')}.`;
+        note.classList.remove('hidden');
+    } else {
+        note.classList.add('hidden');
+    }
+    renderDetailTable(scene, names);
+    // The uncertainty legend names the open ring only while the letters are drawn
+    document.getElementById('timeline-stack-legend')?.classList.toggle('tv-legend--rings', scene.level === 'letters');
+
+    if (focusDetailAfterRender) {
+        focusDetailAfterRender = false;
+        document.querySelector('#tv-marks .tv-mark[tabindex="0"]')?.focus();
+    }
 }
 
 /**
- * Render Y-axis gridlines for timeline
+ * The single letters as marks, stacked in columns of their day; the letters from the centre
+ * above the axis, the letters to it below, the letters between others in a lane of their own
  */
-function renderTimelineGridlines(container, maxCount) {
-    // Remove existing gridlines
-    container.querySelectorAll('.timeline-gridline, .timeline-y-axis').forEach(el => el.remove());
+function layoutLetters(entries, axis, width, sides) {
+    const size = width < 520 ? 6 : 7;
+    const col = size + 1;
+    const pad = Math.ceil(size / 2) + 2;
+    const plotW = width - 2 * pad;
+    const x = day => pad + ((day - axis.start) / (axis.end - axis.start)) * plotW;
+    const columns = Math.max(1, Math.floor(plotW / col));
+    const stacks = Object.fromEntries(sides.map(side => [side, new Map()]));
+    const marks = [];
+    const overflow = [];
+    for (const entry of entries) {
+        const side = sides.includes(entry.side) ? entry.side : sides[0];
+        const cx = x((entry.iv.start + entry.iv.end) / 2);
+        const c = Math.max(0, Math.min(columns - 1, Math.floor((cx - pad) / col)));
+        const stack = stacks[side];
+        const row = stack.get(c) || 0;
+        stack.set(c, row + 1);
+        // A letter beyond the top of its column is not drawn but stays in the keyboard order and
+        // the table; its focus ring stands on the "+n" of the column
+        const hidden = row >= MAX_ROWS;
+        marks.push({ ...entry, side, c, row: hidden ? MAX_ROWS + 1 : row, hidden, cx: pad + c * col + col / 2, x0: x(entry.iv.start), x1: x(entry.iv.end) });
+    }
+    for (const side of sides) {
+        for (const [c, n] of stacks[side]) if (n > MAX_ROWS) overflow.push({ side, c, extra: n - MAX_ROWS, cx: pad + c * col + col / 2 });
+    }
+    const rowsOf = side => Math.min(MAX_ROWS, Math.max(2, ...stacks[side].values(), 0)) + (overflow.some(o => o.side === side) ? 2 : 0);
+    const lanes = buildLanes(sides, side => rowsOf(side) * col);
+    for (const mark of marks) {
+        const lane = lanes[mark.side];
+        mark.cy = lane.up ? lane.axis - (mark.row + 0.5) * col : lane.axis + (mark.row + 0.5) * col;
+        mark.r = size / 2;
+        mark.key = `l:${mark.letter.id}`;
+    }
+    overflow.forEach(o => {
+        const lane = lanes[o.side];
+        const rowsShown = MAX_ROWS + 0.5;
+        o.cy = lane.up ? lane.axis - rowsShown * col - col : lane.axis + rowsShown * col + col;
+    });
+    // The keyboard reads the marks as the eye does, left to right along the axis: a year date
+    // stands at the middle of its year, not at its first day
+    marks.sort((a, b) => a.cx - b.cx || SIDE_ORDER[a.side] - SIDE_ORDER[b.side] || a.row - b.row);
+    return { level: 'letters', width, height: lanes.height, lanes, marks, overflow, x, pad, size, axisYears: axis };
+}
 
-    if (maxCount <= 1) return;
+/**
+ * Lanes from top to bottom: the upper side grows upwards from its axis, the lower side and the
+ * lane of letters between others grow downwards. Tick labels stand in a band under the first axis.
+ */
+function buildLanes(sides, heightOf) {
+    const LABEL = 18;
+    const TICKS = 20;
+    const GAP = 10;
+    const lanes = {};
+    let y = LABEL;
+    const [first, ...rest] = sides;
+    const firstHeight = heightOf(first);
+    lanes[first] = { up: true, top: y, axis: y + firstHeight, height: firstHeight };
+    y += firstHeight;
+    lanes.ticks = y;
+    y += TICKS;
+    // The lower sides grow downwards from their top line; the band of tick labels separates the
+    // upper side from the lower one like the spine of the former chronicle. Each lower side names
+    // itself in a band under its marks.
+    for (const side of rest) {
+        if (side === 'other') y += GAP;
+        const h = heightOf(side);
+        lanes[side] = { up: false, top: y, axis: y, height: h, label: y + h + 2 };
+        y += h + LABEL;
+    }
+    lanes.height = y + 4;
+    return lanes;
+}
 
-    // Calculate nice round numbers for gridlines (aim for 3-5 lines)
-    const gridlineCount = 4;
-    const rawStep = maxCount / gridlineCount;
+function layoutBins(entries, axis, width, sides, binMonths) {
+    const pad = 4;
+    const plotW = width - 2 * pad;
+    const sideOf = side => (sides.includes(side) ? side : sides[0]);
+    const { bins, unplaced } = binLetters(entries.map(e => ({ ...e, side: sideOf(e.side) })), { startYear: axis.startYear, endYear: axis.endYear, binMonths });
+    const binW = plotW / bins.length;
+    const max = Object.fromEntries(sides.map(side => [side, Math.max(1, ...bins.map(b => b.sides[side]))]));
+    // One scale for all sides, so a bar of the same height is the same number of letters
+    const budget = width < 520 ? 150 : 200;
+    const total = sides.reduce((sum, side) => sum + max[side], 0);
+    const perLetter = budget / total;
+    const lanes = buildLanes(sides, side => Math.max(24, max[side] * perLetter));
+    const marks = bins.filter(b => b.total > 0).map(bin => ({
+        bin, key: `b:${bin.index}`,
+        x0: pad + bin.index * binW, x1: pad + (bin.index + 1) * binW,
+        cx: pad + (bin.index + 0.5) * binW
+    }));
+    const x = day => pad + ((day - axis.start) / (axis.end - axis.start)) * plotW;
+    return { level: 'bins', binMonths, width, height: lanes.height, lanes, marks, bins, unplaced, perLetter, binW, x, pad, axisYears: axis };
+}
 
-    // Round to nice numbers
-    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
-    const normalized = rawStep / magnitude;
-    let niceStep;
-    if (normalized <= 1) niceStep = magnitude;
-    else if (normalized <= 2) niceStep = 2 * magnitude;
-    else if (normalized <= 5) niceStep = 5 * magnitude;
-    else niceStep = 10 * magnitude;
+function drawScene(canvas, s) {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(s.width * dpr);
+    canvas.height = Math.round(s.height * dpr);
+    canvas.style.height = `${s.height}px`;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, s.width, s.height);
+    // Colours from the tokens, read at drawing time so a theme change follows
+    const t = readTokens({ text: '--color-text', light: '--color-text-light', border: '--color-border-light', data: '--color-data', accent: '--color-primary', bg: '--color-bg' });
 
-    niceStep = Math.max(1, niceStep);
-
-    // Create Y-axis container
-    const yAxis = document.createElement('div');
-    yAxis.className = 'timeline-y-axis';
-
-    for (let value = niceStep; value < maxCount; value += niceStep) {
-        const percentage = (value / maxCount) * 100;
-
-        const gridline = document.createElement('div');
-        gridline.className = 'timeline-gridline';
-        gridline.style.bottom = `${percentage}%`;
-
-        const label = document.createElement('span');
-        label.className = 'timeline-gridline-label';
-        label.textContent = value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value;
-        label.style.bottom = `${percentage}%`;
-
-        yAxis.appendChild(gridline);
-        yAxis.appendChild(label);
+    // Axis lines and year rules
+    ctx.strokeStyle = t.border;
+    ctx.lineWidth = 1;
+    for (const tick of s.ticks || []) {
+        ctx.beginPath();
+        ctx.moveTo(Math.round(tick.x) + 0.5, 4);
+        ctx.lineTo(Math.round(tick.x) + 0.5, s.height - 4);
+        ctx.stroke();
+    }
+    ctx.strokeStyle = t.text;
+    for (const side of s.sides) {
+        const y = Math.round(s.lanes[side].axis) + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(s.pad, y);
+        ctx.lineTo(s.width - s.pad, y);
+        ctx.stroke();
     }
 
-    container.insertBefore(yAxis, container.firstChild);
+    if (s.level === 'letters') {
+        for (const m of s.marks) {
+            if (m.hidden) {
+                if (m.key === hoverKey) {
+                    ctx.beginPath();
+                    ctx.arc(m.cx, m.cy, m.r + 5, 0, Math.PI * 2);
+                    ctx.lineWidth = 2.5;
+                    ctx.strokeStyle = t.accent;
+                    ctx.stroke();
+                }
+                continue;
+            }
+            const colour = colourOf(m.lang) || t.data;
+            const uncertain = !m.iv.exact || m.letter.dateInferred || m.letter.dateCertainty === 'low';
+            // The span the date covers, as a thin line through the open mark; a span over a large
+            // part of the axis (a year date in a year) only under the pointer or the focus
+            const wide = m.x1 - m.x0 > (s.width - 2 * s.pad) * 0.15;
+            if (!m.iv.exact && m.x1 - m.x0 > m.r * 2 && (!wide || m.key === hoverKey)) {
+                ctx.strokeStyle = t.light;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(m.x0, m.cy);
+                ctx.lineTo(m.x1, m.cy);
+                ctx.stroke();
+            }
+            ctx.beginPath();
+            ctx.arc(m.cx, m.cy, uncertain ? m.r - 1 : m.r, 0, Math.PI * 2);
+            if (uncertain) {
+                ctx.fillStyle = t.bg;
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = colour;
+                ctx.stroke();
+            } else {
+                ctx.fillStyle = colour;
+                ctx.fill();
+            }
+            if (m.key === hoverKey) {
+                // Pointer and keyboard focus: the accent ring is the visible focus of the mark
+                ctx.beginPath();
+                ctx.arc(m.cx, m.cy, m.r + 3, 0, Math.PI * 2);
+                ctx.lineWidth = 2.5;
+                ctx.strokeStyle = t.accent;
+                ctx.stroke();
+            }
+        }
+    } else {
+        const gap = s.binW > 4 ? 1 : 0;
+        for (const m of s.marks) {
+            const w = Math.max(1, s.binW - gap);
+            for (const side of s.sides) {
+                const lane = s.lanes[side];
+                let offset = 0;
+                const langs = Object.entries(m.bin.langs[side]).sort((a, b) => b[1] - a[1]);
+                for (const [lang, n] of langs) {
+                    const h = n * s.perLetter;
+                    ctx.fillStyle = colourOf(lang) || t.data;
+                    const y = lane.up ? lane.axis - offset - h : lane.axis + offset;
+                    ctx.fillRect(m.x0 + gap / 2, y, w, h);
+                    offset += h;
+                }
+            }
+            if (m.key === hoverKey) {
+                ctx.strokeStyle = t.accent;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(m.x0, 2, s.binW, s.height - 4);
+            }
+        }
+    }
+}
+
+// Ticks every year, or every month in a period of up to two years, thinned to keep 44px apart
+function axisTicks(s, axis) {
+    const ticks = [];
+    const years = axis.endYear - axis.startYear + 1;
+    if (years <= 2) {
+        for (let y = axis.startYear; y <= axis.endYear; y++) {
+            for (let m = 1; m <= 12; m++) {
+                const x = s.x(dayNumber(y, m, 1));
+                ticks.push({ x, label: m === 1 ? String(y) : MONTHS_SHORT[m - 1], major: m === 1 });
+            }
+        }
+        const every = Math.max(1, [1, 2, 3, 6].find(step => (s.width / (years * 12)) * step >= 100) || 12);
+        return ticks.filter((tick, i) => i % every === 0);
+    }
+    const step = niceYearStep(Math.max(1, Math.ceil(years / Math.max(2, Math.floor(s.width / 96)))));
+    for (let y = Math.ceil(axis.startYear / step) * step; y <= axis.endYear; y += step) {
+        ticks.push({ x: s.x(dayNumber(y, 1, 1)), label: String(y), major: true });
+    }
+    if (!ticks.length || ticks[0].label !== String(axis.startYear)) {
+        if (!ticks.length || ticks[0].x - s.x(axis.start) > 40) ticks.unshift({ x: s.x(axis.start), label: String(axis.startYear), major: true });
+    }
+    return ticks;
+}
+
+function renderAxis(s) {
+    const host = document.getElementById('tv-axis');
+    // A label at the left edge starts there instead of standing half outside the figure
+    const ticks = s.ticks.map(t => `<span class="tv-tick${t.x < 20 ? ' tv-tick--start' : ''}" style="left: ${t.x}px; top: ${s.lanes.ticks + 3}px">${escapeHtml(t.label)}</span>`);
+    const labels = [];
+    if (s.names) {
+        const first = s.sides[0];
+        labels.push(`<span class="tv-side" style="top: 0">${escapeHtml(s.names[first])}</span>`);
+        for (const side of ['in', 'other']) {
+            if (s.lanes[side]) labels.push(`<span class="tv-side" style="top: ${s.lanes[side].label}px">${escapeHtml(s.names[side])}</span>`);
+        }
+    }
+    const overflow = (s.overflow || []).map(o => `<span class="tv-more" style="left: ${o.cx}px; top: ${o.cy - 7}px">+${fmt(o.extra)}</span>`);
+    host.style.height = `${s.height}px`;
+    host.innerHTML = ticks.join('') + labels.join('') + overflow.join('');
+}
+
+function markLabel(m, s) {
+    if (s.level === 'letters') return letterTip(m.letter, m.iv);
+    const head = `${binLabel(m.bin, s.binMonths, s.axisYears.startYear)}: ${fmt(m.bin.total)} ${m.bin.total === 1 ? 'Brief' : 'Briefe'}`;
+    const parts = s.names ? s.sides.filter(side => m.bin.sides[side]).map(side => `${s.names[side]}: ${fmt(m.bin.sides[side])}`) : [];
+    return [head, ...parts];
+}
+
+// One focusable element per mark over the canvas: keyboard, focus ring and accessible name, in
+// time order with one tab stop. The pointer finds the marks by geometry (pointer-events: none).
+function renderMarks(s) {
+    const host = document.getElementById('tv-marks');
+    const hint = s.level === 'letters'
+        ? 'Briefe in zeitlicher Folge. Pfeiltasten wechseln den Brief, Enter öffnet ihn.'
+        : 'Briefe je Zeitabschnitt. Pfeiltasten wechseln den Abschnitt, Enter wählt ihn als Zeitraum.';
+    host.setAttribute('aria-label', hint);
+    host.style.height = `${s.height}px`;
+    host.innerHTML = s.marks.map((m, i) => {
+        const label = markLabel(m, s).filter(Boolean).join('. ');
+        const top = s.level === 'letters' ? m.cy : s.lanes.ticks;
+        return `<button type="button" class="tv-mark" tabindex="${i === 0 ? 0 : -1}" data-i="${i}" style="left: ${m.cx}px; top: ${top}px" aria-label="${escapeHtml(label)}"></button>`;
+    }).join('');
+}
+
+function markAt(clientX, clientY) {
+    if (!scene) return null;
+    const rect = document.getElementById('tv-canvas').getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    if (scene.level === 'letters') {
+        let best = null;
+        for (const m of scene.marks) {
+            if (m.hidden) continue;
+            const d = Math.hypot(m.cx - x, m.cy - y);
+            if (d <= m.r + 3 && (!best || d < best.d)) best = { m, d };
+        }
+        return best?.m || null;
+    }
+    return scene.marks.find(m => x >= m.x0 && x < m.x1) || null;
+}
+
+function activateMark(m) {
+    if (!m) return;
+    if (scene.level === 'letters') {
+        deps.showLetterDetail(m.letter.id);
+        return;
+    }
+    // A bin narrows the period to its years; a bin of months within one year to that year
+    const first = scene.axisYears.startYear + Math.floor(m.bin.startMonth / 12);
+    const last = scene.axisYears.startYear + Math.floor((m.bin.startMonth + scene.binMonths - 1) / 12);
+    focusDetailAfterRender = true;
+    deps.setPeriod(first, Math.min(last, scene.axisYears.endYear));
+}
+
+function setHover(key) {
+    if (hoverKey === key || !scene) return;
+    hoverKey = key;
+    drawScene(document.getElementById('tv-canvas'), scene);
+}
+
+function bindDetail() {
+    const figure = document.getElementById('tv-figure');
+    const marks = document.getElementById('tv-marks');
+    if (!figure || !marks) return;
+
+    let drag = null;
+    figure.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0 || !scene) return;
+        drag = { from: markAt(e.clientX, e.clientY), x: e.clientX };
+        if (scene.level === 'bins') figure.setPointerCapture(e.pointerId);
+    });
+    figure.addEventListener('pointermove', (e) => {
+        const m = markAt(e.clientX, e.clientY);
+        figure.classList.toggle('is-over-mark', Boolean(m));
+        setHover(m?.key || null);
+        if (m) showTip(markLabel(m, scene), e.clientX, e.clientY);
+        else hideTip();
+    });
+    figure.addEventListener('pointerleave', () => {
+        setHover(null);
+        hideTip();
+    });
+    figure.addEventListener('pointerup', (e) => {
+        if (!drag || !scene) return;
+        const to = markAt(e.clientX, e.clientY);
+        const from = drag.from;
+        drag = null;
+        if (scene.level === 'bins' && from && to && from !== to) {
+            // Dragging over bins chooses the years they cover
+            const year = m => scene.axisYears.startYear + Math.floor(m.bin.startMonth / 12);
+            commitYears(year(from), year(to), { toggle: false });
+            return;
+        }
+        if (from && from === to) {
+            const index = scene.marks.indexOf(from);
+            const proxy = marks.querySelector(`.tv-mark[data-i="${index}"]`);
+            // The letter dialog returns the focus to the element that had it
+            if (proxy && scene.level === 'letters') moveFocus(proxy, true);
+            activateMark(from);
+        }
+    });
+
+    marks.addEventListener('keydown', (e) => {
+        const proxy = e.target.closest('.tv-mark');
+        if (!proxy || !scene) return;
+        const all = [...marks.querySelectorAll('.tv-mark')];
+        const index = all.indexOf(proxy);
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            activateMark(scene.marks[Number(proxy.dataset.i)]);
+            return;
+        }
+        const targets = { ArrowRight: index + 1, ArrowDown: index + 1, ArrowLeft: index - 1, ArrowUp: index - 1, Home: 0, End: all.length - 1 };
+        if (!(e.key in targets)) return;
+        e.preventDefault();
+        const next = all[Math.max(0, Math.min(all.length - 1, targets[e.key]))];
+        moveFocus(next, true);
+    });
+    marks.addEventListener('focusin', (e) => {
+        const proxy = e.target.closest('.tv-mark');
+        if (!proxy || !scene) return;
+        const m = scene.marks[Number(proxy.dataset.i)];
+        setHover(m.key);
+        showTipFor(proxy, markLabel(m, scene));
+    });
+    marks.addEventListener('focusout', () => {
+        setHover(null);
+        hideTip();
+    });
+
+    // The figure follows the width of the main area, the sidebar or the drawer may change it
+    resizeObserver = new ResizeObserver(() => {
+        if (Math.abs(figure.clientWidth - lastWidth) > 4 && document.getElementById('timeline-view')?.classList.contains('active')) {
+            requestAnimationFrame(() => renderDetail());
+        }
+    });
+    resizeObserver.observe(figure);
+}
+
+function moveFocus(proxy, focus) {
+    document.querySelectorAll('#tv-marks .tv-mark[tabindex="0"]').forEach(p => { p.tabIndex = -1; });
+    proxy.tabIndex = 0;
+    if (focus) proxy.focus();
+}
+
+function renderDetailTable(s, names) {
+    const host = document.getElementById('tv-table');
+    if (s.level === 'letters') {
+        const withSide = Boolean(names);
+        const rows = s.marks.map(m => {
+            const tip = letterTip(m.letter, m.iv);
+            return [tip[0], ...(withSide ? [names[m.side]] : []), tip[1], tip[2], tip[3]];
+        });
+        renderDataTable(host, {
+            caption: 'Die Briefe des Zeitraums in zeitlicher Folge',
+            columns: ['Datum', ...(withSide ? ['Seite'] : []), 'Brief', 'Ort', 'Stelle im Briefwechsel'],
+            rows
+        });
+        nameTable('tv-table', 'Die Briefe des Zeitraums als Tabelle');
+        return;
+    }
+    const sides = names ? s.sides : [];
+    renderDataTable(host, {
+        caption: `Briefe ${UNIT[s.binMonths]}`,
+        columns: ['Zeitraum', 'Briefe', ...sides.map(side => names[side])],
+        rows: s.bins.filter(b => b.total).map(b => [binLabel(b, s.binMonths, s.axisYears.startYear), b.total, ...sides.map(side => b.sides[side])])
+    });
+    nameTable('tv-table', `Briefe ${UNIT[s.binMonths]} als Tabelle`);
 }

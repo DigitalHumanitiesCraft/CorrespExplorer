@@ -13,9 +13,9 @@ import { loadDemoDataset, parseCMIFFiles } from './cmif-parser.js';
 import { formatSingleDate } from './formatters.js';
 import { summarizeLetters, recordOf, STATEMENTS } from './start-summary.js';
 import { prefersReducedMotion, httpErrorMessage, personKey, letterRecipients, placeKey } from './utils.js';
+import { loadLand, mapFrame, frameProjection, landPath, smallGeometry } from './mini-figures.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const LAND_URL = 'vendor/natural-earth/countries-110m.geo.json';
 const SUMMARY_URL = 'data/examples.json';
 // The key names three languages; the rest share the grey of "übrige Sprachen" as in the explorer
 const NAMED_LANGUAGES = 3;
@@ -99,7 +99,6 @@ const STATEMENT_VIEWS = {
 };
 
 const loaded = new Map();
-let landPromise = null;
 let current = null;
 let record = null;
 let requestedLetter = null;
@@ -462,17 +461,6 @@ function egoInput(ego) {
     };
 }
 
-// Geometry of the network view, sized to the small figure: the rim fills it, and with the outer
-// ring the rows of mentioned persons sit just outside the rim
-function smallGeometry(module, width, height, hasOuter) {
-    const g = module.egoGeometry(width, height, { hasOuter });
-    const rows = hasOuter ? g.bandRows : 0;
-    const step = 3;
-    const gap = hasOuter ? 8 : 0;
-    const R = Math.max(20, Math.min(width, height) / 2 - 6 - gap - rows * step);
-    return { ...g, R, r0: R * 0.14, bandR0: R + gap, bandStep: step };
-}
-
 // Correspondents: the explorer's ego circle in small. Distance from the centre by letters, angle by
 // the year the exchange begins, chords only between correspondents who write to each other
 function drawCircle({ data, marks, width, height, summary, entry }) {
@@ -569,13 +557,7 @@ function drawPlaces(kind) {
         data.replaceChildren();
         marks.replaceChildren();
         if (!frame || list.length === 0) return null;
-        const k = Math.cos((((frame.latMin + frame.latMax) / 2) * Math.PI) / 180);
-        const spanX = (frame.lonMax - frame.lonMin) * k;
-        const spanY = frame.latMax - frame.latMin;
-        const scale = Math.min(width / spanX, height / spanY);
-        const offsetX = (width - spanX * scale) / 2;
-        const offsetY = (height - spanY * scale) / 2;
-        const project = (lat, lon) => [offsetX + (lon - frame.lonMin) * k * scale, offsetY + (frame.latMax - lat) * scale];
+        const project = frameProjection(frame, width, height);
         const land = node('path', { class: 'mini-land' });
         const max = list[0][2];
         const keys = kind === 'sent' ? summary.context?.locatedKeys : null;
@@ -604,53 +586,6 @@ function drawPlaces(kind) {
             mark.at(x, y);
         };
     };
-}
-
-function landPath(features, frame, project) {
-    const rings = [];
-    features.forEach(feature => {
-        const geometry = feature.geometry;
-        const polygons = geometry?.type === 'Polygon' ? [geometry.coordinates] : geometry?.type === 'MultiPolygon' ? geometry.coordinates : [];
-        polygons.forEach(polygon => {
-            const outer = polygon[0];
-            // Only outlines near the frame, so the path stays small
-            if (!outer.some(([lon, lat]) => lon > frame.lonMin - 20 && lon < frame.lonMax + 20 && lat > frame.latMin - 20 && lat < frame.latMax + 20)) return;
-            rings.push(`M${outer.map(([lon, lat]) => project(lat, lon).map(v => v.toFixed(1)).join(' ')).join('L')}Z`);
-        });
-    });
-    return rings.join('');
-}
-
-// A frame around the places that hold most of the letters (the frame rule of the space-time view)
-function mapFrame(places) {
-    if (!places || places.length === 0) return null;
-    const quantile = (value, share) => {
-        const sorted = places.map(p => [value(p), p[2]]).sort((a, b) => a[0] - b[0]);
-        const total = sorted.reduce((sum, [, w]) => sum + w, 0);
-        let seen = 0;
-        for (const [v, w] of sorted) {
-            seen += w;
-            if (seen >= total * share) return v;
-        }
-        return sorted[sorted.length - 1][0];
-    };
-    const latMin = quantile(p => p[0], 0.03);
-    const latMax = quantile(p => p[0], 0.97);
-    const lonMin = quantile(p => p[1], 0.03);
-    const lonMax = quantile(p => p[1], 0.97);
-    const padLat = Math.max((latMax - latMin) * 0.12, 1.5);
-    const padLon = Math.max((lonMax - lonMin) * 0.12, 1.5);
-    return { latMin: latMin - padLat, latMax: latMax + padLat, lonMin: lonMin - padLon, lonMax: lonMax + padLon };
-}
-
-function loadLand() {
-    if (!landPromise) {
-        landPromise = fetch(LAND_URL)
-            .then(response => (response.ok ? response.json() : null))
-            .then(json => json?.features || null)
-            .catch(() => null);
-    }
-    return landPromise;
 }
 
 // Letters per year in the language colours, the most frequent language at the bottom as in the

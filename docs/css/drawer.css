@@ -94,11 +94,6 @@
     color: var(--color-text-light);
 }
 
-/* End of the rendered rows; the list grows by a step when it comes into sight */
-.letters-drawer__end {
-    height: 1px;
-}
-
 /* Phones: the line stays at the lower edge of the screen while the page scrolls, and the open
    list covers most of the screen above it */
 @media (max-width: 767px) {
@@ -136,6 +131,31 @@
     line-height: var(--line-height-base);
     color: var(--color-text);
     overflow-wrap: anywhere;
+}
+
+/* While a filter is set the block stands out, the title of the view takes the selection colour
+   and the main area carries a line of it at its upper edge, so a narrowed figure is not read as
+   the whole dataset */
+#sidebar-filters .selection-sentence {
+    padding: var(--space-sm) var(--space-md);
+    border-left: 3px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-light);
+}
+
+.selection-sentence__lead {
+    display: block;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-primary-dark);
+}
+
+body.has-filter .main-content {
+    box-shadow: inset 0 3px 0 var(--color-primary);
+}
+
+body.has-filter .view-header__title {
+    color: var(--color-primary-dark);
 }
 
 /* The cross stands close to its word and the comma follows the cross directly; the target keeps
