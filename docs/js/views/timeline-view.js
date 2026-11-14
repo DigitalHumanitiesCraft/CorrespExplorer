@@ -333,7 +333,7 @@ const OFF_AXIS = [
 /**
  * Letters without a year, grouped by reason. `mixed` is true when the dataset gives a reason
  * besides a missing date; only then does the timeline name the groups, so plain CMIF keeps its
- * single "k.A." bin.
+ * single "ohne Datum" bin.
  * @param {Array} letters - letters without year
  * @returns {{groups: Array<{key: string, label: string, phrase: string, count: number}>, mixed: boolean}}
  */
@@ -374,12 +374,12 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
         undatedBin.style.cursor = 'pointer';
         undatedBin.setAttribute('role', 'button');
         undatedBin.tabIndex = 0;
-        const visibleLabel = offAxis.mixed ? 'ohne Jahr' : 'k.A.';
+        const visibleLabel = offAxis.mixed ? 'ohne Jahr' : 'ohne Datum';
         const groupText = offAxis.groups.map(g => `${g.count} ${g.phrase}`).join(', ');
         // The accessible name starts with the visible text (count, then the label), WCAG 2.5.3
         undatedBin.setAttribute('aria-label', offAxis.mixed
             ? `${undatedLetters.length} ohne Jahr: ${groupText}. Alle anzeigen`
-            : `${undatedLetters.length} k.A., Briefe ohne Datum anzeigen`);
+            : `${undatedLetters.length} ohne Datum, Briefe anzeigen`);
         const undatedHeight = Math.max(4, (undatedLetters.length / maxCount) * 100);
         const binBar = undatedBin.querySelector('.undated-bin-bar');
         const binTooltip = undatedBin.querySelector('.undated-bin-tooltip');
@@ -443,7 +443,7 @@ function renderUndatedBin(undatedBin, undatedLetters, undatedByLang, sortedLangu
             binBar.style.height = '0';
         }
         if (binCount) binCount.innerHTML = '<i class="fas fa-check"></i>';
-        if (binLabel) binLabel.textContent = 'k.A.';
+        if (binLabel) binLabel.textContent = 'ohne Datum';
         if (binTooltip) binTooltip.textContent = 'Alle Briefe datiert';
         undatedBin.onclick = null;
         undatedBin.style.cursor = 'default';

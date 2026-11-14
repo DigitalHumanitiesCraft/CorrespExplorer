@@ -5,27 +5,24 @@
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    padding: var(--space-2xl);
-    background: var(--color-bg);  /* Solid cream, no gradients */
+    gap: var(--space-2xl);
+    padding: var(--space-3xl) var(--space-2xl) var(--space-xl);
+    background: var(--color-bg);
 }
 
 .landing-header {
-    text-align: center;
-    margin-bottom: var(--space-2xl);
-    max-width: 600px;
     position: relative;
 }
 
 .disclaimer {
-    margin-top: var(--space-lg);
-    padding: var(--space-md);
-    background: var(--color-warning-light);
-    border: 1px solid var(--color-warning);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-sm);
-    text-align: left;
+    width: 100%;
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border-light);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
 }
 
 /* The primary colour reaches only 4.29:1 on --color-warning-light; the dark variant meets AA */
@@ -60,10 +57,10 @@
 
 /* Logo in header replaces h1 */
 .landing-logo {
-    max-width: 400px;
+    display: block;
+    max-width: 340px;
     width: 100%;
     height: auto;
-    margin-bottom: var(--space-lg);
 }
 
 .landing-title {
@@ -71,29 +68,30 @@
 }
 
 .landing-header p {
+    margin: var(--space-md) 0 0;
     font-size: var(--font-size-lg);
-    color: var(--color-text-light);
+    color: var(--color-text);
     line-height: var(--line-height-base);
 }
 
 /* The parts of the start page share the centre axis of logo and introduction. Without this the
    main element takes the width of its widest child and the narrower parts sit at its left edge. */
 .landing-main {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2xl) var(--space-4xl);
     align-items: center;
     width: 100%;
+    max-width: var(--max-width-content);
+    margin: 0 auto;
 }
 
 /* Upload Zone */
 .upload-zone {
-    width: 100%;
-    max-width: 600px;
-    border: 2px dashed var(--color-border);
+    padding: var(--space-xl);
+    border: 2px dashed var(--color-border-control);
     border-radius: var(--radius-md);
-    padding: var(--space-3xl);
-    text-align: center;
-    background: var(--color-bg-light);  /* Manila background */
+    background: var(--color-bg-light);
     transition: var(--transition-base);
     transition-property: var(--transition-properties);
     cursor: pointer;
@@ -108,13 +106,6 @@
 
 .upload-zone.drag-over {
     border-width: 3px;
-}
-
-.upload-icon {
-    font-size: 4rem;
-    color: var(--color-text-light);
-    margin-bottom: var(--space-lg);
-    opacity: 0.7;
 }
 
 .upload-zone h2 {
@@ -164,34 +155,11 @@
     background: var(--color-primary-dark);
 }
 
-/* URL Input */
-.url-input-section {
-    width: 100%;
-    max-width: 600px;
-    margin-top: var(--space-xl);
-}
 
-.divider {
-    display: flex;
-    align-items: center;
-    margin-bottom: var(--space-lg);
-    color: var(--color-text-light);
-}
 
-.divider::before,
-.divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--color-border);
-}
 
-.divider span {
-    padding: 0 var(--space-lg);
-    font-size: var(--font-size-sm);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+
+
 
 .url-input-wrapper {
     display: flex;
@@ -234,76 +202,30 @@
     cursor: not-allowed;
 }
 
-/* Example Datasets */
-.example-datasets {
-    width: 100%;
-    max-width: 800px;
-    margin-top: var(--space-3xl);
-}
 
-.example-datasets h3 {
-    text-align: center;
-    font-size: var(--font-size-lg);
-    color: var(--color-text);
-    margin-bottom: var(--space-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-sm);
-}
 
-/* Small icon for section headers */
-.section-icon {
-    height: 32px;
-    width: auto;
-}
+
 
 .dataset-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-md);
+    margin-top: var(--space-xl);
+    border-top: 1px solid var(--color-border-light);
 }
 
 .dataset-card {
-    position: relative;
-    background: var(--color-bg-light);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg);
+    padding: var(--space-md) var(--space-sm);
+    border-bottom: 1px solid var(--color-border-light);
     cursor: pointer;
-    transition: var(--transition-base);
+    transition: var(--transition-fast);
     transition-property: var(--transition-properties);
 }
 
 .dataset-card:hover {
-    border-color: var(--color-primary);
-}
-
-/* Featured Dataset Card (Demo) */
-.dataset-card-featured {
-    border-color: var(--color-primary);
     background: var(--color-bg-light);
-    position: relative;
 }
 
-.dataset-card-featured:hover {
-    border-color: var(--color-primary-dark);
-    transform: translateY(-2px);
-}
 
-.dataset-badge {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
-    background: var(--color-primary);
-    color: white;
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--radius-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+
+
 
 .dataset-card h4 {
     font-size: var(--font-size-md);
@@ -318,112 +240,37 @@
     margin-bottom: var(--space-md);
 }
 
-.dataset-stats {
-    display: flex;
-    gap: var(--space-lg);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-}
 
-.dataset-stats span {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-}
 
-/* Extended Dataset Card (HSA) */
-.dataset-card-extended {
-    border-color: var(--color-secondary);
-}
 
-.dataset-card-extended:hover {
-    border-color: var(--color-primary);
-    transform: translateY(-2px);
-}
 
-.dataset-badge-extended {
-    background: var(--color-secondary);
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-}
 
-/* Badge Info Icon with Tooltip */
 
-.dataset-extended-info {
-    margin-top: var(--space-md);
-    padding-top: var(--space-sm);
-    border-top: 1px solid var(--color-border-light);
-    font-size: var(--font-size-xs);
-    color: var(--color-secondary);
-    font-weight: 500;
-}
 
-.dataset-extended-info i {
-    margin-right: var(--space-xs);
-}
 
-/* Dataset Explanation */
-.dataset-explanation {
-    margin-top: var(--space-md);
-    text-align: left;
-}
 
-.dataset-explanation details {
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-sm);
-    padding: var(--space-sm) var(--space-md);
-}
 
-.dataset-explanation summary {
-    cursor: pointer;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    font-weight: 500;
-}
 
-.dataset-explanation summary i {
-    margin-right: var(--space-sm);
-    color: var(--color-secondary);
-}
 
-.dataset-explanation summary:hover {
-    color: var(--color-text);
-}
 
-.dataset-explanation p {
-    margin-top: var(--space-sm);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    line-height: var(--line-height-base);
-}
 
-/* API Hint */
-.api-hint {
-    margin-top: var(--space-lg);
-    padding: var(--space-md) var(--space-lg);
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-    text-align: center;
-}
 
-.api-hint i {
-    color: var(--color-secondary);
-    margin-right: var(--space-sm);
-}
 
-.api-hint a {
-    color: var(--color-link);
-    text-decoration: underline;
-}
 
-.api-hint a:hover {
-    color: var(--color-primary-dark);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* Loading State */
 .loading-state {
@@ -486,9 +333,7 @@
         padding: var(--space-xl);
     }
 
-    .upload-icon {
-        font-size: var(--font-size-3xl);
-    }
+    
 
     .url-input-wrapper {
         flex-direction: column;
@@ -675,4 +520,56 @@
     color: var(--color-text);
     margin: 0;
     font-weight: 500;
+}
+
+/* Start page parts */
+/* The start page has no fixed header, so the offset every other page keeps for it is not needed */
+body:has(.landing-container) {
+    padding-top: 0;
+}
+
+@media (min-width: 900px) {
+    .landing-main {
+        grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    }
+}
+
+.dataset-card h2 {
+    margin: 0;
+    font-family: var(--font-base);
+    font-size: var(--font-size-md);
+    font-weight: 700;
+    color: var(--color-link);
+}
+
+.landing-header .dataset-card p {
+    margin: 2px 0 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.upload-zone h2 {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--font-size-lg);
+}
+
+.upload-zone p {
+    margin: 0 0 var(--space-lg);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.landing-load .url-input-wrapper {
+    margin-top: var(--space-md);
+}
+
+.landing-hint {
+    margin: var(--space-sm) 0 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+}
+
+.disclaimer p {
+    margin: 0;
+    max-width: 110ch;
 }

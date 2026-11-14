@@ -30,6 +30,15 @@ related: [project, specification, plan]
 
 ## Einträge
 
+### 2026-11-14 Startseite auf einem Bildschirm, lokales Beispiel, Karte und Sprachliste
+
+- Anlass: Der Operator wünschte eine Startseite, auf der alles sichtbar ist, den Bestand von Stefan Zweig Digital als Beispiel neben dem Tutorial und die Umsetzung weiterer Befunde. Während der Arbeit kam Rückmeldung zu Karte und Sprachliste. Seine Sätze stehen wörtlich in [design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14).
+- Entschieden (bauende Session, umkehrbar): Der Zweig-Bestand erscheint als Beispiel nur, wo er lokal eingebunden ist. Der ursprüngliche Auftrag schloss aus, die Daten ins Repository zu legen oder auszuliefern, und der Operator hat das nicht aufgehoben. Das Tutorial bleibt.
+- Geändert: `index.html`, `upload.css` und `upload.js` für die Startseite in zwei Spalten mit den Beispielen als Zeilen. Die Schritte der Forschungspfade heißen wie die Umschaltung. Themen stehen neben ihrem Detail. Der Hinweis auf Orte ohne Koordinaten ist eine Zeile. Der Balken ohne Datum heißt nicht mehr „k.A.“. Ein Cluster der Karte zählt Briefe. Die Sprachliste klappt nach den Sprachen mit eigener Farbe.
+- Belege: der Commit dieses Eintrags. Die Startseite misst bei 1280 und bei 1680 Pixel Breite genau die Höhe des Bildschirms und scrollt bei 360 Pixel nur senkrecht. `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen dreizehn Prüfungen. Startseite und Karte sind am Bild gesehen. Themenansicht, Ortshinweis und Pfadnamen sind nur über die Tests geprüft.
+- Wer was tat: Der Operator gab Rückmeldung und Auftrag. Diese Session (Claude Fable 5.2 in Claude Code) baute und prüfte. Die Abnahme am Bildschirm steht aus.
+- Offen: Die Frage des Operators, warum die Seitenleiste nur Sprachen als Kategorie anbietet, führt [plan.md](plan.md#offen-nach-der-stufe-vom-2026-11-14) als Richtungsfrage. Das Tutorial ist noch nicht neu ausgearbeitet.
+
 ### 2026-11-14 Zwei Durchsichten der neuen Gliederung und ihre Korrekturen
 
 - Anlass: Auftrag des Operators, die vier Restpunkte der Stufe zu erledigen und danach alles mit Agenten zu prüfen.

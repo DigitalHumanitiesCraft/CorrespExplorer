@@ -1,7 +1,7 @@
 // Explorer page: loads a dataset (?json= path or the upload in sessionStorage), keeps the filter
 // inputs and the URL state, switches between the views and wires the view modules.
 
-import { NO_LANGUAGE, VIEWS, LETTER_FEATURES, LANGUAGE_COLORS, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
+import { NO_LANGUAGE, VIEWS, LETTER_FEATURES, LANGUAGE_COLORS, isRestLanguage, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
 import { initBasket, datasetKey, loadBasketFromUrl } from './basket.js';
 import { debounce, escapeHtml, isAllowedJsonPath, sameFilterParams, datedYearRange, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, letterRecipients } from './utils.js';
 import { datasetQuality, summarizeCorpus } from './research-paths.js';
@@ -534,7 +534,6 @@ function updateQualityIcon(iconId, count, total, label) {
 }
 
 // Number of languages the sidebar lists before the rest folds into "weitere Sprachen"
-const LANGUAGES_SHOWN = 8;
 
 // Build language filter checkboxes dynamically
 function buildLanguageFilter() {
@@ -555,19 +554,18 @@ function buildLanguageFilter() {
 
     const languageKeys = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
 
-    // The most frequent languages stand in the list, the others open on demand, so a dataset with
-    // twenty languages does not push the remaining filters off the screen
-    let target = container;
-    const more = languageKeys.length > LANGUAGES_SHOWN + 1 ? document.createElement('details') : null;
+    // The list folds where the colours end: the languages with a colour of their own stand open,
+    // the others are the grey "Übrige Sprachen" of the charts and open on demand. One cut for
+    // list, legend and map, also for a dataset with twenty languages.
+    const restCount = languageKeys.filter(code => isRestLanguage(code)).length;
+    const more = restCount > 1 ? document.createElement('details') : null;
     if (more) {
         more.className = 'filter-more';
-        const summary = document.createElement('summary');
-        summary.textContent = `${languageKeys.length - LANGUAGES_SHOWN} weitere Sprachen`;
-        more.appendChild(summary);
+        more.appendChild(document.createElement('summary'));
     }
 
-    languageKeys.forEach((code, index) => {
-        if (more && index === LANGUAGES_SHOWN) target = more;
+    languageKeys.forEach(code => {
+        const target = more && isRestLanguage(code) ? more : container;
         const displayLabel = languageLabel(code);
         const tooltip = code === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten' : '';
         const label = document.createElement('label');
@@ -576,7 +574,7 @@ function buildLanguageFilter() {
         }
         label.innerHTML = `
             <input type="checkbox" name="language" value="${escapeHtml(code)}"${!initialLanguageFilter || initialLanguageFilter.includes(code) ? ' checked' : ''}>
-            <span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" aria-hidden="true"></span>
+            ${more && isRestLanguage(code) ? '' : `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" aria-hidden="true"></span>`}
             <span>${escapeHtml(displayLabel)}</span>
             <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${counts[code].toLocaleString('de-DE')})</span>
         `;
@@ -975,7 +973,7 @@ function updateFilterCounts() {
     if (more) {
         const shown = more.querySelectorAll('label:not(.hidden)').length;
         more.classList.toggle('hidden', shown === 0);
-        more.querySelector('summary').textContent = shown === 1 ? '1 weitere Sprache' : `${shown} weitere Sprachen`;
+        more.querySelector('summary').innerHTML = `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS.other}" aria-hidden="true"></span> Übrige Sprachen (${shown})`;
         // A language filter that selects a folded language must not hide that it does
         const all = document.querySelectorAll('input[name="language"]');
         const checked = document.querySelectorAll('input[name="language"]:checked');

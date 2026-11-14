@@ -354,7 +354,7 @@ function addMapLayers() {
         source: 'places',
         filter: ['has', 'point_count'],
         layout: {
-            'text-field': '{point_count_abbreviated}',
+            'text-field': ['to-string', ['get', 'total_letters']],
             'text-font': ['Noto Sans Regular'],
             'text-size': 12
         },

@@ -56,6 +56,16 @@ Zur Karte und zur Seitenleiste:
 
 > Also hier fallen mir auch wieder zu viele Ebenen ein. Also, ich finde, wir haben zu viele Strukturen, auch in der Sidebar, und auch zu viele Ebenen. Die Cards oben (Datensatz, Briefe, Personenorte) sind ein bisschen sehr mächtig. Brauchen wir hier wirklich Untertitel, also Datensatz, Filter, Zeitraum? Wir wollen das User-Interface mehr sprechen lassen.
 
+Zur Startseite des Werkzeugs und zu den Beispielen, am selben Tag:
+
+> Ich glaube, wir können die Startseite insgesamt ein bisschen innovativer machen und so, dass alles auf einer Seite sichtbar ist, oder?
+
+> Ich würde den Feature-Demosatz weggeben und da eben den Stefan-Zweig-Datensatz nehmen, damit wir den quasi nochmal ausarbeiten, statt dem Tutorial oder zusätzlich zum Tutorial. […] Also, wir arbeiten das Tutorial nochmal sauber aus, und wir fügen quasi Stefan Zweig als Beispiel hinzu.
+
+Zur Karte und zur Sprachliste, nach der Stufe:
+
+> Warum ist 3 + 3 > 7? Was kann man hier noch optimieren und klarer machen? Ist es klar, nach welchen Kriterien ich sortieren kann? Sind das alles Sprachen? Wird das Aufklappen der weiteren Sprachen wirklich sehr gut umgesetzt? Warum haben manche dann nur Grau? Wie kann man das lösen, grundsätzlich, weil wir unterschiedliche Daten hier reinbekommen? Ein bisschen generalisierter: Warum nur die Kategorien, warum nicht andere?
+
 Daraus folgt der Aufbau dieser Stufe.
 
 - Die Kopfzeile nennt die Gegenstände einer Korrespondenz, Start, Briefe, Personen, Orte, Zeit und Themen. Bis dahin standen dort zwölf Ansichten, benannt nach ihrer Darstellungstechnik, in einer zweiten Zeile unter Titel und Aktionen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht.
@@ -68,6 +78,10 @@ Daraus folgt der Aufbau dieser Stufe.
 - Korb, Export und About stehen ohne Rahmen neben den Reitern.
 - Die Startansicht nutzt die Breite. Unter Titel, Kennzahlen und Datenlage stehen links die Briefe pro Jahr als Hauptgrafik, die in die Ansicht Zeit führt, und rechts die Forschungspfade. Die Quelle mit Lizenz schließt die Seite ab.
 - About bleibt in der Kopfzeile, der Verweis auf die Wissensbasis steht auf der Projektseite.
+- Die Startseite `index.html` passt ab 900px Breite auf einen Bildschirm. Links stehen Logo, ein Satz zu dem, was das Werkzeug zeigt, und die Beispiele als Zeilen, rechts das Laden eigener Dateien und einer Adresse, darunter als Schlusszeile der Hinweis auf das Experiment mit seinem vollen Wortlaut. Die Abzeichen „Tutorial“ und „Erweitert“ und der Aufklapper zu „Erweitert“ sind entfallen, jede Zeile sagt in einem Satz, was ihr Bestand zeigt.
+- Ein Bestand unter `data/local` erscheint als drittes Beispiel, wo seine Dateiliste erreichbar ist. Die veröffentlichte Seite trägt keine solche Liste, die Zeile bleibt dort verborgen. So lässt sich der Bestand von Stefan Zweig Digital lokal als Beispiel ansehen, ohne dass seine Daten ausgeliefert werden. Ob sie ausgeliefert werden dürfen, entscheidet der Operator.
+- Ein Cluster der Karte trägt die Zahl seiner Briefe, nach der sich auch seine Größe richtet. Bis 2026-11-14 zählte die Zahl die Orte im Cluster, ein Kreis mit „3“ konnte größer sein als einer mit „7“.
+- Die Sprachliste der Seitenleiste klappt dort, wo die Farben enden. Offen stehen die Sprachen mit eigener Farbe, alle anderen liegen unter „Übrige Sprachen“ mit dem Grau der Grafiken. Bis 2026-11-14 klappte die Liste nach acht Sprachen, zwei offene Sprachen trugen dadurch dasselbe Grau wie der Rest.
 
 Die Gliederung nach Darstellungstechnik ist derselbe Fehler, den das Hauswissen für Arbeitsoberflächen beschreibt, Ansichten nach technischen Kategorien statt nach dem, womit die Zielgruppe arbeitet. Die Zählung von Überschriften, Rahmen und Textstilen hatte ihn nicht gezeigt, weil sie bis zu dieser Stufe nur den Inhaltsbereich der aktiven Ansicht erfasste und Kopf und Seitenleiste ausließ. Sie zählt seither den ganzen ersten Bildschirm.
 

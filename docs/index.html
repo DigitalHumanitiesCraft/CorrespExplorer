@@ -21,96 +21,68 @@
     <link rel="stylesheet" href="css/upload.css">
 </head>
 <body>
-    <!-- Landing Container -->
+    <!-- Start page: one screen. Left what the tool does and the examples, right one's own data -->
     <div class="landing-container">
-        <header class="landing-header">
-            <nav class="landing-nav" aria-label="Hauptnavigation">
-                <a href="about.html">About</a>
-                <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/INDEX.md">Wissensbasis</a>
-            </nav>
-            <h1 class="landing-title"><img src="assets/logo-no-background.png" alt="CorrespExplorer" class="landing-logo"></h1>
-            <p>Visualisieren Sie Korrespondenz-Metadaten im CMIF-Format. Laden Sie eine XML-Datei hoch oder geben Sie eine URL ein.</p>
-
-            <div class="disclaimer">
-                <p>Experiment. CorrespExplorer ist ein Forschungsprototyp, mit Coding-Agenten nach der Arbeitspraxis <a href="https://dhcraft.org/Promptotyping/">Promptotyping</a> entwickelt. Er zeigt Korrespondenzmetadaten im CMIF-Format als Karte, Listen, Zeitleiste und Netzwerk. Er ist kein fertiges oder betreutes Produkt, und seine Ergebnisse sind vor jeder Weiterverwendung zu prüfen. Rückmeldungen gehören in die <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues">Issues des Repositorys</a>.</p>
-            </div>
-        </header>
-
+        <nav class="landing-nav" aria-label="Hauptnavigation">
+            <a href="about.html">About</a>
+            <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/INDEX.md">Wissensbasis</a>
+        </nav>
         <main class="landing-main">
-        <!-- Upload Zone -->
-        <div class="upload-zone" id="upload-zone">
-            <div class="upload-icon">
-                <i class="fas fa-envelope-open-text"></i>
-            </div>
-            <h2>CMIF-Datei hochladen</h2>
-            <p>Ziehen Sie eine oder mehrere XML-Dateien hierher oder klicken Sie zum Auswählen. Mehrere Dateien einer Edition werden zu einem Bestand zusammengeführt.</p>
-            <input type="file" id="file-input" class="upload-input" accept=".xml,application/xml,text/xml" multiple>
-            <label for="file-input" class="upload-btn">Datei auswählen</label>
-        </div>
+            <header class="landing-header">
+                <h1 class="landing-title"><img src="assets/logo-no-background.png" alt="CorrespExplorer" class="landing-logo"></h1>
+                <p>Wer schrieb wem, wann und von wo: CorrespExplorer zeigt die Metadaten einer Korrespondenz als Liste, Karte, Zeitleiste und Netzwerk.</p>
 
-        <!-- URL Input -->
-        <div class="url-input-section">
-            <div class="divider">
-                <span>oder</span>
-            </div>
-            <div class="url-input-wrapper">
-                <input type="url"
-                       id="url-input"
-                       class="url-input"
-                       placeholder="https://example.org/correspondence.xml"
-                       aria-label="CMIF-URL eingeben">
-                <button id="url-submit" class="url-submit-btn">
-                    <i class="fas fa-download"></i> Laden
-                </button>
-            </div>
-        </div>
-
-        <!-- Error Message -->
-        <div class="error-message" id="error-message" role="alert"></div>
-
-        <!-- Loading State -->
-        <div class="loading-state" id="loading-state" role="status" aria-live="polite">
-            <div class="loading-spinner"></div>
-            <p id="loading-text">Verarbeite CMIF-Datei...</p>
-        </div>
-        <!-- Example Datasets -->
-        <section class="example-datasets">
-            <h3><img src="assets/logo-no-background-no-text.png" alt="" class="section-icon"> Beispiel-Datensätze</h3>
-            <div class="dataset-grid">
-                <div class="dataset-card dataset-card-featured" data-url="data/demo-showcase.xml" data-demo="true" role="button" tabindex="0">
-                    <div class="dataset-badge">Tutorial</div>
-                    <h4>Feature-Demo</h4>
-                    <p>Synthetisches Gelehrtennetzwerk 1880-1920. Demonstriert alle Funktionen mit interaktiver Tour.</p>
-                    <div class="dataset-stats">
-                        <span><i class="fas fa-envelope"></i> 35 Briefe</span>
-                        <span><i class="fas fa-graduation-cap"></i> Interaktive Tour</span>
+                <!-- Examples: one row each, the row is the control -->
+                <div class="dataset-grid" role="group" aria-label="Beispiele">
+                    <div class="dataset-card" data-url="data/demo-showcase.xml" data-demo="true" role="button" tabindex="0">
+                        <h2>Tutorial</h2>
+                        <p>Erfundenes Gelehrtennetzwerk mit 35 Briefen und einer geführten Tour durch alle Funktionen.</p>
+                    </div>
+                    <div class="dataset-card" data-json="data/hsa-letters.json" role="button" tabindex="0">
+                        <h2>Hugo Schuchardt Archiv</h2>
+                        <p>Tief erschlossene Edition der Universität Graz: 11.576 Briefe mit Themen, erwähnten Personen, Sprachen und Koordinaten.</p>
+                    </div>
+                    <!-- Shown only where the file list exists; the published site does not carry these data -->
+                    <div class="dataset-card hidden" id="local-dataset" data-files="data/local/files.json" role="button" tabindex="0">
+                        <h2>Stefan Zweig Digital</h2>
+                        <p>Briefe als Archivverzeichnis mit Poststempel, Anschrift und Signatur, <span id="local-dataset-count">mehrere</span> TEI-Dateien. Lokal eingebunden, nicht Teil der veröffentlichten Seite.</p>
                     </div>
                 </div>
-                <div class="dataset-card dataset-card-extended" data-json="data/hsa-letters.json" role="button" tabindex="0">
-                    <div class="dataset-badge dataset-badge-extended">Erweitert</div>
-                    <h4>Hugo Schuchardt Archiv</h4>
-                    <p>Korrespondenz des Sprachwissenschaftlers Hugo Schuchardt (1842-1927). Uni Graz.</p>
-                    <div class="dataset-stats">
-                        <span><i class="fas fa-envelope"></i> 11.576 Briefe</span>
-                        <span><i class="fas fa-users"></i> 852 Personen mit Normdaten</span>
-                    </div>
-                    <div class="dataset-extended-info">
-                        <i class="fas fa-star"></i> Mit Themen, erwähnte Personen und Orte
-                    </div>
+            </header>
+
+            <section class="landing-load" aria-label="Eigene Daten laden">
+                <!-- Upload Zone -->
+                <div class="upload-zone" id="upload-zone">
+                    <h2>Eigene Briefmetadaten laden</h2>
+                    <p>XML-Dateien hierher ziehen, CMIF oder TEI mit <code>correspDesc</code>. Mehrere Dateien einer Edition werden ein Bestand.</p>
+                    <input type="file" id="file-input" class="upload-input" accept=".xml,application/xml,text/xml" multiple>
+                    <label for="file-input" class="upload-btn">Dateien auswählen</label>
                 </div>
-            </div>
-            <div class="dataset-explanation">
-                <details>
-                    <summary><i class="fas fa-info-circle"></i> Was bedeutet "Erweitert"?</summary>
-                    <p>Standard-CMIF-Dateien enthalten Absender, Empfänger, Datum und Ort. <strong>Erweiterte Datensätze</strong> wurden vorverarbeitet und enthalten zusätzliche Annotationen wie erwähnte Themen, Personen und Orte innerhalb der Briefe. Diese Daten ermöglichen tiefere Analysen wie die Erwähnungen oder Themenfilter.</p>
-                </details>
-            </div>
-            <div class="api-hint">
-                <i class="fas fa-database"></i>
-                Weitere CMIF-Datensätze zum Laden via URL finden Sie bei <a href="https://correspsearch.net/de/daten.html" target="_blank" rel="noopener noreferrer">correspSearch</a>.
-            </div>
-        </section>
+
+                <!-- URL Input -->
+                <div class="url-input-wrapper">
+                    <input type="url"
+                           id="url-input"
+                           class="url-input"
+                           placeholder="oder Adresse einer CMIF-Datei"
+                           aria-label="Adresse einer CMIF-Datei">
+                    <button id="url-submit" class="url-submit-btn">Laden</button>
+                </div>
+                <p class="landing-hint">CMIF-Dateien vieler Editionen verzeichnet <a href="https://correspsearch.net/de/daten.html" target="_blank" rel="noopener noreferrer">correspSearch</a>.</p>
+
+                <!-- Error Message -->
+                <div class="error-message" id="error-message" role="alert"></div>
+
+                <!-- Loading State -->
+                <div class="loading-state" id="loading-state" role="status" aria-live="polite">
+                    <div class="loading-spinner"></div>
+                    <p id="loading-text">Verarbeite CMIF-Datei...</p>
+                </div>
+            </section>
         </main>
+        <footer class="disclaimer">
+            <p>Experiment. CorrespExplorer ist ein Forschungsprototyp, mit Coding-Agenten nach der Arbeitspraxis <a href="https://dhcraft.org/Promptotyping/">Promptotyping</a> entwickelt. Er zeigt Korrespondenzmetadaten im CMIF-Format als Karte, Listen, Zeitleiste und Netzwerk. Er ist kein fertiges oder betreutes Produkt, und seine Ergebnisse sind vor jeder Weiterverwendung zu prüfen. Rückmeldungen gehören in die <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues">Issues des Repositorys</a>.</p>
+        </footer>
     </div>
 
     <!-- Dataset Configuration Modal -->

@@ -43,6 +43,7 @@ async function init() {
     loadingState = document.getElementById('loading-state');
     loadingText = document.getElementById('loading-text');
     datasetCards = document.querySelectorAll('.dataset-card');
+    showLocalDataset();
 
     // Config modal
     configModal = document.getElementById('config-modal');
@@ -199,11 +200,34 @@ async function handleUrlSubmit() {
     }
 }
 
+// A corpus mounted under data/local appears as an example where its file list exists. The
+// published site carries no such list, so the entry stays hidden there.
+async function showLocalDataset() {
+    const card = document.getElementById('local-dataset');
+    if (!card) return;
+    try {
+        const response = await fetch(card.dataset.files);
+        if (!response.ok) return;
+        const files = (await response.json())?.files;
+        if (!Array.isArray(files) || files.length === 0) return;
+        document.getElementById('local-dataset-count').textContent = files.length.toLocaleString('de-DE');
+        card.classList.remove('hidden');
+    } catch {
+        // No local corpus: the entry stays hidden
+    }
+}
+
 // Dataset card handler
 async function handleDatasetSelect(card) {
     const info = card.dataset.info;
     const url = card.dataset.url;
     const jsonUrl = card.dataset.json;
+    // An edition published as many files, named by a file list
+    if (card.dataset.files) {
+        lastTrigger = card;
+        hideError();
+        return loadFileList(card.dataset.files);
+    }
     const isDemo = card.dataset.demo === 'true';
     lastTrigger = card;
 

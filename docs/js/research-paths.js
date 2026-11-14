@@ -132,7 +132,7 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             icon: 'fa-users',
             question: 'Wer sind die aktivsten Korrespondenten?',
             description: `${personCount.toLocaleString('de-DE')} Personen als Absender oder Empfänger`,
-            path: [{ view: 'persons', label: 'Korrespondenten', action: 'nach Briefanzahl sortieren' }]
+            path: [{ view: 'persons', label: 'Liste der Personen', action: 'nach Briefanzahl sortieren' }]
         });
     }
 
@@ -143,7 +143,7 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             question: 'Von welchen Orten wurde korrespondiert?',
             description: `${placeCount.toLocaleString('de-DE')} Absendeorte, ${locatedCount.toLocaleString('de-DE')} mit Koordinaten`,
             path: [
-                { view: 'places', label: 'Orte', action: 'Liste durchsuchen' },
+                { view: 'places', label: 'Liste der Orte', action: 'Liste durchsuchen' },
                 ...(locatedCount > 0 ? [{ view: 'map', label: 'Karte', action: 'geografische Verteilung' }] : [])
             ]
         });
@@ -165,7 +165,7 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             icon: 'fa-language',
             question: 'In welchen Sprachen wurde korrespondiert?',
             description: `${s.languages.size} Sprachen im Korpus`,
-            path: [{ view: 'timeline', label: 'Timeline', action: 'Sprachen in der Farblegende' }]
+            path: [{ view: 'timeline', label: 'Jahre', action: 'Sprachen in der Farblegende' }]
         });
     }
 
@@ -178,8 +178,8 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             question: 'Wie entwickelt sich die Korrespondenzfrequenz über die Zeit?',
             description: `Zeitraum ${Math.min(...years)}–${Math.max(...years)}, ${s.datedLetters.toLocaleString('de-DE')} datierte Briefe`,
             path: [
-                { view: 'activity', label: 'Aktivität', action: 'Heatmap auf Muster prüfen' },
-                { view: 'timeline', label: 'Timeline', action: 'jährliche Verteilung' }
+                { view: 'activity', label: 'Tage', action: 'Tage auf Muster prüfen' },
+                { view: 'timeline', label: 'Jahre', action: 'jährliche Verteilung' }
             ]
         });
     }
@@ -199,7 +199,7 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
                 : `${personCount.toLocaleString('de-DE')} Personen in Beziehung`,
             path: [
                 { view: 'network', label: 'Netzwerk', action: 'Struktur erkunden' },
-                { view: 'persons', label: 'Korrespondenten', action: 'Person auswählen' },
+                { view: 'persons', label: 'Liste der Personen', action: 'Person auswählen' },
                 { view: 'chronik', label: 'Chronik', action: 'Beziehungsverlauf' }
             ]
         });
@@ -213,7 +213,7 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             description: `${locatedCount.toLocaleString('de-DE')} Orte mit Koordinaten`,
             path: [
                 { view: 'map', label: 'Karte', action: 'Cluster identifizieren' },
-                { view: 'places', label: 'Orte', action: 'Ort auswählen und zum Korb' }
+                { view: 'places', label: 'Liste der Orte', action: 'Ort auswählen und zum Korb' }
             ]
         });
     }
@@ -226,7 +226,7 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             description: `${s.personMentions.toLocaleString('de-DE')} Personenerwähnungen in ${s.lettersWithMentions.toLocaleString('de-DE')} Briefen`,
             path: [
                 { view: 'mentions-flow', label: 'Erwähnungen', action: 'Erwähnungsmuster' },
-                { view: 'persons', label: 'Korrespondenten', action: 'Person filtern' }
+                { view: 'persons', label: 'Liste der Personen', action: 'Person filtern' }
             ]
         });
     }
@@ -259,8 +259,8 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             question: 'Wie entwickeln sich einzelne Briefbeziehungen?',
             description: 'Erster Brief, Frequenz und Dauer einer Korrespondenz',
             path: [
-                { view: 'persons', label: 'Korrespondenten', action: 'Person wählen und filtern' },
-                { view: 'activity', label: 'Aktivität', action: 'Aktivitätsmuster der Person' }
+                { view: 'persons', label: 'Liste der Personen', action: 'Person wählen und filtern' },
+                { view: 'activity', label: 'Tage', action: 'Aktivitätsmuster der Person' }
             ]
         });
     }

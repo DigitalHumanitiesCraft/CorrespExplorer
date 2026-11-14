@@ -4325,14 +4325,17 @@ body:has(.tour-highlight) .tour-backdrop {
 /* Place rows are short, so list and detail stand side by side from the laptop width on; stacked,
    the list shrank to a few rows above an empty detail (shared breakpoint in components.css) */
 @media (min-width: 1024px) and (max-width: 1600px) {
-    #places-view .entity-split-layout {
+    #places-view .entity-split-layout,
+    #topics-view .entity-split-layout {
         grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     }
 
     /* Both panels keep the height of the screen and scroll on their own, so the detail of a
        place far down the list stays in view */
     #places-view .entity-list-panel,
-    #places-view .entity-detail-panel {
+    #places-view .entity-detail-panel,
+    #topics-view .entity-list-panel,
+    #topics-view .entity-detail-panel {
         max-height: calc(100vh - var(--navbar-height) - 14rem);
         overflow-y: auto;
         align-self: start;
@@ -4535,4 +4538,10 @@ body:has(.tour-highlight) .tour-backdrop {
     overflow: hidden;
     clip: rect(0 0 0 0);
     white-space: nowrap;
+}
+
+/* The folded rest of the language list carries the grey it has in the charts */
+.filter-more summary .lang-swatch {
+    display: inline-block;
+    margin: 0 var(--space-xs);
 }

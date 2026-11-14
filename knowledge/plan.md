@@ -63,6 +63,12 @@ Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Er
 
 Die Stufe „Gliederung nach Gegenstand“ wartet auf das Urteil des Operators am Bildschirm. Zwei unabhängige Durchsichten des fertigen Stands ([Journal vom 2026-11-14](journal.md)) ließen nach den Korrekturen desselben Tages offen:
 
+Richtung, braucht den Operator
+
+- Die Seitenleiste bietet als Kategorie nur die Sprache an, und nur sie färbt Karte und Zeitleiste. Für Bestände mit anderen Feldern liegt nahe, die Kategorien aus den Daten abzuleiten: jedes Merkmal mit wenigen Ausprägungen wird ein Filter, und eines davon färbt die Grafiken. Für den Bestand von Stefan Zweig Digital wären das etwa die Merkmale der Überlieferung.
+- Ob die Daten von Stefan Zweig Digital mit dem Werkzeug ausgeliefert werden dürfen. Bis dahin erscheint das Beispiel nur lokal.
+- Das Tutorial ist neu auszuarbeiten, seine Tour stammt aus der Zeit der zwölf Ansichten.
+
 Dieselbe Tatsache mehrfach
 
 - Die Forschungspfade der Startansicht wiederholen in ihrer Beschreibung die Kennzahlen darüber.
@@ -73,10 +79,8 @@ Dieselbe Tatsache mehrfach
 Ebenen und Flächen
 
 - Vor dem Graphen des Netzwerks stehen fünf Schichten, darunter Legende und Hinweiszeile.
-- Die Ortsliste beginnt mit einem gerahmten Hinweis zu Orten ohne Koordinaten, der die Karte betrifft.
 - Ein gestarteter Forschungspfad legt zwei Streifen unter die Kopfzeile.
 - Details von Orten und Themen und beide Dialoge führen drei Überschriftenebenen, Label-Value-Raster und gerahmte Tags.
-- Themen stapeln Liste und Detail, Orte stellen sie nebeneinander. Die Themenliste ist in der Höhe begrenzt, daneben bleibt Fläche leer.
 - Start, Vergleich und Tage lassen unter oder neben dem Inhalt Fläche frei, die Chronik kürzt in der kompakten Form Namen bei freier Breite.
 - Die Inhaltskante der Ansichten ohne Seitenleiste liegt je Ansicht woanders, die Seitenleiste erscheint innerhalb eines Gegenstands je nach Darstellung.
 - Die Umschaltung steht in der Chronik etwas tiefer als bei Jahren und Tagen.
@@ -95,9 +99,7 @@ Bedienung
 
 Benennung
 
-- Die Schritte der Forschungspfade heißen „Korrespondenten“, „Timeline“ und „Aktivität“, die Umschaltung nennt dieselben Darstellungen „Liste“, „Jahre“ und „Tage“.
-- Derselbe Zustand heißt „k.A.“, „Ohne Datum“ und „ohne Jahr“.
-- Ungarisch und Baskisch stehen in der Seitenleiste mit dem Grau, das in den Legenden „Übrige Sprachen“ heißt.
+- Derselbe Zustand heißt „Ohne Datum“ und bei gemischten Gründen „ohne Jahr“.
 - Die Marke „Experimentell“, „Mit Wikidata anreichern“ und „Koordinaten nachladen“ benennen Technik und Prozess.
 - Die Ortsliste führt eine Zeile mehr, als ihr Titel zählt. Die Ursache ist nicht geklärt.
 
