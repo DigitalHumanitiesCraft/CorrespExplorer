@@ -40,8 +40,6 @@ Daten und Parser
 - Ein Link vom Brief in die Edition fehlt für Briefsätze. Die Quelle trägt je Brief eine PID (`idno type="PID"`), aus der sich nur mit Wissen über das Repositorium eine URL bilden lässt. Eine allgemeine Regel dafür gibt es nicht.
 - Datierungen nur als Text („12. V. 1938“) stehen nicht auf der Zeitachse, weil das Werkzeug Datumsnotationen nicht normalisiert. Ein Jahr aus solchem Text zu lesen wäre eine Deutung und braucht eine Entscheidung.
 - `textLang` der Briefsätze wird nicht als Briefsprache gelesen.
-- Die CSV-Spalte `date_certainty` schreibt „high“, wo die Quelle keine Sicherheit nennt.
-- Im HSA markiert „?“ einen Ort ohne Koordinaten, obwohl das Zeichen sonst eine unsichere Datierung meint.
 
 Bedienung
 
@@ -52,7 +50,7 @@ Bedienung
 - Tooltips der Ansichtsleiste bleiben nach einem Klick stehen.
 - Die Monate der Heatmap sind nicht anklickbar.
 - Für ein Jahr nennt die Jahresauswahl der Aktivität einen tagesgenauen Brief mehr, als die Heatmap zeichnet. Die Ursache ist nicht untersucht.
-- Bei 360 Pixel ist die Zeitleiste flach und zeigt nur die ersten Jahrzehnte, eine Personenzeile braucht vier bis fünf Textzeilen.
+- Bei 360 Pixel zeigt die Zeitleiste nur die ersten Jahrzehnte und scrollt in ihrem Bereich.
 
 Code
 
@@ -63,35 +61,29 @@ Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Er
 
 ### Offen aus den Durchsichten vom 2026-11-14
 
-Zwei unabhängige Durchsichten des Umbaus von Farbrollen und Listen ([Journal vom 2026-11-14](journal.md)) ließen offen:
+Zwei unabhängige Durchsichten des Umbaus von Farbrollen und Listen ließen Befunde offen, von denen die meisten am selben Tag behoben wurden ([Journal vom 2026-11-14](journal.md)). Es bleiben:
+
+Braucht eine Entscheidung des Operators
+
+- Die sechs Einstiegskacheln der Übersicht führen in dieselben Ansichten wie die Leiste darüber. Sie zu streichen nähme einen Teil der Startansicht weg.
+- Ein Forschungspfad zeigt Frage, Beschreibung, Vorschau, Schritt und Startknopf und hat damit mehr Ebenen je Eintrag, als der Maßstab erlaubt. Kürzer würde er, wenn Vorschau oder Schritt erst nach dem Start erschienen.
+- Der Dialog eines Briefs wiederholt Datum, Absender, Empfänger, Ort und Sprache der Zeile. Er soll alles zeigen, was die Quelle verzeichnet, die Wiederholung ist die Folge davon.
 
 Bedienung
 
-- Die Sprachsegmente der Zeitleiste sind per Tastatur nicht erreichbar und bei schmaler Breite kaum zu treffen. Die Tastatur setzt nur das Jahr.
-- Der Balken ohne Datum setzt einen zeitlichen Filter, den die Seitenleiste weder als Häkchen unter „Überlieferung“ noch als Filtermarke zeigt.
-- Bei 360 Pixel zeigen Ansichtsleiste und Kopfknöpfe nur Symbole, und ein aktiver Filter ist nur in der eingeklappten Seitenleiste zu sehen.
-- Eine Briefzeile braucht bei 360 Pixel drei bis vier Textzeilen, mit langen Namen auch bei 1280 Pixel zwei. Brief- und Personenzeile tragen mehr als ein Ziel und eine weitere Aktion.
-- Der Stern der Korrespondentenliste ist kein Schalter und zeigt nicht, ob die Person im Korb liegt.
-- Das Kartenpopup schließt nicht mit Escape, sein Stern ist kleiner als die Zielgröße.
-- Nach dem Start eines Forschungspfads und nach „Alle Pfade anzeigen“ fällt der Fokus auf das Dokument.
-- Die Forschungspfade haben mehr Ebenen je Eintrag, als der Maßstab erlaubt, und die Einstiegskacheln der Übersicht führen in dieselben Ansichten wie die Leiste darüber.
-- Der Dialog eines Briefs wiederholt als Raster, was die Zeile schon zeigt, seine Knöpfe brechen bei langen Namen um.
+- Bei 360 Pixel zeigen die Kopfknöpfe und die nicht aktiven Reiter nur Symbole. Der aktive Reiter nennt seinen Namen.
+- Eine Briefzeile braucht bei 360 Pixel drei Textzeilen, mit langen Namen bei 1280 Pixel zwei. Die Personenzeile trägt neben dem Namen zwei Aktionen, Stern und Details.
+- Die Sprachsegmente eines einzelnen Jahres sind per Tastatur nur in zwei Schritten erreichbar, über die Sprache in der Legende und das Jahr am Balken.
+- Der Balken ohne Jahr und das Merkmal „Ohne Datum“ der Seitenleiste bleiben zwei Filter für fast dieselbe Menge. Beide zeigen jetzt eine Filtermarke.
 
 Gestaltung und Kodierung
 
-- Die Chronik, der Vergleich, die Detailbereiche von Orten und Themen und die Kennzahlen der Seitenleiste stehen weiter in Rahmen und Flächen.
-- Dieselbe Funktion sieht in verschiedenen Ansichten verschieden aus, etwa die Moduswahl in Chronik, Vergleich und Netzwerk, der Weg zu correspSearch und „Zum Korb“ in Liste und Dialogen.
+- Die Art des Netzwerks wählt eine Auswahlliste, Chronik und Vergleich nutzen dafür Schaltflächen.
+- Die Kennzahlen der Seitenleiste und die Tags in den Details von Orten und Themen tragen weiter einen Rahmen.
 - Mehrere Sprachfarben und die unteren Stufen der Heatmap erreichen auf dem Papierton den Kontrast für Grafikteile nicht. Das Werkzeug stützt sich auf die Tabellen unter den Grafiken ([design.md](design.md#sprachfarben)).
-- Im Erwähnungsfluss liegt die rechte Spaltenüberschrift unter den Zoomknöpfen, ein Name liegt auf dem Mittelknoten.
-- Themen stehen im Netzwerk in einer Statusfarbe.
-- Der Zähler im Kopf des Wissenskorbs steht in der Interaktionsfarbe, ohne bedienbar zu sein.
-- Die Kopfzeilen von Startseite, Projektseite und Explorer unterscheiden sich, die Startseite führt einen Link „Tests“.
+- Die Kopfzeilen von Startseite, Projektseite und Explorer sind verschieden gestaltet.
 
-Daten
-
-- Für die Person im Mittelpunkt der Briefe von Stefan Zweig Digital nennen Korrespondentenliste und Forschungspfad verschiedene Briefzahlen. Vermutlich zählt der Pfad gesendete und empfangene Briefe zusammen und damit Briefe doppelt, in denen die Person beides ist.
-
-Nicht geprüft sind die Korrekturen an Fokus, Suche und Stern durch eine zweite Durchsicht, der Wissenskorb mit Einträgen, die dunkle Grundkarte, der Exportdialog und die Demo-Tour im neuen Farbschema.
+Nicht geprüft sind der Wissenskorb mit Einträgen, die dunkle Grundkarte, der Exportdialog und die Demo-Tour im neuen Farbschema sowie das Schließen des Kartenpopups mit Escape, das nur im Code geprüft ist.
 
 ## Vorhaben
 

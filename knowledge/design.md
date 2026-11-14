@@ -46,7 +46,7 @@ Ladereihenfolge und Inhalt der Stylesheets beschreibt `docs/css/CONTEXT-MAP.md`.
 
 ## Farben
 
-Die Palette ist aus dem Logo abgeleitet, die Werte stehen in `tokens.css`. Hier steht, welche Farbe wofür gilt.
+Die Palette ist aus dem Logo abgeleitet, die Werte stehen in `tokens.css`. Der Operator hat sie am 2026-11-14 als Erscheinung des Projekts bestätigt. Hier steht, welche Farbe wofür gilt.
 
 - `--color-bg` (Papier) ist der globale Hintergrund, `--color-bg-light` (Manila) der Grund von Steuerleisten, Feldern und der Zeile unter dem Mauszeiger.
 - `--color-text` ist Haupttext und Kontur, `--color-text-light` Nebentext und Hinweise.
@@ -79,7 +79,7 @@ Das Jahr der Heatmap wählt eine Auswahlliste mit Knöpfen für das vorige und d
 
 Der Farbton allein trägt nur wenige Kategorien. In einer Suchaufgabe unter kontrollierten Bedingungen waren sieben Farben die Grenze für schnelles Erkennen (Healey, 1996), und Fehler nehmen mit der Größe der Palette zu (Gramazio et al., 2017). Die häufigsten Sprachen eines Datensatzes erhalten deshalb je eine Farbe aus `LANGUAGE_PALETTE` in `docs/js/constants.js`, in der Reihenfolge ihrer Briefzahl. Alle übrigen teilen das warme Grau von „Weitere Sprachen“, Briefe ohne Sprache ein helleres. `computeLanguageColors()` setzt die Zuordnung beim Laden, `isRestLanguage()` sagt, ob eine Sprache zum Rest gehört. Die Sprachfarben sind die einzigen Datenfarben außerhalb von `tokens.css`.
 
-Die Palette besteht aus sechs Farben der Okabe-Ito-Reihe (Okabe & Ito, 2008), die für Lesende mit Farbfehlsichtigkeit entworfen ist. Ihr Gelb fehlt, weil es auf dem Papierton verschwindet, ihr Schwarz, weil Tinte die Textfarbe ist. Nachbarn in der Reihenfolge unterscheiden sich in der Helligkeit, die häufiger erkannt wird als ein Unterschied im Farbton (Szafir, 2018). Eine aus der Logofarbe abgeleitete, gedämpfte Reihe wurde am 2026-11-14 erwogen und verworfen, weil Farben einer Tonfamilie und entsättigte Farben schwerer zu benennen und zu trennen sind (Heer & Stone, 2012). Ebenso verworfen ist die frühere Lösung mit einer kräftigen Farbe für die häufigste Sprache und Pastelltönen für alle anderen. Für das Zusammenfassen unter „Weitere Sprachen“ liegt keine Studie vor, die Grenze bei sechs Farben ist eine eigene Setzung. Einzeln bleiben diese Sprachen im Filter der Seitenleiste, im Tooltip und in der Tabelle. Ein Klick auf das graue Segment setzt den Sprachfilter auf alle Sprachen des Rests.
+Die Palette besteht aus sechs Farben der Okabe-Ito-Reihe (Okabe & Ito, 2008), die für Lesende mit Farbfehlsichtigkeit entworfen ist. Ihr Gelb fehlt, weil es auf dem Papierton verschwindet, ihr Schwarz, weil Tinte die Textfarbe ist. Nachbarn in der Reihenfolge unterscheiden sich in der Helligkeit, die häufiger erkannt wird als ein Unterschied im Farbton (Szafir, 2018). Eine aus der Logofarbe abgeleitete, gedämpfte Reihe wurde am 2026-11-14 erwogen und verworfen, weil Farben einer Tonfamilie und entsättigte Farben schwerer zu benennen und zu trennen sind (Heer & Stone, 2012). Ebenso verworfen ist die frühere Lösung mit einer kräftigen Farbe für die häufigste Sprache und Pastelltönen für alle anderen. Für das Zusammenfassen unter „Weitere Sprachen“ liegt keine Studie vor, die Grenze bei sechs Farben ist eine eigene Setzung. Einzeln bleiben diese Sprachen im Filter der Seitenleiste, im Tooltip und in der Tabelle. Ein Klick auf das graue Segment setzt den Sprachfilter auf alle Sprachen des Rests. Jede Sprache der Legende ist ein Schalter, der denselben Filter für die ganze Zeitleiste setzt und beim zweiten Druck aufhebt. Er ist der Tastaturweg zu dem, was ein Segment mit dem Zeiger bietet.
 
 Mehrere der Farben erreichen auf `--color-bg` den Kontrast von 3:1 für Grafikteile nicht. Das Werkzeug stützt sich hier auf die Tabelle „Daten als Tabelle“, die dieselben Werte in Textform führt, nach dem Understanding-Dokument zu WCAG 1.4.11 genügt das. Die Quellenangaben stehen unter [Quellen der Farbentscheidungen](#quellen-der-farbentscheidungen).
 
@@ -197,7 +197,7 @@ Die Balken sind nach Sprache gestapelt ([Sprachfarben](#sprachfarben)), die Schr
 
 ### Listen
 
-Listen verzichten auf wechselnd gefärbte Zeilen, weil sie unruhig wirken. Zahlen stehen rechtsbündig. Ein Brief steht ab 1024px in einer Zeile mit Korrespondenten, den Angaben der Quelle und dem Datum, darunter in zwei bis drei Zeilen. Die Korrespondentenliste führt keine Kreise mit Initialen mehr, weil sie keine Angabe trugen, die der Name nicht trägt.
+Listen verzichten auf wechselnd gefärbte Zeilen, weil sie unruhig wirken. Zahlen stehen rechtsbündig. Ein Brief steht ab 1024px in einer Zeile mit Korrespondenten, den Angaben der Quelle und dem Datum, darunter in zwei bis drei Zeilen. Die Korrespondentenliste führt keine Kreise mit Initialen mehr, weil sie keine Angabe trugen, die der Name nicht trägt. Eine Zeile hat ein Ziel und den Stern zum Korb, die Korrespondentenzeile zusätzlich den Knopf zu den Details. Der Link zur Quelle und der Weg zu correspSearch stehen im Dialog. Der Stern ist ein Umriss, bis der Eintrag im Korb liegt, der Zustand hängt damit nicht an der Farbe allein. Bei eingeklappter Seitenleiste nennt ein Hinweis unter dem Kopf jeder Ansicht den aktiven Filter (`renderFilterNotice()`).
 
 ## Interaktionsmuster
 

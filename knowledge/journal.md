@@ -27,9 +27,17 @@ related: [project, specification, plan]
 - Aus dem Refactoring vom 2026-11-14 vom Agenten gemeldet und nicht behoben: `style.display` in `mentions-view.js`, `network-view.js` und `places-view.js` gegen die Regel, Sichtbarkeit nur über `.hidden` zu schalten. Die Legende der Zeitleiste zeigt ohne Sprachdaten weiter „Keine Sprachdaten im Korpus“. `wissenskorb.css` und `test-runner.js` setzen einzelne Werte ohne Token.
 - Der Operator entscheidet, ob `docs/assets/logo.jpg` und `docs/favicon.svg` bleiben, die keine Seite einbindet (Eintrag vom 2026-11-14).
 - Die Abnahme des Refactorings, der Iteration an den Briefen von Stefan Zweig Digital und des Umbaus von Farbrollen, Sprachpalette und Listen durch den Operator steht aus (Einträge vom 2026-11-14).
-- Der Operator entscheidet, ob die Grundpalette aus dem Logo die Erscheinung des Projekts bleibt (Eintrag vom 2026-11-14 zu den Farbrollen).
 
 ## Einträge
+
+### 2026-11-14 Offene Punkte aus plan.md abgearbeitet, Palette bestätigt
+
+- Anlass: Der Operator entschied, dass die Grundpalette aus dem Logo bleibt, und gab den Auftrag, die offenen Punkte aus [plan.md](plan.md) zu beheben.
+- Entschieden: Die Palette aus Papier, Tinte und Rostrot ist die Erscheinung des Projekts (Operator). Eine Zeile führt ein Ziel und den Stern, der Link zur Quelle und der Weg zu correspSearch stehen im Dialog. Die Legende der Zeitleiste ist der Tastaturweg zum Sprachfilter. Auf schmalem Bildschirm nennt jede Ansicht den aktiven Filter selbst, weil die Seitenleiste dort eingeklappt ist.
+- Korrigiert: Die Sprachen der Legende sind Schalter. Der Balken ohne Jahr zeigt eine entfernbare Filtermarke. Der Stern der Korrespondentenliste ist derselbe Schalter wie in der Briefliste. Das Kartenpopup schließt mit Escape. Nach dem Start eines Forschungspfads und nach „Alle Pfade anzeigen“ bleibt der Fokus im Inhalt. Die Forschungspfade zählen eine Person je Brief einmal, damit stimmen Pfad und Korrespondentenliste überein. Chronik und Vergleich stehen ohne gefüllte Kacheln, ihre Moduswahl sieht gleich aus, „Zum Korb“ und correspSearch sind in beiden Dialogen Nebenknöpfe. Themen stehen im Netzwerk in einer eigenen Datenfarbe. Die CSV-Spalte `date_certainty` bleibt leer, wo die Quelle nichts nennt. Ein Ort ohne Koordinaten sagt das in Worten. Die Startseite führt den Link „Tests“ nicht mehr, alle Seiten nennen die Wissensbasis gleich.
+- Belege: der Commit dieses Eintrags und der Code-Commit davor. Eine Prüfung im Browser stellte die Bedienpunkte einzeln nach, jede mit vorher festgelegtem Ergebnis, und bestand alle (Legende mit Tastatur, Filtermarke, Stern, Dialog ohne Normdatensatz, Fokus, Suche ohne Diakritika, leerer Zustand, Zeile ohne Quellenlink, Filterhinweis bei 360 Pixel, gleiche Zahl in beiden Datensätzen). `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen dreizehn Prüfungen. Chronik, Vergleich, Orte, Brief-Dialog, Erwähnungsfluss und die Briefliste bei 360 Pixel sind am Bild gesehen. Eine zweite unabhängige Durchsicht des neuen Stands hat nicht stattgefunden.
+- Wer was tat: Diese Session (Claude Fable 5.2 in Claude Code) baute und prüfte. Der Operator gab Auftrag und Palettenentscheidung, seine Abnahme steht aus.
+- Offen: Was bleibt, führt [plan.md](plan.md#offen-aus-den-durchsichten-vom-2026-11-14), darunter drei Punkte, die eine Entscheidung des Operators brauchen.
 
 ### 2026-11-14 Farbrollen, Sprachpalette und Listen als Zeilen
 
