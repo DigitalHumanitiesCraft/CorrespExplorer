@@ -166,7 +166,6 @@ export function renderLettersList() {
                     ${labelled('Signatur', letter.signature)}
                     ${recordNote ? `<span class="letter-meta__note">${recordNote}</span>` : ''}
                     ${language ? `<span><i class="fas fa-language" aria-hidden="true"></i> ${escapeHtml(language)}</span>` : ''}
-                    ${safeUrl(letter.url) ? `<span><a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt" aria-hidden="true"></i> Quelle</a></span>` : ''}
                 </div>
             </div>
         `;
@@ -297,8 +296,8 @@ export function showLetterDetail(letterId) {
         .map(r => [buildCorrespSearchUrl(r), r.name]).filter(([url]) => url);
     if (senderCorrespUrl || recipientLinks.length) {
         html += '<div class="corresp-search-links">';
-        if (senderCorrespUrl) html += correspSearchLink(senderCorrespUrl, letter.sender.name, 'btn btn-corresp');
-        html += recipientLinks.map(([url, name]) => correspSearchLink(url, name, 'btn btn-corresp')).join('');
+        if (senderCorrespUrl) html += correspSearchLink(senderCorrespUrl, letter.sender.name, 'btn btn-secondary');
+        html += recipientLinks.map(([url, name]) => correspSearchLink(url, name, 'btn btn-secondary')).join('');
         html += '</div>';
     }
     html += '</div></div>';

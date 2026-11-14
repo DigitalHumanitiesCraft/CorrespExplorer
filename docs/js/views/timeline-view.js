@@ -467,7 +467,7 @@ function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLang
                 const label = languageLabel(lang);
                 const tooltip = lang === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten'
                     : lang === 'other' ? 'Alle übrigen Sprachen, einzeln im Filter der Seitenleiste und in der Tabelle' : '';
-                return `<span class="timeline-legend-item"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count})</span>`;
+                return `<button type="button" class="timeline-legend-item timeline-legend-btn" data-lang="${escapeHtml(lang)}" aria-pressed="${isOnlyLanguage(lang)}"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count})</button>`;
             });
     } else {
         legendItems.push(`<span class="timeline-legend-item timeline-legend-info" title="Dieses Korpus enthält keine Sprachmetadaten"><i class="fas fa-info-circle"></i> Keine Sprachdaten im Korpus</span>`);
@@ -485,6 +485,35 @@ function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLang
     }
 
     legendEl.innerHTML = legendItems.join('');
+
+    // The segments of a bar are too small for a pointer on a narrow screen and out of reach of
+    // the keyboard; the legend sets the same language filter for the whole chart
+    legendEl.querySelectorAll('.timeline-legend-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const lang = btn.dataset.lang;
+            const release = isOnlyLanguage(lang);
+            languageBoxes().forEach(cb => { cb.checked = release || matchesLanguage(cb.value, lang); });
+            applyFilters();
+            legendEl.querySelector(`.timeline-legend-btn[data-lang="${CSS.escape(lang)}"]`)?.focus();
+        });
+    });
+}
+
+function languageBoxes() {
+    return [...document.querySelectorAll('input[name="language"]')];
+}
+
+// The grey rest stands for every language without a colour of its own
+function matchesLanguage(code, lang) {
+    return lang === 'other' ? isRestLanguage(code) : code === lang;
+}
+
+// True when the language filter of the sidebar selects exactly this legend entry
+function isOnlyLanguage(lang) {
+    const boxes = languageBoxes();
+    const checked = boxes.filter(cb => cb.checked);
+    return checked.length > 0 && checked.length < boxes.length
+        && boxes.every(cb => cb.checked === matchesLanguage(cb.value, lang));
 }
 
 /**
@@ -516,9 +545,7 @@ function setupTimelineClickHandlers(container) {
             // code; unchecking every box would then empty the result
             if (lang !== '_total') {
                 // The rest segment stands for every language without a colour of its own
-                document.querySelectorAll('input[name="language"]').forEach(cb => {
-                    cb.checked = lang === 'other' ? isRestLanguage(cb.value) : cb.value === lang;
-                });
+                languageBoxes().forEach(cb => { cb.checked = matchesLanguage(cb.value, lang); });
             }
 
             applyFilters();

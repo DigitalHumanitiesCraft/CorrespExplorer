@@ -370,7 +370,7 @@ function renderMentionsFlowForPerson(person) {
     // Right column: People mentioned by the selected person (only show if data exists)
     if (hasRightColumn) {
         labelGroup.append('text')
-            .attr('x', width - 20)
+            .attr('x', width - 64)
             .attr('y', 20)
             .attr('text-anchor', 'end')
             .style('font-size', tokens.fontXs)
@@ -380,7 +380,7 @@ function renderMentionsFlowForPerson(person) {
 
         if (!narrow) {
             labelGroup.append('text')
-                .attr('x', width - 20)
+                .attr('x', width - 64)
                 .attr('y', 34)
                 .attr('text-anchor', 'end')
                 .style('font-size', tokens.fontXs)

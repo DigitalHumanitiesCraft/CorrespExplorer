@@ -58,6 +58,7 @@
     --color-map-water: #B8D4E8;      /* Basemap water, design.md, Karte */
     --color-role-mentioned: #6E6959; /* Warm grey - Erwähnt, 4.9:1 on --color-bg */
     --color-role-organization: #00735C; /* Green - Körperschaft beside persons in --color-data */
+    --color-role-topic: #7B4F8E;     /* Purple - Themen im Netzwerk */
 
     /* ========================================
      * TYPOGRAPHY

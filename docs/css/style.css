@@ -421,6 +421,11 @@ button {
     display: none;
 }
 
+/* Below the width for twelve names the active view still says which one it is */
+.view-btn.active .view-btn-text {
+    display: inline;
+}
+
 /* The bar clips its overflow, so the focus ring is drawn inside the button */
 .view-btn:focus-visible {
     outline-offset: -3px;
@@ -714,10 +719,10 @@ button {
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-sm) var(--space-md);
-    background: var(--color-bg);
-    color: var(--color-warning);
-    border: 1px solid var(--color-warning);
-    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text);
+    border: 2px solid var(--color-border-control);
+    border-radius: var(--radius-md);
     font-size: var(--font-size-sm);
     cursor: pointer;
     transition: var(--transition-fast);
@@ -725,12 +730,14 @@ button {
 }
 
 .btn-basket:hover {
-    background: var(--color-warning);
-    color: white;
+    background: var(--color-warning-light);
+    border-color: var(--color-warning);
+    color: var(--color-warning);
 }
 
 .btn-basket.in-basket {
     background: var(--color-warning);
+    border-color: var(--color-warning);
     color: white;
 }
 

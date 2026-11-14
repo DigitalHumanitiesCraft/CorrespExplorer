@@ -603,6 +603,12 @@ function setupPopupEventHandlers(popup) {
     const popupEl = popup.getElement();
     if (!popupEl) return;
 
+    popupEl.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        popup.remove();
+        map.getCanvas().focus();
+    });
+
     // Basket toggle
     const basketBtn = popupEl.querySelector('.popup-basket-toggle');
     if (basketBtn) {

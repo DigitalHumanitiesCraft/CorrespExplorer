@@ -13,7 +13,7 @@ import { loadDemoDataset, loadUrlDataset } from './cmif-parser.js';
 import { isCorrespSearchUrl, correspSearchShareUrl } from './correspsearch-api.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
-import { filterSentence, focusViewHeading } from './views/view-support.js';
+import { filterSentence, focusViewHeading, renderFilterNotice } from './views/view-support.js';
 import { initOverviewView, renderOverview } from './views/overview-view.js';
 import { initMapView, updateMapPlaces, resizeMap, aggregateLettersByPlace } from './views/map-view.js';
 import { initPersonsView, renderPersonsList } from './views/persons-view.js';
@@ -776,6 +776,7 @@ function applyFilters({ render = true } = {}) {
     updateFilterBadges();
     updateTopicsQuickFilterState();
     updateFilterIndicators();
+    SIDEBAR_VIEWS.forEach(view => renderFilterNotice(`${view}-view`)?.classList.add('view-filter-notice--narrow'));
     announceResultCount();
 
     if (render) renderView(currentView);
@@ -868,7 +869,9 @@ function subjectLabelForKey(key) {
     return getSubjectIndex()?.[key]?.label || dataIndices.subjects?.[key]?.label || key;
 }
 
-const FILTER_BADGE_ORDER = ['person-filter-display', 'place-filter-display', 'subject-filter-display', 'feature-filter-display'];
+const FILTER_BADGE_ORDER = ['temporal-filter-display', 'person-filter-display', 'place-filter-display', 'subject-filter-display', 'feature-filter-display'];
+// Views with the filter sidebar beside them on a wide screen
+const SIDEBAR_VIEWS = ['map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network'];
 
 /**
  * Removable badge of an active person, place or subject filter under the sidebar stats. The
@@ -913,6 +916,14 @@ function updateFilterBadge(id, className, icon, label, onClear) {
 }
 
 function updateFilterBadges() {
+    // The bar of letters without a year sets a filter the slider cannot show
+    updateFilterBadge('temporal-filter-display', 'person-filter-active temporal-filter-active', 'fa-calendar-times',
+        temporalFilter?.undated ? 'Nur Briefe ohne Jahr' : null, () => {
+            temporalFilter = null;
+            const slider = elements.yearRangeSlider?.noUiSlider;
+            if (slider) slider.set([slider.options.range.min, slider.options.range.max]);
+            applyFilters();
+        });
     updateFilterBadge('person-filter-display', 'person-filter-active', 'fa-user',
         selectedPersonId ? personNameForKey(selectedPersonId) : null, clearPersonFilter);
     updateFilterBadge('place-filter-display', 'person-filter-active place-filter-active', 'fa-map-marker-alt',

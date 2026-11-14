@@ -9,6 +9,7 @@ import {
     onBasketChange
 } from './basket.js';
 import { BASKET_LIMITS } from './constants.js';
+import { focusViewHeading } from './views/view-support.js';
 import { escapeHtml, personKey, placeKey, showToast } from './utils.js';
 
 const STORAGE_KEY = 'knowledgePath';
@@ -57,6 +58,8 @@ export function startKnowledgePath(question) {
     setPathUIVisible(true);
     deps.switchView(question.path[0].view);
     updateKnowledgePathUI();
+    // The start button stays behind in the overview; the new view begins at its title
+    focusViewHeading(question.path[0].view);
 }
 
 function loadKnowledgePath() {

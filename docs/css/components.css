@@ -383,10 +383,8 @@
 
 .entity-detail-panel {
     min-width: 0;
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg);
+    padding: 0 var(--space-lg);
+    border-left: 1px solid var(--color-border-light);
     overflow: auto;
 }
 

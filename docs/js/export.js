@@ -31,7 +31,7 @@ export function letterExportRow(letter) {
         date_to: letter.dateTo || '',
         year: letter.year,
         date_precision: letter.datePrecision || '',
-        date_certainty: letter.dateCertainty || 'high',
+        date_certainty: letter.dateCertainty || '',
         sender_name: letter.sender?.name || '',
         sender_id: letter.sender?.id || '',
         // The id alone does not say whether it is a GND or a VIAF number

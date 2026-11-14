@@ -36,7 +36,9 @@
 
 /* Three cards share the sidebar width; the side padding keeps the number clear of the quality icon in the corner */
 #sidebar-dataset .stat-card {
-    padding: var(--space-md) var(--space-lg);
+    padding: var(--space-sm) var(--space-md);
+    border-width: 1px;
+    border-color: var(--color-border-control);
 }
 
 #sidebar-dataset .stat-value {
@@ -606,35 +608,6 @@
     text-align: right;
 }
 
-/* correspSearch Button */
-.btn-correspsearch {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--color-bg-light);
-    color: var(--color-text-light);
-    border: 1px solid var(--color-border);
-    text-decoration: none;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
-    flex-shrink: 0;
-    min-width: 24px;
-    min-height: 24px;
-}
-
-.btn-correspsearch:hover {
-    background: var(--color-secondary);
-    color: white;
-    border-color: var(--color-info);
-}
-
-.btn-correspsearch i {
-    font-size: var(--font-size-xs);
-}
-
 /* Letter Card */
 .letter-card {
     display: flex;
@@ -867,6 +840,8 @@
 }
 
 .filter-clear {
+    min-width: 24px;
+    min-height: 24px;
     background: none;
     border: none;
     color: white;
@@ -874,7 +849,6 @@
     padding: calc(var(--space-xs) / 2) var(--space-xs);
     margin-left: var(--space-xs);
     opacity: 0.8;
-    transition: opacity var(--transition-fast);
 }
 
 .filter-clear:hover {
@@ -1135,6 +1109,27 @@
     color: var(--color-text);
 }
 
+/* A language of the legend sets the language filter; the keyboard way to what a segment offers */
+.timeline-legend-btn {
+    min-height: 24px;
+    padding: var(--space-xs) var(--space-sm);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.timeline-legend-btn:hover {
+    background: var(--color-bg-light);
+}
+
+.timeline-legend-btn[aria-pressed="true"] {
+    background: var(--color-primary-light);
+    font-weight: 600;
+    box-shadow: inset 0 -2px 0 var(--color-primary);
+}
+
 .timeline-legend-color {
     width: 12px;
     height: 12px;
@@ -1284,7 +1279,8 @@
 
 .letter-detail-actions {
     display: flex;
-    gap: var(--space-md);
+    flex-wrap: wrap;
+    gap: var(--space-sm) var(--space-md);
     padding-top: var(--space-md);
 }
 
@@ -1292,9 +1288,8 @@
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-md);
     font-size: var(--font-size-sm);
+    white-space: nowrap;
     cursor: pointer;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
 }
 
 .letter-detail-actions .btn-primary {
@@ -1307,47 +1302,6 @@
     background: var(--color-primary-dark);
 }
 
-.letter-detail-actions .btn-secondary {
-    background: var(--color-bg);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-}
-
-.letter-detail-actions .btn-secondary:hover {
-    border-color: var(--color-primary);
-}
-
-/* Basket Button in Letter Detail */
-.letter-detail-actions .btn-basket {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--color-bg);
-    color: var(--color-text-light);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-sm);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
-}
-
-.letter-detail-actions .btn-basket:hover {
-    border-color: var(--color-warning);
-    color: var(--color-warning);
-}
-
-.letter-detail-actions .btn-basket.in-basket {
-    background: var(--color-warning);
-    border-color: var(--color-warning);
-    color: white;
-}
-
-.letter-detail-actions .btn-basket.in-basket:hover {
-    background: var(--color-primary-dark);
-}
-
 /* correspSearch Links in Letter Detail */
 .corresp-search-links {
     display: flex;
@@ -1355,30 +1309,6 @@
     gap: var(--space-sm);
     margin-top: var(--space-sm);
     width: 100%;
-}
-
-.btn-corresp {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--color-info-light);
-    color: var(--color-info);
-    border: 1px solid var(--color-info);
-    border-radius: var(--radius-sm);
-    font-size: var(--font-size-xs);
-    text-decoration: none;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
-}
-
-.btn-corresp:hover {
-    background: var(--color-info);
-    color: white;
-}
-
-.btn-corresp i {
-    font-size: var(--font-size-xs);
 }
 
 /* Person Detail Modal */
@@ -1555,6 +1485,15 @@
     background: var(--color-warning-light);
 }
 
+.btn-person-basket:not(.in-basket) i {
+    font-weight: 400;
+}
+
+.btn-person-basket.in-basket {
+    border-color: var(--color-warning);
+    color: var(--color-warning);
+}
+
 /* Person Info Button */
 .btn-person-info {
     display: flex;
@@ -1619,6 +1558,11 @@
 }
 
 .popup-basket-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
     background: none;
     border: none;
     color: var(--color-text-light);
@@ -1626,7 +1570,6 @@
     padding: 0;
     font-size: var(--font-size-base);
     line-height: 1;
-    transition: color var(--transition-fast);
     flex-shrink: 0;
 }
 
@@ -1795,12 +1738,12 @@
 /* Small mobile (≤480px) */
 @media (max-width: 480px) {
     .timeline-chart {
-        height: 150px;
+        height: 220px;
         padding-left: 25px;
     }
 
     .timeline-undated-bin {
-        height: 150px;
+        height: 220px;
     }
 
     .timeline-bar-label {
@@ -2580,11 +2523,8 @@ body:has(.tour-highlight) .tour-backdrop {
    list (round 1 review: twelve boxes in the first screen) */
 .chronik-entry {
     position: relative;
-    margin-bottom: var(--space-sm);
     padding: var(--space-sm) var(--space-md);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-md);
+    border-bottom: 1px solid var(--color-border-light);
     transition: var(--transition-fast);
     transition-property: var(--transition-properties);
 }
@@ -2595,8 +2535,7 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .chronik-entry:hover {
-    border-color: var(--color-primary);
-    transform: translateX(4px);
+    background: var(--color-bg-light);
 }
 
 /* Date dot on timeline */
@@ -2802,8 +2741,9 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .chronik-layout-btn.active {
-    background: var(--color-bg);
+    background: var(--color-primary-light);
     color: var(--color-primary-dark);
+    font-weight: 600;
 }
 
 /* The layout buttons carry their name next to the icon */
@@ -3522,11 +3462,7 @@ body:has(.tour-highlight) .tour-backdrop {
     max-width: 70ch;
 }
 
-/* Filter notice of the views without sidebar (activity, chronicle, comparison), set by
-   renderFilterNotice() in view-support.js under the view header */
-#activity-view .view-filter-notice,
-#chronik-view .view-filter-notice,
-#comparison-view .view-filter-notice {
+.view-filter-notice {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
@@ -3553,6 +3489,18 @@ body:has(.tour-highlight) .tour-backdrop {
 .view-filter-notice__clear:focus-visible {
     outline: 2px solid var(--color-text);
     outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+    .view-filter-notice--narrow {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .view-filter-notice--narrow {
+        margin: 0 var(--space-md) var(--space-sm);
+    }
 }
 
 /* Small explanatory note under controls and statistics (e.g. #activity-without-day-note) */
@@ -3842,11 +3790,12 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .comparison-mode-btn {
-    padding: var(--space-sm) var(--space-md);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-bg);
-    color: var(--color-text);
+    padding: 6px 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-light);
+    color: var(--color-text-light);
+    font: inherit;
     font-size: var(--font-size-sm);
     cursor: pointer;
     transition: var(--transition-fast);
@@ -3854,14 +3803,13 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .comparison-mode-btn:hover {
-    border-color: var(--color-primary);
     color: var(--color-primary-dark);
 }
 
 .comparison-mode-btn.active {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: white;
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    font-weight: 600;
 }
 
 /* Auswahl-Bereich */
@@ -3922,10 +3870,8 @@ body:has(.tour-highlight) .tour-backdrop {
 }
 
 .comparison-panel {
-    background: var(--color-bg-light);
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 2px solid var(--color-border);
 }
 
 .comparison-panel h3 {
@@ -4538,4 +4484,10 @@ body:has(.tour-highlight) .tour-backdrop {
     margin: 0 0 var(--space-md);
     font-size: var(--font-size-sm);
     color: var(--color-text);
+}
+
+/* A place the source names without coordinates says so in words */
+.place-nocoord {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
 }

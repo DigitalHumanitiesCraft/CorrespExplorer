@@ -92,7 +92,7 @@ export function renderFilterNotice(viewId) {
     const sentence = filterSentence();
     if (!sentence) {
         notice?.classList.add('hidden');
-        return;
+        return notice;
     }
     if (!notice) {
         notice = document.createElement('div');
@@ -114,6 +114,7 @@ export function renderFilterNotice(viewId) {
             title.focus();
         }
     });
+    return notice;
 }
 
 /**

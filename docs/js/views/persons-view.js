@@ -1,12 +1,12 @@
 // Correspondents view: the persons of the filtered letters as a list with search, order and kind,
 // and the person dialog with the facts of the dataset and Wikidata on request (ADR-006).
 
-import { addEntityToBasket } from '../basket.js';
+import { addEntityToBasket, isInBasket } from '../basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from '../wikidata-enrichment.js';
 import { debounce, escapeHtml, safeUrl, openModal, closeModal, showToast, personKey, personAuthority, letterRecipients, foldText } from '../utils.js';
 import { getPersonPrecisionClass, getPersonInitials } from '../formatters.js';
 import { elements } from '../dom-cache.js';
-import { authorityUrl, buildCorrespSearchUrl, detailRow } from './view-support.js';
+import { authorityUrl, buildCorrespSearchUrl, detailRow, toggleBasketButton } from './view-support.js';
 
 let deps = {};
 let personsSortOrder = 'letters-desc';
@@ -139,7 +139,7 @@ export function renderPersonsList() {
     // The card is no button: filtering, basket, details and correspSearch are separate controls
     container.innerHTML = persons.map(person => {
         const total = person.letters;
-        const correspSearchUrl = buildCorrespSearchUrl(person);
+        const inBasket = isInBasket('persons', person.key);
         const precisionClass = getPersonPrecisionClass(person.precision);
         const hasWikidataEnrichment = enrichmentData[person.key]?.source === 'wikidata';
         const name = escapeHtml(person.name);
@@ -166,20 +166,14 @@ export function renderPersonsList() {
                     </div>
                 </div>
                 <div class="person-actions">
-                    <button type="button" class="btn-person-basket" data-person-id="${escapeHtml(person.key)}"
-                            title="Person zum Korb hinzufügen" aria-label="${name} zum Korb hinzufügen">
+                    <button type="button" class="btn-person-basket ${inBasket ? 'in-basket' : ''}" data-person-id="${escapeHtml(person.key)}"
+                            title="${inBasket ? 'Aus Korb entfernen' : 'Zum Korb hinzufügen'}" aria-label="${name} im Wissenskorb" aria-pressed="${inBasket}">
                         <i class="fas fa-star" aria-hidden="true"></i>
                     </button>
                     <button type="button" class="btn-person-info" data-person-id="${escapeHtml(person.key)}"
                             title="Details anzeigen" aria-label="Details zu ${name}">
                         <i class="fas fa-info-circle" aria-hidden="true"></i>
                     </button>
-                    ${correspSearchUrl ? `
-                        <a href="${escapeHtml(correspSearchUrl)}" target="_blank" rel="noopener noreferrer" class="btn-correspsearch"
-                           title="Weitere Briefe bei correspSearch suchen" aria-label="${name} bei correspSearch suchen">
-                            <i class="fas fa-search" aria-hidden="true"></i>
-                        </a>
-                    ` : ''}
                     <div class="person-count" title="${total.toLocaleString('de-DE')} ${total === 1 ? 'Brief' : 'Briefe'}">${total.toLocaleString('de-DE')}</div>
                 </div>
             </div>
@@ -211,9 +205,7 @@ export function renderPersonsList() {
     container.querySelectorAll('.btn-person-basket').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const personId = btn.dataset.personId;
-            if (!personId) return;
-            showToast(addEntityToBasket('persons', personId));
+            if (btn.dataset.personId) toggleBasketButton(btn, 'persons', btn.dataset.personId);
         });
     });
 }
@@ -411,7 +403,7 @@ function renderPersonDetail(detail, enriched) {
 
     const correspSearchUrl = buildCorrespSearchUrl(person);
     if (correspSearchUrl) {
-        html += `<a href="${escapeHtml(correspSearchUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+        html += `<a href="${escapeHtml(correspSearchUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
             <i class="fas fa-search" aria-hidden="true"></i> Bei correspSearch suchen
         </a>`;
     }

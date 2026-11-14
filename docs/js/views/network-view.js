@@ -10,7 +10,7 @@ import { readTokens, renderDataTable } from './view-support.js';
 const TYPE_COLOR_TOKEN = {
     correspondence: '--color-role-sender',
     contemporaries: '--color-role-sender',
-    topics: '--color-warning'
+    topics: '--color-role-topic'
 };
 // Organisations apart from persons, in the "Farbe" mode by kind
 const ORGANIZATION_COLOR_TOKEN = '--color-role-organization';

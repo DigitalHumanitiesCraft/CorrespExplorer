@@ -243,13 +243,13 @@ export function renderPlacesList() {
             ? `${place.yearMin}-${place.yearMax}`
             : '';
         const precisionClass = markMissing || place.precision === 'unknown' ? getPlacePrecisionClass(place.precision) : '';
-        const noCoordIcon = markMissing && !place.hasCoordinates ? '<i class="fas fa-question-circle" title="Ohne Koordinaten"></i> ' : '';
+        const noCoordIcon = markMissing && !place.hasCoordinates ? ' <span class="place-nocoord">ohne Koordinaten</span>' : '';
         const meta = [`${place.senderCount} Absender`, yearRange,
             place.inferredCount > 0 ? `davon ${place.inferredCount} erschlossen` : ''].filter(Boolean).join(' | ');
         return `
             <div class="entity-card ${isActive ? 'active' : ''} ${precisionClass}" role="button" tabindex="0" aria-pressed="${isActive}" data-place-id="${escapeHtml(place.id)}">
                 <div class="entity-card-info">
-                    <div class="entity-card-name ${precisionClass}" title="${escapeHtml(place.name)}">${noCoordIcon}${escapeHtml(place.name)}</div>
+                    <div class="entity-card-name ${precisionClass}" title="${escapeHtml(place.name)}">${escapeHtml(place.name)}${noCoordIcon}</div>
                     <div class="entity-card-meta">${meta}</div>
                 </div>
                 <div class="entity-card-count">${place.filteredCount}</div>

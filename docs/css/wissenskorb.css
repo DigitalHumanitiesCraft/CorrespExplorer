@@ -536,6 +536,7 @@
 
 /* Navbar Additions */
 .basket-count-display {
+    color: var(--color-text);
     display: flex;
     align-items: center;
     gap: 6px;

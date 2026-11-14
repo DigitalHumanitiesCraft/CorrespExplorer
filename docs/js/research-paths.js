@@ -42,9 +42,12 @@ export function summarizeCorpus(letters, indices = {}) {
 
     for (const letter of letters) {
         // A person seen once with and once without authority id stays two keys (ADR-001)
+        // Once per letter, also for a person who is sender and recipient of it
+        const seen = new Set();
         for (const person of [letter.sender, ...letterRecipients(letter)]) {
             const key = personKey(person);
-            if (!key) continue;
+            if (!key || seen.has(key)) continue;
+            seen.add(key);
             bump(persons, key, { key, name: person.name || key, identified: Boolean(person.id) });
         }
 
@@ -464,6 +467,8 @@ export function renderOverviewResearchPaths(container, showAllBtn, questions, de
         showAllBtn.onclick = () => {
             renderResearchPathCards(container, answerable, unavailable, deps);
             showAllBtn.classList.add('hidden');
+            // The button is gone; focus continues at the first path that was added
+            container.querySelectorAll('.question-start-btn')[limit]?.focus();
         };
     } else {
         showAllBtn.classList.add('hidden');
