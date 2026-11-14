@@ -23,35 +23,43 @@ related: [project, specification, plan]
 
 ## Open
 
-Stand der Übergabe vom 2026-11-14, spät. Nichts vom 2026-11-14 ist vom Operator abgenommen. `origin/main` steht auf `2f78951` vom Mittag desselben Tages, die öffentliche Demo zeigt also höchstens diesen Stand und nichts von der Gliederung nach Gegenstand und den neuen Ansichten. Der Operator hat den Push freigegeben, er ist nicht erfolgt, weil Umbauten liefen.
+Stand vom 2026-11-14, Ende der Session. Alles Gebaute ist auf main eingecheckt, das Arbeitsverzeichnis ist sauber, alle Prüfungen bestehen am letzten Commit. Nichts vom 2026-11-14 ist vom Operator abgenommen. `origin/main` steht auf `2f78951` vom Mittag desselben Tages, die öffentliche Demo zeigt höchstens diesen Stand. Der Operator hat den Push freigegeben, er ist nicht erfolgt: Vorher fehlt eine unabhängige Durchsicht der neuen Ansichten am gebauten `docs/`, und auf einer Folie des Operators für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der Demo.
 
-Beim Schreiben dieser Übergabe arbeiteten noch drei Bau-Agenten im Arbeitsverzeichnis. Ihre Änderungen sind nicht eingecheckt, weil der Smoke-Test mit ihrem Zwischenstand nur fünf von sechzehn Prüfungen bestand (die Ansichten luden mitten im Umbau nicht). Der letzte Commit, an dem alle Prüfungen bestanden, ist `34fedd9`. Wer weitermacht, sieht zuerst mit `git status` nach, was im Arbeitsverzeichnis liegt, lässt die Prüfungen laufen und liest die Ergebnisse am Bildschirm, bevor etwas davon eingecheckt wird oder als gebaut gilt. Nicht eingecheckt sind `docs/explore.html`, `docs/js/explore.js`, `docs/css/explore.css`, `docs/css/drawer.css`, `overview-view.js`, `letters-view.js`, `letters-drawer.js`, `chronik-view.js`, `start-figures.js` und die neuen Dateien `mini-figures.js`, `dashboard.css` und `letters.css`. In `explore.js` liegen dabei auch zwei Zeilen dieser Session, die den Filterzustand an der Seite setzen.
+Gebaut von Subagenten, von der bauenden Session am Bild gelesen und mit den Prüfungen bestätigt, nicht unabhängig geprüft und nicht abgenommen:
 
-- Startansicht des Explorers als Dashboard kleiner echter Ansichten und knapper Block zum Bestand in der Seitenleiste (`overview-view.js`, `mini-figures.js`, `start-figures.js`). Auftrag des Operators auf zwei Bildschirmfotos, Ergebnis des Agenten stand aus.
-- Briefliste mit Zeilen relativ zur zentralen Person, Gruppierung nach Jahr und einem schmalen Jahresprofil als Navigation (`letters-view.js`). Ergebnis stand aus.
-- Die drei Zeitdarstellungen als eine Ansicht ohne Untermenü (`timeline-view.js`, `activity-view.js`, `chronik-view.js`). Der Agent muss für jede Funktion der Chronik angeben, wo sie bleibt. Ergebnis stand aus.
-- Die Distillation der Wissensbasis nach der neuen Richtung ist abgeschlossen und mit dieser Übergabe eingecheckt (Eintrag unten). Die bauende Session hat die Korrekturen des Schreib-Agenten gegen den Code nicht nachgeprüft, die Dokumente sind nicht unabhängig gelesen, die Stories US-40 bis US-45 sind Vorschläge. Ältere Journaleinträge verlinken Anker, die es nach der Distillation nicht mehr gibt.
+- Startansicht als Dashboard kleiner echter Ansichten, Block zum Bestand in der Seitenleiste.
+- Briefliste mit Zeilen relativ zur zentralen Person, Jahresgruppen und Jahresprofil.
+- Zeit als eine Ansicht: Jahresprofil, darunter der gewählte Zeitraum nach Monaten oder als einzelne Briefe.
+- Startfigur, Briefe der Auswahl, Themenansicht, Korrekturen der Raum-Zeit-Ansicht, Zeichen für einen gesetzten Filter (frühere Einträge).
 
-Von der bauenden Session gebaut, im Browser nachgespielt, nicht unabhängig geprüft:
-
-- Die drei benannten Sichten der Raum-Zeit-Figur stehen in der Figur oben links. Ein gesetzter Filter zeigt sich am Titel der Ansicht, an einer Linie am oberen Rand der Hauptfläche und an einem getönten Block „Gefiltert nach“ in der Seitenleiste.
-- Die Korrekturen der Raum-Zeit-Ansicht nach der Bedienprüfung (Eintrag unten). Derselbe Aufgabensatz ist danach nicht erneut gelaufen.
+Die Wissensdokumente beschreiben Startansicht, Briefliste und Zeit noch als in Arbeit. Nachzuziehen sind [design.md](design.md), [specification.md](specification.md) (US-32 entfällt, US-34 geändert, Sortierungen der Briefliste), [architecture.md](architecture.md) (`mini-figures.js`, `letters.css`, `time.css`, `dashboard.css`, `activity-view.js` unbenutzt) und [testing.md](testing.md) (siebzehn Smoke-Prüfungen, neue Testdateien).
 
 Wartet auf den Operator:
 
-- Die Form des Netzwerks. Er bezweifelt den Korrespondenzkreis, die Recherche dazu liegt in [network-figures.md](network-figures.md) mit fünf Fragen an ihn. Am Netzwerk wird erst nach seiner Entscheidung weitergebaut.
+- Die Form des Netzwerks, fünf Fragen in [network-figures.md](network-figures.md). Am Netzwerk wird erst nach seiner Entscheidung weitergebaut.
 - Liste und Vergleich zusammenlegen, von ihm gewünscht, nicht begonnen.
-- Die Fragen der Bau-Agenten: Telefonkopf ohne den Reiter „Briefe“, ein geklicktes Jahr in der Zeitansicht, die Höhe der geöffneten Briefliste, der Dialog nach dem Laden eigener Daten, der Name des mittleren Bands der Startfigur, die Dichtegrenze für Startfigur und Themenansicht mit gewähltem Thema, das Glätten der Themenverläufe und ihre Blöcke.
-- Die Abnahme aller Stufen am Bildschirm und danach der Push ([plan.md](plan.md)).
+- Was von der Chronik endgültig entfällt: die Schalter Ausführlich und Kompakt, die Porträts, die Wochentagszeilen und der Satz zum briefreichsten Tag sind aus der Oberfläche genommen. Er hatte am selben Tag gesagt, es sei zu stark eingedampft worden.
+- Ob der Zeitraum feiner als ein Jahr wählbar wird, ob die Signatur in der Briefzeile bleibt, ob das Jahresprofil der Briefliste eine Lesezeile bekommt, ob die Dichtegrenze für Listen und für die Startfigur gilt, ob jede kleine Ansicht des Dashboards ihren eigenen Filter auslässt, dazu die älteren Fragen der Bau-Agenten in [plan.md](plan.md).
+- Die Abnahme aller Stufen am Bildschirm und danach der Push.
 
 Offen ohne Entscheidung:
 
-- Die Grundkarte der Kartenansicht wird beim Öffnen jeder Ansicht von außen angefragt, weil die Karte beim Start angelegt wird (`map-view.js`, `initMapView`). Das widerspricht ADR-006 in der Sache.
-- Im Korrespondenzkreis trifft ein Klick auf eine breite Linie zuweilen die schmale daneben. Ein Klick ins Leere hob die Auswahl in der Raum-Zeit-Ansicht im Nachspiel nicht auf, ungeprüft, ob der Klick außerhalb der Figur lag. Ein Ort steht in den Daten des Hugo Schuchardt Archivs unter zwei Kennungen und erscheint als zwei Säulen.
-- Die zwölf Aufgaben der Bedienprüfung und ein Skript für den festen Aufgabensatz liegen nicht im Repository, nur im Bericht des Prüfagenten ([testing.md](testing.md)).
-- Alles Weitere steht nach Gegenstand geordnet in [plan.md](plan.md).
+- Die Grundkarte der Kartenansicht wird beim Öffnen jeder Ansicht von außen angefragt (`map-view.js`, `initMapView`), entgegen ADR-006 in der Sache.
+- Tote Regeln und Module nach den Umbauten: `activity-view.js`, die Regeln `.timeline-*`, `.chronik-*`, `.activity-*` in `explore.css`, einzelne Regeln in `base.css` und `components.css`, der Text von Tourschritt 8, der Dialog der Anreicherung nennt noch Porträts.
+- Im Korrespondenzkreis trifft ein Klick auf eine breite Linie zuweilen die schmale daneben. Ein Ort des Hugo Schuchardt Archivs steht unter zwei Kennungen.
+- Der feste Aufgabensatz liegt nicht im Repository, nur in den Berichten der Agenten ([testing.md](testing.md)). Die Raum-Zeit-Ansicht fehlt in der Liste der Ansichten des Smoke-Tests.
+- Ältere Journaleinträge verlinken Anker, die es nach der Distillation nicht mehr gibt.
+- Alles Weitere nach Gegenstand in [plan.md](plan.md).
 
 ## Einträge
+
+### 2026-11-14 Startansicht als Dashboard, Briefliste, Zeit als eine Ansicht
+
+- Anlass: Drei Bildschirmfotos des Operators mit der Frage, ob sich das verbessern lasse, und sein Satz zur Chronik und zu den Untermenüs ([design.md](design.md)).
+- Gebaut, je von einem Subagenten (Claude Opus 5.5): die Startansicht des Explorers als Dashboard kleiner echter Ansichten mit einem knappen Block zum Bestand, die Zeichenfunktionen dafür in `docs/js/mini-figures.js` gemeinsam mit der Startseite. Die Briefliste mit „von“ und „an“ relativ zur zentralen Person, Spalten, Gruppen nach Jahr und Monat, einem Jahresprofil als Navigation und Zeilen, die beim Scrollen geschrieben werden. Die drei Zeitdarstellungen als eine Ansicht, deren untere Figur den gewählten Zeitraum nach Monaten oder als einzelne Briefe auf einer Zeitachse zeigt, Briefe von der zentralen Person über und an sie unter der Achse.
+- Entschieden (Bau-Agenten, vom Operator nicht bestätigt): Jede kleine Ansicht des Dashboards zeigt die Briefe aller Filter außer ihres eigenen. Der Zeitraum der Zeitansicht ist der Zeitraum der Seitenleiste. Aus der Chronik entfallen die Schalter der Darstellung, Porträts und Lebensbalken, aus der Tagesansicht Wochentagszeilen und der Satz zum briefreichsten Tag, die Stelle im Briefwechsel und die Anreicherung auf ausdrückliche Handlung bleiben.
+- Belege: Commit `c6185bc` und der Commit dieses Eintrags. `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen siebzehn Prüfungen, darunter je eine neue für Dashboard und Briefe im Auszug. Gegenzählungen der Agenten an `hsa-letters.json` für Briefliste, Zeit und Dashboard in ihren Berichten, je ein unabhängiger Leser am Bildschirmfoto. Diese Session hat die Ergebnisse am Bild gelesen und die Prüfungen am zusammengeführten Stand laufen lassen. Stand: gebaut, nicht unabhängig geprüft, nicht abgenommen.
+- Offen: der Abschnitt Open oben.
 
 ### 2026-11-14 Übergabe: Startfigur, Briefe der Auswahl, Bedienprüfung, Themen, Netzwerk als Forschungsfrage
 

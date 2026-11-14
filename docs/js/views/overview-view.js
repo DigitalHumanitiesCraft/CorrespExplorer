@@ -657,7 +657,9 @@ function renderLanguages(filter) {
     keys.forEach(key => {
         const n = counts.get(key) || 0;
         if (!n) return;
-        const segment = element('span', `dash-share__segment${pressed(key) ? ' is-chosen' : ''}`);
+        // Under a language filter the languages outside it fade, so the bar says what is chosen
+        const choice = chosen ? (pressed(key) ? ' is-chosen' : ' is-outside') : '';
+        const segment = element('span', `dash-share__segment${choice}`);
         segment.style.width = `${(n / total) * 100}%`;
         segment.style.backgroundColor = LANGUAGE_COLORS[key] || LANGUAGE_COLORS.other;
         segment.dataset.key = key;
@@ -951,7 +953,8 @@ function renderPlaces(filter) {
     const counts = placeCounts(base);
     view.places.counts = counts;
     const shown = [...counts.values()].filter(p => p.count > 0).length;
-    setCount('dash-places-count', shown === model.places.size ? `${number(shown)} Orte` : `${number(shown)} von ${number(model.places.size)} Orten`);
+    // The name of the part says what is counted
+    setCount('dash-places-count', shown === model.places.size ? number(shown) : `${number(shown)} von ${number(model.places.size)}`);
     if (model.asMap) drawMap(filter, counts); else placeRows(filter, counts);
 }
 
@@ -991,14 +994,14 @@ function drawMap(filter, counts) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
         ctx.strokeStyle = c.control;
-        ctx.globalAlpha = 0.5;
+        ctx.globalAlpha = 0.35;
         ctx.stroke();
         ctx.globalAlpha = 1;
         if (p.n) {
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 1.2 + 9 * Math.sqrt(p.n / model.placeMax), 0, 2 * Math.PI);
+            ctx.arc(p.x, p.y, Math.max(2, 1.2 + 9 * Math.sqrt(p.n / model.placeMax)), 0, 2 * Math.PI);
             ctx.fillStyle = c.data;
-            ctx.globalAlpha = 0.6;
+            ctx.globalAlpha = 0.75;
             ctx.fill();
             ctx.globalAlpha = 1;
         }
@@ -1073,7 +1076,7 @@ function renderSubjects(filter) {
     const span = Math.max(1, (last ?? 0) - (first ?? 0) + 1);
     let max = 1;
     rows.forEach(row => model.subjectTotals.get(row.key)?.years.forEach(n => { if (n > max) max = n; }));
-    setCount('dash-topics-count', `${number(ranked.length)} Themen`);
+    setCount('dash-topics-count', ranked.length === model.subjectTotals.size ? number(ranked.length) : `${number(ranked.length)} von ${number(model.subjectTotals.size)}`);
     const focused = document.activeElement?.closest?.('#dash-subjects .dash-subject')?.dataset.key;
     box.replaceChildren(...rows.filter(Boolean).map(row => {
         const whole = model.subjectTotals.get(row.key);
