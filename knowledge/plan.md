@@ -191,58 +191,56 @@ Nicht geprüft sind der Wissenskorb mit Einträgen, die dunkle Grundkarte, der E
 
 ## Vorhaben
 
-### Entwurf: Arbeitsfläche über alle Dimensionen
+### Entwurf: vier große Ansichten über einer gemeinsamen Auswahl
 
-Dieser Entwurf ist eine Variante neben dem gebauten Stand und noch nicht entschieden. Er antwortet auf die Rückmeldung des Operators vom 2026-11-14, die Oberfläche sei zu stark eingedampft und solle innovativ und professionell alle Dimensionen abbilden ([design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14)). Gebaut wird nach seiner Freigabe, in Abschnitten, die er einzeln am Bildschirm beurteilt.
+Der Operator hat diese Richtung am 2026-11-14 freigegeben und den Bau mit Subagenten beauftragt ([design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14)). Sie löst den Entwurf einer Bühne mit Kontextstreifen vom selben Tag ab, dessen Aufbau des Bildschirms unten weiter gilt. Vorbild sind die Entscheidungen am Werkzeug des Projekts GOSSIP, die dort nach seinen Bildschirmdurchsichten getroffen wurden.
 
-Leitgedanke
+Was von dort übernommen wird
 
-Eine Korrespondenz hat sechs Dimensionen, Zeit, Personen, Orte, Sprache, Themen und Überlieferung. Jede ist zugleich eine Ansicht und ein Filter. Der Brief ist die Einheit, die alle verbindet, und erscheint als Detail der jeweiligen Auswahl. Der Überblick steht zuerst, Auswahl und Vergrößerung folgen, die Briefe kommen auf Abruf.
+- Eine Einsicht trägt die Seite, und die Figur, die sie zeigt, ist zugleich der Schalter. Dort sind es die Stufen vom Nachweis über die Erwähnten zu den Aussagen.
+- Das Netzwerk zeigt eine gewählte Person mit ihren Nachbarn, alle beschriftet. Das Gesamtnetzwerk war dort ein Knäuel und wurde gestrichen.
+- Die Raumansicht mit der Zeit als Höhe, drehbar, mit drei einrastenden Blickrichtungen und dem flachen Bild als Standard.
+- Eine einheitliche Seitenleiste in jeder Ansicht. Die Zeit ist dort ein Band mit zwei Griffen über den Briefen pro Jahr.
+- Der Beleg in beide Richtungen: eine Auswahl öffnet die Briefe, ein Brief führt zurück in die Auswahl.
 
-Aufbau des Bildschirms
+Die vier Ansichten
 
-- Kopfzeile: Name des Bestands, die Dimensionen als Reiter mit ihren Menüs, Korb und Export.
-- Seitenleiste: was den Bestand beschreibt, darunter die aktive Auswahl als ein Satz mit entfernbaren Marken, darunter die Filter.
-- Bühne: eine Grafik in voller Größe, die Darstellung der gewählten Dimension. Sie nimmt den größten Teil des Bildschirms ein.
-- Kontextstreifen: neben oder unter der Bühne stehen die übrigen Dimensionen als kleine Grafiken derselben Auswahl. Ein Klick auf einen Streifen tauscht ihn mit der Bühne. So bleiben alle Dimensionen sichtbar, während eine groß bearbeitet wird.
-- Briefe der Auswahl: am unteren Rand eine Zeile mit der Zahl der Briefe, die sich zur Liste öffnet, ohne die Ansicht zu verlassen. Ein Brief öffnet seinen Dialog.
+- Netzwerk: das Umfeld einer gewählten Person, mit dem Stufenschalter Korrespondenz und Erwähnte. In der zweiten Stufe erscheinen die Dritten, die weder schreiben noch Post bekommen. Das ganze Netzwerk bleibt als zweite Betriebsart erreichbar.
+- Karte: die Absendeorte, gefiltert über das Zeitband.
+- Raum-Zeit: die Orte auf einer Grundfläche, die Zeit als Höhe, jeder Ort eine Säule über die Jahre. Von oben ist es die Karte, von vorn die Zeitleiste je Ort.
+- Themen: Themen als Verläufe über die Zeit und in ihrer Verbindung zu Personen.
 
-Die Dimensionen auf der Bühne
+Was in ihnen aufgeht
 
-- Zeit: gestapelte Jahre mit aufziehbarem Zeitraum. Das Vergrößern eines Zeitraums führt von Jahren über Monate zu Tagen und zuletzt zur Abfolge der einzelnen Briefe. Jahre, Tage und Chronik werden damit Stufen einer Ansicht statt drei Darstellungen.
-- Personen: das Netzwerk als Bühne, daneben die Rangfolge. Eine Person zu wählen zeigt ihr Umfeld. Wo ein Bestand erwähnte Personen auszeichnet, bilden sie eine zuschaltbare Schicht, in der die Dritten sichtbar werden, die weder schreiben noch Post bekommen.
-- Orte: die Karte als Bühne. Für Bestände ohne Koordinaten steht die Rangfolge der Orte und ein Satz, warum die Karte fehlt.
-- Sprache, Themen und Überlieferung: jede als Verlauf über die Zeit in kleinen, gleich skalierten Grafiken je Ausprägung, die sich vergleichen lassen.
-- Vergleich: kein eigener Ort. Eine Auswahl lässt sich festhalten, eine zweite daneben stellen, und jede Grafik zeigt beide.
+- Zeitleiste, Aktivität und Chronik gehen im Zeitband der Seitenleiste und in der Raum-Zeit-Ansicht auf. Ob die Chronik als feinste Stufe bleibt, entscheidet der Operator am Bildschirm.
+- Die Listen der Personen und Orte zeigen das Ergebnis einer Auswahl und sind kein Einstieg mehr.
+- Die Briefe der Auswahl stehen in jeder Ansicht als ausklappbare Liste bereit.
 
-Was der Entwurf vom gebauten Stand übernimmt
+Grenzen der Daten
 
-- Die Arbeitsfläche der Startansicht mit Grafiken, die einander filtern, die gestapelte Zeitleiste, die Farbrollen und die Sprachpalette, die Menüs unter den Reitern, die Parserkorrekturen.
-
-Was offen ist und der Operator entscheidet
-
-- Welche Dinge im früheren Stand besser waren und zurückkommen sollen. Jeder Stand liegt in der Versionsgeschichte.
-- Ob die Chronik als feinste Stufe der Zeit aufgeht oder eine eigene Darstellung bleibt, und was ihr fehlt.
-- Ob die Katalogansichten Briefe und Personen als Reiter bleiben oder nur noch als Liste der Auswahl erscheinen.
-- Ob der Bestand von Stefan Zweig Digital eine geprüfte Ortstabelle für die Karte bekommt.
+- Kein geprüfter Bestand nennt Empfangsorte. Karte und Raum-Zeit zeigen, woher geschrieben wird, und keine Wege zwischen zwei Orten.
+- Themen und Erwähnungen trägt unter den geprüften Beständen nur das Hugo Schuchardt Archiv. Dem Bestand von Stefan Zweig Digital fehlen für Karte und Raum-Zeit die Ortskennungen.
+- Eine Raum-Zeit-Figur liest sich schwerer als eine flache Karte. Die flache Sicht von oben bleibt deshalb eine der drei festen Blickrichtungen.
 
 Bauabschnitte, jeder mit Datenprüfung, Messung des ganzen ersten Bildschirms, einem unabhängigen Leser und dem Urteil des Operators
 
-1. Bühne, Kontextstreifen und Briefe der Auswahl, zuerst mit der Zeit auf der Bühne.
-2. Zeit mit ihren Stufen bis zum einzelnen Brief.
-3. Personen mit Netzwerk und der Schicht der Erwähnten.
-4. Orte mit Karte, dazu die Entscheidung über die Ortstabelle.
-5. Sprache, Themen und Überlieferung als Verläufe, Vergleich als festgehaltene Auswahl.
+1. Raum-Zeit als neue Darstellung unter Orte, am Hugo Schuchardt Archiv.
+2. Netzwerk als Umfeld einer Person mit Stufenschalter.
+3. Zeitband in der Seitenleiste und die ausklappbare Briefliste in jeder Ansicht.
+4. Themen als Verläufe.
+5. Zusammenlegen: Zeitleiste, Aktivität, Chronik und die Listen gehen in den vier Ansichten auf, nach dem Urteil des Operators über jede einzelne.
 6. Aufräumen: die Maschinerie der Forschungspfade, verborgene Reste, Startseite und Lade-Dialog.
 
-Die Punkte sind technisch und umkehrbar und brauchen keine Entscheidung des Operators.
+Aufbau des Bildschirms, aus dem abgelösten Entwurf übernommen
 
-- Live-Prüfung von „Lebensdaten von Wikidata laden“ im Personen-Dialog. correspSearch-API und OpenFreeMap-Grundkarte sind am 2026-11-05 live geprüft
-- Prüfung des CSV-Exports in Excel: Der Export trägt seit Entscheidung E4 ein UTF-8-BOM, ob Excel die Umlaute damit beim Doppelklick richtig zeigt, ist ungeprüft, weil kein Excel zur Verfügung stand
-- GitHub-Actions-Lauf für `test.html?test=true` und `tests/browser/smoke.py` (zweiter Schritt von Entscheidung E9)
-- Gleichnamige Komponentenklassen in Seiten-CSS, die nie zusammen geladen werden (`.empty-state` in explore.css und wissenskorb.css, `.progress-bar` und `.progress-text` in explore.css und upload.css, `.error-message` in style.css und upload.css), auf je eine Komponente in components.css zurückführen
-- Tastaturweg für die Sprachsegmente der Zeitleiste und die Verbindungen im Erwähnungsfluss. Jahresbalken, Netzwerkknoten und die Seitenknoten des Erwähnungsflusses haben einen
-- `build_hsa_data.py` soll die Präzision von Absender, Empfänger und Absendeort wie der Parser klassifizieren. Den Briefen von `hsa-letters.json` fehlt das Feld `precision`, Personen- und Ortsmarkierungen bleiben beim HSA deshalb leer ([uncertainty-specification.md](uncertainty-specification.md#hsa-dataset-analysis))
+- Kopfzeile: Name des Bestands, die Gegenstände als Reiter mit ihren Menüs, Korb und Export.
+- Seitenleiste: was den Bestand beschreibt, die aktive Auswahl als ein Satz mit entfernbaren Marken, die Filter.
+- Eine Grafik in voller Größe nimmt den größten Teil des Bildschirms ein.
+
+Was der Operator noch entscheidet
+
+- Welche Dinge im früheren Stand besser waren und zurückkommen sollen. Jeder Stand liegt in der Versionsgeschichte.
+- Ob der Bestand von Stefan Zweig Digital eine geprüfte Ortstabelle bekommt.
 
 ### Vorschläge aus der Datensatzanalyse
 

@@ -82,6 +82,12 @@ Zur Arbeitsfläche, nach dem ersten Durchklicken:
 
 > Wir wollen wirklich ein innovatives, sehr spannendes User-Interface haben, das wirklich alle Dimensionen abbildet. Wir wollen das wirklich professionell umsetzen.
 
+Zur Richtung des ganzen Werkzeugs, nach der Arbeit am Parser:
+
+> aber können wir das nicht professionalisieren. wir haben doch beim gossip schon viel gelernt. also was waren die guten views. Wir brauchen auf jeden Fall etwas mit Netzwerk, mit Karte, Space-Time, die Themen. Irgendwie kommt mir vor, dass wir den [CorrespExplorer] vielleicht noch besser denken können. Ich glaube, dass wir den innovativer denken können.
+
+Auf den Vorschlag, den Entwurf auf vier große Ansichten umzuschreiben und die Raum-Zeit-Ansicht zuerst zu bauen: „ja. oder besser mit subagents!“ Der Entwurf steht in [plan.md](plan.md#entwurf-vier-große-ansichten-über-einer-gemeinsamen-auswahl).
+
 Daraus folgt der Aufbau dieser Stufe.
 
 - Die Kopfzeile nennt die Gegenstände einer Korrespondenz, Start, Briefe, Personen, Orte, Zeit und Themen. Bis dahin standen dort zwölf Ansichten, benannt nach ihrer Darstellungstechnik, in einer zweiten Zeile unter Titel und Aktionen. Ein Gegenstand, für den der Datensatz nichts enthält, erscheint nicht.
