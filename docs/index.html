@@ -21,69 +21,61 @@
     <link rel="stylesheet" href="css/upload.css">
 </head>
 <body>
-    <!-- Start page: one screen. Left what the tool does and the examples, right one's own data -->
-    <div class="landing-container">
-        <nav class="landing-nav" aria-label="Hauptnavigation">
-            <a href="about.html">About</a>
-            <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/INDEX.md">Wissensbasis</a>
-        </nav>
-        <main class="landing-main">
-            <header class="landing-header">
-                <h1 class="landing-title"><img src="assets/logo-no-background.png" alt="CorrespExplorer" class="landing-logo"></h1>
-                <p>Wer schrieb wem, wann und von wo: CorrespExplorer zeigt die Metadaten einer Korrespondenz als Liste, Karte, Zeitleiste und Netzwerk.</p>
+    <!-- Start page: one figure. A letter record of the chosen dataset unfolded into the data model the
+         explorer reads, each statement a small real aggregate and a link into its view
+         (start-figures.js). The whole page takes dropped files (upload.js, #upload-zone) -->
+    <main class="landing" id="upload-zone">
+        <header class="landing-intro">
+            <h1 class="landing-title"><img src="assets/logo-no-background.png" alt="CorrespExplorer" class="landing-logo"></h1>
+            <p class="landing-lead">Wer schrieb wem, wann und von wo: CorrespExplorer zeigt die Metadaten einer Korrespondenz als Liste, Karte, Zeitleiste und Netzwerk.</p>
+            <nav class="landing-nav" aria-label="Hauptnavigation">
+                <a href="about.html">About</a>
+                <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/INDEX.md">Wissensbasis</a>
+            </nav>
+        </header>
 
-                <!-- Examples: one row each, the row is the control -->
-                <div class="dataset-grid" role="group" aria-label="Beispiele">
-                    <div class="dataset-card" data-url="data/demo-showcase.xml" data-demo="true" role="button" tabindex="0">
-                        <h2>Tutorial</h2>
-                        <p>Erfundenes Gelehrtennetzwerk mit 35 Briefen und einer geführten Tour durch alle Funktionen.</p>
-                    </div>
-                    <div class="dataset-card" data-json="data/hsa-letters.json" role="button" tabindex="0">
-                        <h2>Hugo Schuchardt Archiv</h2>
-                        <p>Tief erschlossene Edition der Universität Graz: 11.576 Briefe mit Themen, erwähnten Personen, Sprachen und Koordinaten.</p>
-                    </div>
+        <section class="landing-figure" aria-label="Datenmodell an einem Beispielbestand">
+            <div class="figure-bar">
+                <div class="dataset-choice" role="group" aria-label="Bestand der Grafik">
+                    <button type="button" data-choice="demo" aria-pressed="true">Tutorial</button>
+                    <button type="button" data-choice="hsa" aria-pressed="false">Hugo Schuchardt Archiv</button>
                     <!-- Shown only where the file list exists; the published site does not carry these data -->
-                    <div class="dataset-card hidden" id="local-dataset" data-files="data/local/files.json" role="button" tabindex="0">
-                        <h2>Stefan Zweig Digital</h2>
-                        <p>Briefe als Archivverzeichnis mit Poststempel, Anschrift und Signatur, <span id="local-dataset-count">mehrere</span> TEI-Dateien. Lokal eingebunden, nicht Teil der veröffentlichten Seite.</p>
+                    <button type="button" data-choice="local" aria-pressed="false" id="local-dataset-choice" class="hidden">Stefan Zweig Digital</button>
+                </div>
+                <!-- The open control of the chosen dataset; upload.js opens it as before -->
+                <button type="button" class="dataset-card figure-open" data-for="demo" data-url="data/demo-showcase.xml" data-demo="true" aria-label="Tutorial mit geführter Tour öffnen">Im Explorer öffnen</button>
+                <button type="button" class="dataset-card figure-open hidden" data-for="hsa" data-json="data/hsa-letters.json" aria-label="Hugo Schuchardt Archiv öffnen">Im Explorer öffnen</button>
+                <button type="button" class="dataset-card figure-open hidden" data-for="local" id="local-dataset" data-files="data/local/files.json" aria-label="Stefan Zweig Digital öffnen">Im Explorer öffnen</button>
+                <details class="own-data">
+                    <summary>Eigene Daten laden</summary>
+                    <div class="own-data-panel">
+                        <p>CMIF oder TEI mit correspDesc, auch viele Dateien einer Edition als ein Bestand. Dateien lassen sich auch auf die Seite ziehen.</p>
+                        <input type="file" id="file-input" class="upload-input" accept=".xml,application/xml,text/xml" multiple>
+                        <label for="file-input" class="upload-btn">Dateien auswählen</label>
+                        <div class="url-input-wrapper">
+                            <input type="url" id="url-input" class="url-input" placeholder="Adresse einer CMIF-Datei" aria-label="Adresse einer CMIF-Datei">
+                            <button type="button" id="url-submit" class="url-submit-btn">Laden</button>
+                        </div>
+                        <p class="landing-hint">CMIF-Dateien vieler Editionen verzeichnet <a href="https://correspsearch.net/de/daten.html" target="_blank" rel="noopener noreferrer">correspSearch</a>.</p>
                     </div>
-                </div>
-            </header>
+                </details>
+            </div>
 
-            <section class="landing-load" aria-label="Eigene Daten laden">
-                <!-- Upload Zone -->
-                <div class="upload-zone" id="upload-zone">
-                    <h2>Eigene Briefmetadaten laden</h2>
-                    <p>XML-Dateien hierher ziehen, CMIF oder TEI mit <code>correspDesc</code>. Mehrere Dateien einer Edition werden ein Bestand.</p>
-                    <input type="file" id="file-input" class="upload-input" accept=".xml,application/xml,text/xml" multiple>
-                    <label for="file-input" class="upload-btn">Dateien auswählen</label>
-                </div>
+            <div class="error-message" id="error-message" role="alert"></div>
+            <p class="model-status hidden" id="model-status" role="status"></p>
+            <div class="model" id="model" aria-describedby="model-text"></div>
+            <p class="visually-hidden" id="model-text" aria-live="polite"></p>
 
-                <!-- URL Input -->
-                <div class="url-input-wrapper">
-                    <input type="url"
-                           id="url-input"
-                           class="url-input"
-                           placeholder="oder Adresse einer CMIF-Datei"
-                           aria-label="Adresse einer CMIF-Datei">
-                    <button id="url-submit" class="url-submit-btn">Laden</button>
-                </div>
-                <p class="landing-hint">CMIF-Dateien vieler Editionen verzeichnet <a href="https://correspsearch.net/de/daten.html" target="_blank" rel="noopener noreferrer">correspSearch</a>.</p>
+            <div class="loading-state" id="loading-state" role="status" aria-live="polite">
+                <div class="loading-spinner"></div>
+                <p id="loading-text">Verarbeite CMIF-Datei...</p>
+            </div>
+        </section>
 
-                <!-- Error Message -->
-                <div class="error-message" id="error-message" role="alert"></div>
-
-                <!-- Loading State -->
-                <div class="loading-state" id="loading-state" role="status" aria-live="polite">
-                    <div class="loading-spinner"></div>
-                    <p id="loading-text">Verarbeite CMIF-Datei...</p>
-                </div>
-            </section>
-        </main>
         <footer class="disclaimer">
-            <p>Experiment. CorrespExplorer ist ein Forschungsprototyp, mit Coding-Agenten nach der Arbeitspraxis <a href="https://dhcraft.org/Promptotyping/">Promptotyping</a> entwickelt. Er zeigt Korrespondenzmetadaten im CMIF-Format als Karte, Listen, Zeitleiste und Netzwerk. Er ist kein fertiges oder betreutes Produkt, und seine Ergebnisse sind vor jeder Weiterverwendung zu prüfen. Rückmeldungen gehören in die <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues">Issues des Repositorys</a>.</p>
+            <p>Experiment: ein Forschungsprototyp, mit Coding-Agenten nach <a href="https://dhcraft.org/Promptotyping/">Promptotyping</a> entwickelt, kein betreutes Produkt. Ergebnisse vor der Weiterverwendung prüfen, Rückmeldungen in die <a href="https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues">Issues</a>.</p>
         </footer>
-    </div>
+    </main>
 
     <!-- Dataset Configuration Modal -->
     <div id="config-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="config-modal-title">

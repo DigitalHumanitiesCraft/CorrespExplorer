@@ -1,125 +1,191 @@
-/* Upload Component Styles */
+/* Start page (index.html only)
+ * One figure fills the screen below logo, sentence and links: a letter record of the chosen
+ * dataset in the middle, the statements of the data model in three bands around it, each a small
+ * aggregate and a link into its view (start-figures.js). The note on the experiment closes the
+ * page. design.md, Startseite. */
 
-/* Landing Page Layout */
-.landing-container {
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--space-2xl);
-    padding: var(--space-3xl) var(--space-2xl) var(--space-xl);
-    background: var(--color-bg);
+/* The start page has no fixed header, so the offset every other page keeps for it is not needed */
+body:has(.landing) {
+    padding-top: 0;
 }
 
-.landing-header {
-    position: relative;
-}
-
-.disclaimer {
+/* A fixed height lets the bands share the screen; below 680px the page grows and scrolls instead */
+.landing {
+    height: max(100dvh, 680px);
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: var(--space-lg);
     width: 100%;
-    max-width: var(--max-width-content);
+    max-width: 120rem;
     margin: 0 auto;
-    padding-top: var(--space-md);
-    border-top: 1px solid var(--color-border-light);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
+    padding: var(--space-lg) var(--space-2xl);
 }
 
-/* The primary colour reaches only 4.29:1 on --color-warning-light; the dark variant meets AA */
-.disclaimer a {
-    color: var(--color-link);
-    text-decoration: underline;
+/* Files dragged anywhere onto the page are taken (upload.js); the frame says so while they hover */
+.landing.drag-over {
+    outline: 3px dashed var(--color-primary);
+    outline-offset: -8px;
 }
 
-/* Landing Page Navigation */
-.landing-nav {
-    position: fixed;
-    top: var(--space-lg);
-    right: var(--space-xl);
-    display: flex;
-    gap: var(--space-md);
-    z-index: var(--z-sticky);
-}
-
-.landing-nav a {
-    color: var(--color-text);
-    text-decoration: none;
-    font-size: var(--font-size-sm);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-sm);
-    transition: var(--transition-fast);
-}
-
-.landing-nav a:hover {
-    color: var(--color-primary-dark);
-    background: var(--color-bg-light);
-}
-
-/* Logo in header replaces h1 */
-.landing-logo {
-    display: block;
-    max-width: 340px;
-    width: 100%;
-    height: auto;
+.landing-intro {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--space-2xl);
 }
 
 .landing-title {
     margin: 0;
+    line-height: 0;
 }
 
-.landing-header p {
-    margin: var(--space-md) 0 0;
+/* The logo file has wide transparent bands above and below the mark; the aspect ratio crops them */
+.landing-logo {
+    display: block;
+    width: clamp(200px, 19vw, 380px);
+    height: auto;
+    aspect-ratio: 1920 / 600;
+    object-fit: cover;
+}
+
+.landing-lead {
+    margin: 0;
+    max-width: 60ch;
     font-size: var(--font-size-lg);
+    line-height: var(--line-height-tight);
     color: var(--color-text);
-    line-height: var(--line-height-base);
 }
 
-/* The parts of the start page share the centre axis of logo and introduction. Without this the
-   main element takes the width of its widest child and the narrower parts sit at its left edge. */
-.landing-main {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-2xl) var(--space-4xl);
+.landing-nav {
+    align-self: start;
+    display: flex;
+    gap: var(--space-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.landing-nav a {
+    display: inline-block;
+    min-height: 24px;
+    padding: var(--space-xs) var(--space-sm);
+    color: inherit;
+}
+
+.landing-nav a:hover,
+.landing-nav a:focus-visible {
+    color: var(--color-link);
+}
+
+.landing-figure {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    min-height: 0;
+}
+
+/* Choice of the dataset, the way into it and one's own data, in one line above the figure */
+.figure-bar {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    width: 100%;
-    max-width: var(--max-width-content);
-    margin: 0 auto;
+    gap: var(--space-md) var(--space-lg);
 }
 
-/* Upload Zone */
-.upload-zone {
-    padding: var(--space-xl);
-    border: 2px dashed var(--color-border-control);
-    border-radius: var(--radius-md);
-    background: var(--color-bg-light);
-    transition: var(--transition-base);
+.dataset-choice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+/* A choice is text with a line under it; the chosen one takes the accent, the colour of selection */
+.dataset-choice button {
+    min-height: 32px;
+    padding: var(--space-xs) var(--space-sm);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    font-family: var(--font-headings);
+    font-size: var(--font-size-md);
+    font-weight: 700;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: var(--transition-fast);
     transition-property: var(--transition-properties);
+}
+
+.dataset-choice button:hover {
+    border-bottom-color: var(--color-border-control);
+}
+
+.dataset-choice button[aria-pressed="true"] {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-link);
+}
+
+.figure-open {
+    min-height: 32px;
+    padding: var(--space-xs) var(--space-lg);
+    border: 1px solid var(--color-primary-dark);
+    border-radius: var(--radius-md);
+    background: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-bg);
     cursor: pointer;
 }
 
-.upload-zone:hover,
-.upload-zone.drag-over {
-    border-color: var(--color-primary);
-    border-style: solid;
-    background: var(--color-bg-light);
+.figure-open:hover {
+    background: var(--color-primary-dark);
 }
 
-.upload-zone.drag-over {
-    border-width: 3px;
+/* One's own data: a quiet control at the end of the line, its panel floats over the figure */
+.own-data {
+    position: relative;
+    margin-left: auto;
 }
 
-.upload-zone h2 {
-    font-size: var(--font-size-xl);
+.own-data summary {
+    min-height: 32px;
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
     color: var(--color-text);
-    margin-bottom: var(--space-md);
+    cursor: pointer;
+    list-style: none;
 }
 
-.upload-zone p {
+.own-data summary::-webkit-details-marker {
+    display: none;
+}
+
+.own-data[open] summary,
+.own-data summary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-link);
+}
+
+.own-data-panel {
+    position: absolute;
+    top: calc(100% + var(--space-sm));
+    right: 0;
+    z-index: var(--z-dropdown);
+    display: grid;
+    gap: var(--space-md);
+    width: min(28rem, calc(100vw - 2 * var(--space-lg)));
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+}
+
+.own-data-panel p {
+    margin: 0;
+    font-size: var(--font-size-sm);
     color: var(--color-text-light);
-    margin-bottom: var(--space-lg);
 }
 
-/* Visually hidden but focusable, so keyboard users can reach the file picker */
+/* Visually hidden but focusable, so keyboard users reach the file picker; its label shows the focus */
 .upload-input {
     position: absolute;
     width: 1px;
@@ -134,143 +200,447 @@
 
 .upload-input:focus-visible + .upload-btn {
     outline: 3px solid var(--color-primary);
-    outline-offset: 3px;
+    outline-offset: 2px;
 }
 
 .upload-btn {
-    display: inline-block;
-    background: var(--color-primary);
-    color: white;
-    padding: var(--space-md) var(--space-xl);
+    justify-self: start;
+    min-height: 36px;
+    padding: var(--space-sm) var(--space-lg);
+    border: 1px solid var(--color-primary-dark);
     border-radius: var(--radius-md);
-    font-weight: 600;
+    background: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-bg);
     cursor: pointer;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
-    border: 2px solid var(--color-primary-dark);
-    font-size: var(--font-size-base);
 }
 
 .upload-btn:hover {
     background: var(--color-primary-dark);
 }
 
-
-
-
-
-
-
 .url-input-wrapper {
     display: flex;
-    gap: var(--space-md);
+    gap: var(--space-sm);
 }
 
 .url-input {
     flex: 1;
-    padding: var(--space-md) var(--space-lg);
-    border: 2px solid var(--color-border);
+    min-width: 0;
+    min-height: 36px;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-md);
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-sm);
     background: var(--color-bg);
-    transition: border-color var(--transition-fast);
-}
-
-.url-input:focus {
-    border-color: var(--color-primary);
 }
 
 .url-submit-btn {
-    background: var(--color-primary);
-    color: white;
-    padding: var(--space-md) var(--space-xl);
-    border: 2px solid var(--color-primary-dark);
+    flex-shrink: 0;
+    min-height: 36px;
+    padding: var(--space-sm) var(--space-lg);
+    border: 1px solid var(--color-border-control);
     border-radius: var(--radius-md);
-    font-weight: 600;
+    background: transparent;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--color-text);
     cursor: pointer;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
-    white-space: nowrap;
 }
 
 .url-submit-btn:hover {
-    background: var(--color-primary-dark);
+    border-color: var(--color-primary);
+    color: var(--color-link);
 }
 
-.url-submit-btn:disabled {
-    background: var(--color-border);
-    cursor: not-allowed;
+.landing-hint {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
 }
 
-
-
-
-
-.dataset-grid {
-    margin-top: var(--space-xl);
-    border-top: 1px solid var(--color-border-light);
+.model-status {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
 }
 
-.dataset-card {
-    padding: var(--space-md) var(--space-sm);
-    border-bottom: 1px solid var(--color-border-light);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
+/* The figure. Columns: band labels, the statements left of the letter, the letter, the statements
+   right of it. Rows: the three bands, the core largest, the letter records smallest */
+.model {
+    --leaders: lines;
+    position: relative;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) minmax(15rem, 20rem) minmax(0, 1fr);
+    grid-template-rows: minmax(9rem, 5fr) minmax(7rem, 3fr) minmax(min-content, 1.4fr);
+    gap: var(--space-xl) var(--space-2xl);
+    min-height: 0;
 }
 
-.dataset-card:hover {
+/* A short fade when the dataset changes; base.css ends it at once under reduced motion */
+.model > * {
+    transition: opacity var(--transition-base);
+}
+
+.model.is-changing > *,
+.model.is-waiting > * {
+    opacity: 0;
+}
+
+.band-row-1 { grid-row: 1; }
+.band-row-2 { grid-row: 2; }
+.band-row-3 { grid-row: 3; }
+
+/* Small capitals with slight tracking, the form of group names in the explorer (design.md) */
+.band-label {
+    grid-column: 1;
+    margin: 0;
+    padding-top: var(--space-md);
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-light);
+}
+
+.band-side {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--space-xl);
+    min-height: 0;
+    padding-top: var(--space-md);
+}
+
+.band-side--left {
+    grid-column: 2;
+}
+
+.band-side--right {
+    grid-column: 4;
+}
+
+/* The date figure is a year axis and takes twice the width of the link beside it */
+.band-side--core.band-side--right {
+    grid-auto-columns: auto;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+/* A statement: name, one number, its figure. The whole is the link into its view */
+.stmt {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    align-content: start;
+    min-width: 0;
+    min-height: 0;
+    padding: var(--space-xs);
+    margin: calc(-1 * var(--space-xs));
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+a.stmt:hover {
+    background: var(--color-bg-light);
+    text-decoration: none;
+}
+
+a.stmt:hover .stmt-name,
+a.stmt:focus-visible .stmt-name {
+    color: var(--color-link);
+}
+
+.stmt-name {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    line-height: var(--line-height-tight);
+}
+
+.stmt-count {
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-light);
+    font-variant-numeric: tabular-nums;
+}
+
+.stmt-figure {
+    position: relative;
+    display: block;
+    min-height: 24px;
+    margin-top: var(--space-sm);
+}
+
+.stmt-figure > svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+
+/* A statement the dataset lacks keeps its place: its name and "nicht im Bestand" over an empty
+   dashed line */
+.stmt.is-absent .stmt-figure {
+    min-height: 0;
+    height: 0;
+    margin-top: var(--space-md);
+    border-top: 1px dashed var(--color-border-control);
+}
+
+.stmt--language {
+    grid-template-rows: auto auto 12px auto;
+}
+
+.stmt--language .stmt-figure {
+    min-height: 12px;
+}
+
+.stmt-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-md);
+    margin-top: var(--space-sm);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    color: var(--color-text-light);
+}
+
+/* Names of the most frequent mentions, each over a bar of its letters (--share, set per entry) */
+.stmt-list {
+    display: grid;
+    gap: var(--space-xs);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    color: var(--color-text);
+}
+
+.stmt-list span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.stmt-list span::after {
+    content: '';
+    display: block;
+    width: calc(var(--share, 0) * 100%);
+    min-width: 1px;
+    height: 2px;
+    margin-top: 2px;
+    background: var(--color-text-light);
+}
+
+.mini-edge {
+    fill: none;
+    stroke: var(--color-data);
+    stroke-opacity: 0.35;
+}
+
+.mini-node {
+    fill: var(--color-data);
+    stroke: var(--color-bg);
+    stroke-width: 1;
+}
+
+.mini-node--centre {
+    fill: var(--color-text);
+}
+
+.mini-land {
+    fill: var(--color-bg-light);
+    stroke: var(--color-border-light);
+    stroke-width: 0.6;
+}
+
+.mini-place {
+    fill: var(--color-data);
+    fill-opacity: 0.55;
+    stroke: var(--color-bg);
+    stroke-width: 0.5;
+}
+
+.mini-bar {
+    fill: var(--color-text-light);
+}
+
+.mini-track {
+    fill: var(--color-bg-light);
+}
+
+.mini-share {
+    fill: var(--color-data);
+}
+
+/* The letter: an envelope in the colour of manila with the fold of its flap, its statements
+   grouped in the rows of their bands (subgrid), so each group stands beside its band */
+.record {
+    position: relative;
+    grid-column: 3;
+    grid-row: 1 / 4;
+    display: grid;
+    grid-template-rows: subgrid;
+    padding: 0 var(--space-lg) var(--space-lg);
+    border: 1.5px solid var(--color-text);
+    border-radius: var(--radius-md);
     background: var(--color-bg-light);
 }
 
-
-
-
-
-.dataset-card h4 {
-    font-size: var(--font-size-md);
-    color: var(--color-text);
-    margin-bottom: var(--space-sm);
-    padding-right: 5rem;
+.record-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 48px;
+    overflow: visible;
 }
 
-.dataset-card p {
+.record-flap path {
+    fill: none;
+    stroke: var(--color-text);
+    stroke-width: 1;
+}
+
+.record-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-width: 0;
+    padding-top: var(--space-md);
+}
+
+.record-group--core {
+    padding-top: 56px;
+}
+
+.record-line {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-tight);
+    color: var(--color-text);
+    overflow-wrap: anywhere;
+}
+
+.record-sender {
+    font-family: var(--font-headings);
+    font-size: var(--font-size-md);
+    font-weight: 700;
+}
+
+a.record-link {
+    color: var(--color-link);
+    text-decoration: underline;
+}
+
+.record-absent {
+    color: var(--color-text-light);
+    font-style: italic;
+}
+
+.record-swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: var(--space-xs);
+    border-radius: 2px;
+}
+
+.model-leaders {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+.leader {
+    fill: none;
+    stroke: var(--color-border-control);
+    stroke-width: 0.8;
+}
+
+.disclaimer p {
+    margin: 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
-    margin-bottom: var(--space-md);
 }
 
+/* Below this width the bands follow the letter in one column, with the same content */
+@media (max-width: 1023px) {
+    .landing {
+        height: auto;
+        min-height: 100dvh;
+        padding: var(--space-lg);
+    }
 
+    .landing-intro {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: var(--space-md);
+    }
 
+    .landing-logo {
+        width: 100%;
+        max-width: 380px;
+    }
 
+    .landing-nav {
+        margin-left: calc(-1 * var(--space-sm));
+    }
 
+    .own-data {
+        margin-left: 0;
+    }
 
+    .own-data-panel {
+        right: auto;
+        left: 0;
+    }
 
+    .model {
+        --leaders: none;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: none;
+        row-gap: var(--space-lg);
+    }
 
+    .model > *,
+    .band-label,
+    .band-side--left,
+    .band-side--right,
+    .record {
+        grid-column: 1;
+        grid-row: auto;
+    }
 
+    .record {
+        order: -1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+    }
 
+    .record-group--core {
+        padding-top: 52px;
+    }
 
+    .band-label {
+        margin-top: var(--space-md);
+    }
 
+    .band-side,
+    .band-side--core.band-side--right {
+        grid-auto-flow: row;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-lg);
+        padding-top: 0;
+    }
 
+    .band-side--core .stmt-figure {
+        height: 140px;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    .stmt--persons .stmt-figure,
+    .stmt--place .stmt-figure {
+        height: 180px;
+    }
+}
 
 /* Loading State */
 .loading-state {
@@ -319,31 +689,7 @@
     display: block;
 }
 
-/* Responsive */
-@media (max-width: 767px) {
-    .landing-container {
-        padding: var(--space-lg);
-    }
-
-    .landing-header h1 {
-        font-size: var(--font-size-2xl);
-    }
-
-    .upload-zone {
-        padding: var(--space-xl);
-    }
-
-    
-
-    .url-input-wrapper {
-        flex-direction: column;
-    }
-
-    .dataset-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
+/* Dataset configuration dialog */
 /* Config Summary */
 .config-summary {
     display: flex;
@@ -520,56 +866,4 @@
     color: var(--color-text);
     margin: 0;
     font-weight: 500;
-}
-
-/* Start page parts */
-/* The start page has no fixed header, so the offset every other page keeps for it is not needed */
-body:has(.landing-container) {
-    padding-top: 0;
-}
-
-@media (min-width: 900px) {
-    .landing-main {
-        grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-    }
-}
-
-.dataset-card h2 {
-    margin: 0;
-    font-family: var(--font-base);
-    font-size: var(--font-size-md);
-    font-weight: 700;
-    color: var(--color-link);
-}
-
-.landing-header .dataset-card p {
-    margin: 2px 0 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
-.upload-zone h2 {
-    margin: 0 0 var(--space-xs);
-    font-size: var(--font-size-lg);
-}
-
-.upload-zone p {
-    margin: 0 0 var(--space-lg);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
-.landing-load .url-input-wrapper {
-    margin-top: var(--space-md);
-}
-
-.landing-hint {
-    margin: var(--space-sm) 0 0;
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-}
-
-.disclaimer p {
-    margin: 0;
-    max-width: 110ch;
 }

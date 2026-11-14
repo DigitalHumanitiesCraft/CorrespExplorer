@@ -6,7 +6,9 @@ import { isCorrespSearchUrl } from './correspsearch-api.js';
 import { summarizeCorpus } from './research-paths.js';
 import { enrichPersonsBatch } from './wikidata-enrichment.js';
 import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
-import { openModal, closeModal, enableModalKeyboard, isAllowedJsonPath, httpErrorMessage } from './utils.js';
+import { openModal, closeModal, enableModalKeyboard, isAllowedJsonPath } from './utils.js';
+import { VIEWS, LETTER_FEATURES } from './constants.js';
+import { initStartFigure, fetchListedFiles } from './start-figures.js';
 
 // DOM Elements
 let uploadZone, fileInput, urlInput, urlSubmit;
@@ -44,6 +46,7 @@ async function init() {
     loadingText = document.getElementById('loading-text');
     datasetCards = document.querySelectorAll('.dataset-card');
     showLocalDataset();
+    initStartFigure();
 
     // Config modal
     configModal = document.getElementById('config-modal');
@@ -58,7 +61,8 @@ async function init() {
         const demoCard = document.querySelector('.dataset-card[data-demo="true"]');
         if (demoCard) handleDatasetSelect(demoCard);
     } else if (startParams.get('files')) {
-        loadFileList(startParams.get('files'));
+        // The figure links a view of a local edition through here, so view and feat pass on
+        loadFileList(startParams.get('files'), { view: startParams.get('view'), feat: startParams.get('feat') });
     } else if (startParams.get('notice') === 'dataset-missing') {
         // explore.html sends links here whose dataset lay only in the sender's tab
         showError('Der Link gehört zu einem Datensatz, der nur im Browser der teilenden Person geladen war (eigene Datei oder correspSearch-Abfrage). Laden Sie den Datensatz hier erneut.');
@@ -74,12 +78,7 @@ function setupEventListeners() {
     uploadZone.addEventListener('dragleave', handleDragLeave);
     uploadZone.addEventListener('drop', handleDrop);
 
-    // Click on upload zone
-    uploadZone.addEventListener('click', (e) => {
-        if (e.target !== fileInput && !e.target.classList.contains('upload-btn')) {
-            fileInput.click();
-        }
-    });
+    // The drop zone is the <label> of the file input, so a click opens the picker without a handler
 
     // URL submit
     urlSubmit.addEventListener('click', handleUrlSubmit);
@@ -92,13 +91,15 @@ function setupEventListeners() {
     // Dataset cards
     datasetCards.forEach(card => {
         card.addEventListener('click', () => handleDatasetSelect(card));
-        // Cards are role="button" divs (block content cannot go into <button>)
-        card.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleDatasetSelect(card);
-            }
-        });
+        // A native button activates on Enter and Space by itself; a role="button" element needs it
+        if (card.tagName !== 'BUTTON') {
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleDatasetSelect(card);
+                }
+            });
+        }
     });
 
     // Config modal buttons
@@ -200,20 +201,20 @@ async function handleUrlSubmit() {
     }
 }
 
-// A corpus mounted under data/local appears as an example where its file list exists. The
-// published site carries no such list, so the entry stays hidden there.
+// A corpus mounted under data/local appears as a choice of the figure where its file list
+// exists. The published site carries no such list, so the choice stays hidden there.
 async function showLocalDataset() {
     const card = document.getElementById('local-dataset');
-    if (!card) return;
+    const choice = document.getElementById('local-dataset-choice');
+    if (!card || !choice) return;
     try {
         const response = await fetch(card.dataset.files);
         if (!response.ok) return;
         const files = (await response.json())?.files;
         if (!Array.isArray(files) || files.length === 0) return;
-        document.getElementById('local-dataset-count').textContent = files.length.toLocaleString('de-DE');
-        card.classList.remove('hidden');
+        choice.classList.remove('hidden');
     } catch {
-        // No local corpus: the entry stays hidden
+        // No local corpus: the choice stays hidden
     }
 }
 
@@ -260,27 +261,16 @@ async function handleDatasetSelect(card) {
  * {"files": ["a.xml", ...]}, names relative to the list. The path obeys the same rule as ?json=,
  * and a file name may not leave the folder of the list.
  */
-async function loadFileList(listPath) {
+async function loadFileList(listPath, { view = null, feat = null } = {}) {
     if (!isAllowedJsonPath(listPath)) {
         showError('Die Dateiliste muss ein relativer Pfad unter data/ mit der Endung .json sein.');
         return;
     }
     showLoading('Lade Dateiliste...');
     try {
-        const response = await fetch(listPath);
-        if (!response.ok) throw new Error(httpErrorMessage(response.status, response.statusText));
-        const list = await response.json();
-        const names = (Array.isArray(list?.files) ? list.files : []).filter(name => typeof name === 'string' && /^[\w\-.]+\.xml$/.test(name));
-        if (names.length === 0) throw new Error('Die Dateiliste nennt keine XML-Dateien.');
-        const base = listPath.slice(0, listPath.lastIndexOf('/') + 1);
-        const texts = [];
-        for (let i = 0; i < names.length; i++) {
-            const fileResponse = await fetch(base + names[i]);
-            texts.push(fileResponse.ok ? await fileResponse.text() : '');
-            if (i % 10 === 0) updateLoadingText(`Lade Dateien... ${i + 1} von ${names.length}`);
-        }
+        const { texts, names } = await fetchListedFiles(listPath, (done, total) => updateLoadingText(`Lade Dateien... ${done} von ${total}`));
         const data = await parseCMIFFiles(texts, null, names);
-        await showConfigDialog(data, { type: 'file', source: `${data.meta.title} (${data.meta.files.loaded} Dateien)` });
+        await showConfigDialog(data, { type: 'file', source: `${data.meta.title} (${data.meta.files.loaded} Dateien)`, view, feat });
     } catch (error) {
         console.error('File list load failed:', error);
         showError(`Fehler beim Laden der Dateiliste: ${error.message}`);
@@ -553,8 +543,14 @@ function finalizeAndRedirect(data, sourceInfo) {
         return;
     }
 
-    // Always start with the overview; the demo flag starts the tour in explore.js
-    window.location.href = sourceInfo?.isDemo ? 'explore.html?demo=true&view=overview' : 'explore.html?view=overview';
+    // The overview unless a link of the start figure asked for a view (and a feature filter); the
+    // demo flag starts the tour in explore.js. Both values are checked against the known lists
+    const params = new URLSearchParams();
+    if (sourceInfo?.isDemo) params.set('demo', 'true');
+    params.set('view', VIEWS.includes(sourceInfo?.view) ? sourceInfo.view : 'overview');
+    const features = (sourceInfo?.feat || '').split(',').filter(key => LETTER_FEATURES.some(f => f.key === key));
+    if (features.length) params.set('feat', features.join(','));
+    window.location.href = `explore.html?${params.toString()}`;
 }
 
 // Persons with a GND or VIAF ID, the authorities the Wikidata lookup supports
@@ -576,10 +572,9 @@ function extractEnrichablePersons(letters) {
     return Array.from(persons.values());
 }
 
-// UI helpers: the input sections give way to the loading state, switched by the hidden class
+// UI helpers: the entries give way to the loading state, switched by the hidden class
 function setInputSectionsHidden(hidden) {
-    [uploadZone, document.querySelector('.url-input-section'), document.querySelector('.example-datasets')]
-        .forEach(el => el?.classList.toggle('hidden', hidden));
+    document.querySelectorAll('.figure-bar, .model').forEach(el => el.classList.toggle('hidden', hidden));
 }
 
 function showLoading(text) {
