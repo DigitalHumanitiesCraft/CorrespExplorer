@@ -307,6 +307,50 @@ Der Satz ist so überliefert, wie die koordinierende Session ihn weitergab, mit 
 
 Folge: Ein recherchierender Agent untersucht, welche Netzwerkvisualisierungen zu Briefdaten passen. Ergebnis ausstehend, am Bildschirm unverändert der Korrespondenzkreis.
 
+### 2026-11-14, spät: Raum-Zeit, Filter, Zeit, Briefliste, Startseite
+
+Der vollständige Satz zum Korrespondenzkreis, wie der Operator ihn gab:
+
+> Ich glaube, die Form von Netzwerk passt noch nicht ganz. Also, wir müssen uns noch mal überlegen, was hier überhaupt in Beziehung gestellt wird. Wir haben ja dann auch dieses GOSSIP-Projekt. Dort gibt es sicher irgendwelche Netzwerkinformationen. Also, wir müssen da noch mal genauer verstehen, welche Arten von Netzwerk-Visualisierungen für die Art von Daten wirklich Sinn machen und was man dafür für Daten braucht. Mache auch Web-Suchen dazu. Ich glaube, das ist eine Forschungsfrage, sozusagen, damit wir wirklich sinnvolle Netzwerk-Visualisierungen erzeugen können.
+
+Folge: die Recherche in [network-figures.md](network-figures.md). Am Bildschirm unverändert der Korrespondenzkreis, die Entscheidung liegt bei ihm.
+
+> Ich glaube, die Visualisierung müssen wir noch ordentlich durchtesten: diese Space-Cube-Visualisierung, auch mit Tipps, und uns sozusagen in ihrer Bedienung evaluieren. Die Idee ist sehr gut, aber es ist ein bisschen schwierig zu bedienen
+
+Folge: unabhängige Bedienprüfung an zwölf Aufgaben und die Korrekturen daraus. Am Bildschirm, der Aufgabensatz lief danach nicht erneut.
+
+> Ich glaube, diese Buttons sollen irgendwie besser positioniert werden. Das ist irgendwie wichtig.
+
+Folge: die drei Blickrichtungen der Raum-Zeit-Figur stehen in der Figur oben links. Am Bildschirm.
+
+> Das mit den Filtern ist eh gut, aber es ist sehr streng, und man vergisst das ab und zu. Also, das muss auch irgendwie noch klarer sein, damit man weiß, dass in der Visualisierung etwas eben eingefiltert ist.
+
+Folge: Titel in der Auswahlfarbe, Linie am oberen Rand der Hauptfläche, getönter Block „Gefiltert nach“ in der Seitenleiste. Am Bildschirm.
+
+> Und können Liste und Vergleich nicht irgendwie zusammengeführt werden? Das ist ein bisschen zu viel Funktionalität.
+
+Folge: nicht begonnen ([plan.md](plan.md)).
+
+Zur Themenansicht: „braucht man das? Kann man das nicht irgendwie besser visualisieren? Das ist ein sehr behäbiges Interface.“
+
+Folge: die Themen als eine Figur über die Zeit. Am Bildschirm.
+
+Zum Block des Bestands, zur Arbeitsfläche und zur Briefliste, je auf einem Bildschirmfoto: „das kann man optimieren oder?“, „das kann man auch optimieren oder?“, „und das?“
+
+Folge: knapper Block, Startansicht als Dashboard kleiner echter Ansichten, Briefliste mit Jahresgruppen und Jahresprofil. Am Bildschirm.
+
+> Es gibt ja viele Untermenüs, also muss man ja ein bisschen durchklicken. Das finde ich fast ein bisschen zu aufwendig. Und die Chronik kann sicher auch noch optimiert werden. Da gibt es sicher noch, dass man das irgendwie übersichtlicher macht und damit Datenbestände besser abbilden kann. Und wieder haben wir zu viele Ebenen drin, oder?
+
+Folge: Zeit als eine Ansicht ohne Untermenü. Am Bildschirm. Was aus der Chronik entfiel, hat er nicht bestätigt.
+
+Zur Startseite als Figur, erste Fassung: „Also, da sind keine Bilder, das sind schon die echten Visualisierungen. Das ist eine sehr gute Idee. Da haben wir quasi so eine Art Dashboard der Visualisierungen.“
+
+Zur Startseite nach der Schärfung, über die koordinierende Session weitergegeben, „Übersichtszeiten“ ist als „Übersichtsseiten“ zu lesen:
+
+> Das ist schon gut, das ist wirklich kreativ, aber ich glaube, wir können es nach wie vor verbessern. Zum Beispiel: Die Linien müssen noch irgendwie klarer sein, das Bar-Chart könnte irgendwie interessanter ausschauen. Es ist ein bisschen sehr dicht, und es ist wirklich sehr voll, das Ganze. Es ist nicht ganz klar, dass ich bei Hugo [Schuchardt] da was auswählen kann. Das sind so meine Wahrnehmungen gerade. Bei Hugo [Schuchardt] haben wir schon interessante Visualisierungen, aber auch das ist ein bisschen zu überladen. Es gefällt mir schon ganz gut. Wenn wir das, was wir hier haben, noch optimieren können, wäre es super. Und vielleicht sollten wir auch diese Übersichtszeiten an die jeweiligen Daten anpassen, denn wenn ein bestimmter Aspekt der Daten nicht vorhanden ist, funktionieren bestimmte Visualisierungen nicht. Das heißt, sie sollten von ihrem Wissen auch dynamisch sein. Weißt du, was ich damit meine?
+
+Folge: in Arbeit. Die Startfigur wird aus dem zusammengesetzt, was ein Bestand trägt, statt ein festes Raster zu füllen.
+
 ### Entscheidungen des Operators ohne wörtlichen Satz
 
 Diese Entscheidungen stehen im Journal mit ihrem Tag und sind hier nur mit ihrer Wirkung genannt: die Palette aus dem Logo bleibt (2026-11-14), die Einstiegskacheln der Übersicht entfallen (2026-11-14), der Brief-Dialog bleibt vollständig (2026-11-14), die Forschungspfade verlassen die Oberfläche, die Startansicht wird über die Seitenleiste gefiltert, die Unteransichten sind oben zu finden (2026-11-14), keine Ampel für die Datenlage (2026-10-29), die Ausnahme für die Zellen der Heatmap (E6, 2026-11-05).
