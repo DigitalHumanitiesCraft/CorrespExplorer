@@ -1,0 +1,479 @@
+/* Ego network of the network view (network-view.js): the correspondence circle. The rules of
+   the mode "Gesamt" stay in explore.css. Loaded after explore.css, so equal specificity wins here. */
+
+/* The figure takes the area under the header, the person list follows below it */
+#network-view.active {
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.network-container--ego {
+    height: auto;
+}
+
+.network-container--ego .network-graph {
+    position: relative;
+    flex: none;
+    /* --network-head: distance of the figure from the top of the view, measured by network-view.js,
+       so the figure ends at the fold and the person list begins below it */
+    height: max(22rem, calc(100dvh - var(--navbar-height) - var(--network-head, 8rem)));
+    min-height: 0;
+}
+
+/* The switches start beside the hidden title; the representation switch keeps the right edge */
+.network-switches {
+    justify-content: flex-start;
+}
+
+@media (min-width: 768px) {
+    #network-view .view-header__actions.network-switches {
+        justify-content: flex-start;
+    }
+}
+
+/* Segmented control: one group, the chosen segment in the selection colour */
+.net-seg {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 2px;
+    background: var(--color-bg-light);
+    border-radius: var(--radius-md);
+}
+
+.net-seg:empty {
+    display: none;
+}
+
+.net-seg__btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 32px;
+    padding: var(--space-xs) var(--space-sm);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-light);
+    font-family: var(--font-base);
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+    cursor: pointer;
+    transition-property: var(--transition-properties);
+    transition-duration: 0.15s;
+}
+
+.net-seg__btn strong {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.net-seg__btn:hover {
+    background: var(--color-bg);
+    color: var(--color-primary-dark);
+}
+
+.net-seg__btn[aria-checked="true"],
+.net-seg__btn[aria-checked="true"]:hover {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+    cursor: default;
+}
+
+.net-seg__btn:focus-visible {
+    outline-offset: -3px;
+}
+
+/* The whole network is another kind of picture than the two levels; a rule sets it apart */
+.net-seg__btn[data-value="whole"] {
+    position: relative;
+    margin-left: var(--space-sm);
+}
+
+.net-seg__btn[data-value="whole"]::before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    left: calc(-1 * var(--space-xs) - 1px);
+    border-left: 1px solid var(--color-border-control);
+}
+
+/* Phones: narrower segments; "Gesamt" may wrap to a line of its own, where a rule before it
+   would stand alone */
+@media (max-width: 767px) {
+    .net-seg__btn {
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .net-seg__btn[data-value="whole"] {
+        margin-left: 0;
+    }
+
+    .net-seg__btn[data-value="whole"]::before {
+        content: none;
+    }
+}
+
+/* Info sign: the one sentence on distance and angle, for pointer and keyboard focus */
+.net-info {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+    color: var(--color-text-light);
+    cursor: help;
+}
+
+.net-info::after {
+    content: attr(data-tip);
+    position: absolute;
+    top: calc(100% + var(--space-xs));
+    left: 0;
+    z-index: var(--z-tooltip);
+    width: min(22rem, 80vw);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    color: var(--color-text);
+    white-space: normal;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+}
+
+.net-info:hover::after,
+.net-info:focus-visible::after {
+    opacity: 1;
+}
+
+/* Signs of the figure, repeated in the switch and the list instead of a legend */
+.ego-sign {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: var(--radius-full);
+    background: var(--color-data);
+}
+
+.ego-sign--hollow {
+    background: transparent;
+    border: 1.5px solid var(--color-data);
+}
+
+.ego-sign--centre {
+    width: 11px;
+    height: 11px;
+    background: var(--color-primary);
+}
+
+.ego-sign--square {
+    border-radius: 1px;
+    background: var(--color-role-organization);
+}
+
+.ego-sign--square.ego-sign--hollow {
+    background: transparent;
+    border-color: var(--color-role-organization);
+}
+
+/* Way back and release of the choice, quiet in the corner of the figure */
+.ego-corner {
+    position: absolute;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    z-index: var(--z-raised);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    max-width: calc(100% - 2 * var(--space-sm));
+}
+
+.ego-corner__btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 28px;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-base);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition-property: var(--transition-properties);
+    transition-duration: 0.15s;
+}
+
+.ego-corner__btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary-dark);
+}
+
+/* Figure */
+.ego-svg {
+    display: block;
+}
+
+.ego-ring,
+.ego-rim {
+    fill: none;
+    stroke: var(--color-border-light);
+    stroke-width: 1px;
+}
+
+.ego-rim {
+    stroke: var(--color-border-control);
+}
+
+.ego-gap {
+    fill: none;
+    stroke: var(--color-border-control);
+    stroke-width: 1px;
+    stroke-dasharray: 2 3;
+}
+
+.ego-tick {
+    stroke: var(--color-border-control);
+    stroke-width: 1px;
+}
+
+.ego-ring-label,
+.ego-year {
+    fill: var(--color-text-light);
+    font-size: var(--font-size-xs);
+    stroke: var(--color-bg);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    paint-order: stroke;
+}
+
+.ego-chord__line {
+    fill: none;
+    stroke: var(--color-text-light);
+    stroke-opacity: 0.45;
+}
+
+.ego-chord__hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 10px;
+    pointer-events: stroke;
+    cursor: pointer;
+}
+
+.ego-mention-line {
+    stroke: var(--color-role-mentioned);
+    stroke-width: 1px;
+    stroke-opacity: 0.7;
+    pointer-events: none;
+}
+
+.ego-node {
+    cursor: pointer;
+}
+
+.ego-mark {
+    stroke: var(--color-bg);
+    stroke-width: 1px;
+}
+
+.ego-mark--filled {
+    fill: var(--color-data);
+    fill-opacity: 0.85;
+}
+
+.ego-mark--centre {
+    fill: var(--color-primary);
+    stroke-width: 2px;
+}
+
+rect.ego-mark--filled {
+    fill: var(--color-role-organization);
+}
+
+.ego-out {
+    stroke-width: 1px;
+    cursor: pointer;
+}
+
+.ego-out--hollow {
+    fill: var(--color-bg);
+    stroke: var(--color-data);
+}
+
+.ego-out--filled {
+    fill: var(--color-data);
+    stroke: var(--color-bg);
+}
+
+.ego-label {
+    fill: var(--color-text);
+    font-size: var(--font-size-xs);
+    stroke: var(--color-bg);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    paint-order: stroke;
+    pointer-events: none;
+}
+
+.ego-leader {
+    stroke: var(--color-text-light);
+    stroke-width: 0.75px;
+    pointer-events: none;
+}
+
+.ego-label--centre {
+    font-weight: 600;
+}
+
+/* The nodes also carry the class "node" of the whole network; its hover and focus rules in
+   explore.css would set a wide stroke, hence the stronger selectors here */
+.network-graph .ego-node:hover .ego-mark,
+.network-graph .ego-node.is-near .ego-mark {
+    stroke: var(--color-text);
+    stroke-width: 1.5px;
+}
+
+.ego-node:focus-visible {
+    outline: none;
+}
+
+#network-graph .ego-node:focus-visible .ego-mark {
+    stroke: var(--color-primary);
+    stroke-width: 3px;
+}
+
+/* The second level fades in and out in place; reduced motion ends the transition at once
+   (base.css). Not the class .hidden, because display: none would cut the fade. */
+.ego-svg [data-level="mentions"] {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+}
+
+.ego-svg.ego--mentions [data-level="mentions"] {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Pointing at a person or chord keeps its own and quiets the rest */
+.ego-svg.is-focusing .ego-node:not(.is-near) .ego-mark {
+    opacity: 0.25;
+}
+
+.ego-svg.is-focusing .ego-chord:not(.is-near) .ego-chord__line {
+    stroke-opacity: 0.1;
+}
+
+.ego-svg.is-focusing .ego-chord.is-near .ego-chord__line {
+    stroke: var(--color-text);
+    stroke-opacity: 0.9;
+}
+
+.ego-svg.is-focusing .ego-label {
+    opacity: 0.35;
+}
+
+.ego-tip {
+    position: absolute;
+    z-index: var(--z-dropdown);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 20rem;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text);
+    pointer-events: none;
+}
+
+.ego-tip span:last-child {
+    color: var(--color-text-light);
+}
+
+/* Person list: rows with a hairline, in as many columns as the width carries */
+.ego-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    column-gap: var(--space-xl);
+    margin: var(--space-md) 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ego-list:empty {
+    display: none;
+}
+
+.ego-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 0;
+    padding: 2px var(--space-xs);
+    border-bottom: 1px solid var(--color-border-light);
+    font-size: var(--font-size-sm);
+}
+
+.ego-row--centre {
+    background: var(--color-primary-light);
+    border-left: 3px solid var(--color-primary);
+}
+
+.ego-row__name {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 24px;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--color-text);
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+button.ego-row__name {
+    cursor: pointer;
+}
+
+button.ego-row__name:hover {
+    color: var(--color-link);
+    text-decoration: underline;
+}
+
+.ego-row__name--centre {
+    font-weight: 600;
+}
+
+.ego-row__count {
+    flex-shrink: 0;
+    min-height: 24px;
+    padding: 0 var(--space-xs);
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: var(--font-size-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-light);
+    cursor: pointer;
+}
+
+.ego-row__count:hover {
+    color: var(--color-link);
+    text-decoration: underline;
+}

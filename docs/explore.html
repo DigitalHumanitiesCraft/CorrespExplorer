@@ -25,6 +25,8 @@
     <!-- Page-specific CSS -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/explore.css">
+    <link rel="stylesheet" href="css/network.css">
+    <link rel="stylesheet" href="css/spacetime.css">
 </head>
 <body>
     <a href="#main-content" class="skip-link">Zum Inhalt springen</a>
@@ -238,6 +240,9 @@
                     <button class="view-btn" data-view="map" aria-pressed="false" aria-label="Karte" data-tooltip="Karte" data-tooltip-desc="Briefe nach Absendeort auf Karte">
                         <i class="fas fa-map" aria-hidden="true"></i> <span class="view-btn-text">Karte</span>
                     </button>
+                    <button class="view-btn" data-view="spacetime" aria-pressed="false" aria-label="Raum-Zeit" data-tooltip="Raum-Zeit" data-tooltip-desc="Orte nach Koordinaten, die Jahre als Höhe">
+                        <i class="fas fa-cube" aria-hidden="true"></i> <span class="view-btn-text">Raum-Zeit</span>
+                    </button>
                     <button class="view-btn" data-view="persons" aria-pressed="false" aria-label="Liste der Korrespondenten" data-tooltip="Korrespondenten" data-tooltip-desc="Liste aller Absender und Empfänger">
                         <i class="fas fa-users" aria-hidden="true"></i> <span class="view-btn-text">Liste</span>
                     </button>
@@ -358,6 +363,44 @@
                         <div id="map-legend" class="map-legend">
                             <div class="map-legend-note">Kreisgröße und Zahl nach Briefen. Farbe nach häufigster Sprache eines Orts, grau fasst mehrere Orte zusammen.</div>
                             <div class="map-legend-items"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Space-time View -->
+                <div id="spacetime-view" class="tab-content">
+                    <div class="view-header view-header--inset">
+                        <h2 class="view-header__title">Raum-Zeit</h2>
+                        <p class="view-header__description">Die Absendeorte nach ihren Koordinaten, darüber die Jahre als Höhe. Pfeiltasten drehen die Figur, Plus und Minus zoomen, die Orte stehen auch als Liste unter der Figur.</p>
+                        <div class="view-header__actions">
+                            <div class="st-controls" id="spacetime-controls">
+                                <div class="st-segment" id="spacetime-cams" role="group" aria-label="Blickrichtung">
+                                    <button type="button" class="st-btn" data-cam="schraeg" aria-pressed="true">Schräg</button>
+                                    <button type="button" class="st-btn" data-cam="front" aria-pressed="false">Zeit von vorn</button>
+                                    <button type="button" class="st-btn" data-cam="oben" aria-pressed="false"><i class="fas fa-map" aria-hidden="true"></i> Karte von oben</button>
+                                </div>
+                                <div class="st-segment" role="group" aria-label="Zoom">
+                                    <button type="button" class="st-btn" data-zoom="0.8" aria-label="Herauszoomen"><i class="fas fa-minus" aria-hidden="true"></i></button>
+                                    <button type="button" class="st-btn" data-zoom="1.25" aria-label="Hineinzoomen"><i class="fas fa-plus" aria-hidden="true"></i></button>
+                                    <button type="button" class="st-btn" data-action="reset" aria-label="Zurücksetzen" title="Zurücksetzen"><i class="fas fa-undo" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="st-stage">
+                        <div class="st-figure-wrap">
+                            <svg id="spacetime-figure" tabindex="0" role="application" aria-label="Raum-Zeit-Figur der Absendeorte" aria-describedby="spacetime-keys"></svg>
+                            <p id="spacetime-keys" class="visually-hidden">Pfeiltasten drehen die Figur, mit Umschalt verschieben sie sie, Plus und Minus zoomen. Die Orte mit ihren Briefzahlen stehen in der Liste nach der Figur.</p>
+                            <div id="spacetime-tooltip" class="st-tooltip hidden" role="status"></div>
+                            <div id="spacetime-detail" class="st-detail hidden"></div>
+                        </div>
+                        <div class="st-foot-row">
+                            <div id="spacetime-legend" class="st-legend"></div>
+                            <p id="spacetime-note" class="st-note hidden"></p>
+                        </div>
+                        <div class="st-side">
+                            <h3 class="visually-hidden" id="spacetime-places-title">Orte nach Zahl der Briefe</h3>
+                            <ul id="spacetime-places" class="st-places" aria-labelledby="spacetime-places-title"></ul>
                         </div>
                     </div>
                 </div>
@@ -580,6 +623,12 @@
                         <div class="view-header">
                             <h2 class="view-header__title">Netzwerk-Analyse</h2>
                             <p class="view-header__description" id="network-info-text">Korrespondenten die in denselben Jahren aktiv sind</p>
+                            <div class="view-header__actions network-switches">
+                                <!-- Levels of the ego network with their counts and the whole network, filled by network-view.js -->
+                                <div class="net-seg" id="network-levels" role="radiogroup" aria-label="Was das Netzwerk zeigt"></div>
+                                <!-- What distance and angle of the circle mean; the same sentence is the description of the figure -->
+                                <span class="net-info" tabindex="0" role="img" aria-label="Je näher an der Mitte, desto mehr Briefe; der Winkel zeigt, wann der Briefwechsel beginnt, im Uhrzeigersinn ab oben. Linien verbinden Korrespondenten, die einander schrieben." data-tip="Je näher an der Mitte, desto mehr Briefe; der Winkel zeigt, wann der Briefwechsel beginnt, im Uhrzeigersinn ab oben. Linien verbinden Korrespondenten, die einander schrieben."><i class="fas fa-info-circle" aria-hidden="true"></i></span>
+                            </div>
                         </div>
                         <div class="network-controls">
                             <div class="network-control-group">
@@ -620,6 +669,7 @@
                         </div>
                         <div class="network-coverage" id="network-coverage"></div>
                         <div id="network-graph" class="network-graph"></div>
+                        <ul class="ego-list" id="network-ego-list" aria-label="Personen im Bild"></ul>
                         <div id="network-table" class="chart-table-host"></div>
                         <div class="network-legend" id="network-legend">
                             <div class="legend-item">

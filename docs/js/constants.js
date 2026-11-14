@@ -120,9 +120,9 @@ export function languageLabel(code) {
     return LANGUAGE_LABELS[code] || dataLanguageLabels[code] || code;
 }
 
-// The twelve views of explore.html in navigation order; URL parameter view= accepts only these
+// The views of explore.html in navigation order; URL parameter view= accepts only these
 export const VIEWS = [
-    'overview', 'map', 'persons', 'letters', 'timeline', 'topics', 'places',
+    'overview', 'map', 'spacetime', 'persons', 'letters', 'timeline', 'topics', 'places',
     'network', 'mentions-flow', 'chronik', 'activity', 'comparison'
 ];
 

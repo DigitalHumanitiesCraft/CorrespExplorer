@@ -12,6 +12,8 @@ import { BasketTests } from './test-basket.js';
 import { ResearchPathTests } from './test-research-paths.js';
 import { DemoTests } from './test-demo.js';
 import { CorrespSearchTests } from './test-correspsearch.js';
+import { SpacetimeTests } from './test-spacetime.js';
+import { NetworkTests } from './test-network.js';
 
 /**
  * Run all registered suites
@@ -28,6 +30,8 @@ export async function runAllTests() {
         ResearchPathTests,
         DemoTests,
         CorrespSearchTests,
+        SpacetimeTests,
+        NetworkTests,
 
         // Infrastructure (State Management)
         StateManagerTests,

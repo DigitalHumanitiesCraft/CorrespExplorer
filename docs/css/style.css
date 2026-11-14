@@ -385,6 +385,10 @@ button {
     .view-group:focus-within .view-group__menu {
         display: flex;
     }
+
+    .view-group.view-group--closed .view-group__menu {
+        display: none;
+    }
 }
 
 /* On a narrow screen the subjects take a second row below title and actions */
@@ -433,6 +437,21 @@ button {
         flex-wrap: wrap;
         overflow: visible;
     }
+}
+
+/* The representations of a subject read as its tabs: ink instead of grey, and the chosen one
+   filled in the selection colour */
+.view-variants .view-btn {
+    min-height: 36px;
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+}
+
+.view-variants .view-btn.active,
+.view-variants .view-btn.active:hover {
+    background: var(--color-primary);
+    color: var(--color-bg);
+    font-weight: 700;
 }
 
 /* Comparing two entries is an action beside the representations */

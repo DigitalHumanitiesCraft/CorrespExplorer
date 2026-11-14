@@ -16,6 +16,7 @@ import { elements, initDOMCache } from './dom-cache.js';
 import { filterSentence, focusViewHeading, renderFilterNotice } from './views/view-support.js';
 import { initOverviewView, renderOverview } from './views/overview-view.js';
 import { initMapView, updateMapPlaces, resizeMap, aggregateLettersByPlace } from './views/map-view.js';
+import { initSpacetimeView, renderSpacetime } from './views/spacetime-view.js';
 import { initPersonsView, renderPersonsList } from './views/persons-view.js';
 import { initLettersView, renderLettersList, showLetterDetail, clearLetterSearch } from './views/letters-view.js';
 import { initTimelineView, renderTimeline as renderTimelineView } from './views/timeline-view.js';
@@ -64,7 +65,7 @@ const VIEW_GROUPS = {
     overview: ['overview'],
     letters: ['letters'],
     persons: ['persons', 'network', 'mentions-flow'],
-    places: ['map', 'places'],
+    places: ['map', 'spacetime', 'places'],
     time: ['timeline', 'activity', 'chronik'],
     topics: ['topics']
 };
@@ -93,6 +94,10 @@ function detectAvailableViews() {
             reason: null
         },
         map: {
+            available: hasCoordinates,
+            reason: hasCoordinates ? null : 'Keine Orte mit Koordinaten vorhanden'
+        },
+        spacetime: {
             available: hasCoordinates,
             reason: hasCoordinates ? null : 'Keine Orte mit Koordinaten vorhanden'
         },
@@ -325,6 +330,21 @@ async function init() {
             getPlaceAggregation: () => placeAggregation,
             applyPlaceFilter,
             applyPersonFilter,
+            switchView
+        });
+        initSpacetimeView({
+            getDataIndices: () => dataIndices,
+            togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key)),
+            // The letters of one place in one year, the other filters stay as they are
+            showLettersOfPlaceYear: (key, year) => {
+                clearLetterSearch();
+                selectedPlaceFilter = key;
+                temporalFilter = { start: year, end: year };
+                elements.yearRangeSlider?.noUiSlider?.set([year, year]);
+                applyFilters({ render: false });
+                switchView('letters');
+                focusViewHeading('letters');
+            },
             switchView
         });
         initPersonsView({
@@ -872,7 +892,7 @@ function hasActiveFilter() {
 
 // Every view that shows the filtered letters marks an active filter on its button, so a list
 // shortened by a filter set elsewhere is never silent
-const FILTER_INDICATOR_VIEWS = ['letters', 'persons', 'places', 'timeline', 'network', 'mentions-flow', 'map', 'chronik', 'activity', 'comparison', 'topics'];
+const FILTER_INDICATOR_VIEWS = ['letters', 'persons', 'places', 'timeline', 'network', 'mentions-flow', 'map', 'spacetime','chronik', 'activity', 'comparison', 'topics'];
 
 function updateFilterIndicators() {
     const active = hasActiveFilter();
@@ -912,7 +932,7 @@ function subjectLabelForKey(key) {
 
 const FILTER_BADGE_ORDER = ['temporal-filter-display', 'person-filter-display', 'place-filter-display', 'subject-filter-display', 'feature-filter-display'];
 // Views with the filter sidebar beside them on a wide screen
-const SIDEBAR_VIEWS = ['map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'];
+const SIDEBAR_VIEWS = ['map', 'spacetime', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'];
 
 /**
  * Removable badge of an active person, place or subject filter under the sidebar stats. The
@@ -1215,6 +1235,12 @@ function initViewSwitcher() {
             menu.append(item);
         });
         group.append(btn, menu);
+        // A choice closes the menu until the pointer and the focus have left the tab; open, it
+        // would cover the representation switch that stands below it in the view header
+        group.addEventListener('click', () => group.classList.add('view-group--closed'));
+        // while the focus still rests on the tab the menu stays closed, or it would reopen under the pointer's way to the view
+        group.addEventListener('pointerleave', () => { if (!group.contains(document.activeElement)) group.classList.remove('view-group--closed'); });
+        group.addEventListener('focusout', (e) => { if (!group.contains(e.relatedTarget)) group.classList.remove('view-group--closed'); });
     });
     document.querySelectorAll('.view-group-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1268,6 +1294,7 @@ function renderView(view) {
         case 'activity': renderActivityView(); break;
         case 'comparison': renderComparisonView(); break;
         case 'map': resizeMap(); break;
+        case 'spacetime': renderSpacetime(); break;
     }
 }
 

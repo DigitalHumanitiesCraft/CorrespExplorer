@@ -632,8 +632,15 @@
     max-width: 100%;
 }
 
-/* From 768 px title, actions and the representation switch share one line. The switch keeps
-   its place at the right edge in every representation of a subject. */
+/* On a narrow screen the representation switch stands first, above title and controls */
+.view-header > .view-variants {
+    order: -1;
+}
+
+/* From 768 px title, representation switch and actions share one line. The switch follows the
+   title at the left, where the eye enters the view; the controls of the representation keep the
+   right edge (operator, 2026-11-14: the choice between the representations should be more
+   present). */
 @media (min-width: 768px) {
     .view-header {
         display: flex;
@@ -652,9 +659,12 @@
     }
 
     .view-header > .view-variants {
-        order: 3;
+        order: 1;
         flex: none;
-        margin-left: auto;
+    }
+
+    .view-header > .view-header__actions {
+        order: 2;
     }
 }
 

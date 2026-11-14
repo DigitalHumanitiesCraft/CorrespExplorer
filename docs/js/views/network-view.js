@@ -1,9 +1,14 @@
 // Network View
-// Force-directed graph of who wrote to whom, of contemporaries or of topics
+// Two modes. "Ego" draws one person in the centre with its correspondents and, one level up, the
+// persons their letters mention, every node labelled. "Gesamt" is the earlier force-directed graph
+// of who wrote to whom, of contemporaries or of topics, kept because it serves other questions.
 
-import { debounce, motionMs, personKey, letterRecipients } from '../utils.js';
+import { debounce, motionMs, personKey, letterRecipients, escapeHtml, openModal, closeModal } from '../utils.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
 import { elements } from '../dom-cache.js';
+import { formatDateWithPrecision } from '../formatters.js';
+import { state } from '../state-manager.js';
+import { showLetterDetail } from './letters-view.js';
 import { readTokens, renderDataTable } from './view-support.js';
 
 // Node colours per network type, as custom properties of tokens.css
@@ -29,6 +34,14 @@ let networkSimulation = null;
 let networkSvg = null;
 let networkZoom = null;
 
+// The ego network is the default: the one large network of an archive is a star or a hairball,
+// a person with its direct neighbours can be read name by name
+let networkMode = 'ego'; // 'ego' or 'whole'
+let egoLevel = 'correspondence'; // 'correspondence' or 'mentions'
+let egoHistory = []; // earlier centres as {filter, name}, for the way back
+let egoFocusAfterRender = null; // 'figure' or 'list': where focus goes after a choice re-renders
+let egoDrawn = null; // model and helpers of the drawn figure, for level switches without redraw
+
 // External dependencies - injected via init
 let getFilteredLetters = null;
 let getAllLetters = null;
@@ -48,6 +61,7 @@ export function initNetworkView(deps) {
     switchView = deps.switchView;
 
     setupNetworkEventHandlers();
+    setupEgoControls();
 }
 
 /**
@@ -180,7 +194,7 @@ function updateNetworkThresholdLabel() {
         input.min = 1;
         input.max = NETWORK_DEFAULTS.maxLettersSlider;
         if (valueDisplay) valueDisplay.textContent = networkMinLetters;
-        if (colorGroup) colorGroup.style.display = '';
+        colorGroup?.classList.remove('hidden');
     } else if (networkType === 'contemporaries') {
         label.textContent = 'Min. gemeinsame Jahre:';
         input.value = networkMinYears;
@@ -188,7 +202,7 @@ function updateNetworkThresholdLabel() {
         input.max = NETWORK_DEFAULTS.maxYearsSlider;
         if (valueDisplay) valueDisplay.textContent = networkMinYears;
         // Show color mode selector for contemporaries
-        if (colorGroup) colorGroup.style.display = '';
+        colorGroup?.classList.remove('hidden');
     } else if (networkType === 'topics') {
         label.textContent = 'Min. Co-Occurrence:';
         input.value = networkMinCooccurrence;
@@ -196,7 +210,7 @@ function updateNetworkThresholdLabel() {
         input.max = NETWORK_DEFAULTS.maxNodesSlider;
         if (valueDisplay) valueDisplay.textContent = networkMinCooccurrence;
         // Hide color mode selector for topics (entry year not applicable)
-        if (colorGroup) colorGroup.style.display = 'none';
+        colorGroup?.classList.add('hidden');
         // Reset to type color mode when switching to topics
         networkColorMode = 'type';
         const colorSelect = elements.getById('network-color-mode');
@@ -598,9 +612,27 @@ function networkData(letters) {
 }
 
 /**
- * Render the network visualization
+ * Render the network view in its current mode
  */
 export function renderNetwork() {
+    syncModeParts();
+    if (networkMode === 'ego') {
+        renderEgoNetwork();
+    } else {
+        egoDrawn = null;
+        // The switch keeps the counts of the ego levels current under the filters
+        const letters = egoScopeLetters();
+        const centreId = state.filters.person || mostConnectedPerson(letters)?.id;
+        renderLevelSwitch(centreId ? buildEgoNetwork(letters, centreId) : null,
+            letters.some(l => l.mentions?.persons?.length > 0));
+        renderWholeNetwork();
+    }
+}
+
+/**
+ * Render the whole-dataset network (mode "Gesamt")
+ */
+function renderWholeNetwork() {
     const container = elements.getById('network-graph');
     if (!container) return;
 
@@ -939,10 +971,10 @@ export function renderNetwork() {
 }
 
 // Text width in pixels at the label font, measured on a canvas so it works before the SVG exists
-function labelMeasure(container, fontPx) {
+function labelMeasure(container, fontPx, weight = 400) {
     const context = document.createElement('canvas').getContext('2d');
     if (!context) return text => text.length * fontPx * 0.6;
-    context.font = `${fontPx}px ${getComputedStyle(container).fontFamily}`;
+    context.font = `${weight} ${fontPx}px ${getComputedStyle(container).fontFamily}`;
     return text => context.measureText(text).width;
 }
 
@@ -1084,4 +1116,1053 @@ function resetNetworkZoom() {
     if (networkSvg && networkZoom) {
         networkSvg.transition().duration(motionMs(500)).call(networkZoom.transform, d3.zoomIdentity);
     }
+}
+
+// Ego network
+// A correspondence circle around one person. The distance of a correspondent from the centre
+// says how many letters the two exchanged (more letters, closer, on a log scale), the angle says
+// when the exchange began (first dated letter, clockwise from the top). Position carries the
+// data, so no line runs from the centre; lines join only correspondents who wrote to each other.
+
+const EGO_MARGIN = 8;
+// Room outside the rim for the year ticks and their labels
+const EGO_TICK_ROOM = 34;
+// From the rim to the ring of mentioned persons, and that ring's rows
+const EGO_BAND_GAP = { wide: 40, narrow: 28 };
+const EGO_BAND_STEP = 5;
+const EGO_BAND_ROWS = { wide: 7, narrow: 4 };
+// Radians of the rim between the last and the first year; holds the reference ring labels and
+// the correspondents without any dated letter
+const EGO_GAP = 0.24;
+// Names placed at most, strongest first, where they fit without overlap
+const EGO_LABELS = { wide: 14, narrow: 6 };
+const EGO_OUTER_LABELS = { wide: 8, narrow: 2 };
+const EGO_NARROW = 600;
+
+const formatNumber = n => n.toLocaleString('de-DE');
+const plural = (n, one, many) => `${formatNumber(n)} ${n === 1 ? one : many}`;
+
+// Sender and recipients of a letter, each person once
+function letterParties(letter) {
+    const parties = new Map();
+    [letter.sender, ...letterRecipients(letter)].forEach(person => {
+        const key = personKey(person);
+        if (key && !parties.has(key)) parties.set(key, person);
+    });
+    return parties;
+}
+
+// Time of a letter as a fractional year, or null without a usable year
+function letterTime(letter) {
+    if (!letter.year || letter.dateImplausible) return null;
+    const m = /^(\d{1,4})-(\d{2})(?:-(\d{2}))?/.exec(letter.date || '');
+    if (!m || Number(m[1]) !== letter.year) return letter.year;
+    return letter.year + (Number(m[2]) - 1) / 12 + (Number(m[3] || 1) - 1) / 366;
+}
+
+/**
+ * The person with most correspondents, the default centre of the ego network. In an ego-centred
+ * archive that is the person the archive is built around. Ties go to more letters, then the name.
+ * @param {Array} letters
+ * @returns {{id: string, name: string, partners: number, letters: number}|null}
+ */
+export function mostConnectedPerson(letters) {
+    const people = new Map();
+    const entry = (key, person) => {
+        if (!people.has(key)) people.set(key, { id: key, name: person?.name || key, partners: new Set(), letters: 0 });
+        return people.get(key);
+    };
+    letters.forEach(letter => {
+        letterParties(letter).forEach((person, key) => { entry(key, person).letters++; });
+        const from = personKey(letter.sender);
+        if (!from) return;
+        letterRecipients(letter).forEach(recipient => {
+            const to = personKey(recipient);
+            if (!to || to === from) return;
+            entry(from, letter.sender).partners.add(to);
+            entry(to, recipient).partners.add(from);
+        });
+    });
+    let best = null;
+    people.forEach(p => {
+        if (!best || p.partners.size > best.partners.size ||
+            (p.partners.size === best.partners.size && (p.letters > best.letters ||
+                (p.letters === best.letters && p.name.localeCompare(best.name, 'de') < 0)))) best = p;
+    });
+    return best ? { id: best.id, name: best.name, partners: best.partners.size, letters: best.letters } : null;
+}
+
+/**
+ * The ego network of one person in the given letters.
+ * Correspondents ("correspondence"): the persons who wrote to the centre or received a letter
+ * from it, with their letters, both directions, first and last date. Chords: letters between two
+ * correspondents. Mentioned persons ("mentions"): persons named in the letters of the centre's
+ * correspondence who are not correspondents of the centre. A mention links the letter's writer
+ * to the person named, never two persons named together, which would invent a relation.
+ * @param {Array} letters - letters under all filters except the person filter
+ * @param {string} centreId - personKey of the centre
+ */
+export function buildEgoNetwork(letters, centreId) {
+    const info = new Map();
+    const note = (key, person) => {
+        if (!info.has(key)) info.set(key, { id: key, name: person?.name || key, isOrganization: Boolean(person?.isOrganization) });
+    };
+    // Persons who send or receive a letter in these letters; the others are known only by mention
+    const correspondents = new Set();
+    const partners = new Map();
+    const centreLetters = [];
+    letters.forEach(letter => {
+        const parties = letterParties(letter);
+        parties.forEach((person, key) => { correspondents.add(key); note(key, person); });
+        if (!parties.has(centreId)) return;
+        centreLetters.push(letter);
+        const from = personKey(letter.sender);
+        // The partner is the other side of a sender-recipient pair, as in the whole network;
+        // two recipients of the same letter did not write to each other
+        const others = from === centreId
+            ? letterRecipients(letter).map(personKey).filter(k => k && k !== centreId)
+            : (from && from !== centreId ? [from] : []);
+        const time = letterTime(letter);
+        new Set(others).forEach(key => {
+            const p = partners.get(key) || { letters: 0, toCentre: 0, fromCentre: 0, first: null, firstYear: null, lastYear: null };
+            p.letters++;
+            if (from === centreId) p.fromCentre++; else p.toCentre++;
+            if (time !== null) {
+                if (p.first === null || time < p.first) p.first = time;
+                const year = Math.floor(time);
+                if (p.firstYear === null || year < p.firstYear) p.firstYear = year;
+                if (p.lastYear === null || year > p.lastYear) p.lastYear = year;
+            }
+            partners.set(key, p);
+        });
+    });
+
+    // Mentions in the centre's letters: by whom (writer) and in whose exchange with the centre
+    const mentioned = new Map();
+    const links = new Map();
+    centreLetters.forEach(letter => {
+        const writer = personKey(letter.sender);
+        const partner = writer === centreId
+            ? letterRecipients(letter).map(personKey).find(k => k && k !== centreId)
+            : writer;
+        const seen = new Set();
+        (letter.mentions?.persons || []).forEach(person => {
+            const key = personKey(person);
+            if (!key || key === centreId || seen.has(key)) return;
+            seen.add(key);
+            note(key, person);
+            const m = mentioned.get(key) || { letters: 0, partners: new Map() };
+            m.letters++;
+            if (partner) m.partners.set(partner, (m.partners.get(partner) || 0) + 1);
+            mentioned.set(key, m);
+            if (writer && writer !== key) {
+                const linkKey = `${writer}>${key}`;
+                links.set(linkKey, { writer, mentioned: key, letters: (links.get(linkKey)?.letters || 0) + 1 });
+            }
+        });
+    });
+
+    const byName = (a, b) => a.name.localeCompare(b.name, 'de') || (a.id < b.id ? -1 : 1);
+    const inner = [...partners].map(([id, p]) => ({
+        ...info.get(id), ...p, ring: 'inner', writesLetters: true, mentions: mentioned.get(id)?.letters || 0
+    })).sort((a, b) => b.letters - a.letters || byName(a, b));
+    const outer = [...mentioned].filter(([id]) => !partners.has(id)).map(([id, m]) => ({
+        ...info.get(id),
+        ring: 'outer',
+        mentions: m.letters,
+        writesLetters: correspondents.has(id),
+        // The correspondents in whose exchange with the centre the person is named, which place it
+        partners: [...m.partners].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
+    })).sort((a, b) => b.mentions - a.mentions || byName(a, b));
+
+    // Letters between two correspondents, which the circle shows as chords
+    const chords = new Map();
+    letters.forEach(letter => {
+        const from = personKey(letter.sender);
+        if (!partners.has(from)) return;
+        new Set(letterRecipients(letter).map(personKey)).forEach(to => {
+            if (!to || to === from || !partners.has(to)) return;
+            const [a, b] = from < to ? [from, to] : [to, from];
+            const key = `${a}|${b}`;
+            const c = chords.get(key) || { key, a, b, letters: 0, aToB: 0, bToA: 0 };
+            c.letters++;
+            if (from === a) c.aToB++; else c.bToA++;
+            chords.set(key, c);
+        });
+    });
+
+    const secondLevel = new Set([...partners.keys(), ...mentioned.keys()]);
+    return {
+        centre: { ...(info.get(centreId) || { id: centreId, name: centreId, isOrganization: false }), ring: 'centre', letters: centreLetters.length, writesLetters: true },
+        inner,
+        outer,
+        chords: [...chords.values()].sort((x, y) => y.letters - x.letters || (x.key < y.key ? -1 : 1)),
+        mentionLinks: [...links.values()],
+        counts: {
+            correspondence: partners.size,
+            mentions: secondLevel.size,
+            // Persons of the second level who neither send nor receive a letter here
+            hollow: [...secondLevel].filter(id => !correspondents.has(id)).length,
+            onlyMentioned: outer.length
+        }
+    };
+}
+
+/**
+ * Geometry of the circle: centre, rim radius R, inner radius r0 of the strongest correspondent,
+ * and the ring of mentioned persons outside the year ticks. The ring is reserved whenever the
+ * data have mentions, so switching the level never rescales the circle.
+ * @param {number} width
+ * @param {number} height
+ * @param {{hasOuter: boolean}} options
+ */
+export function egoGeometry(width, height, { hasOuter }) {
+    const narrow = width < EGO_NARROW;
+    const size = narrow ? 'narrow' : 'wide';
+    const cx = width / 2;
+    const cy = height / 2;
+    const room = Math.min(cx, cy) - EGO_MARGIN;
+    const bandRows = EGO_BAND_ROWS[size];
+    const outerRoom = hasOuter ? EGO_BAND_GAP[size] + EGO_BAND_STEP * bandRows + 4 : EGO_TICK_ROOM;
+    const R = Math.max(50, room - outerRoom);
+    return {
+        width, height, cx, cy, R, narrow, size, hasOuter,
+        r0: R * 0.14,
+        bandR0: R + EGO_BAND_GAP[size],
+        bandRows,
+        bandStep: EGO_BAND_STEP
+    };
+}
+
+const polar = (g, radius, angle) => ({ x: g.cx + radius * Math.sin(angle), y: g.cy - radius * Math.cos(angle) });
+
+/**
+ * Scales of the circle from the correspondents: angle from the first dated letter, distance from
+ * the number of letters, mark radius with an area that grows with the letters
+ */
+export function egoScales(model, g) {
+    const firsts = model.inner.map(p => p.first).filter(t => t !== null);
+    const t0 = firsts.length ? Math.min(...firsts) : 0;
+    const t1 = firsts.length ? Math.max(...firsts) : 1;
+    const sweep = 2 * Math.PI - EGO_GAP;
+    const span = t1 - t0;
+    const maxN = Math.max(2, ...model.inner.map(p => p.letters));
+    return {
+        t0, t1, sweep,
+        angle: t => (span > 0 ? ((t - t0) / span) * sweep : sweep / 2),
+        distance: n => g.r0 + (g.R - g.r0) * (1 - Math.log(Math.max(1, n)) / Math.log(maxN)),
+        markRadius: n => Math.max(2, (g.narrow ? 7 : 9) * Math.sqrt(n / maxN)),
+        maxN
+    };
+}
+
+/**
+ * Positions of the circle. A correspondent sits at the angle of its first dated letter and at
+ * the distance of its letter count; where two marks would cover each other, the later one moves
+ * inwards, never past the distance of one letter more, so distance stays monotonic in letters.
+ * Correspondents without a dated letter sit in the gap of the rim. Mentioned persons form rows
+ * outside the rim near the correspondents in whose exchange they are named. The correspondents
+ * depend only on themselves, so the second level never moves them.
+ * @returns {{pos: Map<string, {x: number, y: number, r: number, angle: number, ring: string}>, scales: Object}}
+ */
+export function egoLayout(model, g) {
+    const scales = egoScales(model, g);
+    const pos = new Map([[model.centre.id, { x: g.cx, y: g.cy, r: g.narrow ? 6 : 8, angle: 0, ring: 'centre' }]]);
+    const cell = 12;
+    const grid = new Map();
+    const cellKey = (i, j) => `${i},${j}`;
+    const free = (x, y, r) => {
+        const reach = Math.ceil((r + 10) / cell);
+        const ci = Math.floor(x / cell);
+        const cj = Math.floor(y / cell);
+        for (let i = ci - reach; i <= ci + reach; i++) {
+            for (let j = cj - reach; j <= cj + reach; j++) {
+                for (const q of grid.get(cellKey(i, j)) || []) {
+                    if (Math.hypot(q.x - x, q.y - y) < q.r + r + 0.8) return false;
+                }
+            }
+        }
+        return true;
+    };
+    const occupy = p => {
+        const key = cellKey(Math.floor(p.x / cell), Math.floor(p.y / cell));
+        grid.set(key, [...(grid.get(key) || []), p]);
+    };
+    occupy(pos.get(model.centre.id));
+
+    const undated = model.inner.filter(p => p.first === null);
+    const undatedAngle = new Map(undated.map((p, i) => [p.id, scales.sweep + EGO_GAP * ((i + 1) / (undated.length + 1))]));
+    // Strongest first, so the few heavy marks keep their exact place
+    model.inner.forEach(p => {
+        const angle = p.first === null ? undatedAngle.get(p.id) : scales.angle(p.first);
+        const r = scales.markRadius(p.letters);
+        const outerD = scales.distance(p.letters);
+        const innerD = p.letters >= scales.maxN ? g.r0 * 0.6 : scales.distance(p.letters + 1);
+        let placed = null;
+        const step = Math.max(1.5, r);
+        for (let d = outerD; d > innerD + 0.25; d -= step) {
+            const at = polar(g, d, angle);
+            if (free(at.x, at.y, r)) {
+                placed = at;
+                break;
+            }
+        }
+        const at = placed || polar(g, outerD, angle);
+        const entry = { x: at.x, y: at.y, r, angle, ring: 'inner' };
+        pos.set(p.id, entry);
+        occupy(entry);
+    });
+
+    // Mentioned persons: angle of the exchanges they are named in, then rows outside the rim
+    const outer = model.outer.map(p => {
+        let sx = 0;
+        let sy = 0;
+        (p.partners || []).forEach(([id, n]) => {
+            const a = pos.get(id)?.angle;
+            if (a === undefined) return;
+            sx += n * Math.sin(a);
+            sy += n * Math.cos(a);
+        });
+        let angle = Math.atan2(sx, sy);
+        if (angle < 0) angle += 2 * Math.PI;
+        return { p, angle };
+    }).sort((a, b) => a.angle - b.angle || (a.p.id < b.p.id ? -1 : 1));
+    const rowEnd = new Array(g.bandRows).fill(-Infinity);
+    outer.forEach(({ p, angle }) => {
+        const r = 2.2;
+        let row = rowEnd.findIndex((end, i) => angle - end >= (2 * r + 1.5) / (g.bandR0 + i * g.bandStep));
+        if (row < 0) row = rowEnd.indexOf(Math.min(...rowEnd));
+        rowEnd[row] = angle;
+        const at = polar(g, g.bandR0 + row * g.bandStep, angle);
+        pos.set(p.id, { x: at.x, y: at.y, r, angle, ring: 'outer' });
+    });
+    return { pos, scales };
+}
+
+// Reference rings: a few letter counts on the log scale, each named once
+export function egoRings(maxN) {
+    const ladder = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000].filter(n => n < maxN);
+    const powers = ladder.filter(n => /^10*$/.test(String(n)));
+    return powers.length >= 3 ? powers : ladder.filter((n, i) => i % 2 === 0).slice(0, 4);
+}
+
+/**
+ * Name labels where they fit: horizontal, beside the mark, over no mark, no other label and none
+ * of the reserved boxes (centre name, ring labels, year labels), inside the figure. Correspondents
+ * stay inside the year ticks, so the ring of mentioned persons never runs under a name.
+ * @param {Array} people - in order of priority
+ * @param {Map} pos - from egoLayout
+ * @param {Object} g - from egoGeometry
+ * @param {function(string): number} measure - text width in pixels
+ * @param {{limit: number, reserved: Array, fontPx: number, outside?: number, inside?: number}} options
+ * @returns {Map<string, {text: string, anchor: string, x: number, y: number, box: Object}>}
+ */
+export function placeEgoLabels(people, pos, g, measure, { limit, reserved = [], fontPx = 12, outside = 0, inside = Infinity }) {
+    const placed = [...reserved];
+    const result = new Map();
+    const overlaps = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+    // The many marks of one or two letters do not block a name: its halo covers them, and they
+    // stay reachable for the pointer because labels take no pointer events
+    const marks = [...pos.entries()].filter(([, m]) => m.r > 2.5 || m.ring === 'centre');
+    const hitsMark = (box, ownId) => marks.some(([id, m]) => id !== ownId &&
+        m.x + m.r > box.x0 && m.x - m.r < box.x1 && m.y + m.r > box.y0 && m.y - m.r < box.y1);
+    const corners = box => [[box.x0, box.y0], [box.x1, box.y0], [box.x0, box.y1], [box.x1, box.y1]]
+        .map(([x, y]) => Math.hypot(x - g.cx, y - g.cy));
+    let tried = 0;
+    for (const p of people) {
+        if (result.size >= limit || tried > limit * 6) break;
+        tried++;
+        const m = pos.get(p.id);
+        if (!m) continue;
+        const text = labelText(p.name);
+        const w = measure(text);
+        const gap = m.r + 3;
+        const right = m.x >= g.cx;
+        let sides;
+        if (outside > 0) {
+            // Beyond a ring the name stands further out on the same ray
+            const at = polar(g, outside + 4, m.angle);
+            const sin = Math.sin(m.angle);
+            const anchor = sin > 0.2 ? 'start' : sin < -0.2 ? 'end' : 'middle';
+            const y = at.y + (anchor === 'middle' ? (Math.cos(m.angle) > 0 ? -fontPx * 0.5 : fontPx * 0.5) : 0);
+            sides = [0, -1, 1].map(k => ({ anchor, x: at.x, y: y + k * fontPx }));
+        } else {
+            const near = right ? 'start' : 'end';
+            const far = right ? 'end' : 'start';
+            const dx = right ? gap : -gap;
+            sides = [
+                { anchor: near, x: m.x + dx, y: m.y },
+                { anchor: near, x: m.x + dx, y: m.y - fontPx * 0.8 },
+                { anchor: near, x: m.x + dx, y: m.y + fontPx * 0.8 },
+                { anchor: far, x: m.x - dx, y: m.y },
+                { anchor: 'middle', x: m.x, y: m.y - gap - fontPx * 0.45 },
+                { anchor: 'middle', x: m.x, y: m.y + gap + fontPx * 0.45 }
+            ];
+            // Where the strong marks crowd the middle, a name may stand a little away, joined to
+            // its mark by a short leader
+            for (const shift of [22, 44]) {
+                for (const k of [0, -1, 1, -2, 2]) {
+                    sides.push({ anchor: near, x: m.x + dx + (right ? shift : -shift), y: m.y + k * fontPx * 1.1, leader: true });
+                }
+            }
+        }
+        for (const c of sides) {
+            const x0 = c.anchor === 'start' ? c.x : c.anchor === 'end' ? c.x - w : c.x - w / 2;
+            const box = { x0, x1: x0 + w, y0: c.y - fontPx * 0.6, y1: c.y + fontPx * 0.6 };
+            if (box.x0 < 2 || box.x1 > g.width - 2 || box.y0 < 2 || box.y1 > g.height - 2) continue;
+            const reach = corners(box);
+            if (Math.max(...reach) > inside || Math.min(...reach) < outside) continue;
+            if (placed.some(b => overlaps(b, box)) || hitsMark(box, p.id)) continue;
+            placed.push(box);
+            const leader = c.leader ? { x1: m.x, y1: m.y, x2: c.anchor === 'start' ? box.x0 - 2 : box.x1 + 2, y2: c.y } : null;
+            result.set(p.id, { text, anchor: c.anchor, x: c.x, y: c.y, box, leader });
+            break;
+        }
+    }
+    return result;
+}
+
+// The person filter chooses the centre in this view. Chords and whether a person writes letters
+// at all are facts of the letters without that filter, so the view reads all other filters;
+// without a person filter that is the filtered set itself.
+function egoScopeLetters() {
+    return state.filters.person
+        ? state.filterLetters({ ...state.filters, person: null })
+        : getFilteredLetters();
+}
+
+function setupEgoControls() {
+    // One switch for the two levels of the ego network and the whole network; a level switch
+    // inside the ego network fades instead of redrawing
+    bindSegmented(elements.getById('network-levels'), value => {
+        if (value === 'whole') {
+            networkMode = 'whole';
+            renderNetwork();
+            return;
+        }
+        const fromWhole = networkMode === 'whole';
+        networkMode = 'ego';
+        egoLevel = value;
+        if (fromWhole) renderNetwork(); else applyEgoLevel();
+    });
+
+    // The way back and the release of the choice sit in the corner of the figure
+    elements.getById('network-graph')?.addEventListener('click', event => {
+        const action = event.target.closest('[data-ego]')?.dataset.ego;
+        if (action === 'back') {
+            const previous = egoHistory.pop();
+            if (!previous) return;
+            egoFocusAfterRender = 'figure';
+            applyPersonFilter(previous.filter);
+        } else if (action === 'clear') {
+            egoHistory = [];
+            egoFocusAfterRender = 'figure';
+            applyPersonFilter(null);
+        }
+    });
+
+    elements.getById('network-ego-list')?.addEventListener('click', event => {
+        const button = event.target.closest('button[data-action]');
+        const id = button?.closest('[data-id]')?.dataset.id;
+        const person = id && egoDrawn?.people.get(id);
+        if (!person) return;
+        if (button.dataset.action === 'letters') {
+            showPersonLetters(person);
+        } else {
+            activateEgoPerson(person, 'list');
+        }
+    });
+}
+
+/**
+ * Segmented control: radio buttons in a radiogroup with one tab stop; arrows move and select
+ */
+function bindSegmented(box, onSelect) {
+    if (!box) return;
+    const select = (button, focus) => {
+        const radios = [...box.querySelectorAll('[role="radio"]')];
+        radios.forEach(r => {
+            r.setAttribute('aria-checked', String(r === button));
+            r.tabIndex = r === button ? 0 : -1;
+        });
+        if (focus) button.focus();
+        onSelect(button.dataset.value);
+    };
+    box.addEventListener('click', event => {
+        const button = event.target.closest('[role="radio"]');
+        if (button && button.getAttribute('aria-checked') !== 'true') select(button, false);
+    });
+    box.addEventListener('keydown', event => {
+        const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+        if (!step) return;
+        const radios = [...box.querySelectorAll('[role="radio"]')];
+        if (radios.length < 2) return;
+        event.preventDefault();
+        const current = radios.findIndex(r => r.getAttribute('aria-checked') === 'true');
+        select(radios[(current + step + radios.length) % radios.length], true);
+    });
+}
+
+// Parts of the view that belong to one mode only
+function syncModeParts() {
+    const ego = networkMode === 'ego';
+    elements.getById('network-ego-list')?.classList.toggle('hidden', !ego);
+    document.querySelector('#network-view .net-info')?.classList.toggle('hidden', !ego);
+    ['network-coverage', 'network-legend'].forEach(id => {
+        elements.getById(id)?.classList.toggle('hidden', ego);
+    });
+    document.querySelector('#network-view .network-controls')?.classList.toggle('hidden', ego);
+    if (ego) elements.getById('network-ego-note')?.classList.add('hidden');
+    document.querySelector('#network-view .network-container')?.classList.toggle('network-container--ego', ego);
+    syncSwitch();
+    if (ego) {
+        const info = elements.getById('network-info-text');
+        if (info) info.textContent = EGO_DESCRIPTION;
+    }
+}
+
+// The one sentence on what distance and angle mean; also the tooltip of the info sign
+const EGO_DESCRIPTION = 'Je näher an der Mitte, desto mehr Briefe; der Winkel zeigt, wann der Briefwechsel beginnt, im Uhrzeigersinn ab oben. Linien verbinden Korrespondenten, die einander schrieben.';
+
+const switchValue = () => (networkMode === 'whole' ? 'whole' : egoLevel);
+
+function syncSwitch() {
+    elements.getById('network-levels')?.querySelectorAll('[role="radio"]').forEach(r => {
+        const on = r.dataset.value === switchValue();
+        r.setAttribute('aria-checked', String(on));
+        r.tabIndex = on ? 0 : -1;
+    });
+}
+
+// The level switch carries the counts, so the figure needs no legend
+function renderLevelSwitch(model, hasMentions) {
+    const box = elements.getById('network-levels');
+    if (!box) return;
+    const counts = model?.counts || { correspondence: 0, mentions: 0, hollow: 0 };
+    const segments = [{
+        value: 'correspondence',
+        html: `Korrespondenz <strong>${formatNumber(counts.correspondence)}</strong>`,
+        label: `Korrespondenz: ${plural(counts.correspondence, 'Person', 'Personen')} im Briefwechsel`
+    }];
+    if (hasMentions) {
+        segments.push({
+            value: 'mentions',
+            html: `Erwähnte <strong>${formatNumber(counts.mentions)}</strong>` +
+                (counts.hollow ? ` <span class="ego-sign ego-sign--hollow" aria-hidden="true"></span><strong>${formatNumber(counts.hollow)}</strong>` : ''),
+            label: `Erwähnte: ${plural(counts.mentions, 'Person', 'Personen')} im Briefwechsel und in den Briefen genannt` +
+                (counts.hollow ? `, davon ${formatNumber(counts.hollow)} ohne eigenen Brief` : '')
+        });
+    }
+    // The whole network of the dataset, the default before the ego network, stays one step away
+    segments.push({ value: 'whole', html: 'Gesamt', label: 'Gesamt: das Netzwerk des ganzen Datensatzes' });
+    // Rebuilding the buttons would drop the focus of a keyboard user who just moved the switch
+    const hadFocus = box.contains(document.activeElement);
+    box.innerHTML = segments.map(s => {
+        const on = s.value === switchValue();
+        return `<button type="button" class="net-seg__btn" role="radio" aria-checked="${on}" tabindex="${on ? 0 : -1}" data-value="${s.value}" aria-label="${escapeHtml(s.label)}" title="${escapeHtml(s.label)}">${s.html}</button>`;
+    }).join('');
+    if (hadFocus) box.querySelector('[aria-checked="true"]')?.focus();
+}
+
+function renderEgoNetwork() {
+    const container = elements.getById('network-graph');
+    if (!container) return;
+    const letters = egoScopeLetters();
+    const hasMentions = letters.some(l => l.mentions?.persons?.length > 0);
+    if (!hasMentions) egoLevel = 'correspondence';
+    const centreId = state.filters.person || mostConnectedPerson(letters)?.id || null;
+
+    networkSimulation?.stop();
+    networkSimulation = null;
+    container.innerHTML = '';
+    // The figure fills what the header leaves of the screen; the header's height depends on how
+    // its switches wrap, so it is measured rather than assumed (network.css reads the value)
+    const view = document.getElementById('network-view');
+    if (view) {
+        const offset = container.getBoundingClientRect().top - view.getBoundingClientRect().top + view.scrollTop;
+        view.style.setProperty('--network-head', `${Math.round(offset)}px`);
+    }
+
+    const model = centreId ? buildEgoNetwork(letters, centreId) : null;
+    renderLevelSwitch(model, hasMentions);
+
+    if (!model || model.inner.length === 0) {
+        egoDrawn = null;
+        const name = model?.centre.name;
+        container.innerHTML = `${cornerControls()}<div class="network-empty"><i class="fas fa-project-diagram" aria-hidden="true"></i><div>${name
+            ? `${escapeHtml(name)} hat unter den gewählten Filtern keinen Briefwechsel mit einer anderen Person.`
+            : 'Unter den gewählten Filtern gibt es keinen Briefwechsel zwischen zwei Personen.'}</div></div>`;
+        const list = elements.getById('network-ego-list');
+        if (list) list.innerHTML = '';
+        renderDataTable(elements.getById('network-table'), { caption: '', columns: [], rows: [] });
+        return;
+    }
+
+    const width = container.clientWidth || 800;
+    const height = container.clientHeight || 560;
+    const g = egoGeometry(width, height, { hasOuter: model.outer.length > 0 });
+    const { pos, scales } = egoLayout(model, g);
+    const people = new Map([model.centre, ...model.inner, ...model.outer].map(p => [p.id, p]));
+    const fontPx = parseFloat(readTokens({ size: '--font-size-xs' }).size) || 12;
+    const measure = labelMeasure(container, fontPx);
+    const boldMeasure = labelMeasure(container, fontPx, 600);
+
+    const svg = d3.select(container).append('svg')
+        .attr('class', 'ego-svg')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .attr('viewBox', [0, 0, width, height])
+        .attr('role', 'group');
+
+    // Reference rings and the rim with the years; the centre name, the ring names and the year
+    // labels are reserved before any person gets a name
+    const reserved = [];
+    const textBox = (x, y, w, anchor) => {
+        const x0 = anchor === 'start' ? x : anchor === 'end' ? x - w : x - w / 2;
+        return { x0, x1: x0 + w, y0: y - fontPx * 0.6, y1: y + fontPx * 0.6 };
+    };
+    const centreText = labelText(model.centre.name);
+    const centreY = g.cy + pos.get(model.centre.id).r + fontPx;
+    reserved.push(textBox(g.cx, centreY, boldMeasure(centreText), 'middle'));
+
+    const frame = svg.append('g').attr('class', 'ego-frame').attr('aria-hidden', 'true');
+    // Ring and year names move above the marks at the end, so their halo keeps them legible
+    const frameText = svg.append('g').attr('class', 'ego-frame-text').attr('aria-hidden', 'true');
+    const rings = egoRings(scales.maxN);
+    rings.forEach(n => {
+        const d = scales.distance(n);
+        frame.append('circle').attr('class', n === 1 ? 'ego-rim' : 'ego-ring')
+            .attr('cx', g.cx).attr('cy', g.cy).attr('r', d);
+        const text = n === 1 ? '1 Brief' : `${formatNumber(n)} Briefe`;
+        const y = g.cy - d;
+        // Right of the top, where the first years begin; the gap left of it names the undated
+        frameText.append('text').attr('class', 'ego-ring-label').attr('x', g.cx + 4).attr('y', y)
+            .attr('dy', '0.35em').attr('text-anchor', 'start').text(text);
+        reserved.push(textBox(g.cx + 4, y, measure(text), 'start'));
+    });
+    // The gap of the rim between the last and the first year, dashed
+    const gapArc = d3.arc()({ innerRadius: g.R, outerRadius: g.R, startAngle: scales.sweep, endAngle: 2 * Math.PI });
+    frame.append('path').attr('class', 'ego-gap').attr('d', gapArc).attr('transform', `translate(${g.cx},${g.cy})`);
+    const tickCount = g.narrow ? 4 : 9;
+    let years = d3.ticks(scales.t0, scales.t1, tickCount).filter(y => Number.isInteger(y) && y >= scales.t0 && y <= scales.t1);
+    // A short span holds no whole year between its ends; then its first year stands alone
+    if (years.length === 0 && model.inner.some(p => p.first !== null)) years = [Math.floor(scales.t0)];
+    years.forEach(year => {
+        const a = scales.angle(Math.max(year, scales.t0));
+        const p1 = polar(g, g.R, a);
+        const p2 = polar(g, g.R + 5, a);
+        frame.append('line').attr('class', 'ego-tick').attr('x1', p1.x).attr('y1', p1.y).attr('x2', p2.x).attr('y2', p2.y);
+        const at = polar(g, g.R + 14, a);
+        const anchor = Math.sin(a) > 0.3 ? 'start' : Math.sin(a) < -0.3 ? 'end' : 'middle';
+        frameText.append('text').attr('class', 'ego-year').attr('x', at.x).attr('y', at.y).attr('dy', '0.35em')
+            .attr('text-anchor', anchor).text(year);
+        reserved.push(textBox(at.x, at.y, measure(String(year)), anchor));
+    });
+    // On a phone the dashed gap alone marks the undated; its words would cover the ring names
+    if (!g.narrow && model.inner.some(p => p.first === null)) {
+        const a = scales.sweep + EGO_GAP / 2;
+        const at = polar(g, g.R + 14, a);
+        frameText.append('text').attr('class', 'ego-year').attr('x', at.x).attr('y', at.y).attr('dy', '0.35em')
+            .attr('text-anchor', 'end').text('ohne Datum');
+        reserved.push(textBox(at.x, at.y, measure('ohne Datum'), 'end'));
+    }
+
+    // Chords between correspondents, bent towards the centre
+    const maxChord = Math.max(1, ...model.chords.map(c => c.letters));
+    const chordWidth = d3.scaleSqrt().domain([1, maxChord]).range([1, 5]);
+    const chordPath = c => {
+        const a = pos.get(c.a);
+        const b = pos.get(c.b);
+        const mx = (a.x + b.x) / 2 * 0.5 + g.cx * 0.5;
+        const my = (a.y + b.y) / 2 * 0.5 + g.cy * 0.5;
+        return `M${a.x},${a.y}Q${mx},${my} ${b.x},${b.y}`;
+    };
+    const chord = svg.append('g').attr('class', 'ego-chords').attr('aria-hidden', 'true')
+        .selectAll('g').data(model.chords, c => c.key).join('g').attr('class', 'ego-chord');
+    chord.append('path').attr('class', 'ego-chord__line').attr('d', chordPath).attr('stroke-width', c => chordWidth(c.letters));
+    // A wider transparent stroke makes thin chords reachable for the pointer
+    chord.append('path').attr('class', 'ego-chord__hit').attr('d', chordPath);
+
+    // Lines of mentions appear only for the person under the pointer or in focus
+    const hoverLines = svg.append('g').attr('class', 'ego-mention-lines').attr('aria-hidden', 'true');
+
+    // Mentioned persons: one pass of plain marks, reachable by pointer and through the list
+    const band = svg.append('g').attr('class', 'ego-band').attr('data-level', 'mentions')
+        .selectAll('circle').data(model.outer, p => p.id).join('circle')
+        .attr('class', p => `ego-out ${p.writesLetters ? 'ego-out--filled' : 'ego-out--hollow'}`)
+        .attr('cx', p => pos.get(p.id).x).attr('cy', p => pos.get(p.id).y).attr('r', p => pos.get(p.id).r);
+
+    // Correspondents and centre: one tab stop, arrows walk them by angle
+    const nodeData = [model.centre, ...[...model.inner].sort((a, b) => pos.get(a.id).angle - pos.get(b.id).angle || b.letters - a.letters)];
+    const node = svg.append('g').attr('class', 'ego-nodes').selectAll('g').data(nodeData, d => d.id).join('g')
+        // "node" as in the whole network, so checks and styles that look for nodes find both modes
+        .attr('class', d => `node ego-node ego-node--${d.ring}`)
+        .attr('data-id', d => d.id)
+        .attr('transform', d => `translate(${pos.get(d.id).x},${pos.get(d.id).y})`)
+        .attr('role', 'button')
+        .attr('tabindex', d => (d.ring === 'centre' ? 0 : -1));
+    node.each(function (d) {
+        const r = pos.get(d.id).r;
+        const shape = d.isOrganization
+            ? d3.select(this).append('rect').attr('x', -r).attr('y', -r).attr('width', 2 * r).attr('height', 2 * r)
+            : d3.select(this).append('circle').attr('r', r);
+        shape.attr('class', `ego-mark ${d.ring === 'centre' ? 'ego-mark--centre' : 'ego-mark--filled'}`);
+    });
+
+    // Names: the strongest correspondents, then (second level) the most mentioned persons
+    const limits = { inner: EGO_LABELS[g.size], outer: EGO_OUTER_LABELS[g.size] };
+    const innerPos = new Map([...pos].filter(([, p]) => p.ring !== 'outer'));
+    const innerLabels = placeEgoLabels(model.inner, innerPos, g, measure, {
+        limit: limits.inner, reserved, fontPx, inside: g.hasOuter ? g.bandR0 - 4 : Infinity
+    });
+    const outerLabels = placeEgoLabels(model.outer, pos, g, measure, {
+        limit: limits.outer, reserved: [...reserved, ...[...innerLabels.values()].map(l => l.box)], fontPx,
+        outside: g.bandR0 + g.bandRows * g.bandStep + 2
+    });
+    const labelData = [
+        { id: model.centre.id, text: centreText, anchor: 'middle', x: g.cx, y: centreY, ring: 'centre' },
+        ...[...innerLabels].map(([id, l]) => ({ id, ...l, ring: 'inner' })),
+        ...[...outerLabels].map(([id, l]) => ({ id, ...l, ring: 'outer' }))
+    ];
+    const labelLayer = svg.append('g').attr('class', 'ego-labels').attr('aria-hidden', 'true');
+    labelLayer.selectAll('line').data(labelData.filter(l => l.leader)).join('line')
+        .attr('class', 'ego-leader')
+        .attr('data-level', l => (l.ring === 'outer' ? 'mentions' : null))
+        .attr('x1', l => l.leader.x1).attr('y1', l => l.leader.y1)
+        .attr('x2', l => l.leader.x2).attr('y2', l => l.leader.y2);
+    const label = labelLayer
+        .selectAll('text').data(labelData, l => l.id).join('text')
+        .attr('class', l => `ego-label ego-label--${l.ring}`)
+        .attr('data-level', l => (l.ring === 'outer' ? 'mentions' : null))
+        .attr('x', l => l.x).attr('y', l => l.y).attr('dy', '0.35em')
+        .attr('text-anchor', l => l.anchor)
+        .text(l => l.text);
+    svg.node().append(frameText.node());
+
+    // Tooltip for pointer and keyboard focus; its text also stands in the accessible names
+    const tip = document.createElement('div');
+    tip.className = 'ego-tip hidden';
+    tip.setAttribute('aria-hidden', 'true');
+    container.append(tip);
+    const placeTip = (x, y) => {
+        const box = tip.getBoundingClientRect();
+        const left = x > width * 0.55 ? x - 14 - box.width : x + 14;
+        tip.style.left = `${Math.max(4, Math.min(width - box.width - 4, left))}px`;
+        tip.style.top = `${Math.max(4, Math.min(height - box.height - 4, y + 14))}px`;
+    };
+    const showTip = (lines, x, y) => {
+        tip.replaceChildren(...lines.map((line, i) => {
+            const el = document.createElement(i === 0 ? 'strong' : 'span');
+            el.textContent = line;
+            return el;
+        }));
+        tip.classList.remove('hidden');
+        placeTip(x, y);
+    };
+
+    // Emphasis touches only the elements of one person, so a figure of a thousand marks stays fast
+    const nodeById = new Map(node.nodes().map(el => [el.__data__.id, el]));
+    const chordsOf = new Map();
+    chord.nodes().forEach(el => {
+        const c = el.__data__;
+        [c.a, c.b].forEach(id => chordsOf.set(id, [...(chordsOf.get(id) || []), el]));
+    });
+    let emphasised = [];
+    const clearEmphasis = () => {
+        emphasised.forEach(el => el.classList.remove('is-near'));
+        emphasised = [];
+        svg.classed('is-focusing', false);
+        hoverLines.selectAll('*').remove();
+        tip.classList.add('hidden');
+    };
+    const emphasise = (id, x, y, lines) => {
+        clearEmphasis();
+        svg.classed('is-focusing', true);
+        const els = [nodeById.get(id), ...(chordsOf.get(id) || [])].filter(Boolean);
+        (chordsOf.get(id) || []).forEach(el => {
+            const c = el.__data__;
+            const other = nodeById.get(c.a === id ? c.b : c.a);
+            if (other) els.push(other);
+        });
+        if (egoLevel === 'mentions') {
+            const linked = model.mentionLinks.filter(l => l.writer === id || l.mentioned === id);
+            hoverLines.selectAll('line').data(linked).join('line')
+                .attr('class', 'ego-mention-line')
+                .attr('x1', l => pos.get(l.writer)?.x).attr('y1', l => pos.get(l.writer)?.y)
+                .attr('x2', l => pos.get(l.mentioned)?.x).attr('y2', l => pos.get(l.mentioned)?.y)
+                .filter(l => !pos.get(l.writer) || !pos.get(l.mentioned)).remove();
+            linked.forEach(l => {
+                const other = nodeById.get(l.writer === id ? l.mentioned : l.writer);
+                if (other) els.push(other);
+            });
+        }
+        els.forEach(el => el.classList.add('is-near'));
+        emphasised = els;
+        showTip(lines, x, y);
+    };
+
+    const nameOf = id => people.get(id)?.name || id;
+    node.on('mouseenter', (event, d) => emphasise(d.id, pos.get(d.id).x, pos.get(d.id).y, personLines(d, model.centre)))
+        .on('mouseleave', clearEmphasis)
+        .on('focus', (event, d) => emphasise(d.id, pos.get(d.id).x, pos.get(d.id).y, personLines(d, model.centre)))
+        .on('blur', clearEmphasis)
+        .on('click', (event, d) => {
+            event.stopPropagation();
+            activateEgoPerson(d, null);
+        })
+        .on('keydown', function (event, d) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                // SVG elements have no click(), so the global role="button" handler cannot serve them
+                event.preventDefault();
+                event.stopPropagation();
+                activateEgoPerson(d, 'figure');
+                return;
+            }
+            const order = node.nodes();
+            const at = order.indexOf(this);
+            const targets = { ArrowRight: at + 1, ArrowDown: at + 1, ArrowLeft: at - 1, ArrowUp: at - 1, Home: 0, End: order.length - 1 };
+            if (!(event.key in targets)) return;
+            event.preventDefault();
+            const next = order[(targets[event.key] + order.length) % order.length];
+            this.setAttribute('tabindex', -1);
+            next.setAttribute('tabindex', 0);
+            next.focus();
+        });
+    band.on('mouseenter', (event, p) => emphasise(p.id, pos.get(p.id).x, pos.get(p.id).y, personLines(p, model.centre)))
+        .on('mouseleave', clearEmphasis)
+        .on('click', (event, p) => {
+            event.stopPropagation();
+            activateEgoPerson(p, null);
+        });
+    chord.on('mouseenter', function (event, c) {
+        clearEmphasis();
+        svg.classed('is-focusing', true);
+        emphasised = [this, nodeById.get(c.a), nodeById.get(c.b)].filter(Boolean);
+        emphasised.forEach(el => el.classList.add('is-near'));
+        const [x, y] = d3.pointer(event, svg.node());
+        showTip(chordLines(c, nameOf), x, y);
+    })
+        .on('mousemove', event => {
+            const [x, y] = d3.pointer(event, svg.node());
+            placeTip(x, y);
+        })
+        .on('mouseleave', clearEmphasis)
+        .on('click', (event, c) => {
+            event.stopPropagation();
+            showTieLetters(c);
+        });
+
+    container.insertAdjacentHTML('afterbegin', cornerControls());
+
+    egoDrawn = { model, g, pos, people, letters, svg, node, label, nameOf };
+    renderEgoList(model);
+    applyEgoLevel();
+
+    const focusTarget = egoFocusAfterRender;
+    egoFocusAfterRender = null;
+    if (focusTarget === 'figure') {
+        container.querySelector('.ego-node--centre')?.focus();
+    } else if (focusTarget === 'list') {
+        elements.getById('network-ego-list')?.querySelector('.ego-row--centre button')?.focus();
+    }
+}
+
+// The way back and the release of the choice, only where they apply
+function cornerControls() {
+    const previous = egoHistory[egoHistory.length - 1];
+    const parts = [];
+    if (previous) {
+        parts.push(`<button type="button" class="ego-corner__btn" data-ego="back"><i class="fas fa-arrow-left" aria-hidden="true"></i> ${escapeHtml(previous.name)}</button>`);
+    }
+    if (state.filters.person) {
+        parts.push('<button type="button" class="ego-corner__btn" data-ego="clear">Auswahl aufheben</button>');
+    }
+    return parts.length ? `<div class="ego-corner">${parts.join('')}</div>` : '';
+}
+
+// Years of an exchange in words
+function yearsOf(p) {
+    if (p.firstYear === null) return 'kein datierter Brief';
+    return p.firstYear === p.lastYear ? String(p.firstYear) : `${p.firstYear} bis ${p.lastYear}`;
+}
+
+// Name, role and counts of a person, for the tooltip and the accessible name
+function personLines(person, centre) {
+    const kind = person.isOrganization ? 'Organisation' : null;
+    const mentions = egoLevel === 'mentions';
+    if (person.ring === 'centre') {
+        return [person.name, `Im Zentrum, ${plural(person.letters, 'Brief', 'Briefe')}`, kind,
+            'Klick oder Enter öffnet die Briefe'].filter(Boolean);
+    }
+    if (person.ring === 'inner') {
+        return [person.name,
+            `${plural(person.letters, 'Brief', 'Briefe')} mit ${centre.name}: ${formatNumber(person.toCentre)} an, ${formatNumber(person.fromCentre)} von`,
+            yearsOf(person),
+            mentions && person.mentions ? `in ${plural(person.mentions, 'Brief', 'Briefen')} erwähnt` : null,
+            kind,
+            'Klick oder Enter rückt die Person ins Zentrum'].filter(Boolean);
+    }
+    return [person.name,
+        `in ${plural(person.mentions, 'Brief', 'Briefen')} von und an ${centre.name} erwähnt`,
+        person.writesLetters ? 'schreibt oder erhält selbst Briefe im Bestand' : 'kein eigener Brief im Bestand',
+        kind,
+        person.writesLetters ? 'Klick rückt die Person ins Zentrum' : 'Klick öffnet die Briefe, die die Person erwähnen'
+    ].filter(Boolean);
+}
+
+function chordLines(c, nameOf) {
+    const a = nameOf(c.a);
+    const b = nameOf(c.b);
+    return [`${a} und ${b}`,
+        `${plural(c.letters, 'Brief', 'Briefe')}: ${formatNumber(c.aToB)} an ${b}, ${formatNumber(c.bToA)} an ${a}`,
+        'Klick öffnet die Briefe'];
+}
+
+// Show or hide the second level without moving anything that stays
+function applyEgoLevel() {
+    if (!egoDrawn) return;
+    const { svg, node, model } = egoDrawn;
+    const mentions = egoLevel === 'mentions';
+    svg.classed('ego--mentions', mentions);
+    node.attr('aria-label', d => personLines(d, model.centre).join('. '));
+    svg.attr('aria-label', `${model.centre.name} im Zentrum mit ${plural(model.inner.length, 'Korrespondenzpartner', 'Korrespondenzpartnern')}` +
+        (mentions && model.outer.length ? ` und ${plural(model.outer.length, 'nur erwähnten Person', 'nur erwähnten Personen')} am Rand` : '') +
+        `. ${EGO_DESCRIPTION} Pfeiltasten wechseln die Person, Enter rückt sie ins Zentrum.`);
+
+    elements.getById('network-ego-list')?.querySelectorAll('.ego-row--outer').forEach(row => {
+        row.classList.toggle('hidden', !mentions);
+    });
+    syncSwitch();
+
+    const rows = model.inner.map(p => [p.name, p.letters, p.firstYear ?? '', p.lastYear ?? '', p.mentions]);
+    if (mentions) model.outer.forEach(p => rows.push([p.name, 0, '', '', p.mentions]));
+    renderDataTable(elements.getById('network-table'), {
+        caption: `Personen um ${model.centre.name} (${rows.length})`,
+        columns: ['Person', `Briefe mit ${model.centre.name}`, 'Erster Brief', 'Letzter Brief', 'Erwähnungen'],
+        rows
+    });
+}
+
+// The person list mirrors the figure and is its keyboard path: name moves the centre, count opens letters
+function renderEgoList(model) {
+    const list = elements.getById('network-ego-list');
+    if (!list) return;
+    const centre = model.centre;
+    list.innerHTML = [centre, ...model.inner, ...model.outer].map(p => {
+        const sign = `<span class="ego-sign ${p.isOrganization ? 'ego-sign--square ' : ''}ego-sign--${p.ring === 'centre' ? 'centre' : p.writesLetters ? 'filled' : 'hollow'}" aria-hidden="true"></span>`;
+        const name = escapeHtml(p.name);
+        let nameEl;
+        let count;
+        let countLabel;
+        if (p.ring === 'centre') {
+            nameEl = `<span class="ego-row__name ego-row__name--centre">${name}</span>`;
+            count = plural(p.letters, 'Brief', 'Briefe');
+            countLabel = `Alle ${count} von und an ${p.name} in der Briefliste`;
+        } else if (p.ring === 'inner') {
+            nameEl = `<button type="button" class="ego-row__name" data-action="centre" aria-label="${name} ins Zentrum">${name}</button>`;
+            count = plural(p.letters, 'Brief', 'Briefe');
+            countLabel = `${count} zwischen ${p.name} und ${centre.name} zeigen`;
+        } else {
+            nameEl = p.writesLetters
+                ? `<button type="button" class="ego-row__name" data-action="centre" aria-label="${name} ins Zentrum">${name}</button>`
+                : `<span class="ego-row__name">${name}</span>`;
+            count = `${formatNumber(p.mentions)}× erwähnt`;
+            countLabel = `${plural(p.mentions, 'Brief', 'Briefe')} zeigen, die ${p.name} erwähnen`;
+        }
+        return `<li class="ego-row ego-row--${p.ring}" data-id="${escapeHtml(p.id)}">${sign}${nameEl}` +
+            `<button type="button" class="ego-row__count" data-action="letters" aria-label="${escapeHtml(countLabel)}">${escapeHtml(count)}</button></li>`;
+    }).join('');
+}
+
+// A click on a person: a correspondent becomes the centre through the person filter, so the
+// other views follow; the centre and persons without own letters open their letters instead
+function activateEgoPerson(person, focusTarget) {
+    if (person.ring === 'centre' || !person.writesLetters) {
+        showPersonLetters(person);
+        return;
+    }
+    egoHistory.push({ filter: state.filters.person || null, name: egoDrawn?.model.centre.name || '' });
+    egoFocusAfterRender = focusTarget;
+    applyPersonFilter(person.id);
+}
+
+function showPersonLetters(person) {
+    if (!egoDrawn) return;
+    const { model, letters } = egoDrawn;
+    if (person.ring === 'centre') {
+        // The letter list under the person filter is the existing way to all letters of a person
+        if (state.filters.person !== person.id) applyPersonFilter(person.id);
+        switchView('letters');
+        return;
+    }
+    if (person.ring === 'inner') {
+        showTieLetters({ a: model.centre.id, b: person.id });
+        return;
+    }
+    const centreId = model.centre.id;
+    const found = letters.filter(l => letterParties(l).has(centreId) &&
+        (l.mentions?.persons || []).some(m => personKey(m) === person.id));
+    showLettersDialog(`${person.name} erwähnt in Briefen von und an ${model.centre.name}`, found);
+}
+
+// The letters exchanged between two persons
+function showTieLetters(t) {
+    if (!egoDrawn) return;
+    const { letters, nameOf } = egoDrawn;
+    const pair = new Set([t.a, t.b]);
+    const found = letters.filter(l => {
+        const from = personKey(l.sender);
+        return pair.has(from) && letterRecipients(l).some(r => {
+            const to = personKey(r);
+            return to !== from && pair.has(to);
+        });
+    });
+    showLettersDialog(`Briefe zwischen ${nameOf(t.a)} und ${nameOf(t.b)}`, found);
+}
+
+const DIALOG_LIMIT = 100;
+
+/**
+ * List of letters in the dialog form of the comparison and mentions views; a row opens the letter
+ */
+function showLettersDialog(title, found) {
+    if (found.length === 0) return;
+    // By date, letters without a date at the end
+    const sorted = [...found].sort((x, y) => (!x.date - !y.date) || String(x.date || '').localeCompare(String(y.date || '')));
+    document.getElementById('network-letters-modal')?.remove();
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'network-letters-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'network-letters-modal-title');
+    const rows = sorted.slice(0, DIALOG_LIMIT).map(letter => {
+        const recipients = letterRecipients(letter).map(r => r?.name).filter(Boolean).join('; ') || 'Unbekannt';
+        const place = letter.place_sent?.name || '';
+        return `<div class="common-letter-item" role="button" tabindex="0" data-letter-id="${escapeHtml(letter.id)}">
+                <span class="common-letter-date">${formatDateWithPrecision(letter)}</span>
+                <span class="common-letter-sender">${escapeHtml(letter.sender?.name || 'Unbekannt')}</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                <span class="common-letter-recipient">${escapeHtml(recipients)}</span>
+                ${place ? `<span class="common-letter-place">(${escapeHtml(place)})</span>` : ''}
+            </div>`;
+    }).join('');
+    const more = sorted.length > DIALOG_LIMIT
+        ? `<div class="common-letters-more">Die ersten ${DIALOG_LIMIT} von ${formatNumber(sorted.length)} Briefen.</div>`
+        : '';
+    modal.innerHTML = `<div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 id="network-letters-modal-title">${escapeHtml(title)} (${formatNumber(sorted.length)})</h3>
+                <button class="modal-close" aria-label="Schließen">&times;</button>
+            </div>
+            <div class="modal-body"><div class="common-letters-list">${rows}${more}</div></div>
+        </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', event => {
+        const item = event.target.closest('[data-letter-id]');
+        if (!item) return;
+        closeModal(modal);
+        showLetterDetail(item.dataset.letterId);
+    });
+    openModal(modal);
 }
