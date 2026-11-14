@@ -40,3 +40,11 @@ ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md]
 - Personen werden über `personKey`, Orte über `placeKey` verglichen, im Filter, in Indizes, in den Ansichten und im Korb. Normdaten einer Person liefert `personAuthority()`.
 - Ansicht und Filter aus der URL liest nur `state.fromURLParams()`, Ansichtsnamen prüft `VIEWS`. Datensatz (`json`, `demo`) und geteilter Korb (`basket_*`) haben ihre eigenen Leser in `explore.js` und `basket.js`.
 - Dateinamen kebab-case, Funktionen camelCase, Rendering `render*()`, Filter `apply*()`.
+
+## Briefsätze und mehrere Dateien (November 2026)
+
+- cmif-parser.js liest auch TEI mit `correspDesc` je Briefsatz (`biblFull`, `bibl`, `msDesc`): ID vom Datensatz, alle Empfänger, Poststempel, Anschrift, Signatur, erschlossene Angaben. `parseCMIFFiles()` lädt mehrere Dateien als einen Bestand, `mergeRecords()` führt Einträge gleicher Signatur zusammen, `flagImplausibleYears()` kennzeichnet Ausreißerjahre.
+- constants.js führt `LETTER_FEATURES`, die Merkmale der Überlieferung für Filter, Übersicht und Export.
+- utils.js führt `letterRecipients()`, das jede Stelle nutzt, die Empfänger zählt oder zeigt.
+- upload.js nimmt mehrere Dateien und eine Dateiliste `?files=data/….json`.
+- explore.js: Gruppe „Überlieferung“ der Seitenleiste (`buildFeatureFilter()`), Briefliste mit Zahlzeile und Nachladen, Personendialog mit `personFacts()`.

@@ -29,3 +29,13 @@ Netzwerk und Erwähnungsfluss nehmen ihre Farben aus Tokens ([design.md](../../.
 
 - Netzwerk: Personen in Briefwechsel und Zeitgenossen `--color-role-sender`, Themen `--color-warning`, Kanten `--color-text-light`, hervorgehobene Kanten und Beschriftung `--color-text`, Knotenrand `--color-bg`
 - Erwähnungsfluss: Absender links `--color-role-sender`, Mitte `--color-primary`, erwähnte Personen rechts `--color-role-mentioned`, Text `--color-text` und `--color-text-light`
+
+## Briefsätze und Überlieferung (November 2026)
+
+- `view-support.js` exportiert zusätzlich `describeFilters()`, `filterSentence()` und `renderFilterNotice(viewId)`: der Satz über aktive Filter in den Ansichten ohne Seitenleiste, mit dem Knopf „Filter aufheben“, der `#reset-filters` auslöst. `explore.js` nutzt `filterSentence()` im Exportdialog.
+- `timeline-view.js`: Untertitel, Legende und Tabelle richten sich nach dem, was der Datensatz enthält (Sprachen, erschlossene Datierungen). Der Balken ohne Jahr nennt seine Gruppen, die Zahlen im Fußsatz führen über die Checkboxen `input[name="feature"]` der Seitenleiste zu den Briefen (bewusste Abkürzung, im Code vermerkt).
+- `activity-view.js`: `buildActivityIndex()` liefert auch `lettersByYear` nach der Zählung der Zeitleiste und `withoutDay` mit den Gründen. Ein Satz ersetzt die Kennzahlkästen, die Heatmap trägt eine Monatszeile.
+- `chronik-view.js`: Index der Briefwechsel je Personenpaar über alle Empfänger, jeder Eintrag nennt seine Stelle darin. Unbekannte Personen bilden kein Paar.
+- `comparison-view.js`: Zeiträume aus den Jahren, die die Briefe tragen, frei eingebbar. Personen und Orte der Suchliste mit Briefzahl.
+- `places-view.js` exportiert `indexPlaces()`, `coordinateCoverage()` (`all`, `none`, `mixed`) und `countLettersByPlace()`. Die Marke für fehlende Koordinaten steht nur bei `mixed`.
+- `network-view.js` exportiert `findEgo()` und `networkWithoutEgo()`. Das Layout wird immer vorab berechnet, Beschriftungen stehen in einer eigenen Ebene ohne Überlappung.

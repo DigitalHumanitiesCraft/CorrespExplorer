@@ -364,7 +364,7 @@ function renderPlaceDetail(placeId) {
         // The inferred number leads to exactly those letters, through the existing feature filter
         const inferredCount = placeLetters.filter(l => l.place_sent.inferred).length;
         const canShow = inferredCount > 0 && document.querySelector('input[name="feature"][value="placeInferred"]');
-        countEl.innerHTML = `${filteredCount} Briefe` + (inferredCount === 0 ? ''
+        countEl.innerHTML = `${filteredCount.toLocaleString('de-DE')} ${filteredCount === 1 ? 'Brief' : 'Briefe'}` + (inferredCount === 0 ? ''
             : canShow ? `, davon <button type="button" class="view-header__link place-inferred-btn" title="Briefe dieses Orts zeigen, deren Ort die Edition erschlossen hat">${inferredCount} erschlossen</button>`
             : `, davon ${inferredCount} erschlossen`);
         // The button is rebuilt with the count, so it is found in its container, not via the id cache

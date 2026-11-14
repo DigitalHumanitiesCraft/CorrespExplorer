@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2026-10-28
-updated: 2026-11-10
+updated: 2026-11-14
 authors: [Christopher Pollin]
 template:
   name: Vorlage Plan
@@ -54,6 +54,20 @@ Die Analyse externer CMIF-Dateien vom November 2025 ([data.md](data.md#testdaten
 - Parser: `evidence="conjecture"` erkennen, Datumsnotationen in Französisch und Deutsch normalisieren, `unknown` als Ort ohne Koordinaten führen
 - Oberfläche: „Unbekannt“-Orte in eigener Kategorie, Leerzustände für kleine Datensätze, Nachladen oder Paginierung für große
 - Ansichten: Karte mit Fallback bei ein oder zwei Orten, Lücken in der Timeline sichtbar machen, asymmetrische Beziehungen im Netzwerk zeigen, `[NN]` in der Personenliste ans Ende sortieren
+
+### Offen aus der Iteration vom November 2026
+
+- Ein Link vom Brief in die Edition fehlt für Briefsätze. Die Quelle trägt je Brief eine PID (`idno type="PID"`), aus der sich nur mit Wissen über das Repositorium eine URL bilden lässt. Eine allgemeine Regel dafür gibt es nicht.
+- Datierungen nur als Text („12. V. 1938“) stehen nicht auf der Zeitachse, weil das Werkzeug Datumsnotationen nicht normalisiert. Ein Jahr aus solchem Text zu lesen wäre eine Deutung und braucht eine Entscheidung.
+- `textLang` der Briefsätze wird nicht als Briefsprache gelesen.
+- Suche und Sortierung der Briefliste und die Auswahl „Anzeigen“ der Korrespondenten stehen nicht in der URL.
+- Zweite Prüfrunde, nicht behoben: Der Forschungspfad zum Ego-Netzwerk lässt „Weiter“ ohne Personenwahl zu und zeigt dann die ungefilterte Chronik. Der Vergleich rechnet unter einem aktiven Filter der Seitenleiste und nennt das nur im Hinweissatz. Bei 360 Pixel ist die Zeitleiste flach und zeigt nur die ersten Jahrzehnte, eine Personenzeile braucht vier bis fünf Textzeilen. Tooltips der Ansichtsleiste bleiben nach einem Klick stehen. Browser-Zurück aus der Briefliste behält den gesetzten Filter. Für ein Jahr nennt die Jahresauswahl der Aktivität einen tagesgenauen Brief mehr, als die Heatmap zeichnet (Ursache nicht untersucht). Die Monate der Heatmap sind nicht anklickbar. Die Dialoge sind `div role="dialog"` statt `<dialog>`.
+- Die Dichtemessung des ersten Bildschirms liegt in mehreren Ansichten über den Grenzwerten, vor allem durch die Seitenleiste (fünf Überschriften und ihre Kästen in jeder Ansicht). Das gehört zu E11.
+- Im HSA markiert weiter „?“ einen Ort ohne Koordinaten, obwohl das Zeichen sonst eine unsichere Datierung meint.
+- Die CSV-Spalte `date_certainty` schreibt „high“, wo die Quelle keine Sicherheit nennt.
+- Die Zeitleiste ruft die Überlieferungsfilter über die Checkboxen der Seitenleiste auf (im Code als bewusste Abkürzung vermerkt), eine Abhängigkeit aus `explore.js` wäre der saubere Weg.
+- Ob die Chronik für Bestände ohne Anreicherung in der oberen Navigation bleibt, entscheidet der Operator mit E11.
+- Was der Datenprüfung für Stefan Zweig Digital auffiel (falsches Jahrhundert, vertauschte Namensteile, abweichende Einträge desselben Briefs, Schreibweise des Reihentitels), steht in [data.md](data.md#stefan-zweig-digital-tei-auf-briefebene-kein-cmif) und ist eine Rückmeldung an die Edition, keine Aufgabe des Werkzeugs.
 
 ## Offene Entscheidungen und Abhängigkeiten
 

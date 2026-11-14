@@ -541,15 +541,20 @@ export function buildIndices(letters) {
     const subjects = {};
     const languages = {};
 
+    // letter_count is the number of letters a person is on: a letter that names the same person
+    // as sender and recipient counts once, while as_sender and as_recipient count each role
+    let seenInLetter = new Set();
     const countPerson = (person, role) => {
         const key = personKey(person);
         if (!key) return;
         persons[key] ??= { name: person.name, id: person.id || null, authority: person.authority || null, letter_count: 0, as_sender: 0, as_recipient: 0, ...(person.isOrganization && { isOrganization: true }) };
-        persons[key].letter_count++;
+        if (!seenInLetter.has(key)) persons[key].letter_count++;
+        seenInLetter.add(key);
         persons[key][role]++;
     };
 
     for (const letter of letters) {
+        seenInLetter = new Set();
         countPerson(letter.sender, 'as_sender');
         letterRecipients(letter).forEach(recipient => countPerson(recipient, 'as_recipient'));
 

@@ -353,7 +353,7 @@ async function showConfigDialog(data, sourceInfo) {
     }
 
     // Person enrichment option
-    document.getElementById('enrich-persons-info').textContent = `${enrichableCount} Personen mit Authority-ID`;
+    document.getElementById('enrich-persons-info').textContent = `${enrichableCount} Personen mit Normdatensatz (GND oder VIAF)`;
 
     // Show warning for large datasets
     const warningEl = document.getElementById('config-warning');

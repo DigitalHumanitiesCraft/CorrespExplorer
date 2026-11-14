@@ -97,7 +97,8 @@ export function datasetQuality(letters, corpus) {
     const persons = [...corpus.persons.values()];
     const places = [...corpus.places.values()];
     return {
-        dates: { known: letters.filter(l => l.datePrecision === 'day').length, total: letters.length },
+        // A day in an implausible year is no usable date; the heatmap leaves it out as well
+        dates: { known: letters.filter(l => l.datePrecision === 'day' && !l.dateImplausible).length, total: letters.length },
         persons: { known: persons.filter(p => p.identified).length, total: persons.length },
         places: { known: places.filter(p => p.located).length, total: places.length }
     };

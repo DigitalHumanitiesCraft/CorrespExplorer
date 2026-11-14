@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-10
+updated: 2026-11-14
 authors: [Christopher Pollin]
 template:
   name: Vorlage Design
@@ -581,3 +581,29 @@ Ein gestarteter Forschungspfad erscheint als eine Leiste unter der Navigation mi
 ### Forschungspfade
 
 Jeder Schritt eines Pfads zeigt seine Aktion unter der Bezeichnung statt im Tooltip, weil Tooltips Hover verlangen und wesentliche Information verstecken. Die Pfadnummern stehen auf `var(--color-accent)`, nachdem weiße Ziffern auf hellem Grund unsichtbar waren. Texte über Lücken in Partnerdaten folgen [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Fragen, die der Datensatz nicht beantworten kann, stehen deshalb nicht als gesperrte Karten zwischen den Pfaden, sondern im aufklappbaren Abschnitt „Anreicherungspotential“ (`details.questions-enrichment`) mit der fehlenden Angabe und dem CMIF-Element, das sie ergänzen würde.
+
+## Briefsätze und Überlieferung (Iteration November 2026)
+
+Anforderungen des Operators, wörtlich, vom 2026-11-13 und 2026-11-14:
+
+- „Wir können den CorrespExplorer in dieser Phase jetzt nochmal extra optimieren und genau anpassen und customizen, sodass er mit diesen Zweigdaten auch wirklich sehr gut umgehen kann. Das heißt: wirklich die Views nochmal durchdenken, anpassen, implementieren und umsetzen“
+- „Ich möchte das, was wir haben, auch am Design und dem User Interface verbessern und optimieren und auch refactorn an dieser Stelle. Wir sollten uns dann wirklich überlegen: Wie können wir das evolvieren?“
+- „Ich möchte bei den Zweigbriefen, die wir hier alle verarbeiten möchten, das in allen Views durchgehen. Das heißt, du sollst Software und Subagents da hinschicken, die wirklich den Browser mit konkreten Aufgaben bedienen. Die sollten uns dann immer wieder Feedback geben, ob das jetzt wirklich besser geworden ist.“
+- Festgehaltene Vorlieben aus dem Auftrag: wenige Ebenen, nichts hinter Aufklappern, was man braucht, ist sichtbar oder über einen Filter erreichbar.
+
+Was daraus gilt. Die Regeln werden von Eigenschaften der Daten ausgelöst und gelten für jeden Datensatz, der sie trägt.
+
+- Der Normalfall bleibt unmarkiert. Ein Ort ohne GeoNames-ID trägt weder „(Region)“ noch Kursivschrift. Fehlen allen Orten die Koordinaten, sagt die Ortsansicht das in einem Satz, statt jeden Ort mit „?“ zu markieren. Nur in gemischten Datensätzen trägt der einzelne Ort die Marke.
+- Erschlossenes steht in eckigen Klammern, in Liste, Dialog, Chronik und Korb gleich, mit einer Legendenzeile über der Briefliste. Ein Tooltip ist nie der einzige Ort einer Erklärung.
+- Poststempel, Anschrift und Signatur stehen als benannte Angaben in der Briefzeile, mit kleinem Versal-Label, und brechen auf schmalen Bildschirmen um.
+- Die Briefliste nennt ihre Zahl über der Liste, auch für eine Suche und für null Treffer, und wächst auf Wunsch in Schritten, statt still abzubrechen. Ein Klick auf einen Brief öffnet den Dialog mit allen Angaben. Die frühere aufgeklappte Zeile entfällt, weil sie nur Absender und Empfänger wiederholte.
+- Jedes Merkmal der Überlieferung ist ein Filter der Seitenleiste mit Zahl (Gruppe „Überlieferung“). Ein Qualitätsfilter, der alle oder keine Briefe behielte, wird nicht gezeigt. Ein aktiver Überlieferungsfilter erscheint als Filtermarke wie Person und Ort.
+- Die Übersicht nennt Dateien, Einträge und Briefe neben der Quelle, die Kennzeichen der Datenlage heißen nach dem, was sie zählen („auf den Tag datiert“, „mit Normdatensatz“, „mit Koordinaten“), und die Merkmale der Überlieferung stehen daneben als Knöpfe in die Briefliste. Kein Einstieg führt in eine Ansicht, die der Datensatz nicht füllt. Die Überschrift „Was möchten Sie erkunden?“ entfällt.
+- Korrespondenten: „Körperschaft“ und „ohne Normdatensatz“ stehen als Wort in der Zeile, die Auswahl „Anzeigen“ bietet nur Arten, die der Datensatz enthält. Der Personendialog zeigt für jede Person zuerst, was der Datensatz sagt (Briefe, Zeitraum, häufigste Gegenüber, Absendeorte, Nachweis), externe Dienste folgen danach.
+- Netzwerk: Beschriftungen stehen nach Knotengröße ohne Überlappung im Bild, das Layout ist vor dem Zeichnen berechnet. Ist eine Person an mindestens der Hälfte der Briefe beteiligt, sagt ein Satz das und nennt die Zahl der Verbindungen ohne sie, der Schalter „Ego ausblenden“ steht daneben. Die Farbwahl unterscheidet Person und Organisation, wo der Datensatz Organisationen hat.
+- Zeitleiste: Erschlossene Datierungen teilen die Schraffur der unscharfen, die Legende nennt nur vorhandene Gründe. Der Balken ohne Jahr nennt seine Gruppen (ohne Datum, nur als Text datiert, unplausibles Jahr), jede Zahl führt zu genau diesen Briefen. Ohne Sprachdaten spricht die Ansicht nicht von Sprachen.
+- Aktivität: Ein Satz nennt das dichteste Jahr, den dichtesten Monat und Tag, die Heatmap trägt Monatsnamen. Die Jahreszahlen zählen wie die Zeitleiste.
+- Chronik: Die Ansicht zeigt den Verlauf der Briefwechsel. Jeder Eintrag nennt seine Stelle im Briefwechsel der beiden Personen und Lücken ab zwei Jahren. Die Marke des ersten Briefs ist eine Fahne, der Stern gehört dem Korb.
+- Ansichten ohne Seitenleiste (Aktivität, Chronik, Vergleich) nennen einen aktiven Filter in einem Satz mit dem Knopf „Filter aufheben“. Derselbe Satz steht im Exportdialog.
+
+Der Plan wurde dem Operator am 2026-11-13 als Text vorgelegt (acht Punkte von Laden bis Kennzeichnung) und am 2026-11-14 mit der Erweiterung auf alle Ansichten beauftragt. Seine Beurteilung am laufenden Explorer steht aus. Die Messung der Dichte im ersten Bildschirm liegt in mehreren Ansichten weiter über den Grenzwerten des Maßstabs, vor allem wegen der Seitenleiste, siehe [plan.md](plan.md#e11-entlastung-der-oberfläche).

@@ -3781,6 +3781,8 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .activity-month-row span {
     flex: 0 0 12px;
+    /* Without it the name widens its slot and every later month drifts to the right */
+    min-width: 0;
     overflow: visible;
     white-space: nowrap;
 }
@@ -4654,8 +4656,13 @@ body:has(.tour-highlight) .tour-backdrop {
         grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
     }
 
-    #places-view .entity-list-panel {
-        max-height: none;
+    /* Both panels keep the height of the screen and scroll on their own, so the detail of a
+       place far down the list stays in view */
+    #places-view .entity-list-panel,
+    #places-view .entity-detail-panel {
+        max-height: calc(100vh - var(--navbar-height) - 14rem);
+        overflow-y: auto;
+        align-self: start;
     }
 }
 

@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-12-03
-updated: 2026-11-05
+updated: 2026-11-14
 authors: [Christopher Pollin]
 template:
   name: Vorlage Testing
@@ -126,6 +126,20 @@ uv run tests/browser/smoke.py --online --axe path/to/axe.min.js
 ```
 
 Die Ladezeitgrenze des HSA liegt bei 5 Sekunden (`--load-limit`). Sie fängt einen Rückschritt um eine Größenordnung, nicht das Rauschen des Rechners, eigene Performance-Tests mit festen Grenzen gibt es deshalb nicht (Entscheidung E10 vom 2026-11-05). Eine CI ist nicht eingerichtet.
+
+## Prüfung an einem Bestand außerhalb des Repositorys
+
+`verification/check-corpus.mjs` lässt den Parser über einen Ordner mit TEI- oder CMIF-Dateien laufen und vergleicht jeden Eintrag mit seiner Quelldatei: jeder `correspDesc` wird ein Eintrag, IDs sind eindeutig und keine Positions-IDs, kein Poststempel und keine Anschrift steht als Absendeort, jede als ergänzt ausgezeichnete Angabe ist als erschlossen markiert, jeder Empfänger und jede Adresszeile bleibt erhalten, kein interner Verweis gilt als identifiziert. Danach prüft es den zusammengeführten Bestand: jeder Eintrag gehört zu genau einem Brief, zusammengeführte Einträge teilen eine Signatur ohne widersprechende Datierung, kein unplausibles Jahr steht auf der Zeitachse. Am Ende gibt es die Kennzahlen des Laufs als Momentaufnahme aus.
+
+```bash
+node verification/check-corpus.mjs <Pfad zu jsdom> <Ordner mit XML-Dateien>
+```
+
+Das Skript braucht `jsdom` aus einer vorhandenen Installation, weil das Repository keine Node-Abhängigkeiten führt. Es ist der Beleg für Bestände, deren Daten nicht gebündelt werden dürfen ([data.md](data.md#stefan-zweig-digital-tei-auf-briefebene-kein-cmif)). Die Fälle selbst stehen als synthetische Briefe in `test-letter-records.xml` und `test-letter-records-b.xml` und laufen in der Suite CMIF Parser.
+
+## Aufgabenprüfung durch Browser-Agenten
+
+In der Iteration vom November 2026 prüften Agenten mit Browserzugang die Oberfläche an Forschungsaufgaben, getrennt von den Agenten, die bauten. Jeder Prüfer erhielt Ansichten, konkrete Aufgaben mit prüfbarer Antwort (etwa die Briefe zwischen zwei Korrespondenten, alle Briefe mit erschlossenem Ort, der dichteste Monat), den Maßstab aus `UI-Praxis für agentisch erzeugte Frontends` mit seiner Strukturmessung und keinen Hinweis auf die Einschätzung der Bauenden. Die erste Runde maß den Ausgangszustand, die zweite urteilte Befund für Befund, ob er behoben ist. Die koordinierende Session prüfte Datenbefunde der Prüfer an den Quelldateien, bevor sie darauf baute. Ein Prüferbericht ist eine Beobachtung, keine Abnahme: Die Beurteilung am Bildschirm liegt beim Operator.
 
 ## Browser-Prüfung der Ansichten
 

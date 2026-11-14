@@ -185,7 +185,7 @@ function contextText(context) {
     const base = context.isLast && context.dated === context.total
         ? `Letzter von ${context.total} Briefen zwischen beiden`
         : `${context.number}. von ${context.total} Briefen zwischen beiden`;
-    return context.previousYear ? `${base}, der erste seit ${context.previousYear}` : base;
+    return context.previousYear ? `${base}, nach einer Lücke seit ${context.previousYear}` : base;
 }
 
 // Short form for the compact and two-column layouts: "1/48", "12/48"; a flag marks the beginning

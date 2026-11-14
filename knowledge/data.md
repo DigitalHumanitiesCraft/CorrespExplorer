@@ -206,7 +206,7 @@ Unsicherheitsangaben (`cert`, `[NN]`, Regionen statt Orte) beschreibt [uncertain
 
 Der Parser erzeugt Briefe als Hauptentitäten und Indizes für Personen, Orte, Sprachen und Themen, beschrieben in [architecture.md](architecture.md#datenmodell). Drei Eigenheiten der Parser-Ausgabe führten bei der Implementierung der Forschungspfade zu falschen Annahmen und sind deshalb festgehalten.
 
-- Personen tragen `letter_count` als Summe aus `as_sender` und `as_recipient`. Ein Feld `letters_sent` gibt es nicht.
+- Personen tragen `letter_count` als Zahl der Briefe, an denen sie beteiligt sind, dazu `as_sender` und `as_recipient` je Rolle. Nennt ein Brief dieselbe Person als Absender und Empfänger, zählt er in `letter_count` einmal (seit 2026-11-14, vorher die Summe der Rollen). Ein Feld `letters_sent` gibt es nicht.
 - Themen tragen ihre Bezeichnung in `label`. Code, der `name` erwartet, greift auf `s.label || s.name` zurück.
 - CMIF speichert Sprachen oft als URI (`http://lexvo.org/id/iso639-3/deu`). `LANGUAGE_LABELS` in `constants.js` ist die einzige Bezeichnungstabelle für Parser und Ansichten, für Codes außerhalb der Tabelle gilt die Bezeichnung aus den Daten (`languageLabel()`), beim Parsen der Text des `ref`-Elements.
 

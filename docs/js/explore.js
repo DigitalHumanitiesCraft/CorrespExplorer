@@ -240,7 +240,7 @@ async function init() {
 
         // Check if URL-requested view is available, otherwise use first available
         if (!availableViews[currentView]?.available) {
-            currentView = getFirstAvailableView();
+            currentView = currentView === 'map' && availableViews.places?.available ? 'places' : getFirstAvailableView();
         }
 
         updateUI(data);
@@ -1404,7 +1404,15 @@ function showUndatedLetters() {
     switchView('letters');
 }
 
+// A filter set from another view opens the letter list without a search left from before, which
+// would narrow the result without being asked for
+function clearLetterSearch() {
+    lettersSearchTerm = '';
+    if (elements.letterSearch) elements.letterSearch.value = '';
+}
+
 function applyPersonFilter(personId) {
+    clearLetterSearch();
     selectedPersonId = personId;
     applyFilters();
 }
@@ -1416,6 +1424,7 @@ function clearPersonFilter() {
 
 // Goes through the state manager like the other filters, so every view and the reset button see it
 function applyPlaceFilter(placeId) {
+    clearLetterSearch();
     selectedPlaceFilter = placeId;
     applyFilters();
 }
@@ -1442,9 +1451,9 @@ function hasActiveFilter() {
         f.quality?.preciseDates || f.quality?.knownPersons || f.quality?.locatedPlaces);
 }
 
-// Views whose button marks active filters: letters and map, and the views without sidebar,
-// where the filters themselves are not visible
-const FILTER_INDICATOR_VIEWS = ['letters', 'map', 'chronik', 'activity', 'comparison'];
+// Every view that shows the filtered letters marks an active filter on its button, so a list
+// shortened by a filter set elsewhere is never silent
+const FILTER_INDICATOR_VIEWS = ['letters', 'persons', 'places', 'timeline', 'network', 'map', 'chronik', 'activity', 'comparison'];
 
 function updateFilterIndicators() {
     const active = hasActiveFilter();
@@ -1932,7 +1941,7 @@ function renderOverview() {
             const n = value => value.toLocaleString('de-DE');
             let note = `${n(meta.files.loaded)} Dateien`;
             if (meta.files.records > totalLetters) note += `, ${n(meta.files.records)} Einträge zu ${n(totalLetters)} Briefen zusammengeführt`;
-            if (meta.files.skipped?.length) note += `, ${n(meta.files.skipped.length)} ohne Briefe`;
+            if (meta.files.skipped?.length) note += `, ${n(meta.files.skipped.length)} weitere Dateien ohne Briefe`;
             parts.push(escapeHtml(note));
         }
 
@@ -1996,14 +2005,20 @@ function updateQualityChip(chipId, label) {
 function renderFeatureChips() {
     const container = document.getElementById('overview-features');
     if (!container) return;
-    const OVERVIEW_FEATURES = ['undated', 'dateImplausible', 'dateInferred', 'placeInferred', 'recordsDiffer'];
+    const OVERVIEW_FEATURES = {
+        undated: 'ohne Datum',
+        dateImplausible: 'mit unplausiblem Jahr',
+        dateInferred: 'mit erschlossenem Datum',
+        placeInferred: 'mit erschlossenem Ort',
+        recordsDiffer: 'mit abweichenden Einträgen'
+    };
     const chips = LETTER_FEATURES
-        .filter(feature => OVERVIEW_FEATURES.includes(feature.key))
+        .filter(feature => feature.key in OVERVIEW_FEATURES)
         .map(feature => ({ feature, count: allLetters.filter(feature.test).length }))
         .filter(({ count }) => count > 0);
     container.classList.toggle('hidden', chips.length === 0);
     container.innerHTML = chips.map(({ feature, count }) =>
-        `<button type="button" class="quality-chip quality-chip--link" data-feature="${feature.key}">${count.toLocaleString('de-DE')} ${escapeHtml(feature.label)}</button>`
+        `<button type="button" class="quality-chip quality-chip--link" data-feature="${feature.key}">${count.toLocaleString('de-DE')} ${OVERVIEW_FEATURES[feature.key]}</button>`
     ).join('');
     container.querySelectorAll('[data-feature]').forEach(btn => {
         btn.addEventListener('click', () => showLettersWithFeature(btn.dataset.feature));
@@ -2012,6 +2027,7 @@ function renderFeatureChips() {
 
 // The letter list under exactly one transmission feature
 function showLettersWithFeature(key) {
+    clearLetterSearch();
     featureFilter = new Set([key]);
     document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = cb.value === key; });
     applyFilters({ render: false });
@@ -2052,20 +2068,27 @@ function renderPersonsList() {
     const personsMap = {};
     const count = (person, role) => {
         const key = personKey(person);
-        if (!key || !person.name) return;
+        if (!key) return;
         personsMap[key] ??= {
             key,
-            name: person.name,
+            // The source gives an authority id without a name
+            name: person.name || `Ohne Namen (${key})`,
             id: person.id,
             authority: person.authority,
             precision: person.precision,
             isOrganization: Boolean(person.isOrganization),
             sent: 0,
-            received: 0
+            received: 0,
+            letters: 0
         };
         personsMap[key][role]++;
+        // The large figure counts letters, so a letter that names the person in both roles counts once
+        if (!seenInLetter.has(key)) personsMap[key].letters++;
+        seenInLetter.add(key);
     };
+    let seenInLetter = new Set();
     filteredLetters.forEach(letter => {
+        seenInLetter = new Set();
         count(letter.sender, 'sent');
         letterRecipients(letter).forEach(recipient => count(recipient, 'received'));
     });
@@ -2096,8 +2119,8 @@ function renderPersonsList() {
     }
 
     persons.sort((a, b) => {
-        const totalA = a.sent + a.received;
-        const totalB = b.sent + b.received;
+        const totalA = a.letters;
+        const totalB = b.letters;
 
         switch (personsSortOrder) {
             case 'letters-desc': return totalB - totalA;
@@ -2128,7 +2151,7 @@ function renderPersonsList() {
     // The card is no button: filtering, basket, details and correspSearch are separate controls
     container.innerHTML = persons.map(person => {
         const initials = getPersonInitials(person.name, person.precision);
-        const total = person.sent + person.received;
+        const total = person.letters;
         const correspSearchUrl = buildCorrespSearchUrl(person);
         const precisionClass = getPersonPrecisionClass(person.precision);
         const hasWikidataEnrichment = enrichmentData[person.key]?.source === 'wikidata';
@@ -2171,7 +2194,7 @@ function renderPersonsList() {
                             <i class="fas fa-search" aria-hidden="true"></i>
                         </a>
                     ` : ''}
-                    <div class="person-count">${total}</div>
+                    <div class="person-count" title="${total.toLocaleString('de-DE')} ${total === 1 ? 'Brief' : 'Briefe'}">${total.toLocaleString('de-DE')}</div>
                 </div>
             </div>
         `;
@@ -2223,13 +2246,14 @@ function personFacts(key) {
     const years = [];
     let sent = 0;
     let received = 0;
+    let withoutYear = 0;
     const bump = (map, name) => { if (name) map.set(name, (map.get(name) || 0) + 1); };
     for (const letter of allLetters) {
         const recipients = letterRecipients(letter);
         const isSender = personKey(letter.sender) === key;
         const isRecipient = recipients.some(r => personKey(r) === key);
         if (!isSender && !isRecipient) continue;
-        if (letter.year) years.push(letter.year);
+        if (letter.year) years.push(letter.year); else withoutYear++;
         if (isSender) {
             sent++;
             recipients.forEach(r => bump(counterparts, r.name));
@@ -2242,7 +2266,7 @@ function personFacts(key) {
     }
     const top = (map, n) => [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, n);
     return {
-        sent, received,
+        sent, received, withoutYear,
         period: years.length ? [Math.min(...years), Math.max(...years)] : null,
         counterparts: top(counterparts, 5),
         places: top(places, 5)
@@ -2371,7 +2395,7 @@ function renderLettersList() {
         container.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-envelope" aria-hidden="true"></i>
-                <p>Keine Briefe gefunden. ${lettersSearchTerm ? 'Ändern Sie den Suchbegriff' : 'Ändern Sie die Filter'} oder setzen Sie die Filter in der Seitenleiste zurück.</p>
+                <p>Keine Briefe gefunden. ${lettersSearchTerm ? 'Ändern Sie den Suchbegriff.' : ''} ${hasActiveFilter() ? 'Setzen Sie die Filter in der Seitenleiste zurück.' : ''}</p>
             </div>
         `;
         return;
@@ -2430,7 +2454,7 @@ function renderLettersList() {
         const rest = letters.length - displayLetters.length;
         container.insertAdjacentHTML('beforeend', `
             <button type="button" class="btn btn-secondary list-more" id="letters-more">
-                Weitere ${Math.min(rest, LETTERS_PAGE).toLocaleString('de-DE')} von ${rest.toLocaleString('de-DE')} Briefen anzeigen
+                Weitere ${Math.min(rest, LETTERS_PAGE).toLocaleString('de-DE')} anzeigen (noch ${rest.toLocaleString('de-DE')} nicht angezeigt)
             </button>
         `);
         container.querySelector('#letters-more').addEventListener('click', () => {
@@ -2484,7 +2508,7 @@ function showLetterDetail(letterId) {
     if (!modal || !body) return;
 
     const sender = letter.sender?.name || 'Unbekannt';
-    const recipient = letterRecipients(letter).map(r => r.name).join(', ') || 'Unbekannt';
+    const recipient = letterRecipients(letter).map(r => r.name).join('; ') || 'Unbekannt';
     title.textContent = `${sender} an ${recipient}`;
 
     let html = '<div class="letter-detail">';
@@ -2494,7 +2518,7 @@ function showLetterDetail(letterId) {
     // Date with its precision marker, as in the list (ADR-002)
     html += detailRow('Datum', formatDateWithPrecision(letter), getDatePrecisionClass(letter.datePrecision, letter.dateCertainty));
     html += detailRow('Absender', buildPersonLink(letter.sender));
-    html += detailRow('Empfänger', letterRecipients(letter).map(buildPersonLink).join(', ') || buildPersonLink(null));
+    html += detailRow('Empfänger', letterRecipients(letter).map(buildPersonLink).join('; ') || buildPersonLink(null));
     if (letter.place_sent?.name) {
         html += detailRow('Absendeort', letter.place_sent.inferred
             ? formatPlaceName(letter.place_sent.name, letter.place_sent.precision, true)
@@ -2503,6 +2527,12 @@ function showLetterDetail(letterId) {
     if (letter.postmark) html += detailRow('Poststempel', escapeHtml(letter.postmark));
     if (letter.address) html += detailRow('Anschrift', escapeHtml(letter.address));
     if (letter.signature) html += detailRow('Signatur', escapeHtml(letter.signature));
+    if (letter.dateInferred || letter.place_sent?.inferred) {
+        html += '<p class="list-legend">Eckige Klammern: von der Edition erschlossen, nicht dem Brief entnommen.</p>';
+    }
+    if (letter.recordsDiffer) {
+        html += '<p class="list-legend">Die Angaben oben folgen dem ersten Eintrag der Quelle mit Datum. Die übrigen Einträge stehen darunter.</p>';
+    }
     html += '</div>';
 
     // Several records of the source for one letter are listed as they stand, nothing is decided between them
@@ -2696,7 +2726,10 @@ function renderPersonDetail(detail, enriched) {
     html += '<div class="person-detail-section">';
     html += '<h4>Im Datensatz</h4>';
     html += detailRow('Briefe', `${facts.sent.toLocaleString('de-DE')} gesendet, ${facts.received.toLocaleString('de-DE')} empfangen`);
-    if (facts.period) html += detailRow('Zeitraum', facts.period[0] === facts.period[1] ? String(facts.period[0]) : `${facts.period[0]} bis ${facts.period[1]}`);
+    if (facts.period) {
+        const span = facts.period[0] === facts.period[1] ? String(facts.period[0]) : `${facts.period[0]} bis ${facts.period[1]}`;
+        html += detailRow('Zeitraum', facts.withoutYear ? `${span}, dazu ${facts.withoutYear.toLocaleString('de-DE')} ohne Jahr auf der Zeitachse` : span);
+    }
     if (facts.counterparts.length) html += detailRow('Häufigste Gegenüber', listed(facts.counterparts));
     if (facts.places.length) html += detailRow('Absendeorte', listed(facts.places));
     html += detailRow('Nachweis', person.isOrganization
