@@ -178,7 +178,7 @@ Alle Darstellungen des Explorers beginnen mit derselben Komponente `.view-header
 - `.view-header__title` ist die `h2` und nennt, was die Ansicht gerade zeigt (`updateViewTitle()` in `explore.js`). `.view-header__description` bleibt als Beschreibung für Screenreader im Dokument und ist nicht sichtbar. `.view-header__actions` ist ein optionaler Bereich für Hinweise, Suche und Moduswahl. Die Umschaltung `#view-variants` hängt `explore.js` in den Kopf der aktiven Ansicht.
 - Titel und Beschreibung stehen links. Weitere Kinder wie die Kennzahlen und die Quellenzeile der Übersicht reihen sich darunter ein.
 - Die Aktionen stehen ab 768px rechts neben Titel und Beschreibung und nehmen höchstens die halbe Breite ein, darunter brechen sie unter die Beschreibung um. Die Spalte darf schrumpfen, ihre Elemente umbrechen dann innerhalb der Spalte.
-- Einen Aktionsbereich haben Aktivität (Hinweis „Experimentell“), Erwähnungsfluss (Personensuche), Chronik (Layoutwahl und Wikidata-Anreicherung) und Vergleich (Moduswahl Personen, Zeiträume, Orte). Die übrigen Ansichten haben Titel und Beschreibung, die Übersicht Titel und Kennzahlen. Das Netzwerk führt seine Steuerung in einer eigenen Leiste unter dem Kopf.
+- Einen Aktionsbereich haben Aktivität (Hinweis „Experimentell“), Erwähnungsfluss (Personensuche) und Chronik (Layoutwahl und Wikidata-Anreicherung). Was der Vergleich vergleicht, folgt aus dem Gegenstand, von dem aus er geöffnet wurde, seine frühere Moduswahl ist nicht mehr sichtbar.
 - `.view-header--inset` gilt für Ansichten ohne gepolsterten Container (Karte, Korrespondenten, Briefe, Erwähnungsfluss). Der Kopf trägt dort selbst den Innenabstand und schließt mit einer Linie in `--color-border-light` statt mit Außenabstand ab.
 - Die Überschriften tragen keine Icons, damit alle Köpfe gleich beginnen. Der Zusatz „(angereichert)“ der Chronik hängt per `::after` am Titel.
 - Auf der Karte liegen Steuerung und Legende auf `.map-stage`, die ab 768px den Platz unter dem Kopf füllt. Auf Telefonen behalten Karte und Listen ihre feste Höhe, die Seite scrollt um die Höhe des Kopfes.
@@ -191,9 +191,9 @@ Die Breakpoints stehen als `--breakpoint-*` in `tokens.css`, die Sidebarbreite a
 - Von 768px bis 899px zeigen die Navigationslinks nur ihr Icon, der Text bleibt für Screenreader erhalten.
 - Ab 768px hat die Sidebar `--sidebar-width`, bis 1024px eine schmalere feste Breite, der Inhalt füllt den Rest.
 
-Ab 768px hat die Kopfzeile der Arbeitsansicht zwei Zeilen, oben Datensatztitel und Verweise, unten die Ansichtsleiste (`grid-template-areas` in `style.css`). Die Höhe steht in `--navbar-height`, das `style.css` über `html:has(.view-switcher)` nur für die Seite mit Ansichtsleiste erhöht. Alle Abstände, die sich auf die Kopfzeile beziehen, lesen diese Eigenschaft. Der Datensatztitel hat damit die Breite der oberen Zeile neben den Verweisen und wird erst dort mit Auslassungspunkten gekürzt (vollständig im Tooltip). Bis 2026-11-10 teilten sich Titel, Ansichtsleiste und Verweise eine Zeile, der Titel war auf 20rem begrenzt und wurde regelmäßig gekürzt.
+Ab 768px hat die Kopfzeile der Arbeitsansicht eine Zeile mit Datensatztitel, den Gegenständen und den Aktionen, darunter zwei Zeilen mit den Gegenständen in der zweiten (`grid-template-areas` in `style.css`). Die Höhe steht in `--navbar-height`.
 
-Die Ansichtsleiste scrollt waagerecht, wenn die zwölf Ansichten nicht passen, das ist unter 768px und mit Namen unter etwa 1100px der Fall. Ihre dünne Scrollleiste bleibt sichtbar, und der angeschnittene Knopf am Rand zeigt, dass weitere Ansichten folgen. Bis 2026-11-05 war die Scrollleiste ausgeblendet. Der Fokusrahmen der Knöpfe liegt innen (`outline-offset: -3px`), damit der Überlauf der Leiste ihn nicht abschneidet.
+Die Umschaltung der Darstellung bricht unter 768px um, statt ihre letzten Einträge zu verbergen. Die geschlossene Seitenleiste ist dort nicht sichtbar und nicht in der Tab-Folge.
 
 Der Wissenskorb stapelt Liste und Auswertung bis 1024px, die Liste nimmt dann die volle Breite. Breite Darstellungen (Timeline, Aktivitäts-Heatmap, Erwähnungsfluss) scrollen in ihrem eigenen Container, die Seite selbst bleibt ohne horizontalen Überlauf (geprüft 2026-10-29 bei 390px, am 2026-11-05 für alle zwölf Ansichten bei 1440, 1024, 768 und 390px mit Playwright).
 
@@ -212,7 +212,7 @@ Briefe ohne Jahr stehen in einem eigenen Balken rechts der Timeline und werden k
 - Grundkarte ist der helle Stil von OpenFreeMap (Positron), umgefärbt mit `--color-map-land` für Land, Parks und Wald und `--color-map-water` für Wasser (`applyPaperBasemap()` in `explore.js`). Die Farben ändern nur die Darstellung des geladenen Stils, es wird keine weitere Ressource geladen. Fehlt eine Ebene in einer späteren Fassung von Positron, bleibt ihre Originalfarbe. Der dunkle Stil bleibt über den Ebenen-Knopf erreichbar. Bis 2026-11-05 startete die Karte dunkel, danach kurz grau.
 - Ist die Grundkarte nicht erreichbar, zeigt die Karte die Orte auf einer einfarbigen Fläche in `--color-bg-light` und meldet das in einem Toast.
 - Orte sind Kreise, deren Größe der Briefzahl folgt, Cluster tragen ihre Zahl innen.
-- Die Marker sind Teil der MapLibre-Fläche und nicht einzeln fokussierbar. Der Kopf der Karte nennt die Ortsansicht als Tastaturweg und öffnet sie über einen Link-Knopf (`.view-header__link`, `data-switch-view`). Die Ortsliste bietet dieselben Orte mit Briefzahl und Filter (Entscheidung E7 vom 2026-11-05).
+- Die Marker sind Teil der MapLibre-Fläche und nicht einzeln fokussierbar. Der Tastaturweg zu denselben Orten ist die Darstellung „Liste“ in der Umschaltung der Ansicht Orte.
 
 ### Netzwerk
 
@@ -242,7 +242,7 @@ Die Oberfläche zeigt zuerst den Überblick und Details auf Klick, vollständige
 
 ### Startansicht und Navigation
 
-Die Kennzahlen der Sidebar (Briefe, Personen, Orte) zeigen bei aktivem Filter die gefilterte Zahl groß und darunter klein „von“ und die Gesamtzahl, ohne Filter nur die Gesamtzahl. So bleibt kein Filter unbemerkt, auch wenn sein Bedienelement eingeklappt ist. Die Kennzahlen und die Datenlage (Symbole an den Sidebar-Zahlen, Chips der Startansicht) entstehen aus einer Zusammenfassung beim Laden (`summarizeCorpus()`, `datasetQuality()`). Bis 2026-11-05 lasen die Sidebar-Symbole `meta.uncertainty` der Vorverarbeitung und zählten damit anders als die Chips.
+Die Zahl dessen, was eine Ansicht zeigt, steht in ihrer Titelzeile, unter einem Filter als Anteil („95 von 774 Orten“). Die Karte nennt die Orte, die sie zeichnet, der Vergleich nennt, was er vergleicht. Die Seitenleiste wiederholt diese Zahlen seit 2026-11-14 nicht mehr, ihr Abschnitt mit den drei Kennzahlen ist ausgeblendet. Kennzahlen und Datenlage entstehen aus einer Zusammenfassung beim Laden (`summarizeCorpus()`, `datasetQuality()`).
 
 Die Sprachliste der Sidebar zeigt die acht häufigsten Sprachen des Datensatzes mit ihrem Farbfeld und fasst die übrigen in der aufklappbaren Gruppe „weitere Sprachen“ zusammen. Eine Sprache, der die übrigen Filter keinen Brief lassen, verlässt die Liste, bis ein Filter sie wieder trifft. Die kurze Themenliste der Sidebar ist seit 2026-11-14 nicht mehr sichtbar.
 

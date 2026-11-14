@@ -61,12 +61,49 @@ Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Er
 
 ### Offen nach der Stufe vom 2026-11-14
 
-Die Stufe „Gliederung nach Gegenstand“ und ihre Nacharbeit ([Journal vom 2026-11-14](journal.md)) warten auf das Urteil des Operators am Bildschirm. Es bleiben:
+Die Stufe „Gliederung nach Gegenstand“ wartet auf das Urteil des Operators am Bildschirm. Zwei unabhängige Durchsichten des fertigen Stands ([Journal vom 2026-11-14](journal.md)) ließen nach den Korrekturen desselben Tages offen:
 
-- Der Kopf der Chronik braucht bei 1280 Pixel zwei Zeilen, weil Layoutwahl und Wikidata-Knopf neben Titel und Umschaltung nicht in ihren schmalen Satzspiegel passen.
-- Der Vergleich führt neben Personen und Orten weiter die Wahl „Zeiträume“, für die es keinen Reiter gibt, von dem aus man ihn öffnet.
-- Die Hauptgrafik der Startansicht zeigt die Briefe pro Jahr einfarbig und führt als Ganzes in die Ansicht Zeit.
-- Startseite, Projektseite und Wissenskorb übernehmen die ruhigeren Kopfknöpfe aus den gemeinsamen Regeln, am Bild geprüft sind sie nicht.
+Dieselbe Tatsache mehrfach
+
+- Die Forschungspfade der Startansicht wiederholen in ihrer Beschreibung die Kennzahlen darüber.
+- Die Sprachzahlen stehen in der Seitenleiste und in der Legende der Zeitleiste, die Zahl ohne Datum dort dreimal.
+- Im Netzwerk nennen der Satz zur zentralen Person und der Streifen „Sichtbar“ dieselben Gesamtzahlen.
+- Zeile und Detailkopf eines gewählten Orts oder Themas zeigen dieselbe Briefzahl.
+
+Ebenen und Flächen
+
+- Vor dem Graphen des Netzwerks stehen fünf Schichten, darunter Legende und Hinweiszeile.
+- Die Ortsliste beginnt mit einem gerahmten Hinweis zu Orten ohne Koordinaten, der die Karte betrifft.
+- Ein gestarteter Forschungspfad legt zwei Streifen unter die Kopfzeile.
+- Details von Orten und Themen und beide Dialoge führen drei Überschriftenebenen, Label-Value-Raster und gerahmte Tags.
+- Themen stapeln Liste und Detail, Orte stellen sie nebeneinander. Die Themenliste ist in der Höhe begrenzt, daneben bleibt Fläche leer.
+- Start, Vergleich und Tage lassen unter oder neben dem Inhalt Fläche frei, die Chronik kürzt in der kompakten Form Namen bei freier Breite.
+- Die Inhaltskante der Ansichten ohne Seitenleiste liegt je Ansicht woanders, die Seitenleiste erscheint innerhalb eines Gegenstands je nach Darstellung.
+- Die Umschaltung steht in der Chronik etwas tiefer als bei Jahren und Tagen.
+- Listenzeilen von Personen und Orten haben zwei Textzeilen, bei 360 Pixel drei bis vier.
+- Der Dichtecheck des Hauses meldet für die Listenansichten mehr Textelemente und Bedienelemente im ersten Bildschirm, als sein Arbeitsprofil erlaubt.
+
+Bedienung
+
+- Der Vergleich hat keinen adressierbaren Zustand. Nach einem Neuladen und nach Browser-Zurück öffnet er den Personenvergleich ohne Auswahl.
+- Die Jahre der Startgrafik sind nur mit dem Zeiger wählbar, die Tastatur erreicht sie über die Ansicht Zeit.
+- Die Tab-Folge führt bei breitem Bildschirm durch die Seitenleiste, bevor sie die Umschaltung erreicht.
+- „Zum Wissenskorb“ legt die aktuelle Auswahl in den Korb, liest sich wie ein Ziel und ist erst nach dem ersten Stern erreichbar.
+- Ein Direktlink auf eine Darstellung, die der Datensatz nicht füllen kann, landet ohne Begründung in einer anderen.
+- Die Filtermarke an den Darstellungen ist ein Punkt, dessen Bedeutung nur im Tooltip steht.
+- Bei 360 Pixel öffnet die Demo-Tour die Seitenleiste nicht, auf die drei ihrer Schritte zeigen.
+
+Benennung
+
+- Die Schritte der Forschungspfade heißen „Korrespondenten“, „Timeline“ und „Aktivität“, die Umschaltung nennt dieselben Darstellungen „Liste“, „Jahre“ und „Tage“.
+- Derselbe Zustand heißt „k.A.“, „Ohne Datum“ und „ohne Jahr“.
+- Ungarisch und Baskisch stehen in der Seitenleiste mit dem Grau, das in den Legenden „Übrige Sprachen“ heißt.
+- Die Marke „Experimentell“, „Mit Wikidata anreichern“ und „Koordinaten nachladen“ benennen Technik und Prozess.
+- Die Ortsliste führt eine Zeile mehr, als ihr Titel zählt. Die Ursache ist nicht geklärt.
+
+Code
+
+- Der ausgeblendete Abschnitt mit den Kennzahlen der Seitenleiste und die verborgene Moduswahl des Vergleichs stehen noch im Markup und werden weiter befüllt.
 
 ### Offen aus den Durchsichten vom 2026-11-14
 
