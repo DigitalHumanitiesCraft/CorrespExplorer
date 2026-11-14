@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2026-10-28
-updated: 2026-10-29
+updated: 2026-11-14
 ---
 
 # Handoff
@@ -18,4 +18,4 @@ Diese Process Inbox führt ausschließlich offene Übergabepunkte. Prüfe vor de
 
 ## Offene Handoff-Punkte
 
-Zurzeit gibt es keine offenen Punkte.
+Keine offenen Handoff-Punkte.

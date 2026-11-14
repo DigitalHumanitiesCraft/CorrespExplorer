@@ -46,7 +46,7 @@ Alle Bibliotheken liegen versioniert in `docs/vendor/`, jeweils mit ihrer Lizenz
 | Font Awesome Free | 6.4.0 | Icons (nur woff2-Schriften) | Icons CC BY 4.0, Schriften OFL 1.1, Code MIT |
 | Inter, Lato, Merriweather | Google-Fonts-Stand vom 2026-10-29 | Schriften, Untermengen latin und latin-ext | OFL 1.1 |
 
-Extern bleibt allein die Grundkarte von OpenFreeMap. Ist sie nicht erreichbar, setzt `initMap()` einen leeren Hintergrundstil, damit die Ortsmarker sichtbar bleiben. Die Karte der Korbseite hat denselben Rückfall nach einem Stilfehler oder acht Sekunden ohne Laden. Wikidata, GeoNames über Wikidata und correspSearch werden nur auf Aktion der Nutzenden abgefragt, auch im Personen-Dialog ([ADR-006](specification.md#adr-006-externe-dienste-nur-auf-ausdrückliche-aktion)).
+Extern bleibt allein die Grundkarte von OpenFreeMap. Ist sie nicht erreichbar, setzt die Kartenansicht (`views/map-view.js`) einen leeren Hintergrundstil, damit die Ortsmarker sichtbar bleiben. Die Karte der Korbseite hat denselben Rückfall nach einem Stilfehler oder acht Sekunden ohne Laden. Wikidata, GeoNames über Wikidata und correspSearch werden nur auf Aktion der Nutzenden abgefragt, auch im Personen-Dialog ([ADR-006](specification.md#adr-006-externe-dienste-nur-auf-ausdrückliche-aktion)).
 
 ## Module
 
@@ -63,9 +63,9 @@ Die Module stehen in `docs/js/`, die ausgelagerten Ansichten in `docs/js/views/`
 - Korb: `basket.js` mit einem Korb je Datensatz in localStorage, Massenaufnahme über `addItemsToBasket()`, Tab-Synchronisation und URL-Teilen (`basketToParams()`, `basketFromParams()`, `loadBasketFromUrl()`). `onBasketChange()` gibt eine Funktion zum Abmelden zurück. Die Korbseite exportiert mit `lettersToCsv()` und `letterExportRow()` aus `export.js` und verlinkt nach einem `data/*.json`-Datensatz zurück auf `explore.html?json=<Pfad>`.
 - Demo-Tour: `demo-tour.js` mit `initDemoTour({ switchView })`, `shouldStartDemoTour(search)`, `checkAndStartDemoTour()` und `startTour()`. Sie öffnet bei `demo=true`, solange sie in diesem Browser nicht beendet wurde (localStorage, damit neue Tabs und spätere Links sie nicht erneut zeigen), `tour=0` unterdrückt sie für Workshop-Links und Aufnahme-Skripte. Die Tour ist ein modaler Dialog: Der Fokus liegt auf dem Hauptknopf des aktiven Schritts, Tab bleibt über `trapTabKey()` im Schritt, Escape beendet sie und gibt den Fokus zurück, bei einer beim Laden geöffneten Tour an den aktiven Ansichtsknopf. Schritte mit `data-view` wechseln vorher die Ansicht, die Sidebar-Schritte deshalb in die Briefansicht. Ein nicht sichtbares Ziel, etwa die eingeklappte Sidebar unter 768 px, erhält keine Hervorhebung.
 - Seiten: `upload.js`, `explore.js`, `wissenskorb.js`, `demo-tour.js`.
-- Ansichten in `views/`: Zeitleiste, Aktivität, Chronik, Vergleich, Netzwerk, Erwähnungsfluss, Themen, Orte, dazu `view-support.js` mit `readTokens()`, `bindCombobox()` und `renderDataTable()` (Textalternative der Grafiken) für mehrere Ansichten. Das Netzwerk wählt seinen Aufbau aus `NETWORK_BUILDERS` (Briefwechsel, Zeitgenossen, Themen).
+- Ansichten in `views/`: je ein Modul für Übersicht, Karte, Korrespondenten mit Personen-Dialog, Briefe mit Brief-Dialog, Zeitleiste, Themen, Orte, Netzwerk, Erwähnungsfluss, Chronik, Aktivität und Vergleich. `view-support.js` hält, was mehrere Ansichten teilen: den Satz über aktive Filter (`describeFilters()`, `filterSentence()`, `renderFilterNotice()`), `readTokens()`, `bindCombobox()`, `renderDataTable()` (Textalternative der Grafiken), den Stern des Korbs (`toggleBasketButton()`) und die Zeilen und Links der Dialoge (`detailRow()`, `buildPersonLink()`, `buildPlaceLink()`, `buildCorrespSearchUrl()`). Das Netzwerk wählt seinen Aufbau aus `NETWORK_BUILDERS` (Briefwechsel, Zeitgenossen, Themen).
 
-`explore.js` orchestriert. Übersicht, Karte, Korrespondenten, Briefe, Filter und die Detail-Dialoge liegen weiter dort, Forschungspfade, Wissenspfad und Export in den eigenen Modulen. Die Ansichtsmodule erhalten ihre Abhängigkeiten über `init*View(deps)` und importieren `explore.js` nicht, damit keine zirkulären Importe entstehen.
+`explore.js` orchestriert: Es lädt den Datensatz, hält die Filtereingaben der Seitenleiste und den URL-Zustand, wechselt die Ansicht und öffnet den Export. Jede Ansicht liegt seit 2026-11-14 in einem eigenen Modul. Die Ansichtsmodule erhalten ihre Abhängigkeiten über `init*View(deps)` und importieren `explore.js` nicht, damit keine zirkulären Importe entstehen.
 
 ## Datenfluss
 
@@ -89,8 +89,8 @@ Die Indizes unterscheiden sich zwischen Parser und Vorprozessierung. Parser und 
 ## Ansichten
 
 - Übersicht mit Kennzahlen, Quelle, Lizenz und Änderungsvermerk, Qualitäts-Chips, Einstiegspunkten und Forschungspfaden. Ein Klick auf einen Pfad startet einen Wissenspfad, dessen Leiste durch die Schritte führt. Nicht beantwortbare Fragen stehen in einem aufklappbaren Abschnitt „Anreicherungspotential“.
-- Karte (MapLibre mit Clustering, Farbmodus nach Sprache), Korrespondenten, Briefe.
-- Zeitleiste, Themen, Orte, Netzwerk, Erwähnungsfluss, Chronik, Aktivität und Vergleich in `views/`. Netzwerk und Erwähnungsfluss lesen ihre Farben mit `readTokens()` aus `tokens.css`, weil D3-Attribute `var()` nicht auflösen.
+- Karte (MapLibre mit Clustering, Farbmodus nach Sprache, `aggregateLettersByPlace()` bildet die Orte der gefilterten Briefe), Korrespondenten, Briefe.
+- Zeitleiste, Themen, Orte, Netzwerk, Erwähnungsfluss, Chronik, Aktivität und Vergleich. Netzwerk und Erwähnungsfluss lesen ihre Farben mit `readTokens()` aus `tokens.css`, weil D3-Attribute `var()` nicht auflösen.
 
 Die Sidebar ist auf Übersicht, Chronik, Aktivität und Vergleich ausgeblendet. Unter 768 px Breite liegt sie außerhalb des Bildschirms und öffnet sich über den Filter-Schalter der Navigation, Escape schließt sie und gibt den Fokus an den Schalter zurück. Elemente mit `role="button"` reagieren über einen globalen Handler auf Enter und Leertaste. `enableModalKeyboard()` schließt Dialoge mit Escape, führt den Fokus hinein, hält ihn mit Tab im Dialog und gibt ihn beim Schließen zurück, ein Dialog ohne Namen erhält `aria-labelledby` auf seine erste Überschrift. Ihr MutationObserver prüft nur Änderungen, die einen Dialog betreffen, weil die Prüfung das Layout misst und jeder Filterschritt große Listen neu zeichnet.
 
@@ -104,7 +104,7 @@ Die Sidebar ist auf Übersicht, Chronik, Aktivität und Vergleich ausgeblendet. 
 
 ## Grenzen
 
-- Die Briefliste rendert höchstens 500 Einträge.
+- Die Briefliste zeigt die Briefe in Schritten (`LETTERS_PAGE` in `views/letters-view.js`), nennt die Gesamtzahl über der Liste und lädt auf Wunsch nach.
 - Ein Upload in sessionStorage scheitert am Kontingent des Browsers. Für große Datensätze ist die Vorprozessierung zu JSON vorgesehen.
 - Ein geteilter Link auf `explore.html` trägt bei einem Upload nur Ansicht und Filter, der Datensatz liegt im Tab der Absenderin. Empfänger ohne diesen Upload landen auf der Startseite.
 - correspSearch-Abfragen laden höchstens `API_DEFAULTS.correspSearchMaxLetters` Briefe, der Konfigurationsdialog zeigt dann geladene und gefundene Treffer.

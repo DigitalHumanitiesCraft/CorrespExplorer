@@ -72,7 +72,7 @@ Verwendet in [data.md](data.md#modell), [project.md](project.md#standards).
 
 Webservice der Berlin-Brandenburgischen Akademie der Wissenschaften, der CMIF-Dateien vieler Editionen aggregiert und über eine API durchsuchbar macht.
 
-Verwendet in [data.md](data.md#externe-cmif-quellen), [plan.md](plan.md#8-correspsearch-api-urls-liefern-keine-briefe).
+Verwendet in [data.md](data.md#externe-cmif-quellen), [architecture.md](architecture.md#datenfluss).
 
 ### Erweiterter Datensatz
 

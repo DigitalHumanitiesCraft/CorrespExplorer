@@ -35,7 +35,7 @@ Die funktionalen Anforderungen stehen als Akzeptanzkriterien bei den Stories im 
 - NFR-02: Kein Build-Schritt. Maßstab: `docs/` ist ohne Werkzeugkette lauffähig ([architecture.md](architecture.md#entwurfsmuster)).
 - NFR-03: Daten aus CMIF und Wikidata werden vor jeder Ausgabe in HTML escaped, Links nur mit `http` und `https` gesetzt. Maßstab: Suite `test-security.js` gegen `test-hostile.xml`.
 - NFR-04: Unsicherheit in den Daten bleibt sichtbar und wird nicht durch falsche Präzision überdeckt. Maßstab: [uncertainty-specification.md](uncertainty-specification.md).
-- NFR-05: Alle interaktiven Elemente sind per Tastatur bedienbar und haben einen sichtbaren Fokus. Maßstab: [design.md](design.md#9-accessibility).
+- NFR-05: Alle interaktiven Elemente sind per Tastatur bedienbar und haben einen sichtbaren Fokus. Maßstab: [design.md](design.md#barrierefreiheit).
 
 ## Epics und User Stories
 
@@ -377,7 +377,7 @@ Als Forschende möchte ich zwei Personen, Zeiträume oder Orte nebeneinander ver
 - Schnellauswahl häufiger Einträge und Suche mit Autovervollständigung
 - Die gemeinsamen Briefe öffnen sich als Liste und von dort im Brief-Dialog
 
-#### US-37 Edition aus vielen Dateien laden
+#### US-38 Edition aus vielen Dateien laden
 
 Als Forschende möchte ich eine Edition laden, die je Korrespondenz eine TEI-Datei veröffentlicht, um den ganzen Bestand als einen Datensatz zu erkunden.
 
@@ -386,7 +386,7 @@ Als Forschende möchte ich eine Edition laden, die je Korrespondenz eine TEI-Dat
 - Dateien ohne Briefe werden übersprungen und gezählt, die Übersicht nennt Dateien, Einträge und Briefe
 - Einträge gleicher Signatur werden zu einem Brief zusammengeführt ([ADR-009](#adr-009-einträge-gleicher-signatur-sind-ein-brief))
 
-#### US-38 Überlieferung eines Briefs sehen und filtern
+#### US-39 Überlieferung eines Briefs sehen und filtern
 
 Als Forschende möchte ich sehen, was die Edition erschlossen hat und was der Brief selbst trägt, um Datierung und Ort eines Briefs einschätzen zu können.
 
@@ -405,7 +405,7 @@ Die Ansichten von `explore.html` und ihre Umsetzung beschreibt [architecture.md]
 | Übersicht mit Forschungspfaden | US-04, US-27, US-33 |
 | Karte | US-06, US-07, US-08 |
 | Korrespondenten | US-09, US-10, US-23 |
-| Briefe und Brief-Dialog | US-12, US-13, US-14 |
+| Briefe und Brief-Dialog | US-12, US-13, US-14, US-39 |
 | Timeline | US-05 |
 | Themen | US-17, US-24, US-25, US-26 |
 | Orte | US-07, US-08 |
@@ -415,7 +415,7 @@ Die Ansichten von `explore.html` und ihre Umsetzung beschreibt [architecture.md]
 | Vergleich | US-37 |
 | Wissenspfade und Datenkorb (`wissenskorb.html`) | US-35, US-36 |
 | Sidebar und Navigation | US-15 bis US-22 |
-| Startseite | US-01 bis US-03 |
+| Startseite | US-01 bis US-03, US-38 |
 
 ## Entscheidungen
 
