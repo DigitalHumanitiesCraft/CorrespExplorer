@@ -89,8 +89,12 @@ export function formatPersonName(name, precision) {
  * @param {string} precision - exact, region, unknown
  * @returns {string} HTML string
  */
-export function formatPlaceName(name, precision) {
+export function formatPlaceName(name, precision, inferred = false) {
     if (!name) return '';
+    // An inferred place keeps the editorial brackets; it is never shown like a place read from the letter
+    if (inferred && precision !== 'unknown') {
+        return `<span class="place-inferred" title="Ort von der Edition erschlossen">[${escapeHtml(name)}]</span>`;
+    }
     if (precision === 'unknown') {
         return `<span class="place-unknown">${escapeHtml(name)} <i class="fas fa-question-circle" title="Unbekannter Ort"></i></span>`;
     }
@@ -136,6 +140,10 @@ export function formatSingleDate(dateStr) {
  */
 export function formatDateWithPrecision(letter) {
     if (!letter.date) {
+        // The source wrote a date that no machine-readable value stands for
+        if (letter.dateText) {
+            return `<span class="date-text" title="Datum nur als Text überliefert, nicht auf der Zeitachse">${escapeHtml(letter.dateText)}</span>`;
+        }
         return '<span class="date-unknown"><i class="fas fa-question" title="Datum unbekannt"></i> unbekannt</span>';
     }
 
@@ -177,10 +185,15 @@ export function formatDateWithPrecision(letter) {
 
     // Build final output with icon prefix for imprecise dates
     // Date strings come verbatim from CMIF attributes, so the result is escaped
-    if (icon) {
-        return `<span class="date-with-precision" title="${tooltip}">${icon} ${escapeHtml(formattedDate)}</span>`;
+    // An inferred date keeps the editorial brackets, whatever its precision
+    const text = letter.dateInferred ? `[${escapeHtml(formattedDate)}]` : escapeHtml(formattedDate);
+    if (letter.dateInferred) {
+        tooltip = tooltip ? `${tooltip}. Datum von der Edition erschlossen` : 'Datum von der Edition erschlossen';
     }
-    return escapeHtml(formattedDate);
+    if (icon || letter.dateInferred) {
+        return `<span class="date-with-precision${letter.dateInferred ? ' date-inferred' : ''}" title="${tooltip}">${icon} ${text}</span>`;
+    }
+    return text;
 }
 
 // Initials

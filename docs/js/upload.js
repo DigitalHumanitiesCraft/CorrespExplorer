@@ -1,12 +1,12 @@
 // Upload Component - Handles CMIF file upload and URL loading
 // Parses CMIF-XML and stores data for visualization
 
-import { parseCMIF, addTableCoordinates } from './cmif-parser.js';
+import { parseCMIF, parseCMIFFiles, addTableCoordinates } from './cmif-parser.js';
 import { isCorrespSearchUrl } from './correspsearch-api.js';
 import { summarizeCorpus } from './research-paths.js';
 import { enrichPersonsBatch } from './wikidata-enrichment.js';
 import { resolveGeoNamesCoordinates, applyCoordinatesToData, analyzeCoordinateNeeds } from './geonames-enrichment.js';
-import { openModal, closeModal, enableModalKeyboard } from './utils.js';
+import { openModal, closeModal, enableModalKeyboard, isAllowedJsonPath, httpErrorMessage } from './utils.js';
 
 // DOM Elements
 let uploadZone, fileInput, urlInput, urlSubmit;
@@ -56,6 +56,8 @@ async function init() {
     if (startParams.get('demo') === 'true') {
         const demoCard = document.querySelector('.dataset-card[data-demo="true"]');
         if (demoCard) handleDatasetSelect(demoCard);
+    } else if (startParams.get('files')) {
+        loadFileList(startParams.get('files'));
     } else if (startParams.get('notice') === 'dataset-missing') {
         // explore.html sends links here whose dataset lay only in the sender's tab
         showError('Der Link gehört zu einem Datensatz, der nur im Browser der teilenden Person geladen war (eigene Datei oder correspSearch-Abfrage). Laden Sie den Datensatz hier erneut.');
@@ -135,7 +137,7 @@ function handleDrop(e) {
     const files = e.dataTransfer.files;
     if (files.length > 0) {
         lastTrigger = fileInput;
-        processFile(files[0]);
+        processFiles([...files]);
     }
 }
 
@@ -144,7 +146,7 @@ function handleFileSelect(e) {
     const files = e.target.files;
     if (files.length > 0) {
         lastTrigger = fileInput;
-        processFile(files[0]);
+        processFiles([...files]);
     }
     // Without the reset, choosing the same file again fires no change event
     e.target.value = '';
@@ -226,6 +228,63 @@ async function handleDatasetSelect(card) {
         }
     } else if (info === 'cmif') {
         fileInput.click();
+    }
+}
+
+/**
+ * Load an edition published as many files from a file list: a JSON document under data/ with
+ * {"files": ["a.xml", ...]}, names relative to the list. The path obeys the same rule as ?json=,
+ * and a file name may not leave the folder of the list.
+ */
+async function loadFileList(listPath) {
+    if (!isAllowedJsonPath(listPath)) {
+        showError('Die Dateiliste muss ein relativer Pfad unter data/ mit der Endung .json sein.');
+        return;
+    }
+    showLoading('Lade Dateiliste...');
+    try {
+        const response = await fetch(listPath);
+        if (!response.ok) throw new Error(httpErrorMessage(response.status, response.statusText));
+        const list = await response.json();
+        const names = (Array.isArray(list?.files) ? list.files : []).filter(name => typeof name === 'string' && /^[\w\-.]+\.xml$/.test(name));
+        if (names.length === 0) throw new Error('Die Dateiliste nennt keine XML-Dateien.');
+        const base = listPath.slice(0, listPath.lastIndexOf('/') + 1);
+        const texts = [];
+        for (let i = 0; i < names.length; i++) {
+            const fileResponse = await fetch(base + names[i]);
+            texts.push(fileResponse.ok ? await fileResponse.text() : '');
+            if (i % 10 === 0) updateLoadingText(`Lade Dateien... ${i + 1} von ${names.length}`);
+        }
+        const data = await parseCMIFFiles(texts, null, names);
+        await showConfigDialog(data, { type: 'file', source: `${data.meta.title} (${data.meta.files.loaded} Dateien)` });
+    } catch (error) {
+        console.error('File list load failed:', error);
+        showError(`Fehler beim Laden der Dateiliste: ${error.message}`);
+        hideLoading();
+    }
+}
+
+// One file loads as before; several files of one edition load as one dataset
+async function processFiles(files) {
+    if (files.length === 1) return processFile(files[0]);
+
+    const xmlFiles = files.filter(file => file.name.endsWith('.xml') || file.type.includes('xml'));
+    if (xmlFiles.length === 0) {
+        showError('Bitte wählen Sie XML-Dateien aus.');
+        return;
+    }
+
+    hideError();
+    showLoading(`Verarbeite ${xmlFiles.length} Dateien...`);
+    try {
+        const data = await parseCMIFFiles(xmlFiles, (done, total) => {
+            if (done % 10 === 0 || done === total) updateLoadingText(`Verarbeite Dateien... ${done} von ${total}`);
+        });
+        await showConfigDialog(data, { type: 'file', source: `${data.meta.title} (${data.meta.files.loaded} Dateien)` });
+    } catch (error) {
+        console.error('CMIF files parse failed:', error);
+        showError(`Fehler beim Parsen: ${error.message}`);
+        hideLoading();
     }
 }
 
@@ -478,7 +537,7 @@ function finalizeAndRedirect(data, sourceInfo) {
 function extractEnrichablePersons(letters) {
     const persons = new Map();
     letters.forEach(letter => {
-        [letter.sender, letter.recipient].forEach(person => {
+        [letter.sender, ...(letter.recipients || [letter.recipient])].forEach(person => {
             if (person?.id && person?.authority && ['gnd', 'viaf'].includes(person.authority)) {
                 if (!persons.has(person.id)) {
                     persons.set(person.id, {

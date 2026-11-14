@@ -101,6 +101,22 @@ Diese Quellen wurden beim Aufbau des Werkzeugs als ladbar erfasst. Ob eine URL w
 | Carl-Maria-von-Weber-Gesamtausgabe | https://weber-gesamtausgabe.de/cmif_v1.xml (empfohlen), `cmif_v2.xml` (CMIF-v2-Entwurf) | Umfangreicher Bestand, GND für Personen, CC BY 4.0 |
 | Edvard-Munch-Korrespondenz (NorKorr) | https://dataverse.no/api/access/datafile/191809, Datensatz https://dataverse.no/dataset.xhtml?persistentId=doi:10.18710/TAFUSV | Großer Datensatz aus der Edition eMunch.no, GeoNames für Orte, geeignet für Lasttests |
 
+### Stefan Zweig Digital (TEI auf Briefebene, kein CMIF)
+
+Stefan Zweig Digital (Literaturarchiv Salzburg, Hosting GAMS der Universität Graz) veröffentlicht kein CMIF. Die Briefmetadaten liegen als TEI je Konvolut im öffentlichen Repository https://github.com/chpollin/SZD unter `data/Correspondence/konvolute/`, Branch `master`, geprüft an Commit `74e08d03` (2026-09-30), und auf GAMS als Datastream `https://gams.uni-graz.at/{PID}/TEI_SOURCE`. Jeder Brief ist ein `biblFull` mit eigenem `profileDesc/correspDesc`, Signatur (`idno type="signature"`) und GAMS-PID (`idno type="PID"`, etwa `o:szd.985`). Das Werkzeug bündelt diese Daten nicht, weil die Dateien kein `licence`-Element tragen und die Rechte beim Literaturarchiv Salzburg liegen (README des SZD-Repositorys). Sie werden zur Laufzeit geladen.
+
+Ladewege, geprüft am 2026-11-13 mit `curl`: GAMS antwortet ohne `Access-Control-Allow-Origin`, ein Browser kann die GAMS-URL deshalb nicht laden. Raw-URLs des GitHub-Repositorys (`https://raw.githubusercontent.com/chpollin/SZD/master/data/Correspondence/konvolute/{datei}.xml`) erlauben CORS und laden ein Konvolut. Den ganzen Bestand lädt man als lokale Dateien.
+
+Befund des ersten Ladeversuchs mit dem unveränderten Parser (Repository `promptotyping-paper`, Commit `ec8b860`, `verification/szd-cmif-2026-11-13/`, am 2026-11-13 an den Ausgabedateien nachgeprüft):
+
+- 303 Dateien, 2.135 `correspDesc` in 301 Dateien, zwei Dateien ohne Brief. 1.786 Briefe tragen `correspDesc/@type="toZweig"`, 333 `fromZweig`, 16 keinen Typ.
+- Kein Ort trägt eine GeoNames-ID. Personen und Körperschaften tragen GND-URIs, teils ohne Schema (`d-nb.info/gnd/…`), teils projektinterne Verweise wie `#SZDPER.2137`.
+- Ein `correspAction type="sent"` enthält bis zu drei `placeName`. `@type="postmark"` (135) bezeichnet einen Poststempel, dessen Text oft ein Datum ist („5. 9. 1927“), `@type="original"` (45) die Ortsangabe der Vorlage, `@ana="deduced"` (527) einen erschlossenen Ort.
+- Datumsangaben stehen doppelt (`xml:lang` de und en). `date/@type="supplied"` (80) und `@ana="supplied/verified"` (250) kennzeichnen ergänzte Datierungen, 71 Datumselemente tragen nur Text ohne `@when`.
+- 671 `address/addrLine` unter `correspAction type="sent"` geben die Postanschrift des Empfängers wieder, etwa „Salzburg, Kapuzinerberg 5“ bei 194 Briefen an Zweig. Sie sind kein Absendeort.
+- 343 Briefe haben mehr als einen Empfänger. Personennamen stehen als `surname` und `forename` mit Zeilenumbruch.
+- `correspDesc` trägt kein `@ref` und kein `@key`, die ID steht als `xml:id` am umgebenden `biblFull`.
+
 ## Rechte und Lizenzen
 
 Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY 4.0 (`README.md`). Forschungsdaten Dritter sind davon ausgenommen und behalten die Lizenz, die ihre Herausgeber angeben. Maßgeblich ist die Angabe in `publicationStmt/availability/licence` der jeweiligen CMIF-Datei. Stand der Prüfung 2026-10-29.

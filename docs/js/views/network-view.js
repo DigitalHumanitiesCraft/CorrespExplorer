@@ -1,7 +1,7 @@
 // Network View
 // Force-directed graph of who wrote to whom, of contemporaries or of topics
 
-import { debounce, motionMs, personKey, settleWithoutMotion } from '../utils.js';
+import { debounce, motionMs, personKey, settleWithoutMotion, letterRecipients } from '../utils.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
 import { elements } from '../dom-cache.js';
 import { readTokens, renderDataTable } from './view-support.js';
@@ -236,16 +236,20 @@ export function buildCorrespondenceNetwork(letters, minLetters, maxNodes) {
 
     letters.forEach(letter => {
         const from = personKey(letter.sender);
-        const to = personKey(letter.recipient);
         if (from) touch(from, letter.sender, letter.year);
-        if (to) touch(to, letter.recipient, letter.year);
-        // A letter to oneself or with one side unknown is no correspondence between two persons
-        if (!from || !to || from === to) return;
-        const [a, b] = [from, to].sort();
-        if (!pairs.has(`${a}|${b}`)) pairs.set(`${a}|${b}`, { source: a, target: b, count: 0, forward: 0, backward: 0 });
-        const pair = pairs.get(`${a}|${b}`);
-        pair.count++;
-        if (from === a) pair.forward++; else pair.backward++;
+        // A letter to several recipients joins the sender with each of them
+        const recipients = letterRecipients(letter);
+        for (const recipient of recipients.length ? recipients : [null]) {
+            const to = personKey(recipient);
+            if (to) touch(to, recipient, letter.year);
+            // A letter to oneself or with one side unknown is no correspondence between two persons
+            if (!from || !to || from === to) continue;
+            const [a, b] = [from, to].sort();
+            if (!pairs.has(`${a}|${b}`)) pairs.set(`${a}|${b}`, { source: a, target: b, count: 0, forward: 0, backward: 0 });
+            const pair = pairs.get(`${a}|${b}`);
+            pair.count++;
+            if (from === a) pair.forward++; else pair.backward++;
+        }
     });
 
     const strong = [...pairs.values()].filter(p => p.count >= minLetters);

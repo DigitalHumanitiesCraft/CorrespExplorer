@@ -1,7 +1,7 @@
 // Test Suite: CMIF Parser
 // Tests XML→JSON parsing with REAL CMIF data
 
-import { parseCMIF } from '../cmif-parser.js';
+import { parseCMIF, parseCMIFFiles } from '../cmif-parser.js';
 import { assert } from './test-runner.js';
 import { httpErrorMessage } from '../utils.js';
 
@@ -264,6 +264,57 @@ export const CMIFParserTests = {
                 assert(second.letters[2].id === first.letters[2].id, 'Fallback id should be stable across parses');
                 const ids = first.letters.map(l => l.id);
                 assert(new Set(ids).size === ids.length, `Letter ids should be unique, got ${ids.join(', ')}`);
+            }
+        },
+
+        {
+            name: 'Briefsätze: ID vom Datensatz, Poststempel ist kein Absendeort, Anschrift und Signatur bleiben erhalten',
+            async run() {
+                const { letters } = await parseCMIF('data/test-letter-records.xml');
+                const r01 = letters[0];
+                assert(r01.id === 'REC.a.1', `ID vom biblFull erwartet, erhalten ${r01.id}`);
+                assert(r01.place_sent?.name === 'London', `London als Absendeort erwartet, erhalten ${r01.place_sent?.name}`);
+                assert(r01.postmark === '9. APR 1937', `Poststempel erwartet, erhalten ${r01.postmark}`);
+                assert(r01.address === 'Salzburg, Beispielgasse 5', `Anschrift erwartet, erhalten ${r01.address}`);
+                assert(r01.signature === 'TA/B1.1', `Signatur erwartet, erhalten ${r01.signature}`);
+                assert(r01.sender.name === 'Muster, Anna', `Name ohne Zeilenumbruch erwartet, erhalten ${JSON.stringify(r01.sender.name)}`);
+                assert(r01.date === '1937-04-09' && !r01.dateInferred, 'Gelesenes Datum bleibt unmarkiert');
+                const r04 = letters[3];
+                assert(r04.place_sent === null && r04.postmark === 'Graz 2', `Nur Poststempel: kein Absendeort, erhalten ${JSON.stringify(r04.place_sent)}`);
+            }
+        },
+
+        {
+            name: 'Briefsätze: Erschlossenes ist markiert, Datum nur als Text bleibt Text, interner Verweis ist nicht identifiziert',
+            async run() {
+                const { letters, indices } = await parseCMIF('data/test-letter-records.xml');
+                const [, r02, r03] = letters;
+                assert(r02.place_sent.inferred === true, 'ana="deduced" markiert den Ort als erschlossen');
+                assert(r02.dateInferred === true, 'type="supplied" markiert das Datum als erschlossen');
+                assert(r02.recipients?.length === 2, `Zwei Empfänger erwartet, erhalten ${r02.recipients?.length}`);
+                assert(r02.recipients[1].isOrganization && r02.recipients[1].authority === 'gnd', 'GND ohne Schema wird an der Körperschaft erkannt');
+                assert(indices.persons['000000003-1']?.as_recipient === 1, 'Der zweite Empfänger zählt im Personenindex');
+                assert(r03.date === null && r03.dateText === 'Pfingsten 1938', `Datumstext erwartet, erhalten ${r03.dateText}`);
+                assert(r03.sender.precision === 'named' && r03.sender.id === null && r03.sender.localRef === '#TESTPER.7',
+                    `Interner Verweis bleibt "named", erhalten ${JSON.stringify(r03.sender)}`);
+                assert(r03.place_sent.name === 'Wien' && r03.place_sent.inferred === true, `[Wien] wird Wien, erschlossen; erhalten ${JSON.stringify(r03.place_sent)}`);
+            }
+        },
+
+        {
+            name: 'Mehrere Dateien: ein Bestand, eindeutige IDs, übersprungene Datei wird genannt',
+            async run() {
+                const sources = await Promise.all(['data/test-letter-records.xml', 'data/test-letter-records-b.xml', 'data/test-letter-records-b.xml']
+                    .map(path => fetch(path).then(r => r.text())));
+                const data = await parseCMIFFiles([...sources, '<TEI xmlns="http://www.tei-c.org/ns/1.0"/>'], null, ['a.xml', 'b.xml', 'b2.xml', 'leer.xml']);
+                assert(data.letters.length === 6, `6 Briefe erwartet, erhalten ${data.letters.length}`);
+                const ids = data.letters.map(l => l.id);
+                assert(new Set(ids).size === ids.length, `Eindeutige IDs erwartet, erhalten ${ids.join(', ')}`);
+                assert(data.meta.title === 'Test Series: Letter Records', `Reihentitel erwartet, erhalten ${data.meta.title}`);
+                assert(data.meta.files.loaded === 3 && data.meta.files.skipped[0]?.name === 'leer.xml', `Dateibilanz: ${JSON.stringify(data.meta.files)}`);
+                assert(data.meta.publishers.length === 1, `Ein Herausgeber erwartet, erhalten ${JSON.stringify(data.meta.publishers)}`);
+                // R03 names her without authority id, which stays a separate key (ADR-001)
+                assert(data.indices.persons['000000001'].letter_count === 5, `Anna Muster mit GND in 5 Briefen, erhalten ${data.indices.persons['000000001'].letter_count}`);
             }
         },
 

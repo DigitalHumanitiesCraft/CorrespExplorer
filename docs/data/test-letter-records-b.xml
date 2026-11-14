@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic test file: second file of the same invented edition as test-letter-records.xml, for loading
+     several files as one dataset. Its letter has neither ref, key nor xml:id, like the first letter
+     of any file without ids, so the fallback ids of two files collide. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Test Dataset: Letter Records B</title>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>
+          <orgName>CorrespExplorer  Test</orgName>
+        </publisher>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</licence>
+        </availability>
+      </publicationStmt>
+      <seriesStmt>
+        <title>Test Series: Letter Records</title>
+      </seriesStmt>
+      <sourceDesc>
+        <p>Synthetic</p>
+      </sourceDesc>
+    </fileDesc>
+    <profileDesc>
+      <correspDesc>
+        <correspAction type="sent">
+          <persName ref="http://d-nb.info/gnd/000000002">Beispiel, Bruno</persName>
+          <date when="1940-01-02"/>
+          <placeName ref="http://sws.geonames.org/2778067">Graz</placeName>
+        </correspAction>
+        <correspAction type="received">
+          <persName ref="http://d-nb.info/gnd/000000001">Muster, Anna</persName>
+        </correspAction>
+      </correspDesc>
+    </profileDesc>
+  </teiHeader>
+</TEI>

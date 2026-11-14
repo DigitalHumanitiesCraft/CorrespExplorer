@@ -1,10 +1,10 @@
 // State manager: one filter state for all views (ADR-003), so every view and the URL see the same
 // letter set, and subscribers learn about changes without importing each other
 
-import { personKey, placeKey } from './utils.js';
+import { personKey, placeKey, letterRecipients } from './utils.js';
 
 const LEGACY_PLACE_PREFIX = 'name:';
-import { NO_LANGUAGE } from './constants.js';
+import { NO_LANGUAGE, LETTER_FEATURES } from './constants.js';
 
 /**
  * AppState
@@ -35,6 +35,7 @@ class AppState {
             person: null,                // personKey: authority id, else name
             subject: null,               // Subject URI, else id or label
             place: null,                 // placeKey: GeoNames id, else name
+            features: null,              // null = no filter, array of LETTER_FEATURES keys (all must hold)
             quality: {
                 preciseDates: false,
                 knownPersons: false,
@@ -176,6 +177,7 @@ class AppState {
             person: null,
             subject: null,
             place: null,
+            features: null,
             quality: {
                 preciseDates: false,
                 knownPersons: false,
@@ -242,7 +244,7 @@ class AppState {
 
             if (filters.person) {
                 if (personKey(letter.sender) !== filters.person &&
-                    personKey(letter.recipient) !== filters.person) {
+                    !letterRecipients(letter).some(r => personKey(r) === filters.person)) {
                     return false;
                 }
             }
@@ -262,7 +264,11 @@ class AppState {
             }
 
             if (filters.quality?.preciseDates && letter.datePrecision !== 'day') return false;
-            if (filters.quality?.knownPersons && (!letter.sender?.id || !letter.recipient?.id)) return false;
+            if (filters.quality?.knownPersons && (!letter.sender?.id || !letterRecipients(letter).every(r => r.id) || !letter.recipient)) return false;
+            if (filters.features?.length) {
+                const holds = key => LETTER_FEATURES.find(f => f.key === key)?.test(letter);
+                if (!filters.features.every(holds)) return false;
+            }
             if (filters.quality?.locatedPlaces && (!letter.place_sent?.lat || !letter.place_sent?.lon)) return false;
 
             return true;
@@ -348,6 +354,7 @@ class AppState {
         if (this.filters.quality?.preciseDates) params.set('precise', '1');
         if (this.filters.quality?.knownPersons) params.set('known', '1');
         if (this.filters.quality?.locatedPlaces) params.set('located', '1');
+        if (this.filters.features?.length) params.set('feat', this.filters.features.join(','));
 
         return params;
     }
@@ -385,12 +392,17 @@ class AppState {
         let place = params.get('place') || null;
         if (place?.startsWith(LEGACY_PLACE_PREFIX)) place = place.slice(LEGACY_PLACE_PREFIX.length) || null;
 
+        // Unknown tokens are dropped, so a hand-edited link cannot name a filter that does not exist
+        const featureKeys = (params.get('feat') || '').split(',').filter(key => LETTER_FEATURES.some(f => f.key === key));
+        const features = featureKeys.length ? featureKeys : null;
+
         this.updateFilters({
             temporal,
             languages,
             person: params.get('person') || null,
             subject: params.get('subject') || null,
             place,
+            features,
             quality: {
                 preciseDates: params.get('precise') === '1',
                 knownPersons: params.get('known') === '1',

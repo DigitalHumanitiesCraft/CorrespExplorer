@@ -6,7 +6,7 @@
 // index shapes differ between the CMIF parser (letter_count, {label, letter_count}) and the
 // preprocessed HSA JSON (letters_sent/letters_received, language strings, subjects with count).
 
-import { personKey, placeKey, escapeHtml, isKnownPlace } from './utils.js';
+import { personKey, placeKey, escapeHtml, isKnownPlace, letterRecipients } from './utils.js';
 import { languageLabel } from './constants.js';
 
 const PREVIEW_SIZE = 3;
@@ -42,7 +42,7 @@ export function summarizeCorpus(letters, indices = {}) {
 
     for (const letter of letters) {
         // A person seen once with and once without authority id stays two keys (ADR-001)
-        for (const person of [letter.sender, letter.recipient]) {
+        for (const person of [letter.sender, ...letterRecipients(letter)]) {
             const key = personKey(person);
             if (!key) continue;
             bump(persons, key, { key, name: person.name || key, identified: Boolean(person.id) });

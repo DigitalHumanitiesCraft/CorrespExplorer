@@ -1,7 +1,7 @@
 // Explorer page: loads a dataset (?json= path or the upload in sessionStorage), keeps the filter
 // inputs, renders overview, map, persons, letters and the dialogs, and wires the view modules.
 
-import { LANGUAGE_COLORS, MAP_DEFAULTS, NO_LANGUAGE, BASKET_LIMITS, VIEWS, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
+import { LANGUAGE_COLORS, MAP_DEFAULTS, NO_LANGUAGE, BASKET_LIMITS, VIEWS, LETTER_FEATURES, computeLanguageColors, registerLanguageLabels, languageLabel } from './constants.js';
 import {
     isInBasket as basketIsInBasket,
     addToBasket as basketAdd,
@@ -12,7 +12,7 @@ import {
     loadBasketFromUrl
 } from './basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from './wikidata-enrichment.js';
-import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, ignoreMissingStyleImages, sameFilterParams, datedYearRange, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority } from './utils.js';
+import { debounce, escapeHtml, safeUrl, externalLink, isAllowedJsonPath, ignoreMissingStyleImages, sameFilterParams, datedYearRange, enableModalKeyboard, openModal, closeModal, showToast, downloadFile, personKey, placeKey, personAuthority, letterRecipients } from './utils.js';
 import { analyzeResearchQuestions, datasetQuality, summarizeCorpus, renderOverviewResearchPaths } from './research-paths.js';
 import { datasetToJson, lettersToCsv } from './export.js';
 import { initKnowledgePath, startKnowledgePath } from './knowledge-path.js';
@@ -61,6 +61,7 @@ let historyReady = false;
 let datasetSource = null;
 let restoringFromHistory = false;
 let qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
+let featureFilter = new Set();
 let selectedPersonId = null;
 let selectedPlaceFilter = null;
 // The subject filter is separate from the topic shown in the topics view, which only displays it
@@ -450,6 +451,7 @@ function updateUI(data) {
 
     // Build language filter
     buildLanguageFilter();
+    buildFeatureFilter();
 }
 
 // Quality icons next to the sidebar counts, from the same figures as the overview chips
@@ -1327,6 +1329,8 @@ function initFilters() {
         activeSubjectFilter = null;
         qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false };
         Object.values(qualityCheckboxes).forEach(cb => { if (cb) cb.checked = false; });
+        featureFilter.clear();
+        document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = false; });
         applyFilters();
     });
 }
@@ -1366,6 +1370,7 @@ function applyFilters({ render = true } = {}) {
     filterUpdates.place = selectedPlaceFilter || null;
     filterUpdates.subject = activeSubjectFilter || null;
     filterUpdates.quality = { ...qualityFilter };
+    filterUpdates.features = featureFilter.size ? [...featureFilter] : null;
 
     state.updateFilters(filterUpdates);
     filteredLetters = state.getFilteredLetters();
@@ -1380,6 +1385,7 @@ function applyFilters({ render = true } = {}) {
     }
 
     updateFilterCounts();
+    updateFeatureCounts();
     updateStatCounts();
     updateUrlState();
     updateFilterBadges();
@@ -1431,7 +1437,7 @@ function clearSubjectFilter() {
 
 function hasActiveFilter() {
     const f = state.filters;
-    return Boolean(f.temporal || f.languages || f.person || f.place || f.subject ||
+    return Boolean(f.temporal || f.languages || f.person || f.place || f.subject || f.features?.length ||
         f.quality?.preciseDates || f.quality?.knownPersons || f.quality?.locatedPlaces);
 }
 
@@ -1460,7 +1466,8 @@ function updateFilterIndicators() {
 function personNameForKey(key) {
     for (const letter of allLetters) {
         if (personKey(letter.sender) === key) return letter.sender.name || key;
-        if (personKey(letter.recipient) === key) return letter.recipient.name || key;
+        const recipient = letterRecipients(letter).find(r => personKey(r) === key);
+        if (recipient) return recipient.name || key;
     }
     return key;
 }
@@ -1643,6 +1650,45 @@ function initUrlState() {
     activeSubjectFilter = f.subject;
     initialLanguageFilter = f.languages;
     qualityFilter = { preciseDates: false, knownPersons: false, locatedPlaces: false, ...f.quality };
+    featureFilter = new Set(f.features || []);
+}
+
+/**
+ * Sidebar filters for what the source records about the transmission of a letter (postmark,
+ * inferred date or place, several recipients). A feature no letter of the dataset has gets no
+ * checkbox, so plain CMIF shows no such group.
+ */
+function buildFeatureFilter() {
+    const group = document.getElementById('feature-filter-group');
+    const container = document.getElementById('feature-checkboxes');
+    if (!group || !container) return;
+    const present = LETTER_FEATURES.filter(feature => allLetters.some(feature.test));
+    group.classList.toggle('hidden', present.length === 0);
+    container.innerHTML = present.map(feature => `
+        <label class="filter-checkbox">
+            <input type="checkbox" name="feature" value="${feature.key}" ${featureFilter.has(feature.key) ? 'checked' : ''}>
+            <span>${escapeHtml(feature.label)}</span>
+            <span class="filter-count" id="count-feature-${feature.key}"></span>
+        </label>`).join('');
+    container.querySelectorAll('input[name="feature"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+            if (cb.checked) featureFilter.add(cb.value); else featureFilter.delete(cb.value);
+            applyFilters();
+        });
+    });
+}
+
+// Counts under all other active filters, like the language counts
+function updateFeatureCounts() {
+    const boxes = document.querySelectorAll('input[name="feature"]');
+    if (boxes.length === 0) return;
+    boxes.forEach(cb => {
+        const feature = LETTER_FEATURES.find(f => f.key === cb.value);
+        const others = (state.filters.features || []).filter(key => key !== cb.value);
+        const count = state.filterLetters({ ...state.filters, features: [...others, cb.value] }).length;
+        const el = document.getElementById(`count-feature-${feature.key}`);
+        if (el) el.textContent = `(${count.toLocaleString('de-DE')})`;
+    });
 }
 
 function updateUrlState() {
@@ -1948,7 +1994,7 @@ function renderPersonsList() {
     };
     filteredLetters.forEach(letter => {
         count(letter.sender, 'sent');
-        count(letter.recipient, 'received');
+        letterRecipients(letter).forEach(recipient => count(recipient, 'received'));
     });
 
     let persons = Object.values(personsMap);
@@ -2142,10 +2188,11 @@ function renderLettersList() {
     let letters = [...filteredLetters];
 
     if (lettersSearchTerm) {
+        const has = value => (value || '').toLowerCase().includes(lettersSearchTerm);
         letters = letters.filter(l =>
-            (l.sender?.name || '').toLowerCase().includes(lettersSearchTerm) ||
-            (l.recipient?.name || '').toLowerCase().includes(lettersSearchTerm) ||
-            (l.place_sent?.name || '').toLowerCase().includes(lettersSearchTerm)
+            has(l.sender?.name) ||
+            letterRecipients(l).some(r => has(r.name)) ||
+            has(l.place_sent?.name) || has(l.address) || has(l.postmark) || has(l.signature) || has(l.dateText)
         );
     }
 
@@ -2173,9 +2220,13 @@ function renderLettersList() {
 
     container.innerHTML = displayLetters.map((letter, index) => {
         const senderName = formatPersonName(letter.sender?.name, letter.sender?.precision);
-        const recipientName = formatPersonName(letter.recipient?.name, letter.recipient?.precision);
+        // Every recipient is named in the row; an absent recipient keeps the placeholder
+        const recipients = letterRecipients(letter);
+        const recipientName = recipients.length
+            ? recipients.map(r => formatPersonName(r.name, r.precision)).join('<span class="letter-recipient-sep">, </span>')
+            : formatPersonName(null);
         const date = formatDateWithPrecision(letter);
-        const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision);
+        const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision, letter.place_sent?.inferred);
         const language = letter.language?.label || '';
         const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
         const inBasket = basketIsInBasket('letters', letter.id);
@@ -2185,7 +2236,7 @@ function renderLettersList() {
                           letter.mentions?.persons?.length > 0 ||
                           letter.mentions?.places?.length > 0 ||
                           letter.sender?.id ||
-                          letter.recipient?.id;
+                          recipients.some(r => r.id);
 
         // The participants are the expand button; the star stays a sibling control (no nesting)
         const participants = `
@@ -2213,6 +2264,9 @@ function renderLettersList() {
                 </div>
                 <div class="letter-meta">
                     ${placeName ? `<span><i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${placeName}</span>` : ''}
+                    ${letter.postmark ? `<span class="letter-meta__labelled"><span class="letter-meta__label">Poststempel</span> ${escapeHtml(letter.postmark)}</span>` : ''}
+                    ${letter.address ? `<span class="letter-meta__labelled"><span class="letter-meta__label">Anschrift</span> ${escapeHtml(letter.address)}</span>` : ''}
+                    ${letter.signature ? `<span class="letter-meta__labelled"><span class="letter-meta__label">Signatur</span> ${escapeHtml(letter.signature)}</span>` : ''}
                     ${language ? `<span><i class="fas fa-language" aria-hidden="true"></i> ${escapeHtml(language)}</span>` : ''}
                     ${safeUrl(letter.url) ? `<span><a href="${escapeHtml(safeUrl(letter.url))}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt" aria-hidden="true"></i> Quelle</a></span>` : ''}
                 </div>
@@ -2261,7 +2315,7 @@ function buildLetterDetails(letter) {
 
     html += '<div class="letter-detail-persons">';
     html += `<span class="detail-person"><strong>Von:</strong> ${buildPersonLink(letter.sender)}</span>`;
-    html += `<span class="detail-person"><strong>An:</strong> ${buildPersonLink(letter.recipient)}</span>`;
+    html += `<span class="detail-person"><strong>An:</strong> ${letterRecipients(letter).map(buildPersonLink).join(', ') || buildPersonLink(null)}</span>`;
     html += '</div>';
 
     const mentionGroups = [
@@ -2317,7 +2371,7 @@ function showLetterDetail(letterId) {
     if (!modal || !body) return;
 
     const sender = letter.sender?.name || 'Unbekannt';
-    const recipient = letter.recipient?.name || 'Unbekannt';
+    const recipient = letterRecipients(letter).map(r => r.name).join(', ') || 'Unbekannt';
     title.textContent = `${sender} an ${recipient}`;
 
     let html = '<div class="letter-detail">';
@@ -2327,10 +2381,15 @@ function showLetterDetail(letterId) {
     // Date with its precision marker, as in the list (ADR-002)
     html += detailRow('Datum', formatDateWithPrecision(letter), getDatePrecisionClass(letter.datePrecision, letter.dateCertainty));
     html += detailRow('Absender', buildPersonLink(letter.sender));
-    html += detailRow('Empfänger', buildPersonLink(letter.recipient));
+    html += detailRow('Empfänger', letterRecipients(letter).map(buildPersonLink).join(', ') || buildPersonLink(null));
     if (letter.place_sent?.name) {
-        html += detailRow('Absendeort', buildPlaceLink(letter.place_sent));
+        html += detailRow('Absendeort', letter.place_sent.inferred
+            ? formatPlaceName(letter.place_sent.name, letter.place_sent.precision, true)
+            : buildPlaceLink(letter.place_sent));
     }
+    if (letter.postmark) html += detailRow('Poststempel', escapeHtml(letter.postmark));
+    if (letter.address) html += detailRow('Anschrift', escapeHtml(letter.address));
+    if (letter.signature) html += detailRow('Signatur', escapeHtml(letter.signature));
     if (letter.language?.label) {
         html += detailRow('Sprache', escapeHtml(letter.language.label));
     }

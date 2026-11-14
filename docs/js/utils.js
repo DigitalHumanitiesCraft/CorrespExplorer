@@ -459,6 +459,16 @@ export function personKey(person) {
 }
 
 /**
+ * All recipients of a letter. Most letters have one; a source that names several keeps them in
+ * `recipients`, with the first also in `recipient`.
+ * @param {Object|null} letter
+ * @returns {Array}
+ */
+export function letterRecipients(letter) {
+    return letter?.recipients || (letter?.recipient ? [letter.recipient] : []);
+}
+
+/**
  * Key of a place in the place index and basket: GeoNames id, else name
  * @param {{geonames_id?: string, name?: string}|null} place
  * @returns {string|null}
@@ -541,7 +551,7 @@ export function buildIndices(letters) {
 
     for (const letter of letters) {
         countPerson(letter.sender, 'as_sender');
-        countPerson(letter.recipient, 'as_recipient');
+        letterRecipients(letter).forEach(recipient => countPerson(recipient, 'as_recipient'));
 
         const placeId = placeKey(letter.place_sent);
         if (placeId) {

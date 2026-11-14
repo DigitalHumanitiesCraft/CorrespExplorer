@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic test file: TEI that describes each letter in its own biblFull record instead of a CMIF list.
+     Covers ids on the record, postmarks, inferred places and dates, dates given only as text,
+     several recipients, references inside the edition, addresses and shelfmarks. All persons,
+     places and shelfmarks are invented. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>Test Dataset: Letter Records A</title>
+      </titleStmt>
+      <publicationStmt>
+        <publisher>
+          <orgName>CorrespExplorer Test</orgName>
+        </publisher>
+        <availability>
+          <licence target="https://creativecommons.org/licenses/by/4.0/">CC-BY 4.0</licence>
+        </availability>
+      </publicationStmt>
+      <seriesStmt>
+        <title>Test Series: Letter Records</title>
+      </seriesStmt>
+      <sourceDesc>
+        <p>Synthetic</p>
+      </sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text>
+    <body>
+      <listBibl>
+
+        <!-- CASE R01: postmark before the place, address, shelfmark, name in surname and forename -->
+        <biblFull xml:id="REC.a.1">
+          <fileDesc>
+            <titleStmt><title>R01</title></titleStmt>
+            <publicationStmt><ab>Einzelbrief</ab></publicationStmt>
+            <sourceDesc>
+              <msDesc>
+                <msIdentifier>
+                  <repository>Testarchiv</repository>
+                  <idno type="signature">TA/B1.1</idno>
+                </msIdentifier>
+              </msDesc>
+            </sourceDesc>
+          </fileDesc>
+          <profileDesc>
+            <correspDesc>
+              <correspAction type="sent">
+                <persName ref="http://d-nb.info/gnd/000000001">
+                  <surname>Muster</surname>
+                  <forename>Anna</forename>
+                </persName>
+                <date when="1937-04-09" xml:lang="de">9. 4. 37</date>
+                <date when="1937-04-09" xml:lang="en">9. 4. 37</date>
+                <placeName type="postmark">9. APR 1937</placeName>
+                <placeName xml:lang="de">London</placeName>
+                <address>
+                  <addrLine>Salzburg, Beispielgasse 5</addrLine>
+                </address>
+              </correspAction>
+              <correspAction type="received">
+                <persName ref="http://d-nb.info/gnd/000000002">
+                  <surname>Beispiel</surname>
+                  <forename>Bruno</forename>
+                </persName>
+              </correspAction>
+            </correspDesc>
+          </profileDesc>
+        </biblFull>
+
+        <!-- CASE R02: place deduced by the edition (ana), date supplied (type), two received actions -->
+        <biblFull xml:id="REC.a.2">
+          <fileDesc>
+            <titleStmt><title>R02</title></titleStmt>
+            <publicationStmt><ab>Einzelbrief</ab></publicationStmt>
+            <sourceDesc><p>Synthetic</p></sourceDesc>
+          </fileDesc>
+          <profileDesc>
+            <correspDesc>
+              <correspAction type="sent">
+                <persName ref="http://d-nb.info/gnd/000000002">
+                  <surname>Beispiel</surname>
+                  <forename>Bruno</forename>
+                </persName>
+                <date type="supplied" when="1938-05-12">12. Mai 1938</date>
+                <placeName ana="deduced">Salzburg</placeName>
+              </correspAction>
+              <correspAction type="received">
+                <persName ref="http://d-nb.info/gnd/000000001">
+                  <surname>Muster</surname>
+                  <forename>Anna</forename>
+                </persName>
+              </correspAction>
+              <correspAction type="received">
+                <orgName ref="d-nb.info/gnd/000000003-1">Verlag Probe</orgName>
+              </correspAction>
+            </correspDesc>
+          </profileDesc>
+        </biblFull>
+
+        <!-- CASE R03: date only as text, sender with a reference inside the edition, original wording of the place -->
+        <biblFull xml:id="REC.a.3">
+          <fileDesc>
+            <titleStmt><title>R03</title></titleStmt>
+            <publicationStmt><ab>Einzelbrief</ab></publicationStmt>
+            <sourceDesc><p>Synthetic</p></sourceDesc>
+          </fileDesc>
+          <profileDesc>
+            <correspDesc>
+              <correspAction type="sent">
+                <persName ref="#TESTPER.7">Probe Carl</persName>
+                <date xml:lang="de">Pfingsten 1938</date>
+                <placeName type="original">Beispielgasse 5 | Salzburg</placeName>
+                <placeName>[Wien]</placeName>
+              </correspAction>
+              <correspAction type="received">
+                <persName>Muster Anna</persName>
+              </correspAction>
+            </correspDesc>
+          </profileDesc>
+        </biblFull>
+
+        <!-- CASE R04: only a postmark, no place -->
+        <biblFull xml:id="REC.a.4">
+          <fileDesc>
+            <titleStmt><title>R04</title></titleStmt>
+            <publicationStmt><ab>Einzelbrief</ab></publicationStmt>
+            <sourceDesc><p>Synthetic</p></sourceDesc>
+          </fileDesc>
+          <profileDesc>
+            <correspDesc>
+              <correspAction type="sent">
+                <persName ref="http://d-nb.info/gnd/000000001">
+                  <surname>Muster</surname>
+                  <forename>Anna</forename>
+                </persName>
+                <placeName type="postmark">Graz 2</placeName>
+              </correspAction>
+              <correspAction type="received">
+                <persName ref="http://d-nb.info/gnd/000000002">
+                  <surname>Beispiel</surname>
+                  <forename>Bruno</forename>
+                </persName>
+              </correspAction>
+            </correspDesc>
+          </profileDesc>
+        </biblFull>
+
+      </listBibl>
+    </body>
+  </text>
+</TEI>

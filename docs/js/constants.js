@@ -2,6 +2,20 @@
 
 // Language code of letters without a language. The former sentinel 'None' collided with the
 // HSA source, which writes target="None" for Ladin (data.md, Hugo Schuchardt Archiv)
+/**
+ * Properties of the transmission a source may record per letter. Each becomes a sidebar filter
+ * when at least one letter of the loaded dataset has it, so every such group can be listed.
+ * `param` is the token in the `feat` URL parameter.
+ */
+export const LETTER_FEATURES = [
+    { key: 'dateInferred', label: 'Datum erschlossen', test: l => Boolean(l.dateInferred) },
+    { key: 'dateText', label: 'Datum nur als Text', test: l => Boolean(l.dateText) },
+    { key: 'placeInferred', label: 'Ort erschlossen', test: l => Boolean(l.place_sent?.inferred) },
+    { key: 'postmark', label: 'Mit Poststempel', test: l => Boolean(l.postmark) },
+    { key: 'address', label: 'Mit Anschrift', test: l => Boolean(l.address) },
+    { key: 'multiRecipients', label: 'Mehrere Empfänger', test: l => (l.recipients?.length || 0) > 1 }
+];
+
 export const NO_LANGUAGE = '_none';
 
 // Strong language colours, for the dominant language of a corpus
