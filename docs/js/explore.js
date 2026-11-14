@@ -54,7 +54,7 @@ let selectedPartnerId = null;
 let selectedPlaceFilter = null;
 // One year picked in the space-time figure; the period of the sidebar stays as it is
 let pickedYearFilter = null;
-// The subject filter is separate from the topic shown in the topics view, which only displays it
+// The subject filter; choosing a row of the topics figure sets it
 let activeSubjectFilter = null;
 let initialLanguageFilter = null;
 let currentView = 'overview';
@@ -933,7 +933,7 @@ function clearPlaceFilter() {
     applyFilters();
 }
 
-// Only these two change the subject filter; selecting a topic in the topics view only shows it
+// Only these two change the subject filter
 function applySubjectFilter(subjectId) {
     activeSubjectFilter = subjectId;
     applyFilters();

@@ -14,6 +14,7 @@ import { DemoTests } from './test-demo.js';
 import { CorrespSearchTests } from './test-correspsearch.js';
 import { SpacetimeTests } from './test-spacetime.js';
 import { NetworkTests } from './test-network.js';
+import { TopicsTests } from './test-topics.js';
 import { SelectionTests } from './test-selection.js';
 
 /**
@@ -33,6 +34,7 @@ export async function runAllTests() {
         CorrespSearchTests,
         SpacetimeTests,
         NetworkTests,
+        TopicsTests,
         SelectionTests,
 
         // Infrastructure (State Management)

@@ -34,6 +34,7 @@ let frame = 0;
 let hoverIndex = -1;
 let hoverYear = null;
 let lastChosen = null;
+let tableStale = true;
 const egoCache = { letters: null, ego: null, totals: null };
 
 const el = id => document.getElementById(id);
@@ -304,6 +305,8 @@ function measure() {
     geom = {
         width, height, narrow, pitch, nameW, plotX0, plotX1,
         ridge: narrow ? 20 : Math.round(pitch * 2.2),
+        // Room above the first row for the part of its ridge that rises over the row
+        offset: narrow ? 0 : Math.round(pitch * 1.2),
         // A block is the rows of the first screen. It follows the window, not the figure, so that
         // the strip of a chosen subject or the open drawer, which shorten the figure, do not
         // reorder it; the subtrahend is the height of header, axis, table line and drawer line.
@@ -349,9 +352,10 @@ function renderRows() {
     // A single-select listbox: one tab stop, the options carry name and numbers
     list.innerHTML = rows.map((s, i) => {
         const chosen = s.key === model.chosen;
-        return `<li role="option" class="tp-row${chosen ? ' tp-row--chosen' : ''}" data-i="${i}" data-key="${escapeHtml(s.key)}" aria-selected="${chosen}" tabindex="${s.key === current ? 0 : -1}"><span class="tp-row__name">${escapeHtml(s.label)}</span><span class="visually-hidden">: ${escapeHtml(describe(s))}</span></li>`;
+        return `<li role="option" class="tp-row${chosen ? ' tp-row--chosen' : ''}" data-i="${i}" data-key="${escapeHtml(s.key)}" aria-selected="${chosen}" aria-label="${escapeHtml(`${s.label}: ${describe(s)}`)}" tabindex="${s.key === current ? 0 : -1}"><span class="tp-row__name">${escapeHtml(s.label)}</span></li>`;
     }).join('');
     if (geom) list.style.setProperty('--tp-pitch', `${geom.pitch}px`);
+    if (geom) list.style.setProperty('--tp-offset', `${geom.offset}px`);
     if (geom) list.style.setProperty('--tp-name-width', `${geom.nameW}px`);
     let message = '';
     if (model.profiles.subjects.length === 0) message = 'Die Auswahl enthält keinen Brief mit Thema.';
@@ -440,9 +444,23 @@ function renderChoice() {
     strip.classList.remove('hidden');
 }
 
+// The table of all rows costs more than the figure, so it is built when it is opened and kept
+// current only while it is open; closed, the host holds the disclosure alone
 function renderTable() {
+    const host = el('topics-table');
+    if (!host) return;
+    if (!model.rows.length) {
+        host.innerHTML = '';
+        return;
+    }
+    if (!host.querySelector('details')?.open) {
+        if (!host.querySelector('details')) host.innerHTML = '<details class="chart-table"><summary>Daten als Tabelle</summary></details>';
+        tableStale = true;
+        return;
+    }
+    tableStale = false;
     const rows = model.rows.map(s => [s.label, model.twoKinds ? (s.kind === 'language' ? 'Sprache' : 'Thema') : 'Thema', s.total, s.first ?? '', s.peak ?? '', s.last ?? '']);
-    renderDataTable(el('topics-table'), {
+    renderDataTable(host, {
         caption: 'Themen mit Briefen, erstem Jahr, Jahr der meisten Briefe und letztem Jahr',
         columns: ['Thema', 'Art', 'Briefe', 'Erstes Jahr', 'Meiste Briefe', 'Letztes Jahr'],
         rows,
@@ -458,7 +476,7 @@ function revealChosen() {
     const i = chosen ? model.index.get(chosen) : undefined;
     const scroll = el('topics-scroll');
     if (i === undefined || !scroll || !geom) return;
-    const top = i * geom.pitch;
+    const top = geom.offset + i * geom.pitch;
     if (top < scroll.scrollTop || top + geom.pitch > scroll.scrollTop + scroll.clientHeight) {
         scroll.scrollTop = Math.max(0, top - scroll.clientHeight / 2);
     }
@@ -473,7 +491,7 @@ function draw() {
     const canvas = el('topics-canvas');
     const scroll = el('topics-scroll');
     if (!canvas || !scroll || !model || !geom || !ink) return;
-    const { width, height, pitch, ridge, plotX0, plotX1, block, narrow } = geom;
+    const { width, height, pitch, ridge, plotX0, plotX1, block, narrow, offset } = geom;
     const dpr = window.devicePixelRatio || 1;
     if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) {
         canvas.width = Math.round(width * dpr);
@@ -486,18 +504,24 @@ function draw() {
     ctx.clearRect(0, 0, width, height);
     const { yearMin, yearMax } = model.profiles;
     if (yearMin === null || !model.rows.length) return;
-    const top = scroll.scrollTop;
+    // Scroll position counted from the top of the first row
+    const top = scroll.scrollTop - offset;
 
-    // Decades as faint lines behind the ridges
-    ctx.strokeStyle = ink.grid;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for (let y = Math.ceil(yearMin / 10) * 10; y <= yearMax; y += 10) {
-        const x = Math.round(xOf(y)) + 0.5;
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-    }
-    ctx.stroke();
+    // Decades as faint lines behind the ridges; on a phone only within the ridge of each row, so
+    // they do not cross the names above the ridges
+    const decades = [];
+    for (let y = Math.ceil(yearMin / 10) * 10; y <= yearMax; y += 10) decades.push(Math.round(xOf(y)) + 0.5);
+    const grid = (y0, y1) => {
+        ctx.strokeStyle = ink.grid;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (const x of decades) {
+            ctx.moveTo(x, y0);
+            ctx.lineTo(x, y1);
+        }
+        ctx.stroke();
+    };
+    if (!narrow) grid(0, height);
 
     // Rows from top to bottom, so a lower ridge covers the foot of the one above; rows below the
     // screen whose ridge reaches into it are drawn as well
@@ -522,6 +546,7 @@ function draw() {
             ctx.lineTo(width, y);
             ctx.stroke();
         }
+        if (narrow) grid(base - ridge, base);
         ridgePath(ctx, s.years, base);
         // An opaque fill in the colour of the row's band hides the ridges behind it
         ctx.fillStyle = chosen ? ink.chosenBand : hovered ? ink.hoverBand : ink.bg;
@@ -584,7 +609,7 @@ function showTooltip(i, year, anchorX) {
     if (shared) lines.push(`${fmt(shared)} davon zusammen mit dem gewählten Thema`);
     tip.innerHTML = lines.map(escapeHtml).join('<br>');
     tip.classList.remove('hidden');
-    const rowTop = i * geom.pitch - scroll.scrollTop;
+    const rowTop = geom.offset + i * geom.pitch - scroll.scrollTop;
     const x = anchorX ?? geom.plotX0;
     tip.style.left = `${Math.max(4, Math.min(geom.width - tip.offsetWidth - 4, x + 12))}px`;
     const above = rowTop - tip.offsetHeight - 6;
@@ -608,17 +633,26 @@ function bind() {
     const scroll = el('topics-scroll');
     const list = el('topics-rows');
 
+    // Scrolling moves the rows away from a pointer tooltip; a focused row keeps its tooltip,
+    // because focusing a row far down scrolls the figure to it
     scroll.addEventListener('scroll', () => {
-        hideTooltip();
+        const focused = list.contains(document.activeElement) ? document.activeElement : null;
+        if (focused) requestAnimationFrame(() => showTooltip(Number(focused.dataset.i), null));
+        else hideTooltip();
         scheduleDraw();
     }, { passive: true });
+
+    // toggle does not bubble, so the host listens in the capture phase
+    el('topics-table')?.addEventListener('toggle', (e) => {
+        if (e.target.open && tableStale && model) renderTable();
+    }, true);
 
     // Pointer: the row under it by its band, the year by its position on the axis
     scroll.addEventListener('pointermove', (e) => {
         if (!model || !geom) return;
         const rect = scroll.getBoundingClientRect();
         const mx = e.clientX - rect.left;
-        const i = Math.floor((e.clientY - rect.top + scroll.scrollTop) / geom.pitch);
+        const i = Math.floor((e.clientY - rect.top + scroll.scrollTop - geom.offset) / geom.pitch);
         if (i < 0 || i >= model.rows.length) {
             setHover(-1, null);
             hideTooltip();

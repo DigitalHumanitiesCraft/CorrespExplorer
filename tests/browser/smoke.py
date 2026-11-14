@@ -350,6 +350,41 @@ class Smoke:
         assert years > 2, f"activity year select has {years} options"
         assert styles and "positron" in styles[0], f"map starts with {styles[:1]}"
 
+    def topics_figure(self) -> None:
+        # Every subject of the data file is a row; Enter on a row sets the subject filter and the
+        # figure keeps all rows; a correspondent of the strip adds the person filter
+        data = json.loads((DOCS / "data" / "hsa-letters.json").read_text(encoding="utf-8"))
+        expected = len({
+            s.get("uri") or s.get("id") or s.get("label")
+            for letter in data["letters"]
+            for s in (letter.get("mentions") or {}).get("subjects") or []
+        })
+        ctx = self.context()
+        page = ctx.new_page()
+        page.goto(f"{self.base}explore.html?view=topics&{HSA}")
+        _loaded(page)
+        rows = page.locator("#topics-rows .tp-row").count()
+        painted = page.evaluate(
+            "() => { const c = document.getElementById('topics-canvas');"
+            " return c.width > 0 && c.getContext('2d').getImageData(0, 0, c.width, c.height).data.some(v => v); }"
+        )
+        page.locator('#topics-rows .tp-row[tabindex="0"]').focus()
+        page.keyboard.press("ArrowDown")
+        key = page.evaluate("document.activeElement.dataset.key")
+        page.keyboard.press("Enter")
+        page.wait_for_timeout(300)
+        subject = page.evaluate("new URLSearchParams(location.search).get('subject')")
+        rows_chosen = page.locator("#topics-rows .tp-row").count()
+        page.locator("#topics-choice [data-person]").first.click()
+        page.wait_for_timeout(300)
+        params = page.evaluate("Object.fromEntries(new URLSearchParams(location.search))")
+        ctx.close()
+        assert rows == expected, f"{rows} rows for {expected} subjects"
+        assert painted, "topics canvas is empty"
+        assert subject == key, f"Enter on {key} set subject {subject}"
+        assert rows_chosen == expected, f"{rows_chosen} rows after choosing a subject"
+        assert params.get("person") and params.get("subject") == key, f"after a correspondent: {params}"
+
     def reduced_motion_network(self) -> None:
         ctx = self.browser.new_context(
             viewport={"width": 1366, "height": 900}, reduced_motion="reduce"
@@ -507,6 +542,10 @@ def _checks(
         (
             "page structure: h1 first, described views, one path bar, light map",
             smoke.page_structure,
+        ),
+        (
+            "topics: a row per subject, Enter sets the subject, a correspondent adds the person",
+            smoke.topics_figure,
         ),
         ("network does not move under reduced motion", smoke.reduced_motion_network),
         (
