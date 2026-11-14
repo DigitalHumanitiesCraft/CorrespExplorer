@@ -178,6 +178,50 @@ Nicht geprüft sind der Wissenskorb mit Einträgen, die dunkle Grundkarte, der E
 
 ## Vorhaben
 
+### Entwurf: Arbeitsfläche über alle Dimensionen
+
+Dieser Entwurf ist eine Variante neben dem gebauten Stand und noch nicht entschieden. Er antwortet auf die Rückmeldung des Operators vom 2026-11-14, die Oberfläche sei zu stark eingedampft und solle innovativ und professionell alle Dimensionen abbilden ([design.md](design.md#gliederung-nach-gegenstand-stufe-vom-2026-11-14)). Gebaut wird nach seiner Freigabe, in Abschnitten, die er einzeln am Bildschirm beurteilt.
+
+Leitgedanke
+
+Eine Korrespondenz hat sechs Dimensionen, Zeit, Personen, Orte, Sprache, Themen und Überlieferung. Jede ist zugleich eine Ansicht und ein Filter. Der Brief ist die Einheit, die alle verbindet, und erscheint als Detail der jeweiligen Auswahl. Der Überblick steht zuerst, Auswahl und Vergrößerung folgen, die Briefe kommen auf Abruf.
+
+Aufbau des Bildschirms
+
+- Kopfzeile: Name des Bestands, die Dimensionen als Reiter mit ihren Menüs, Korb und Export.
+- Seitenleiste: was den Bestand beschreibt, darunter die aktive Auswahl als ein Satz mit entfernbaren Marken, darunter die Filter.
+- Bühne: eine Grafik in voller Größe, die Darstellung der gewählten Dimension. Sie nimmt den größten Teil des Bildschirms ein.
+- Kontextstreifen: neben oder unter der Bühne stehen die übrigen Dimensionen als kleine Grafiken derselben Auswahl. Ein Klick auf einen Streifen tauscht ihn mit der Bühne. So bleiben alle Dimensionen sichtbar, während eine groß bearbeitet wird.
+- Briefe der Auswahl: am unteren Rand eine Zeile mit der Zahl der Briefe, die sich zur Liste öffnet, ohne die Ansicht zu verlassen. Ein Brief öffnet seinen Dialog.
+
+Die Dimensionen auf der Bühne
+
+- Zeit: gestapelte Jahre mit aufziehbarem Zeitraum. Das Vergrößern eines Zeitraums führt von Jahren über Monate zu Tagen und zuletzt zur Abfolge der einzelnen Briefe. Jahre, Tage und Chronik werden damit Stufen einer Ansicht statt drei Darstellungen.
+- Personen: das Netzwerk als Bühne, daneben die Rangfolge. Eine Person zu wählen zeigt ihr Umfeld. Wo ein Bestand erwähnte Personen auszeichnet, bilden sie eine zuschaltbare Schicht, in der die Dritten sichtbar werden, die weder schreiben noch Post bekommen.
+- Orte: die Karte als Bühne. Für Bestände ohne Koordinaten steht die Rangfolge der Orte und ein Satz, warum die Karte fehlt.
+- Sprache, Themen und Überlieferung: jede als Verlauf über die Zeit in kleinen, gleich skalierten Grafiken je Ausprägung, die sich vergleichen lassen.
+- Vergleich: kein eigener Ort. Eine Auswahl lässt sich festhalten, eine zweite daneben stellen, und jede Grafik zeigt beide.
+
+Was der Entwurf vom gebauten Stand übernimmt
+
+- Die Arbeitsfläche der Startansicht mit Grafiken, die einander filtern, die gestapelte Zeitleiste, die Farbrollen und die Sprachpalette, die Menüs unter den Reitern, die Parserkorrekturen.
+
+Was offen ist und der Operator entscheidet
+
+- Welche Dinge im früheren Stand besser waren und zurückkommen sollen. Jeder Stand liegt in der Versionsgeschichte.
+- Ob die Chronik als feinste Stufe der Zeit aufgeht oder eine eigene Darstellung bleibt, und was ihr fehlt.
+- Ob die Katalogansichten Briefe und Personen als Reiter bleiben oder nur noch als Liste der Auswahl erscheinen.
+- Ob der Bestand von Stefan Zweig Digital eine geprüfte Ortstabelle für die Karte bekommt.
+
+Bauabschnitte, jeder mit Datenprüfung, Messung des ganzen ersten Bildschirms, einem unabhängigen Leser und dem Urteil des Operators
+
+1. Bühne, Kontextstreifen und Briefe der Auswahl, zuerst mit der Zeit auf der Bühne.
+2. Zeit mit ihren Stufen bis zum einzelnen Brief.
+3. Personen mit Netzwerk und der Schicht der Erwähnten.
+4. Orte mit Karte, dazu die Entscheidung über die Ortstabelle.
+5. Sprache, Themen und Überlieferung als Verläufe, Vergleich als festgehaltene Auswahl.
+6. Aufräumen: die Maschinerie der Forschungspfade, verborgene Reste, Startseite und Lade-Dialog.
+
 Die Punkte sind technisch und umkehrbar und brauchen keine Entscheidung des Operators.
 
 - Live-Prüfung von „Lebensdaten von Wikidata laden“ im Personen-Dialog. correspSearch-API und OpenFreeMap-Grundkarte sind am 2026-11-05 live geprüft
