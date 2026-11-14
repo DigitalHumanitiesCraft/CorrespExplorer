@@ -4545,3 +4545,13 @@ body:has(.tour-highlight) .tour-backdrop {
     display: inline-block;
     margin: 0 var(--space-xs);
 }
+
+/* The one group of the sidebar whose entries do not say what they are: "Ladinisch" or
+   "Papiamentu" need the word. Quiet, in the text face, no heading style. */
+#sidebar-filters .filter-label {
+    margin: 0 0 var(--space-xs);
+    font-family: var(--font-base);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    color: var(--color-text-light);
+}
