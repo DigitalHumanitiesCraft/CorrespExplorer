@@ -351,6 +351,12 @@ Zur Startseite nach der Schärfung, über die koordinierende Session weitergegeb
 
 Folge: in Arbeit. Die Startfigur wird aus dem zusammengesetzt, was ein Bestand trägt, statt ein festes Raster zu füllen.
 
+Zur Startansicht des Explorers als Dashboard, über die koordinierende Session weitergegeben, „BASC, Geschrieben“ steht für die Themenzeilen Baskisch und eine weitere:
+
+> Also, das geht auf jeden Fall in die richtige Richtung. Auch jetzt ist es noch ein bisschen zu voll. Wo können wir das, was wir hier haben, noch mal optimieren und verbessern? In User Interfaces, im Design. Ich könnte mir vorstellen, dass die Sidebar noch kompakter ist, mit mehr Icons und Tooltips arbeitet und damit ein bisschen schmäler wird. Dann haben die Visualisierungen ein bisschen mehr Platz. Den mittleren Teil mit den Legenden können wir vielleicht besser zusammenführen. Vielleicht kann sie eine bestimmte Funktion beim Filtern von der Zeit übernehmen. Dieses Selektieren ist natürlich wirklich sehr gut. Das muss ja bei den Userinnen und Usern gleich beim Start klar sein, dass sie das tun können. Bei BASC, Geschrieben, Spanisch, Französisch, Biografisch usw.: Warum ist sonst immer alles nur blau? Kann man bei der Grafik, beim Netzwerk und bei den Themen das noch verbessern? Dann kann man die Anzahlen, also die Briefpartner, die Orte (286 von 774), noch irgendwie besser machen. Nochmal schauen, wo es vielleicht Redundanzen gibt. Zum Beispiel die Briefe links unten, die Anzahl: Vielleicht kann man das dort, wo die Filter sind, irgendwie zusammenführen, sodass man bei den Filterinformationen das noch besser hat, damit das noch besser zusammenspricht. Aber das geht auf jeden Fall in die richtige Richtung. So ist das wirklich cool.
+
+Folge: in Arbeit. Legende als Sprachfilter, schmalere Seitenleiste, Farbe in Kreis, Karte und Themen, einheitliche Zählangaben, ein Ort für Filterzustand und Briefzahl.
+
 ### Entscheidungen des Operators ohne wörtlichen Satz
 
 Diese Entscheidungen stehen im Journal mit ihrem Tag und sind hier nur mit ihrer Wirkung genannt: die Palette aus dem Logo bleibt (2026-11-14), die Einstiegskacheln der Übersicht entfallen (2026-11-14), der Brief-Dialog bleibt vollständig (2026-11-14), die Forschungspfade verlassen die Oberfläche, die Startansicht wird über die Seitenleiste gefiltert, die Unteransichten sind oben zu finden (2026-11-14), keine Ampel für die Datenlage (2026-10-29), die Ausnahme für die Zellen der Heatmap (E6, 2026-11-05).
