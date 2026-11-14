@@ -467,7 +467,7 @@ function renderTimelineLegend(legendEl, sortedLanguages, languageTotals, hasLang
                 const label = languageLabel(lang);
                 const tooltip = lang === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten'
                     : lang === 'other' ? 'Alle übrigen Sprachen, einzeln im Filter der Seitenleiste und in der Tabelle' : '';
-                return `<button type="button" class="timeline-legend-item timeline-legend-btn" data-lang="${escapeHtml(lang)}" aria-pressed="${isOnlyLanguage(lang)}"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count})</button>`;
+                return `<button type="button" class="timeline-legend-item timeline-legend-btn" data-lang="${escapeHtml(lang)}" aria-pressed="${isOnlyLanguage(lang)}"${tooltip ? ` title="${tooltip}"` : ''}><span class="timeline-legend-color" style="background: ${color}"></span>${escapeHtml(label)} (${count.toLocaleString('de-DE')})</button>`;
             });
     } else {
         legendItems.push(`<span class="timeline-legend-item timeline-legend-info" title="Dieses Korpus enthält keine Sprachmetadaten"><i class="fas fa-info-circle"></i> Keine Sprachdaten im Korpus</span>`);

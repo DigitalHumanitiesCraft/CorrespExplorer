@@ -196,7 +196,7 @@ export function renderTopicsList() {
                         <div class="entity-card-bar-fill" style="width: ${barWidth}%"></div>
                     </div>
                 </div>
-                <div class="entity-card-count">${topic.filteredCount}</div>
+                <div class="entity-card-count">${topic.filteredCount.toLocaleString('de-DE')}</div>
             </div>
         `;
     }).join('');

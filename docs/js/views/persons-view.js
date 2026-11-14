@@ -159,8 +159,8 @@ export function renderPersonsList() {
                 <div class="person-info">
                     <div class="person-name" title="${name}"><button type="button" class="person-filter-btn" data-id="${escapeHtml(person.key)}" title="Briefe von ${name} anzeigen">${name}</button>${wikidataIndicator}</div>
                     <div class="person-stats">
-                        <span><i class="fas fa-paper-plane" aria-hidden="true"></i> ${person.sent} gesendet</span>
-                        <span><i class="fas fa-inbox" aria-hidden="true"></i> ${person.received} empfangen</span>
+                        <span><i class="fas fa-paper-plane" aria-hidden="true"></i> ${person.sent.toLocaleString('de-DE')} gesendet</span>
+                        <span><i class="fas fa-inbox" aria-hidden="true"></i> ${person.received.toLocaleString('de-DE')} empfangen</span>
                         ${person.isOrganization ? '<span class="person-kind">Körperschaft</span>' : ''}
                         ${!person.id && person.precision !== 'unknown' ? '<span class="person-kind">ohne Normdatensatz</span>' : ''}
                     </div>
@@ -329,8 +329,6 @@ function renderPersonDetail(detail, enriched) {
     html += '<div class="person-detail-header">';
     if (enriched?.thumbnail && safeUrl(enriched.thumbnail)) {
         html += `<img class="person-detail-image" src="${escapeHtml(safeUrl(enriched.thumbnail))}" alt="${escapeHtml(person.name)}">`;
-    } else {
-        html += `<div class="person-detail-avatar" aria-hidden="true">${escapeHtml(getPersonInitials(person.name, person.precision))}</div>`;
     }
     html += '<div class="person-detail-info">';
     // The dialog title carries the name; a second heading repeats it only for a differing Wikidata name

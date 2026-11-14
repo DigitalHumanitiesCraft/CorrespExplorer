@@ -122,7 +122,7 @@
                 <!-- ========================================
                      SECTION 1: DATENSATZ (Kontext zuerst)
                      ======================================== -->
-                <div class="sidebar-section" id="sidebar-dataset">
+                <div class="sidebar-section hidden" id="sidebar-dataset">
                     <div class="sidebar-section-header">
                         <h2 class="visually-hidden">Datensatz</h2>
                     </div>
@@ -336,8 +336,7 @@
                             </button>
                         </div>
                         <div id="map-legend" class="map-legend">
-                            <div class="map-legend-title">Orte nach häufigster Sprache</div>
-                            <div class="map-legend-note">Kreisgröße nach Zahl der Briefe</div>
+                            <div class="map-legend-note">Farbe nach häufigster Sprache des Orts, Kreisgröße nach Zahl der Briefe, grau mehrere Orte</div>
                             <div class="map-legend-items"></div>
                         </div>
                     </div>
@@ -939,9 +938,9 @@
             </div>
         </div>
         <div class="tour-step" data-step="2">
-            <div class="tour-content" data-target=".view-switcher">
+            <div class="tour-content" data-target=".view-groups">
                 <h3>Ansichten wechseln</h3>
-                <p>Mit diesen Buttons wechseln Sie zwischen zwölf Ansichten: Start, Karte, Korrespondenten, Briefe, Timeline, Themen, Orte, Netzwerk, Erwähnungen, Chronik, Aktivität und Vergleich. Ansichten, für die ein Datensatz keine Daten hat, sind ausgeblendet.</p>
+                <p>Die Kopfzeile nennt, was sich an einer Korrespondenz untersuchen lässt: Briefe, Personen, Orte, Zeit und Themen. In jeder Ansicht wechseln Sie rechts oben die Darstellung, bei den Orten etwa zwischen Karte und Liste. Was ein Datensatz nicht enthält, ist ausgeblendet.</p>
                 <div class="tour-nav">
                     <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
@@ -971,7 +970,7 @@
         <div class="tour-step" data-step="5" data-view="letters">
             <div class="tour-content" data-target="#sidebar-filters">
                 <h3>Filter anwenden</h3>
-                <p>Unter dem Zeitraum grenzen Sie nach Datierung, identifizierten Personen, lokalisierten Orten, Briefsprache und Thema ein, Themen finden Sie über die Themensuche. Personen und Orte filtern Sie aus den Ansichten Korrespondenten und Orte. Alle Filter lassen sich kombinieren, aktive Personen-, Orts- und Themenfilter erscheinen als entfernbare Marken in der Sidebar.</p>
+                <p>Unter dem Zeitraum grenzen Sie nach Datierung, identifizierten Personen, lokalisierten Orten, und Briefsprache ein. Personen, Orte und Themen filtern Sie aus ihren Ansichten. Alle Filter lassen sich kombinieren, aktive Personen-, Orts- und Themenfilter erscheinen als entfernbare Marken in der Sidebar.</p>
                 <div class="tour-nav">
                     <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>
@@ -979,9 +978,9 @@
             </div>
         </div>
         <div class="tour-step" data-step="6">
-            <div class="tour-content" data-target=".view-btn[data-view='map']">
+            <div class="tour-content" data-target=".view-group-btn[data-group='places']">
                 <h3>Interaktive Karte</h3>
-                <p>Die Karte zeigt Briefe nach Absendeort. Klicken Sie auf Marker für Details. Die Legende erklärt die Farben (nach Sprache).</p>
+                <p>Unter „Orte“ zeigt die Karte die Briefe nach Absendeort. Klicken Sie auf einen Kreis für Details. Die Farbe eines Orts ist die seiner häufigsten Briefsprache.</p>
                 <div class="tour-nav">
                     <button type="button" class="tour-prev">Zurück</button>
                     <button type="button" class="tour-next">Weiter</button>

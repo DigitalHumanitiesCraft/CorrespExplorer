@@ -361,6 +361,20 @@ button {
 }
 
 /* Switch between the representations of one subject, in the header line of the view */
+/* The names of the representations stand on the buttons; the hover tooltip of the former view
+   bar would repeat them far from the pointer */
+.view-variants .view-btn[data-tooltip]::after {
+    display: none;
+}
+
+/* On a narrow screen the switch wraps instead of hiding its last entries */
+@media (max-width: 767px) {
+    .view-variants {
+        flex-wrap: wrap;
+        overflow: visible;
+    }
+}
+
 /* Comparing two entries is an action beside the representations */
 .view-btn[data-view="comparison"] {
     margin-left: var(--space-sm);
@@ -532,11 +546,14 @@ button {
         top: var(--navbar-height);
         height: calc(100dvh - var(--navbar-height));
         z-index: calc(var(--z-fixed) - 1);
-        transition: left var(--transition-base);
+        visibility: hidden;
+        transition: left var(--transition-base), visibility 0s linear var(--transition-base);
     }
 
     .sidebar.open {
         left: 0;
+        visibility: visible;
+        transition: left var(--transition-base);
     }
 
     /* Only the back arrow stays, so the view switcher keeps room for its buttons */

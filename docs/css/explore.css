@@ -1181,7 +1181,7 @@
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
-    text-transform: uppercase;
+    text-transform: none;
     letter-spacing: 0.5px;
 }
 
@@ -1294,20 +1294,6 @@
     border-radius: var(--radius-md);
 }
 
-.person-detail-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: var(--radius-full);
-    background: var(--color-bg-light);
-    color: var(--color-text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-xl);
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
 .person-detail-info {
     flex: 1;
 }
@@ -1395,7 +1381,7 @@
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
-    text-transform: uppercase;
+    text-transform: none;
     letter-spacing: 0.5px;
 }
 
@@ -4511,6 +4497,8 @@ body:has(.tour-highlight) .tour-backdrop {
 /* The letter list names its count in the line above the list and the start view opens with the
    figures of the dataset whose name the header carries, so neither repeats a title */
 #letters-view .view-header__title,
+#network-view .view-header__title,
+#mentions-flow-view .view-header__title,
 #overview-view .view-header__title {
     position: absolute;
     width: 1px;
@@ -4529,4 +4517,22 @@ body:has(.tour-highlight) .tour-backdrop {
 /* The basket section appears with its first entry; the header link counts and opens the basket */
 #sidebar-basket:has(.basket-empty) {
     display: none;
+}
+
+/* The language list of the sidebar is the legend of the map while the sidebar is beside it */
+@media (min-width: 768px) {
+    .map-legend-items {
+        display: none;
+    }
+}
+
+/* A select that shows "Briefe (absteigend)" names itself; its label stays for assistive technology */
+.list-sort label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }

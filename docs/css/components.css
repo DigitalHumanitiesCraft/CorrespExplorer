@@ -440,7 +440,7 @@
     margin: 0 0 var(--space-sm) 0;
     font-size: var(--font-size-sm);
     color: var(--color-text-light);
-    text-transform: uppercase;
+    text-transform: none;
     letter-spacing: 0.5px;
 }
 
@@ -625,8 +625,18 @@
     border-bottom: 1px solid var(--color-border-light);
 }
 
-/* From 768 px title, actions and the representation switch share one line and wrap when the
-   actions of a view need more room */
+/* Children of the header may shrink, so a wide switch scrolls inside itself instead of
+   pushing the header past the screen */
+.view-header > * {
+    min-width: 0;
+}
+
+.view-header > .view-variants {
+    max-width: 100%;
+}
+
+/* From 768 px title, actions and the representation switch share one line. The switch keeps
+   its place at the right edge in every representation of a subject. */
 @media (min-width: 768px) {
     .view-header {
         display: flex;
@@ -635,15 +645,19 @@
     }
 
     .view-header__title {
-        flex: 1 1 auto;
+        flex: 0 1 auto;
     }
 
     .view-header__actions {
+        flex: 1 1 0;
+        justify-content: flex-end;
         margin-top: 0;
     }
 
     .view-header > .view-variants {
         order: 3;
+        flex: none;
+        margin-left: auto;
     }
 }
 

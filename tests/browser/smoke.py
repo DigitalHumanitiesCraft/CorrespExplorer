@@ -209,10 +209,10 @@ class Smoke:
             f"{self.base}explore.html?view=letters&{HSA}&yearMin=1890&yearMax=1891"
         )
         _loaded(page)
-        shown = page.inner_text("#total-letters-count").split("\n")[0].replace(".", "")
+        shown = page.inner_text("#letters-result").split(" ")[0].replace(".", "")
         ctx.close()
         assert shown == str(expected), (
-            f"sidebar shows {shown}, data hold {expected} letters 1890-1891"
+            f"letter list shows {shown}, data hold {expected} letters 1890-1891"
         )
 
     def csv_export(self) -> None:

@@ -252,7 +252,7 @@ export function renderPlacesList() {
                     <div class="entity-card-name ${precisionClass}" title="${escapeHtml(place.name)}">${escapeHtml(place.name)}${noCoordIcon}</div>
                     <div class="entity-card-meta">${meta}</div>
                 </div>
-                <div class="entity-card-count">${place.filteredCount}</div>
+                <div class="entity-card-count">${place.filteredCount.toLocaleString('de-DE')}</div>
             </div>
         `;
     }).join('');

@@ -192,7 +192,15 @@ function updateViewTitle() {
     if (!title || !corpusTotals) return;
     const group = groupOf(currentView);
     const shown = hasActiveFilter() ? summarizeCorpus(filteredLetters, dataIndices) : null;
-    if (group === 'persons') {
+    if (currentView === 'comparison') {
+        title.textContent = { persons: 'Zwei Personen im Vergleich', places: 'Zwei Orte im Vergleich', time: 'Zwei Zeiträume im Vergleich' }[group];
+    } else if (currentView === 'map') {
+        // The map draws the places that have coordinates
+        title.textContent = `${formatCount(Object.keys(placeAggregation).length)} Orte auf der Karte`;
+    } else if (currentView === 'network' || currentView === 'mentions-flow') {
+        // Not visible: both name what they show in their own line under the header
+        title.textContent = currentView === 'network' ? 'Netzwerk der Personen' : 'Erwähnungen';
+    } else if (group === 'persons') {
         title.textContent = partOf(shown ? shown.persons.size : corpusTotals.persons, corpusTotals.persons, 'Personen');
     } else if (group === 'places') {
         title.textContent = partOf(shown ? shown.places.size : corpusTotals.places, corpusTotals.places, 'Orte', 'Orten');
@@ -201,7 +209,7 @@ function updateViewTitle() {
         const years = !range ? '' : range.min === range.max ? `, ${range.min}` : `, ${range.min}–${range.max}`;
         title.textContent = partOf(filteredLetters.length, corpusTotals.letters, 'Briefe', 'Briefen') + years;
     } else if (group === 'topics') {
-        title.textContent = `${formatCount((shown || corpusSummary).subjects.size)} Themen`;
+        title.textContent = partOf((shown || corpusSummary).subjects.size, corpusSummary.subjects.size, 'Themen');
     } else if (group === 'overview') {
         // Not visible: the header carries the name of the dataset, the page starts with its figures
         title.textContent = elements.getById('dataset-title')?.textContent?.trim() || 'Datensatz';
@@ -570,7 +578,7 @@ function buildLanguageFilter() {
             <input type="checkbox" name="language" value="${escapeHtml(code)}"${!initialLanguageFilter || initialLanguageFilter.includes(code) ? ' checked' : ''}>
             <span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" aria-hidden="true"></span>
             <span>${escapeHtml(displayLabel)}</span>
-            <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${counts[code]})</span>
+            <span class="filter-count" id="count-lang-${escapeHtml(code)}">(${counts[code].toLocaleString('de-DE')})</span>
         `;
         target.appendChild(label);
     });
@@ -686,7 +694,9 @@ function initFilters() {
         Object.values(qualityCheckboxes).forEach(cb => { if (cb) cb.checked = false; });
         featureFilter.clear();
         document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = false; });
+        const hadFocus = document.activeElement === resetButton;
         applyFilters();
+        if (hadFocus) focusViewHeading(currentView);
     });
 }
 
@@ -752,6 +762,7 @@ function applyFilters({ render = true } = {}) {
 
 // The letters of one year, set through the year slider like a click on a bar of the time view
 function showLettersOfYear(year) {
+    if (hasActiveFilter()) elements.resetFiltersBtn?.click();
     clearLetterSearch();
     const slider = elements.yearRangeSlider?.noUiSlider;
     if (slider) slider.set([year, year]);
@@ -810,7 +821,7 @@ function hasActiveFilter() {
 
 // Every view that shows the filtered letters marks an active filter on its button, so a list
 // shortened by a filter set elsewhere is never silent
-const FILTER_INDICATOR_VIEWS = ['letters', 'persons', 'places', 'timeline', 'network', 'map', 'chronik', 'activity', 'comparison'];
+const FILTER_INDICATOR_VIEWS = ['letters', 'persons', 'places', 'timeline', 'network', 'mentions-flow', 'map', 'chronik', 'activity', 'comparison', 'topics'];
 
 function updateFilterIndicators() {
     const active = hasActiveFilter();
@@ -850,7 +861,7 @@ function subjectLabelForKey(key) {
 
 const FILTER_BADGE_ORDER = ['temporal-filter-display', 'person-filter-display', 'place-filter-display', 'subject-filter-display', 'feature-filter-display'];
 // Views with the filter sidebar beside them on a wide screen
-const SIDEBAR_VIEWS = ['map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network'];
+const SIDEBAR_VIEWS = ['map', 'persons', 'letters', 'timeline', 'topics', 'places', 'network', 'mentions-flow'];
 
 /**
  * Removable badge of an active person, place or subject filter under the sidebar stats. The
@@ -954,7 +965,7 @@ function updateFilterCounts() {
     document.querySelectorAll('input[name="language"]').forEach(cb => {
         const count = languageCounts[cb.value] || 0;
         const el = document.getElementById(`count-lang-${cb.value}`);
-        if (el) el.textContent = `(${count})`;
+        if (el) el.textContent = `(${count.toLocaleString('de-DE')})`;
         // A language without a letter under the other filters says nothing and leaves the list
         cb.closest('label')?.classList.toggle('hidden', count === 0);
     });
@@ -1142,12 +1153,17 @@ function initViewSwitcher() {
     });
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (btn.dataset.view !== 'comparison') return switchView(btn.dataset.view);
+            if (btn.dataset.view !== 'comparison') {
+                switchView(btn.dataset.view);
+                btn.focus();
+                return;
+            }
             // Compare what the current subject lists: two persons, two places or two periods
             const from = groupOf(currentView);
             comparisonGroup = from in COMPARISON_MODE ? from : 'persons';
             switchView('comparison');
             document.querySelector(`.comparison-mode-btn[data-mode="${COMPARISON_MODE[comparisonGroup]}"]`)?.click();
+            btn.focus();
         });
         // The tooltip shows the description only to mouse users; a hidden text gives it to screen readers
         if (btn.dataset.tooltipDesc) {
@@ -1229,6 +1245,7 @@ function showLettersWithFeature(key, { keepOthers = false } = {}) {
     document.querySelectorAll('input[name="feature"]').forEach(cb => { cb.checked = featureFilter.has(cb.value); });
     applyFilters({ render: false });
     switchView('letters');
+    focusViewHeading('letters');
 }
 
 // The letter list of one person, from a list entry or a dialog
