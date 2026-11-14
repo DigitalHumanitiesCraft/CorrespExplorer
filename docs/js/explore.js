@@ -68,7 +68,9 @@ const VIEW_GROUPS = {
     time: ['timeline', 'activity', 'chronik'],
     topics: ['topics']
 };
-// The comparison is an action on persons or places and stays with the subject it was opened from
+// The comparison is an action on persons, places or periods and stays with the subject it was
+// opened from; the subject decides what is compared
+const COMPARISON_MODE = { persons: 'persons', places: 'places', time: 'periods' };
 let comparisonGroup = 'persons';
 const groupOf = view => (view === 'comparison'
     ? comparisonGroup
@@ -166,7 +168,7 @@ function syncViewVariants() {
     if (!variants) return;
     let shown = 0;
     variants.querySelectorAll('.view-btn').forEach(btn => {
-        const compare = btn.dataset.view === 'comparison' && (group === 'persons' || group === 'places');
+        const compare = btn.dataset.view === 'comparison' && group in COMPARISON_MODE;
         const visible = (VIEW_GROUPS[group]?.includes(btn.dataset.view) || compare) && !btn.disabled;
         btn.classList.toggle('hidden', !visible);
         if (visible) shown++;
@@ -179,7 +181,10 @@ function syncViewVariants() {
 }
 
 const formatCount = n => n.toLocaleString('de-DE');
-const partOf = (part, total) => (part === total ? formatCount(total) : `${formatCount(part)} von ${formatCount(total)}`);
+// "774 Orte", under a filter "95 von 774 Orten"
+const partOf = (part, total, one, of = one) => (part === total
+    ? `${formatCount(total)} ${one}`
+    : `${formatCount(part)} von ${formatCount(total)} ${of}`);
 
 // The header line of a view says what it currently shows; the subject itself stands in the header
 function updateViewTitle() {
@@ -188,12 +193,13 @@ function updateViewTitle() {
     const group = groupOf(currentView);
     const shown = hasActiveFilter() ? summarizeCorpus(filteredLetters, dataIndices) : null;
     if (group === 'persons') {
-        title.textContent = `${partOf(shown ? shown.persons.size : corpusTotals.persons, corpusTotals.persons)} Personen`;
+        title.textContent = partOf(shown ? shown.persons.size : corpusTotals.persons, corpusTotals.persons, 'Personen');
     } else if (group === 'places') {
-        title.textContent = `${partOf(shown ? shown.places.size : corpusTotals.places, corpusTotals.places)} Orte`;
+        title.textContent = partOf(shown ? shown.places.size : corpusTotals.places, corpusTotals.places, 'Orte', 'Orten');
     } else if (group === 'time') {
         const range = datedYearRange(filteredLetters);
-        title.textContent = `${partOf(filteredLetters.length, corpusTotals.letters)} Briefe${range ? `, ${range.min}–${range.max}` : ''}`;
+        const years = !range ? '' : range.min === range.max ? `, ${range.min}` : `, ${range.min}–${range.max}`;
+        title.textContent = partOf(filteredLetters.length, corpusTotals.letters, 'Briefe', 'Briefen') + years;
     } else if (group === 'topics') {
         title.textContent = `${formatCount((shown || corpusSummary).subjects.size)} Themen`;
     } else if (group === 'overview') {
@@ -283,6 +289,7 @@ async function init() {
             getCorpusSummary: () => corpusSummary,
             getCorpusQuality: () => corpusQuality,
             showLettersWithFeature,
+            showLettersOfYear,
             switchView
         });
         initMapView({
@@ -743,6 +750,17 @@ function applyFilters({ render = true } = {}) {
     elements.resetFiltersBtn?.classList.toggle('hidden', !hasActiveFilter());
 }
 
+// The letters of one year, set through the year slider like a click on a bar of the time view
+function showLettersOfYear(year) {
+    clearLetterSearch();
+    const slider = elements.yearRangeSlider?.noUiSlider;
+    if (slider) slider.set([year, year]);
+    temporalFilter = { start: year, end: year };
+    applyFilters({ render: false });
+    switchView('letters');
+    focusViewHeading('letters');
+}
+
 // Undated letters have no place on the year slider, so they get their own temporal filter
 function showUndatedLetters() {
     temporalFilter = { undated: true };
@@ -1125,10 +1143,11 @@ function initViewSwitcher() {
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             if (btn.dataset.view !== 'comparison') return switchView(btn.dataset.view);
-            // Compare what the current subject lists: two persons or two places
-            comparisonGroup = groupOf(currentView) === 'places' ? 'places' : 'persons';
+            // Compare what the current subject lists: two persons, two places or two periods
+            const from = groupOf(currentView);
+            comparisonGroup = from in COMPARISON_MODE ? from : 'persons';
             switchView('comparison');
-            document.querySelector(`.comparison-mode-btn[data-mode="${comparisonGroup}"]`)?.click();
+            document.querySelector(`.comparison-mode-btn[data-mode="${COMPARISON_MODE[comparisonGroup]}"]`)?.click();
         });
         // The tooltip shows the description only to mouse users; a hidden text gives it to screen readers
         if (btn.dataset.tooltipDesc) {

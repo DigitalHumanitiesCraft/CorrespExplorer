@@ -2406,7 +2406,7 @@ body:has(.tour-highlight) .tour-backdrop {
 
 .chronik-container {
     padding: var(--space-lg);
-    max-width: 900px;
+    max-width: var(--max-width-content);
     margin: 0 auto;
 }
 
@@ -4438,17 +4438,9 @@ body:has(.tour-highlight) .tour-backdrop {
     }
 }
 
-.overview-chart__button {
+.overview-chart {
     position: relative;
-    display: block;
-    width: 100%;
-    padding: var(--space-2xl) 0 0;
-    border: none;
-    background: none;
-    font: inherit;
-    color: inherit;
-    text-align: left;
-    cursor: pointer;
+    padding-top: var(--space-2xl);
 }
 
 .overview-chart__bars {
@@ -4459,13 +4451,23 @@ body:has(.tour-highlight) .tour-backdrop {
     border-bottom: 1px solid var(--color-border-control);
 }
 
-.overview-chart__bar {
+/* The column of a year takes the pointer over its whole height, so a year with few letters
+   can be hit as well */
+.overview-chart__year {
+    display: flex;
     flex: 1;
+    align-items: flex-end;
     min-width: 1px;
+    height: 100%;
+    cursor: pointer;
+}
+
+.overview-chart__bar {
+    width: 100%;
     background: var(--color-data);
 }
 
-.overview-chart__button:hover .overview-chart__bar {
+.overview-chart__year:hover .overview-chart__bar {
     background: var(--color-primary-dark);
 }
 
@@ -4481,9 +4483,23 @@ body:has(.tour-highlight) .tour-backdrop {
 .overview-chart__axis {
     display: flex;
     justify-content: space-between;
+    align-items: baseline;
     padding-top: var(--space-xs);
     font-size: var(--font-size-xs);
     color: var(--color-text-light);
+}
+
+.overview-chart__link {
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: var(--color-link);
+    cursor: pointer;
+}
+
+.overview-chart__link:hover {
+    text-decoration: underline;
 }
 
 @media (max-width: 767px) {

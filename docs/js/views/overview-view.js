@@ -170,8 +170,8 @@ function renderFeatureChips() {
     });
 }
 
-// Letters per year as the main figure of the start view. One button for the whole chart: the
-// years themselves are worked with in the time view, which it opens.
+// Letters per year as the main figure of the start view. A click on a year shows its letters;
+// the caption opens the time view, which is also the keyboard way to the single years.
 function renderOverviewChart() {
     const box = document.getElementById('overview-chart');
     if (!box) return;
@@ -186,19 +186,27 @@ function renderOverviewChart() {
     const max = Math.max(...years);
     const peak = Math.max(...perYear.values());
     const peakYear = years.find(year => perYear.get(year) === peak);
+    const number = n => n.toLocaleString('de-DE');
     let bars = '';
     for (let year = min; year <= max; year++) {
         const count = perYear.get(year) || 0;
-        bars += `<span class="overview-chart__bar" style="height: ${count ? Math.max(2, count / peak * 100) : 0}%"></span>`;
+        bars += `<span class="overview-chart__year" data-year="${year}" title="${year}: ${number(count)} ${count === 1 ? 'Brief' : 'Briefe'}">
+            <span class="overview-chart__bar" style="height: ${count ? Math.max(2, count / peak * 100) : 0}%"></span></span>`;
     }
     const left = (peakYear - min) / (max - min) * 100;
     box.innerHTML = `
-        <button type="button" class="overview-chart__button" aria-label="Briefe pro Jahr von ${min} bis ${max}, die meisten im Jahr ${peakYear} mit ${peak.toLocaleString('de-DE')}. Zur Ansicht Zeit">
-            <span class="overview-chart__peak" style="left: ${left}%">${peak.toLocaleString('de-DE')} Briefe ${peakYear}</span>
-            <span class="overview-chart__bars" aria-hidden="true">${bars}</span>
-            <span class="overview-chart__axis" aria-hidden="true"><span>${min}</span><span>Briefe pro Jahr</span><span>${max}</span></span>
-        </button>`;
-    box.querySelector('button').addEventListener('click', () => deps.switchView('timeline'));
+        <span class="overview-chart__peak" style="left: ${left}%">${number(peak)} Briefe ${peakYear}</span>
+        <div class="overview-chart__bars" role="img" aria-label="Briefe pro Jahr von ${min} bis ${max}, die meisten im Jahr ${peakYear} mit ${number(peak)}">${bars}</div>
+        <div class="overview-chart__axis">
+            <span>${min}</span>
+            <button type="button" class="overview-chart__link">Briefe pro Jahr in der Ansicht Zeit</button>
+            <span>${max}</span>
+        </div>`;
+    box.querySelector('.overview-chart__bars').addEventListener('click', (e) => {
+        const year = Number(e.target.closest('.overview-chart__year')?.dataset.year);
+        if (year && perYear.get(year)) deps.showLettersOfYear(year);
+    });
+    box.querySelector('.overview-chart__link').addEventListener('click', () => deps.switchView('timeline'));
 }
 
 // Research paths of the overview (US-33), analysed by research-paths.js from all letters
