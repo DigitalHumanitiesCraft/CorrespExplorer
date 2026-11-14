@@ -399,6 +399,16 @@ Zur Startseite nach dem Zusammensetzen aus dem Bestand, Tutorial gewählt, über
 
 Folge: in Arbeit. Das Hugo Schuchardt Archiv als erster Bestand, das Tutorial aus der Startseite, die Bandnamen und die Zeile über Fehlendes entfallen, die Wahl des Bestands und das Laden eigener Daten in einem Element, der Satz ohne den Namen, Kopf und Fuß nach der Form seiner Projektseiten. Die Datei des Tutorials und die Tour im Explorer bleiben, bis er das Löschen der Datei ausdrücklich freigibt und der Durchgang über die Ansichten die Tour erreicht.
 
+Zum Aufbau des Explorers, über die koordinierende Session weitergegeben, eine Frage mit klarer Neigung und noch kein Auftrag zum Umbau:
+
+> Ich finde, beim CorrespExplorer könnten Briefe und Personen viel mehr aufgebaut sein. Ähnlich also, ich finde, so wie das bei Briefen oben die Top-Navigation ist, soll es ja auch bei Personen und Orten einheitlicher sein. Jetzt finde ich, dass wir diese Indexinformationen vielleicht irgendwie zusammenführen können. Können wir Briefe, Personen und Orte sinnvoll in eine Ansicht zusammenführen, weil wir sozusagen nach Personen und Orten dort gleich filtern könnten oder so, damit wir keine Redundanzen haben?
+
+Folge: Antwort im Chat und eine kleine echte Fassung am Hugo Schuchardt Archiv neben den bestehenden Ansichten, im selben Durchgang wie die gemeinsamen Regeln. Nichts Bestehendes entfällt vor seinem Vergleich. Derselbe Schritt löst seinen früheren Wunsch, Liste und Vergleich zusammenzuführen.
+
+An alle laufenden Projekte, über die koordinierende Session weitergegeben: „wir wollen nun überall dafür sorgen dass die promptotyping skills durchgeführt werden. überall: kuratieren, destillieren, refactoren, handoff“.
+
+Folge: am nächsten stabilen Stand in dieser Folge, jeder Schritt mit eigenem Commit: distillieren, kuratieren, refactoren, übergeben.
+
 Folge zur Themenansicht: in Arbeit. Zwei kleine echte Fassungen am selben gefilterten Bestand, eine Treemap und ein Raster aus Themen und Jahren auf gemeinsamer Skala, zur Wahl nebeneinander. Die bestehende Ansicht bleibt bis zu seiner Entscheidung.
 
 ### Entscheidungen des Operators ohne wörtlichen Satz
