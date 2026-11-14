@@ -379,6 +379,12 @@ Zur Zeitansicht, gefiltert auf einen Ort und einen Zeitraum, über die koordinie
 
 Folge: die [gemeinsamen Regeln aller Ansichten](#gemeinsame-regeln-aller-ansichten) und ein Durchgang über Start, Briefe, Zeit, Themen, Personen und Orte. In Arbeit.
 
+Zur Themenansicht, gefiltert auf einen Ort und einen Zeitraum, über die koordinierende Session weitergegeben, „Verhandeltliche“ ist ein Diktatfehler, vermutlich für „Vorhandene“:
+
+> Auch die Themenseite geht in die richtige Richtung, aber es scheint mir auch hier noch ein bisschen zu viele Strukturen zu geben. Wie können wir das Verhandeltliche verbessern? Und wäre es nicht sinnvoll, wenn diese Bereiche, diese Polygone, die hier gefunden werden, in Relation zu allen sind? Vielleicht ist hier eine Tree Map oder so etwas besser?
+
+Folge: in Arbeit. Zwei kleine echte Fassungen am selben gefilterten Bestand, eine Treemap und ein Raster aus Themen und Jahren auf gemeinsamer Skala, zur Wahl nebeneinander. Die bestehende Ansicht bleibt bis zu seiner Entscheidung.
+
 ### Entscheidungen des Operators ohne wörtlichen Satz
 
 Diese Entscheidungen stehen im Journal mit ihrem Tag und sind hier nur mit ihrer Wirkung genannt: die Palette aus dem Logo bleibt (2026-11-14), die Einstiegskacheln der Übersicht entfallen (2026-11-14), der Brief-Dialog bleibt vollständig (2026-11-14), die Forschungspfade verlassen die Oberfläche, die Startansicht wird über die Seitenleiste gefiltert, die Unteransichten sind oben zu finden (2026-11-14), keine Ampel für die Datenlage (2026-10-29), die Ausnahme für die Zellen der Heatmap (E6, 2026-11-05).
