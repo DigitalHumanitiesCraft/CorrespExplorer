@@ -7,7 +7,6 @@ import { analyzeResearchQuestions, renderOverviewResearchPaths } from '../resear
 import { startKnowledgePath } from '../knowledge-path.js';
 import { startTour } from '../demo-tour.js';
 import { state } from '../state-manager.js';
-import { focusViewHeading } from './view-support.js';
 
 let deps = {};
 
@@ -26,7 +25,6 @@ const OVERVIEW_FEATURES = {
  * @param {Function} dependencies.getDataIndices
  * @param {Function} dependencies.getCorpusSummary - summarizeCorpus() of the whole dataset
  * @param {Function} dependencies.getCorpusQuality - datasetQuality() of the whole dataset
- * @param {Function} dependencies.getAvailableViews
  * @param {Function} dependencies.showLettersWithFeature
  * @param {Function} dependencies.switchView
  */
@@ -122,14 +120,6 @@ export function renderOverview() {
     updateQualityChip('quality-chip-places', `${placeQuality}% mit Koordinaten`);
     renderFeatureChips();
 
-    // No entry point leads into a view the dataset cannot fill
-    document.querySelectorAll('.entry-point-btn').forEach(btn => {
-        btn.classList.toggle('hidden', deps.getAvailableViews()[btn.dataset.target]?.available === false);
-    });
-
-    // Setup entry point buttons
-    setupEntryPointButtons();
-
     // Show/hide tutorial button based on dataset
     const tutorialBtn = document.getElementById('start-tutorial-btn');
     if (tutorialBtn) {
@@ -179,27 +169,12 @@ function renderFeatureChips() {
     });
 }
 
-let entryPointsInitialized = false;
-function setupEntryPointButtons() {
-    if (entryPointsInitialized) return;
-    entryPointsInitialized = true;
-
-    document.querySelectorAll('.entry-point-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (!btn.dataset.target) return;
-            deps.switchView(btn.dataset.target);
-            focusViewHeading(btn.dataset.target);
-        });
-    });
-}
-
 // Research paths of the overview (US-33), analysed by research-paths.js from all letters
 function renderOverviewPaths() {
     const container = document.getElementById('overview-questions-grid');
     if (!container) return;
     renderOverviewResearchPaths(container, document.getElementById('show-all-paths-btn'),
         analyzeResearchQuestions(deps.getAllLetters(), deps.getDataIndices(), deps.getCorpusSummary()), {
-            onStartPath: startKnowledgePath,
-            onStepClick: deps.switchView
+            onStartPath: startKnowledgePath
         });
 }

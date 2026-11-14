@@ -88,7 +88,7 @@ Die Indizes unterscheiden sich zwischen Parser und Vorprozessierung. Parser und 
 
 ## Ansichten
 
-- Übersicht mit Kennzahlen, Quelle, Lizenz und Änderungsvermerk, Qualitäts-Chips, Einstiegspunkten und Forschungspfaden. Ein Klick auf einen Pfad startet einen Wissenspfad, dessen Leiste durch die Schritte führt. Nicht beantwortbare Fragen stehen in einem aufklappbaren Abschnitt „Anreicherungspotential“.
+- Übersicht mit Kennzahlen, Quelle, Lizenz und Änderungsvermerk, Qualitäts-Chips und Forschungspfaden. Ein Klick auf einen Pfad startet einen Wissenspfad, dessen Leiste durch die Schritte führt. Nicht beantwortbare Fragen stehen in einem aufklappbaren Abschnitt „Anreicherungspotential“.
 - Karte (MapLibre mit Clustering, Farbmodus nach Sprache, `aggregateLettersByPlace()` bildet die Orte der gefilterten Briefe), Korrespondenten, Briefe.
 - Zeitleiste, Themen, Orte, Netzwerk, Erwähnungsfluss, Chronik, Aktivität und Vergleich. Netzwerk und Erwähnungsfluss lesen ihre Farben mit `readTokens()` aus `tokens.css`, weil D3-Attribute `var()` nicht auflösen.
 

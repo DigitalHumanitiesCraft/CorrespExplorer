@@ -4,7 +4,7 @@ Ansichtsmodule des Explorers. `explore.js` ruft beim Start `init*View(deps)` mit
 
 | Modul | Ansicht | Abhängigkeiten aus explore.js | Exporte |
 |---|---|---|---|
-| overview-view.js | Übersicht: Kennzahlen, Quelle und Lizenz, Chips der Datenlage, Merkmale der Überlieferung als Knöpfe in die Briefliste, Einstiege, Forschungspfade | getAllLetters, getDataIndices, getCorpusSummary, getCorpusQuality, getAvailableViews, showLettersWithFeature, switchView | initOverviewView, renderOverview |
+| overview-view.js | Übersicht: Kennzahlen, Quelle und Lizenz, Chips der Datenlage, Merkmale der Überlieferung als Knöpfe in die Briefliste, Forschungspfade | getAllLetters, getDataIndices, getCorpusSummary, getCorpusQuality, showLettersWithFeature, switchView | initOverviewView, renderOverview |
 | map-view.js | Karte der Absendeorte (MapLibre, Clustering, Farbe nach dominanter Sprache oder einheitlich), Popup je Ort mit Korb, Briefen und häufigsten Absendern, Rückfall ohne Grundkarte | getPlaceAggregation, applyPlaceFilter, applyPersonFilter, switchView | initMapView, updateMapPlaces, resizeMap, aggregateLettersByPlace |
 | persons-view.js | Korrespondentenliste mit Suche, Ordnung und Auswahl der Art, Personen-Dialog mit `personFacts()` aus allen Briefen und Wikidata erst auf Klick („Wikidata nicht erreichbar“ getrennt von „Kein Wikidata-Eintrag“) | getFilteredLetters, getAllLetters, getDataIndices, showLettersOfPerson | initPersonsView, renderPersonsList |
 | letters-view.js | Briefliste mit Zahlzeile, Suche, Ordnung und Nachladen in Schritten, Brief-Dialog mit allen Angaben und allen Einträgen der Quelle | getFilteredLetters, getAllLetters, hasActiveFilter, showLettersOfPerson | initLettersView, renderLettersList, showLetterDetail, clearLetterSearch |

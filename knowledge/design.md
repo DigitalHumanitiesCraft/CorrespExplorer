@@ -124,7 +124,7 @@ Reduzierte Bewegung (WCAG 2.3.3) wird respektiert. Bei `prefers-reduced-motion: 
 
 ### Kacheln, Zeilen, Knöpfe und Eingaben
 
-- Kacheln (`.stat-card`, `.dataset-card`, die Einstiege der Übersicht) tragen einen Rahmen, `--radius-md` und keinen Schatten. Sie stehen für wenige, eigenständige Objekte.
+- Kacheln (`.stat-card`, `.dataset-card`) tragen einen Rahmen, `--radius-md` und keinen Schatten. Sie stehen für wenige, eigenständige Objekte.
 - Einträge einer Liste (`.letter-card`, `.person-card`, `.entity-card`, die Forschungspfade) sind Zeilen auf dem Papierton, getrennt durch eine Haarlinie in `--color-border-light`. Unter dem Mauszeiger liegt `--color-bg-light`, eine gewählte Zeile trägt `--color-primary-light` und einen rostroten Streifen am linken Rand. Bis 2026-11-14 war jeder Eintrag eine gefüllte Kachel mit 2px-Rahmen. Bei gleichartigen Einträgen in großer Zahl kostet das Platz und erschwert den Vergleich, die Praxisliteratur empfiehlt dafür Listen (Laubheimer, 2016), eine Messung der Suchzeit liegt dazu nicht vor. Die Klassennamen sind aus der Zeit der Kacheln geblieben.
 - `.btn-primary` ist rostrot gefüllt mit weißer Schrift und bleibt der Haupthandlung vorbehalten. `.btn-secondary` hat Text in `--color-text` und einen Rand in `--color-border-control`, erst unter dem Mauszeiger wird er rostrot.
 - Eingaben und Knöpfe ohne eigene Füllung tragen ihren Rand in `--color-border-control`. Eingaben behalten den sichtbaren Fokusrahmen, kein Seiten-CSS setzt `outline: none` auf `:focus`.
@@ -139,6 +139,8 @@ Alle Seiten nutzen eine Dialogform aus `components.css`. `.modal` ist der Hinter
 Toasts liegen über den Dialogen, damit eine Meldung aus einem Dialog sichtbar und schließbar bleibt. Die Demo-Tour hebt ihr Zielelement mit Rahmen und abdunkelndem Schatten hervor. Das Element bleibt dabei unter dem Tour-Dialog und nimmt keine Klicks an, damit „Weiter“ immer erreichbar ist. Ein Ziel außerhalb des Bildschirms wird nicht hervorgehoben.
 
 Karten-Popups lassen rechts im Kopf Platz für den Schließen-Knopf von MapLibre (`padding-right` an `.popup-header`), damit der Stern zum Korb klickbar bleibt.
+
+Der Dialog eines Briefs wiederholt Datum, Absender, Empfänger, Ort und Sprache der Zeile. Er zeigt alles, was die Quelle zu dem Brief verzeichnet, und bleibt deshalb vollständig (Entscheidung des Operators vom 2026-11-14).
 
 ### Kopfbereich der Ansichten
 
@@ -219,7 +221,7 @@ Die Navigation zeigt die zwölf Ansichten ab 768px mit Icon und sichtbarem Namen
 
 Das Hinweisfeld der Startseite nennt das Werkzeug ein Experiment, sagt, was es zeigt, dass es kein fertiges oder betreutes Produkt ist und wohin Rückmeldungen gehören, ohne Tooltip.
 
-Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage, Einstiegspunkte und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die Chips heißen nach dem, was sie zählen („auf den Tag datiert“, „mit Normdatensatz“, „mit Koordinaten“), und stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen. Was die Übersicht für Briefsätze zusätzlich zeigt, steht unter [Briefsätze und Überlieferung](#briefsätze-und-überlieferung-iteration-november-2026).
+Die Startansicht fasst Kennzahlen, Quelle mit Lizenz und Änderungsvermerk, drei Chips zur Datenlage und bis zu vier Forschungspfade auf einer Bildschirmhöhe zusammen. Die sechs Einstiegskacheln zu einzelnen Ansichten hat der Operator am 2026-11-14 gestrichen, weil die Ansichtsleiste direkt darüber in dieselben Ansichten führt. Die Chips heißen nach dem, was sie zählen („auf den Tag datiert“, „mit Normdatensatz“, „mit Koordinaten“), und stehen in der neutralen Chip-Gestaltung (Rahmen `--color-border-light`, Text `--color-text-light`) ohne Färbung nach dem Anteil. Eine Ampel bewertete die Daten der Partner und widersprach damit [ADR-005](specification.md#adr-005-nicht-wertende-sprache-für-partnerdaten). Der Operator hat sie am 2026-10-29 verworfen. Was die Übersicht für Briefsätze zusätzlich zeigt, steht unter [Briefsätze und Überlieferung](#briefsätze-und-überlieferung-iteration-november-2026).
 
 ### Wissenspfade
 
@@ -227,7 +229,7 @@ Ein gestarteter Forschungspfad erscheint als eine Leiste unter der Navigation mi
 
 ### Forschungspfade
 
-Jeder Schritt eines Pfads zeigt seine Aktion unter der Bezeichnung statt im Tooltip, weil Tooltips Hover verlangen und wesentliche Information verstecken. Die Pfadnummern stehen auf `--color-primary`, nachdem weiße Ziffern auf hellem Grund unsichtbar waren. Fragen, die der Datensatz nicht beantworten kann, stehen nicht als gesperrte Karten zwischen den Pfaden. Sie stehen im aufklappbaren Abschnitt „Anreicherungspotential“ (`details.questions-enrichment`) mit der fehlenden Angabe und dem CMIF-Element, das sie ergänzen würde.
+In der Übersicht ist ein Forschungspfad eine Zeile mit Frage, einem Satz zu dem, was der Datensatz dazu enthält, und dem Startknopf. Die Schritte erscheinen erst in der Leiste des gestarteten Pfads, mit ihrer Aktion als sichtbarem Text, weil Tooltips Hover verlangen und wesentliche Information verstecken. Bis 2026-11-14 zeigte jede Zeile zusätzlich eine Vorschau der häufigsten Einträge und die Schritte als Knöpfe und hatte damit mehr Ebenen, als der Maßstab des Hauswissens je Eintrag erlaubt. Der Operator hat die Kürzung an diesem Tag entschieden. Fragen, die der Datensatz nicht beantworten kann, stehen nicht als gesperrte Zeilen zwischen den Pfaden. Sie stehen im aufklappbaren Abschnitt „Anreicherungspotential“ (`details.questions-enrichment`) mit der fehlenden Angabe und dem CMIF-Element, das sie ergänzen würde.
 
 ## Barrierefreiheit
 

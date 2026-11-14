@@ -219,7 +219,6 @@ async function init() {
             getDataIndices: () => dataIndices,
             getCorpusSummary: () => corpusSummary,
             getCorpusQuality: () => corpusQuality,
-            getAvailableViews: () => availableViews,
             showLettersWithFeature,
             switchView
         });

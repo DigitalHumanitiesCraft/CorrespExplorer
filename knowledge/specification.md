@@ -96,10 +96,10 @@ Als Forschende möchte ich beim Laden eines Datensatzes eine Übersicht sehen, u
 - Kennzahlen für Briefe, Zeitraum, Personen und Orte, Personen und Orte aus den Briefen gezählt (`personKey`, `placeKey`)
 - Drei neutrale Chips mit den Anteilen datierter Briefe, identifizierter Personen und georeferenzierter Orte, ohne Ampelfarben ([ADR-005](#adr-005-nicht-wertende-sprache-für-partnerdaten))
 - Quellen-Metadaten aus dem teiHeader (Publisher, Lizenz mit Änderungsvermerk, Link zur CMIF-Datei)
-- Einstiegspunkte zu Karte, Netzwerk, Timeline, Briefen, Chronik und Aktivität
+- Die Einstiegspunkte zu Karte, Netzwerk, Timeline, Briefen, Chronik und Aktivität sind seit 2026-11-14 gestrichen, weil die Ansichtsleiste direkt darüber in dieselben Ansichten führt (Entscheidung des Operators)
 - Bis zu vier Forschungspfade ([US-33](#us-33-methodisch-geleitete-exploration))
 - Sidebar ausgeblendet für volle Breite
-- Die fünf aktivsten Korrespondenten, die Sprachverteilung und Ansichtsempfehlungen auf Basis der Datenlage sind gestrichen. Die Forschungspfade zeigen die aktivsten Korrespondenten als Vorschau, die Sprachverteilung steht in der Zeitleiste ([ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code))
+- Die fünf aktivsten Korrespondenten, die Sprachverteilung und Ansichtsempfehlungen auf Basis der Datenlage sind gestrichen. Die aktivsten Korrespondenten führt die Korrespondentenliste, die Sprachverteilung steht in der Zeitleiste ([ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code))
 
 ### Räumliche Exploration
 

@@ -9,9 +9,7 @@
 import { personKey, placeKey, escapeHtml, isKnownPlace, letterRecipients } from './utils.js';
 import { languageLabel } from './constants.js';
 
-const PREVIEW_SIZE = 3;
-
-function topEntries(map, n = PREVIEW_SIZE) {
+function topEntries(map, n) {
     return [...map.values()].sort((a, b) => b.count - a.count).slice(0, n);
 }
 
@@ -107,15 +105,13 @@ export function datasetQuality(letters, corpus) {
     };
 }
 
-const preview = (entries, suffix = '') => entries.map(e => `${e.name} (${e.count}${suffix})`);
-
 /**
  * Research questions for a letter list, grouped by epistemic category (ADR-004):
  * descriptive, analytical, interpretive, and unavailable for questions the data cannot answer yet.
  * @param {Array} letters
  * @param {Object} [indices]
  * @param {Object} [summary] - summarizeCorpus() of the same letters, computed here when missing
- * @returns {Array<{id, category, icon, question, description, preview?, path?, missingData?, suggestion?}>}
+ * @returns {Array<{id, category, icon, question, description, path?, missingData?, suggestion?}>}
  */
 export function analyzeResearchQuestions(letters, indices = {}, summary = null) {
     if (!Array.isArray(letters) || letters.length === 0) return [];
@@ -136,7 +132,6 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             icon: 'fa-users',
             question: 'Wer sind die aktivsten Korrespondenten?',
             description: `${personCount.toLocaleString('de-DE')} Personen als Absender oder Empfänger`,
-            preview: preview(topEntries(s.persons)),
             path: [{ view: 'persons', label: 'Korrespondenten', action: 'nach Briefanzahl sortieren' }]
         });
     }
@@ -147,7 +142,6 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             icon: 'fa-map-marker-alt',
             question: 'Von welchen Orten wurde korrespondiert?',
             description: `${placeCount.toLocaleString('de-DE')} Absendeorte, ${locatedCount.toLocaleString('de-DE')} mit Koordinaten`,
-            preview: preview(topEntries(s.places)),
             path: [
                 { view: 'places', label: 'Orte', action: 'Liste durchsuchen' },
                 ...(locatedCount > 0 ? [{ view: 'map', label: 'Karte', action: 'geografische Verteilung' }] : [])
@@ -161,7 +155,6 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             icon: 'fa-tags',
             question: 'Welche Themen dominieren die Korrespondenz?',
             description: `${s.subjects.size.toLocaleString('de-DE')} verschiedene Themen`,
-            preview: preview(topEntries(s.subjects)),
             path: [{ view: 'topics', label: 'Themen', action: 'Thema auswählen und zum Korb' }]
         });
     }
@@ -172,7 +165,6 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             icon: 'fa-language',
             question: 'In welchen Sprachen wurde korrespondiert?',
             description: `${s.languages.size} Sprachen im Korpus`,
-            preview: preview(topEntries(s.languages)),
             path: [{ view: 'timeline', label: 'Timeline', action: 'Sprachen in der Farblegende' }]
         });
     }
@@ -185,7 +177,6 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             icon: 'fa-chart-line',
             question: 'Wie entwickelt sich die Korrespondenzfrequenz über die Zeit?',
             description: `Zeitraum ${Math.min(...years)}–${Math.max(...years)}, ${s.datedLetters.toLocaleString('de-DE')} datierte Briefe`,
-            preview: preview(topEntries(s.yearCounts)),
             path: [
                 { view: 'activity', label: 'Aktivität', action: 'Heatmap auf Muster prüfen' },
                 { view: 'timeline', label: 'Timeline', action: 'jährliche Verteilung' }
@@ -206,7 +197,6 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             description: isEgoNetwork
                 ? `${ranked[0].name} ist an ${ranked[0].count.toLocaleString('de-DE')} von ${s.total.toLocaleString('de-DE')} Briefen beteiligt`
                 : `${personCount.toLocaleString('de-DE')} Personen in Beziehung`,
-            preview: preview(ranked.slice(0, PREVIEW_SIZE)),
             path: [
                 { view: 'network', label: 'Netzwerk', action: 'Struktur erkunden' },
                 { view: 'persons', label: 'Korrespondenten', action: 'Person auswählen' },
@@ -234,7 +224,6 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
             icon: 'fa-stream',
             question: 'Wer wird in wessen Briefen erwähnt?',
             description: `${s.personMentions.toLocaleString('de-DE')} Personenerwähnungen in ${s.lettersWithMentions.toLocaleString('de-DE')} Briefen`,
-            preview: preview(topEntries(s.mentioned), '×'),
             path: [
                 { view: 'mentions-flow', label: 'Erwähnungen', action: 'Erwähnungsmuster' },
                 { view: 'persons', label: 'Korrespondenten', action: 'Person filtern' }
@@ -350,32 +339,15 @@ export function analyzeResearchQuestions(letters, indices = {}, summary = null) 
     return questions;
 }
 
-function renderPathSteps(path) {
-    return path.map((step, i) => `
-        <button type="button" class="path-step" data-view="${escapeHtml(step.view)}" data-step="${i}">
-            <span class="path-step-header">
-                <span class="path-step-num">${i + 1}</span>
-                <span class="path-step-label">${escapeHtml(step.label)}</span>
-            </span>
-            <span class="path-step-action">${escapeHtml(step.action)}</span>
-        </button>
-        ${i < path.length - 1 ? '<span class="path-arrow" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>' : ''}
-    `).join('');
-}
-
 function renderQuestionCard(q) {
-    const previewHtml = q.preview?.length
-        ? `<div class="question-preview"><span class="preview-label">Vorschau:</span> ${q.preview.map(p => `<span class="preview-item">${escapeHtml(p)}</span>`).join(' ')}</div>`
-        : '';
-    // The card is no button itself: path steps and the start button are its controls (no nesting)
+    // Question, what the data hold for it, and the start. The steps appear in the path bar once
+    // the path runs, so the overview stays a list of questions.
     return `
         <div class="question-card question-${escapeHtml(q.category)}" data-question-id="${escapeHtml(q.id)}">
             <div class="question-icon" aria-hidden="true"><i class="fas ${escapeHtml(q.icon || 'fa-question')}"></i></div>
             <div class="question-content">
                 <div class="question-text">${escapeHtml(q.question)}</div>
                 <div class="question-description">${escapeHtml(q.description)}</div>
-                ${previewHtml}
-                <div class="question-path">${renderPathSteps(q.path)}</div>
             </div>
             <button type="button" class="question-start-btn" aria-label="Wissenspfad starten: ${escapeHtml(q.question)}" title="Wissenspfad starten">
                 <i class="fas fa-play" aria-hidden="true"></i>
@@ -403,9 +375,9 @@ function renderEnrichmentCard(q) {
  * @param {HTMLElement} container
  * @param {Array} paths - answerable questions to show
  * @param {Array} unavailable - questions the data cannot answer yet
- * @param {{onStartPath: Function, onStepClick: Function}} deps
+ * @param {{onStartPath: Function}} deps
  */
-function renderResearchPathCards(container, paths, unavailable, { onStartPath, onStepClick }) {
+function renderResearchPathCards(container, paths, unavailable, { onStartPath }) {
     const enrichment = unavailable.length > 0 ? `
         <details class="questions-enrichment">
             <summary>Anreicherungspotential (${unavailable.length})</summary>
@@ -413,13 +385,6 @@ function renderResearchPathCards(container, paths, unavailable, { onStartPath, o
         </details>
     ` : '';
     container.innerHTML = paths.map(renderQuestionCard).join('') + enrichment;
-
-    container.querySelectorAll('.path-step').forEach(step => {
-        step.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (step.dataset.view) onStepClick(step.dataset.view);
-        });
-    });
 
     const start = (card) => {
         const question = paths.find(q => q.id === card?.dataset.questionId);
@@ -445,7 +410,7 @@ function renderResearchPathCards(container, paths, unavailable, { onStartPath, o
  * @param {HTMLElement} container
  * @param {HTMLElement|null} showAllBtn
  * @param {Array} questions - result of analyzeResearchQuestions
- * @param {{onStartPath: Function, onStepClick: Function}} deps
+ * @param {{onStartPath: Function}} deps
  * @param {number} [limit]
  */
 export function renderOverviewResearchPaths(container, showAllBtn, questions, deps, limit = 4) {

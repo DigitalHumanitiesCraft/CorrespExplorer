@@ -17,7 +17,7 @@ export const ResearchPathTests = {
 
     tests: [
         {
-            name: 'analyzeResearchQuestions: Vorschau zählt Briefe je personKey (Parser)',
+            name: 'summarizeCorpus: zählt Briefe je personKey (Parser)',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
                 const questions = analyzeResearchQuestions(data.letters, data.indices);
@@ -25,7 +25,6 @@ export const ResearchPathTests = {
                 assert(persons, 'Descriptive persons question expected');
                 const top = [...summarizeCorpus(data.letters).persons.values()].sort((a, b) => b.count - a.count)[0];
                 assert(top.count === lettersOf(data.letters, top.key), `Top person count ${top.count} should equal its letters`);
-                assert(persons.preview[0] === `${top.name} (${top.count})`, `Preview should start with ${top.name} (${top.count}), got ${persons.preview[0]}`);
             }
         },
         {
@@ -56,9 +55,9 @@ export const ResearchPathTests = {
                 const summary = summarizeCorpus(data.letters, data.indices);
                 const persons = questions.find(q => q.category === 'descriptive' && q.path?.[0]?.view === 'persons');
                 assert(persons.description.startsWith(summary.persons.size.toLocaleString('de-DE')), `Description should count ${summary.persons.size} persons`);
-                assert(!persons.preview.some(p => p.endsWith('(0)')), 'Preview counts must not be 0 for the HSA index shape');
+                assert([...summary.persons.values()].every(p => p.count > 0), 'Person counts must not be 0 for the HSA index shape');
                 const languages = questions.find(q => q.path?.[0]?.view === 'timeline' && q.category === 'descriptive');
-                assert(languages && !languages.preview.some(p => p.endsWith('(0)')), 'Language preview counted from letters');
+                assert(languages && [...summary.languages.values()].every(l => l.count > 0), 'Languages counted from letters');
                 const top = [...summary.persons.values()].sort((a, b) => b.count - a.count)[0];
                 const ego = top.count > data.letters.length * 0.6;
                 assert(questions.some(q => q.question.includes('Ego-Netzwerk')) === ego, 'Ego network detection follows the top person share');

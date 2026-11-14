@@ -63,12 +63,6 @@ Nicht geprüft sind axe-core auf dem neuen Stand und die Ansichten Themen und Er
 
 Zwei unabhängige Durchsichten des Umbaus von Farbrollen und Listen ließen Befunde offen, von denen die meisten am selben Tag behoben wurden ([Journal vom 2026-11-14](journal.md)). Es bleiben:
 
-Braucht eine Entscheidung des Operators
-
-- Die sechs Einstiegskacheln der Übersicht führen in dieselben Ansichten wie die Leiste darüber. Sie zu streichen nähme einen Teil der Startansicht weg.
-- Ein Forschungspfad zeigt Frage, Beschreibung, Vorschau, Schritt und Startknopf und hat damit mehr Ebenen je Eintrag, als der Maßstab erlaubt. Kürzer würde er, wenn Vorschau oder Schritt erst nach dem Start erschienen.
-- Der Dialog eines Briefs wiederholt Datum, Absender, Empfänger, Ort und Sprache der Zeile. Er soll alles zeigen, was die Quelle verzeichnet, die Wiederholung ist die Folge davon.
-
 Bedienung
 
 - Bei 360 Pixel zeigen die Kopfknöpfe und die nicht aktiven Reiter nur Symbole. Der aktive Reiter nennt seinen Namen.

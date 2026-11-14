@@ -169,61 +169,19 @@
     font-size: 0.9em;
 }
 
-/* Entry Points */
-.overview-entry-points {
-    margin-bottom: var(--space-xl);
-}
 
-.overview-entry-points h3 {
-    text-align: center;
-    font-size: var(--font-size-md);
-    color: var(--color-text-light);
-    font-weight: 400;
-    margin: 0 0 var(--space-lg) 0;
-}
 
-.entry-point-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-md);
-}
 
-.entry-point-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-lg);
-    background: var(--color-bg-light);
-    border: 2px solid var(--color-border-control);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
-}
 
-.entry-point-btn:hover {
-    border-color: var(--color-primary);
-    background: var(--color-primary-light);
-    transform: translateY(-2px);
-}
 
-.entry-point-btn i {
-    font-size: var(--font-size-2xl);
-    color: var(--color-text);
-}
 
-.entry-label {
-    font-size: var(--font-size-md);
-    font-weight: 600;
-    color: var(--color-text);
-}
 
-.entry-desc {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-    text-align: center;
-}
+
+
+
+
+
+
 
 /* Research Paths Compact */
 .overview-research-paths {
@@ -257,12 +215,6 @@
 }
 
 /* Responsive */
-@media (max-width: 767px) {
-    .entry-point-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-}
 
 /* Research Paths in Overview */
 .overview-research-paths .questions-grid {
@@ -3254,35 +3206,11 @@ body:has(.tour-highlight) .tour-backdrop {
     color: var(--color-text-light);
 }
 
-.question-preview {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-xs);
-    margin-top: var(--space-sm);
-}
 
-.preview-label {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-    font-weight: 500;
-}
 
-.preview-item {
-    font-size: var(--font-size-xs);
-    color: var(--color-text);
-    background: var(--color-bg-light);
-    padding: 2px var(--space-sm);
-    border-radius: var(--radius-full);
-    white-space: nowrap;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
 
-.question-card:hover .preview-item {
-    background: var(--color-bg);
-}
+
+
 
 .question-fix {
     font-size: var(--font-size-xs);
@@ -3296,86 +3224,21 @@ body:has(.tour-highlight) .tour-backdrop {
     margin-right: var(--space-xs);
 }
 
-/* Research path (multi-step navigation) */
-.question-path {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-xs);
-    margin-top: var(--space-sm);
-    padding-top: var(--space-sm);
-    border-top: 1px solid var(--color-border-light);
-}
 
-.path-step {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--color-bg-light);
-    border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: var(--transition-fast);
-    transition-property: var(--transition-properties);
-    font-size: var(--font-size-xs);
-    min-width: 80px;
-    font-family: inherit;
-    color: inherit;
-    text-align: left;
-}
 
-.path-step-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-}
 
-.path-step-action {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-light);
-    padding-left: var(--space-xl);
-    line-height: 1.2;
-}
 
-.path-step:hover .path-step-action {
-    color: var(--color-primary-dark);
-}
 
-.path-step:hover {
-    background: var(--color-primary-light);
-    border-color: var(--color-primary);
-}
 
-.path-step-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    background: var(--color-primary);
-    color: white;
-    border-radius: 50%;
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    flex-shrink: 0;
-}
 
-.path-step:hover .path-step-num {
-    background: var(--color-primary-dark);
-}
 
-.path-step-label {
-    color: var(--color-text);
-    font-weight: 600;
-}
 
-.path-arrow {
-    color: var(--color-text-light);
-    font-size: var(--font-size-xs);
-    align-self: center;
-}
+
+
+
+
+
+
 
 /* Empty state */
 .questions-empty {

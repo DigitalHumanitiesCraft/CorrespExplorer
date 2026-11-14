@@ -30,6 +30,14 @@ related: [project, specification, plan]
 
 ## Einträge
 
+### 2026-11-14 Übersicht ohne Einstiegskacheln, Forschungspfade als kurze Zeilen
+
+- Anlass: Der Operator stimmte drei Empfehlungen aus [plan.md](plan.md) zu und gab den Auftrag zur Umsetzung.
+- Entschieden (Operator): Die sechs Einstiegskacheln der Übersicht entfallen, weil die Ansichtsleiste in dieselben Ansichten führt. Ein Forschungspfad zeigt in der Übersicht Frage, Beschreibung und Startknopf, die Schritte stehen in der Leiste des gestarteten Pfads. Der Dialog eines Briefs bleibt vollständig und wiederholt die Angaben der Zeile.
+- Geändert: `explore.html`, `views/overview-view.js`, `research-paths.js` und `explore.css` ohne Kacheln, Vorschau und Schrittknöpfe. Die Vorschau der häufigsten Einträge ist auch aus den Daten der Pfade entfernt, weil nichts sie mehr zeigt. Zwei Tests in `test-research-paths.js` prüften die Vorschau und prüfen jetzt dieselben Zählungen an `summarizeCorpus()`. [specification.md](specification.md#us-27-datensatz-übersicht-als-einstieg), [design.md](design.md#forschungspfade) und [architecture.md](architecture.md) sind nachgezogen.
+- Belege: der Commit dieses Eintrags. Im ersten Bildschirm der Übersicht bei 1280 Pixel sank die Zahl der Rahmen und Flächen gegenüber dem Stand vor dem Tag auf die Hälfte, die Schachtelungstiefe von drei auf zwei. `test.html?test=true` ohne Fehlschlag, `tests/browser/smoke.py` mit allen dreizehn Prüfungen, die Übersicht am Bild gesehen.
+- Wer was tat: Diese Session (Claude Fable 5.2 in Claude Code) baute und prüfte. Der Operator entschied, seine Abnahme am Bildschirm steht aus.
+
 ### 2026-11-14 Offene Punkte aus plan.md abgearbeitet, Palette bestätigt
 
 - Anlass: Der Operator entschied, dass die Grundpalette aus dem Logo bleibt, und gab den Auftrag, die offenen Punkte aus [plan.md](plan.md) zu beheben.
