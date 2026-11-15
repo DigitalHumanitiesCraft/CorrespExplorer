@@ -28,6 +28,10 @@ let enrichmentController = null;
 // The element that started loading; it is hidden while loading, so focus returns to it explicitly
 let lastTrigger = null;
 
+// verification/serve_local_corpus.py mounts a corpus under data/local and binds to the loopback
+// interface only, so the file list can exist only on a loopback host
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
+
 // Initialize on DOM ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
@@ -198,11 +202,12 @@ async function handleUrlSubmit() {
 }
 
 // A corpus mounted under data/local appears as a choice of the figure where its file list
-// exists. The published site carries no such list, so the choice stays hidden there.
+// exists. The published site carries no such list and is never served from a loopback host, so
+// it does not ask for the list and the choice stays hidden there.
 async function showLocalDataset() {
     const card = document.getElementById('local-dataset');
     const choice = document.getElementById('local-dataset-choice');
-    if (!card || !choice) return;
+    if (!card || !choice || !LOOPBACK_HOSTS.has(window.location.hostname)) return;
     try {
         const response = await fetch(card.dataset.files);
         if (!response.ok) return;

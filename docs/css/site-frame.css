@@ -12,6 +12,11 @@
     --site-head-height: 57px;
 }
 
+/* base.css reserves room for the fixed navbar of the explorer; the shared header stands in the flow */
+body:has(> .site-head) {
+    padding-top: 0;
+}
+
 .site-head {
     position: relative;
     z-index: var(--z-sticky);

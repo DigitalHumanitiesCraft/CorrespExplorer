@@ -156,19 +156,6 @@
     color: var(--color-text);
 }
 
-/* Footer */
-.about-footer {
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--color-border);
-    text-align: center;
-}
-
-.about-footer p {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    color: var(--color-text-light);
-}
-
 /* Legend Table for Data Quality */
 .legend-table {
     width: 100%;
@@ -234,4 +221,16 @@
 .about-section .btn {
     display: inline-block;
     margin-top: var(--space-sm);
+}
+
+/* The shared header (site-frame.css) stands in the page flow, so the container no longer clears a
+   fixed navbar, and the footer follows the text instead of a full screen */
+.site-head ~ .about-container {
+    padding-top: var(--space-xl);
+    min-height: auto;
+}
+
+/* The target of the skip link takes focus only to move the reading position; it is no control */
+.about-container:focus {
+    outline: none;
 }
