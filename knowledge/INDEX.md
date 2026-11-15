@@ -44,22 +44,22 @@ Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents,
 - `knowledge/` enthält die Promptotyping Documents.
 - `research-artefacts/` enthält den Paper-Entwurf zur Entstehung des Werkzeugs und den Prompt für ein externes LLM-Review.
 - `docs/data/` enthält Beispiel- und Testdatensätze und die erzeugte `examples.json`, `preprocessing/` die Python-Skripte, die sie erzeugen.
-- `verification/` enthält Prüfwerkzeuge für Bestände außerhalb des Repositorys (`check-corpus.mjs`, `serve_local_corpus.py`), `tests/browser/` den Smoke-Test. Daten liegen dort nicht.
+- `verification/` enthält Prüfwerkzeuge für Bestände außerhalb des Repositorys (`check-corpus.mjs`, `serve_local_corpus.py`) und den festen Aufgabensatz mit berechneten Antworten (`task_set.py`), `tests/browser/` den Smoke-Test. Daten liegen dort nicht.
 - `docs/vendor/` enthält Bibliotheken, Schriften und die Länderumrisse mit ihren Lizenzen, `docs/assets/dhcraft/` die Bausteine von Kopf und Fuß der Projektseiten mit Herkunft und Lizenz.
 
 ## Lesepfade
 
 - Sessionstart: `CLAUDE.md`, der Abschnitt `## Open` am Anfang von [journal.md](journal.md), dieser Index, dann [plan.md](plan.md) und die Dokumente der Aufgabe.
 - Neue Funktion oder Ansicht: [specification.md](specification.md) (Story und Aufgabe), [design.md](design.md) (Aufbau, gemeinsame Regeln und Rückmeldungen des Operators), [architecture.md](architecture.md#wo-eine-neue-ansicht-ansetzt).
-- Durchgang nach den gemeinsamen Regeln: [design.md](design.md#gemeinsame-regeln-aller-ansichten), die geteilten Teile in [architecture.md](architecture.md#module), die Liste je Ansicht in [plan.md](plan.md#durchgang-nach-den-gemeinsamen-regeln).
+- Gemeinsame Regeln der Ansichten: [design.md](design.md#gemeinsame-regeln-aller-ansichten), die geteilten Teile in [architecture.md](architecture.md#module), was nach dem Durchgang offen ist, in [plan.md](plan.md#durchgang-nach-den-gemeinsamen-regeln).
 - Aufräumen: [architecture.md](architecture.md#ungenutzt), [plan.md](plan.md#aufräumen).
 - Daten und Parser: [data.md](data.md#was-der-parser-liest), [uncertainty-specification.md](uncertainty-specification.md), [testing.md](testing.md#korpusprüfung).
-- Prüfrunde: [testing.md](testing.md#feste-aufgaben) mit den Aufgaben der Specification, Befunde nach [plan.md](plan.md).
+- Prüfrunde: [testing.md](testing.md#feste-aufgaben) mit den Aufgaben der Specification und `verification/task_set.py`, Befunde nach [plan.md](plan.md).
 - Gemeinsames Briefmodell: [data.md](data.md#gemeinsames-brief--und-aussagemodell), [plan.md](plan.md#gemeinsames-briefmodell), `knowledge/data.md` im Repository `gossip`.
 
 ## Konvention
 
-Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vorlagen (https://dhcraft.org/Promptotyping/templates/convention.md). Bis Oktober 2026 (Commit `29dfc15`) bestand sie aus Journal, Context Map, einer Liste bekannter Probleme und Themendokumenten. Am 2026-11-14 wurde sie nach der neuen Richtung des Werkzeugs distilliert, am 2026-11-15 nach dem Umbau von Startseite, Startansicht, Briefliste, Zeit und Themen erneut und nach dem anschließenden Refactoring kuratiert ([Journal](journal.md)).
+Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vorlagen (https://dhcraft.org/Promptotyping/templates/convention.md). Bis Oktober 2026 (Commit `29dfc15`) bestand sie aus Journal, Context Map, einer Liste bekannter Probleme und Themendokumenten. Am 2026-11-14 wurde sie nach der neuen Richtung des Werkzeugs distilliert, am 2026-11-15 nach dem Umbau von Startseite, Startansicht, Briefliste, Zeit und Themen erneut, nach dem anschließenden Refactoring kuratiert und nach Parserprüfung und Durchgang über die Ansichten noch einmal kuratiert ([Journal](journal.md)).
 
 ## Begriffe
 
@@ -93,7 +93,7 @@ Die Zeile am unteren Rand jeder Darstellung, der eine Ort für die Auswahl, mit 
 
 ### Briefauszug
 
-Die Briefe der Auswahl als Liste über der Darstellung, geöffnet über die Zahl der Auswahlzeile, in jeder Darstellung außer der Briefliste (`letters-drawer.js`).
+Die Briefe der Auswahl als Liste über der Darstellung, geöffnet über die Zahl der Auswahlzeile (`letters-drawer.js`). In der Briefliste führt dieselbe Zahl zur Liste selbst.
 
 ### Schiene
 
@@ -101,7 +101,7 @@ Die Seitenleiste des Explorers als schmale Spalte aus Zeichen mit Hinweis und zu
 
 ### Sprachlegende
 
-Die eine Zeile der Sprachen mit ihren Farben, jede so breit wie ihr Anteil an der Auswahl, die zugleich erklärt, was die Farben bedeuten, und als Sprachfilter dient (`renderLanguageKey()` in `selection-ui.js`). Bisher steht sie in der Startansicht.
+Die eine Zeile der Sprachen mit ihren Farben, jede so breit wie ihr Anteil an der Auswahl, die zugleich erklärt, was die Farben bedeuten, und als Sprachfilter dient (`renderLanguageKey()` in `selection-ui.js`). Sie steht in jeder Darstellung mit Sprachfarben, außerhalb der Startansicht über `renderViewLanguageKey()` in `explore.js`.
 
 ### Korrespondenzkreis
 
@@ -121,7 +121,7 @@ Die Darstellung „Start“ des Explorers, ein Dashboard kleiner echter Darstell
 
 ### Raster
 
-Die Hauptfigur der Themenansicht mit einer Zeile je Thema und einer Zelle je Jahr, getönt auf einer festen Skala nach der Zahl der Briefe.
+Die Hauptfigur der Themenansicht mit einer Zeile je Thema und einer Zelle je Jahr, getönt auf einer festen Skala nach der Zahl der Briefe. Themen, die Sprachen sind, folgen den übrigen als eigene Gruppe.
 
 ### Anteile
 

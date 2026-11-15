@@ -21,7 +21,7 @@ related: [architecture, data, specification, uncertainty-specification, plan]
 
 # Testing
 
-Die Prüfung von CorrespExplorer hat fünf Ebenen: Modultests im Browser an echten Datendateien, einen Browser-Smoke-Test des Wegs durch die Seiten, eine Korpusprüfung des Parsers an Beständen außerhalb des Repositorys, Messungen der Oberfläche und Aufgabenprüfungen durch Agenten, die den Browser bedienen. Seit 2026-11-14 kommt ein fester Aufgabensatz hinzu, dessen Antworten ein Skript aus den Daten berechnet und der in jeder Runde erneut läuft. Grüne Tests schließen Fehler der Oberfläche nicht aus, das zeigten alle Durchsichten seit Oktober 2026. Eine CI gibt es nicht.
+Die Prüfung von CorrespExplorer hat fünf Ebenen: Modultests im Browser an echten Datendateien, einen Browser-Smoke-Test des Wegs durch die Seiten, eine Korpusprüfung des Parsers an Beständen außerhalb des Repositorys, Messungen der Oberfläche und Aufgabenprüfungen durch Agenten, die den Browser bedienen. Seit 2026-11-14 kommt ein fester Aufgabensatz hinzu, dessen Antworten `verification/task_set.py` aus den Daten berechnet und der in jeder Runde erneut läuft. Grüne Tests schließen Fehler der Oberfläche nicht aus, das zeigten alle Durchsichten seit Oktober 2026. Eine CI gibt es nicht.
 
 ## Teststrategie
 
@@ -31,7 +31,7 @@ Die Prüfung von CorrespExplorer hat fünf Ebenen: Modultests im Browser an echt
 | Smoke-Test | `tests/browser/smoke.py` (Playwright, Chrome headless) | Fehler, die nur die geladene Seite zeigt: Laden, Konsole, Navigation, Historie, Export, Startfigur |
 | Korpusprüfung | `verification/check-corpus.mjs` | Parserfehler an einem ganzen echten Bestand, der nicht gebündelt werden darf |
 | Messung | Dichtemessung des ersten Bildschirms, Kontrastrechnung, Bildrate | zu viele Ebenen und Flächen, zu geringer Kontrast, langsames Zeichnen |
-| Aufgabenprüfung | Agenten mit Browser, fester Aufgabensatz | ob Forschende ihre Fragen in der Oberfläche beantworten können |
+| Aufgabenprüfung | Agenten mit Browser, fester Aufgabensatz (`verification/task_set.py`) | ob Forschende ihre Fragen in der Oberfläche beantworten können |
 
 Tests verwenden keine Mock-Daten. Sie laden echte XML-Dateien aus `docs/data/` über die Produktionsfunktion `parseCMIF`, wo sie die Indexform der Vorprozessierung brauchen, `docs/data/hsa-letters.json` unverändert (Entscheidung des Operators vom 2026-10-30). Ein neuer Fall wird als Brief in eine Fixture-Datei aufgenommen. Tests importieren die echten Funktionen und duplizieren keine Helfer.
 
@@ -41,19 +41,19 @@ Für jede Prüfung: ob sie gegen den Code läuft, den das Werkzeug nutzt, ob sie
 
 | Prüfung | Was sie behauptet | Code des Werkzeugs | echte Daten | kann fehlschlagen |
 |---|---|---|---|---|
-| Suite CMIF Parser | Briefsätze, Unsicherheit, weitere Handlungen, Datumsgrenzen, Registerkennungen, Entsprechungen, Zusammenführung, unplausible Jahre | ja, `cmif-parser.js` und `utils.js` | Fixtures, darunter unverändert übernommene Einträge dreier Grazer Editionen | ja |
-| Suites Aggregation, State Manager, Selection | Zählungen aus den Briefen, Filter, URL-Zustand mit Jahr, Gegenüber und Briefauszug, Marken und Zahl der Auswahlzeile (`selectionMarks()`, `drawerCountText()`) | ja | Fixtures und das ganze HSA | ja |
-| Suites Spacetime, Network, Topics | Aggregation und Geometrie von Raum-Zeit und Korrespondenzkreis, Zählung, Ordnung, feste Tönungsskala und Treemap der Themen | ja, über die exportierten reinen Funktionen | das ganze HSA, Raster und Anteile gegen eine unabhängige Zählung für Paris 1882 bis 1892 | ja |
+| Suite CMIF Parser | Briefsätze, Unsicherheit, weitere Handlungen, Datumsgrenzen, Registerkennungen, Entsprechungen, Zusammenführung je Datierung, unplausible Jahre, seit `f856e11` die Fälle der Parserprüfung an `test-parser-cases.xml` (ergänzter Datumswortlaut, weitere Absendeorte, Anschriften, Verweise ohne Normdatum, Platzhalter, Uhrzeit) | ja, `cmif-parser.js` und `utils.js` | Fixtures, darunter unverändert übernommene Einträge dreier Grazer Editionen | ja |
+| Suites Aggregation, State Manager, Selection | Zählungen aus den Briefen, seit `65ea4b8` auch Absender und Jahre eines Orts aus der Auswahl, Filter, URL-Zustand mit Jahr, Gegenüber und Briefauszug, Marken und Zahl der Auswahlzeile (`selectionMarks()`, `drawerCountText()`) | ja | Fixtures und das ganze HSA | ja |
+| Suites Spacetime, Network, Topics | Aggregation und Geometrie von Raum-Zeit und Korrespondenzkreis, Zeichenfolge und Trefferbreite der Sehnen (`chordPaintOrder()`, `chordHitWidth()`), Zählung, Ordnung mit den Sprachen als eigener Gruppe, feste Tönungsskala und Treemap der Themen | ja, über die exportierten reinen Funktionen | das ganze HSA, Raster und Anteile gegen eine unabhängige Zählung für Paris 1882 bis 1892 | ja |
 | Suite Letters (seit `c6185bc`) | Briefe ohne Platz auf der Zeitachse, Datumsordnung, Richtung von der zentralen Person aus, Gruppen nach Jahr und Monat, Jahresprofil | ja, `letters-view.js` | Fixtures und das HSA, die Spalten 1913 und ohne Jahr gegen eine eigene Zählung der Datei | ja |
 | Suite Time (seit `c6185bc`) | Intervall eines Briefs auf der Achse, Wahl der Auflösung, Seite eines Briefs zur zentralen Person, Briefe und Abschnitte eines Zeitraums | ja, `timeline-view.js` | das HSA für 1912 und 1900 bis 1905 gegen eine getrennte Zählung | ja |
 | Suite Dashboard (seit `c6185bc`) | Zählungen der Startansicht, `countOf()`, `languageOrder()` und `dominantLanguages()`, Rahmen und Projektion der kleinen Karte | ja, `overview-view.js`, `selection-ui.js`, `mini-figures.js` | Fixtures und das HSA | ja |
 | Suite Compose (seit `b189cb5`) | `composeFigure()` für reines CMIF, Briefsätze ohne Koordinaten, einen erweiterten Bestand, Bestände ohne Datum und erwähnte Orte ohne Koordinaten, `missingSentence()` | ja, `start-compose.js` | Zusammenfassungen aus Fixtures | ja |
-| Suites Formatters, Security, Basket, correspSearch, DOM Cache | Anzeige der Unsicherheit, Escaping, Korb, API-Antworten, DOM-Zugriff | ja | Fixtures, HSA, zwei gespeicherte API-Antworten | ja |
-| Suite Research Paths and Export | Zählungen aus `summarizeCorpus()`, Korbauswahl einer Ansicht (`basketSelectionForView()`), CSV- und JSON-Export, Filtersatz, Personenindex mit Normdaten | ja, `research-paths.js`, `knowledge-path.js`, `export.js`, `view-support.js`, `utils.js` | Fixtures und das HSA | ja |
+| Suites Formatters, Security, Basket, correspSearch, DOM Cache | Anzeige der Unsicherheit, `sharedLetterLabel()`, Escaping, Korb, API-Antworten, DOM-Zugriff | ja | Fixtures, HSA, zwei gespeicherte API-Antworten | ja |
+| Suite Research Paths and Export | Zählungen aus `summarizeCorpus()`, Korbauswahl einer Ansicht (`basketSelectionForView()`), CSV- und JSON-Export mit den Spalten der neuen Parserfelder, Filtersatz, Personenindex mit Normdaten | ja, `research-paths.js`, `knowledge-path.js`, `export.js`, `view-support.js`, `utils.js` | Fixtures und das HSA | ja |
 | Suite Demo | Standardschwelle, Kanten, Ego und Organisationen des Netzwerks an der Testdatei `demo-showcase.xml`, escapte Tabelle der Textalternative an `test-hostile.xml` | ja, `network-view.js` und `view-support.js` | nur Testdateien, darunter die synthetische Datei des früheren Tutorials | ja |
 | Smoke-Test | siehe [Browser-Smoke-Test](#browser-smoke-test) | ja, die ausgelieferten Seiten | HSA, die Testdatei `demo-showcase.xml` über den Datei-Upload der Startseite | ja, Exit-Code nur bei vollem Erfolg 0 |
 | Korpusprüfung | jeder Eintrag eines Bestands entspricht seiner Quelldatei | ja, der Parser über jsdom | ein ganzer externer Bestand | ja |
-| Fester Aufgabensatz | die Oberfläche gibt die aus den Daten berechnete Antwort | die Oberfläche, bedient von Hand oder von einem Agenten | das ganze HSA | ja, sobald jemand die Antwort abliest |
+| Fester Aufgabensatz | die Oberfläche gibt die aus den Daten berechnete Antwort | die Antworten rechnet `task_set.py` ohne Code des Werkzeugs, die Oberfläche liest es mit `--browser` oder ein Mensch von Hand | das ganze HSA | ja, sobald jemand die Antwort abliest. Eine abweichende Antwort meldet `--browser` als „nein“, der Exit-Code ist nur 1, wenn das Skript selbst eine Probe nicht ausführen kann |
 
 Die Modultests prüfen nicht das gezeichnete Bild (D3, MapLibre, Zeichenflächen), nicht die Aggregationen, die nur in `explore.js` stehen, und keine externen Dienste.
 
@@ -68,11 +68,11 @@ Die Modultests prüfen nicht das gezeichnete Bild (D3, MapLibre, Zeichenflächen
 
 ## Feste Aufgaben
 
-Jede Story in [specification.md](specification.md#epics-und-user-stories) hat eine Aufgabe am gebündelten Hugo Schuchardt Archiv mit einer Rechenregel. Ein Skript berechnet die Antworten aus `docs/data/hsa-letters.json`, ohne Code des Werkzeugs zu laden. In jeder Runde liest ein Mensch oder ein Agent die Antwort in der Oberfläche ab, eine Abweichung ist ein Befund und wird einer Story, der Gestaltung oder den Daten zugeordnet. Die Arbeitsweise hat der Operator am 2026-11-14 angenommen.
+Jede Story in [specification.md](specification.md#epics-und-user-stories) hat eine Aufgabe am gebündelten Hugo Schuchardt Archiv mit einer Rechenregel. `verification/task_set.py` berechnet die Antworten aus `docs/data/hsa-letters.json`, für US-01 und US-02 aus `docs/data/hsa.xml`, ohne Code des Werkzeugs zu laden. Es überträgt `personKey`, `placeKey`, die Platzhalter für unbekannte Orte und das gültige Jahr der Specification nach Python und nennt je Aufgabe Ansicht und Adresse, unter der die Antwort abzulesen ist. In jeder Runde liest ein Mensch oder ein Agent die Antwort in der Oberfläche ab, eine Abweichung ist ein Befund und wird einer Story, der Gestaltung oder den Daten zugeordnet. Die Arbeitsweise hat der Operator am 2026-11-14 angenommen.
 
-Das Skript lag am 2026-11-14 im Arbeitsordner der distillierenden Session und ist nicht Teil des Repositorys ([plan.md](plan.md#aufgabensatz-und-prüfungen)). Seine Regeln stehen in der Specification. Seit dem Umbau der Ansichten hat niemand die Antworten in der Oberfläche abgelesen.
+Seit `d9f740b` liegt das Skript im Repository. Es führt die Aufgaben aller Stories mit Antwort und die zwölf Aufgaben der Bedienprüfung der Raum-Zeit-Ansicht als ST-a bis ST-l, deren Gegenstände aus den Skripten jener Prüfung rekonstruiert sind und die von Hand bleiben. Wo kein robuster Selektor besteht, markiert es eine Aufgabe als „von Hand“. Die Probe im Browser vergleicht die Zahlen der Antwort mit dem Text der Ansicht nach Entfernen der Tausenderpunkte. Seit dem Umbau der Ansichten hat niemand die Antworten in der Oberfläche abgelesen, auch `--browser` ist noch nicht gelaufen ([plan.md](plan.md#aufgabensatz-und-prüfungen)).
 
-Berechnete Antworten, Stand 2026-11-14, Datei `hsa-letters.json` mit `meta.generated` 2026-10-29:
+Berechnete Antworten, Stand 2026-11-14, Datei `hsa-letters.json` mit `meta.generated` 2026-10-29. Am 2026-11-15 hat `task_set.py` am Stand `65ea4b8` dieselben Antworten gerechnet, dazu US-26 mit 627 Briefen, US-22 mit 1.031 Personen und US-36 mit 447 Briefen:
 
 | Story | Antwort |
 |---|---|
@@ -116,17 +116,17 @@ Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit d
 
 ## Browser-Smoke-Test
 
-`tests/browser/smoke.py` startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile. Erwartete Zahlen liest es aus den gebündelten Daten. Die Liste steht in `_checks()`, am Stand nach dem Refactoring vom 2026-11-15 achtzehn Prüfungen ohne `--online` und `--axe`:
+`tests/browser/smoke.py` startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile. Erwartete Zahlen liest es aus den gebündelten Daten. Die Liste steht in `_checks()`, am Stand `65ea4b8` achtzehn Prüfungen ohne `--online` und `--axe`:
 
 - Test-Runner ohne Fehlschlag
-- alle Ansichten der Liste `VIEWS` des Skripts mit dem HSA ohne Konsolen- und Seitenfehler, Laden unter der Zeitgrenze (`--load-limit`, Vorgabe 5 Sekunden, Entscheidung E10)
+- alle Ansichten der Liste `VIEWS` des Skripts mit dem HSA, seit `d9f740b` mit Raum-Zeit, ohne Konsolen- und Seitenfehler, Laden unter der Zeitgrenze (`--load-limit`, Vorgabe 5 Sekunden, Entscheidung E10)
 - Testdatei (seit dem Refactoring, ersetzt den Demo-Link): `demo-showcase.xml` wird über den Datei-Upload der Startseite geladen, der Dialog „Datensatz konfigurieren“ übersprungen, das Netzwerk hat mit seiner Standardschwelle Knoten. Die Prüfung sichert den Weg eigener Daten von der Startseite in den Explorer.
 - Stillgelegte Links (seit dem Refactoring, ersetzt „Tour einmal je Browser“): `view=activity` und `view=chronik` mit `demo=true&tour=0` öffnen die Zeitansicht ohne Konsolen- und Seitenfehler, ein Link mit `demo=true` ohne Datensatz führt auf die Startseite ohne den Hinweis auf den fehlenden Datensatz, `index.html?demo=true` bleibt auf der Startseite. Die Prüfung sichert, dass ältere Links nach dem Entfernen von Tutorial, Tagen und Chronik weiter öffnen.
 - Link ohne Datensatz führt auf die Startseite mit Hinweis
-- Zurück führt zur vorigen Ansicht, geteilter Filterlink zeigt die gefilterten Briefe
+- Zurück führt zur vorigen Ansicht, geteilter Filterlink zeigt die gefilterten Briefe, deren Zahl die Prüfung seit `d9f740b` in der Auswahlzeile der Briefliste liest
 - CSV-Export mit BOM und Normdatenspalten, Stern legt die Person in den Korb
 - Balken „Spanne“ und Hinweis der Karte auf die Ortsliste
-- ein Jahresbalken öffnet seine Briefe im Briefauszug, die Zeitansicht bleibt
+- ein Jahresbalken wählt sein Jahr, die Zahl der Auswahlzeile öffnet seine Briefe im Briefauszug, die Zeitansicht bleibt (seit `d9f740b`, vorher über den entfallenen Knopf der Zeitansicht)
 - Seitenstruktur, ruhendes Netzwerk unter reduzierter Bewegung, Entscheidung E8 mit JSON-Indizes und Tabellen
 - Themen: eine Zeile je Thema der Datei, Enter setzt das Thema, alle Zeilen bleiben, ein Korrespondent des Streifens setzt den Personenfilter dazu
 - Startansicht, Filter (seit `c6185bc`): Ein Thema filtert Kreis, Karte und Auswahlzeile, die Zahl der Zeile gleicht einer Zählung der Datei, ein zweiter Klick löst, der Kreis wählt mit Pfeiltaste und Enter eine Person.
@@ -135,11 +135,11 @@ Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit d
 
 `--online` prüft zusätzlich einen geteilten correspSearch-Link gegen die API, über den Eintrag „Eigene Daten“ der Startseite. `--axe <Pfad>` führt axe-core über alle Seiten und die Startansicht bei 390px.
 
-Lücke: Die Liste `VIEWS` des Skripts kennt die Raum-Zeit-Ansicht nicht, `chronik` und `activity` hat das Refactoring daraus entfernt. „Alle Ansichten ohne Fehler“ und axe-core laufen deshalb nicht über Raum-Zeit ([plan.md](plan.md#aufgabensatz-und-prüfungen)). Kopf und Fuß der Startseite und die Schiene haben keine eigene Prüfung.
+Lücke: axe-core ist seit der Aufnahme von Raum-Zeit in `VIEWS` nicht gelaufen. Kopf und Fuß von Startseite und Projektseite, die Schiene, die Sprachlegende der einzelnen Ansichten und die neuen Angaben im Briefdialog haben keine eigene Prüfung.
 
 ## Korpusprüfung
 
-`verification/check-corpus.mjs` lässt den Parser über einen Ordner mit TEI- oder CMIF-Dateien laufen und vergleicht jeden Eintrag mit seiner Quelldatei: jeder `correspDesc` wird ein Eintrag, IDs sind eindeutig, kein Poststempel und keine Anschrift steht als Absendeort, jede als ergänzt ausgezeichnete Angabe ist als erschlossen markiert, jeder Empfänger und jede Adresszeile bleibt erhalten, kein interner Verweis gilt als identifiziert. Danach prüft es den zusammengeführten Bestand: jeder Eintrag gehört zu genau einem Brief, zusammengeführte Einträge teilen eine Signatur ohne widersprechende Datierung, kein unplausibles Jahr steht auf der Zeitachse, der Personenindex zählt jeden Empfänger. Am Ende gibt es die Kennzahlen des Laufs aus. Es ist der Beleg für Bestände, deren Daten nicht gebündelt werden dürfen. Die Datenprüfung vom 2026-11-14 fand Parserfehler, die es nicht abdeckte, seither enthält es vier weitere Prüfungen.
+`verification/check-corpus.mjs` lässt den Parser über einen Ordner mit TEI- oder CMIF-Dateien laufen und vergleicht jeden Eintrag mit seiner Quelldatei: jeder `correspDesc` wird ein Eintrag, IDs sind eindeutig, kein Poststempel und keine Anschrift steht als Absendeort, jede als ergänzt ausgezeichnete Angabe ist als erschlossen markiert, jeder Empfänger und jede Adresszeile bleibt erhalten, kein interner Verweis gilt als identifiziert. Danach prüft es den zusammengeführten Bestand: jeder Eintrag gehört zu genau einem Brief, zusammengeführte Einträge teilen eine Signatur ohne widersprechende Datierung, kein unplausibles Jahr steht auf der Zeitachse, der Personenindex zählt jeden Empfänger. Seit `f856e11` prüft es außerdem, dass ein Datum genau dort als erschlossen gilt, wo das gezeigte Datumselement markiert ist, dass kein markiertes Datumselement spurlos verloren geht, dass jeder ungetypte Absendeort Ort oder weiterer Absendeort ist, dass die Briefe der Zusammenführungsregel entsprechen und dass jeder Brief einer Signatur mit abweichenden Daten die anderen nennt. Am Ende gibt es die Kennzahlen des Laufs aus. Es ist der Beleg für Bestände, deren Daten nicht gebündelt werden dürfen. Am 2026-11-15 bestand es am Bestand von Stefan Zweig Digital (Klon des Repositorys, Ordner der Konvolute unverändert seit `74e08d03`) alle 24 Prüfungen mit 2.135 Einträgen, 1.636 Briefen aus 1.633 Signaturen, zwei davon mit abweichenden Daten.
 
 ## Messungen
 
@@ -164,16 +164,16 @@ Befunde:
 - Die Skala der Breite änderte sich mit dem Filter.
 - Verblasste Säulen hatten einen Kontrast von 1.1 bis 1.4 zu 1.
 
-Behoben von der koordinierenden Session und im Browser nachgespielt (Commit `f24c8ae`): die nächste Marke gewinnt, erst Ort, dann Jahr, das Jahr steht an der Achse, Escape, feste Blickrichtungen setzen Zoom und Verschiebung zurück, Suche über der Ortsliste, eine Breitenskala, stärkere Abblendung. Offen geblieben ([plan.md](plan.md#orte-und-raum-zeit)): die Grundkarte wird beim Öffnen jeder Ansicht angefragt, Wien steht als zwei Orte in den Daten ([data.md](data.md#hugo-schuchardt-archiv)), ein Klick ins Leere löste die Wahl im Nachspiel nicht (nicht gesichert), breite Linien im Korrespondenzkreis überdecken einander.
+Behoben von der koordinierenden Session und im Browser nachgespielt (Commit `f24c8ae`): die nächste Marke gewinnt, erst Ort, dann Jahr, das Jahr steht an der Achse, Escape, feste Blickrichtungen setzen Zoom und Verschiebung zurück, Suche über der Ortsliste, eine Breitenskala, stärkere Abblendung. Offen geblieben ([plan.md](plan.md#orte-und-raum-zeit)): Wien steht als zwei Orte in den Daten ([data.md](data.md#hugo-schuchardt-archiv)), ein Klick ins Leere löste die Wahl im Nachspiel nicht (nicht gesichert). Seit `7e04269` erledigt: die Grundkarte wird nur noch auf der Karte angefragt, die breitere Linie im Korrespondenzkreis liegt oben und erhält den Zeiger.
 
-Die zwölf Aufgaben sind der Anfang eines Aufgabensatzes, der in jeder Runde wieder läuft. Mit dem festen Aufgabensatz der Specification bilden sie ihn, sobald sie im Repository stehen.
+Die zwölf Aufgaben stehen als ST-a bis ST-l in `verification/task_set.py`, ihre Gegenstände rekonstruiert, ihr Wortlaut nicht überliefert.
 
 ## Was nicht geprüft ist
 
 - Das gezeichnete Bild von Karte, Netzwerk, Raum-Zeit, Themen und Startfigur. Gedeckt durch Bildschirmfotos der bauenden Sessions und die Aufgabenprüfung.
-- Die Raum-Zeit-Ansicht im Smoke-Test und unter axe-core.
+- Die Raum-Zeit-Ansicht unter axe-core.
 - Raster und Anteile, Briefliste, Zeitansicht, Startansicht und Startseite über ihre Modultests und Smoke-Prüfungen hinaus. Gedeckt durch Lesetests frischer Leser an Startseite und Raster und Gegenzählungen der Bau-Agenten an `hsa-letters.json`, je in deren Berichten, nicht unabhängig wiederholt.
-- Alles vom Abend des 2026-11-14 und der Nacht zum 2026-11-15 bei 200 Prozent Zoom und mit einem Screenreader.
+- Alles vom 2026-11-14 und 2026-11-15 bei 200 Prozent Zoom und mit einem Screenreader, darunter die Sprachlegende in jeder Ansicht bei 360 Pixel.
 - Zoom auf 200 Prozent, andere Browser als Chrome, Excel mit dem BOM.
 - Der Wissenskorb mit Einträgen, die dunkle Grundkarte und der Exportdialog im neuen Farbschema.
 - Fachliche Richtigkeit von Zusammenführung, Entsprechungen und unplausiblen Jahren. Das entscheiden die Editionen.
@@ -186,6 +186,8 @@ python -m http.server 8000 --directory docs
 uv run tests/browser/smoke.py                # alle Prüfungen, Exit-Code 0 nur bei vollem Erfolg
 uv run tests/browser/smoke.py --online --axe path/to/axe.min.js
 node verification/check-corpus.mjs <Pfad zu jsdom> <Ordner mit XML-Dateien>
+uv run verification/task_set.py               # Aufgaben mit berechneten Antworten, --json als JSON
+uv run verification/task_set.py --browser     # liest jede Antwort in der Ansicht, Server auf docs/ unter http://localhost:8137/
 uv run preprocessing/build_examples.py       # nach jeder Neuerzeugung von hsa-letters.json
 ```
 
@@ -193,6 +195,10 @@ uv run preprocessing/build_examples.py       # nach jeder Neuerzeugung von hsa-l
 
 ## Stand
 
-Am 2026-11-15 nach dem Refactoring registriert `run-all-tests.js` achtzehn Suites: CMIF Parser, Aggregation, Formatters, Security, Research Paths and Export, Demo, correspSearch, Spacetime, Network, Topics, Selection, Letters, Time, Dashboard, Compose, State Manager, DOM Cache, Basket. Neu seit dem Stand von `34fedd9` sind Letters, Time und Dashboard (`c6185bc`) und Compose (`b189cb5`), Topics ist mit dem Raster neu gefasst (`7cbe3c3`). Das Refactoring hat mit der Tagesansicht und den Forschungspfaden deren Tests entfernt, die Zahl der Modultests sank von 191 auf 181. Der Smoke-Test hat achtzehn Prüfungen ohne `--online` und `--axe`, zwei davon hat das Refactoring ersetzt ([Browser-Smoke-Test](#browser-smoke-test)). Suites und Smoke-Prüfungen sind aus den Dateien gezählt.
+Am 2026-11-15 registriert `run-all-tests.js` achtzehn Suites: CMIF Parser, Aggregation, Formatters, Security, Research Paths and Export, Demo, correspSearch, Spacetime, Network, Topics, Selection, Letters, Time, Dashboard, Compose, State Manager, DOM Cache, Basket. Neu seit dem Stand von `34fedd9` sind Letters, Time und Dashboard (`c6185bc`) und Compose (`b189cb5`), Topics ist mit dem Raster neu gefasst (`7cbe3c3`). Das Refactoring hat mit der Tagesansicht und den Forschungspfaden deren Tests entfernt, die Zahl der Modultests sank von 191 auf 181. Parserprüfung und Durchgang über die Ansichten (`f856e11` bis `65ea4b8`) haben Tests in den Suites CMIF Parser, Aggregation, Formatters, Network, Topics und Research Paths and Export ergänzt. Suites und Smoke-Prüfungen sind aus den Dateien gezählt.
 
-Nach Bericht der koordinierenden Session liefen am Commit `34fedd9` 160 Modultests und 16 Prüfungen des Smoke-Tests ohne Fehlschlag. Am Arbeitsbaum nach dem Refactoring lief `test.html?test=true` am 2026-11-15 in der kuratierenden Session mit 181 von 181 Modultests ohne Fehlschlag (Browser der Desktop-App gegen den lokalen Server). Den Smoke-Test hat die kuratierende Session nicht ausgeführt, sein Lauf am Stand des Refactorings ist von der Hauptsession zu bestätigen.
+Läufe:
+
+- Am Commit `34fedd9` nach Bericht der koordinierenden Session 160 Modultests und 16 Smoke-Prüfungen ohne Fehlschlag.
+- Am Arbeitsbaum nach dem Refactoring 181 von 181 Modultests (kuratierende Session, 2026-11-15), am Commit `ce4dcf4` 181 von 181 und 18 von 18 Smoke-Prüfungen (Hauptsession).
+- Am Commit `65ea4b8` am 2026-11-15 in der kuratierenden Session: `test.html?test=true` mit 192 von 192 Modultests über Playwright in Chrome headless gegen den lokalen Server auf Port 8137. Die Konsole meldete dabei eine Ressource mit Fehler 404, welche, ist nicht ermittelt. `tests/browser/smoke.py` mit 18 von 18 Prüfungen. `verification/task_set.py` ohne `--browser` mit 57 Aufgaben (45 zu Stories, 12 der Bedienprüfung). `verification/check-corpus.mjs` am Bestand von Stefan Zweig Digital mit allen 24 Prüfungen.

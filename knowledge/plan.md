@@ -27,50 +27,43 @@ Herkunft der Punkte: Operator, unabhängige Prüfung (Agent ohne Kenntnis der Ba
 
 ## Richtung
 
-Der Operator hat am 2026-11-14 entschieden, dass CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell des Projekts GOSSIP wird, mit wenigen großen Ansichten über einer gemeinsamen Auswahl ([design.md](design.md#rückmeldungen-des-operators)). Seine Urteile vom Abend sind als [gemeinsame Regeln aller Ansichten](design.md#gemeinsame-regeln-aller-ansichten) zusammengefasst. Gebaut sind Startseite, Startansicht, Briefliste, Zeit als eine Ansicht, Themen als Raster und Anteile und die geteilten Teile der Auswahl. Am 2026-11-14 hat er für alle Projekte die Promptotyping-Folge verlangt: distillieren, kuratieren, refactoren, übergeben, jeder Schritt mit eigenem Commit. Die Distillation steht in `db2befc`, Refactoring und Kuratieren sind am 2026-11-15 gelaufen und werden mit den Commits dieses Schritts gesichert, die Übergabe folgt.
+Der Operator hat am 2026-11-14 entschieden, dass CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell des Projekts GOSSIP wird, mit wenigen großen Ansichten über einer gemeinsamen Auswahl ([design.md](design.md#rückmeldungen-des-operators)). Seine Urteile vom Abend sind als [gemeinsame Regeln aller Ansichten](design.md#gemeinsame-regeln-aller-ansichten) zusammengefasst. Gebaut sind Startseite, Startansicht, Briefliste, Zeit als eine Ansicht, Themen als Raster und Anteile, die geteilten Teile der Auswahl und seit `7e04269` der Durchgang über alle Ansichten nach diesen Regeln. Die Promptotyping-Folge, die er am 2026-11-14 für alle Projekte verlangt hat, ist mit der Übergabe in `ce4dcf4` gelaufen. Am 2026-11-15 hat er über die koordinierende Session verlangt, alle Projekte auf eine fertige, stabile Version zu bringen. Für CorrespExplorer ist das `v0.9.0` ([Veröffentlichung](#veröffentlichung)).
 
 ## Durchgang nach den gemeinsamen Regeln
 
-Beauftragt vom Operator („Können wir das jetzt auch noch mal vereinheitlichen mit dem anderen Feedback, das wir haben?“), nicht gebaut. Die geteilten Teile sind gebaut ([architecture.md](architecture.md#module)), die Ansichten nutzen sie noch nicht. Was je Ansicht zu ändern ist, nach dem Bericht des Bau-Agenten, Regelnummern in Klammern. Herkunft: Operator, Bauende.
+Beauftragt vom Operator („Können wir das jetzt auch noch mal vereinheitlichen mit dem anderen Feedback, das wir haben?“), gebaut in `7e04269` und `65ea4b8` ([Journal](journal.md)), von ihm nicht gesehen. Vier Fragen daraus liegen bei ihm ([Journal](journal.md#open)). Offen geblieben, Regelnummern in Klammern, Herkunft: Bauende, koordinierende Session:
 
-- Start: bei 360 Pixel zu viele Bedienelemente (8), Kreis und Karte ohne sichtbare Erklärung von Lage und Größe (5, 8). In den Themenzeilen drei Farbfamilien ohne Erklärung (Befund der koordinierenden Session am Bild). Die Sprachlegende nennt am Ende „Übrige Sprachen“ und „Thema“ (am 2026-11-15 im Browser gesehen), ob das den Befund erledigt, ist nicht beurteilt.
-- Briefe: Die Zeile über der Liste wiederholt die Briefzahl (1), die Sprachfelder je Brief wiederholen die Legende (2).
-- Personen, Liste: keine Sprachfarbe (5). Erwähnungen: keine Sprachfarbe und keine Legende (5), Kopfzeile prüfen (10).
-- Netzwerk: Die Sprachfarben brauchen die gemeinsame Legende (2, 5), eigene Bedienelemente in der Ecke und der Stufenschalter gegen Regel 10, der Ring der Erwähnten ohne erklärte Farbe (5).
-- Karte: eigene Legende durch die gemeinsame ersetzen (2), Titel mit `countOf()` (7), Farbe der Bündel (5).
-- Raum-Zeit: eigene Legende durch die gemeinsame ersetzen (2), Verblassen mit `OUTSIDE_OPACITY` (6), das dafür wieder aus `selection-ui.js` zu exportieren ist.
-- Orte, Liste: Zählform (7), kein Link zur Tabelle (4).
-- Zeit: Legende durch die gemeinsame ersetzen (2, 11), der Knopf „Briefe zeigen“ entfällt zugunsten von `revealLetters()` (1), beide Tabellenschalter brauchen ihr `label` und heißen derzeit gleich „Daten als Tabelle“, weil `nameTable()` in `timeline-view.js` ein `summary` sucht, das `renderDataTable()` nicht mehr schreibt (4, am 2026-11-15 im Browser gesehen), blasser Ton aus `PALE_TOKEN` (6), der Zeitraum hat keinen Tastaturweg ohne den Regler (8).
-- Themen: Farbe der Themen, die wie Sprachen heißen, wie in der Startansicht (5). Im Raster stehen Sprachen und übrige Themen gemischt in einem Datenton, getrennt nennt sie nur die Spalte „Art“ der Tabelle und die Gruppen der Anteile (am 2026-11-15 im Browser gesehen, [US-44](specification.md#us-44-themen-als-verläufe-über-die-zeit)).
-- Vergleichen: Ohne Seitenleiste ist der Sprachfilter nur über die Marken erreichbar (2).
+- Start: Kreis und Karte ohne sichtbare Erklärung von Lage und Größe (5, 8). In den Themenzeilen drei Farbfamilien ohne Erklärung (Befund der koordinierenden Session am Bild). Die Sprachlegende nennt am Ende „Übrige Sprachen“ und „Thema“, ob das den Befund erledigt, ist nicht beurteilt.
+- Bei 360 Pixel übersteigt die Sprachlegende in jeder Ansicht die Grenze der Bedienelemente (8). Wartet auf den Operator.
+- Außerhalb der Startansicht steht neben der Sprachlegende weiter das Zeichen „Sprache“ der Schiene mit der vollen Sprachliste (`syncRail()` in `explore.js` blendet es nur auf der Startansicht aus), die Marke „Übrige Sprachen“ öffnet dieselbe Liste. Ob das die zweite Sprachliste ist, die Regel 2 ausschließt, ist nicht beurteilt (kuratierende Session, am Code).
 - Ein Bild des Operators zeigte das Zeitdiagramm der Startansicht mit Balken in voller Höhe und einer Farbe. Der Zustand ließ sich nicht nachstellen, ein Codepfad, der ihn erzeugen konnte, ist behoben und hat eine Smoke-Prüfung ([testing.md](testing.md#browser-smoke-test)). Ob das Bild damit erklärt ist, ist offen.
 
 Regel 9 sieht vor, dass ein Bestand, dem etwas fehlt, das einmal als ruhigen Satz sagt. Auf der Startseite hat der Operator diesen Satz entfernen lassen, er steht dort nur in der Textalternative. Herkunft: distillierende Session.
 
 ## Register aus Briefen, Personen und Orten
 
-Briefe, Personen und Orte als ein Register mit Facetten, zuerst als kleine echte Fassung am Hugo Schuchardt Archiv neben den bestehenden Ansichten, auf die Frage des Operators („Können wir Briefe, Personen und Orte sinnvoll in eine Ansicht zusammenführen …?“). Nichts Bestehendes entfällt vor seinem Vergleich. Derselbe Schritt führt Liste und Vergleich zusammen. Vorgeschlagen als [US-47](specification.md#us-47-briefe-personen-und-orte-in-einem-register). Herkunft: Operator. Nicht begonnen.
+Briefe, Personen und Orte als ein Register mit Facetten, zurückgestellt, bis der Operator die Ansichten abgenommen hat, dann als benannte Fassung am Hugo Schuchardt Archiv neben den bestehenden Ansichten, auf die Frage des Operators („Können wir Briefe, Personen und Orte sinnvoll in eine Ansicht zusammenführen …?“). Nichts Bestehendes entfällt vor seinem Vergleich. Derselbe Schritt führt Liste und Vergleich zusammen. Vorgeschlagen als [US-47](specification.md#us-47-briefe-personen-und-orte-in-einem-register). Herkunft: Operator, Zurückstellung koordinierende Session. Nicht begonnen.
 
-## Kopf und Fuß für Explorer und Projektseite
+## Kopf und Fuß für den Explorer
 
-Kopf und Fuß der Startseite auch für `explore.html` und `about.html`. Die Bausteine liegen in `site-frame.css` und `docs/assets/dhcraft/`. Der Operator hat danach nicht ausdrücklich verlangt. Der Text der Projektseite nennt seit dem Refactoring die bestehenden Ansichten, ihre Form ist die alte. Herkunft: Bauende, Durchsicht.
+Kopf und Fuß der Startseite hat seit `8464b92` auch `about.html`. Für `explore.html` ist der Schritt zurückgestellt, weil seine Kopfzeile die Navigation des Explorers mit den Gegenständen ist. Der Operator hat danach nicht ausdrücklich verlangt. Herkunft: Bauende, koordinierende Session.
 
 ## Aufgabensatz und Prüfungen
 
-- Das Skript des festen Aufgabensatzes und die zwölf Aufgaben der Bedienprüfung der Raum-Zeit-Ansicht ins Repository (`verification/`), damit sie in jeder Runde laufen. Seit dem Umbau der Ansichten hat niemand die Antworten in der Oberfläche abgelesen. Herkunft: distillierende Session.
-- `VIEWS` im Smoke-Test um `spacetime` ergänzen. `chronik` und `activity` hat das Refactoring daraus entfernt. Herkunft: distillierende Session.
-- Eine unabhängige Durchsicht am gebauten `docs/` vor dem Push, mit Raum-Zeit unter axe-core. Herkunft: Operator (Vorbedingung des Pushs).
+- Die Antworten des Aufgabensatzes in der Oberfläche ablesen, mit `uv run verification/task_set.py --browser` gegen den lokalen Server und die Aufgaben „von Hand“ mit Zeiger und Tastatur. Seit dem Umbau der Ansichten hat niemand sie abgelesen. Herkunft: distillierende Session.
+- Die zwölf Aufgaben der Bedienprüfung der Raum-Zeit-Ansicht sind im Repository nicht festgehalten. `task_set.py` führt ihre Gegenstände als ST-a bis ST-l, aus den Skripten der Prüfung rekonstruiert. Herkunft: Bauende.
+- Die unabhängige Durchsicht dieser Runde vor dem Eintrag der Versionsnummer, mit axe-core über alle Ansichten. Herkunft: Operator (Vorbedingung der Version), koordinierende Session.
 - Eine unabhängige Prüfung des Korrespondenzkreises mit Zeiger und Tastatur und am Aufgabensatz. Herkunft: Bauende.
-- Nichts vom Abend des 2026-11-14 und der Nacht zum 2026-11-15 ist bei 200 Prozent Zoom oder mit einem Screenreader geprüft. Herkunft: Bauende.
+- Nichts vom 2026-11-14 und 2026-11-15 ist bei 200 Prozent Zoom oder mit einem Screenreader geprüft. Herkunft: Bauende.
 
 ## Aufräumen
 
 Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren Knöpfen und Regeln, die Maschinerie der Forschungspfade, tote Regeln, ungenutzte Exporte und Getter und `renderFilterNotice()` entfernt und gemeinsame Helfer zusammengeführt ([Journal](journal.md)). Was danach ungenutzt bleibt, führt [architecture.md](architecture.md#ungenutzt). Herkunft: Operator (Folge der Schritte), Bauende, kuratierende Session.
 
-- Dateien ohne Verweis einer Seite: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, `docs/assets/logo-no-background.png`, `docs/assets/logo.jpg`, `docs/favicon.svg`. Ob sie gelöscht werden, entscheidet der Operator ([Warten auf den Operator](#warten-auf-den-operator)). `hsa.xml` nennen die Aufgaben zu US-01 und US-02.
+- Dateien ohne Verweis einer Seite: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, `docs/assets/logo-no-background.png`, `docs/assets/logo.jpg`, `docs/favicon.svg`. Ob sie gelöscht werden, entscheidet der Operator ([Warten auf den Operator](#warten-auf-den-operator)). `hsa.xml` liest `verification/task_set.py` für die Antwort zu US-01 und US-02, ohne die Datei meldet es dort „hsa.xml fehlt“.
 - Irreführende Modulnamen: `knowledge-path.js` enthält nur noch den Korb, `research-paths.js` nur noch die Zählung. Ein Umbenennen ändert Importe, Tests und die Context Maps.
 - Mehrfach gebaute Helfer: Hinweisfelder in Startansicht, Zeit, Raum-Zeit und Themen, Trefferprüfung auf Zeichenflächen, die zentrale Person in Briefliste (`rowCentre()`), Zeit und Netzwerk.
-- Tokens in `tokens.css`, die weder ein Stylesheet noch ein Skript liest, darunter `--color-scale-1` bis `--color-scale-4`, `--border-card`, `--border-focus`, `--radius-xl`, `--space-4xl`, `--line-height-loose`, `--z-modal-backdrop` und die Breakpoints, die als Custom Properties in Media Queries ohnehin nicht greifen. `PALE_TOKEN` und `OUTSIDE_OPACITY` in `selection-ui.js` liest ebenfalls niemand, bis der [Durchgang](#durchgang-nach-den-gemeinsamen-regeln) sie braucht.
+- Tokens in `tokens.css`, die weder ein Stylesheet noch ein Skript liest, darunter `--color-scale-1` bis `--color-scale-4`, `--border-card`, `--border-focus`, `--radius-xl`, `--space-4xl`, `--line-height-loose`, `--z-modal-backdrop` und die Breakpoints, die als Custom Properties in Media Queries ohnehin nicht greifen.
 - `getPersonInitials()` ohne Aufruf in `persons-view.js` importiert.
 - Ausgeblendete Kacheln der Seitenleiste und verborgene Moduswahl des Vergleichs stehen im Markup und werden befüllt. Herkunft: Durchsicht.
 - `style.display` in `mentions-view.js` und `places-view.js` gegen die Regel `.hidden`. `wissenskorb.css` und `test-runner.js` setzen einzelne Werte ohne Token. Herkunft: Durchsicht.
@@ -78,7 +71,9 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 
 ## Warten auf den Operator
 
-- Die Abnahme aller Ansichten am Bildschirm, die er seit ihrem Umbau nicht gesehen hat, und danach der Push.
+- Die Abnahme aller Ansichten am Bildschirm, die er seit ihrem Umbau nicht gesehen hat.
+- Die vier Fragen aus dem Durchgang über die Ansichten, im Wortlaut im [Journal](journal.md#open).
+- Herkunft und Rechteinhaber des Logos des Werkzeugs ([data.md](data.md#rechte-und-lizenzen)).
 - Die Form des Netzwerks, fünf Fragen in [network-figures.md](network-figures.md).
 - Ob die Dateien ohne Verweis einer Seite gelöscht werden: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, zwei Logodateien in `docs/assets/` und `docs/favicon.svg` ([Aufräumen](#aufräumen)). Die Datei des Tutorials ist keine Frage mehr, sie dient als Testdatei.
 - Ob der Dialog „Datensatz konfigurieren“ nach dem Laden eigener Daten entfällt. Er fragt vor dem ersten Blick nach der Anreicherung, setzt sie als Vorgabe, und sein Schließen-Kreuz verwirft den Bestand.
@@ -86,7 +81,7 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 - Ob das Raster eine fünfte Tönungsstufe bekommt und die Restfläche der Treemap so groß bleibt, und ob die Anteile, wie gebaut, hinter einem Schalter stehen dürfen, wo er „daneben“ sagte.
 - Was von der Chronik endgültig entfällt, und ob der Zeitraum feiner als ein Jahr wählbar wird.
 - Die Signatur in der Briefzeile.
-- Die Story-Vorschläge US-40 bis US-48 und die Streichung von US-17, US-32 und US-33 ([specification.md](specification.md#funktionsumfang)), die Darstellung „Erwähnungen“ ohne Story.
+- Die Story-Vorschläge US-40 bis US-48 und die Streichung von US-17, US-32 und US-33 ([specification.md](specification.md#funktionsumfang)), die Darstellung „Erwähnungen“ ohne Story, und der Befund zu US-40, dass die Startseite erwähnte Personen zählt und nicht Briefe.
 - Die älteren Fragen in den Abschnitten unten, je mit dem Vermerk.
 
 ## Daten und Parser
@@ -108,13 +103,11 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 
 ## Netzwerk
 
-- Breite Linien im Korrespondenzkreis überdecken einander, ein Klick auf eine breite Linie trifft zuweilen die schmale daneben. Herkunft: unabhängige Prüfung.
 - Ob die Zahlzeile („24 von 282 im Briefwechsel“) mit dem Stufenschalter integriert ist, wie der Operator es verlangte. Herkunft: Operator.
 - Am früheren ganzen Netzwerk gemessen und am Kreis nicht nachgeprüft: fünf Schichten vor dem Graphen, Satz zur zentralen Person und Streifen „Sichtbar“ mit denselben Zahlen, die Art wird mit einer Auswahlliste gewählt. Herkunft: Durchsicht.
 
 ## Orte und Raum-Zeit
 
-- Die Grundkarte von OpenFreeMap wird beim Öffnen jeder Ansicht angefragt, auch für einen Bestand ohne Koordinaten, entgegen ADR-006 in der Sache, und ihr Fehlen wird auf jeder Ansicht gemeldet. Herkunft: unabhängige Prüfung.
 - Ein Klick ins Leere der Raum-Zeit-Figur löste die Wahl im Nachspiel nicht. Nicht gesichert. Herkunft: Bauende.
 - Die Kontraste der stärkeren Abblendung sind nicht nachgemessen. Herkunft: Bauende.
 - Karte für Bestände ohne Koordinaten: entweder ergänzt die Quelle Ortskennungen, oder der Bestand bekommt eine geprüfte Ortstabelle. Herkunft: Operator. Wartet auf den Operator.
@@ -153,7 +146,7 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 
 ## Veröffentlichung
 
-- Version. Der Stand ist seit 2026-11-15 auf `origin/main` gepusht. Nummer, Tag und Release vergibt der Operator, der Vorschlag steht im [Journal](journal.md#2026-11-15-übergabe-prüfung-des-ausgelieferten-stands-und-push).
+- Version. Der Operator hat `v0.9.0` entschieden (über die koordinierende Session, 2026-11-15). Die Nummer kommt in `CITATION.cff`, `codemeta.json` und `CHANGELOG.md`, nachdem die unabhängige Durchsicht dieser Runde gelaufen ist. Tag und Release setzt er selbst. `origin/main` steht auf `ce4dcf4`, die Commits dieser Runde sind beim Schreiben nicht gepusht.
 - Auf einer Folie für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der öffentlichen Demo. Herkunft: Operator.
 - Das Aufräumen der Branches neben main. Wartet auf den Operator.
 - Der Abschnitt des Aufsatzes zur Promptotyping-Methode, der das Werkzeug als Explorer für CMIF beschreibt, ändert mit der Richtung seinen Gegenstand. Der Aufsatz ist bis zur Wiederaufnahme der Schreibarbeit nicht angefasst. Herkunft: Bauende.

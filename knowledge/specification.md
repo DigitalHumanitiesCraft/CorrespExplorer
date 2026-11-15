@@ -37,14 +37,14 @@ Die funktionalen Anforderungen stehen als Kriterien bei den Stories.
 
 Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive, Bibliotheken und Editionsprojekte. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Forschenden validiert. Die Stories US-01 bis US-39 hat der Operator über die Entwicklung hinweg angenommen oder entschieden (zuletzt [ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code)). Die Stories US-40 bis US-45 sind Vorschläge der distillierenden Session vom 2026-11-14, US-46 bis US-48 der distillierenden Session vom 2026-11-15, für Funktionen, die der Operator verlangt hat und die bis dahin keine Story abdeckte. Sie bleiben Vorschläge, bis der Operator sie annimmt.
 
-Jede Story nennt ihren Stand im Werkzeug, festgestellt am Code vom 2026-11-15 nach dem Refactoring, das auf die Distillation in `db2befc` folgte. Vom Operator gesehen ist davon nur, was bei der Story so genannt ist.
+Jede Story nennt ihren Stand im Werkzeug, festgestellt am Code vom 2026-11-15 nach dem Refactoring, das auf die Distillation in `db2befc` folgte, und für die Stories, die Parser und Ansichten seither berührten, nachgeführt am Stand `65ea4b8`. Vom Operator gesehen ist davon nur, was bei der Story so genannt ist.
 
 - bedient: Das Werkzeug erfüllt die Kriterien, an der genannten Stelle.
 - geändert: Das Werkzeug dient der Story auf anderem Weg als ihre Kriterien beschreiben. Die Abweichung ist genannt.
 - nicht mehr bedient: Die Oberfläche bietet die Story nicht mehr an.
 - nicht bedient: Die Story ist ein Vorhaben.
 
-Jede Story hat eine feste Aufgabe am gebündelten Hugo Schuchardt Archiv (`explore.html?json=data/hsa-letters.json`), deren Antwort ein Skript aus `docs/data/hsa-letters.json` unabhängig von der Oberfläche berechnet. Die Aufgabe nennt die Rechenregel, die berechneten Antworten mit Datum stehen in [testing.md](testing.md#feste-aufgaben). Die Regeln zählen wie das Werkzeug: eine Person über `personKey` (Normdaten-ID, sonst Registerkennung, sonst Name) als Absender oder Empfänger, ein Ort über `placeKey` (GeoNames-ID, sonst Name) ohne Platzhalter wie „Unbekannt“, ein Jahr nur, wenn es zwischen 1400 und 2100 liegt und kein Zeitraum über mehrere Jahre ist. Wo die Antwort nicht aus der Datei folgt, sagt die Aufgabe das.
+Jede Story hat eine feste Aufgabe am gebündelten Hugo Schuchardt Archiv (`explore.html?json=data/hsa-letters.json`), deren Antwort `verification/task_set.py` aus `docs/data/hsa-letters.json` unabhängig von der Oberfläche berechnet. Die Aufgabe nennt die Rechenregel, die berechneten Antworten mit Datum stehen in [testing.md](testing.md#feste-aufgaben). Die Regeln zählen wie das Werkzeug: eine Person über `personKey` (Normdaten-ID, sonst Registerkennung, sonst Name) als Absender oder Empfänger, ein Ort über `placeKey` (GeoNames-ID, sonst Name) ohne Platzhalter wie „Unbekannt“, ein Jahr nur, wenn es zwischen 1400 und 2100 liegt und kein Zeitraum über mehrere Jahre ist. Wo die Antwort nicht aus der Datei folgt, sagt die Aufgabe das.
 
 ### Startfigur und Überblick
 
@@ -95,6 +95,8 @@ Als Forschende möchte ich auf der Startseite sehen, welche Angaben des Datenmod
 Stand: geändert. Startseite, `start-figures.js`. Seit `d38b4c8` erhält eine Angabe, die der Bestand nicht enthält, keinen Platz, und die Teile des Modells stehen ohne sichtbaren Namen ([US-46](#us-46-startseite-aus-dem-zusammengesetzt-was-ein-bestand-enthält)). Was fehlt, nennt ein Satz nur in der Textalternative. Damit erfüllt das Werkzeug das Kriterium „leer und benannt“ nicht mehr, auf Auftrag des Operators. Die Startseite als Figur hat er gutgeheißen, den gebauten Stand nicht gesehen.
 
 Aufgabe: Wie viele Briefe des Archivs nennen erwähnte Personen? Antwort: Zahl der Briefe mit mindestens einem Eintrag in `mentions.persons`.
+
+Befund, offen (kuratierende Session, 2026-11-15, am Code von `start-figures.js` und an `verification/task_set.py`): Die Aufgabe fragt nach Briefen, die Startseite nennt bei „Erwähnte Personen“ die Zahl der verschiedenen erwähnten Personen (`mentioned.persons.distinct`), die Zahl der Briefe steht nirgends auf der Seite. Das Kriterium „wie viele seiner Briefe sie nennen“ erfüllt die Startseite damit nicht. Ob die Story auf Personen umgestellt wird oder die Startseite die Briefe zählt, ist nicht entschieden. Bis dahin bleibt die Aufgabe im Aufgabensatz von Hand abzulesen.
 
 #### US-46 Startseite aus dem zusammengesetzt, was ein Bestand enthält
 
@@ -231,7 +233,7 @@ Als Forschende möchte ich sehen, wann Themen in der Korrespondenz aufkommen und
 - Jedes Thema ist eine Zeile mit seinen Briefen je Jahr auf gemeinsamer Achse, die häufigsten oben, geordnet nach ihrem Höhepunkt.
 - Sprachen als Themen stehen getrennt von den übrigen Themen.
 
-Stand: geändert, nicht abgenommen. Themen, Darstellung „Raster“, `topics-view.js`, gebaut in `7cbe3c3` nach der Wahl des Operators („Raster als Hauptfigur, Treemap als Anteile daneben“). Die Zeile ist eine Folge von Zellen je Jahr auf einer festen Skala statt eines Kamms, die Ordnung lässt sich auf Umfang und erstes Auftreten umstellen. Die Treemap „Anteile“ gruppiert nach der Art des Themas, Sprachen eingeschlossen. Das Raster führt Sprachen nicht getrennt, sie stehen zwischen den übrigen Themen im selben Datenton, nur die Spalte „Art“ der Tabelle unterscheidet sie (am 2026-11-15 von der kuratierenden Session im Browser am HSA gesehen). Das zweite Kriterium erfüllt das Raster damit nicht. Den Endstand hat der Operator nicht gesehen.
+Stand: geändert, nicht abgenommen. Themen, Darstellung „Raster“, `topics-view.js`, gebaut in `7cbe3c3` nach der Wahl des Operators („Raster als Hauptfigur, Treemap als Anteile daneben“). Die Zeile ist eine Folge von Zellen je Jahr auf einer festen Skala statt eines Kamms, die Ordnung lässt sich auf Umfang und erstes Auftreten umstellen. Die Treemap „Anteile“ gruppiert nach der Art des Themas, Sprachen eingeschlossen. Seit `7e04269` folgen im Raster die Themen, die Sprachen sind, den übrigen als eigene Gruppe unter einer Linie in Tinte, in derselben Ordnung (`orderSubjects()` mit `languagesApart`), und ein Thema, das wie eine Sprache der Briefe heißt, steht in Raster und Treemap in deren Farbe. Damit erfüllt das Raster das zweite Kriterium. Einen sichtbaren Namen hat die Gruppe nicht, nur der zugängliche Name nennt „(Sprache)“. Diese Form liegt dem Operator als Frage vor ([Journal](journal.md#open)). Den Endstand hat der Operator nicht gesehen.
 
 Aufgabe: In welchem Jahr erreicht „Publikationsversand“ seinen Höhepunkt? Antwort: Briefe des Themas je gültigem Jahr, das Jahr mit der größten Zahl.
 
@@ -246,7 +248,7 @@ Als Forschende möchte ich unter jeder Figur die Briefe meiner Auswahl öffnen, 
 - Eine Zeile nennt die Zahl der Auswahl und öffnet die Liste über der Ansicht, die Ansicht behält ihren Zustand.
 - Der offene Zustand steht in der URL.
 
-Stand: bedient, nicht abgenommen. In der Auswahlzeile unter jeder Ansicht außer der Briefliste, `letters-drawer.js`.
+Stand: bedient, nicht abgenommen. In der Auswahlzeile unter jeder Ansicht, `letters-drawer.js`. In der Briefliste führt dieselbe Zahl zur Liste selbst, statt einen Auszug über ihr zu öffnen (seit `7e04269`).
 
 Aufgabe: Wählen Sie in der Zeitansicht das Jahr 1900. Wie viele Briefe nennt die Zeile? Antwort: Briefe mit gültigem Jahr 1900.
 
@@ -307,7 +309,7 @@ Als Forschende möchte ich nach Briefsprache filtern, um etwa nur französische 
 
 - Sprachen mit ihrer Farbe und Briefanzahl, Mehrfachauswahl.
 
-Stand: bedient. Feld „Sprache“ der Schiene, die Sprachlegende der Startansicht und jede Sprache der Legende der Zeitansicht.
+Stand: bedient. Feld „Sprache“ der Schiene und die Sprachlegende, die seit `7e04269` in jeder Ansicht dieselbe ist (`renderViewLanguageKey()` in `explore.js`), auch im Vergleich ohne Seitenleiste.
 
 Aufgabe: Wie viele Briefe sind französisch? Antwort: Briefe mit `language.code` „fr“.
 
@@ -570,7 +572,7 @@ Als Forschende möchte ich in jeder Ansicht an derselben Stelle sehen, wie viele
 - Eine Zeile am unteren Rand jeder Ansicht nennt die Zahl in der Form „x von y Briefen“, die Filter als entfernbare Marken und „Filter aufheben“, und öffnet die Briefe.
 - Titel, Regler und andere Zeilen wiederholen Zahl und Filter nicht.
 
-Stand: bedient, nicht abgenommen. Auswahlzeile in `explore.html` und `letters-drawer.js`, gebaut in der Nacht zum 2026-11-15, vom Operator nicht gesehen. In der Briefliste wiederholt die Zeile über der Liste die Zahl ([plan.md](plan.md#durchgang-nach-den-gemeinsamen-regeln)).
+Stand: bedient, nicht abgenommen. Auswahlzeile in `explore.html` und `letters-drawer.js`, gebaut in der Nacht zum 2026-11-15, vom Operator nicht gesehen. Seit `7e04269` steht die Zahl auch in der Briefliste nur in der Auswahlzeile, die Zeile über der Liste nennt allein die Treffer einer Suche.
 
 Aufgabe: Wählen Sie in der Startansicht die Sprache Französisch. Welche Zahl nennt die Auswahlzeile? Antwort: wie US-16.
 
@@ -702,7 +704,7 @@ Wahl. Einträge mit gleicher Signatur und gleicher maschinenlesbarer Datierung w
 
 Begründung. Das Werkzeug entscheidet nicht zwischen abweichenden Einträgen, es zeigt sie. Zusammengeführt wird nur über ein Merkmal, das die Quelle selbst vergibt.
 
-Effekt. Die Übersicht nennt Einträge und Briefe, die Seitenleiste filtert „Mehrfach verzeichnet“ und „Einträge weichen ab“, der Dialog listet die Einträge. Dass Empfänger nicht über Einträge gemischt werden, kam mit der Parserkorrektur vom 2026-11-14 hinzu. Bis 2026-11-15 blieb eine Signatur mit widersprechenden Datierungen ganz ungeteilt, auch ihre übereinstimmenden Einträge, so dass ein Brief des Bestands von Stefan Zweig Digital mit einer Jahrhundertverschiebung in einem Eintrag dreimal erschien. Die Zusammenführung je Datierung kam mit der Parserprüfung dieses Tages hinzu, entschieden von der bauenden Session ([Journal](journal.md)).
+Effekt. Die Übersicht nennt Einträge und Briefe, die Seitenleiste filtert „Mehrfach verzeichnet“ und „Einträge weichen ab“, der Dialog listet die Einträge. Seit `65ea4b8` nennen Briefzeile und Korb die übrigen Briefe einer Signatur („Gleiche Signatur wie Brief vom …“), der Dialog öffnet sie unter „Unter derselben Signatur“. Dass Empfänger nicht über Einträge gemischt werden, kam mit der Parserkorrektur vom 2026-11-14 hinzu. Bis 2026-11-15 blieb eine Signatur mit widersprechenden Datierungen ganz ungeteilt, auch ihre übereinstimmenden Einträge, so dass ein Brief des Bestands von Stefan Zweig Digital mit einer Jahrhundertverschiebung in einem Eintrag dreimal erschien. Die Zusammenführung je Datierung kam mit der Parserprüfung dieses Tages hinzu, entschieden von der bauenden Session ([Journal](journal.md)).
 
 ### ADR-010 Unplausible Jahre kennzeichnen, nicht korrigieren
 

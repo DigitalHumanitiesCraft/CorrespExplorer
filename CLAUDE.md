@@ -25,7 +25,7 @@ The knowledge base lives in `knowledge/` at the repository root, outside `docs/`
 - Write-back: after a change, update the responsible document and every document that restates it. A new or changed view gets its story, state and test task in `specification.md`, its account in `design.md` and its module in `architecture.md`. A parser change goes into `data.md`. An open finding goes into `plan.md` with its origin.
 - Operator statements: his words stay verbatim in `design.md`, section "Rückmeldungen des Operators", with one line on what followed. Never paraphrase them away.
 - Status: name the status of every statement about the tool an agent made (built, tested by whom, not independently read, not accepted). Stories proposed by an agent stay marked as proposals until the operator adopts them.
-- Each round of work closes with the fixed task set of `specification.md` (answers computed by script, in `testing.md`), an independent reader and the operator's judgement at the screen. Assign each finding to a story, to the design or to the data.
+- Each round of work closes with the fixed task set of `specification.md` (answers computed by `verification/task_set.py`, dated in `testing.md`), an independent reader and the operator's judgement at the screen. Assign each finding to a story, to the design or to the data.
 - Nothing invented: dataset figures, CMIF structures, authority IDs and source URLs come from the data files or the cited source. Ask when knowledge is missing.
 - Truth hierarchy: the code and the data files outrank the knowledge documents, `tokens.css` outranks values in `design.md`, the registered suites in `run-all-tests.js` outrank any list in the documents. Report contradictions instead of letting them drift.
 - No claims of compliance, completeness or passing tests without a check that was actually run and is named.
@@ -68,6 +68,7 @@ Check the available tools and runtimes before dependent steps. Name any check th
 - Unit tests: http://localhost:8000/test.html?test=true, all suites must pass before every commit
 - Smoke test: `uv run tests/browser/smoke.py` (exit code 0 only when every check passed), with `--online` and `--axe <path to axe.min.js>` for the live API and axe-core
 - Corpus check of the parser: `node verification/check-corpus.mjs <path to jsdom> <folder of XML files>`
+- Fixed task set: `uv run verification/task_set.py` lists every task with its answer computed from the bundled data (`--json` for JSON), `--browser` also reads each answer in the rendered view against a running server on `docs/` (default http://localhost:8137/)
 - Preprocessing: `python preprocessing/build_hsa_data.py`, then `uv run preprocessing/build_examples.py` for the start figure
 
 ### Conventions

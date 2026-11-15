@@ -42,7 +42,7 @@ correspSearch der Berlin-Brandenburgischen Akademie der Wissenschaften aggregier
 
 ## Datengrundlage
 
-Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität Graz entwickelt, der als vorprozessierte Datei mitkommt und als einziger gebündelter Realdatensatz Themen, Erwähnungen, Sprachen und Koordinaten zugleich enthält. Der synthetische Datensatz des früheren Tutorials liegt nur noch als Testdatei bei, Tutorial und Tour sind entfernt. Die Briefsätze von Stefan Zweig Digital dienen als Bestand aus vielen TEI-Dateien und werden nur lokal geladen. Einträge dreier Grazer Editionen aus dem Kreis von GOSSIP liegen als Testdateien bei. Nutzende laden eigene CMIF- und TEI-Dateien oder Adressen. Quellen, Modell, Lizenzen und Grenzen beschreibt [data.md](data.md).
+Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität Graz entwickelt, der als vorprozessierte Datei mitkommt und als einziger gebündelter Realdatensatz Themen, Erwähnungen, Sprachen und Koordinaten zugleich enthält. Der synthetische Datensatz des früheren Tutorials liegt nur noch als Testdatei bei, Tutorial und Tour sind entfernt. Die Briefsätze von Stefan Zweig Digital dienen als Bestand aus vielen TEI-Dateien und werden nur lokal geladen. Je ein Eintrag zweier Grazer Editionen aus dem Kreis von GOSSIP liegt als Testdatei bei, die Fälle einer dritten bildet eine Testdatei mit erfundenen Einträgen nach. Nutzende laden eigene CMIF- und TEI-Dateien oder Adressen. Quellen, Modell, Lizenzen und Grenzen beschreibt [data.md](data.md).
 
 ## Abgrenzungen
 
@@ -63,7 +63,7 @@ Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität G
 
 ## Technische Umsetzung
 
-Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. Daten werden im Browser geparst, große Datensätze in Python vorprozessiert. Bibliotheken und Schriften liegen versioniert in `docs/vendor/`, extern lädt die Seite nur die Grundkarte von OpenFreeMap. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code, die Commit-Trailer nennen die beteiligten LLMs. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md), Gestaltung und Rückmeldungen des Operators [design.md](design.md).
+Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. Daten werden im Browser geparst, große Datensätze in Python vorprozessiert. Bibliotheken und Schriften liegen versioniert in `docs/vendor/`, extern lädt die Seite nur die Grundkarte von OpenFreeMap, und diese erst, wenn die Kartenansicht geöffnet wird. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code, die Commit-Trailer nennen die beteiligten LLMs. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md), Gestaltung und Rückmeldungen des Operators [design.md](design.md).
 
 ## Herkunft
 
