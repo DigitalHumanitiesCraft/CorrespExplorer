@@ -4,7 +4,7 @@
 // follows the letters, angle follows the first year, the second level moves nothing and names
 // do not overlap
 
-import { parseCMIF, DEMO_DATASET_URL } from '../cmif-parser.js';
+import { parseCMIF } from '../cmif-parser.js';
 import { buildEgoNetwork, egoGeometry, egoLayout, mostConnectedPerson, placeEgoLabels } from '../views/network-view.js';
 import { personKey, letterRecipients } from '../utils.js';
 import { assert } from './test-runner.js';
@@ -138,7 +138,7 @@ export const NetworkTests = {
         {
             name: 'Tutorial-Datensatz: Zentrum, Korrespondenzpartner und Sehnen zwischen ihnen',
             async run() {
-                const { letters } = await parseCMIF(DEMO_DATASET_URL);
+                const { letters } = await parseCMIF('data/demo-showcase.xml');
                 const centre = mostConnectedPerson(letters);
                 assert(centre, 'Kein Zentrum gefunden');
                 const model = buildEgoNetwork(letters, centre.id);

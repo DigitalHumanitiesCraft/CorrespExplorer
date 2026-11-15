@@ -268,11 +268,6 @@ button {
     overflow-y: auto;
 }
 
-/* Activity View - allow scrolling */
-#activity-view.active {
-    overflow-y: auto;
-}
-
 /* Map */
 #map {
     width: 100%;
@@ -556,16 +551,6 @@ button {
 
 .view-btn:disabled::after {
     display: none;
-}
-
-/* Separates the start view from the data views */
-.view-separator {
-    flex-shrink: 0;
-    width: 1px;
-    height: 20px;
-    margin: 0 var(--space-xs);
-    align-self: center;
-    background: var(--color-border);
 }
 
 /* From 768 px every view shows its name beside its icon. Twelve names do not fit beside the

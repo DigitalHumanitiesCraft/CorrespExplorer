@@ -5,8 +5,8 @@
 // (rule 8). The dashboard of the start view uses them now; the other figures can take them over.
 
 import { LANGUAGE_COLORS, NO_LANGUAGE, isRestLanguage, languageLabel } from './constants.js';
+import { formatNumber as format } from './formatters.js';
 
-const format = n => n.toLocaleString('de-DE');
 
 /**
  * A count in the one form of the page: "774 Orte", under a filter "95 von 774 Orten" (rule 7)
@@ -25,8 +25,8 @@ export function countOf(part, total, one, of = one) {
  * dataset in PALE_TOKEN (or, where it fades marks instead, at OUTSIDE_OPACITY) and the selection
  * in the colour of its language or the data colour.
  */
-export const PALE_TOKEN = '--color-border-light';
-export const OUTSIDE_OPACITY = 0.3;
+const PALE_TOKEN = '--color-border-light';
+const OUTSIDE_OPACITY = 0.3;
 
 /**
  * Rule 8: a figure whose marks can be chosen sets CHOOSABLE on itself, and OVER_MARK while the

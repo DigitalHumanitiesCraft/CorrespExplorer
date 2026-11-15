@@ -1,5 +1,5 @@
-// DOM cache of the explorer: elements looked up once by id or selector and kept, so the many
-// render calls do not repeat getElementById and querySelector
+// DOM cache of the explorer: elements looked up once by id and kept, so the many render calls do
+// not repeat getElementById
 
 /**
  * Lazy cache of DOM elements
@@ -27,44 +27,10 @@ class DOMCache {
     }
 
     /**
-     * Get element by selector with caching
-     * @param {string} selector - CSS selector
-     * @returns {HTMLElement|null} Element or null
-     */
-    bySelector(selector) {
-        if (this._cache.has(selector)) {
-            return this._cache.get(selector);
-        }
-
-        const element = document.querySelector(selector);
-        if (element) {
-            this._cache.set(selector, element);
-        }
-        return element;
-    }
-
-    /**
-     * Get elements by selector (not cached, as NodeList can change)
-     * @param {string} selector - CSS selector
-     * @returns {NodeList} NodeList of elements
-     */
-    allBySelector(selector) {
-        return document.querySelectorAll(selector);
-    }
-
-    /**
      * Clear cache (useful after dynamic DOM updates)
      */
     clear() {
         this._cache.clear();
-    }
-
-    /**
-     * Remove specific element from cache
-     * @param {string} key - ID or selector
-     */
-    remove(key) {
-        this._cache.delete(key);
     }
 }
 
@@ -79,14 +45,10 @@ export const elements = {
     // Navigation
     get datasetTitle() { return cache.byId('dataset-title'); },
 
-    // Sidebar
-    get sidebar() { return cache.bySelector('.sidebar'); },
-
     // Stats cards
     get totalLettersCount() { return cache.byId('total-letters-count'); },
     get totalSendersCount() { return cache.byId('total-senders-count'); },
     get totalPlacesCount() { return cache.byId('total-places-count'); },
-    get sourceInfo() { return cache.byId('source-info'); },
 
     // Filter controls
     get resetFiltersBtn() { return cache.byId('reset-filters'); },
@@ -102,10 +64,7 @@ export const elements = {
     get languageFilterGroup() { return cache.byId('language-filter-group'); },
     get languageCheckboxes() { return cache.byId('language-checkboxes'); },
 
-    // Topics filter
-
     // Views
-    get mapContainer() { return cache.byId('map-container'); },
     get mapLegend() { return cache.byId('map-legend'); },
     get mapColorToggle() { return cache.byId('map-color-toggle'); },
 
@@ -116,10 +75,6 @@ export const elements = {
     get letterSearch() { return cache.byId('letter-search'); },
     get letterSort() { return cache.byId('letter-sort'); },
     get lettersList() { return cache.byId('letters-list'); },
-
-    get timelineChart() { return cache.byId('timeline-chart'); },
-
-    get topicsList() { return cache.byId('topics-list'); },
 
     get placesList() { return cache.byId('places-list'); },
 
@@ -134,22 +89,9 @@ export const elements = {
     // Loading overlay
     get loadingOverlay() { return cache.byId('loading-overlay'); },
 
-    // Helper methods
+    // Helper methods; the explorer never clears the cache, the tests do between cases
     clearCache() {
         cache.clear();
-    },
-
-    removeFromCache(key) {
-        cache.remove(key);
-    },
-
-    /**
-     * Check if element exists
-     * @param {string} id - Element ID
-     * @returns {boolean} True if element exists
-     */
-    exists(id) {
-        return cache.byId(id) !== null;
     },
 
     /**
@@ -159,24 +101,6 @@ export const elements = {
      */
     getById(id) {
         return cache.byId(id);
-    },
-
-    /**
-     * Get element by custom selector (not in pre-defined list)
-     * @param {string} selector - CSS selector
-     * @returns {HTMLElement|null} Element or null
-     */
-    getBySelector(selector) {
-        return cache.bySelector(selector);
-    },
-
-    /**
-     * Get elements by custom selector (returns NodeList)
-     * @param {string} selector - CSS selector
-     * @returns {NodeList} NodeList of elements
-     */
-    getAllBySelector(selector) {
-        return cache.allBySelector(selector);
     }
 };
 
@@ -184,6 +108,6 @@ export const elements = {
  * Fill the cache with the elements the explorer reads first, once the DOM is ready
  */
 export function initDOMCache() {
-    ['loadingOverlay', 'sidebar', 'datasetTitle', 'yearRangeSlider', 'personsList', 'lettersList']
+    ['loadingOverlay', 'datasetTitle', 'yearRangeSlider', 'personsList', 'lettersList']
         .forEach(key => elements[key]);
 }

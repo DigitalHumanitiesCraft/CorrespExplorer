@@ -7,9 +7,8 @@ import { debounce, escapeHtml, isAllowedJsonPath, sameFilterParams, datedYearRan
 import { datasetQuality, summarizeCorpus } from './research-paths.js';
 import { datasetToJson, lettersToCsv } from './export.js';
 import { initKnowledgePath } from './knowledge-path.js';
-import { formatCountOf } from './formatters.js';
-import { initDemoTour, checkAndStartDemoTour } from './demo-tour.js';
-import { loadDemoDataset, loadUrlDataset } from './cmif-parser.js';
+import { formatCountOf, formatNumber as formatCount } from './formatters.js';
+import { loadUrlDataset } from './cmif-parser.js';
 import { isCorrespSearchUrl, correspSearchShareUrl } from './correspsearch-api.js';
 import { state } from './state-manager.js';
 import { elements, initDOMCache } from './dom-cache.js';
@@ -134,6 +133,8 @@ function detectAvailableViews() {
             available: mentionedPersonsIndex.size > 0,
             reason: mentionedPersonsIndex.size > 0 ? null : 'Keine Mentions-Daten im Datensatz'
         },
+        // Not views of their own any more: older links with view=chronik or view=activity open
+        // the time view (switchView), and these entries let such a link pass the check in init()
         chronik: {
             available: hasLetters,
             reason: hasLetters ? null : 'Keine Briefe vorhanden'
@@ -194,8 +195,6 @@ function syncViewVariants() {
     });
 }
 
-const formatCount = n => n.toLocaleString('de-DE');
-
 // The header line of a view says what it currently shows; the subject itself stands in the header
 function updateViewTitle() {
     const title = document.querySelector(`#${currentView}-view .view-header__title`);
@@ -248,8 +247,10 @@ async function init() {
         const data = await loadData();
 
         if (!data) {
-            // Nothing uploaded and no ?json= path: the start page says why and offers the datasets
-            window.location.href = 'index.html?notice=dataset-missing';
+            // Nothing uploaded and no ?json= path: the start page says why and offers the datasets.
+            // A link of the retired tutorial (demo=true) never named a dataset, so it gets no notice
+            const retiredTutorial = new URLSearchParams(window.location.search).has('demo');
+            window.location.href = retiredTutorial ? 'index.html' : 'index.html?notice=dataset-missing';
             return;
         }
 
@@ -437,8 +438,6 @@ async function init() {
         loadBasketFromUrl();
 
         initKnowledgePath({
-            datasetKey: currentDatasetKey,
-            switchView,
             getCurrentView: () => currentView,
             getFilteredLetters: () => filteredLetters
         });
@@ -454,8 +453,6 @@ async function init() {
         hideLoading();
         historyReady = true;
         window.addEventListener('popstate', handleHistoryNavigation);
-        initDemoTour({ switchView });
-        checkAndStartDemoTour();
     } catch (error) {
         console.error('Init failed:', error);
         showError(error.message);
@@ -512,11 +509,7 @@ async function loadData() {
         if (!Array.isArray(data?.letters)) {
             throw new Error(`Die Datei ${jsonUrl} enthält keine Briefliste (letters).`);
         }
-        data.sourceInfo = {
-            type: 'preprocessed',
-            source: jsonUrl,
-            isDemo: params.get('demo') === 'true'
-        };
+        data.sourceInfo = { type: 'preprocessed', source: jsonUrl };
         return data;
     }
 
@@ -539,8 +532,7 @@ async function loadData() {
         }
         return stored?.sourceInfo?.source === sharedQuery ? stored : loadUrlDataset(sharedQuery, { type: 'correspsearch' });
     }
-    if (stored) return stored;
-    return params.get('demo') === 'true' ? loadDemoDataset() : null;
+    return stored;
 }
 
 // Update UI with data info
@@ -1243,7 +1235,7 @@ function updateUrlState() {
     const newParams = state.toURLParams();
 
     // Keep the parameters that select the dataset, so a reload or shared link still loads it
-    for (const key of ['dataset', 'json', 'demo']) {
+    for (const key of ['dataset', 'json']) {
         const value = urlParams.get(key);
         if (value) newParams.set(key, value);
     }
@@ -1611,8 +1603,8 @@ document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
     setSidebarOpen(!document.querySelector('.sidebar')?.classList.contains('open'));
 });
 
-// Escape closes the open off-canvas sidebar and returns focus to its toggle. Dialogs, the tour and
-// the comboboxes handle Escape first and mark it with preventDefault or stop it.
+// Escape closes the open off-canvas sidebar and returns focus to its toggle. Dialogs and the
+// comboboxes handle Escape first and mark it with preventDefault or stop it.
 document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape' || e.defaultPrevented) return;
     if (!document.querySelector('.sidebar')?.classList.contains('open')) return;

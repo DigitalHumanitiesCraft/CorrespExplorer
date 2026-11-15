@@ -127,7 +127,7 @@ export const BasketTests = {
                 const legacy = new URLSearchParams({ basket_letters: letters.join(',') });
                 const parsed = basketFromParams(legacy);
                 assert(JSON.stringify(parsed.items.letters) === JSON.stringify(letters), 'Alte Links sollten lesbar bleiben');
-                assert(parsed.dataset === null, 'Alte Links tragen keinen Datensatz');
+                assert(parsed.dataset === null, 'Alte Links haben keinen Datensatz');
             }
         },
         {

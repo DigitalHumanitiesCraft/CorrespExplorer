@@ -26,7 +26,7 @@ export const CorrespSearchTests = {
                 // The query this fixture answers, as the API names it in publicationStmt/idno
                 const query = page.teiHeader.fileDesc.publicationStmt.idno.replace(/&amp;/g, '&');
                 assert(correspSearchShareUrl({ type: 'correspsearch', source: query }) === query, `Abfrage nicht übernommen: ${query}`);
-                assert(correspSearchShareUrl({ type: 'file', source: 'test-uncertainty.xml' }) === null, 'Upload trägt keine Abfrage');
+                assert(correspSearchShareUrl({ type: 'file', source: 'test-uncertainty.xml' }) === null, 'Upload hat keine Abfrage');
                 assert(correspSearchShareUrl({ type: 'url', source: 'data/demo-showcase.xml' }) === null, 'Gebündelte Datei ist keine Abfrage');
                 assert(correspSearchShareUrl({ type: 'url', source: 'https://correspsearch.net.example.org/api/x' }) === null, 'Fremder Host darf nicht durch');
                 assert(correspSearchShareUrl(null) === null, 'Ohne Quelle keine Abfrage');
@@ -41,7 +41,7 @@ export const CorrespSearchTests = {
                 assert(data.letters.length === raw, `${data.letters.length} von ${raw} Briefen übernommen`);
                 assert(data.meta.publishers.some(p => p.name.includes('Berlin-Brandenburg')), `Herausgeber: ${JSON.stringify(data.meta.publishers)}`);
                 assert(data.meta.licence?.url === 'https://creativecommons.org/licenses/by/4.0/', `Lizenz: ${JSON.stringify(data.meta.licence)}`);
-                assert(data.letters.every(l => l.datePrecision === 'range'), 'Die Seite trägt nur Zeitspannen (from/to, notBefore/notAfter)');
+                assert(data.letters.every(l => l.datePrecision === 'range'), 'Die Seite enthält nur Zeitspannen (from/to, notBefore/notAfter)');
             }
         },
         {

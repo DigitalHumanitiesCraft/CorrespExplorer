@@ -91,35 +91,6 @@
         </div>
     </nav>
 
-    <!-- The only knowledge path control: question, steps, back, next and end -->
-    <div id="knowledge-path-bar" class="knowledge-path-bar hidden" role="region" aria-label="Wissenspfad">
-        <div class="path-bar-content">
-            <div class="path-bar-question">
-                <i class="fas fa-route" aria-hidden="true"></i>
-                <span id="path-bar-question-text">-</span>
-            </div>
-            <div class="path-bar-steps" id="path-bar-steps">
-                <!-- Dynamisch: Pfad-Schritte -->
-            </div>
-            <div class="path-bar-actions">
-                <button type="button" id="path-nav-back" class="btn btn-secondary" disabled>
-                    <i class="fas fa-arrow-left" aria-hidden="true"></i> Zurück
-                </button>
-                <button type="button" id="path-nav-next" class="btn btn-primary">
-                    Weiter <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                </button>
-                <button type="button" class="path-bar-close" id="path-bar-close" title="Wissenspfad beenden" aria-label="Wissenspfad beenden">
-                    <i class="fas fa-times" aria-hidden="true"></i>
-                </button>
-            </div>
-        </div>
-        <!-- Aktions-Anleitung für aktuellen Schritt -->
-        <div class="path-action-hint" id="path-action-hint">
-            <i class="fas fa-lightbulb" aria-hidden="true"></i>
-            <span id="path-action-text">-</span>
-        </div>
-    </div>
-
     <!-- Main Container -->
     <div class="container">
         <h1 class="visually-hidden" id="page-title">CorrespExplorer</h1>
@@ -167,7 +138,7 @@
                 <!-- The filters as a narrow rail of signs (design.md, rule 3): a sign carries its
                      name as tooltip and accessible name, the control at the top opens the rail to
                      full labels. Holding, period and languages open as panels beside the rail -->
-                <div class="sidebar-section rail-filters" id="sidebar-filters">
+                <div class="sidebar-section rail-filters">
                     <h2 class="visually-hidden">Filter</h2>
                     <button type="button" class="rail__item rail__toggle" id="rail-toggle" aria-expanded="false" data-tip="Beschriftungen zeigen">
                         <i class="fas fa-angles-right" aria-hidden="true"></i><span class="rail__name">Beschriftungen ausblenden</span>
@@ -197,7 +168,7 @@
                     </div>
 
                     <!-- Data Quality Filter -->
-                    <div class="rail__group" role="group" id="quality-filter-group" aria-labelledby="filter-quality-heading">
+                    <div class="rail__group" role="group" aria-labelledby="filter-quality-heading">
                         <h3 id="filter-quality-heading" class="rail__group-name">Datenlage</h3>
                         <label class="filter-checkbox" data-tip="Nur exakte Datierungen">
                             <input type="checkbox" id="filter-precise-dates">
@@ -271,25 +242,19 @@
                     <button class="view-btn" data-view="timeline" aria-pressed="false" aria-label="Jahre, Briefe pro Jahr" data-tooltip="Timeline" data-tooltip-desc="Zeitliche Verteilung der Korrespondenz">
                         <i class="fas fa-chart-line" aria-hidden="true"></i> <span class="view-btn-text">Jahre</span>
                     </button>
-                    <button class="view-btn" data-view="topics" aria-pressed="false" id="topics-view-btn" aria-label="Themen" data-tooltip="Themen" data-tooltip-desc="Verschlagwortete Inhalte filtern">
+                    <button class="view-btn" data-view="topics" aria-pressed="false" aria-label="Themen" data-tooltip="Themen" data-tooltip-desc="Verschlagwortete Inhalte filtern">
                         <i class="fas fa-tags" aria-hidden="true"></i> <span class="view-btn-text">Themen</span>
                     </button>
-                    <button class="view-btn" data-view="places" aria-pressed="false" id="places-view-btn" aria-label="Liste der Orte" data-tooltip="Orte" data-tooltip-desc="Korrespondenz nach Orten analysieren">
+                    <button class="view-btn" data-view="places" aria-pressed="false" aria-label="Liste der Orte" data-tooltip="Orte" data-tooltip-desc="Korrespondenz nach Orten analysieren">
                         <i class="fas fa-map-marker-alt" aria-hidden="true"></i> <span class="view-btn-text">Liste</span>
                     </button>
-                    <button class="view-btn" data-view="network" aria-pressed="false" id="network-view-btn" aria-label="Netzwerk" data-tooltip="Netzwerk" data-tooltip-desc="Verbindungen zwischen Korrespondenten">
+                    <button class="view-btn" data-view="network" aria-pressed="false" aria-label="Netzwerk" data-tooltip="Netzwerk" data-tooltip-desc="Verbindungen zwischen Korrespondenten">
                         <i class="fas fa-project-diagram" aria-hidden="true"></i> <span class="view-btn-text">Netzwerk</span>
                     </button>
-                    <button class="view-btn" data-view="mentions-flow" aria-pressed="false" id="mentions-flow-view-btn" aria-label="Erwähnungen" data-tooltip="Erwähnungen" data-tooltip-desc="Erwähnte Personen und Orte (Sankey)">
+                    <button class="view-btn" data-view="mentions-flow" aria-pressed="false" aria-label="Erwähnungen" data-tooltip="Erwähnungen" data-tooltip-desc="Erwähnte Personen und Orte (Sankey)">
                         <i class="fas fa-stream" aria-hidden="true"></i> <span class="view-btn-text">Erwähnungen</span>
                     </button>
-                    <button class="view-btn" data-view="chronik" aria-pressed="false" id="chronik-view-btn" aria-label="Chronik" data-tooltip="Chronik" data-tooltip-desc="Verlauf der Briefwechsel">
-                        <i class="fas fa-scroll" aria-hidden="true"></i> <span class="view-btn-text">Chronik</span>
-                    </button>
-                    <button class="view-btn" data-view="activity" aria-pressed="false" id="activity-view-btn" aria-label="Tage, Briefe je Kalendertag" data-tooltip="Aktivität" data-tooltip-desc="Heatmap der Briefaktivität">
-                        <i class="fas fa-calendar-alt" aria-hidden="true"></i> <span class="view-btn-text">Tage</span>
-                    </button>
-                    <button class="view-btn" data-view="comparison" aria-pressed="false" id="comparison-view-btn" aria-label="Vergleichen" data-tooltip="Vergleich" data-tooltip-desc="Personen, Zeiträume oder Orte vergleichen">
+                    <button class="view-btn" data-view="comparison" aria-pressed="false" aria-label="Vergleichen" data-tooltip="Vergleich" data-tooltip-desc="Personen, Zeiträume oder Orte vergleichen">
                         <i class="fas fa-columns" aria-hidden="true"></i> <span class="view-btn-text">Vergleichen</span>
                     </button>
                 </div>
@@ -303,17 +268,13 @@
                             <p class="meta-what" id="meta-what"></p>
                             <div class="meta-shares" id="meta-shares"></div>
                             <div class="meta-source" id="meta-source"></div>
-                            <!-- Tutorial button, only with the tutorial dataset -->
-                            <button class="tutorial-start-btn hidden" id="start-tutorial-btn" title="Interaktive Tour starten">
-                                <i class="fas fa-graduation-cap" aria-hidden="true"></i> Tutorial starten
-                            </button>
                         </aside>
 
                         <!-- The dashboard: the views in small, showing the selection and setting the same
                              filters as the sidebar; each label opens its view in full. How many letters the
                              selection holds says the letters drawer below the view -->
-                        <div class="overview-body dashboard" id="dashboard">
-                            <section class="dash-part dash-part--time" id="dash-time" aria-label="Zeit und Sprache">
+                        <div class="dashboard" id="dashboard">
+                            <section class="dash-part" id="dash-time" aria-label="Zeit und Sprache">
                                 <div class="dash-head">
                                     <button type="button" class="dash-open" data-open="timeline" aria-describedby="dash-open-timeline"><span class="dash-name">Zeit</span></button>
                                     <!-- Selecting is said once for the whole dashboard; fresh readers saw the period
@@ -511,8 +472,8 @@
                             </div>
                             <div id="tv-detail-note" class="tv-note hidden"></div>
                         </div>
-                        <div id="tv-table" class="chart-table-host"></div>
-                        <div id="timeline-table" class="chart-table-host"></div>
+                        <div id="tv-table"></div>
+                        <div id="timeline-table"></div>
                         <div id="tv-tip" class="tv-tip hidden" role="tooltip"></div>
                     </div>
                 </div>
@@ -558,7 +519,7 @@
                         </div>
                         <p class="tp-map__note hidden" id="topics-map-note"><button type="button" class="tp-map__back hidden" id="topics-map-back"><i class="fas fa-arrow-left" aria-hidden="true"></i> Alle Themen</button> <span id="topics-map-text"></span></p>
                         <div class="tp-choice hidden" id="topics-choice" aria-label="Gewähltes Thema" role="region"></div>
-                        <div id="topics-table" class="chart-table-host tp-table"></div>
+                        <div id="topics-table" class="tp-table"></div>
                     </div>
                 </div>
 
@@ -601,7 +562,7 @@
                                 <div id="places-list" class="entity-list"></div>
                             </div>
                             <!-- Place Detail Panel -->
-                            <div class="entity-detail-panel" id="place-detail-panel">
+                            <div class="entity-detail-panel">
                                 <div class="entity-detail-empty" id="place-detail-empty">
                                     <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                                     <p>Wählen Sie einen Ort aus der Liste</p>
@@ -693,7 +654,7 @@
                         <div class="network-coverage" id="network-coverage"></div>
                         <div id="network-graph" class="network-graph"></div>
                         <ul class="ego-list" id="network-ego-list" aria-label="Personen im Bild"></ul>
-                        <div id="network-table" class="chart-table-host"></div>
+                        <div id="network-table"></div>
                         <div class="network-legend" id="network-legend">
                             <div class="legend-item">
                                 <span class="legend-circle legend-network-contemporary"></span> Zeitgenossen-Netzwerk
@@ -723,8 +684,8 @@
                             <p class="view-header__description" id="mentions-flow-selected-person"></p>
                         </div>
                         <div id="mentions-flow-graph" class="mentions-flow-graph"></div>
-                        <div id="mentions-flow-table" class="chart-table-host"></div>
-                        <div class="content-placeholder" id="mentions-flow-placeholder">
+                        <div id="mentions-flow-table"></div>
+                        <div id="mentions-flow-placeholder">
                             <i class="fas fa-search" aria-hidden="true"></i>
                             <p>Suche eine Person um deren Erwähnungen zu sehen</p>
                         </div>
@@ -752,7 +713,7 @@
 
                         <!-- Auswahl-Bereich -->
                         <div class="comparison-selectors">
-                            <div class="comparison-selector comparison-selector-a">
+                            <div class="comparison-selector">
                                 <label for="comparison-input-a">Auswahl A</label>
                                 <div class="autocomplete-container">
                                     <input type="search" id="comparison-input-a" class="autocomplete-input" placeholder="Suchen..." autocomplete="off">
@@ -765,7 +726,7 @@
                             <div class="comparison-vs">
                                 <span>vs</span>
                             </div>
-                            <div class="comparison-selector comparison-selector-b">
+                            <div class="comparison-selector">
                                 <label for="comparison-input-b">Auswahl B</label>
                                 <div class="autocomplete-container">
                                     <input type="search" id="comparison-input-b" class="autocomplete-input" placeholder="Suchen..." autocomplete="off">
@@ -780,15 +741,15 @@
                         <!-- Ergebnis-Panels -->
                         <div class="comparison-results hidden" id="comparison-results">
                             <div class="comparison-panels">
-                                <div class="comparison-panel comparison-panel-a" id="comparison-panel-a">
+                                <div class="comparison-panel">
                                     <h3 id="comparison-title-a">-</h3>
-                                    <div class="comparison-metrics" id="comparison-metrics-a">
+                                    <div id="comparison-metrics-a">
                                         <!-- Metriken werden dynamisch gefüllt -->
                                     </div>
                                 </div>
-                                <div class="comparison-panel comparison-panel-b" id="comparison-panel-b">
+                                <div class="comparison-panel">
                                     <h3 id="comparison-title-b">-</h3>
-                                    <div class="comparison-metrics" id="comparison-metrics-b">
+                                    <div id="comparison-metrics-b">
                                         <!-- Metriken werden dynamisch gefüllt -->
                                     </div>
                                 </div>
@@ -934,151 +895,6 @@
         </div>
     </div>
 
-
-    <!-- Demo Tour Overlay -->
-    <div id="demo-tour" class="demo-tour hidden" role="dialog" aria-modal="true" aria-label="Demo-Tour">
-        <div class="tour-backdrop"></div>
-        <div class="tour-step" data-step="1">
-            <div class="tour-content">
-                <h3>Willkommen zur CorrespExplorer Demo</h3>
-                <p>Dieser Datensatz zeigt ein fiktives europäisches Gelehrtennetzwerk (1880-1920) mit 35 Briefen zwischen 9 Korrespondenten: 7 Personen mit Normdaten, eine unbekannte Person [NN] und eine Akademie als Absenderin.</p>
-                <p>Die Demo demonstriert alle Funktionen von CorrespExplorer.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-skip">Überspringen</button>
-                    <button type="button" class="tour-next">Tour starten</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="2">
-            <div class="tour-content" data-target=".view-groups">
-                <h3>Ansichten wechseln</h3>
-                <p>Die Kopfzeile nennt, was sich an einer Korrespondenz untersuchen lässt: Briefe, Personen, Orte, Zeit und Themen. In jeder Ansicht wechseln Sie rechts oben die Darstellung, bei den Orten etwa zwischen Karte und Liste. Was ein Datensatz nicht enthält, ist ausgeblendet.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="3" data-view="letters">
-            <div class="tour-content" data-target="#sidebar-dataset">
-                <h3>Datensatz-Übersicht</h3>
-                <p>Die Tour wechselt dafür in die Briefansicht, denn die Startansicht hat keine Sidebar. Oben in der Sidebar stehen die Zahl der Briefe, der Personen (Absender und Empfänger) und der Absendeorte. Symbole daneben nennen den Anteil unscharfer Angaben.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="4" data-view="letters">
-            <div class="tour-content" data-target="#sidebar-filters">
-                <h3>Zeitraum filtern</h3>
-                <p>Mit dem Timeline-Slider können Sie den Zeitraum einschränken. Alle Ansichten werden automatisch aktualisiert.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="5" data-view="letters">
-            <div class="tour-content" data-target="#sidebar-filters">
-                <h3>Filter anwenden</h3>
-                <p>Unter dem Zeitraum grenzen Sie nach Datierung, identifizierten Personen, lokalisierten Orten und Sprache ein. Personen, Orte und Themen filtern Sie aus ihren Ansichten. Alle Filter lassen sich kombinieren, aktive Personen-, Orts- und Themenfilter erscheinen als entfernbare Marken in der Sidebar.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="6">
-            <div class="tour-content" data-target=".view-group-btn[data-group='places']">
-                <h3>Interaktive Karte</h3>
-                <p>Unter „Orte“ zeigt die Karte die Briefe nach Absendeort. Klicken Sie auf einen Kreis für Details. Die Farbe eines Orts ist die seiner häufigsten Briefsprache.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="7">
-            <div class="tour-content">
-                <h3>Unsicherheiten visualisieren</h3>
-                <p>CorrespExplorer zeigt unsichere Daten transparent an:</p>
-                <ul>
-                    <li>Eckige Klammern [Name] = unsichere Person</li>
-                    <li>Kalender-Icon = nur Jahr/Monat bekannt</li>
-                    <li>Fragezeichen = unsichere Datierung</li>
-                    <li>Zeitraum-Pfeile = notBefore/notAfter</li>
-                </ul>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="8" data-view="overview">
-            <div class="tour-content" data-target=".overview-body">
-                <h3>Der Bestand im Überblick</h3>
-                <p>Die Grafiken der Startansicht filtern einander. Ziehen Sie in der Zeitleiste über einige Jahre oder klicken Sie eine Person, einen Ort oder eine Sprache an: Alle Felder zeigen dann diese Auswahl, und „Briefe ansehen“ öffnet ihre Briefe.</p>
-                <p>Der Abspielknopf neben einer Frage startet ihren Wissenspfad.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="9">
-            <div class="tour-content">
-                <h3>Wissenspfad starten</h3>
-                <p>Klicken Sie bei einer Forschungsfrage auf den Abspielknopf "Wissenspfad starten". Eine Pfad-Leiste erscheint oben und führt Sie durch die Ansichten.</p>
-                <p>Der Wissenskorb in der Sidebar sammelt Ihre Auswahl während der Navigation.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="10">
-            <div class="tour-content">
-                <h3>Daten sammeln</h3>
-                <p>In Detail-Ansichten (Brief, Person, Ort) finden Sie "Zum Korb"-Buttons:</p>
-                <ul>
-                    <li>Brief-Modal: Einzelnen Brief hinzufügen</li>
-                    <li>Person-Modal: Alle Briefe einer Person</li>
-                    <li>Ort-Panel: Alle Briefe eines Ortes</li>
-                </ul>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="11">
-            <div class="tour-content" data-target="#basket-nav-link">
-                <h3>Wissenskorb</h3>
-                <p>Der Korb-Button in der Navigation zeigt die Anzahl gesammelter Items. Klicken Sie darauf, um zur Wissenskorb-Seite zu gelangen.</p>
-                <p>Dort können Sie Ihre kuratierte Sammlung als CSV oder JSON exportieren.</p>
-                <div class="tour-nav">
-                    <button type="button" class="tour-prev">Zurück</button>
-                    <button type="button" class="tour-next">Weiter</button>
-                </div>
-            </div>
-        </div>
-        <div class="tour-step" data-step="12">
-            <div class="tour-content">
-                <h3>Viel Erfolg beim Forschen</h3>
-                <p>Sie kennen nun den vollständigen Workflow:</p>
-                <ul>
-                    <li>Forschungsfrage wählen</li>
-                    <li>Durch Views navigieren</li>
-                    <li>Relevante Daten sammeln</li>
-                    <li>Kuratierte Liste exportieren</li>
-                </ul>
-                <div class="tour-nav">
-                    <button type="button" class="tour-finish">Tour beenden</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Scripts -->
     <script src="vendor/maplibre-gl/maplibre-gl.js"></script>

@@ -16,10 +16,11 @@
 import { escapeHtml, foldText, debounce, isMultiYearSpan, personKey, placeKey, letterRecipients, isUnknownPlaceName } from '../utils.js';
 import { state } from '../state-manager.js';
 import { renderDataTable } from './view-support.js';
+import { formatNumber as fmt, plural } from '../formatters.js';
 import { findEgo } from './network-view.js';
 
-export const ORDERS = ['peak', 'size', 'first'];
-export const VARIANTS = ['grid', 'treemap'];
+const ORDERS = ['peak', 'size', 'first'];
+const VARIANTS = ['grid', 'treemap'];
 // Subjects that are languages (Lexvo and the language list of the HSA) against all other subjects;
 // the categories come from cmif-parser.js (categorizeSubject)
 const LANGUAGE_CATEGORIES = new Set(['lexvo', 'hsa_language']);
@@ -30,10 +31,10 @@ const MARKS = { wide: [4, 2, 2], narrow: [3, 1, 0] };
 // Lower bounds of the four shades of the grid, one fixed scale for every figure and filter: a year
 // with 1, 2 to 3, 4 to 9, or 10 and more letters. Fixed bounds keep a shade comparable between
 // filter states; over the whole HSA the steps hold about 60, 26, 12 and 3 % of the filled cells.
-export const SHADE_BOUNDS = [1, 2, 4, 10];
+const SHADE_BOUNDS = [1, 2, 4, 10];
 // Smallest area of a subject of its own in the treemap, 60 x 60 px: a short name fits, the target is
 // far above 24 x 24 px, and the map keeps fewer unnamed slivers
-export const MIN_AREA = 3600;
+const MIN_AREA = 3600;
 
 let deps = {};
 let order = 'peak';
@@ -53,8 +54,6 @@ let drill = null;
 const egoCache = { letters: null, ego: null, totals: null };
 
 const el = id => document.getElementById(id);
-const fmt = n => n.toLocaleString('de-DE');
-const plural = (n, one, many) => `${fmt(n)} ${n === 1 ? one : many}`;
 const span = (a, b) => (a === b ? String(a) : `${a}–${b}`);
 // The one form of counts (design.md, rule 7): "20 von 257 Briefen", the whole alone as "257 Briefe"
 const ofLetters = (part, whole) => (part === whole ? plural(whole, 'Brief', 'Briefe') : `${fmt(part)} von ${plural(whole, 'Brief', 'Briefen')}`);
@@ -64,7 +63,7 @@ const ofLetters = (part, whole) => (part === whole ? plural(whole, 'Brief', 'Bri
  * @param {{uri?: string, id?: string, label?: string}} subject
  * @returns {string}
  */
-export function subjectKey(subject) {
+function subjectKey(subject) {
     return subject.uri || subject.id || subject.label;
 }
 

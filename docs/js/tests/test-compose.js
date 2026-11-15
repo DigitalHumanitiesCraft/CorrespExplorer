@@ -31,7 +31,7 @@ export const ComposeTests = {
             run() {
                 const c = composeFigure(summary({ place: 100, date: 100, link: 100 }));
                 assertEqual(figures(c), 'core:persons=circle,place=map,date=profile', 'Bänder');
-                assertEqual(c.sentence, 'Dieser Bestand trägt keine Sprachangaben, erwähnten Personen, erwähnten Orte, Themen und Angaben aus TEI-Briefsätzen wie Poststempel, Anschrift und Signatur.', 'Satz');
+                assertEqual(c.sentence, 'Dieser Bestand enthält keine Sprachangaben, erwähnten Personen, erwähnten Orte, Themen und Angaben aus TEI-Briefsätzen wie Poststempel, Anschrift und Signatur.', 'Satz');
             }
         },
         {
@@ -55,7 +55,7 @@ export const ComposeTests = {
                     { mentionedLocated: [[48.8, 2.3, 3]] }
                 ));
                 assertEqual(figures(c), 'core:persons=circle,place=map,date=profile | extension:mentionsPerson=ring,mentionsPlace=map,mentionsSubject=profiles', 'Bänder');
-                assertEqual(c.sentence, 'Dieser Bestand trägt keine Angaben aus TEI-Briefsätzen wie Poststempel, Anschrift und Signatur.', 'Satz');
+                assertEqual(c.sentence, 'Dieser Bestand enthält keine Angaben aus TEI-Briefsätzen wie Poststempel, Anschrift und Signatur.', 'Satz');
             }
         },
         {
@@ -79,7 +79,7 @@ export const ComposeTests = {
             name: 'missingSentence: leer ohne Lücke, ein Glied ohne Komma',
             run() {
                 assertEqual(missingSentence([]), '', 'leer');
-                assertEqual(missingSentence(['mentionsSubject']), 'Dieser Bestand trägt keine Themen.', 'eins');
+                assertEqual(missingSentence(['mentionsSubject']), 'Dieser Bestand enthält keine Themen.', 'eins');
             }
         }
     ]

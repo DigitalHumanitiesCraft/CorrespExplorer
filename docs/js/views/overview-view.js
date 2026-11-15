@@ -8,8 +8,8 @@
 
 import { LETTER_FEATURES, LANGUAGE_COLORS, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
 import { safeUrl, datedYearRange, personKey, placeKey, letterRecipients, isKnownPlace } from '../utils.js';
-import { startTour } from '../demo-tour.js';
 import { state } from '../state-manager.js';
+import { formatNumber as number } from '../formatters.js';
 import { readTokens } from './view-support.js';
 import * as network from './network-view.js';
 import { subjectProfiles } from './topics-view.js';
@@ -19,7 +19,6 @@ import { countOf, renderLanguageKey, languageColor, languageCategory, dominantLa
 let deps = {};
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
-const number = n => n.toLocaleString('de-DE');
 const ofLetters = (n, total) => countOf(n, total, total === 1 ? 'Brief' : 'Briefe', 'Briefen');
 // The chords of the circle: the strongest, so a large archive does not draw thousands of curves
 const CHORD_LIMIT = 400;
@@ -324,16 +323,6 @@ function renderDatasetBlock(meta, all) {
 
     const source = document.getElementById('meta-source');
     if (source) source.replaceChildren(...sourceLines(meta, all.length));
-
-    const tutorial = document.getElementById('start-tutorial-btn');
-    if (tutorial) {
-        const isDemo = new URLSearchParams(window.location.search).get('demo') === 'true';
-        tutorial.classList.toggle('hidden', !isDemo);
-        if (isDemo && !tutorial.dataset.listenerAdded) {
-            tutorial.addEventListener('click', () => startTour());
-            tutorial.dataset.listenerAdded = 'true';
-        }
-    }
 }
 
 // Publisher; licence, source file and, for a dataset from several files, how records became

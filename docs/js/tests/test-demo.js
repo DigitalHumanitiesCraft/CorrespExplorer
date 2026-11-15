@@ -1,63 +1,20 @@
 // Test Suite: Demo
-// What a workshop participant meets first: the tour, demo links in a new tab and the network of
-// the tutorial dataset data/demo-showcase.xml
+// The network of the tutorial dataset data/demo-showcase.xml, the fixture of the parser and the
+// views since the tutorial itself was retired, and the escaped table of its text alternative
 
-import { parseCMIF, loadDemoDataset, DEMO_DATASET_URL } from '../cmif-parser.js';
-import { shouldStartDemoTour } from '../demo-tour.js';
-import { datasetKey } from '../basket.js';
+import { parseCMIF } from '../cmif-parser.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
 import { defaultNetworkThreshold, buildContemporariesNetwork, buildCorrespondenceNetwork, buildTopicsNetwork, findEgo, networkWithoutEgo } from '../views/network-view.js';
 import { personKey } from '../utils.js';
 import { renderDataTable } from '../views/view-support.js';
 import { assert } from './test-runner.js';
 
-const TOUR_DONE_KEY = 'ce-demo-tour-completed';
-// A browser that finished the tour keeps that state; setup saves it and teardown writes it back
-let savedTourState = null;
+const DEMO_DATASET_URL = 'data/demo-showcase.xml';
 
 export const DemoTests = {
     name: 'Demo',
 
-    setup() {
-        savedTourState = localStorage.getItem(TOUR_DONE_KEY);
-    },
-
-    teardown() {
-        if (savedTourState === null) localStorage.removeItem(TOUR_DONE_KEY);
-        else localStorage.setItem(TOUR_DONE_KEY, savedTourState);
-    },
-
     tests: [
-        {
-            name: 'Tour: startet nur im Demo, bis sie in diesem Browser beendet wurde',
-            run() {
-                localStorage.removeItem(TOUR_DONE_KEY);
-                assert(shouldStartDemoTour('?demo=true&view=overview'), 'Demo ohne beendete Tour sollte die Tour zeigen');
-                assert(!shouldStartDemoTour('?view=overview'), 'Ohne demo=true keine Tour');
-                assert(!shouldStartDemoTour('?demo=true&tour=0'), 'tour=0 sollte die Tour unterdrücken');
-
-                // Finished in another tab: localStorage reaches every tab, sessionStorage did not
-                localStorage.setItem(TOUR_DONE_KEY, 'true');
-                assert(!shouldStartDemoTour('?demo=true&view=overview'), 'Beendete Tour sollte in neuen Tabs nicht wiederkommen');
-            }
-        },
-
-        {
-            name: 'Demo-Link ohne Upload: lädt den Tutorial-Datensatz mit dem Korbschlüssel der Startseite',
-            async run() {
-                const data = await loadDemoDataset();
-                const direct = await parseCMIF(DEMO_DATASET_URL);
-
-                assert(data.letters.length === direct.letters.length && data.letters.length > 0,
-                    `Briefe: ${data.letters.length} gegenüber ${direct.letters.length}`);
-                assert(data.sourceInfo?.isDemo === true, 'sourceInfo sollte den Datensatz als Demo kennzeichnen');
-                // upload.js keys the basket by the card's data-url, so shared basket links stay valid
-                assert(datasetKey(data.sourceInfo) === datasetKey({ type: 'url', source: 'data/demo-showcase.xml' }),
-                    `Korbschlüssel weicht ab: ${datasetKey(data.sourceInfo)}`);
-                assert(data.letters.some(l => l.place_sent?.lat), 'Koordinaten aus geonames_coordinates.json sollten gesetzt sein');
-            }
-        },
-
         {
             name: 'Netzwerk: Standardschwelle des Tutorial-Datensatzes ergibt Verbindungen',
             async run() {

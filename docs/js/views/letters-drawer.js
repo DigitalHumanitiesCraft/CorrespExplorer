@@ -4,6 +4,7 @@
 // order, one control away. Rows and the letter dialog are those of the letter list.
 
 import { sortLetters, renderLetterGroups, bindLetterRows } from './letters-view.js';
+import { formatNumber as fmt } from '../formatters.js';
 
 let deps = {};
 let isOpen = false;
@@ -11,7 +12,6 @@ let visible = true;
 let renderedFrom = null;
 
 const el = id => document.getElementById(id);
-const fmt = n => n.toLocaleString('de-DE');
 
 /**
  * Count of the selection as the line says it: "312 Briefe", under a filter "312 von 11.576 Briefen"
@@ -89,10 +89,6 @@ function bindGrip() {
         e.preventDefault();
         setHeight(panel.getBoundingClientRect().height + step);
     });
-}
-
-export function isDrawerOpen() {
-    return isOpen;
 }
 
 /**

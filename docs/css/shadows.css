@@ -1,7 +1,7 @@
 /* Shadow System - CorrespExplorer
  *
  * Principle: shadows only for floating elements that sit above the page (dialogs, dropdowns,
- * tooltips, toasts, the demo tour, map popups and map controls, the off-canvas sidebar).
+ * tooltips, toasts, map popups and map controls, the off-canvas sidebar).
  * Regular elements (cards, buttons, inputs, bars, panels) use borders instead, see design.md.
  *
  * This file is the only place that sets box-shadow, apart from focus rings and resets
@@ -9,8 +9,7 @@
  */
 
 /* Dialogs */
-.modal-content,
-.tour-content {
+.modal-content {
     box-shadow: var(--shadow-lg);
 }
 
@@ -26,8 +25,6 @@
 
 /* Tooltips */
 .sankey-tooltip,
-.undated-bin-tooltip,
-.timeline-bar-tooltip,
 .view-btn[data-tooltip]::after {
     box-shadow: var(--shadow-md);
 }
@@ -40,11 +37,6 @@
 .map-control-btn,
 .map-legend {
     box-shadow: var(--shadow-sm);
-}
-
-/* Demo tour spotlight: the spread shadow dims the page around the highlighted element */
-.tour-highlight {
-    box-shadow: 0 0 0 9999px var(--color-overlay);
 }
 
 /* Panels of the rail float over the view */

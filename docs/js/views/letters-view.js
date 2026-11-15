@@ -585,7 +585,7 @@ const namesHtml = persons => (persons.length
  *   year of a plain day date to the label of its group
  * @returns {string} escaped HTML of an li element
  */
-export function letterRowHtml(letter, { centre = null, compactDate = false } = {}) {
+function letterRowHtml(letter, { centre = null, compactDate = false } = {}) {
     const direction = letterDirection(letter, centre?.key);
     const who = direction
         ? `<span class="lv-dir">${direction.dir === 'to' ? 'an' : 'von'}</span> <span class="lv-name">${namesHtml(direction.others)}</span>`

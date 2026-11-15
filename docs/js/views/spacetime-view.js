@@ -10,6 +10,9 @@
 
 import { escapeHtml, foldText, isMultiYearSpan, placeKey, prefersReducedMotion } from '../utils.js';
 import { state } from '../state-manager.js';
+import { readTokens } from './view-support.js';
+import { formatNumber as fmt, plural } from '../formatters.js';
+import { loadLand as loadLandFeatures } from '../mini-figures.js';
 import { LANGUAGE_COLORS, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
 
 export const CAMERAS = {
@@ -29,8 +32,6 @@ const LABEL_COUNT = 24;
 // every place these lines turn the figure into a texture
 const LEAD_COUNT = 60;
 const TAU = Math.PI * 2;
-// Country outlines of Natural Earth (public domain), see vendor/natural-earth/PROVENANCE.md
-const LAND_URL = 'vendor/natural-earth/countries-110m.geo.json';
 
 let deps = {};
 let cam = { ...CAMERAS.schraeg, zoom: 1, panX: 0, panY: 0 };
@@ -228,7 +229,7 @@ export function fitBox(ax, az, cameraState, width, height, margin) {
 }
 
 // A round step for axis ticks: at most about `count` ticks over the span
-export function niceStep(span, count) {
+function niceStep(span, count) {
     for (const step of [0.5, 1, 2, 5, 10, 15, 20, 25, 30, 50, 100]) {
         if (span / step <= count) return step;
     }
@@ -247,8 +248,6 @@ export function initSpacetimeView(dependencies) {
 }
 
 const el = id => document.getElementById(id);
-const fmt = n => n.toLocaleString('de-DE');
-const plural = (n, one, many) => `${fmt(n)} ${n === 1 ? one : many}`;
 const isNarrow = () => window.matchMedia?.(NARROW_QUERY).matches ?? false;
 // A period of one year leaves the time axis without extent, an oblique figure would be a flat sliver
 const isOneYear = () => Boolean(model && model.drawn > 0 && model.yearMin === model.yearMax);
@@ -321,13 +320,11 @@ function screenProjection(width, height) {
 }
 
 function readInk() {
-    const css = getComputedStyle(el('spacetime-figure'));
-    const token = name => css.getPropertyValue(name).trim();
-    ink = {
-        sea: token('--color-bg-light'), land: token('--color-bg'), frame: token('--color-border-control'),
-        line: token('--color-border-light'), stem: token('--color-text-light'), chosen: token('--color-primary'),
-        text: token('--color-text')
-    };
+    ink = readTokens({
+        sea: '--color-bg-light', land: '--color-bg', frame: '--color-border-control',
+        line: '--color-border-light', stem: '--color-text-light', chosen: '--color-primary',
+        text: '--color-text'
+    });
 }
 
 // Colour of a language as in the sidebar and the start view: the most frequent languages of the
@@ -337,14 +334,15 @@ function languageInk(code) {
     return LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other;
 }
 
-// The outlines are fetched once from the vendored file; a failure leaves the plain plane
+// The outlines come from the vendored file through the loader the small maps share
+// (mini-figures.js); a failure leaves the plain plane
 function loadLand() {
     if (landRequested) return;
     landRequested = true;
-    fetch(LAND_URL).then(r => (r.ok ? r.json() : null)).then(geo => {
-        if (!geo?.features) return;
+    loadLandFeatures().then(features => {
+        if (!features) return;
         const rings = [];
-        for (const feature of geo.features) {
+        for (const feature of features) {
             const g = feature.geometry;
             const polygons = g?.type === 'Polygon' ? [g.coordinates] : g?.type === 'MultiPolygon' ? g.coordinates : [];
             for (const polygon of polygons) if (polygon[0]?.length > 2) rings.push(polygon[0]);
@@ -683,18 +681,6 @@ function hitAt(mx, my) {
         if (!best || c.total > best.total) best = { i: c.i, year: null, total: c.total, d };
     }
     return best;
-}
-
-/**
- * Screen position of a place, at one of its years or at its foot, in the last drawing. For
- * checks that drive the figure with a pointer.
- * @returns {{x: number, y: number}|null}
- */
-export function screenPositionOf(placeId, year = null) {
-    const place = model?.places.find(p => p.id === placeId);
-    if (!place || !lastScreen) return null;
-    const q = lastScreen.at(place.x, place.z, yearToHeight(year ?? place.years[place.years.length - 1].year));
-    return { x: q.X, y: q.Y };
 }
 
 function figureTitle() {

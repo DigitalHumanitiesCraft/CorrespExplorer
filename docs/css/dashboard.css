@@ -69,11 +69,6 @@
     margin: var(--space-xs) 0 0;
 }
 
-.workspace__meta .tutorial-start-btn {
-    align-self: flex-start;
-    margin-left: 0;
-}
-
 /* The overview fills the height above the drawer */
 .overview-container.workspace {
     display: flex;
@@ -321,10 +316,6 @@
     flex: 1;
     width: 100%;
     min-height: 10px;
-}
-
-.dash-subject__bars {
-    fill: var(--color-data);
 }
 
 .dash-row-item {

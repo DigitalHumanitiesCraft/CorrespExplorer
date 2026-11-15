@@ -363,7 +363,7 @@ export const CMIFParserTests = {
                     `Verweis auf den anderen Bestand erwartet, erhalten ${JSON.stringify(a.parallels)}`);
                 assert(b.parallels?.[0]?.id === '622', 'Der Verweis gilt in beide Richtungen');
                 assert(data.indices.persons['118513109'].as_sender === 2, 'Beide Einträge zählen einzeln, die Person ist eine');
-                assert(data.letters.filter(l => l.file === 'hpe.xml').every(l => !l.parallels), 'Briefe ohne Entsprechung tragen keinen Verweis');
+                assert(data.letters.filter(l => l.file === 'hpe.xml').every(l => !l.parallels), 'Briefe ohne Entsprechung haben keinen Verweis');
             }
         },
 

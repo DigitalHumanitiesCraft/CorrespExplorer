@@ -124,7 +124,7 @@ export const TopicsTests = {
             }
         },
         {
-            name: 'mapGroups: Gruppen nur nach der Art, die die Daten tragen, Anteil am Ganzen',
+            name: 'mapGroups: Gruppen nur nach der Art, die in den Daten vorkommt, Anteil am Ganzen',
             run() {
                 const s = (key, total, kind) => ({ key, label: key, total, kind });
                 const groups = mapGroups([s('a', 6, 'topic'), s('b', 3, 'language'), s('c', 1, 'language')], 1000, { minArea: 250 });

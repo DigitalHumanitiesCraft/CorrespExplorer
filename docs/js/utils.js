@@ -43,19 +43,6 @@ export function safeUrl(url) {
 }
 
 /**
- * Build an external link from dataset values; falls back to escaped text for non-http(s) URLs
- * @param {string} url - URL from CMIF or loaded JSON
- * @param {string} text - Link text from CMIF or loaded JSON
- * @returns {string} - HTML
- */
-export function externalLink(url, text) {
-    const href = safeUrl(url);
-    return href
-        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`
-        : escapeHtml(text);
-}
-
-/**
  * Check a ?json= parameter: only same-origin relative paths to .json files under data/
  * @param {string} path - Value of the json URL parameter
  * @returns {boolean}
@@ -92,7 +79,7 @@ export function ignoreMissingStyleImages(map) {
 }
 
 // Parameters that select the dataset, the shared basket or a one-time notice, not the filter state
-const NON_FILTER_PARAMS = new Set(['view', 'dataset', 'json', 'demo', 'cs', 'tour', 'notice']);
+const NON_FILTER_PARAMS = new Set(['view', 'dataset', 'json', 'cs', 'notice']);
 
 /**
  * Whether two URLs carry the same filters, ignoring view, dataset and basket parameters. The
@@ -255,12 +242,11 @@ function isShown(el) {
 
 /**
  * Keep Tab and Shift+Tab inside a container: focus wraps from the last shown focusable element
- * to the first and back, and enters the container when it was outside. Shared by the modals and
- * the demo tour.
+ * to the first and back, and enters the container when it was outside, for the modals.
  * @param {KeyboardEvent} e - keydown event with key Tab
  * @param {HTMLElement} container
  */
-export function trapTabKey(e, container) {
+function trapTabKey(e, container) {
     const focusable = [...container.querySelectorAll(FOCUSABLE_SELECTOR)].filter(isShown);
     if (focusable.length === 0) {
         e.preventDefault();

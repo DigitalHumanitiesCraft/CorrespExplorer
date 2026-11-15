@@ -5,7 +5,7 @@
 """Browser smoke test of CorrespExplorer: the researcher's path through the real pages.
 
 The browser test runner (docs/test.html) checks the modules; this script checks what only a
-browser shows, meaning loading, views, tour, links, Back, basket and export. It serves docs/ on a
+browser shows, meaning loading, views, links, Back, basket and export. It serves docs/ on a
 free local port, drives Chrome headless through Playwright and prints one line per check, then a
 summary. The exit code is 0 only when every check passed.
 
@@ -52,8 +52,6 @@ VIEWS = (
     "places",
     "network",
     "mentions-flow",
-    "chronik",
-    "activity",
     "comparison",
 )
 HSA = "json=data/hsa-letters.json"
@@ -79,7 +77,7 @@ def _serve() -> tuple[ThreadingHTTPServer, str]:
 # several representations, through the switch in the view header
 GROUP_OF = {"overview": "overview", "letters": "letters", "persons": "persons", "network": "persons",
             "mentions-flow": "persons", "comparison": "persons", "map": "places", "places": "places",
-            "timeline": "time", "activity": "time", "chronik": "time", "topics": "topics"}
+            "timeline": "time", "topics": "topics"}
 
 
 def _open_view(page, view: str) -> None:
@@ -147,34 +145,60 @@ class Smoke:
         ctx.close()
         assert not errors, f"{len(errors)} errors, first: {errors[0]}"
 
-    def demo_link_and_network(self) -> None:
+    def fixture_network(self) -> None:
+        # The tutorial dataset stays as fixture; uploaded through the start page, its network is
+        # not empty with the default threshold
         ctx = self.context()
         page = ctx.new_page()
-        page.goto(self.base + "explore.html?view=network&demo=true&tour=0")
+        page.goto(self.base + "index.html")
+        page.set_input_files("#file-input", str(DOCS / "data" / "demo-showcase.xml"))
+        page.click("#config-skip-btn")
+        page.wait_for_url("**/explore.html*")
         _loaded(page)
+        _open_view(page, "network")
         page.wait_for_timeout(1500)
         nodes = page.locator("#network-graph g.node").count()
-        url = page.url
         ctx.close()
-        assert "explore.html" in url, f"demo link left the explorer: {url}"
-        assert nodes > 0, "demo network is empty with its default threshold"
+        assert nodes > 0, "fixture network is empty with its default threshold"
 
-    def tour_once_per_browser(self) -> None:
+    def retired_links(self) -> None:
+        # Links of the retired tutorial, days and chronicle views still open without an error:
+        # demo and tour are ignored, view=activity and view=chronik open the time view, and a
+        # tutorial link without a dataset reaches the start page without the missing-dataset notice
         ctx = self.context()
         page = ctx.new_page()
-        page.goto(self.base + "explore.html?view=overview&demo=true")
-        _loaded(page)
-        page.wait_for_selector("#demo-tour:not(.hidden)", timeout=5000)
-        page.keyboard.press("Escape")
-        focused = page.evaluate("document.activeElement.classList.contains('view-group-btn')")
-        second = ctx.new_page()
-        second.goto(self.base + "explore.html?view=letters&demo=true")
-        _loaded(second)
-        second.wait_for_timeout(2500)
-        shown_again = second.locator("#demo-tour").is_visible()
+        errors: list[str] = []
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+        views = {}
+        for old in ("activity", "chronik"):
+            page.goto(f"{self.base}explore.html?view={old}&{HSA}&demo=true&tour=0")
+            _loaded(page)
+            page.wait_for_timeout(500)
+            views[old] = page.get_attribute(".tab-content.active", "id")
+        # The start page asks for the file list of a local edition, which the published site
+        # lacks (a 404 by design), so from here on only script errors count
+        explorer_errors = list(errors)
+        errors.clear()
+        # A fresh context, so no dataset of the visits above is left in the session
         ctx.close()
-        assert focused, "focus did not return to a view button after Escape"
-        assert not shown_again, "tour opened again in a new tab"
+        ctx = self.context()
+        page = ctx.new_page()
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+        page.goto(self.base + "explore.html?view=network&demo=true&tour=0")
+        page.wait_for_url("**/index.html", timeout=15_000)
+        notice = page.locator("#error-message").is_visible()
+        page.goto(self.base + "index.html?demo=true")
+        page.wait_for_selector("#model .stmt")
+        start = page.url
+        ctx.close()
+        assert all(v == "timeline-view" for v in views.values()), f"old views opened {views}"
+        assert not notice, "a tutorial link shows the missing-dataset notice"
+        assert "index.html" in start, f"index.html?demo=true left the start page: {start}"
+        assert not explorer_errors, f"{len(explorer_errors)} errors, first: {explorer_errors[0]}"
+        script_errors = [e for e in errors if not e.startswith("Failed to load resource")]
+        assert not script_errors, f"{len(script_errors)} errors, first: {script_errors[0]}"
 
     def missing_dataset_notice(self) -> None:
         ctx = self.context()
@@ -243,7 +267,7 @@ class Smoke:
         _open_view(page, "timeline")
         timeline_rows = page.locator("#timeline-table tbody tr").count()
         # Days are part of the time view since 2026-11-14: its lower figure has its own table
-        activity_rows = page.locator("#tv-table tbody tr").count()
+        day_rows = page.locator("#tv-table tbody tr").count()
         page.click("#export-btn")
         with page.expect_download() as info:
             page.click('#export-modal .export-option[data-format="json"]')
@@ -251,8 +275,8 @@ class Smoke:
         ctx.close()
         assert network_type == "correspondence", f"network starts as {network_type}"
         assert network_rows > 0, "network has no table of its connections"
-        assert timeline_rows > 0 and activity_rows > 0, (
-            f"tables: timeline {timeline_rows}, activity {activity_rows}"
+        assert timeline_rows > 0 and day_rows > 0, (
+            f"tables: timeline {timeline_rows}, days {day_rows}"
         )
         assert export["letterCount"] == len(export["letters"]) > 0, "JSON letters"
         assert export["indices"]["persons"] and export["indices"]["places"], (
@@ -344,8 +368,8 @@ class Smoke:
         )
         _open_view(page, "letters")
         _open_view(page, "topics")
-        # view=activity opens the time view, whose years are the keyboard way to a period
-        _open_view(page, "activity")
+        # The years of the time view are the keyboard way to a period
+        _open_view(page, "timeline")
         years = page.locator("#timeline-chart .tv-bar").count()
         _open_view(page, "map")
         page.wait_for_timeout(1000)
@@ -396,7 +420,7 @@ class Smoke:
         data = json.loads((DOCS / "data" / "hsa-letters.json").read_text(encoding="utf-8"))
         ctx = self.context()
         page = ctx.new_page()
-        page.goto(f"{self.base}explore.html?view=overview&{HSA}&tour=0")
+        page.goto(f"{self.base}explore.html?view=overview&{HSA}")
         _loaded(page)
         page.wait_for_selector("#dash-subjects .dash-subject")
         persons = page.inner_text("#dash-persons-count")
@@ -451,7 +475,7 @@ class Smoke:
         for width, height in ((1280, 800), (1280, 520), (1720, 1000)):
             ctx = self.browser.new_context(viewport={"width": width, "height": height})
             page = ctx.new_page()
-            page.goto(f"{self.base}explore.html?view=overview&{HSA}&tour=0")
+            page.goto(f"{self.base}explore.html?view=overview&{HSA}")
             _loaded(page)
             page.wait_for_timeout(400)
             states = [("loaded", page.evaluate(probe))]
@@ -587,10 +611,10 @@ class Smoke:
         overflow = page.evaluate(
             "() => document.documentElement.scrollWidth > document.documentElement.clientWidth"
         )
-        page.screenshot(path=str(Path(tempfile.gettempdir()) / "ce-path-390.png"))
+        page.screenshot(path=str(Path(tempfile.gettempdir()) / "ce-start-390.png"))
         phone.close()
-        violations += [f"active path at 390px: {v}" for v in found]
-        assert not overflow, "active path bar overflows at 390px"
+        violations += [f"start view at 390px: {v}" for v in found]
+        assert not overflow, "start view overflows at 390px"
         assert not violations, "; ".join(violations)
 
 
@@ -604,12 +628,12 @@ def _checks(
             smoke.views_without_errors,
         ),
         (
-            "demo link loads the tutorial dataset, network not empty",
-            smoke.demo_link_and_network,
+            "uploaded fixture demo-showcase.xml, network not empty",
+            smoke.fixture_network,
         ),
         (
-            "tour once per browser, focus back on the view bar",
-            smoke.tour_once_per_browser,
+            "retired links (demo, tour, view=activity, view=chronik) open without error",
+            smoke.retired_links,
         ),
         (
             "link without its dataset reaches the start page with a notice",
@@ -628,7 +652,7 @@ def _checks(
             smoke.drawer_keeps_the_view,
         ),
         (
-            "page structure: h1 first, described views, one path bar, light map",
+            "page structure: h1 first, described views, years of the time view, light map",
             smoke.page_structure,
         ),
         (

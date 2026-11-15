@@ -1,6 +1,6 @@
-// Knowledge path (US-35, US-36): the bar under the navigation that leads through the steps of a
-// research path, and the Wissenskorb section of the sidebar. The path lives in sessionStorage
-// with the key of its dataset, the basket itself in basket.js.
+// The Wissenskorb section of the sidebar: add the selection of the current view, empty the basket,
+// and the counts in the sidebar and the navigation badge. The basket itself lives in basket.js.
+// The knowledge path (US-35, US-36) that gave this module its name is retired.
 
 import {
     addItemsToBasket,
@@ -9,24 +9,17 @@ import {
     onBasketChange
 } from './basket.js';
 import { BASKET_LIMITS } from './constants.js';
-import { focusViewHeading } from './views/view-support.js';
-import { escapeHtml, personKey, placeKey, showToast } from './utils.js';
+import { personKey, placeKey, showToast } from './utils.js';
 
-const STORAGE_KEY = 'knowledgePath';
-
-let knowledgePath = null;
 let deps = null;
 
 /**
- * Wire path bar and sidebar basket and restore a path of the same dataset
- * @param {{datasetKey: string, switchView: Function, getCurrentView: Function, getFilteredLetters: Function}} dependencies
+ * Wire the sidebar basket
+ * @param {{getCurrentView: Function, getFilteredLetters: Function}} dependencies
  */
 export function initKnowledgePath(dependencies) {
     deps = dependencies;
 
-    document.getElementById('path-nav-back')?.addEventListener('click', () => goToStep(knowledgePath?.currentStep - 1));
-    document.getElementById('path-nav-next')?.addEventListener('click', nextPathStep);
-    document.getElementById('path-bar-close')?.addEventListener('click', endKnowledgePath);
     document.getElementById('add-to-basket')?.addEventListener('click', addToBasketFromView);
     document.getElementById('clear-basket')?.addEventListener('click', () => {
         clearBasket();
@@ -35,143 +28,6 @@ export function initKnowledgePath(dependencies) {
 
     onBasketChange(() => updateSidebarBasketUI());
     updateSidebarBasketUI();
-    loadKnowledgePath();
-}
-
-/**
- * Start a path from a research question of the overview
- * @param {{question: string, category: string, path: Array<{view, label, action}>}} question
- */
-export function startKnowledgePath(question) {
-    if (!question?.path?.length) return;
-
-    knowledgePath = {
-        active: true,
-        dataset: deps.datasetKey,
-        questionId: `kp-${Date.now()}`,
-        question: question.question,
-        category: question.category,
-        path: question.path,
-        currentStep: 0
-    };
-    saveKnowledgePath();
-    setPathUIVisible(true);
-    deps.switchView(question.path[0].view);
-    updateKnowledgePathUI();
-    // The start button stays behind in the overview; the new view begins at its title
-    focusViewHeading(question.path[0].view);
-}
-
-// Research paths have no entry point since 2026-11-14: the operator works in the data directly.
-// A path saved by an earlier visit is dropped, so its bar does not return. Deliberate shortcut:
-// the path machinery of this module is removed once the workspace is accepted.
-function loadKnowledgePath() {
-    knowledgePath = null;
-    sessionStorage.removeItem(STORAGE_KEY);
-}
-
-// Storage can be blocked or full (private mode, quota); the path then lasts only for this page
-function saveKnowledgePath() {
-    if (!knowledgePath) return;
-    try {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(knowledgePath));
-    } catch (e) {
-        console.warn('Knowledge path not saved:', e);
-    }
-}
-
-function endKnowledgePath() {
-    knowledgePath = null;
-    try {
-        sessionStorage.removeItem(STORAGE_KEY);
-    } catch (e) {
-        console.warn('Knowledge path not removed from storage:', e);
-    }
-    setPathUIVisible(false);
-    deps.switchView('overview');
-}
-
-function nextPathStep() {
-    if (!knowledgePath) return;
-    if (knowledgePath.currentStep >= knowledgePath.path.length - 1) {
-        showToast('Wissenspfad abgeschlossen');
-        endKnowledgePath();
-        return;
-    }
-    goToStep(knowledgePath.currentStep + 1);
-}
-
-function goToStep(index) {
-    if (!knowledgePath || !Number.isInteger(index) || index < 0 || index >= knowledgePath.path.length) return;
-    knowledgePath.currentStep = index;
-    saveKnowledgePath();
-    deps.switchView(knowledgePath.path[index].view);
-    updateKnowledgePathUI();
-}
-
-function setPathUIVisible(visible) {
-    document.getElementById('knowledge-path-bar')?.classList.toggle('hidden', !visible);
-}
-
-function updateKnowledgePathUI() {
-    if (!knowledgePath) return;
-
-    const questionText = document.getElementById('path-bar-question-text');
-    if (questionText) {
-        questionText.textContent = knowledgePath.question;
-        questionText.title = knowledgePath.question;
-    }
-
-    // Steps up to the current one are buttons that jump back; later steps are reached with Weiter
-    const stepsContainer = document.getElementById('path-bar-steps');
-    if (stepsContainer) {
-        // Re-rendering replaces the step buttons, so a focused step hands focus to the new current one
-        const hadFocus = stepsContainer.contains(document.activeElement);
-        stepsContainer.innerHTML = knowledgePath.path.map((step, i) => {
-            const isActive = i === knowledgePath.currentStep;
-            const isComplete = i < knowledgePath.currentStep;
-            const reachable = i <= knowledgePath.currentStep;
-            const arrow = i < knowledgePath.path.length - 1
-                ? '<span class="path-bar-step-arrow" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>'
-                : '';
-            return `
-                <button type="button" class="path-bar-step ${isActive ? 'active' : ''} ${isComplete ? 'complete' : ''}"
-                        data-step="${i}" title="${escapeHtml(step.action)}"
-                        ${isActive ? 'aria-current="step"' : ''} ${reachable ? '' : 'disabled'}>
-                    <span class="path-bar-step-num">${i + 1}</span>
-                    <span class="path-bar-step-label">${escapeHtml(step.label)}</span>
-                </button>
-                ${arrow}
-            `;
-        }).join('');
-
-        stepsContainer.querySelectorAll('.path-bar-step:not([disabled])').forEach(stepEl => {
-            stepEl.addEventListener('click', () => goToStep(parseInt(stepEl.dataset.step, 10)));
-        });
-        if (hadFocus) stepsContainer.querySelector(`[data-step="${knowledgePath.currentStep}"]`)?.focus();
-    }
-
-    const actionText = document.getElementById('path-action-text');
-    const currentStep = knowledgePath.path[knowledgePath.currentStep];
-    if (actionText && currentStep) {
-        actionText.textContent = currentStep.action || 'Erkunde diese Ansicht und füge interessante Elemente zum Korb hinzu.';
-    }
-
-    updatePathNavigation();
-    updateSidebarBasketUI();
-}
-
-function updatePathNavigation() {
-    const backBtn = document.getElementById('path-nav-back');
-    const nextBtn = document.getElementById('path-nav-next');
-
-    if (backBtn) backBtn.disabled = knowledgePath.currentStep === 0;
-    if (nextBtn) {
-        const isLastStep = knowledgePath.currentStep >= knowledgePath.path.length - 1;
-        nextBtn.innerHTML = isLastStep
-            ? 'Abschließen <i class="fas fa-check" aria-hidden="true"></i>'
-            : 'Weiter <i class="fas fa-arrow-right" aria-hidden="true"></i>';
-    }
 }
 
 const BASKET_TYPES = {

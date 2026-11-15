@@ -17,6 +17,7 @@ import { escapeHtml, showToast, isMultiYearSpan, letterRecipients, personKey } f
 import { addLettersToBasket } from '../basket.js';
 import { state } from '../state-manager.js';
 import { renderDataTable, readTokens } from './view-support.js';
+import { formatNumber as fmt } from '../formatters.js';
 import { rowCentre, letterDirection } from './letters-view.js';
 import { initChronikView, correspondenceContext, contextText, personAge, lifeDatesOf } from './chronik-view.js';
 
@@ -32,7 +33,6 @@ const MAX_ROWS = 24;
 const DAY_MS = 86400000;
 const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 const MONTHS_SHORT = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
-const fmt = n => n.toLocaleString('de-DE');
 
 let deps = {};
 // The resolution and marks of the last drawing, for hit tests, keys and the table

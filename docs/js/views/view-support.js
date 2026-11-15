@@ -123,7 +123,7 @@ export function describeFilters(filters, letters) {
 
 /**
  * One sentence on the active filter, or an empty string without filter. Plain text, for the
- * filter notice of the views without sidebar and for any other place that states the filter.
+ * export dialog and any other place that states the filter.
  * @param {Object} [filters]
  * @param {Array} [allLetters]
  * @param {number} [shown] - number of letters the filter leaves
@@ -136,27 +136,6 @@ export function filterSentence(filters = state.filters, allLetters = state.getAl
     return `Gezeigt ${shown === 1 ? 'wird' : 'werden'} ${shown.toLocaleString('de-DE')} von ${total.toLocaleString('de-DE')} Briefen, gefiltert nach ${joinGerman(parts)}.`;
 }
 
-/**
- * Notice under the header of a view without sidebar (activity, chronicle, comparison): the
- * filter set elsewhere narrows these views too, and without the sidebar it would act unseen.
- * The button uses the sidebar's reset button, which stays in the document while the sidebar is
- * hidden, so no further hook into explore.js is needed. Focus then moves to the view heading,
- * because the notice and its button disappear with the filter.
- * @param {string} viewId - id of the view container, e.g. 'activity-view'
- */
-export function renderFilterNotice(viewId) {
-    // The selection stands once, in the line at the lower edge of every view (design.md, rule 1);
-    // a view that still calls this only loses the notice it made earlier
-    document.getElementById(`${viewId}-filter-notice`)?.remove();
-    return null;
-}
-
-/**
- * Current values of design tokens from tokens.css. SVG presentation attributes and gradient stops
- * set through D3 attr() cannot resolve var(), so the views read the values once per render.
- * @param {Object<string, string>} names - Map of result key to custom property name
- * @returns {Object<string, string>}
- */
 /**
  * Text alternative of a chart: a table of the values the chart shows, below the chart, shown on
  * one quiet switch named by `label`.
@@ -205,6 +184,12 @@ export function renderDataTable(host, { caption, columns, rows, limit = 500, lab
     });
 }
 
+/**
+ * Current values of design tokens from tokens.css. SVG presentation attributes and gradient stops
+ * set through D3 attr() cannot resolve var(), so the views read the values once per render.
+ * @param {Object<string, string>} names - Map of result key to custom property name
+ * @returns {Object<string, string>}
+ */
 export function readTokens(names) {
     const style = getComputedStyle(document.documentElement);
     return Object.fromEntries(Object.entries(names).map(([key, prop]) => [key, style.getPropertyValue(prop).trim()]));

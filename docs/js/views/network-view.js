@@ -6,7 +6,7 @@
 import { debounce, motionMs, personKey, letterRecipients, escapeHtml, openModal, closeModal } from '../utils.js';
 import { NETWORK_DEFAULTS } from '../constants.js';
 import { elements } from '../dom-cache.js';
-import { formatDateWithPrecision } from '../formatters.js';
+import { formatDateWithPrecision, formatNumber, plural } from '../formatters.js';
 import { state } from '../state-manager.js';
 import { showLetterDetail } from './letters-view.js';
 import { readTokens, renderDataTable } from './view-support.js';
@@ -1045,12 +1045,11 @@ function updateEgoNote(ego, othersLinks) {
         return;
     }
 
-    const count = n => n.toLocaleString('de-DE');
-    const share = `${ego.name} ist an ${count(ego.count)} von ${count(ego.total)} Briefen beteiligt.`;
+    const share = `${ego.name} ist an ${formatNumber(ego.count)} von ${formatNumber(ego.total)} Briefen beteiligt.`;
     text.textContent = networkHideEgo
         ? `${share} Die Person ist ausgeblendet, das Netz zeigt die Verbindungen zwischen den anderen Personen.`
         : othersLinks > 0
-            ? `${share} Ohne diese Person zeigt das Netz ${count(othersLinks)} ${othersLinks === 1 ? 'Verbindung' : 'Verbindungen'} zwischen anderen Personen.`
+            ? `${share} Ohne diese Person zeigt das Netz ${formatNumber(othersLinks)} ${othersLinks === 1 ? 'Verbindung' : 'Verbindungen'} zwischen anderen Personen.`
             : `${share} Zwischen anderen Personen gibt es bei dieser Schwelle keine Verbindung.`;
     if (egoGroup.parentElement !== note) note.append(egoGroup);
     note.classList.remove('hidden');
@@ -1107,11 +1106,10 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
 
     // Update coverage
     if (coverageDiv) {
-        const count = n => n.toLocaleString('de-DE');
         const shown = networkType === 'topics'
-            ? `${count(data.nodes.length)} von ${count(data.stats.totalTopics)} Themen`
-            : `${count(data.nodes.length)} von ${count(data.stats.totalPersons)} Personen`;
-        coverageDiv.textContent = `Sichtbar: ${shown}, ${count(data.links.length)} von ${count(data.stats.totalConnections)} Verbindungen`;
+            ? `${formatNumber(data.nodes.length)} von ${formatNumber(data.stats.totalTopics)} Themen`
+            : `${formatNumber(data.nodes.length)} von ${formatNumber(data.stats.totalPersons)} Personen`;
+        coverageDiv.textContent = `Sichtbar: ${shown}, ${formatNumber(data.links.length)} von ${formatNumber(data.stats.totalConnections)} Verbindungen`;
     }
 }
 
@@ -1145,8 +1143,6 @@ const EGO_LABELS = { wide: 14, narrow: 6 };
 const EGO_OUTER_LABELS = { wide: 8, narrow: 2 };
 const EGO_NARROW = 600;
 
-const formatNumber = n => n.toLocaleString('de-DE');
-const plural = (n, one, many) => `${formatNumber(n)} ${n === 1 ? one : many}`;
 
 // Sender and recipients of a letter, each person once
 function letterParties(letter) {
@@ -1346,7 +1342,7 @@ const polar = (g, radius, angle) => ({ x: g.cx + radius * Math.sin(angle), y: g.
  * Scales of the circle from the correspondents: angle from the first dated letter, distance from
  * the number of letters, mark radius with an area that grows with the letters
  */
-export function egoScales(model, g) {
+function egoScales(model, g) {
     const firsts = model.inner.map(p => p.first).filter(t => t !== null);
     const t0 = firsts.length ? Math.min(...firsts) : 0;
     const t1 = firsts.length ? Math.max(...firsts) : 1;
@@ -1446,7 +1442,7 @@ export function egoLayout(model, g) {
 }
 
 // Reference rings: a few letter counts on the log scale, each named once
-export function egoRings(maxN) {
+function egoRings(maxN) {
     const ladder = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000].filter(n => n < maxN);
     const powers = ladder.filter(n => /^10*$/.test(String(n)));
     return powers.length >= 3 ? powers : ladder.filter((n, i) => i % 2 === 0).slice(0, 4);

@@ -1,9 +1,9 @@
-// Test suite: research paths, basket selection of a view, letter export and person index
+// Test suite: corpus summary, basket selection of a view, letter export and person index
 // Real fixtures through parseCMIF and the preprocessed HSA file, real production functions
 
 import { parseCMIF } from '../cmif-parser.js';
 import { personKey, placeKey, personAuthority, isKnownPlace } from '../utils.js';
-import { analyzeResearchQuestions, summarizeCorpus } from '../research-paths.js';
+import { summarizeCorpus } from '../research-paths.js';
 import { basketSelectionForView } from '../knowledge-path.js';
 import { datasetToJson, lettersToCsv, letterExportRow, LETTER_EXPORT_COLUMNS, CSV_BOM } from '../export.js';
 import { describeFilters, filterSentence } from '../views/view-support.js';
@@ -20,47 +20,17 @@ export const ResearchPathTests = {
             name: 'summarizeCorpus: zählt Briefe je personKey (Parser)',
             async run() {
                 const data = await parseCMIF('data/test-uncertainty.xml');
-                const questions = analyzeResearchQuestions(data.letters, data.indices);
-                const persons = questions.find(q => q.path?.[0]?.view === 'persons' && q.category === 'descriptive');
-                assert(persons, 'Descriptive persons question expected');
                 const top = [...summarizeCorpus(data.letters).persons.values()].sort((a, b) => b.count - a.count)[0];
                 assert(top.count === lettersOf(data.letters, top.key), `Top person count ${top.count} should equal its letters`);
             }
         },
         {
-            name: 'analyzeResearchQuestions: Fehlende Erwähnungen als Anreicherungspotential mit Parser-Element',
-            async run() {
-                const data = await parseCMIF('data/test-uncertainty.xml');
-                const unavailable = analyzeResearchQuestions(data.letters, data.indices).filter(q => q.category === 'unavailable');
-                const mentions = unavailable.find(q => q.missingData === 'Erwähnte Personen');
-                assert(mentions, 'Fixture without mentionsPerson should yield the enrichment question');
-                assert(mentions.suggestion.includes('mentionsPerson'), 'Suggestion should name the ref type the parser reads');
-                assert(unavailable.every(q => !q.path), 'Unavailable questions carry no path');
-            }
-        },
-        {
-            name: 'analyzeResearchQuestions: Erwähnungen im Demo-Datensatz werden analysiert',
-            async run() {
-                const data = await parseCMIF('data/demo-showcase.xml');
-                const questions = analyzeResearchQuestions(data.letters, data.indices);
-                assert(questions.some(q => q.path?.[0]?.view === 'mentions-flow'), 'Mentions question expected');
-                assert(!questions.some(q => q.missingData === 'Erwähnte Personen'), 'No mentions enrichment question expected');
-            }
-        },
-        {
-            name: 'analyzeResearchQuestions: HSA-JSON mit letters_sent und Sprach-Strings',
+            name: 'summarizeCorpus: HSA-JSON mit letters_sent und Sprach-Strings',
             async run() {
                 const data = await (await fetch('data/hsa-letters.json')).json();
-                const questions = analyzeResearchQuestions(data.letters, data.indices);
                 const summary = summarizeCorpus(data.letters, data.indices);
-                const persons = questions.find(q => q.category === 'descriptive' && q.path?.[0]?.view === 'persons');
-                assert(persons.description.startsWith(summary.persons.size.toLocaleString('de-DE')), `Description should count ${summary.persons.size} persons`);
-                assert([...summary.persons.values()].every(p => p.count > 0), 'Person counts must not be 0 for the HSA index shape');
-                const languages = questions.find(q => q.path?.[0]?.view === 'timeline' && q.category === 'descriptive');
-                assert(languages && [...summary.languages.values()].every(l => l.count > 0), 'Languages counted from letters');
-                const top = [...summary.persons.values()].sort((a, b) => b.count - a.count)[0];
-                const ego = top.count > data.letters.length * 0.6;
-                assert(questions.some(q => q.question.includes('Ego-Netzwerk')) === ego, 'Ego network detection follows the top person share');
+                assert(summary.persons.size > 0 && [...summary.persons.values()].every(p => p.count > 0), 'Person counts must not be 0 for the HSA index shape');
+                assert(summary.languages.size > 1 && [...summary.languages.values()].every(l => l.count > 0), 'Languages counted from letters');
             }
         },
         {
@@ -88,7 +58,7 @@ export const ResearchPathTests = {
                 const { type, ids } = basketSelectionForView('persons', data.letters);
                 assert(type === 'persons' && ids.length === expected.size, `Expected ${expected.size} person keys, got ${ids.length}`);
                 assert(ids.some(id => !data.letters.some(l => l.sender?.id === id || l.recipient?.id === id)), 'Persons without authority id are included');
-                assert(basketSelectionForView('chronik', data.letters).type === 'letters', 'Other views collect letters');
+                assert(basketSelectionForView('timeline', data.letters).type === 'letters', 'Other views collect letters');
             }
         },
         {
@@ -134,7 +104,7 @@ export const ResearchPathTests = {
                 assert(lines[1].split('","').length === LETTER_EXPORT_COLUMNS.length, 'Jede Zeile hat alle Spalten');
                 const json = JSON.parse(datasetToJson(letters, { exported: '2026-11-14' }));
                 assert(json.letters[0].postmark === '9. APR 1937' && json.letters[1].recipients.length === 2 && json.letters[2].dateText === 'Pfingsten 1938',
-                    'JSON trägt Poststempel, alle Empfänger und Datumstext');
+                    'JSON enthält Poststempel, alle Empfänger und Datumstext');
             }
         },
         {
@@ -154,26 +124,13 @@ export const ResearchPathTests = {
             }
         },
         {
-            name: 'buildIndices: Personenindex trägt Normdaten-ID und System',
+            name: 'buildIndices: Personenindex enthält Normdaten-ID und System',
             async run() {
                 const data = await parseCMIF('data/demo-showcase.xml');
                 const withId = data.letters.find(l => l.sender?.id && l.sender?.authority).sender;
                 const entry = data.indices.persons[personKey(withId)];
                 const ref = personAuthority(entry);
                 assert(ref && ref.id === withId.id && ref.authority === withId.authority, 'Index entry should resolve to the authority of its letters');
-            }
-        },
-
-        {
-            // The overview passes the summary built at load time instead of counting again
-            name: 'analyzeResearchQuestions: übergebene Zusammenfassung ergibt dieselben Fragen',
-            async run() {
-                const data = await parseCMIF('data/test-uncertainty.xml');
-                const summary = summarizeCorpus(data.letters, data.indices);
-                const passed = analyzeResearchQuestions(data.letters, data.indices, summary);
-                const own = analyzeResearchQuestions(data.letters, data.indices);
-                assert(passed.length > 0, 'Fixture sollte Forschungsfragen ergeben');
-                assert(JSON.stringify(passed) === JSON.stringify(own), 'Fragen hängen davon ab, wer die Zusammenfassung bildet');
             }
         },
 

@@ -67,7 +67,7 @@ function correspondentKey(person) {
  * @param {Array} letters
  * @returns {Map<string, {letters: Array<{id: string, year: number|null}>, dated: number}>}
  */
-export function buildCorrespondenceIndex(letters) {
+function buildCorrespondenceIndex(letters) {
     const index = new Map();
     for (const letter of letters) {
         const senderId = correspondentKey(letter.sender);
@@ -141,10 +141,6 @@ export function contextText(context) {
         ? `Letzter von ${context.total} Briefen zwischen beiden`
         : `${context.number}. von ${context.total} Briefen zwischen beiden`;
     return context.previousYear ? `${base}, nach einer Lücke seit ${context.previousYear}` : base;
-}
-
-export function isEnriched() {
-    return enriched;
 }
 
 function personEnrichment(person) {

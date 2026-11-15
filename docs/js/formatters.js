@@ -50,6 +50,12 @@ export function getPlacePrecisionClass(precision) {
 
 // Name formatters
 
+// A count in German digit grouping, "11.576"
+export const formatNumber = n => n.toLocaleString('de-DE');
+
+// A count with its noun, the singular for one: "1 Brief", "11.576 Briefe"
+export const plural = (n, one, many) => `${formatNumber(n)} ${n === 1 ? one : many}`;
+
 /**
  * A filtered count with its total ("8" and "von 35"), or the total alone when nothing is filtered out
  * @param {number} part

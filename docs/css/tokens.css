@@ -36,12 +36,10 @@
 
     /* Light tints for hover and status backgrounds, mixed from the base colours */
     --color-primary-light: color-mix(in srgb, var(--color-primary) 12%, var(--color-bg));
-    --color-success-light: color-mix(in srgb, var(--color-success) 12%, var(--color-bg));
-    --color-info-light: color-mix(in srgb, var(--color-info) 12%, var(--color-bg));
     --color-warning-light: color-mix(in srgb, var(--color-warning) 12%, var(--color-bg));
     --color-error-light: color-mix(in srgb, var(--color-error) 12%, var(--color-bg));
 
-    /* Sequential scale for counts (activity heatmap), towards --color-data; the lowest step
+    /* Sequential scale for counts, towards --color-data (design.md); the lowest step
        stays apart from the empty cell on --color-bg-light */
     --color-scale-1: color-mix(in srgb, var(--color-data) 50%, var(--color-bg));
     --color-scale-2: color-mix(in srgb, var(--color-data) 66%, var(--color-bg));
@@ -50,7 +48,6 @@
 
     /* Backdrops */
     --color-backdrop: rgba(0, 0, 0, 0.5); /* Behind dialogs and the mobile menu */
-    --color-overlay: rgba(0, 0, 0, 0.7);  /* Behind the demo tour */
 
     /* Role Colors (Map/Network) - design.md, Datenvisualisierung */
     --color-role-sender: #2C5282;    /* Same as --color-data */
@@ -105,8 +102,6 @@
     /* Layout Constants */
     --sidebar-width: 300px;
     --navbar-height: 60px;
-    --max-width-content: 1200px;  /* Standard content max-width */
-    --max-width-wide: 1400px;     /* Wide content max-width */
 
     /* ========================================
      * RESPONSIVE BREAKPOINTS
@@ -152,12 +147,11 @@
     --z-base: 1;
     --z-raised: 10;          /* Local layering inside a component: hover lift, map controls */
     --z-dropdown: 1000;      /* Autocomplete lists and tooltips inside the content */
-    --z-sticky: 1020;        /* Knowledge path bar, landing navigation */
+    --z-sticky: 1020;        /* Landing navigation and other sticky bars */
     --z-fixed: 1030;         /* Navbar and the off-canvas sidebar */
     --z-modal-backdrop: 1040;
     --z-modal: 1050;         /* Dialogs and the loading overlay */
     --z-tooltip: 1060;       /* Tooltips of the view switcher */
-    --z-tour: 1070;          /* Demo tour above everything it explains */
     --z-toast: 1080;
     --z-skip-link: 1090;
 }

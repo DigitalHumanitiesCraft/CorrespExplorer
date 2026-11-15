@@ -179,7 +179,7 @@ function markParallels(letters) {
  * @param {Array} letters
  * @returns {Array} the same letters, flagged in place
  */
-export function flagImplausibleYears(letters) {
+function flagImplausibleYears(letters) {
     const GAP_YEARS = 40;
     // A span states its own width and is no slip; year bars already leave it out (decision E5)
     const dated = letters.filter(l => Number.isInteger(l.year) && l.datePrecision !== 'range');
@@ -1065,28 +1065,15 @@ export async function addTableCoordinates(data) {
     return data;
 }
 
-// Tutorial dataset of the start page; its card loads this path, so the basket key matches
-export const DEMO_DATASET_URL = 'data/demo-showcase.xml';
-
-/**
- * The tutorial dataset as the start page prepares it, without Wikidata enrichment (ADR-006).
- * Demo links opened in a new tab or by another person load it here instead of landing on the
- * start page.
- * @returns {Promise<Object>} parsed data with sourceInfo
- */
-export async function loadDemoDataset() {
-    return loadUrlDataset(DEMO_DATASET_URL, { isDemo: true });
-}
-
 /**
  * A dataset from a URL as the start page prepares it, coordinates from the table and no Wikidata
  * enrichment (ADR-006). The sourceInfo matches the start page, so the basket key stays the same.
  * @param {string} url - Bundled CMIF path or correspSearch API URL
- * @param {{isDemo?: boolean, type?: string}} [options] - type as the start page sets it (url, correspsearch)
+ * @param {{type?: string}} [options] - type as the start page sets it (url, correspsearch)
  * @returns {Promise<Object>}
  */
-export async function loadUrlDataset(url, { isDemo = false, type = 'url' } = {}) {
+export async function loadUrlDataset(url, { type = 'url' } = {}) {
     const data = await addTableCoordinates(await parseCMIF(url));
-    data.sourceInfo = isDemo ? { type, source: url, isDemo: true } : { type, source: url };
+    data.sourceInfo = { type, source: url };
     return data;
 }

@@ -17,7 +17,7 @@
 //    absence stands in the sentence. The band of TEI letter records, where held, draws postmarks
 //    over the years, the records per letter and the share of each other property.
 
-export const UNIT_LIMIT = 300;
+const UNIT_LIMIT = 300;
 
 const PHRASES = {
     place: 'Absendeorte',
@@ -89,5 +89,5 @@ export function missingSentence(missing) {
     const phrases = missing.map(key => PHRASES[key]).filter(Boolean);
     if (phrases.length === 0) return '';
     const list = phrases.length === 1 ? phrases[0] : `${phrases.slice(0, -1).join(', ')} und ${phrases[phrases.length - 1]}`;
-    return `Dieser Bestand trägt keine ${list}.`;
+    return `Dieser Bestand enthält keine ${list}.`;
 }

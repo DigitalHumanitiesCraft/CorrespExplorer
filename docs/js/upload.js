@@ -55,14 +55,8 @@ async function init() {
     setupEventListeners();
     enableModalKeyboard();
 
-    // about.html links here with ?demo=true
     const startParams = new URLSearchParams(window.location.search);
-    if (startParams.get('demo') === 'true') {
-        // The tutorial left the start page; links to it (about.html) open it in the explorer,
-        // which loads it itself (loadDemoDataset in cmif-parser.js)
-        window.location.replace('explore.html?demo=true&view=overview');
-        return;
-    } else if (startParams.get('files')) {
+    if (startParams.get('files')) {
         // The figure links a view of a local edition through here, so view and feat pass on
         loadFileList(startParams.get('files'), { view: startParams.get('view'), feat: startParams.get('feat') });
     } else if (startParams.get('notice') === 'dataset-missing') {
@@ -220,41 +214,19 @@ async function showLocalDataset() {
     }
 }
 
-// Dataset card handler
+// Dataset card handler: a card names either a file list (data-files) or pre-processed JSON (data-json)
 async function handleDatasetSelect(card) {
-    const info = card.dataset.info;
-    const url = card.dataset.url;
-    const jsonUrl = card.dataset.json;
-    // An edition published as many files, named by a file list
-    if (card.dataset.files) {
-        lastTrigger = card;
-        hideError();
-        return loadFileList(card.dataset.files);
-    }
-    const isDemo = card.dataset.demo === 'true';
     lastTrigger = card;
-
     hideError();
-
+    // An edition published as many files, named by a file list
+    if (card.dataset.files) return loadFileList(card.dataset.files);
+    const jsonUrl = card.dataset.json;
     if (jsonUrl) {
         // Pre-processed JSON goes to explore.html by path, which bypasses the sessionStorage size limit
         const params = new URLSearchParams();
         params.set('json', jsonUrl);
         params.set('view', 'overview');
-        if (isDemo) params.set('demo', 'true');
         window.location.href = `explore.html?${params.toString()}`;
-    } else if (url) {
-        showLoading('Lade CMIF von URL...');
-        try {
-            const data = await parseCMIF(url);
-            await showConfigDialog(data, { type: 'url', source: url, isDemo: isDemo });
-        } catch (error) {
-            console.error('Error loading CMIF:', error);
-            showError(`Fehler beim Laden: ${error.message}`);
-            hideLoading();
-        }
-    } else if (info === 'cmif') {
-        fileInput.click();
     }
 }
 
@@ -575,10 +547,9 @@ function finalizeAndRedirect(data, sourceInfo) {
         return;
     }
 
-    // The overview unless a link of the start figure asked for a view (and a feature filter); the
-    // demo flag starts the tour in explore.js. Both values are checked against the known lists
+    // The overview unless a link of the start figure asked for a view (and a feature filter); both
+    // values are checked against the known lists
     const params = new URLSearchParams();
-    if (sourceInfo?.isDemo) params.set('demo', 'true');
     params.set('view', VIEWS.includes(sourceInfo?.view) ? sourceInfo.view : 'overview');
     const features = (sourceInfo?.feat || '').split(',').filter(key => LETTER_FEATURES.some(f => f.key === key));
     if (features.length) params.set('feat', features.join(','));

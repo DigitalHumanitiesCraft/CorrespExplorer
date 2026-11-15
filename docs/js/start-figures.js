@@ -10,7 +10,7 @@
 
 import { computeLanguageColors, languageLabel, NO_LANGUAGE } from './constants.js';
 import { parseCMIFFiles } from './cmif-parser.js';
-import { formatSingleDate } from './formatters.js';
+import { formatSingleDate, formatNumber as format } from './formatters.js';
 import { summarizeLetters, recordOf, STATEMENTS, letterTime } from './start-summary.js';
 import { composeFigure } from './start-compose.js';
 import { prefersReducedMotion, httpErrorMessage, personKey, letterRecipients, placeKey } from './utils.js';
@@ -28,10 +28,7 @@ const INSET = 26;
 const CLIP_FACTOR = 1.6;
 // Height a subject profile needs to be read; fewer profiles stand where the band is lower
 const SUBJECT_ROW = 46;
-// Time of the rust marks moving to the letter's new places (none under reduced motion)
-const MOVE_MS = 320;
 
-const format = n => n.toLocaleString('de-DE');
 
 // Modules of the explorer whose pure parts are reused: the circle layout of the network view and
 // the side of a letter on the time axis. They come in lazily, so a failure there leaves one
@@ -75,7 +72,7 @@ const DATASETS = {
 // The three parts of the model. They name the groups in the text alternative and, on hover and
 // focus, the sheets of the letter; the page itself carries no band headings
 const BAND_LABELS = { core: 'Kern des CMIF', extension: 'Erweiterungen im CMIF', record: 'TEI-Briefsätze' };
-const SHEET_CAPTIONS = { core: 'Was jedes CMIF trägt', extension: 'Was die Edition im CMIF ergänzt', record: 'Was ein TEI-Briefsatz ergänzt' };
+const SHEET_CAPTIONS = { core: 'Was jedes CMIF enthält', extension: 'Was die Edition im CMIF ergänzt', record: 'Was ein TEI-Briefsatz ergänzt' };
 // Share of the height each band takes, and of the width each figure takes in its band
 const BAND_WEIGHT = { core: 1.25, extension: 1, record: 0.85 };
 const FIGURE_WEIGHT = { circle: 1, map: 1.15, ranking: 0.8, letters: 2, profile: 2, ring: 1, profiles: 1.6, bar: 1, years: 1.6, histogram: 1, shares: 1.3 };
@@ -1156,7 +1153,7 @@ function describe(summary, dataset, r) {
         return `${BAND_LABELS[band.key]}${note}: ${items.join('; ')}.`;
     });
     const time = composition.bands[0]?.items.find(i => i.key === 'date');
-    const scale = time?.figure === 'profile' ? ' Die Zeitfigur zählt linear; ein Jahr weit über den übrigen ist gekappt und trägt seine Zahl.' : '';
+    const scale = time?.figure === 'profile' ? ' Die Zeitfigur zählt linear; ein Jahr weit über den übrigen ist gekappt und nennt seine Zahl.' : '';
     const letter = r ? ` Beispielbrief: ${[r.sender, r.recipient && `an ${r.recipient}`, r.place, r.date].filter(Boolean).join(', ')}.` : '';
     return `${dataset.name}, ${format(summary.letters)} Briefe. ${parts.join(' ')} ${composition.sentence}${scale}${letter}`;
 }

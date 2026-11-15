@@ -74,33 +74,6 @@ export const DOMCacheTests = {
         },
 
         {
-            name: 'getBySelector: Findet Element mit Selector',
-            run() {
-                if (typeof document === 'undefined') {
-                    console.warn('Skipping test (no DOM)');
-                    return;
-                }
-
-                const el = elements.getBySelector('#test-container');
-                assert(el !== null, 'Sollte Element finden');
-                assert(el.id === 'test-container', 'Sollte korrektes Element sein');
-            }
-        },
-
-        {
-            name: 'getAllBySelector: Gibt NodeList zurück',
-            run() {
-                if (typeof document === 'undefined') {
-                    console.warn('Skipping test (no DOM)');
-                    return;
-                }
-
-                const els = elements.getAllBySelector('[data-test-element]');
-                assert(els.length >= 3, `Sollte mindestens 3 Test-Elemente finden, fand ${els.length}`);
-            }
-        },
-
-        {
             name: 'clearCache: Leert Cache',
             run() {
                 if (typeof document === 'undefined') {
@@ -119,26 +92,6 @@ export const DOMCacheTests = {
                 // (können wir nicht direkt testen, aber clearCache sollte nicht werfen)
                 const el = elements.getById('test-button');
                 assert(el !== null, 'Sollte Element nach clear auch noch finden');
-            }
-        },
-
-        {
-            name: 'Predefined accessor: mapContainer',
-            run() {
-                if (typeof document === 'undefined') {
-                    console.warn('Skipping test (no DOM)');
-                    return;
-                }
-
-                // Erstelle map-container für Test
-                const mapContainer = document.createElement('div');
-                mapContainer.id = 'map-container';
-                mapContainer.dataset.testElement = 'true';
-                document.body.appendChild(mapContainer);
-
-                const el = elements.mapContainer;
-                assert(el !== null, 'Sollte map-container finden');
-                assert(el.id === 'map-container', 'Sollte korrektes Element sein');
             }
         },
 
@@ -164,25 +117,19 @@ export const DOMCacheTests = {
                     return;
                 }
 
-                // Erstelle kritische Elemente
-                const navbar = document.createElement('nav');
-                navbar.className = 'navbar';
-                navbar.dataset.testElement = 'true';
-                document.body.appendChild(navbar);
-
-                const sidebar = document.createElement('aside');
-                sidebar.className = 'sidebar';
-                sidebar.dataset.testElement = 'true';
-                document.body.appendChild(sidebar);
+                // Ein kritisches Element; die Testseite hat kein eigenes
+                const overlay = document.createElement('div');
+                overlay.id = 'loading-overlay';
+                overlay.dataset.testElement = 'true';
+                document.body.appendChild(overlay);
 
                 // Clear cache und init
                 elements.clearCache();
                 initDOMCache();
 
                 // A preloaded element stays cached after it leaves the DOM
-                sidebar.remove();
-                navbar.remove();
-                assert(elements.sidebar === sidebar, 'initDOMCache sollte die Sidebar vorab im Cache halten');
+                overlay.remove();
+                assert(elements.loadingOverlay === overlay, 'initDOMCache sollte das Ladeoverlay vorab im Cache halten');
                 elements.clearCache();
             }
         },

@@ -6,7 +6,7 @@ import { closeModal, debounce, escapeHtml, isKnownPlace, letterRecipients, openM
 import { formatDateWithPrecision } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { state } from '../state-manager.js';
-import { bindCombobox, renderFilterNotice } from './view-support.js';
+import { bindCombobox } from './view-support.js';
 
 // A letter involves a person as sender or as any of its recipients
 function involves(letter, key) {
@@ -270,7 +270,6 @@ export function renderComparison() {
     const container = document.getElementById('comparison-view');
     if (!container) return;
 
-    renderFilterNotice('comparison-view');
     setupComparisonModeSelector();
     renderComparisonQuickSelect();
     updatePeriodInputHint();

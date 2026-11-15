@@ -5,7 +5,7 @@ import { LANGUAGE_COLORS, MAP_DEFAULTS, NO_LANGUAGE, languageLabel } from '../co
 import { isInBasket } from '../basket.js';
 import { escapeHtml, ignoreMissingStyleImages, showToast, personKey, placeKey } from '../utils.js';
 import { elements } from '../dom-cache.js';
-import { toggleBasketButton } from './view-support.js';
+import { readTokens, toggleBasketButton } from './view-support.js';
 
 let deps = {};
 // MapLibre manages its own state, so the instance stays outside the state manager
@@ -38,11 +38,6 @@ export function updateMapPlaces() {
 // The map measures its container only while visible
 export function resizeMap() {
     map?.resize();
-}
-
-// Colour of a design token from tokens.css, for canvas and WebGL layers that cannot read CSS
-function cssToken(name) {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
 // Aggregate letters by place_sent for the map; places are keyed with placeKey (ADR-001), so a
@@ -174,7 +169,7 @@ function createMap() {
     map.on('error', () => {
         if (mapInitialized || usingFallbackStyle || map.isStyleLoaded()) return;
         usingFallbackStyle = true;
-        const background = cssToken('--color-bg-light');
+        const background = readTokens({ bg: '--color-bg-light' }).bg;
         map.setStyle({
             version: 8,
             sources: {},
@@ -211,12 +206,12 @@ function createMap() {
 const PAPER_LAND_LAYERS = ['background', 'park', 'landuse_residential', 'landcover_wood', 'road_area_pier'];
 
 function applyPaperBasemap(targetMap) {
-    const land = cssToken('--color-map-land');
+    const land = readTokens({ land: '--color-map-land' }).land;
     for (const id of PAPER_LAND_LAYERS) {
         const layer = targetMap.getLayer(id);
         if (layer) targetMap.setPaintProperty(id, layer.type === 'background' ? 'background-color' : 'fill-color', land);
     }
-    if (targetMap.getLayer('water')) targetMap.setPaintProperty('water', 'fill-color', cssToken('--color-map-water'));
+    if (targetMap.getLayer('water')) targetMap.setPaintProperty('water', 'fill-color', readTokens({ water: '--color-map-water' }).water);
 }
 
 function setMapStyle(styleKey) {
@@ -321,8 +316,7 @@ function renderPlaceMarkers(places) {
 // Add map layers
 function addMapLayers() {
     // A cluster mixes languages, so it takes a neutral tone that no language carries
-    const primary = cssToken('--color-text-light');
-    const outline = cssToken('--color-bg');
+    const { primary, outline } = readTokens({ primary: '--color-text-light', outline: '--color-bg' });
 
     // Cluster layer
     map.addLayer({
@@ -391,7 +385,7 @@ function addMapLayers() {
 // Get the circle color expression based on current color mode
 function getMapCircleColorExpression() {
     if (mapColorMode === 'uniform') {
-        return cssToken('--color-data');
+        return readTokens({ data: '--color-data' }).data;
     }
 
     // Build dynamic match expression based on available languages

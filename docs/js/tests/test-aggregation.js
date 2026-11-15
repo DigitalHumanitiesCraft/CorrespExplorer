@@ -10,7 +10,6 @@ import { datasetQuality, summarizeCorpus } from '../research-paths.js';
 import { NO_LANGUAGE, registerLanguageLabels, languageLabel } from '../constants.js';
 import { assert } from './test-runner.js';
 import { analyzeCoordinateNeeds } from '../geonames-enrichment.js';
-import { buildActivityIndex } from '../views/activity-view.js';
 import { indexPlaces, coordinateCoverage, countLettersByPlace } from '../views/places-view.js';
 
 export const AggregationTests = {
@@ -45,38 +44,6 @@ export const AggregationTests = {
                 const foreign = stats.geonamesIdsToResolve.filter(id => !geonamesIds.has(id));
                 assert(foreign.length === 0, `Keine GeoNames-IDs: ${foreign.join(', ')}`);
                 assert(stats.withGeoNamesId === stats.geonamesIdsToResolve.length, 'Zählung und Liste sollten übereinstimmen');
-            }
-        },
-        {
-            name: 'buildActivityIndex: Tages-, gröber und undatierte Briefe ergeben zusammen alle Briefe',
-            async run() {
-                const data = await parseCMIF('data/test-uncertainty.xml');
-                const index = buildActivityIndex(data.letters);
-                const { month, year, range, undated, text, implausible } = index.withoutDay;
-                assert(undated > 0, 'Fixture sollte undatierte Briefe enthalten');
-                const sum = index.total + month + year + range + undated + text + implausible;
-                assert(sum === data.letters.length, `Summe ${sum} statt ${data.letters.length} Briefe`);
-            }
-        },
-        {
-            // Regression: the busiest year counted only day-precise letters (326) where the timeline
-            // counted every letter of the year (327)
-            name: 'buildActivityIndex: Jahre zählen wie die Timeline, Datum nur als Text ist nicht undatiert',
-            async run() {
-                const data = await parseCMIF('data/test-uncertainty.xml');
-                const index = buildActivityIndex(data.letters);
-                for (const [year, count] of index.lettersByYear) {
-                    const timeline = data.letters.filter(l => l.year === year && !isMultiYearSpan(l)).length;
-                    assert(count === timeline, `${year}: ${count} statt ${timeline} wie in der Timeline`);
-                }
-                const coarse = data.letters.find(l => l.year && l.datePrecision !== 'day' && !isMultiYearSpan(l));
-                assert(coarse && index.lettersByYear.get(coarse.year) > (index.byYear.get(coarse.year) || 0),
-                    'Ein nur auf Monat oder Jahr datierter Brief zählt im Jahr, nicht in den Tageszellen');
-                assert(index.maxYear.count === Math.max(...index.lettersByYear.values()), 'Aktivstes Jahr aus allen Briefen des Jahres');
-
-                const records = await parseCMIF('data/test-letter-records.xml');
-                const withText = buildActivityIndex(records.letters).withoutDay;
-                assert(withText.text === 1 && withText.undated === 1, `Text 1 und ohne Datum 1 erwartet: ${JSON.stringify(withText)}`);
             }
         },
         {

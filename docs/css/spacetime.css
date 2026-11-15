@@ -101,24 +101,6 @@
     outline-offset: -3px;
 }
 
-.st-ground {
-    fill: var(--color-bg-light);
-    stroke: var(--color-border-control);
-    stroke-width: 1;
-}
-
-.st-graticule {
-    fill: none;
-    stroke: var(--color-border-light);
-    stroke-width: 1;
-}
-
-.st-yearline {
-    fill: none;
-    stroke: var(--color-border-light);
-    stroke-width: 1;
-}
-
 .st-axis {
     stroke: var(--color-text-light);
     stroke-width: 1;
@@ -211,54 +193,9 @@
     stroke-width: 1;
 }
 
-.st-stem {
-    stroke: var(--color-data);
-    stroke-width: 1;
-    stroke-opacity: 0.5;
-}
-
-.st-stem--lead {
-    stroke-opacity: 0.12;
-}
-
 /* Sample widths of the size key; the columns themselves carry the language colours */
 .st-mark {
     fill: var(--color-text-light);
-}
-
-/* A place outside the frame stands at its edge, drawn hollow so its position is not read as true */
-.st-col--out .st-mark {
-    fill: var(--color-bg);
-    stroke: var(--color-data);
-    stroke-width: 1;
-}
-
-.st-col--hover .st-stem {
-    stroke: var(--color-text);
-    stroke-opacity: 1;
-}
-
-.st-col--sel .st-mark {
-    fill: var(--color-primary);
-    fill-opacity: 0.85;
-}
-
-.st-col--sel .st-stem,
-.st-col--sel .st-foot {
-    stroke: var(--color-primary);
-    stroke-opacity: 1;
-}
-
-.st-mark--picked {
-    stroke: var(--color-text);
-    stroke-width: 2;
-}
-
-.st-hit {
-    fill: transparent;
-    stroke: transparent;
-    stroke-width: 7;
-    cursor: pointer;
 }
 
 .st-label {
