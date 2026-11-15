@@ -14,7 +14,8 @@ export const LETTER_EXPORT_COLUMNS = [
     'language', 'url',
     'date_text', 'date_inferred', 'date_implausible', 'place_inferred',
     'recipients_all', 'signature', 'postmark', 'address', 'records', 'records_differ',
-    'date_bound', 'sender_local_ref', 'recipient_local_ref', 'further_actions', 'file', 'parallels'
+    'date_bound', 'sender_local_ref', 'recipient_local_ref', 'further_actions', 'file', 'parallels',
+    'date_supplied', 'place_alternatives', 'addresses_all', 'shared_signature'
 ];
 
 // Several recipients in one cell; a semicolon, because names are written "Surname, Forename"
@@ -70,7 +71,15 @@ export function letterExportRow(letter) {
             .map(a => `${a.type}: ${a.persons.map(p => p.name).join(RECIPIENT_SEPARATOR)}`).join(' | '),
         file: letter.file || '',
         // Ids of letters in other files with the same identified sender, recipients and day
-        parallels: (letter.parallels || []).map(p => p.id).join(RECIPIENT_SEPARATOR)
+        parallels: (letter.parallels || []).map(p => p.id).join(RECIPIENT_SEPARATOR),
+        // Wording of a date element the source marks as supplied, beside the date read
+        date_supplied: letter.dateSupplied || '',
+        // Further places of sending the source names beside place_name
+        place_alternatives: (letter.placeAlternatives || []).map(p => p.name).join(RECIPIENT_SEPARATOR),
+        // Every address where the letter has more than one; addresses contain commas, hence " | "
+        addresses_all: (letter.addresses || []).join(' | '),
+        // Ids of letters kept apart under the same shelfmark because their dates differ
+        shared_signature: (letter.sharedSignature || []).map(s => s.id).join(RECIPIENT_SEPARATOR)
     };
 }
 

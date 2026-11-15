@@ -53,7 +53,7 @@ The CMIF standard supports several ways to express uncertainty:
 
 ### HSA Dataset Analysis
 
-The Hugo Schuchardt Archive CMIF uses only implicit uncertainty. Counts from `docs/data/hsa-letters.json` (11,576 letters, preprocessing of 2026-10-29), computed on 2026-10-29:
+The Hugo Schuchardt Archive CMIF uses only implicit uncertainty. It marks no value as inferred, which is a statement about its markup and not about its editorial practice ([Editorial inference](#editorial-inference-postmarks-and-implausible-years)). Counts from `docs/data/hsa-letters.json` (11,576 letters, preprocessing of 2026-10-29), computed on 2026-10-29:
 
 | Feature | Used | Count |
 |---------|------|-------|
@@ -76,7 +76,7 @@ The preprocessed letters carry `datePrecision` and `dateCertainty`, but no `prec
 
 ### 1. Date Precision
 
-`classifyDate()` in `utils.js` classifies a TEI date for the CMIF parser and the correspSearch loader. `from` and `to` on the same day count as that day. A single bound (`notBefore` or `notAfter` alone) keeps the bound as the date, sets `dateBound` and leaves the year empty, so the letter stands beside the time axis (since 2026-11-14). Otherwise the primary date is `when`, else `from`, else `notBefore`; `dateTo` is `to` or `notAfter`; the year is the first four characters of the primary date.
+`classifyDate()` in `utils.js` classifies a TEI date for the CMIF parser and the correspSearch loader. `from` and `to` on the same day count as that day. A single bound (`notBefore` or `notAfter` alone) keeps the bound as the date, sets `dateBound` and leaves the year empty, so the letter stands beside the time axis (since 2026-11-14). Otherwise the primary date is `when`, else `from`, else `notBefore`; `dateTo` is `to` or `notAfter`; the year is the first four characters of the primary date. The CMIF parser cuts a time of day before classifying, so `when="1900-06-15T10:00"` is the day 1900-06-15 (since 2026-11-15); the correspSearch loader passes its values unchanged.
 
 | Level | Detection | HSA Count |
 |-------|-----------|-----------|
@@ -155,23 +155,28 @@ Do not fake coordinates. Places without coordinates appear in the places view, n
 
 Added on 2026-11-14 for TEI that describes each letter in its own record. Every rule is triggered by properties of the data and holds for any file that carries them.
 
+A value counts as inferred only where the source marks it, by `@evidence`, by a `@type` or `@ana` token supplied, deduced, inferred, conjecture or erschlossen, or by square brackets around the whole value. An unmarked value is taken as the edition gives it, with the precision of its attribute. The tool adds no doubt of its own. In the HSA, o:hsa.letter.10232 has `when="1887-04"` without `cert` or `evidence`, so the tool shows April 1887 with month precision and not as inferred, whatever the edition's reasons for giving only the month. The same holds for a read date beside a supplied wording. Whether the read value is itself an editorial fill-in is for the edition to say, and the supplied wording is kept beside it in `dateSupplied`.
+
 | Property of the source | Detection in `cmif-parser.js` | Field | Display |
 |---|---|---|---|
-| Value supplied by the edition | `@evidence`, a `@type` or `@ana` token `supplied`, `deduced`, `inferred`, `conjecture…`, or square brackets around the whole value (`isInferred()`) | `dateInferred`, `place_sent.inferred` | value in square brackets, class `.date-inferred` or `.place-inferred`, legend line above the letter list |
+| Value supplied by the edition | `@evidence`, a `@type` or `@ana` token `supplied`, `deduced`, `inferred`, `conjecture…`, `erschlossen`, or square brackets around the whole value (`isInferred()`) | `dateInferred`, `place_sent.inferred` | value in square brackets, class `.date-inferred` or `.place-inferred`, legend line above the letter list |
+| Supplied wording beside a read date | a date element marked as supplied without a value of its own, beside the date element whose value is shown (since 2026-11-15) | `dateSupplied` with the wording; the read date keeps its precision and stays unmarked | not yet shown by the views; exported as `date_supplied` |
 | Date only as text | `date` without machine-readable attribute | `dateText`, `date` stays null | the text in italics, off the time axis |
 | Postmark | `placeName` or `note` with `@type` postmark, postalStamp or Poststempel | `postmark` | labelled value "Poststempel", never the sending place |
 | Wording of the place on the letter | `placeName type="original"` | never the sending place; where it is the only `placeName` besides postmarks, its text is kept as `placeText` and the letter has no sending place (since 2026-11-14) | the wording as the source gives it, not in the place list |
-| Postal address | `address/addrLine` inside `correspDesc` | `address` | labelled value "Anschrift", never the sending place |
-| Reference inside the edition | `persName/@ref` or `orgName/@ref` that is no http(s) URL of a known authority, such as `#ID` | `localRef`, precision `named` | "ohne Normdatensatz" |
+| Several places of sending | further `placeName` of the sending action with another name than the chosen one, neither postmark nor wording (since 2026-11-15) | `placeAlternatives` with name, GeoNames id and inferred mark; the place of sending stays the first untyped one | not yet shown by the views; exported as `place_alternatives` |
+| Postal address | every `address` inside `correspDesc`, its parts joined with a comma; a `placeName` or `date` inside an address belongs to the address (since 2026-11-15) | `address` (the first), `addresses` (all, where there are several) | labelled value "Anschrift", never the sending place; further addresses not yet shown, exported as `addresses_all` |
+| Reference without authority record | `persName/@ref` or `orgName/@ref` that is no URL of a known authority with a number, such as `#ID`, a Wikidata URI or a bare `https://viaf.org/viaf/` (since 2026-11-15 also for http(s) URLs of unknown systems) | `localRef`, precision `named` | "ohne Normdatensatz" |
 | Year far from all others | a gap of 40 years or more separates less than a twentieth of the dated letters from the rest (`flagImplausibleYears()`) | `dateImplausible`, `year` null, `date` kept | date as the source gives it with the word "unplausibel", off the time axis, sorted with the undated letters |
-| Several records of one letter | records sharing a shelfmark without contradicting dates (`mergeRecords()`) | `records`, `recordsDiffer` | "n Einträge in der Quelle", with "Angaben weichen ab" where sender, recipients or place differ by name; the dialog lists every record |
+| Several records of one letter | records sharing a shelfmark and a date; records without a date join where all dated records of the shelfmark agree (`mergeRecords()`) | `records`, `recordsDiffer` | "n Einträge in der Quelle", with "Angaben weichen ab" where sender, recipients or place differ by name; the dialog lists every record |
+| One shelfmark, differing dates | records of one shelfmark with different dates: one letter per date, records without a date stay single (since 2026-11-15) | `sharedSignature` with id and date of the other letters | not yet shown by the views; exported as `shared_signature` |
 | One date bound and no date | `date` with only `@notBefore` or only `@notAfter` (`classifyDate()`) | `dateBound`, `date` holds the bound, `year` null | "nicht nach 1848" or "nicht vor 1848", off the time axis, filter "Nur Datumsgrenze" |
-| Placeholder for no date | text of the `date` element such as "ohne Datum", "o. D.", "n. d." | no `dateText` | the letter counts as undated, not as dated in words |
+| Placeholder for no date | text of the `date` element such as "ohne Datum", "o. D.", "n. d.", "s.d.", also in square brackets as "[o. D.]" or "[Date Unknown]" (`isNoDate()`) | no `dateText`, no `dateInferred` | the letter counts as undated, not as dated in words |
 | Action besides sending and receiving | `correspAction` with another `@type`, such as `forwarded` | `furtherActions` with type, persons and a place or date only where the action carries its own | row "Weitergeleitet an" in the dialog, filter "Weitergeleitet"; the persons are no correspondents and enter neither index nor network |
 | Id in the register of the edition | `persName/@corresp`, or a `@ref` that is no authority record | `localRef` | key of the person where no authority record exists, so name variants of one register entry stay one person |
 | Same identified sender, recipients and day in two files | letters of different files after merging by shelfmark (`markParallels()`) | `parallels` with id and file of the others, `file` on every letter of a dataset from several files | section "Möglicherweise derselbe Brief in einer anderen Datei", filter "Auch in anderer Datei"; nothing is merged, both count |
 
-An inferred value is never shown as secured, a postmark and an address never as a place, and the tool decides nothing between differing records: the first record with a date leads, the others fill only what it lacks. The sidebar group "Überlieferung" (`LETTER_FEATURES` in `constants.js`, URL parameter `feat`) offers one filter per property the loaded dataset has, so each group can be listed; plain CMIF shows no such group. Unknown person patterns now include `Unidentified` and bilingual placeholders such as `Unbekannt/Unidentified`.
+An inferred value is never shown as secured, a postmark and an address never as a place, and the tool decides nothing between differing records: the first record with a date leads, the others fill only what it lacks. A merged letter shows a date or place as inferred exactly when the record that value comes from marks it (since 2026-11-15; before, one marked record made the date of the merged letter inferred). The sidebar group "Überlieferung" (`LETTER_FEATURES` in `constants.js`, URL parameter `feat`) offers one filter per property the loaded dataset has, so each group can be listed; plain CMIF shows no such group. Unknown person patterns now include `Unidentified` and bilingual placeholders such as `Unbekannt/Unidentified`.
 
 ---
 
@@ -225,7 +230,7 @@ JSON example (one element of the exported array, case 005 of `test-uncertainty.x
 }
 ```
 
-The example omits the remaining columns of `LETTER_EXPORT_COLUMNS`, among them the columns of letter records (`date_text`, `date_inferred`, `date_implausible`, `place_inferred`, `date_bound` and others).
+The example omits the remaining columns of `LETTER_EXPORT_COLUMNS`, among them the columns of letter records (`date_text`, `date_inferred`, `date_implausible`, `place_inferred`, `date_bound` and others) and, appended on 2026-11-15, `date_supplied`, `place_alternatives`, `addresses_all` and `shared_signature`.
 
 ---
 

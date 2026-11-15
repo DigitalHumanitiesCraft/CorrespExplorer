@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic test file, created in the project (CC BY 4.0).
+     Cases from the parser review of 2026-11-15: two places of sending, addresses with places and
+     dates inside, several addresses, references that are no authority record, a note inside the
+     sending action, placeholders for no date, a time of day, and records of one shelfmark with
+     agreeing, contradicting and complementing values. All persons, places, shelfmarks and
+     identifiers are invented. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader><fileDesc><titleStmt><title>Test Dataset: Parser Cases</title></titleStmt>
+    <publicationStmt><publisher><orgName>CorrespExplorer Test</orgName></publisher></publicationStmt>
+    <sourceDesc><p>Synthetic</p></sourceDesc></fileDesc></teiHeader>
+  <text><body><listBibl>
+    <!-- P01: two untyped places of sending, both deduced -->
+    <biblFull xml:id="TP.P01">
+      <fileDesc><titleStmt><title>P01</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent">
+          <persName>Probe, Paula</persName>
+          <date when="1934-03-02">2. 3. 34</date>
+          <placeName ana="deduced" ref="https://sws.geonames.org/9990001/">Altstadt</placeName>
+          <placeName ana="deduced" xml:lang="de">Neustadt</placeName>
+          <placeName ana="deduced" xml:lang="en">Altstadt</placeName>
+        </correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- P02: a place and a date inside the address of the sending action, an address of parts -->
+    <biblFull xml:id="TP.P02">
+      <fileDesc><titleStmt><title>P02</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent">
+          <persName>Probe, Paula</persName>
+          <address><addrLine>Erfundene Gasse 1</addrLine><addrLine><placeName>Adressstadt</placeName></addrLine><date when="1899-12-31">31. 12. 1899</date></address>
+          <placeName>Schreibort</placeName>
+          <date when="1901-02-03">3. 2. 1901</date>
+        </correspAction>
+        <correspAction type="received">
+          <persName>Muster, Max</persName>
+          <address><street>Beispielweg 2</street><postCode>9999</postCode><settlement>Zielstadt</settlement></address>
+        </correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- P03: the only place and the only date stand inside the address; addrLine beside settlement -->
+    <biblFull xml:id="TP.P03">
+      <fileDesc><titleStmt><title>P03</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent">
+          <persName>Probe, Paula</persName>
+          <address><addrLine>Erfundene Gasse 3</addrLine><settlement><placeName>Adressstadt</placeName></settlement><date when="1902-04-05"/></address>
+        </correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- P04: references of a system the tool does not know and a VIAF stem without number -->
+    <biblFull xml:id="TP.P04">
+      <fileDesc><titleStmt><title>P04</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent">
+          <persName ref="https://www.wikidata.org/entity/Q1">Probe, Paula</persName>
+          <date when="1903-01-01"/>
+        </correspAction>
+        <correspAction type="received"><persName ref="https://viaf.org/viaf/">Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- P05: a note inside the sending action before the note of the letter -->
+    <biblFull xml:id="TP.P05">
+      <fileDesc><titleStmt><title>P05</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent">
+          <persName>Probe, Paula</persName>
+          <date when="1904-02-26">26. 2. 1904</date>
+          <note>26 II 04</note>
+        </correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+        <note>
+          <ref type="https://lod.academy/cmif/vocab/terms#hasLanguage" target="fr">Französisch</ref>
+          <ref type="https://lod.academy/cmif/vocab/terms#mentionsPerson" target="https://viaf.org/viaf/999000005">Erwähnt, Erna</ref>
+        </note>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- P06 to P08: placeholders for no date; P09: a time of day -->
+    <biblFull xml:id="TP.P06">
+      <fileDesc><titleStmt><title>P06</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date>s.d.</date></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <biblFull xml:id="TP.P07">
+      <fileDesc><titleStmt><title>P07</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date>[o. D.]</date></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <biblFull xml:id="TP.P08">
+      <fileDesc><titleStmt><title>P08</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date>[Date Unknown]</date></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <biblFull xml:id="TP.P09">
+      <fileDesc><titleStmt><title>P09</title></titleStmt><publicationStmt><p/></publicationStmt><sourceDesc><p/></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="1900-06-15T10:00"/></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- M1: three records of one shelfmark, one with the year in the wrong century -->
+    <biblFull xml:id="TP.M1a">
+      <fileDesc><titleStmt><title>M1a</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M1</idno></msIdentifier></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="1919-02-20"/></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <biblFull xml:id="TP.M1b">
+      <fileDesc><titleStmt><title>M1b</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M1</idno></msIdentifier></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="2019-02-20"/></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <biblFull xml:id="TP.M1c">
+      <fileDesc><titleStmt><title>M1c</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M1</idno></msIdentifier></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="1919-02-20"/></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- M2: the leading record reads the date; the other marks the same date as supplied and adds
+         the wording of the place and the language -->
+    <biblFull xml:id="TP.M2a">
+      <fileDesc><titleStmt><title>M2a</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M2</idno></msIdentifier></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="1920-01-05"/></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <biblFull xml:id="TP.M2b">
+      <fileDesc><titleStmt><title>M2b</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M2</idno></msIdentifier>
+          <msContents><textLang><lang xml:lang="fre">French</lang></textLang></msContents></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent">
+          <persName>Probe, Paula</persName>
+          <date when="1920-01-05" type="supplied"/>
+          <placeName type="original">Hotel Erfunden, Zimmer 3</placeName>
+        </correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- M3: the leading record has no place, the other a deduced one -->
+    <biblFull xml:id="TP.M3a">
+      <fileDesc><titleStmt><title>M3a</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M3</idno></msIdentifier></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="1921-07-07"/></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <biblFull xml:id="TP.M3b">
+      <fileDesc><titleStmt><title>M3b</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M3</idno></msIdentifier></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="1921-07-07"/><placeName ana="deduced">Schreibort</placeName></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <!-- M4: the leading record reads the place, the other marks the same place as deduced -->
+    <biblFull xml:id="TP.M4a">
+      <fileDesc><titleStmt><title>M4a</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M4</idno></msIdentifier></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="1922-08-08"/><placeName>Schreibort</placeName></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+    <biblFull xml:id="TP.M4b">
+      <fileDesc><titleStmt><title>M4b</title></titleStmt><publicationStmt><p/></publicationStmt>
+        <sourceDesc><msDesc><msIdentifier><idno type="signature">TP/M4</idno></msIdentifier></msDesc></sourceDesc></fileDesc>
+      <profileDesc><correspDesc>
+        <correspAction type="sent"><persName>Probe, Paula</persName><date when="1922-08-08"/><placeName ana="deduced">Schreibort</placeName></correspAction>
+        <correspAction type="received"><persName>Muster, Max</persName></correspAction>
+      </correspDesc></profileDesc>
+    </biblFull>
+  </listBibl></body></text>
+</TEI>

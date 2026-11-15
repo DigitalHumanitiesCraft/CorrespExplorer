@@ -59,6 +59,7 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 | `docs/data/test-hostile.xml` | Feindliche Eingaben (Markup, Skript-URLs, Tabellenformeln) | Testdatei der Suites Security und Basket |
 | `docs/data/test-correspsearch.json`, `docs/data/test-correspsearch-empty.json` | Antworten der correspSearch-API v2.0 vom 2026-11-05 auf `d=1890-01-01&x=1` und `d=1066-01-01&x=1`, unverändert gespeichert | Testdateien der Suite correspSearch |
 | `docs/data/test-letter-records.xml`, `-b.xml`, `-c.xml` | Synthetische Briefsätze in TEI (`biblFull` je Brief): Poststempel, erschlossener Ort und erschlossenes Datum, Datum nur als Text, mehrere Empfänger, interner Personenverweis, Anschrift und Signatur, eine zweite Datei derselben erfundenen Edition und die Fälle der Datenprüfung vom 2026-11-14 (Person und Körperschaft als Absender, Ortswortlaut, gelesenes neben ergänztem Datum, Sprache aus `textLang`) | Testdateien der Suite CMIF Parser, im Projekt erstellt |
+| `docs/data/test-parser-cases.xml` | Synthetische Fälle der Parserprüfung vom 2026-11-15: ergänzter Datumswortlaut neben gelesenem Datum, eine Signatur mit einer Jahrhundertverschiebung, Werte, die beim Zusammenführen ergänzt werden, zwei Absendeorte, Ort und Datum in einer Anschrift, mehrere Anschriften, Verweise ohne Normdatum, Notiz in einer Handlung, Platzhalter und Uhrzeit | Testdateien der Suite CMIF Parser, im Projekt erstellt |
 | `docs/data/test-graz-cases.xml`, `test-parallel-a.xml`, `test-parallel-b.xml` | Vier Fälle aus Grazer Editionen. `test-graz-cases.xml` bildet sie mit erfundenen Einträgen nach (Weiterleitung als dritte Handlung, Person mit Registerkennung ohne Normdatum, Datum nur als obere Grenze, „ohne Ort“). Die beiden anderen Dateien enthalten denselben Brief von Boltzmann an Brentano, unverändert aus dem CMIF beider Bestände | Testdateien der Suite CMIF Parser, Herkunft und Lizenz im Kopf jeder Datei und unter [Rechte und Lizenzen](#rechte-und-lizenzen) |
 
 ### Hugo Schuchardt Archiv
@@ -93,7 +94,7 @@ Die CMIF-Datei des HSA schreibt VIAF-URIs in zwei Formen. Absender und Empfänge
 
 Die CMIF-Datei des HSA schreibt für Ladinisch `target="None"` mit dem Text „Ladinisch“ (zwei Briefe), die Vorprozessierung übernimmt den Code unverändert. Briefe ohne Sprache erhalten im Werkzeug den internen Code `NO_LANGUAGE` (`_none`, `constants.js`), `languageLabel()` zeigt für `None` die Bezeichnung aus den Daten.
 
-Der HSA enthält keine Merkmale von Briefsätzen (Poststempel, Anschrift, Signatur, Mehrfacheinträge, erschlossene Angaben) und keine Zeiträume oder Datumsgrenzen. Was die Unsicherheitsbehandlung an ihm zählt, steht in [uncertainty-specification.md](uncertainty-specification.md#hsa-dataset-analysis).
+Der HSA enthält keine Merkmale von Briefsätzen (Poststempel, Anschrift, Signatur, Mehrfacheinträge) und keine Zeiträume oder Datumsgrenzen. Er markiert keine Angabe als erschlossen, kein Datum hat `@cert` oder `@evidence` (geprüft in `docs/data/hsa.xml` am 2026-11-15). Ob einzelne Werte von der Edition erschlossen sind, sagt die Datei nicht, das Werkzeug zeigt sie deshalb als gelesen ([Erschlossene Angaben](#erschlossene-angaben)). Was die Unsicherheitsbehandlung an ihm zählt, steht in [uncertainty-specification.md](uncertainty-specification.md#hsa-dataset-analysis).
 
 ### Externe CMIF-Quellen
 
@@ -120,10 +121,10 @@ Ladewege, geprüft am 2026-11-13 mit `curl`: GAMS antwortet ohne `Access-Control
 
 Was der Bestand enthält, gezählt mit `verification/check-corpus.mjs` am genannten Commit:
 
-- 303 Dateien, 2.135 `correspDesc` in 301 Dateien. Die 2.135 Einträge haben 1.633 verschiedene Signaturen, weil die Edition denselben Brief in der Datei jedes beteiligten Konvoluts verzeichnet. Der Parser führt Einträge gleicher Signatur zusammen, außer ihre Datierungen widersprechen sich ([ADR-009](specification.md#adr-009-einträge-gleicher-signatur-sind-ein-brief)), das ergibt 1.637 Briefe.
+- 303 Dateien, 2.135 `correspDesc` in 301 Dateien. Die 2.135 Einträge haben 1.633 verschiedene Signaturen, weil die Edition denselben Brief in der Datei jedes beteiligten Konvoluts verzeichnet. Der Parser führt Einträge gleicher Signatur und gleicher Datierung zusammen ([ADR-009](specification.md#adr-009-einträge-gleicher-signatur-sind-ein-brief)), das ergibt 1.636 Briefe (Stand des Parsers vom 2026-11-15). Zwei Signaturen haben Einträge mit verschiedenen Daten. Unter SZ-SAM/B18 stehen drei Briefe verschiedener Jahre, unter SZ-LAS/B1.3 zwei Einträge vom 1919-02-20 und einer vom 2019-02-20, dessen Jahr ins falsche Jahrhundert aufgelöst ist.
 - Kein Ort hat eine GeoNames-ID oder Koordinaten. Personen und Körperschaften haben GND-URIs, teils ohne Schema, teils projektinterne Verweise wie `#SZDPER.2137`.
-- Ein `correspAction type="sent"` enthält bis zu drei `placeName`: `@type="postmark"` für einen Poststempel, `@type="original"` für den Wortlaut der Vorlage, `@ana="deduced"` für einen erschlossenen Ort. 671 `address/addrLine` geben die Postanschrift des Empfängers wieder.
-- Datumsangaben stehen doppelt (`xml:lang` de und en). `date/@type="supplied"` und `@ana="supplied/verified"` kennzeichnen ergänzte Datierungen, 71 Datumselemente enthalten nur Text ohne `@when`.
+- Ein `correspAction type="sent"` enthält bis zu drei `placeName`: `@type="postmark"` für einen Poststempel, `@type="original"` für den Wortlaut der Vorlage, `@ana="deduced"` für einen erschlossenen Ort. 39 Einträge nennen zwei ungetypte Absendeorte verschiedenen Namens, etwa SZDKOR.fuchs-emil.2 Salzburg und London, beide `ana="deduced"`. 671 `address/addrLine` geben die Postanschrift des Empfängers wieder.
+- Datumsangaben stehen doppelt (`xml:lang` de und en). `date/@type="supplied"` und `@ana="supplied/verified"` kennzeichnen ergänzte Datierungen. 71 Einträge geben ihr Datum nur als Text, von den 3.950 Datumselementen im Versand haben 409 kein maschinenlesbares Attribut (gezählt am 2026-11-15). In 35 Einträgen steht ein ungekennzeichnetes `@when` neben einem ergänzten Wortlaut ohne `@when`, etwa der Eintrag SZDKOR.reichner-herbert.B.5 in `szd.korrespondenzen.masereel-frans.xml` (im Werkzeug `SZDKOR.reichner-herbert.B.5~2`, weil die Kennung in drei Dateien vorkommt) mit `when="1919-03-01"` zu „1. 3. 19“ und dem ergänzten „März 1919“.
 - 35 Briefe haben ein Jahr zwischen 2008 und 2030, etwa `when="2030-08-12"` zum Text „12. 8. 30“. Das zweistellige Jahr ist in der Quelle ins falsche Jahrhundert aufgelöst ([ADR-010](specification.md#adr-010-unplausible-jahre-kennzeichnen-nicht-korrigieren)). Der Zeitraum der übrigen Briefe ist 1901 bis 1947.
 - Bei einigen Personen sind `surname` und `forename` vertauscht ausgezeichnet, einige Körperschaften sind als `persName` zerlegt. Mehrere Personen haben die Normdatennummer einer anderen Person und zählen deshalb unter deren Namen. Der Parser gibt die Auszeichnung wieder, wie sie steht.
 
@@ -156,7 +157,7 @@ Der `teiHeader` beschreibt das Briefverzeichnis selbst (`titleStmt` mit Titel un
 
 ### Was der Parser liest
 
-`docs/js/cmif-parser.js` mit den Helfern aus `docs/js/utils.js` ist die maßgebliche Beschreibung. Die Tabelle gibt den Stand des Codes vom 2026-11-14 wieder.
+`docs/js/cmif-parser.js` mit den Helfern aus `docs/js/utils.js` ist die maßgebliche Beschreibung. Die Tabelle gibt den Stand des Codes vom 2026-11-15 wieder. Ort, Datum und Notizen einer Handlung liest der Parser nur aus ihren eigenen Kindelementen, ein `placeName` oder `date` innerhalb einer `address` gehört zur Anschrift.
 
 | Quelle | Was das Werkzeug daraus macht | Ort im Code |
 |---|---|---|
@@ -164,17 +165,18 @@ Der `teiHeader` beschreibt das Briefverzeichnis selbst (`titleStmt` mit Titel un
 | `correspAction type="sent"` | alle Personen und Körperschaften als `senders`, der erste als `sender`. Wer zugleich Empfänger ist, steht hinter den übrigen Absendern zurück | `extractSenders()` |
 | `correspAction type="received"` | alle Empfänger aller empfangenden Handlungen als `recipients`, der erste als `recipient` | `extractLetter()` |
 | weitere `correspAction` (etwa `forwarded`) | `furtherActions` mit Typ, Personen und Ort oder Datum nur, wo die Handlung eigene nennt. Ihre Personen sind keine Korrespondenten | `extractFurtherActions()` |
-| `persName/@ref` | Normdatum, wenn VIAF, GND (auch ohne `gnd/` im Pfad), Library of Congress oder BnF erkannt wird. Eine andere URL gilt als Verweis ohne Normdatum | `parseAuthorityRef()`, `personFromElement()` |
-| `persName/@corresp`, interner `@ref` | `localRef`, Schlüssel der Person, wo kein Normdatum steht | `personFromElement()`, `personKey()` |
-| `placeName` im Versand | Absendeort ist das erste ungetypte `placeName`, sonst das erste, das weder Poststempel noch Wortlaut der Vorlage ist. Steht nur ein `placeName type="original"`, bleibt sein Wortlaut als `placeText` und ergibt keinen Ort. Eckige Klammern um den ganzen Namen sind Markierung und nicht Teil des Namens | `extractPlace()` |
+| `persName/@ref` | Normdatum, wenn VIAF, GND (auch ohne `gnd/` im Pfad), Library of Congress oder BnF mit Nummer erkannt wird. Eine andere URL gilt als Verweis ohne Normdatum, auch Wikidata und eine VIAF-Adresse ohne Nummer wie `https://viaf.org/viaf/` | `parseAuthorityRef()`, `personFromElement()` |
+| `persName/@corresp`, `@ref` ohne Normdatum | `localRef`, Schlüssel der Person, Präzision `named` | `personFromElement()`, `personKey()` |
+| `placeName` im Versand | Absendeort ist das erste ungetypte `placeName`, sonst das erste, das weder Poststempel noch Wortlaut der Vorlage ist. Weitere Absendeorte anderen Namens bleiben als `placeAlternatives` (Name, GeoNames-ID, Markierung als erschlossen), die Wahl des Absendeorts ändern sie nicht. Steht nur ein `placeName type="original"`, bleibt sein Wortlaut als `placeText` und ergibt keinen Ort. Eckige Klammern um den ganzen Namen sind Markierung und nicht Teil des Namens | `extractPlace()` |
 | Poststempel | `placeName` oder `note` mit `@type` postmark, postalStamp oder Poststempel werden `postmark`, nie Absendeort | `extractPlace()` |
-| `address/addrLine` | `address`, nie Absendeort | `extractAddress()` |
-| `date` | Das erste Datumselement mit maschinenlesbarem Attribut zählt. `@when` ergibt Tag, Monat oder Jahr. `@from` und `@to` am selben Tag gelten als ein Tag. `@from`/`@to` oder beide Grenzen ergeben einen Zeitraum mit dem Jahr des Anfangs. Eine einzelne Grenze (`@notBefore` oder `@notAfter` allein) ergibt `dateBound`, das Datum bleibt erhalten, das Jahr leer. Ein Datum nur als Text bleibt als `dateText`. „ohne Datum“, „o. D.“ und ähnliche Platzhalter gelten als undatiert | `extractDate()`, `classifyDate()` |
+| `address` | jede Anschrift des Briefs, in Versand und Empfang. Ihre Teile (`addrLine`, `street`, `postCode`, `settlement` und andere) stehen mit Komma verbunden in einem Text. `address` ist die erste, `addresses` nennt alle, wo es mehrere gibt. Eine Anschrift und was in ihr steht, ist nie Absendeort oder Briefdatum | `extractAddresses()` |
+| `date` | Das erste Datumselement mit maschinenlesbarem Attribut zählt. `@when` ergibt Tag, Monat oder Jahr, eine Uhrzeit (`1900-06-15T10:00`) den Tag. `@from` und `@to` am selben Tag gelten als ein Tag. `@from`/`@to` oder beide Grenzen ergeben einen Zeitraum mit dem Jahr des Anfangs. Eine einzelne Grenze (`@notBefore` oder `@notAfter` allein) ergibt `dateBound`, das Datum bleibt erhalten, das Jahr leer. Ein Datum nur als Text bleibt als `dateText`. „ohne Datum“, „o. D.“, „s.d.“, „[o. D.]“, „[Date Unknown]“ und ähnliche Platzhalter gelten als undatiert und nicht als erschlossen | `extractDate()`, `isNoDate()`, `classifyDate()` |
+| ergänztes Datum neben dem gelesenen | Den Wortlaut eines als ergänzt markierten Datumselements ohne eigenen Wert behält `dateSupplied`. Das gelesene Datum bleibt unmarkiert und behält seine Präzision | `extractDate()` |
 | `@cert` am Datum | `dateCertainty`, Vorgabe `high` | `classifyDate()` |
-| `@evidence`, `@type`/`@ana` mit supplied, deduced, inferred, conjecture, eckige Klammern | `dateInferred`, `place_sent.inferred` | `isInferred()` |
-| `note/ref` hasLanguage | Sprache als Code und Bezeichnung, sonst die erste Sprache aus `msContents/textLang` des Briefsatzes | `extractLanguage()`, `extractTextLanguage()` |
-| `note/ref` mentionsPerson, mentionsPlace, mentionsSubject, mentionsOrg, mentionsBibl | erwähnte Personen (Name aus dem Text, `@target` über `parseAuthorityRef()`), Orte (GeoNames-ID), Themen (URI, Bezeichnung, Kategorie), Organisationen und Werke | `extractMentions()` |
-| Signatur, Mehrfacheinträge | `signature` aus `idno type="signature"`. Einträge gleicher Signatur ohne widersprechende Datierung werden ein Brief mit `records` und `recordsDiffer` | `extractSignature()`, `mergeRecords()` |
+| `@evidence`, `@type`/`@ana` mit supplied, deduced, inferred, conjecture oder erschlossen, eckige Klammern um den ganzen Wert | `dateInferred`, `place_sent.inferred` ([Erschlossene Angaben](#erschlossene-angaben)) | `isInferred()` |
+| `note/ref` hasLanguage | Sprache als Code und Bezeichnung aus den Notizen, die direkte Kinder von `correspDesc` sind, sonst die erste Sprache aus `msContents/textLang` des Briefsatzes | `extractLanguage()`, `extractTextLanguage()` |
+| `note/ref` mentionsPerson, mentionsPlace, mentionsSubject, mentionsOrg, mentionsBibl | aus denselben Notizen erwähnte Personen (Name aus dem Text, `@target` über `parseAuthorityRef()`), Orte (GeoNames-ID), Themen (URI, Bezeichnung, Kategorie), Organisationen und Werke | `extractMentions()` |
+| Signatur, Mehrfacheinträge | `signature` aus `idno type="signature"`. Einträge gleicher Signatur und gleicher Datierung werden ein Brief mit `records` und `recordsDiffer`, Einträge ohne Datum schließen sich an, wenn alle datierten Einträge der Signatur übereinstimmen. Weichen die Daten ab, wird jede Datierung ein eigener Brief, Einträge ohne Datum bleiben einzeln, und jeder dieser Briefe nennt die anderen in `sharedSignature`. Der erste Eintrag mit Datum führt. Die anderen füllen Ort mit seiner Markierung und seinen Alternativen, Ortswortlaut, Poststempel, Anschrift, Link, Sprache, ergänzten Datumswortlaut und Empfänger nur, wo er sie nicht hat. `dateInferred` gilt, wenn der Eintrag, aus dem das gezeigte Datum stammt, es markiert | `extractSignature()`, `mergeRecords()` |
 | mehrere Dateien | `file` je Brief, `parallels` für Briefe verschiedener Dateien mit gleichem identifiziertem Absender, gleichen identifizierten Empfängern und gleichem Tag | `markParallels()` |
 | unplausible Jahre | `dateImplausible`, das Jahr wird leer, das Datum bleibt | `flagImplausibleYears()` |
 
@@ -186,7 +188,16 @@ Was der Parser nicht liest:
 - Ob eine Erwähnung im Brieftext oder im Kommentar der Edition steht. CMIF drückt das nicht aus.
 - Eine ausdrückliche Gleichsetzung zweier Einträge als ein Brief, weil kein Austauschprofil sie festlegt.
 - Ein Datum, das nur im Titel eines Eintrags oder an anderer Stelle der Briefdatei steht. Ein Datum nur als Text wird nicht normalisiert.
-- Notizen zu weiteren Beteiligten und ungetypte Notizen am Absender.
+- `@when-iso` und andere Datumsattribute außerhalb von `@when`, `@from`, `@to`, `@notBefore` und `@notAfter`.
+- Eckige Klammern um einen Teil des Datums oder Namens, etwa „2. 1. [19]20“. Nur Klammern um den ganzen Wert gelten als Markierung.
+- Werte von `@cert` außer `low` zeigt die Anzeige nicht an, sie stehen nur in `dateCertainty`.
+- Von mehreren Sprachen in `textLang` nur die erste.
+- `correspDesc/@type`.
+- Notizen zu weiteren Beteiligten und ungetypte Notizen in der Versandhandlung.
+
+### Erschlossene Angaben
+
+Ein Wert gilt nur dann als erschlossen, wenn die Quelle ihn markiert, durch `@evidence`, durch `@type` oder `@ana` mit supplied, deduced, inferred, conjecture oder erschlossen oder durch eckige Klammern um den ganzen Wert. Ein unmarkierter Wert wird so übernommen, wie die Edition ihn gibt, mit der Präzision seines Attributs. Das Werkzeug fügt keinen eigenen Zweifel hinzu. Im HSA steht etwa bei o:hsa.letter.10232 `when="1887-04"` ohne `@cert` und ohne `@evidence`, das Werkzeug zeigt April 1887 mit Monatspräzision und nicht als erschlossen, auch wenn die Edition den Monat erschlossen haben mag. Dasselbe gilt für ein gelesenes Datum neben einem ergänzten Wortlaut im Bestand von Stefan Zweig Digital. Ob der gelesene Wert selbst eine Ergänzung ist, beurteilt die Edition, der ergänzte Wortlaut bleibt daneben in `dateSupplied` erhalten.
 
 Jahre unter 1400 und über 2100 und Zeiträume über mehrere Jahre stehen auf keiner Zeitachse (`datedYearRange()` und `isMultiYearSpan()` in `utils.js`, dieselbe Regel in Raum-Zeit und Themen), weil Erfassungsfehler wie 0 oder 20250 die Achse sonst sprengen. Bis 2026-11-14 schrieb dieses Dokument die Regel `explore.js` zu.
 
@@ -299,7 +310,7 @@ GeoNames liefert keine Koordinaten im CMIF. Sie kommen aus `docs/data/geonames_c
 
 Editionen, die je Korrespondenz eine Datei veröffentlichen, lädt `parseCMIFFiles()` als einen Bestand: mehrere Dateien im Dateidialog oder per Drag-and-Drop, oder eine Dateiliste `index.html?files=data/….json` mit `{"files": ["a.xml", …]}`, deren Dateinamen den Ordner der Liste nicht verlassen. Eine Datei ohne Briefe oder ohne gültiges XML wird übersprungen und in `meta.files.skipped` genannt. Der Kopf des Bestands nennt nur, was alle Dateien teilen.
 
-Für Bestände, die nicht ins Repository gehören, bindet `python verification/serve_local_corpus.py <Ordner>` einen Ordner außerhalb des Repositorys unter `data/local/` ein und erzeugt die Dateiliste. Startseite und Explorer bieten den Bestand dann als weiteren Eintrag neben dem Archiv an.
+Für Bestände, die nicht ins Repository gehören, bindet `python verification/serve_local_corpus.py <Ordner>` einen Ordner außerhalb des Repositorys unter `data/local/` ein und erzeugt die Dateiliste. Startseite und Explorer bieten den Bestand dann als weiteren Eintrag neben dem Archiv an. Die Startseite fragt die Dateiliste nur auf einem lokalen Host ab (`localhost`, `127.0.0.1`, `[::1]`), damit die öffentliche Seite keine fehlschlagende Anfrage stellt.
 
 ### Vorprozessierung
 
@@ -316,11 +327,13 @@ Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY
 | `docs/data/schoenbach.xml` | CMIF der Edition „Fünf Briefe aus dem Nachlass von Anton Emanuel Schönbach“ am ACDH-OEAW | CC0 | `licence` im teiHeader |
 | `docs/data/test-graz-cases.xml` | Synthetisch, im Projekt erstellt, seit 2026-11-15. Bis dahin zitierte die Datei drei `correspDesc` der Edition „Joseph von Hammer-Purgstall. Korrespondenz“ auf GAMS unter CC BY-NC 4.0. Dieser Auszug steht gekennzeichnet in den Commits vom 2026-11-14 | CC BY 4.0 | Kommentar im Kopf der Datei |
 | `docs/data/test-parallel-a.xml`, `test-parallel-b.xml` | Je ein Eintrag aus dem CMIF von „Ludwig Boltzmann. Leben und Briefe“ und des Franz Brentano Archivs Graz | CC BY 4.0 | `licence` der beiden CMIF-Dateien |
-| `docs/data/demo-showcase.xml`, `test-uncertainty.xml`, `test-letter-records*.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | teiHeader oder diese Tabelle |
+| `docs/data/demo-showcase.xml`, `test-uncertainty.xml`, `test-letter-records*.xml`, `test-parser-cases.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | teiHeader oder diese Tabelle |
 | `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | Diese Tabelle. Das `licence`-Element der Datei bleibt absichtlich feindliche Eingabe |
-| `data/geonames_coordinates.json`, `docs/data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata über die GeoNames-ID (P1566) | Wikidata CC0, der Eintrag für Genf (2660646) aus GeoNames unter CC BY 4.0 | `meta` der Datei, Feld `source: "geonames"` am Eintrag |
+| `docs/data/test-correspsearch.json`, `test-correspsearch-empty.json` | Antworten der correspSearch-API v2.0 vom 2026-11-05, Publisher Berlin-Brandenburgische Akademie der Wissenschaften, unverändert gespeichert. Die erste Datei verzeichnet Briefe aus mehreren Editionen, die ihre `sourceDesc/bibl` nennt, die zweite ist ein leeres Ergebnis | CC BY 4.0 | `publicationStmt/availability/licence` im Kopf jeder Datei |
+| `data/geonames_coordinates.json`, `docs/data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata über die GeoNames-ID (P1566) | Wikidata CC0, der Eintrag für Genf (2660646), nur in der ausgelieferten Datei, aus GeoNames unter CC BY 4.0 | `meta.source` der ausgelieferten Datei nennt beide Quellen, das Feld `source: "geonames"` den Eintrag aus GeoNames. Ein Lizenzfeld hat `meta` nicht, die Lizenzangabe steht nur in dieser Tabelle |
 | `docs/vendor/natural-earth/countries-110m.geo.json` | Natural Earth über world-atlas | gemeinfrei, Build-Skripte ISC | `PROVENANCE.md` daneben |
 | `docs/assets/dhcraft/` | Bausteine der Projektseiten aus `brand-assets` bei `b0641cc` | Stylesheets MIT, Schriften OFL 1.1, DHCraft-Zeichen geschützt | `LICENSE.md` und `PROVENANCE.md` daneben, Lizenzzeile im Fuß der Startseite |
+| `docs/assets/logo.jpg`, `logo-no-background.png`, `logo-no-background-no-text.png` | Das Logo des Werkzeugs (Umschlag mit Zahnrad und Auge, in zwei Dateien mit dem Schriftzug „CorrespExplorer“), eingeführt in `b79a95e` am 2025-11-26 ohne Herkunftsangabe. Es ist nicht das DHCraft-Zeichen und liegt nicht im Repository `brand-assets` (Abgleich der Prüfsummen am 2026-11-15 ohne Treffer) | Nicht festgelegt | Keine. Die Lizenzhinweise von `brand-assets` gelten für die Logos jenes Repositorys und erfassen diese Dateien nicht. Herkunft und Rechteinhaber klärt der Operator |
 
 Externe Quellen, die Nutzende zur Laufzeit laden, sind nicht gebündelt, ihre Lizenz steht im teiHeader der geladenen Datei und in der Übersicht. Die correspSearch-API gibt ihre Ergebnisse laut Dokumentation unter CC BY 4.0 aus.
 

@@ -18,7 +18,7 @@ const win = new JSDOM('').window;
 globalThis.DOMParser = win.DOMParser;
 
 const here = dirname(fileURLToPath(import.meta.url));
-const { parseCMIFFiles } = await import(pathToFileURL(join(here, '../docs/js/cmif-parser.js')).href);
+const { parseCMIFFiles, isNoDate } = await import(pathToFileURL(join(here, '../docs/js/cmif-parser.js')).href);
 const { LETTER_FEATURES } = await import(pathToFileURL(join(here, '../docs/js/constants.js')).href);
 
 const TEI = 'http://www.tei-c.org/ns/1.0';
@@ -52,11 +52,12 @@ check('no letter id is a position fallback', letters.every(l => !/^letter-\d+/.t
 
 let postmarkAsPlace = 0, inferredPlaceLost = 0, inferredDateLost = 0, recipientsLost = 0, addressLost = 0;
 let localRefIdentified = 0, rawWhitespace = 0, postmarkLost = 0, dateTextLost = 0, addressAsPlace = 0;
-let placeWordingLost = 0, sendersLost = 0, selfAddressed = 0;
+let placeWordingLost = 0, sendersLost = 0, selfAddressed = 0, markedDateLost = 0, placeAlternativeLost = 0;
 letters.forEach((letter, i) => {
     const desc = source[i];
     const sent = action(desc, 'sent')[0];
-    const places = sent ? [...sent.getElementsByTagNameNS(TEI, 'placeName')] : [];
+    // Places and dates of the action itself; one inside an address belongs to the address
+    const places = children(sent, 'placeName');
     const stamps = places.filter(p => p.getAttribute('type') === 'postmark').map(p => clean(p.textContent));
     const real = places.filter(p => p.getAttribute('type') !== 'postmark');
     // The wording of the letter (type original) is no sending place; it is kept as placeText
@@ -68,12 +69,25 @@ letters.forEach((letter, i) => {
     if (stamps.length && !stamps.every(s => (letter.postmark || '').includes(s))) postmarkLost++;
     if (chosen && marked(chosen) && !letter.place_sent?.inferred) inferredPlaceLost++;
     if (Boolean(chosen) !== Boolean(letter.place_sent)) inferredPlaceLost++;
+    // A second untyped place of another name is kept beside the chosen one
+    const untypedNames = new Set(places.filter(p => !p.getAttribute('type')).map(p => clean(p.textContent).replace(/^\[([^\]]+)\]$/, '$1')));
+    for (const name of untypedNames) {
+        if (name !== letter.place_sent?.name && !(letter.placeAlternatives || []).some(a => a.name === name)) placeAlternativeLost++;
+    }
 
-    const dates = sent ? [...sent.getElementsByTagNameNS(TEI, 'date')] : [];
+    const dates = children(sent, 'date');
     // Brackets follow the date element whose value is shown, not a supplied sibling
     const DATE_ATTRS = ['when', 'from', 'to', 'notBefore', 'notAfter'];
     const shown = dates.find(d => DATE_ATTRS.some(a => d.getAttribute(a))) || dates[0];
-    if (shown && marked(shown) !== Boolean(letter.dateInferred)) inferredDateLost++;
+    const showsSomething = shown && (DATE_ATTRS.some(a => shown.getAttribute(a)) || !isNoDate(shown.textContent));
+    if (showsSomething && marked(shown) !== Boolean(letter.dateInferred)) inferredDateLost++;
+    // Every marked date element either is the date shown as inferred or leaves its wording in
+    // dateSupplied; a placeholder for no date says nothing that could be lost
+    for (const d of dates) {
+        if (d === shown || !marked(d) || isNoDate(d.textContent) || !clean(d.textContent)) continue;
+        if (clean(d.textContent) === clean(shown.textContent)) continue;
+        if (!letter.dateSupplied && !(DATE_ATTRS.some(a => d.getAttribute(a)) && letter.dateInferred)) markedDateLost++;
+    }
     // Nobody writes to themselves while the source names another sender
     const names = el => [...el.children].filter(c => c.localName === 'persName' || c.localName === 'orgName').length;
     const sourceSenders = sent ? names(sent) : 0;
@@ -81,9 +95,8 @@ letters.forEach((letter, i) => {
     const rcpts = letter.recipients || (letter.recipient ? [letter.recipient] : []);
     const key = person => person?.id || person?.name;
     if (sourceSenders > 1 && rcpts.some(r => key(r) === key(letter.sender)) && letter.senders.some(x => !rcpts.some(r => key(r) === key(x)))) selfAddressed++;
-    // "o. D." and "ohne Datum" say that there is no date; they must not stand as a date in words
-    const noDate = d => /^(ohne Datum|undatiert|unbekannt|o\. ?D\.|n\. ?d\.|no date|undated|unknown)$/i.test(d.textContent.replace(/\s+/g, ' ').trim());
-    const worded = dates.some(d => !noDate(d));
+    // "o. D." and "[Date Unknown]" say that there is no date; they must not stand as a date in words
+    const worded = dates.some(d => clean(d.textContent) && !isNoDate(d.textContent));
     if (dates.length && !dates.some(d => d.getAttribute('when')) && !letter.date && Boolean(letter.dateText) !== worded) dateTextLost++;
 
     const received = action(desc, 'received').flatMap(a => children(a, 'persName', 'orgName'));
@@ -91,7 +104,8 @@ letters.forEach((letter, i) => {
     if (received.length !== got.length) recipientsLost++;
 
     const addrLines = [...desc.getElementsByTagNameNS(TEI, 'addrLine')].map(a => clean(a.textContent)).filter(Boolean);
-    if (addrLines.length && !addrLines.every(a => (letter.address || '').includes(a))) addressLost++;
+    const allAddresses = (letter.addresses || [letter.address || '']).join(' | ');
+    if (addrLines.length && !addrLines.every(a => allAddresses.includes(a))) addressLost++;
     if (letter.place_sent && addrLines.includes(letter.place_sent.name) && !real.some(p => clean(p.textContent) === letter.place_sent.name)) addressAsPlace++;
 
     for (const person of [letter.sender, ...got]) {
@@ -104,6 +118,8 @@ check('no postmark stands as sending place', postmarkAsPlace === 0, String(postm
 check('every postmark is kept as postmark', postmarkLost === 0, String(postmarkLost));
 check('every place marked supplied or deduced is flagged inferred', inferredPlaceLost === 0, String(inferredPlaceLost));
 check('a date is flagged inferred exactly where the shown date element is marked supplied', inferredDateLost === 0, String(inferredDateLost));
+check('no marked date element is lost without a trace', markedDateLost === 0, `${markedDateLost}; ${letters.filter(l => l.dateSupplied).length} letters keep a supplied wording`);
+check('every untyped place of sending is the place or an alternative', placeAlternativeLost === 0, `${placeAlternativeLost}; ${letters.filter(l => l.placeAlternatives).length} letters with alternatives`);
 check('the wording of a place stands as text and makes no sending place', placeWordingLost === 0, String(placeWordingLost));
 check('every sender the source names is kept', sendersLost === 0, String(sendersLost));
 check('no recipient stands as sender while the source names another sender', selfAddressed === 0, String(selfAddressed));
@@ -121,7 +137,27 @@ check('merged records share one shelfmark and no contradicting dates', merged.le
     const group = letters.filter(r => l.records.some(x => x.id === r.id));
     return new Set(group.map(r => r.signature)).size === 1 && new Set(group.map(r => r.date).filter(Boolean)).size <= 1;
 }));
-check('letters equal distinct shelfmarks plus unmerged records', merged.letters.length === merged.letters.filter(l => l.records).length + merged.letters.filter(l => !l.records).length);
+// The count the merge rule (ADR-009) predicts from the records alone: a shelfmark whose records
+// agree on the date is one letter; one whose dates differ gives a letter per date and one per
+// record without date; a record without shelfmark is a letter of its own
+const shelfmarks = new Map();
+for (const record of letters) {
+    if (!record.signature) continue;
+    if (!shelfmarks.has(record.signature)) shelfmarks.set(record.signature, []);
+    shelfmarks.get(record.signature).push(record);
+}
+let expectedLetters = letters.filter(r => !r.signature).length;
+let splitShelfmarks = 0;
+for (const group of shelfmarks.values()) {
+    const dates = new Set(group.map(r => r.date).filter(Boolean));
+    if (dates.size <= 1) { expectedLetters++; continue; }
+    splitShelfmarks++;
+    expectedLetters += dates.size + group.filter(r => !r.date).length;
+}
+check('letters equal what the merge rule predicts from the records', merged.letters.length === expectedLetters,
+    `${merged.letters.length} letters, ${expectedLetters} predicted from ${shelfmarks.size} shelfmarks, ${splitShelfmarks} with differing dates`);
+check('every letter of a shelfmark with differing dates names the others', merged.letters.filter(l => l.signature && (shelfmarks.get(l.signature) || []).length > 1
+    && new Set(shelfmarks.get(l.signature).map(r => r.date).filter(Boolean)).size > 1).every(l => l.sharedSignature?.length > 0));
 const span = merged.letters.map(l => l.year).filter(Boolean);
 check('no letter with an implausible year stands on the time axis', merged.letters.every(l => !l.dateImplausible || l.year === null), `${Math.min(...span)} to ${Math.max(...span)}`);
 

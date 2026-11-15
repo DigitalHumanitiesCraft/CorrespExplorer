@@ -698,11 +698,11 @@ Effekt. Vor einem Push, der die Seite ändert, wird der Baum `docs/` auf solches
 
 Kontext. Eine Edition kann denselben Brief mehrfach verzeichnen, etwa in der Datei jedes beteiligten Konvoluts ([data.md](data.md#stefan-zweig-digital-tei-auf-briefebene-kein-cmif)). Jede Zählung nach Einträgen überschätzt Briefe.
 
-Wahl. Einträge mit gleicher Signatur werden ein Brief, außer ihre maschinenlesbaren Datierungen widersprechen sich. Der erste Eintrag mit Datum führt, die anderen füllen nur, was ihm fehlt, Empfänger nur, wo der führende Eintrag keinen nennt. Der Brief behält alle Einträge (`records`) und den Vermerk, ob sie sich unterscheiden (`recordsDiffer`).
+Wahl. Einträge mit gleicher Signatur und gleicher maschinenlesbarer Datierung werden ein Brief. Nennt eine Signatur verschiedene Datierungen, entsteht je Datierung ein Brief, und jeder nennt die anderen in `sharedSignature`. Einträge ohne Datum schließen sich nur an, wenn alle datierten Einträge der Signatur übereinstimmen, weil das Werkzeug sonst nicht weiß, zu welchem Brief sie gehören. Der erste Eintrag mit Datum führt, die anderen füllen nur, was ihm fehlt, Empfänger nur, wo der führende Eintrag keinen nennt. Die Markierung als erschlossen folgt dem Eintrag, aus dem der gezeigte Wert stammt. Der Brief behält alle Einträge (`records`) und den Vermerk, ob sie sich unterscheiden (`recordsDiffer`).
 
 Begründung. Das Werkzeug entscheidet nicht zwischen abweichenden Einträgen, es zeigt sie. Zusammengeführt wird nur über ein Merkmal, das die Quelle selbst vergibt.
 
-Effekt. Die Übersicht nennt Einträge und Briefe, die Seitenleiste filtert „Mehrfach verzeichnet“ und „Einträge weichen ab“, der Dialog listet die Einträge. Dass Empfänger nicht über Einträge gemischt werden, kam mit der Parserkorrektur vom 2026-11-14 hinzu ([Journal](journal.md)).
+Effekt. Die Übersicht nennt Einträge und Briefe, die Seitenleiste filtert „Mehrfach verzeichnet“ und „Einträge weichen ab“, der Dialog listet die Einträge. Dass Empfänger nicht über Einträge gemischt werden, kam mit der Parserkorrektur vom 2026-11-14 hinzu. Bis 2026-11-15 blieb eine Signatur mit widersprechenden Datierungen ganz ungeteilt, auch ihre übereinstimmenden Einträge, so dass ein Brief des Bestands von Stefan Zweig Digital mit einer Jahrhundertverschiebung in einem Eintrag dreimal erschien. Die Zusammenführung je Datierung kam mit der Parserprüfung dieses Tages hinzu, entschieden von der bauenden Session ([Journal](journal.md)).
 
 ### ADR-010 Unplausible Jahre kennzeichnen, nicht korrigieren
 

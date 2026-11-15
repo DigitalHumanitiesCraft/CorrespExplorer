@@ -389,8 +389,108 @@ export const CMIFParserTests = {
                 assert(c01.place_sent === null, 'Ein Ortswortlaut allein ist kein Absendeort');
                 assert(c01.placeText === '49, Musterstrasse, | London, W.1.', `Wortlaut bleibt als Text, erhalten ${c01.placeText}`);
                 assert(c01.date === '1938-05-05' && !c01.dateInferred, 'Ein gelesenes Datum neben einem erschlossenen bleibt ungeklammert');
+                assert(c01.datePrecision === 'day', `Das gelesene Datum behält seine Präzision, erhalten ${c01.datePrecision}`);
+                assert(c01.dateSupplied === 'Mai 1938', `Der Wortlaut des ergänzten Datums bleibt erhalten, erhalten ${c01.dateSupplied}`);
                 assert(c01.dateWording === '5. 5. 38', `Wortlaut des Datums erwartet, erhalten ${c01.dateWording}`);
                 assert(c01.language?.code === 'de', `Sprache aus textLang erwartet, erhalten ${c01.language?.code}`);
+            }
+        },
+
+        {
+            name: 'Parserfälle: Zwei Absendeorte, der zweite bleibt als Alternative (P01)',
+            async run() {
+                const { letters } = await parseCMIF('data/test-parser-cases.xml');
+                const p01 = letters.find(l => l.id === 'TP.P01');
+                assert(p01.place_sent?.name === 'Altstadt' && p01.place_sent.geonames_id === '9990001' && p01.place_sent.inferred === true,
+                    `Der erste Ort bleibt Absendeort, erhalten ${JSON.stringify(p01.place_sent)}`);
+                assert(JSON.stringify(p01.placeAlternatives) === JSON.stringify([{ name: 'Neustadt', geonames_id: null, inferred: true }]),
+                    `Neustadt als einzige Alternative erwartet, die Wiederholung von Altstadt nicht; erhalten ${JSON.stringify(p01.placeAlternatives)}`);
+            }
+        },
+
+        {
+            name: 'Parserfälle: Ort und Datum in der Anschrift sind kein Absendeort und kein Briefdatum, jede Anschrift bleibt (P02, P03)',
+            async run() {
+                const { letters } = await parseCMIF('data/test-parser-cases.xml');
+                const p02 = letters.find(l => l.id === 'TP.P02');
+                const p03 = letters.find(l => l.id === 'TP.P03');
+                assert(p02.place_sent?.name === 'Schreibort' && !p02.placeAlternatives, `Schreibort erwartet, erhalten ${JSON.stringify(p02.place_sent)}`);
+                assert(p02.date === '1901-02-03', `Datum der Handlung erwartet, erhalten ${p02.date}`);
+                assert(p02.address === 'Erfundene Gasse 1, Adressstadt, 31. 12. 1899', `Erste Anschrift erwartet, erhalten ${p02.address}`);
+                assert(JSON.stringify(p02.addresses) === JSON.stringify(['Erfundene Gasse 1, Adressstadt, 31. 12. 1899', 'Beispielweg 2, 9999, Zielstadt']),
+                    `Beide Anschriften, Teile mit Komma, erwartet; erhalten ${JSON.stringify(p02.addresses)}`);
+                assert(p03.place_sent === null, `Ein Ort nur in der Anschrift ist kein Absendeort, erhalten ${JSON.stringify(p03.place_sent)}`);
+                assert(p03.date === null && p03.datePrecision === 'unknown', `Ein Datum nur in der Anschrift ist kein Briefdatum, erhalten ${p03.date}`);
+                assert(p03.address === 'Erfundene Gasse 3, Adressstadt' && !p03.addresses, `Zeile und Ort der Anschrift erwartet, erhalten ${p03.address}`);
+            }
+        },
+
+        {
+            name: 'Parserfälle: Verweis eines unbekannten Systems und VIAF ohne Nummer sind kein Normdatum (P04)',
+            async run() {
+                const { letters } = await parseCMIF('data/test-parser-cases.xml');
+                const p04 = letters.find(l => l.id === 'TP.P04');
+                assert(p04.sender.precision === 'named' && p04.sender.id === null && p04.sender.authority === null
+                    && p04.sender.localRef === 'https://www.wikidata.org/entity/Q1', `Wikidata als Verweis erwartet, erhalten ${JSON.stringify(p04.sender)}`);
+                assert(p04.recipient.precision === 'named' && p04.recipient.id === null && p04.recipient.localRef === 'https://viaf.org/viaf/',
+                    `VIAF ohne Nummer als Verweis erwartet, erhalten ${JSON.stringify(p04.recipient)}`);
+            }
+        },
+
+        {
+            name: 'Parserfälle: Die Notiz des Briefs zählt, nicht die Notiz der Handlung (P05)',
+            async run() {
+                const { letters } = await parseCMIF('data/test-parser-cases.xml');
+                const p05 = letters.find(l => l.id === 'TP.P05');
+                assert(p05.language?.code === 'fr', `Sprache aus der Notiz des Briefs erwartet, erhalten ${JSON.stringify(p05.language)}`);
+                assert(p05.mentions.persons.length === 1 && p05.mentions.persons[0].id === '999000005', `Erwähnung erwartet, erhalten ${JSON.stringify(p05.mentions.persons)}`);
+            }
+        },
+
+        {
+            name: 'Parserfälle: Platzhalter ohne Datum sind undatiert, eine Uhrzeit ergibt den Tag (P06 bis P09)',
+            async run() {
+                const { letters } = await parseCMIF('data/test-parser-cases.xml');
+                for (const id of ['TP.P06', 'TP.P07', 'TP.P08']) {
+                    const letter = letters.find(l => l.id === id);
+                    assert(letter.date === null && !letter.dateText && !letter.dateInferred && letter.datePrecision === 'unknown',
+                        `${id} sollte undatiert sein, erhalten ${JSON.stringify([letter.date, letter.dateText, letter.dateInferred])}`);
+                }
+                const p09 = letters.find(l => l.id === 'TP.P09');
+                assert(p09.date === '1900-06-15' && p09.datePrecision === 'day' && p09.year === 1900,
+                    `Tag erwartet, erhalten ${JSON.stringify([p09.date, p09.datePrecision])}`);
+            }
+        },
+
+        {
+            name: 'Parserfälle: Eine Signatur, zwei gleiche Daten und ein Jahrhundertfehler ergeben zwei Briefe (M1)',
+            async run() {
+                const { letters } = await parseCMIF('data/test-parser-cases.xml');
+                const group = letters.filter(l => l.signature === 'TP/M1');
+                assert(group.length === 2, `Zwei Briefe erwartet, erhalten ${group.length}`);
+                const [merged, apart] = group;
+                assert(merged.id === 'TP.M1a' && merged.records?.map(r => r.id).join() === 'TP.M1a,TP.M1c',
+                    `M1a und M1c zusammengeführt erwartet, erhalten ${JSON.stringify(merged.records)}`);
+                assert(apart.id === 'TP.M1b' && !apart.records, `M1b bleibt allein, erhalten ${JSON.stringify(apart.records)}`);
+                assert(merged.sharedSignature?.[0]?.id === 'TP.M1b' && merged.sharedSignature[0].date === '2019-02-20',
+                    `Der zusammengeführte Brief nennt den abweichenden, erhalten ${JSON.stringify(merged.sharedSignature)}`);
+                assert(apart.sharedSignature?.[0]?.id === 'TP.M1a', 'Der abweichende Brief nennt den zusammengeführten');
+            }
+        },
+
+        {
+            name: 'Parserfälle: Zusammenführung füllt Sprache und Ortswortlaut, Erschlossen folgt dem gezeigten Wert (M2 bis M4)',
+            async run() {
+                const { letters } = await parseCMIF('data/test-parser-cases.xml');
+                const m2 = letters.find(l => l.id === 'TP.M2a');
+                const m3 = letters.find(l => l.id === 'TP.M3a');
+                const m4 = letters.find(l => l.id === 'TP.M4a');
+                assert(m2.records?.length === 2, 'M2 ist ein Brief');
+                assert(m2.language?.code === 'fr', `Sprache aus dem zweiten Eintrag erwartet, erhalten ${JSON.stringify(m2.language)}`);
+                assert(m2.placeText === 'Hotel Erfunden, Zimmer 3', `Ortswortlaut aus dem zweiten Eintrag erwartet, erhalten ${m2.placeText}`);
+                assert(!m2.dateInferred, 'Das gezeigte Datum stammt aus dem Eintrag, der es nicht markiert');
+                assert(m3.place_sent?.name === 'Schreibort' && m3.place_sent.inferred === true, `Der übernommene Ort bleibt erschlossen, erhalten ${JSON.stringify(m3.place_sent)}`);
+                assert(m4.place_sent?.name === 'Schreibort' && !m4.place_sent.inferred, `Der gelesene Ort des führenden Eintrags bleibt unmarkiert, erhalten ${JSON.stringify(m4.place_sent)}`);
             }
         }
     ]

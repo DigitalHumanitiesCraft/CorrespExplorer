@@ -93,11 +93,14 @@ function recordSummary(letter) {
 
 /**
  * An edition may describe the same letter in several records, for instance once in the file of
- * each correspondent. Records that share a shelfmark become one letter, unless their dates
- * contradict each other (a shelfmark can also stand for a bundle of letters). The letter keeps
- * every record in `records`, and `recordsDiffer` says that they disagree on sender, recipients or
- * place. Nothing is decided between them: the first record with a date leads, and the others
- * only fill what it lacks.
+ * each correspondent. Records that share a shelfmark and a date become one letter; records without
+ * a date join them where all dated records of the shelfmark agree. Where the dates disagree (a
+ * shelfmark can stand for a bundle of letters, or one record has a slip of the century), each
+ * date makes its own letter, records without a date stay apart because nothing says which letter
+ * they describe, and every letter of the shelfmark names the others in `sharedSignature`.
+ * A merged letter keeps every record in `records`, and `recordsDiffer` says that they disagree on
+ * sender, recipients or place. Nothing is decided between them: the first record with a date
+ * leads, and the others only fill what it lacks.
  * @param {Array} letters
  * @returns {Array}
  */
@@ -108,40 +111,69 @@ function mergeRecords(letters) {
         if (!groups.has(letter.signature)) groups.set(letter.signature, []);
         groups.get(letter.signature).push(letter);
     }
-    const dropped = new Set();
-    const merged = new Map();
+    // Each record maps to the letter that replaces it, or to null where it joined another
+    const replacement = new Map();
     for (const group of groups.values()) {
         if (group.length < 2) continue;
-        if (new Set(group.map(l => l.date).filter(Boolean)).size > 1) continue;
-        const lead = group.find(l => l.date) || group[0];
-        const distinct = pick => new Set(group.map(pick).filter(Boolean)).size > 1;
-        const letter = { ...lead, records: group.map(recordSummary) };
-        for (const other of group) {
-            if (other === lead) continue;
-            dropped.add(other);
-            for (const field of ['dateText', 'place_sent', 'postmark', 'address', 'url']) {
-                if (!letter[field] && other[field]) letter[field] = other[field];
+        const dates = [...new Set(group.map(l => l.date).filter(Boolean))];
+        const parts = dates.length > 1
+            ? [...dates.map(date => group.filter(l => l.date === date)), ...group.filter(l => !l.date).map(l => [l])]
+            : [group];
+        const results = parts.map(part => (part.length > 1 ? mergePart(part) : { ...part[0] }));
+        if (parts.length > 1) {
+            for (const letter of results) {
+                letter.sharedSignature = results.filter(other => other !== letter)
+                    .map(other => ({ id: other.id, date: other.date || other.dateText || null }));
             }
-            // Recipients are filled only where the leading record names none at all; a record
-            // with one recipient has no `recipients` and must not take another record's list
-            if (!letter.recipient && other.recipient) {
-                letter.recipient = other.recipient;
-                if (other.recipients) letter.recipients = other.recipients;
-            }
-            if (other.dateInferred) letter.dateInferred = true;
         }
-        // A machine-readable date makes the text of another record redundant
-        if (letter.date) delete letter.dateText;
-        // Compared by what a reader sees: one record with and one without authority id for the
-        // same name do not disagree
-        if (distinct(l => l.sender?.name) ||
-            distinct(l => letterRecipients(l).map(r => r.name).sort().join('|')) ||
-            distinct(l => l.place_sent?.name)) {
-            letter.recordsDiffer = true;
-        }
-        merged.set(lead, letter);
+        parts.forEach((part, i) => part.forEach((record, j) => replacement.set(record, j === 0 ? results[i] : null)));
     }
-    return letters.filter(l => !dropped.has(l)).map(l => merged.get(l) || l);
+    return letters.flatMap(l => (replacement.has(l) ? (replacement.get(l) ? [replacement.get(l)] : []) : [l]));
+}
+
+// Fields one record fills from another where the leading record lacks them. The inferred mark
+// travels inside place_sent, so a place shows as inferred exactly when the record it came from
+// marks it; placeAlternatives belong to that place and come with it
+const FILLED_FIELDS = ['placeText', 'postmark', 'address', 'url', 'language', 'dateSupplied'];
+
+// One letter from records that share a shelfmark and do not contradict each other's date
+function mergePart(group) {
+    const lead = group.find(l => l.date) || group[0];
+    const distinct = pick => new Set(group.map(pick).filter(Boolean)).size > 1;
+    const letter = { ...lead, records: group.map(recordSummary) };
+    for (const other of group) {
+        if (other === lead) continue;
+        for (const field of FILLED_FIELDS) {
+            if (!letter[field] && other[field]) {
+                letter[field] = other[field];
+                if (field === 'address' && other.addresses) letter.addresses = other.addresses;
+            }
+        }
+        if (!letter.place_sent && other.place_sent) {
+            letter.place_sent = other.place_sent;
+            if (other.placeAlternatives) letter.placeAlternatives = other.placeAlternatives;
+        }
+        // The date in words comes with its own mark; a dated lead keeps the mark of its date
+        if (!letter.date && !letter.dateText && other.dateText) {
+            letter.dateText = other.dateText;
+            if (other.dateInferred) letter.dateInferred = true;
+            else delete letter.dateInferred;
+        }
+        // Recipients are filled only where the leading record names none at all; a record
+        // with one recipient has no `recipients` and must not take another record's list
+        if (!letter.recipient && other.recipient) {
+            letter.recipient = other.recipient;
+            if (other.recipients) letter.recipients = other.recipients;
+        }
+    }
+    // Compared by what a reader sees: one record with and one without authority id for the
+    // same name do not disagree
+    if (distinct(l => l.sender?.name) ||
+        distinct(l => letterRecipients(l).map(r => r.name).sort().join('|')) ||
+        distinct(l => l.place_sent?.name)) {
+        letter.recordsDiffer = true;
+    }
+    return letter;
 }
 
 /**
@@ -342,14 +374,15 @@ function extractLetter(desc, index) {
     const recipients = getCorrespActions(desc, 'received').flatMap(extractPersons);
     const recipient = recipients[0] || null;
     const { sender, senders } = extractSenders(sentAction, recipients);
-    const { place: placeSent, postmark, placeText } = extractPlace(sentAction);
+    const { place: placeSent, postmark, placeText, alternatives } = extractPlace(sentAction);
     const dateInfo = extractDate(sentAction);
-    const address = extractAddress(desc);
+    const addresses = extractAddresses(desc);
     const signature = extractSignature(record);
 
-    const note = desc.getElementsByTagNameNS(TEI_NS, 'note')[0];
-    const language = extractLanguage(note) || extractTextLanguage(record);
-    const mentions = extractMentions(note);
+    // The notes of the letter itself; a note inside a correspAction belongs to that action
+    const notes = directChildren(desc, 'note');
+    const language = extractLanguage(notes) || extractTextLanguage(record);
+    const mentions = extractMentions(notes);
     const furtherActions = extractFurtherActions(desc);
 
     return {
@@ -366,14 +399,18 @@ function extractLetter(desc, index) {
         ...(dateInfo.text && { dateText: dateInfo.text }),
         ...(dateInfo.wording && { dateWording: dateInfo.wording }),
         ...(dateInfo.bound && { dateBound: dateInfo.bound }),
+        ...(dateInfo.supplied && { dateSupplied: dateInfo.supplied }),
         sender,
         ...(senders.length > 1 && { senders }),
         recipient,
         ...(recipients.length > 1 && { recipients }),
         place_sent: placeSent,
+        ...(alternatives?.length && { placeAlternatives: alternatives }),
         ...(placeText && { placeText }),
         ...(postmark && { postmark }),
-        ...(address && { address }),
+        // The first address as before; a letter with several keeps all of them in `addresses`
+        ...(addresses.length && { address: addresses[0] }),
+        ...(addresses.length > 1 && { addresses }),
         ...(signature && { signature }),
         ...(furtherActions.length && { furtherActions }),
         language,
@@ -440,7 +477,8 @@ function directChildren(parent, localName) {
  * Whether the source marks a value as supplied by the editors rather than read from the letter:
  * TEI @evidence, a @type or @ana token such as supplied, deduced, inferred or conjecture, or the
  * editorial convention of square brackets around the whole value. Such a value is shown as
- * inferred and never as secured (uncertainty-specification.md).
+ * inferred and never as secured (uncertainty-specification.md). An unmarked value is taken as the
+ * edition gives it, with the precision of its attribute; the tool adds no doubt of its own.
  */
 function isInferred(el) {
     if (el.hasAttribute('evidence')) return true;
@@ -450,14 +488,16 @@ function isInferred(el) {
 }
 
 /**
- * Postal address written on the letter (address/addrLine inside correspDesc). It is the place a
- * letter was sent to, never its sending place.
+ * Postal addresses written on the letter (every address inside correspDesc), each as one text.
+ * The parts of an address (addrLine, street, postCode, settlement and others) are joined with a
+ * comma; an address without parts is its text. An address is never the sending place or date.
+ * @returns {string[]}
  */
-function extractAddress(desc) {
-    const address = desc.getElementsByTagNameNS(TEI_NS, 'address')[0];
-    if (!address) return null;
-    const lines = [...address.getElementsByTagNameNS(TEI_NS, 'addrLine')].map(l => cleanText(l.textContent)).filter(Boolean);
-    return (lines.length ? lines.join(', ') : cleanText(address.textContent)) || null;
+function extractAddresses(desc) {
+    return [...desc.getElementsByTagNameNS(TEI_NS, 'address')].map(address => {
+        const parts = [...address.children].map(el => cleanText(el.textContent)).filter(Boolean);
+        return parts.length ? parts.join(', ') : cleanText(address.textContent);
+    }).filter(Boolean);
 }
 
 /**
@@ -522,10 +562,12 @@ function personName(el) {
 function personFromElement(el) {
     const ref = (el.getAttribute('ref') || '').trim();
     const name = personName(el);
-    // A reference inside the edition (#id) or to an unknown system is no authority record: the
-    // person stays "named", and the reference is kept so the source value is not lost
+    // A reference inside the edition (#id), to a system parseAuthorityRef() does not know (such as
+    // Wikidata) or to an authority without a number (a bare https://viaf.org/viaf/) is no
+    // authority record: the person stays "named", and the reference is kept so the source value
+    // is not lost (data.md, Normdaten und Anschlüsse)
     const parsed = parseAuthorityRef(ref);
-    const authority = parsed && (parsed.type !== 'unknown' || safeUrl(ref)) ? parsed : null;
+    const authority = parsed && parsed.type !== 'unknown' ? parsed : null;
     // @corresp links a person to the register of the edition, with or without an authority record
     const local = (el.getAttribute('corresp') || '').trim() || (ref && !authority ? ref : '');
     const localRef = local ? { localRef: local } : {};
@@ -601,18 +643,21 @@ function getPlacePrecision(name, geonamesId) {
 /**
  * Sending place and postmark of a correspAction. A placeName of type postmark is the stamp, not
  * the place of writing, and one of type original repeats the wording of the letter; the sending
- * place is the first untyped placeName, else the first that is no postmark.
+ * place is the first untyped placeName, else the first that is no postmark. Further places of
+ * sending with another name are kept as `alternatives`, so a source that names two is not cut
+ * to one. Only the action's own children count: a placeName inside an address is part of the
+ * address.
  * Precision levels: exact, region, unknown
- * @returns {{place: Object|null, postmark: string|null}}
+ * @returns {{place: Object|null, postmark: string|null, placeText?: string|null, alternatives?: Array}}
  */
 function extractPlace(action) {
     if (!action) return { place: null, postmark: null };
 
-    const placeNames = [...action.getElementsByTagNameNS(TEI_NS, 'placeName')];
+    const placeNames = directChildren(action, 'placeName');
     const isPostmark = el => /^post(mark|alstamp|stempel)$/i.test(el.getAttribute('type') || '');
     const stamps = [
         ...placeNames.filter(isPostmark),
-        ...[...action.getElementsByTagNameNS(TEI_NS, 'note')].filter(isPostmark)
+        ...directChildren(action, 'note').filter(isPostmark)
     ].map(el => cleanText(el.textContent)).filter(Boolean);
     const postmark = [...new Set(stamps)].join(', ') || null;
 
@@ -626,12 +671,24 @@ function extractPlace(action) {
         return { place: null, postmark, placeText: wording ? cleanText(wording.textContent) || null : null };
     }
 
-    const ref = placeName.getAttribute('ref');
-    const geonames = parseGeoNamesRef(ref);
-    const inferred = isInferred(placeName);
     // Brackets are the marker, not part of the name, so "[Wien]" and "Wien" are one place
-    const name = cleanText(placeName.textContent).replace(/^\[([^\]]+)\]$/, '$1');
+    const placeNameOf = el => cleanText(el.textContent).replace(/^\[([^\]]+)\]$/, '$1');
+    const geonames = parseGeoNamesRef(placeName.getAttribute('ref'));
+    const inferred = isInferred(placeName);
+    const name = placeNameOf(placeName);
     const precision = getPlacePrecision(name, geonames?.id);
+
+    // A repeat of the chosen name, as in a second language, is no alternative
+    const alternatives = [];
+    for (const el of candidates) {
+        const other = placeNameOf(el);
+        if (el === placeName || isOriginal(el) || !other || other === name || alternatives.some(a => a.name === other)) continue;
+        alternatives.push({
+            name: other,
+            geonames_id: parseGeoNamesRef(el.getAttribute('ref'))?.id || null,
+            ...(isInferred(el) && { inferred: true })
+        });
+    }
 
     return {
         place: {
@@ -642,7 +699,8 @@ function extractPlace(action) {
             precision,
             ...(inferred && { inferred: true })
         },
-        postmark
+        postmark,
+        alternatives
     };
 }
 
@@ -652,31 +710,52 @@ function extractPlace(action) {
  * Certainty levels: high, medium, low (from @cert attribute)
  * A source may repeat the date per language; the first element with a machine-readable value
  * counts. A date given only as text keeps that text, so the letter is not shown as undated.
+ * A sibling date element that the source marks as supplied keeps its wording as `supplied`.
+ * The value read stays as the edition gives it: whether it is itself an editorial fill-in is for
+ * the edition to say, so it is neither marked inferred nor coarsened. Only the action's own
+ * children count: a date inside an address belongs to the address.
  */
 function extractDate(action) {
-    const dateEls = action ? [...action.getElementsByTagNameNS(TEI_NS, 'date')] : [];
+    const dateEls = directChildren(action, 'date');
     const DATE_ATTRS = ['when', 'from', 'to', 'notBefore', 'notAfter'];
-    const dateEl = dateEls.find(el => DATE_ATTRS.some(a => el.getAttribute(a))) || dateEls[0];
+    const hasValue = el => DATE_ATTRS.some(a => el.getAttribute(a));
+    const dateEl = dateEls.find(hasValue) || dateEls[0];
     if (!dateEl) return classifyDate({});
 
+    // A time of day adds nothing to the day the tool shows; 1900-06-15T10:00 is that day
+    const value = name => (dateEl.getAttribute(name) || '').replace(/^(\d{4}-\d{2}-\d{2})T.*$/, '$1') || null;
     const info = classifyDate({
-        when: dateEl.getAttribute('when'),
-        from: dateEl.getAttribute('from'),
-        to: dateEl.getAttribute('to'),
-        notBefore: dateEl.getAttribute('notBefore'),
-        notAfter: dateEl.getAttribute('notAfter'),
+        when: value('when'),
+        from: value('from'),
+        to: value('to'),
+        notBefore: value('notBefore'),
+        notAfter: value('notAfter'),
         cert: dateEl.getAttribute('cert')
     });
-    // "ohne Datum" in the date element says that there is none; it is no date in words
     const content = cleanText(dateEl.textContent);
-    const text = /^(ohne Datum|undatiert|unbekannt|o\. ?D\.|n\. ?d\.|no date|undated|unknown)$/i.test(content || '') ? null : content;
+    const text = isNoDate(content) ? null : content;
+    const supplied = dateEls.find(el => el !== dateEl && !hasValue(el) && isInferred(el)
+        && !isNoDate(cleanText(el.textContent)) && cleanText(el.textContent) !== content);
     return {
         ...info,
-        inferred: isInferred(dateEl),
+        // A placeholder for no date shows nothing, so nothing is shown as inferred
+        inferred: (info.date || text) ? isInferred(dateEl) : false,
         text: !info.date && text ? text : null,
         // The wording behind a machine-readable date, shown where that date is implausible
-        wording: info.date && text ? text : null
+        wording: info.date && text ? text : null,
+        supplied: supplied ? cleanText(supplied.textContent) : null
     };
+}
+
+/**
+ * Whether the text of a date element says that there is no date ("ohne Datum", "o. D.", "s.d.",
+ * "[Date Unknown]"). Such a text is no date in words, also in square brackets.
+ * @param {string} text
+ * @returns {boolean}
+ */
+export function isNoDate(text) {
+    const inner = cleanText(text).replace(/^\[(.*)\]$/, '$1').trim();
+    return /^(ohne Datum|undatiert|unbekannt|Datum unbekannt|o\. ?D\.?|n\. ?d\.?|s\. ?d\.?|sine dato|no date|undated|unknown|date unknown)$/i.test(inner);
 }
 
 // ISO 639-2 codes of record descriptions, mapped to the codes of the label table
@@ -702,14 +781,17 @@ function extractTextLanguage(record) {
     return { code, label: LANGUAGE_LABELS[code] || (named ? `${named} (${raw})` : code) };
 }
 
-/**
- * Extract language from note element
- */
-function extractLanguage(note) {
-    if (!note) return null;
+// The ref elements of the letter's notes, in document order
+function noteRefs(notes) {
+    return notes.flatMap(note => [...note.getElementsByTagNameNS(TEI_NS, 'ref')]);
+}
 
-    const refs = note.getElementsByTagNameNS(TEI_NS, 'ref');
-    for (const ref of refs) {
+/**
+ * Language of the letter from the first hasLanguage ref of its notes
+ * @param {Element[]} notes - notes that are direct children of correspDesc
+ */
+function extractLanguage(notes) {
+    for (const ref of noteRefs(notes)) {
         const type = ref.getAttribute('type') || '';
         if (type.includes('hasLanguage')) {
             const target = ref.getAttribute('target');
@@ -725,9 +807,10 @@ function extractLanguage(note) {
 }
 
 /**
- * Extract mentions (subjects, persons, places, orgs, bibls) from note element
+ * Mentions (subjects, persons, places, orgs, bibls) from the notes of the letter
+ * @param {Element[]} notes - notes that are direct children of correspDesc
  */
-function extractMentions(note) {
+function extractMentions(notes) {
     const mentions = {
         subjects: [],
         persons: [],
@@ -736,10 +819,7 @@ function extractMentions(note) {
         bibls: []
     };
 
-    if (!note) return mentions;
-
-    const refs = note.getElementsByTagNameNS(TEI_NS, 'ref');
-    for (const ref of refs) {
+    for (const ref of noteRefs(notes)) {
         const type = ref.getAttribute('type') || '';
         const target = ref.getAttribute('target');
         const label = ref.textContent.trim();

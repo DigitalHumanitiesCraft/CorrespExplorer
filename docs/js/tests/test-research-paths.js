@@ -108,6 +108,24 @@ export const ResearchPathTests = {
             }
         },
         {
+            // Fields of the parser review of 2026-11-15, appended after the earlier columns
+            name: 'CSV-Export: ergänztes Datum, weitere Absendeorte, alle Anschriften, geteilte Signatur (test-parser-cases.xml)',
+            async run() {
+                const header = lettersToCsv([]).slice(CSV_BOM.length).split(',');
+                assert(header.slice(-4).join(',') === 'date_supplied,place_alternatives,addresses_all,shared_signature',
+                    `Neue Spalten am Ende erwartet: ${header.slice(-4).join(',')}`);
+                const { letters } = await parseCMIF('data/test-parser-cases.xml');
+                const row = id => letterExportRow(letters.find(l => l.id === id));
+                assert(row('TP.P01').place_alternatives === 'Neustadt', `Weiterer Absendeort: ${row('TP.P01').place_alternatives}`);
+                assert(row('TP.P02').addresses_all === 'Erfundene Gasse 1, Adressstadt, 31. 12. 1899 | Beispielweg 2, 9999, Zielstadt',
+                    `Alle Anschriften: ${row('TP.P02').addresses_all}`);
+                assert(row('TP.M1a').shared_signature === 'TP.M1b', `Geteilte Signatur: ${row('TP.M1a').shared_signature}`);
+                const c = await parseCMIF('data/test-letter-records-c.xml');
+                assert(letterExportRow(c.letters[0]).date_supplied === 'Mai 1938', 'Wortlaut des ergänzten Datums');
+                assert(lettersToCsv(letters).split('\n')[1].split('","').length === LETTER_EXPORT_COLUMNS.length, 'Jede Zeile hat alle Spalten');
+            }
+        },
+        {
             // Views without sidebar and the export dialog state the filter in one sentence
             name: 'filterSentence: aktiver Filter als Satz mit Namen statt Schlüsseln',
             async run() {
