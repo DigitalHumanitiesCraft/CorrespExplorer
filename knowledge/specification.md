@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 template:
   name: Vorlage Specification
@@ -21,7 +21,7 @@ related: [project, data, architecture, design, testing, uncertainty-specificatio
 
 # Specification
 
-Die Specification hält fest, was CorrespExplorer für Forschende leisten soll und warum es so gebaut ist. Die Anforderungen ändern sich selten, die Stories tragen ihren Stand im Werkzeug, die Entscheidungen wachsen monoton und werden bei Revision durch einen neuen Eintrag abgelöst. Die Behandlung unsicherer Daten spezialisiert [uncertainty-specification.md](uncertainty-specification.md), was offen ist, führt [plan.md](plan.md).
+Die Specification hält fest, was CorrespExplorer für Forschende leisten soll und warum es so gebaut ist. Die Anforderungen ändern sich selten, die Stories nennen ihren Stand im Werkzeug, die Entscheidungen wachsen monoton und werden bei Revision durch einen neuen Eintrag abgelöst. Die Behandlung unsicherer Daten spezialisiert [uncertainty-specification.md](uncertainty-specification.md), was offen ist, führt [plan.md](plan.md).
 
 ## Anforderungen
 
@@ -35,16 +35,16 @@ Die funktionalen Anforderungen stehen als Kriterien bei den Stories.
 
 ## Epics und User Stories
 
-Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive, Bibliotheken und Editionsprojekte. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Forschenden validiert. Die Stories US-01 bis US-39 hat der Operator über die Entwicklung hinweg angenommen oder entschieden (zuletzt [ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code)). Die Stories US-40 bis US-45 sind Vorschläge der distillierenden Session vom 2026-11-14 für Funktionen, die der Operator verlangt hat und die bis dahin keine Story trugen. Sie bleiben Vorschläge, bis der Operator sie annimmt.
+Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive, Bibliotheken und Editionsprojekte. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Forschenden validiert. Die Stories US-01 bis US-39 hat der Operator über die Entwicklung hinweg angenommen oder entschieden (zuletzt [ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code)). Die Stories US-40 bis US-45 sind Vorschläge der distillierenden Session vom 2026-11-14, US-46 bis US-48 der distillierenden Session vom 2026-11-15, für Funktionen, die der Operator verlangt hat und die bis dahin keine Story abdeckte. Sie bleiben Vorschläge, bis der Operator sie annimmt.
 
-Jede Story nennt ihren Stand im Werkzeug, festgestellt am Code vom 2026-11-14.
+Jede Story nennt ihren Stand im Werkzeug, festgestellt am Code vom 2026-11-15 (main bei `ef0c0d4`). Vom Operator gesehen ist davon nur, was bei der Story so genannt ist.
 
 - bedient: Das Werkzeug erfüllt die Kriterien, an der genannten Stelle.
 - geändert: Das Werkzeug dient der Story auf anderem Weg als ihre Kriterien beschreiben. Die Abweichung ist genannt.
 - nicht mehr bedient: Die Oberfläche bietet die Story nicht mehr an.
 - nicht bedient: Die Story ist ein Vorhaben.
 
-Jede Story trägt eine feste Aufgabe am gebündelten Hugo Schuchardt Archiv (`explore.html?json=data/hsa-letters.json`), deren Antwort ein Skript aus `docs/data/hsa-letters.json` unabhängig von der Oberfläche berechnet. Die Aufgabe nennt die Rechenregel, die berechneten Antworten mit Datum stehen in [testing.md](testing.md#feste-aufgaben). Die Regeln zählen wie das Werkzeug: eine Person über `personKey` (Normdaten-ID, sonst Registerkennung, sonst Name) als Absender oder Empfänger, ein Ort über `placeKey` (GeoNames-ID, sonst Name) ohne Platzhalter wie „Unbekannt“, ein Jahr nur, wenn es zwischen 1400 und 2100 liegt und kein Zeitraum über mehrere Jahre ist. Wo die Antwort nicht aus der Datei folgt, sagt die Aufgabe das.
+Jede Story hat eine feste Aufgabe am gebündelten Hugo Schuchardt Archiv (`explore.html?json=data/hsa-letters.json`), deren Antwort ein Skript aus `docs/data/hsa-letters.json` unabhängig von der Oberfläche berechnet. Die Aufgabe nennt die Rechenregel, die berechneten Antworten mit Datum stehen in [testing.md](testing.md#feste-aufgaben). Die Regeln zählen wie das Werkzeug: eine Person über `personKey` (Normdaten-ID, sonst Registerkennung, sonst Name) als Absender oder Empfänger, ein Ort über `placeKey` (GeoNames-ID, sonst Name) ohne Platzhalter wie „Unbekannt“, ein Jahr nur, wenn es zwischen 1400 und 2100 liegt und kein Zeitraum über mehrere Jahre ist. Wo die Antwort nicht aus der Datei folgt, sagt die Aufgabe das.
 
 ### Startfigur und Überblick
 
@@ -55,7 +55,7 @@ Als neue Nutzerin möchte ich einen Beispieldatensatz laden, um die Funktionen d
 - Tutorial und Hugo Schuchardt Archiv sind mit einem Klick zu öffnen.
 - Links auf den Tutorial-Datensatz (`explore.html?…&demo=true`) öffnen ihn auch in einem neuen Tab, die Tour erscheint einmal je Browser und entfällt mit `tour=0`.
 
-Stand: bedient. Startseite, Wahl „Tutorial“ oder „Hugo Schuchardt Archiv“ über der Figur und „Im Explorer öffnen“. Die Tour stammt aus der Zeit der zwölf Ansichten ([plan.md](plan.md#startfigur)).
+Stand: geändert. Die Startseite bietet das Hugo Schuchardt Archiv als Vorgabe und „Im Explorer öffnen“, das Tutorial hat sie auf Auftrag des Operators verlassen (`d38b4c8`). Das Tutorial öffnet weiter über `explore.html?demo=true`, auf das `about.html` über `index.html?demo=true` verweist, die Tour erscheint dort einmal je Browser. Die Tour stammt aus der Zeit der zwölf Ansichten. Ob die Datei des Tutorials gelöscht wird, entscheidet der Operator ([plan.md](plan.md#warten-auf-den-operator)).
 
 Aufgabe: Öffnen Sie das Archiv von der Startseite. Wie viele Briefe nennt der Explorer? Antwort: Zahl der Einträge in `letters`.
 
@@ -65,7 +65,7 @@ Als Forschende möchte ich auf einen Blick sehen, wie viele Briefe, Personen und
 
 - Kernzahlen für Briefe, Personen und Orte, der Zeitraum.
 
-Stand: geändert. Die Zahlen stehen auf der Startansicht des Explorers in der Beschreibung des Bestands, die dort über den Filtern der Seitenleiste steht, in den Titelzeilen der Ansichten und in den Zeilen der Startfigur. Die Kacheln der Seitenleiste sind ausgeblendet.
+Stand: geändert. Auf der Startansicht stehen die Zahlen der Personen, Orte und Themen als Überschriften ihrer kleinen Darstellungen, die Zahl der Briefe in der Auswahlzeile, die Beschreibung des Bestands hinter dem Info-Zeichen der Schiene. Dazu die Titelzeilen der Ansichten und die Titel der Startfigur. Die Kacheln der Seitenleiste sind ausgeblendet.
 
 Aufgabe: Wie viele Personen und wie viele Orte nennt die Startansicht? Antwort: Zahl der verschiedenen `personKey` über Absender und Empfänger aller Briefe, Zahl der verschiedenen `placeKey` der bekannten Absendeorte.
 
@@ -78,7 +78,7 @@ Als Forschende möchte ich beim Laden eines Datensatzes eine Übersicht sehen, u
 - Quelle aus dem teiHeader mit Publisher, Lizenz und Änderungsvermerk.
 - Grafiken, die einander filtern, statt Einstiegskacheln (Entscheidung des Operators vom 2026-11-14).
 
-Stand: bedient. Explorer, Reiter „Start“: Arbeitsfläche aus Zeitleiste, Personen, Orten, Themen, Sprachen und Überlieferung, die Beschreibung des Bestands in der Seitenleiste.
+Stand: bedient. Explorer, Reiter „Start“: Dashboard aus Zeit mit Sprachlegende, Personen, Orten, Themen und Überlieferung ([design.md](design.md#startansicht-des-explorers)), die Beschreibung des Bestands mit den drei Angaben zur Datenlage hinter dem Info-Zeichen der Schiene. Im Stand von `b189cb5` vom Operator gesehen und gutgeheißen, der spätere Stand nicht.
 
 Aufgabe: Wie viele Briefe sind auf den Tag datiert? Antwort: Zahl der Briefe mit `datePrecision` „day“.
 
@@ -88,13 +88,27 @@ Vorschlag, Agent, 2026-11-14. Grundlage ist die Rückmeldung des Operators zur S
 
 Als Forschende möchte ich auf der Startseite sehen, welche Angaben des Datenmodells ein Bestand trägt und wie viele seiner Briefe sie tragen, um vor dem Öffnen zu wissen, welche Fragen er beantworten kann.
 
-- Jede Angabe des Modells steht an ihrem Platz, gefüllt mit einer kleinen echten Figur des Bestands, oder leer und benannt, wo er sie nicht trägt.
+- Jede Angabe des Modells steht an ihrem Platz, gefüllt mit einer kleinen echten Figur des Bestands, oder leer und benannt, wo er sie nicht enthält.
 - Jede Angabe führt in die Ansicht, die sie zeigt.
 - Ein Beispielbrief ist in jeder Figur markiert, eigene Daten füllen die Figur ebenso.
 
-Stand: bedient, nicht abgenommen. Startseite, Figur in drei Bändern (Kern des CMIF, Erweiterungen im CMIF, TEI-Briefsätze), `start-figures.js`.
+Stand: geändert. Startseite, `start-figures.js`. Seit `d38b4c8` erhält eine Angabe, die der Bestand nicht enthält, keinen Platz, und die Teile des Modells stehen ohne sichtbaren Namen ([US-46](#us-46-startseite-aus-dem-zusammengesetzt-was-ein-bestand-enthält)). Was fehlt, nennt ein Satz nur in der Textalternative. Damit erfüllt das Werkzeug das Kriterium „leer und benannt“ nicht mehr, auf Auftrag des Operators. Die Startseite als Figur hat er gutgeheißen, den gebauten Stand nicht gesehen.
 
 Aufgabe: Wie viele Briefe des Archivs nennen erwähnte Personen? Antwort: Zahl der Briefe mit mindestens einem Eintrag in `mentions.persons`.
+
+#### US-46 Startseite aus dem zusammengesetzt, was ein Bestand enthält
+
+Vorschlag, Agent, 2026-11-15. Grundlage sind die Rückmeldung des Operators zur Startseite nach der Schärfung („sie sollten von ihrem Wissen auch dynamisch sein“) und seine Aufträge zur zusammengesetzten Fassung ([design.md](design.md#rückmeldungen-des-operators)).
+
+Als Forschende möchte ich auf der Startseite nur die Figuren sehen, die mein Bestand füllen kann, und Beispielbestände und eigene Daten an einer Stelle wählen, um ohne leere oder falsche Figuren zu erfahren, was der Bestand enthält.
+
+- Eine Figur erscheint nur für eine Angabe, die mindestens ein Brief enthält. Eine Figur, die etwas Fehlendes braucht, weicht einer, die mit dem Vorhandenen auskommt, etwa die Rangfolge der Ortsnamen statt der Karte.
+- Das Hugo Schuchardt Archiv ist die Vorgabe. Beispielbestände und eigene Daten stehen in einem Element, eigene Daten werden nach denselben Regeln zusammengesetzt.
+- Jede Zeile des Beispielbriefs und ihre Marke in einer Figur zeigen dieselbe Nummer.
+
+Stand: bedient, nicht abgenommen. Startseite, `start-compose.js` mit `composeFigure()`, `start-figures.js`, gebaut in `d38b4c8`, vom Operator nicht gesehen.
+
+Aufgabe: Zeigt die Startseite des Archivs eine Figur zu Poststempeln? Antwort: nein, wenn kein Brief in `hsa-letters.json` ein Feld `postmark` hat.
 
 ### Die vier großen Ansichten
 
@@ -106,7 +120,7 @@ Als Forschende möchte ich sehen, wer mit wem korrespondiert hat, um Netzwerke u
 
 - Ein Klick oder Enter auf eine Person setzt den Filter.
 - Das ganze Netzwerk mit den Arten Briefwechsel, Zeitgenossen und Themen bleibt erreichbar. Eine Kante des Briefwechsels verbindet zwei Personen, die einander schrieben, ihre Stärke folgt der Zahl der Briefe in beide Richtungen.
-- Unter dem Netzwerk steht eine aufklappbare Tabelle der gezeigten Verbindungen.
+- Unter dem Netzwerk steht eine Tabelle der gezeigten Verbindungen hinter einem Schalter.
 
 Stand: geändert. Personen, Darstellung „Netzwerk“: Die Ansicht öffnet als Korrespondenzkreis um eine Person ([US-42](#us-42-umfeld-einer-person-mit-korrespondenz-und-erwähnten)), das ganze Netzwerk ist die Stufe „Gesamt“ des Schalters.
 
@@ -176,7 +190,7 @@ Als Forschende möchte ich alle Themen des Datensatzes durchsuchen, um relevante
 
 - Suchfeld über alle Themen, Briefanzahl je Thema.
 
-Stand: bedient, nicht abgenommen. Themen, Suche über der Figur, die jedes Thema erreicht. Neu gebaut am 2026-11-14 (Commit `34fedd9`, [US-44](#us-44-themen-als-verläufe-über-die-zeit)).
+Stand: bedient, nicht abgenommen. Themen, Suche über dem Raster, die jedes Thema erreicht, und die Zahl der Briefe am Ende jeder Zeile. Gebaut in `7cbe3c3` ([US-44](#us-44-themen-als-verläufe-über-die-zeit)).
 
 Aufgabe: Welches Thema, das keine Sprache ist, nennen die meisten Briefe? Antwort: Briefe je `mentions.subjects[].uri`, ohne die Kategorien `lexvo` und `hsa_language`.
 
@@ -186,7 +200,7 @@ Als Forschende möchte ich zu einem Thema sehen, wer darüber geschrieben hat un
 
 - Korrespondenten, zeitliche Verteilung und verwandte Themen über gemeinsame Briefe.
 
-Stand: bedient, nicht abgenommen. Ein Streifen unter der Themenfigur nennt Korrespondenten, Orte und benachbarte Themen der Wahl, die übrigen Zeilen zeigen die Briefe, die sie mit dem gewählten Thema teilen.
+Stand: bedient, nicht abgenommen. Ein Streifen unter Raster und Anteile nennt Korrespondenten, Orte und benachbarte Themen der Wahl, je als eigener Filter. Die zeitliche Verteilung zeigt die Zeile des Themas im Raster, in den Anteilen steht sie unter der Karte.
 
 Aufgabe: Wer schreibt außer Schuchardt die meisten Briefe zum Thema „Publikationsversand“ (`https://gams.uni-graz.at/o:hsa.subjects#S.948`)? Antwort: Personen nach `personKey` in den Briefen mit diesem Thema, ohne Schuchardt, nach Briefzahl.
 
@@ -196,7 +210,7 @@ Als Forschende möchte ich alle Briefe filtern, die ein bestimmtes Thema erwähn
 
 - Ein Thema zu wählen setzt den Filter, er erscheint als entfernbare Marke im Satz der Auswahl, alle Ansichten zeigen nur seine Briefe.
 
-Stand: bedient. Themenansicht, Startansicht, Satz der Auswahl.
+Stand: bedient. Themenansicht, Startansicht, Auswahlzeile.
 
 Aufgabe: Wie viele Briefe hält die Auswahl „Publikationsversand“? Antwort: Briefe mit dieser URI in `mentions.subjects`.
 
@@ -217,7 +231,7 @@ Als Forschende möchte ich sehen, wann Themen in der Korrespondenz aufkommen und
 - Jedes Thema ist eine Zeile mit seinen Briefen je Jahr auf gemeinsamer Achse, die häufigsten oben, geordnet nach ihrem Höhepunkt.
 - Sprachen als Themen stehen getrennt von den übrigen Themen.
 
-Stand: bedient, nicht abgenommen. Themen, `topics-view.js`, Commit `34fedd9`.
+Stand: geändert, nicht abgenommen. Themen, Darstellung „Raster“, `topics-view.js`, gebaut in `7cbe3c3` nach der Wahl des Operators („Raster als Hauptfigur, Treemap als Anteile daneben“). Die Zeile ist eine Folge von Zellen je Jahr auf einer festen Skala statt eines Kamms, die Ordnung lässt sich auf Umfang und erstes Auftreten umstellen. Die Treemap „Anteile“ gruppiert nach der Art des Themas, Sprachen eingeschlossen. Ob das Raster Sprachen getrennt führt, ist am gebauten Stand nicht festgestellt. Den Endstand hat der Operator nicht gesehen.
 
 Aufgabe: In welchem Jahr erreicht „Publikationsversand“ seinen Höhepunkt? Antwort: Briefe des Themas je gültigem Jahr, das Jahr mit der größten Zahl.
 
@@ -232,9 +246,9 @@ Als Forschende möchte ich unter jeder Figur die Briefe meiner Auswahl öffnen, 
 - Eine Zeile nennt die Zahl der Auswahl und öffnet die Liste über der Ansicht, die Ansicht behält ihren Zustand.
 - Der offene Zustand steht in der URL.
 
-Stand: bedient, nicht abgenommen. Unter jeder Ansicht außer der Briefliste, `letters-drawer.js`.
+Stand: bedient, nicht abgenommen. In der Auswahlzeile unter jeder Ansicht außer der Briefliste, `letters-drawer.js`.
 
-Aufgabe: Wählen Sie in der Zeitleiste das Jahr 1900. Wie viele Briefe nennt die Zeile? Antwort: Briefe mit gültigem Jahr 1900.
+Aufgabe: Wählen Sie in der Zeitansicht das Jahr 1900. Wie viele Briefe nennt die Zeile? Antwort: Briefe mit gültigem Jahr 1900.
 
 #### US-10 Briefe einer Person filtern
 
@@ -243,7 +257,7 @@ Als Forschende möchte ich alle Briefe einer bestimmten Person sehen, um deren K
 - Ein Klick auf eine Person filtert, eine Marke im Satz der Auswahl zeigt den Filter und hebt ihn auf.
 - Eine zweite Person beschränkt auf die Briefe zwischen beiden.
 
-Stand: bedient. Personenliste, Korrespondenzkreis, Startansicht, Satz der Auswahl in der Seitenleiste.
+Stand: bedient. Personenliste, Korrespondenzkreis, Startansicht, Marke in der Auswahlzeile.
 
 Aufgabe: Wie viele Briefe hält die Auswahl Leo Spitzer? Antwort: Briefe, an denen VIAF 71397982 als Absender oder Empfänger beteiligt ist.
 
@@ -263,7 +277,7 @@ Als Forschende möchte ich alle Briefe durchsuchen und sortieren, um bestimmte K
 
 - Suche, Sortierung nach Datum und Absender, Zahl der Treffer über der Liste.
 
-Stand: bedient. Reiter „Briefe“.
+Stand: bedient. Reiter „Briefe“. Sortiert wird nach Datum (neueste oder älteste zuerst), Person und Ort, nach Person bei einer zentralen Person nach der Gegenseite. Zeilen nennen die Gegenseite der zentralen Person mit „von“ und „an“, Gruppen nach Jahr oder Anfangsbuchstabe, ein Jahresprofil über der Liste springt zu den Gruppen ([design.md](design.md#briefe)). Gebaut in `c6185bc`, vom Operator nicht gesehen.
 
 Aufgabe: Welcher Brief steht nach „Datum (älteste)“ zuerst? Antwort: der Brief mit dem kleinsten `date`.
 
@@ -293,7 +307,7 @@ Als Forschende möchte ich nach Briefsprache filtern, um etwa nur französische 
 
 - Sprachen mit ihrer Farbe und Briefanzahl, Mehrfachauswahl.
 
-Stand: bedient. Seitenleiste, Sprachliste, und jede Sprache der Legende der Zeitleiste.
+Stand: bedient. Feld „Sprache“ der Schiene, die Sprachlegende der Startansicht und jede Sprache der Legende der Zeitansicht.
 
 Aufgabe: Wie viele Briefe sind französisch? Antwort: Briefe mit `language.code` „fr“.
 
@@ -311,7 +325,7 @@ Aufgabe: Wie viele französische Briefe kamen zwischen 1880 und 1900 aus Paris? 
 
 Als Forschende möchte ich alle Filter mit einem Klick zurücksetzen, um zur Gesamtansicht zurückzukehren.
 
-Stand: bedient. „Filter aufheben“ in der Seitenleiste, jede Marke des Satzes der Auswahl einzeln.
+Stand: bedient. „Filter aufheben“ in der Auswahlzeile, jede ihrer Marken einzeln.
 
 Aufgabe: Nach dem Aufheben aller Filter, wie viele Briefe nennt die Zeile unter der Ansicht? Antwort: Zahl aller Briefe.
 
@@ -342,7 +356,7 @@ Als Forschende möchte ich die zeitliche Verteilung der Korrespondenz sehen, um 
 - Balken je Jahr, gestapelt nach Sprache, undatierte Briefe in einem eigenen Balken, Zeiträume über mehrere Jahre im Balken „Spanne“ (Entscheidung E5 vom 2026-11-05).
 - Aufklappbare Tabelle als Textalternative.
 
-Stand: bedient. Zeit, Darstellung „Jahre“, verkleinert in der Startansicht und in der Startfigur.
+Stand: bedient. Zeit, oberes Profil, verkleinert in der Startansicht und in der Startfigur. Die Tabelle steht hinter einem ruhigen Schalter statt in einem Aufklapper (Regel 4 in [design.md](design.md#gemeinsame-regeln-aller-ansichten)).
 
 Aufgabe: Welches Jahr hat die meisten Briefe, wie viele, und wie viele Briefe stehen ohne Datum? Antwort: Briefe je gültigem Jahr, Maximum, und Briefe ohne `date` und ohne `dateText`.
 
@@ -352,7 +366,7 @@ Als Forschende möchte ich die Korrespondenz auf einen Zeitraum einschränken, u
 
 - Regler für Start- und Endjahr in der Seitenleiste, alle Ansichten folgen.
 
-Stand: bedient. Ein Klick auf ein Jahr der Zeitleiste setzt den Zeitraum auf dieses Jahr, die Raum-Zeit-Ansicht setzt stattdessen ein gewähltes Jahr neben dem Zeitraum ([plan.md](plan.md#zeit)).
+Stand: bedient. Regler im Feld „Zeitraum“ der Schiene, Ziehen im Profil der Zeitansicht und im Zeitdiagramm der Startansicht, dort mit Griffen an beiden Enden. Alle drei setzen denselben Zeitraum. Ein Klick auf ein Jahr der Zeitansicht setzt den Zeitraum auf dieses Jahr, die Raum-Zeit-Ansicht setzt stattdessen ein gewähltes Jahr neben dem Zeitraum ([plan.md](plan.md#zeit)).
 
 Aufgabe: Wie viele Briefe liegen zwischen 1900 und 1910? Antwort: Briefe mit gültigem Jahr von 1900 bis 1910.
 
@@ -362,7 +376,7 @@ Als Forschende möchte ich alle Briefe auf einem Zeitstrahl sehen, um den Verlau
 
 - Älteste zuerst, undatierte am Ende, Gruppierung nach Jahren, Nachladen in Blöcken.
 
-Stand: bedient, aber vom Operator beanstandet. Zeit, Darstellung „Chronik“. Ob sie bleibt, entscheidet er ([plan.md](plan.md#zeit)).
+Stand: geändert. Die Chronik ist in die Zeitansicht aufgegangen, deren untere Figur zeigt einen Zeitraum mit wenigen Briefen als einzelne Briefe auf einer echten Zeitachse. Älteste zuerst, undatierte am Ende und Gruppen nach Jahren bietet die Briefliste in der Ordnung „Datum (älteste)“. Was aus der Chronik entfällt, haben die Bau-Agenten entschieden, der Operator hat es nicht bestätigt ([plan.md](plan.md#warten-auf-den-operator)).
 
 Aufgabe: Welcher Brief steht zuerst, von wem, an welchem Tag? Antwort: der Brief mit dem kleinsten `date`.
 
@@ -372,7 +386,7 @@ Als Forschende möchte ich biografische Informationen zu den Korrespondenten seh
 
 - Anreicherung über Wikidata auf ausdrückliche Aktion, nur für Personen mit Normdaten ([ADR-006](#adr-006-externe-dienste-nur-auf-ausdrückliche-aktion)).
 
-Stand: bedient. Chronik, Personen-Dialog, Dialog nach dem Laden eigener Daten.
+Stand: bedient. Zeitansicht (Knopf „Lebensdaten der Personen aus Wikidata laden“), Personen-Dialog, Dialog nach dem Laden eigener Daten.
 
 Aufgabe: keine aus `hsa-letters.json` berechenbare, die Antwort kommt von Wikidata. Prüfbar ist, dass ohne Klick keine Anfrage an Wikidata geht.
 
@@ -380,9 +394,9 @@ Aufgabe: keine aus `hsa-letters.json` berechenbare, die Antwort kommt von Wikida
 
 Als Forschende möchte ich das Alter der Korrespondenten zum Zeitpunkt des Briefs sehen, um ihre Lebensphasen einzuordnen.
 
-Stand: bedient, nur nach Anreicherung.
+Stand: bedient, nur nach Anreicherung, in den Angaben eines Briefs der Zeitansicht.
 
-Aufgabe: keine aus `hsa-letters.json` berechenbare, das HSA trägt keine Lebensdaten.
+Aufgabe: keine aus `hsa-letters.json` berechenbare, das HSA enthält keine Lebensdaten.
 
 #### US-31 Beziehungskontext in der Chronik
 
@@ -390,7 +404,7 @@ Als Forschende möchte ich den Kontext einer Korrespondenzbeziehung sehen, um Br
 
 - Marke des ersten Briefs zweier Personen, „Brief X von Y“, Lücken ab zwei Jahren.
 
-Stand: bedient. Chronik.
+Stand: geändert. In der Zeitansicht nennt jeder Brief seine Stelle im Briefwechsel („Erster von …“, „493. von 521 Briefen zwischen beiden“, „nach einer Lücke seit …“, `contextText()` in `chronik-view.js`). Eine eigene Marke in der Figur hat der erste Brief nicht mehr.
 
 Aufgabe: Wann beginnt der Briefwechsel zwischen Schuchardt und Spitzer, und wie viele Briefe umfasst er? Antwort: Briefe mit beiden als Beteiligten, der früheste `date` und die Zahl.
 
@@ -398,9 +412,9 @@ Aufgabe: Wann beginnt der Briefwechsel zwischen Schuchardt und Spitzer, und wie 
 
 Als Forschende möchte ich zwischen Chronik-Layouts wechseln, um je nach Frage die passende Darstellung zu wählen.
 
-Stand: bedient. Chronik, Layoutwahl im Kopf.
+Stand: nicht mehr bedient. Die drei Layouts der Chronik sind mit ihr in die Zeitansicht aufgegangen und entfallen (`c6185bc`, Entscheidung der Bau-Agenten, vom Operator nicht bestätigt). Kandidat zur Streichung.
 
-Aufgabe: Nach jedem Wechsel des Layouts unter dem Zeitraum 1900 bis 1910 bleibt die Zahl der Briefe gleich. Antwort: wie US-15.
+Aufgabe: entfällt mit der Story.
 
 #### US-34 Korrespondenzaktivität visualisieren
 
@@ -408,7 +422,7 @@ Als Forschende möchte ich die Korrespondenz als Kalender sehen, um Aktivitätsp
 
 - Heatmap je Tag, Jahresauswahl, Klick auf einen Tag zeigt seine Briefe, der aktivste Tag nur aus tagesgenauen Daten.
 
-Stand: bedient. Zeit, Darstellung „Tage“.
+Stand: geändert. Die Kalender-Heatmap ist mit der Darstellung „Tage“ entfallen, `activity-view.js` besteht ungenutzt. Die untere Figur der Zeitansicht zählt einen langen Zeitraum in Monaten und zeigt einen kurzen, auch jedes einzelne Jahr, Brief für Brief auf der Zeitachse. Den Satz zum briefreichsten Tag gibt es nicht mehr. Ob die Aufgabe dort ablesbar ist, ist nicht geprüft.
 
 Aufgabe: Welcher Tag hat die meisten tagesgenau datierten Briefe, wie viele? Antwort: Briefe mit `datePrecision` „day“ je `date`, Maximum.
 
@@ -420,7 +434,7 @@ Als Forschende möchte ich eine lokale CMIF-XML-Datei laden, um meine eigenen Ko
 
 - Dateidialog oder Ziehen auf die Seite, Meldung bei ungültigem Format.
 
-Stand: bedient. Startseite, „Eigene Daten laden“. Eigene Daten füllen zuerst die Startfigur.
+Stand: bedient. Startseite, Eintrag „Eigene Daten“ im Element der Bestände, Dateiwahl oder Ziehen auf die Seite. Eigene Daten füllen zuerst die Startfigur.
 
 Aufgabe: Laden Sie `docs/data/hsa.xml` als eigene Datei. Erwartet ist entweder der Explorer mit der Zahl aller Briefe oder eine Meldung, die diese Zahl nennt, weil die Datei das Kontingent von sessionStorage überschreiten kann. Antwort: Zahl der `correspDesc` in `hsa.xml`, gleich der Zahl der Briefe in `hsa-letters.json`.
 
@@ -430,7 +444,7 @@ Als Forschende möchte ich eine CMIF-Datei von einer URL laden, um Daten aus Onl
 
 - URL-Feld mit Hinweis bei CORS-Fehlern. URLs der correspSearch-API v2.0 laden alle Trefferseiten bis zu einer Obergrenze, eine Abfrage ohne Treffer öffnet keinen leeren Explorer.
 
-Stand: bedient. Startseite, „Eigene Daten laden“.
+Stand: bedient. Startseite, Eintrag „Eigene Daten“, Adressfeld.
 
 Aufgabe: Laden Sie bei lokalem Server die Adresse `http://localhost:8000/data/hsa.xml`. Antwort wie US-01.
 
@@ -452,7 +466,7 @@ Als Forschende möchte ich einen Link zu meiner Auswahl teilen, um Kolleg:innen 
 
 - Ansicht, alle Filter (Zeitraum oder undatiert, Jahr, Sprachen, Person und Gegenüber, Ort, Thema, Qualität, Merkmale) und der offene Briefauszug stehen in der URL, ein fehlender Parameter bedeutet keinen Filter.
 - Bei `?json=` sehen Empfänger dieselben Briefe. Bei hochgeladenen Dateien landen sie auf der Startseite mit einem Hinweis.
-- Ein Ansichtswechsel legt einen Eintrag in der Browser-Historie an, Filteränderungen ersetzen ihn (Entscheidung E1 vom 2026-11-05). `cs=` trägt eine correspSearch-Abfrage (Entscheidung E3).
+- Ein Ansichtswechsel legt einen Eintrag in der Browser-Historie an, Filteränderungen ersetzen ihn (Entscheidung E1 vom 2026-11-05). `cs=` enthält eine correspSearch-Abfrage (Entscheidung E3).
 
 Stand: bedient.
 
@@ -515,9 +529,9 @@ Als Forschende möchte ich sehen, was die Edition erschlossen hat und was der Br
 - Erschlossene Daten und Orte in eckigen Klammern mit Legende. Poststempel, Anschrift und Signatur benannt, nie als Absendeort. Alle Empfänger genannt und gezählt.
 - Die Seitenleiste bietet je vorhandenem Merkmal einen Filter mit Zahl, der Zustand steht in der URL.
 
-Stand: bedient. Seitenleiste, Gruppe der Merkmale, Briefzeile und Dialog, Feld „Überlieferung“ der Startansicht, unteres Band der Startfigur.
+Stand: bedient. Gruppe „Überlieferung“ der Schiene, Briefzeile und Dialog, Feld „Überlieferung“ der Startansicht, die Figuren der Briefsätze auf der Startseite, wo der Bestand sie enthält.
 
-Aufgabe: Wie viele Briefe nennt das Merkmal „Ohne Datum“? Antwort: Briefe ohne `date` und ohne `dateText`. Die übrigen Merkmale trägt das HSA nicht, ihre Zahl ist null.
+Aufgabe: Wie viele Briefe nennt das Merkmal „Ohne Datum“? Antwort: Briefe ohne `date` und ohne `dateText`. Die übrigen Merkmale enthält das HSA nicht, ihre Zahl ist null.
 
 #### US-45 Aussagen über Dritte mit ihrem Prüfstand sehen
 
@@ -530,31 +544,60 @@ Als Forschende möchte ich sehen, was die Briefe über dritte Personen aussagen,
 
 Stand: nicht bedient. Das Werkzeug liest keine Aussagen. Welche Figuren sie zeigen, ist offen und beim Operator ([plan.md](plan.md#gemeinsames-briefmodell)).
 
-Aufgabe: keine am HSA, dessen CMIF keine Aussagen trägt.
+Aufgabe: keine am HSA, dessen CMIF keine Aussagen enthält.
+
+### Gemeinsame Teile der Ansichten
+
+#### US-47 Briefe, Personen und Orte in einem Register
+
+Vorschlag, Agent, 2026-11-15. Grundlage ist die Frage des Operators, ob sich Briefe, Personen und Orte sinnvoll in eine Ansicht zusammenführen lassen, und sein früherer Wunsch, Liste und Vergleich zusammenzuführen ([design.md](design.md#rückmeldungen-des-operators)). Die Frage hatte eine klare Neigung und war noch kein Auftrag zum Umbau.
+
+Als Forschende möchte ich Briefe, Personen und Orte in einer Ansicht durchsuchen und dort gleich nach Person und Ort filtern, um ohne doppelte Listen vom Register zu den Briefen zu kommen.
+
+- Eine Ansicht führt Briefe, Personen und Orte mit Facetten, eine Wahl in einer Facette filtert die anderen.
+- Sie steht zuerst als kleine echte Fassung am Hugo Schuchardt Archiv neben den bestehenden Ansichten, nichts Bestehendes entfällt vor dem Vergleich durch den Operator.
+
+Stand: nicht bedient.
+
+Aufgabe: Wie viele Briefe nennt das Register für Graz als Absendeort? Antwort: wie US-06.
+
+#### US-48 Die Auswahl an einem Ort
+
+Vorschlag, Agent, 2026-11-15. Grundlage sind der Satz des Operators zur Startansicht („Vielleicht kann man das dort, wo die Filter sind, irgendwie zusammenführen“) und Regel 1 der [gemeinsamen Regeln](design.md#gemeinsame-regeln-aller-ansichten), die er nicht einzeln bestätigt hat.
+
+Als Forschende möchte ich in jeder Ansicht an derselben Stelle sehen, wie viele Briefe meine Auswahl enthält und welche Filter sie bilden, um nie zu vergessen, dass eine Figur gefiltert ist.
+
+- Eine Zeile am unteren Rand jeder Ansicht nennt die Zahl in der Form „x von y Briefen“, die Filter als entfernbare Marken und „Filter aufheben“, und öffnet die Briefe.
+- Titel, Regler und andere Zeilen wiederholen Zahl und Filter nicht.
+
+Stand: bedient, nicht abgenommen. Auswahlzeile in `explore.html` und `letters-drawer.js`, gebaut in der Nacht zum 2026-11-15, vom Operator nicht gesehen. In der Briefliste wiederholt die Zeile über der Liste die Zahl ([plan.md](plan.md#durchgang-nach-den-gemeinsamen-regeln)).
+
+Aufgabe: Wählen Sie in der Startansicht die Sprache Französisch. Welche Zahl nennt die Auswahlzeile? Antwort: wie US-16.
 
 ## Lücken, Unsicherheit und Prüfstand
 
 - Unsichere Werte tragen Farbe und Symbol, exakte bleiben unmarkiert ([ADR-002](#adr-002-unsicherheit-sichtbar-machen), [uncertainty-specification.md](uncertainty-specification.md)).
 - Briefe ohne Jahr, mit einer einzelnen Datumsgrenze, mit unplausiblem Jahr oder einem Zeitraum über mehrere Jahre stehen neben der Zeitachse in eigenen Balken und werden in jeder Figur gezählt, die sie nicht zeichnet. Raum-Zeit nennt die Briefe ohne Jahr und ohne Koordinaten in einer Notiz.
-- Eine Angabe des Datenmodells, die ein Bestand nicht trägt, steht in der Startfigur leer und benannt an ihrem Platz.
+- Eine Angabe des Datenmodells, die ein Bestand nicht enthält, erhält auf der Startseite keinen Platz. Ein Satz in der Textalternative nennt, was fehlt. Den sichtbaren Satz hat der Operator am 2026-11-14 entfernen lassen, Regel 9 der gemeinsamen Regeln sieht ihn einmal als ruhigen Satz vor.
 - Lücken in fremden Daten heißen Anreicherungspotential ([ADR-005](#adr-005-nicht-wertende-sprache-für-partnerdaten)).
 - Einen Prüfstand von Aussagen zeigt das Werkzeug nicht, weil es keine Aussagen liest. Alles, was es zeigt, ist die Angabe der Edition, wie die Quelle sie gibt. Eine Unterscheidung von bestätigten und vorgeschlagenen Aussagen kommt erst mit [US-45](#us-45-aussagen-über-dritte-mit-ihrem-prüfstand-sehen).
 
 ## Funktionsumfang
 
-Ansichten und Funktionen von `explore.html` und `index.html` mit den Stories, die sie tragen. Aufbau und Gestaltung beschreiben [architecture.md](architecture.md#module) und [design.md](design.md).
+Ansichten und Funktionen von `explore.html` und `index.html` mit den Stories, denen sie dienen. Aufbau und Gestaltung beschreiben [architecture.md](architecture.md#module) und [design.md](design.md).
 
 | Ort | Ansicht oder Funktion | Stories |
 |---|---|---|
-| Startseite | Startfigur, Beispiele, eigene Daten | US-01, US-02, US-03, US-38, US-40 |
-| Start | Arbeitsfläche, Beschreibung des Bestands | US-04, US-27 |
-| Briefe | Briefliste und Brief-Dialog | US-12, US-13, US-14, US-39 |
+| Startseite | Startfigur aus dem Bestand, Element der Bestände mit eigenen Daten | US-01, US-02, US-03, US-38, US-40, US-46 |
+| Start | Dashboard, Sprachlegende | US-04, US-16, US-27 |
+| Briefe | Briefliste und Brief-Dialog | US-12, US-13, US-14, US-28, US-39 |
 | Personen | Liste, Netzwerk (Kreis und Gesamt), Erwähnungen, Vergleich | US-09, US-10, US-11, US-23, US-37, US-42 |
 | Orte | Karte, Raum-Zeit, Liste, Vergleich | US-06, US-07, US-08, US-37, US-41 |
-| Zeit | Jahre, Tage, Chronik, Vergleich | US-05, US-15, US-28 bis US-32, US-34, US-37 |
-| Themen | Themen als Verläufe | US-24, US-25, US-26, US-44 |
-| unter jeder Ansicht | Briefe der Auswahl | US-43 |
-| Seitenleiste | Zeitraum, Qualität, Merkmale, Sprachen, Satz der Auswahl, Korb | US-10, US-15, US-16, US-18, US-19, US-39 |
+| Zeit | Zeit, Vergleich | US-05, US-15, US-28 bis US-31, US-34, US-37 |
+| Themen | Raster und Anteile | US-24, US-25, US-26, US-44 |
+| unter jeder Ansicht | Auswahlzeile mit Briefauszug | US-10, US-19, US-43, US-48 |
+| Schiene | Bestand, Zeitraum, Sprache, Datenlage, Merkmale, Korb | US-15, US-16, US-18, US-27, US-39 |
+| nicht gebaut | Register aus Briefen, Personen und Orten | US-47 |
 | Kopfzeile | Export, Korb | US-21, US-22, US-35, US-36 |
 | `wissenskorb.html` | Analyseseite des Korbs | US-35, US-36 |
 
@@ -562,10 +605,12 @@ Ohne Story und damit Kandidaten zur Streichung, die der Operator entscheidet:
 
 - Die Darstellung „Erwähnungen“ (Erwähnungsfluss, `mentions-view.js`). Keine Story verlangt sie, die Stufe „Erwähnte“ des Korrespondenzkreises zeigt dieselben Personen.
 - Leiste und Maschinerie der Forschungspfade (`research-paths.js` außer den Zählungen, `knowledge-path.js` außer dem Korb, `#knowledge-path-bar`), nach dem Wegfall von US-33.
-- Der Dialog „Datensatz konfigurieren“ nach dem Laden eigener Daten trägt mit der Personenanreicherung US-29, mit der Georeferenzierung keine Story. Ob er bleibt, fragt [plan.md](plan.md#startfigur).
+- Der Dialog „Datensatz konfigurieren“ nach dem Laden eigener Daten dient mit der Personenanreicherung US-29, mit der Georeferenzierung keiner Story. Ob er bleibt, fragt [plan.md](plan.md#startfigur).
 - Ausgeblendete Reste im Markup, die weiter befüllt werden: die Kacheln der Seitenleiste und die verborgene Moduswahl des Vergleichs.
+- Die Tour des Tutorials (`demo-tour.js`), erreichbar nur noch über `demo=true`, und ihr Knopf im Block des Bestands. US-03 nennt sie, die Startseite bietet das Tutorial nicht mehr an.
+- Ungenutzte Module ohne Einstieg: `activity-view.js` mit der Kalender-Heatmap, die Darstellungsknöpfe „Chronik“ und „Tage“ in `#view-variants`, die keine Gruppe mehr zeigt ([architecture.md](architecture.md#ungenutzt)).
 
-Funktionen, die der Operator verlangt hat und die noch keine angenommene Story tragen, sind US-40 bis US-45.
+Funktionen, die der Operator verlangt hat und die noch keine angenommene Story haben, sind US-40 bis US-48.
 
 ## Entscheidungen
 
@@ -573,7 +618,7 @@ Die Gründungsentscheidungen E1 bis E4 und E9 bis E12 (CMIF als Austauschformat,
 
 ### ADR-001 Normdaten-URIs als primärer Schlüssel
 
-Kontext. CMIF trägt zu Personen und Orten eine Normdaten-URI (`@ref`) und einen Anzeigenamen. Editionen schreiben denselben Namen verschieden.
+Kontext. CMIF enthält zu Personen und Orten eine Normdaten-URI (`@ref`) und einen Anzeigenamen. Editionen schreiben denselben Namen verschieden.
 
 Wahl. Abgleich und Aggregation laufen über die URI, der Name dient nur der Anzeige. Fehlt die URI, gilt die Kennung im Register der Edition, sonst der Name.
 
@@ -599,7 +644,7 @@ Wahl. Der Filterzustand liegt zentral in `state-manager.js`, keine Ansicht hält
 
 Begründung. Doppelte Zustände führen zu Synchronisationsfehlern zwischen Ansichten.
 
-Effekt. Zeitraum, gewähltes Jahr, Sprachen, Person und Gegenüber, Ort, Thema, Qualität und Merkmale laufen über den state-manager. `explore.js` hält die Filtereingaben der Seitenleiste und die gefilterte Menge zusätzlich als Arbeitskopie und gleicht sie in `applyFilters()` ab ([architecture.md](architecture.md#entwurfsmuster)). Raum-Zeit, Themen und Netzwerk zeichnen die Briefe aller Filter außer dem, der in ihnen selbst gewählt ist, damit eine Wahl unter den übrigen hervortritt.
+Effekt. Zeitraum, gewähltes Jahr, Sprachen, Person und Gegenüber, Ort, Thema, Qualität und Merkmale laufen über den state-manager. `explore.js` hält die Filtereingaben der Seitenleiste und die gefilterte Menge zusätzlich als Arbeitskopie und gleicht sie in `applyFilters()` ab ([architecture.md](architecture.md#entwurfsmuster)). Raum-Zeit, Themen, Netzwerk, das Profil der Zeitansicht und jede kleine Darstellung der Startansicht zeichnen die Briefe aller Filter außer dem, der in ihnen selbst gewählt ist, damit eine Wahl unter den übrigen hervortritt.
 
 ### ADR-004 Epistemische Kategorien für Forschungsfragen
 
@@ -629,7 +674,7 @@ Wahl. Jede Anfrage an Wikidata oder GeoNames startet erst auf eine ausdrücklich
 
 Begründung. Nutzende sollen sehen und bestimmen, wann Daten das Werkzeug verlassen.
 
-Effekt. Gilt für Personen-Dialog, Chronik, Orte und den Dialog nach dem Laden. Das Laden des Datensatzes selbst fällt nicht darunter: Ein Link mit `cs=` lädt die genannte correspSearch-Abfrage beim Öffnen (Entscheidung E3 vom 2026-11-05). Die Grundkarte von OpenFreeMap ist kein Dienst mit Personenbezug und wird beim Öffnen des Explorers angefragt ([plan.md](plan.md#orte-und-raum-zeit)).
+Effekt. Gilt für Personen-Dialog, Zeitansicht, Orte und den Dialog nach dem Laden. Das Laden des Datensatzes selbst fällt nicht darunter: Ein Link mit `cs=` lädt die genannte correspSearch-Abfrage beim Öffnen (Entscheidung E3 vom 2026-11-05). Die Grundkarte von OpenFreeMap ist kein Dienst mit Personenbezug und wird beim Öffnen des Explorers angefragt ([plan.md](plan.md#orte-und-raum-zeit)).
 
 ### ADR-007 Umfang der Stories nach dem Abgleich mit dem Code
 

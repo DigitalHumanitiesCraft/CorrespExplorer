@@ -10,7 +10,7 @@ status: draft
 language: de
 version: 0.1
 created: 2025-12-03
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 template:
   name: Vorlage Index
@@ -31,10 +31,10 @@ Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents,
 | [journal.md](journal.md) | Provenance | Was ist offen, und wie ist der heutige Stand entstanden? | bei jedem Übergang, `## Open` bei jeder Übergabe |
 | [project.md](project.md) | Charter | Wofür ist das Werkzeug da, wofür nicht, und woran wird es entwickelt? | bei Änderung von Zweck oder Abgrenzung |
 | [specification.md](specification.md) | Specification | Was soll das Werkzeug für Forschende leisten, was davon tut es, wie prüft man es, und warum ist es so gebaut? | bei neuen Stories, Entscheidungen und Änderungen des Funktionsumfangs |
-| [data.md](data.md) | Material | Was liest das Werkzeug, was tragen die Datensätze, wie verhält sich das gemeinsame Briefmodell dazu? | bei neuen Datensätzen, Quellen oder Parser-Änderungen |
+| [data.md](data.md) | Material | Was liest das Werkzeug, was enthalten die Datensätze und die erzeugten Dateien, wie verhält sich das gemeinsame Briefmodell dazu? | bei neuen Datensätzen, Quellen oder Parser-Änderungen |
 | [uncertainty-specification.md](uncertainty-specification.md) | Specification | Wie werden unsichere und fehlende Angaben erkannt, angezeigt und getestet? | bei Änderung der Unsicherheitsbehandlung |
-| [design.md](design.md) | Design | Wie sieht die Oberfläche aus, warum, und was hat der Operator dazu gesagt? | bei Änderung von Aufbau, Ansichten oder Gestaltungsregeln |
-| [architecture.md](architecture.md) | Architecture | Wie ist das Werkzeug gebaut, und wo setzt eine Änderung an? | bei Änderung von Modulen, Seiten oder Datenfluss |
+| [design.md](design.md) | Design | Wie sieht die Oberfläche aus, nach welchen gemeinsamen Regeln, was hat der Operator dazu gesagt und was davon gesehen? | bei Änderung von Aufbau, Ansichten oder Gestaltungsregeln |
+| [architecture.md](architecture.md) | Architecture | Wie ist das Werkzeug gebaut, welche Teile teilen die Ansichten, was ist ungenutzt, und wo setzt eine Änderung an? | bei Änderung von Modulen, Seiten oder Datenfluss |
 | [testing.md](testing.md) | Quality Assurance | Was garantieren die Prüfungen, wie laufen sie, und was bleibt ungeprüft? | bei neuen Prüfungen und nach jeder Prüfrunde |
 | [plan.md](plan.md) | Planning | Was ist offen, woher kommt es, und was wartet auf den Operator? | bei neuen Befunden, Entscheidungen und nach deren Erledigung |
 | [network-figures.md](network-figures.md) | Domain knowledge | Was lässt sich bei Briefdaten als Netz in Beziehung setzen, und welche Daten braucht es? | vor jeder Arbeit am Netzwerk |
@@ -45,19 +45,21 @@ Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents,
 - `research-artefacts/` enthält den Paper-Entwurf zur Entstehung des Werkzeugs und den Prompt für ein externes LLM-Review.
 - `docs/data/` enthält Beispiel- und Testdatensätze und die erzeugte `examples.json`, `preprocessing/` die Python-Skripte, die sie erzeugen.
 - `verification/` enthält Prüfwerkzeuge für Bestände außerhalb des Repositorys (`check-corpus.mjs`, `serve_local_corpus.py`), `tests/browser/` den Smoke-Test. Daten liegen dort nicht.
-- `docs/vendor/` enthält Bibliotheken, Schriften und die Länderumrisse mit ihren Lizenzen.
+- `docs/vendor/` enthält Bibliotheken, Schriften und die Länderumrisse mit ihren Lizenzen, `docs/assets/dhcraft/` die Bausteine von Kopf und Fuß der Projektseiten mit Herkunft und Lizenz.
 
 ## Lesepfade
 
 - Sessionstart: `CLAUDE.md`, der Abschnitt `## Open` am Anfang von [journal.md](journal.md), dieser Index, dann [plan.md](plan.md) und die Dokumente der Aufgabe.
-- Neue Funktion oder Ansicht: [specification.md](specification.md) (Story und Aufgabe), [design.md](design.md) (Aufbau und Rückmeldungen des Operators), [architecture.md](architecture.md#wo-eine-neue-ansicht-ansetzt).
+- Neue Funktion oder Ansicht: [specification.md](specification.md) (Story und Aufgabe), [design.md](design.md) (Aufbau, gemeinsame Regeln und Rückmeldungen des Operators), [architecture.md](architecture.md#wo-eine-neue-ansicht-ansetzt).
+- Durchgang nach den gemeinsamen Regeln: [design.md](design.md#gemeinsame-regeln-aller-ansichten), die geteilten Teile in [architecture.md](architecture.md#module), die Liste je Ansicht in [plan.md](plan.md#durchgang-nach-den-gemeinsamen-regeln).
+- Aufräumen: [architecture.md](architecture.md#ungenutzt), [plan.md](plan.md#aufräumen).
 - Daten und Parser: [data.md](data.md#was-der-parser-liest), [uncertainty-specification.md](uncertainty-specification.md), [testing.md](testing.md#korpusprüfung).
 - Prüfrunde: [testing.md](testing.md#feste-aufgaben) mit den Aufgaben der Specification, Befunde nach [plan.md](plan.md).
 - Gemeinsames Briefmodell: [data.md](data.md#gemeinsames-brief--und-aussagemodell), [plan.md](plan.md#gemeinsames-briefmodell), `knowledge/data.md` im Repository `gossip`.
 
 ## Konvention
 
-Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vorlagen (https://dhcraft.org/Promptotyping/templates/convention.md). Bis Oktober 2026 (Commit `29dfc15`) bestand sie aus Journal, Context Map, einer Liste bekannter Probleme und Themendokumenten. Am 2026-11-14 wurde sie nach der neuen Richtung des Werkzeugs distilliert ([Journal](journal.md)).
+Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vorlagen (https://dhcraft.org/Promptotyping/templates/convention.md). Bis Oktober 2026 (Commit `29dfc15`) bestand sie aus Journal, Context Map, einer Liste bekannter Probleme und Themendokumenten. Am 2026-11-14 wurde sie nach der neuen Richtung des Werkzeugs distilliert, am 2026-11-15 nach dem Umbau von Startseite, Startansicht, Briefliste, Zeit und Themen erneut ([Journal](journal.md)).
 
 ## Begriffe
 
@@ -83,11 +85,23 @@ Eine Figur oder Liste zu einem Gegenstand, etwa Karte, Raum-Zeit und Liste unter
 
 ### Auswahl
 
-Die Menge der Briefe unter allen gesetzten Filtern, als ein Satz aus entfernbaren Marken in der Seitenleiste genannt. Alle Darstellungen zeigen dieselbe Auswahl.
+Die Menge der Briefe unter allen gesetzten Filtern. Alle Darstellungen zeigen dieselbe Auswahl.
+
+### Auswahlzeile
+
+Die Zeile am unteren Rand jeder Darstellung, der eine Ort für die Auswahl, mit der Zahl ihrer Briefe, „Gefiltert nach“ mit den Filtern als entfernbare Marken und „Filter aufheben“ ([design.md](design.md#auswahlzeile)).
 
 ### Briefauszug
 
-Die Briefe der Auswahl, als Zeile unter jeder Darstellung außer der Briefliste und auf Klick als Liste über ihr (`letters-drawer.js`).
+Die Briefe der Auswahl als Liste über der Darstellung, geöffnet über die Zahl der Auswahlzeile, in jeder Darstellung außer der Briefliste (`letters-drawer.js`).
+
+### Schiene
+
+Die Seitenleiste des Explorers als schmale Spalte aus Zeichen mit Hinweis und zugänglichem Namen, die sich zu vollen Beschriftungen öffnen lässt. Bestand, Zeitraum und Sprache öffnen je ein Feld daneben ([design.md](design.md#schiene)).
+
+### Sprachlegende
+
+Die eine Zeile der Sprachen mit ihren Farben, jede so breit wie ihr Anteil an der Auswahl, die zugleich erklärt, was die Farben bedeuten, und als Sprachfilter dient (`renderLanguageKey()` in `selection-ui.js`). Bisher steht sie in der Startansicht.
 
 ### Korrespondenzkreis
 
@@ -99,11 +113,23 @@ Die Darstellung, die die Absendeorte nach ihren Koordinaten auf eine Grundfläch
 
 ### Startfigur
 
-Die Startseite als eine Figur des Datenmodells, gefüllt aus dem gewählten Bestand, in drei Bändern: Kern des CMIF, Erweiterungen im CMIF, TEI-Briefsätze.
+Die Figur der Startseite aus den kleinen Darstellungen des Explorers und einem Beispielbrief, zusammengesetzt aus dem, was der gewählte Bestand enthält (`composeFigure()` in `start-compose.js`), in der Ordnung des Datenmodells (Kern des CMIF, Erweiterungen im CMIF, TEI-Briefsätze), deren Namen nicht auf der Seite stehen. Nummerierte Marken verbinden die Zeilen des Briefs mit seinen Marken in den Figuren.
+
+### Startansicht
+
+Die Darstellung „Start“ des Explorers, ein Dashboard kleiner echter Darstellungen, die einander filtern. Sie ist von der Startseite zu unterscheiden.
+
+### Raster
+
+Die Hauptfigur der Themenansicht mit einer Zeile je Thema und einer Zelle je Jahr, getönt auf einer festen Skala nach der Zahl der Briefe.
+
+### Anteile
+
+Die zweite Figur der Themenansicht, eine Treemap, in der jedes Thema eine Fläche nach seinen Briefen ist.
 
 ### Erweiterter Datensatz
 
-Datensatz, der über Absender, Empfänger, Ort und Datum hinaus erwähnte Personen, Orte, Themen und Sprachen trägt, wie das Hugo Schuchardt Archiv. Er wird in Python vorprozessiert und als JSON geladen.
+Datensatz, der über Absender, Empfänger, Ort und Datum hinaus erwähnte Personen, Orte, Themen und Sprachen enthält, wie das Hugo Schuchardt Archiv. Er wird in Python vorprozessiert und als JSON geladen.
 
 ### Aussage
 

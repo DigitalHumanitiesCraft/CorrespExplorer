@@ -9,7 +9,7 @@ method:
 status: draft
 language: en
 created: 2025-11-27
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 related: [specification, data, design, architecture]
 ---
@@ -140,7 +140,7 @@ Do not fake coordinates. Places without coordinates appear in the places view, n
 
 ### Person Display
 
-`formatPersonName()` and `getPersonInitials()` in `formatters.js`. Since 2026-11-14 the list of correspondents shows no initials; they appear only in the card layout of the chronicle.
+`formatPersonName()` and `getPersonInitials()` in `formatters.js`. Since 2026-11-14 the list of correspondents shows no initials. The card layout of the chronicle, the last place that showed them, was retired with the chronicle on 2026-11-14, so no view shows initials. `persons-view.js` still imports `getPersonInitials()` without calling it.
 
 | Precision | Display | Avatar |
 |-----------|---------|--------|

@@ -8,29 +8,30 @@ Live Demo: https://dhcraft.org/CorrespExplorer
 
 CorrespExplorer lets researchers load letter metadata in the browser and see who wrote to whom, when, from where and about what, and which letters stand behind each pattern, without installation or server-side processing. It does not show letter texts and does not edit or correct data; it links to the editions.
 
-- A start page that is one figure of the letter record and its data model (core of CMIF, its extensions, TEI letter records), filled from the chosen dataset
-- Four large views over one selection: a correspondence circle around a person (with the whole network as a second mode), a map, a space-time view with the places on a ground plane and the years as height, and topics as rows over time
-- Further representations per subject: letter list, lists of persons and places, years, days, chronicle, mentions, comparison
-- The letters of the current selection below every view, and the selection as one sentence of removable marks
+- A start page that is one figure of small views and an example letter, composed from what the chosen dataset contains and ordered by its data model (core of CMIF, its extensions, TEI letter records)
+- A start view in the explorer made of small real views that filter one another, with a language key that is also the language filter
+- Large views over one selection: a correspondence circle around a person (with the whole network as a second mode), a map, a space-time view with the places on a ground plane and the years as height, and topics as a grid of subjects by years with a treemap of shares
+- Further representations per subject: a letter list told from the central person and grouped by year, lists of persons and places, one time view from the whole period down to single letters, mentions, comparison
+- A narrow rail of signs for the holding, the period, the languages and the other filters, and one line at the lower edge of every view with the count of the selection, its filters as removable marks and its letters on request
 - Loading CMIF or TEI files (several files of one edition as one dataset), addresses and URLs of the correspSearch API v2.0
 - Values inferred by the edition, postmarks, addresses, letters recorded several times and implausible years shown as what they are
 - Wikidata enrichment on explicit request, links to the correspSearch search
 - CSV and JSON export, a basket (Wissenskorb) with its own analysis page, URL-based state sharing
 
-Work in progress on 2026-11-14: a dashboard start view of the explorer, a reworked letters view, one merged time view and a review of the network form.
+State on 2026-11-15: the start page, the start view, the letter list, the time view and the topics grid were rebuilt on 2026-11-14 and in the following night and are not yet published. The operator approved the start view as of commit `b189cb5` and the start page as a figure. He has not seen the rest. The form of the network is an open research question.
 
 Scope and its deliberate limits are in [project.md](knowledge/project.md).
 
 ## Data and rights
 
-The tool reads CMIF, the TEI-based exchange format for correspondence metadata. Uploaded data stay in the browser. Two example datasets are bundled: the Hugo Schuchardt Archiv (HSA), the correspondence of the linguist Hugo Schuchardt (1842–1927), on which the tool is developed and tested, and a synthetic tutorial dataset with a guided tour. The letter records of Stefan Zweig Digital, which carry no licence statement, are loaded only locally and are not bundled. Its figures, the further datasets and their sources are documented in [data.md](knowledge/data.md), and the handling of uncertain and missing values in [uncertainty-specification.md](knowledge/uncertainty-specification.md).
+The tool reads CMIF, the TEI-based exchange format for correspondence metadata. Uploaded data stay in the browser. Two example datasets are bundled: the Hugo Schuchardt Archiv (HSA), the correspondence of the linguist Hugo Schuchardt (1842–1927), on which the tool is developed and tested and which the start page offers, and a synthetic tutorial dataset with a guided tour, which the start page no longer offers and the About page still links. The letter records of Stefan Zweig Digital, which carry no licence statement, are loaded only locally and are not bundled. Its figures, the further datasets and their sources are documented in [data.md](knowledge/data.md), and the handling of uncertain and missing values in [uncertainty-specification.md](knowledge/uncertainty-specification.md).
 
 The bundled datasets keep the licences their publishers state, see [Licence and citation](#licence-and-citation).
 
 ## Use
 
 1. Visit https://dhcraft.org/CorrespExplorer
-2. Choose an example dataset above the start figure (tutorial or Hugo Schuchardt Archiv), or load your own files or an address
+2. Keep the Hugo Schuchardt Archiv, the default above the start figure, or choose "Eigene Daten" to load your own files or an address
 3. Open it in the explorer and work in the views of its subjects (start, letters, persons, places, time, topics)
 
 For local development:

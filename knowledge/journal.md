@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2025-11-26
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 template:
   name: Vorlage Journal
@@ -70,6 +70,15 @@ Offen ohne Entscheidung:
 - Nichts vom Abend ist bei 200 Prozent Zoom oder mit einem Screenreader geprüft.
 
 ## Einträge
+
+### 2026-11-15 Wissensbasis nach dem Umbau des Abends distilliert
+
+- Anlass: der erste Schritt der Promptotyping-Folge, die der Operator für alle Projekte verlangt hat („kuratieren, destillieren, refactoren, handoff“), in der Reihenfolge des Abschnitts Open. Die Wissensdokumente beschrieben den Stand vom frühen Abend des 2026-11-14.
+- Geschrieben: [design.md](design.md) beschreibt im Präsens Schiene, Auswahlzeile, Startseite mit den Regeln von `composeFigure()`, Startansicht, Briefliste, Zeit als eine Ansicht und Themen mit Raster und Anteile, je mit dem, was der Operator gesehen hat, und die Folge-Zeilen der Rückmeldungen, die von „in Arbeit“ zu gebaut wechselten. Die elf Regeln und die Sätze des Operators sind unverändert. [specification.md](specification.md) hat den Stand jeder Story am Code, US-32 nicht mehr bedient, US-28, US-31, US-34, US-40 und US-44 geändert, US-03 ohne Tutorial auf der Startseite, und drei Vorschläge US-46 (Startseite aus dem Bestand), US-47 (Register) und US-48 (Auswahlzeile). [architecture.md](architecture.md) führt die geteilten Teile, `mini-figures.js`, `start-compose.js`, die neuen Stylesheets, einen Abschnitt „Ungenutzt“ und die Schritte zum Eintragen einer Ansicht, wie sie heute sind. [testing.md](testing.md) zählt achtzehn Suites und achtzehn Smoke-Prüfungen aus den Dateien und beschreibt die neuen. [data.md](data.md) beschreibt die Schlüssel von `examples.json`, `docs/assets/dhcraft/` mit Herkunft und Lizenzen und das Tutorial außerhalb der Startseite. [plan.md](plan.md) ist eine Liste nach Gegenstand im Einklang mit Open, das Gebaute ist entfallen. [INDEX.md](INDEX.md) hat Lesepfade für Durchgang und Aufräumen und die Begriffe Schiene, Auswahlzeile, Sprachlegende, Startfigur, Startansicht, Raster und Anteile. Kleine Korrekturen in [project.md](project.md), [uncertainty-specification.md](uncertainty-specification.md), `README.md` und `CLAUDE.md`.
+- Befund beim Abgleich: Die Anteile stehen hinter einem Schalter und nicht neben dem Raster, wie der Operator „daneben“ sagte. Regel 9 sieht einen ruhigen Satz über Fehlendes vor, auf der Startseite steht er auf seinen Auftrag nur in der Textalternative und lautet dort „Dieser Bestand trägt keine …“. `topics-view.js` liest am Stand `ef0c0d4` bereits `host.dataset.tableShown`, der Befund der Liste in Open dazu ist zu prüfen. Alle drei stehen in [plan.md](plan.md).
+- Nicht geändert: Open, ältere Einträge, Code, Daten und alles unter `docs/`, `tests/`, `verification/` und `preprocessing/`. Während der Distillation lagen im Arbeitsbaum nicht eingecheckte Änderungen einer anderen Session an `docs/explore.html`, `explore.js`, `upload.js`, `utils.js` und `overview-view.js` (Entfernen von Tutorial und Pfadleiste). Die Dokumente beschreiben den eingecheckten Stand `ef0c0d4`, nicht diese Änderungen.
+- Belege: Lesen von `index.html`, `explore.html`, `explore.js`, `selection-ui.js`, `mini-figures.js`, `start-compose.js`, Teilen von `start-figures.js`, `start-summary.js`, `overview-view.js`, `letters-view.js`, `timeline-view.js`, `chronik-view.js`, `topics-view.js`, `view-support.js`, der Kopfkommentare der übrigen Ansichten und neuen Stylesheets, von `run-all-tests.js`, `smoke.py`, `build_examples.py` und `docs/assets/dhcraft/`. Die Schlüssel von `examples.json` an den Commits `b5c4e5e`, `c6185bc`, `b189cb5` und `d38b4c8` verglichen. Kein Brief in `hsa-letters.json` hat `postmark` (Antwort von US-46). Test-Runner und Smoke-Test sind nicht gelaufen.
+- Wer was tat: Ein Agent (Claude Opus 5.5 in Claude Code) im Auftrag der koordinierenden Session distillierte. Nicht unabhängig gelesen, vom Operator nicht bestätigt, nicht eingecheckt.
 
 ### 2026-11-15 Kontrolliertes Ende: Startseite, Startansicht, Themen, gemeinsame Regeln
 

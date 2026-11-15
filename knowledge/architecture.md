@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 template:
   name: Vorlage Architecture
@@ -21,7 +21,7 @@ related: [data, specification, design, testing]
 
 # Architecture
 
-CorrespExplorer ist eine statische Browser-Anwendung ohne Backend und ohne Build-Schritt. GitHub Pages liefert den Ordner `docs/` aus, alle Verarbeitung läuft im Browser in ES-Modulen, die Wissensbasis liegt außerhalb in `knowledge/`. Dieses Dokument beschreibt Seiten, Module, Datenfluss und die Stellen, an denen eine neue Ansicht ansetzt. Die Modulliste mit Exporten führt `docs/js/CONTEXT-MAP.md`, die Ansichtsmodule `docs/js/views/CONTEXT-MAP.md`.
+CorrespExplorer ist eine statische Browser-Anwendung ohne Backend und ohne Build-Schritt. GitHub Pages liefert den Ordner `docs/` aus, alle Verarbeitung läuft im Browser in ES-Modulen, die Wissensbasis liegt außerhalb in `knowledge/`. Dieses Dokument beschreibt Seiten, Module, Stylesheets, ungenutzten Code, Datenfluss und die Stellen, an denen eine neue Ansicht ansetzt, am Stand vom 2026-11-15 (main bei `ef0c0d4`). Die Modulliste mit Exporten führt `docs/js/CONTEXT-MAP.md`, die Ansichtsmodule `docs/js/views/CONTEXT-MAP.md`.
 
 ## Stack
 
@@ -32,19 +32,22 @@ CorrespExplorer ist eine statische Browser-Anwendung ohne Backend und ohne Build
 | D3 | 7.9.0 | Netzwerk, Erwähnungsfluss, Zeitleiste und Netzwerk des Korbs | ISC |
 | d3-sankey | 0.12.3 | Erwähnungsfluss | BSD-3-Clause |
 | Font Awesome Free | 6.4.0 | Symbole (nur woff2) | Icons CC BY 4.0, Schriften OFL 1.1, Code MIT |
-| Inter, Lato, Merriweather | Stand 2026-10-29 | Schriften | OFL 1.1 |
+| Inter, Lato, Merriweather | Stand 2026-10-29 | Schriften des Werkzeugs | OFL 1.1 |
+| Bausteine der DHCraft-Projektseiten (`dhcraft-tokens.css`, `dhcraft-components.css`, Sora, Instrument Sans) | `brand-assets` bei `b0641cc` | Kopf und Fuß der Startseite | Stylesheets MIT, Schriften OFL 1.1, DHCraft-Zeichen geschützt |
 
-Alle Bibliotheken liegen versioniert in `docs/vendor/` mit ihrer Lizenzdatei, dazu die Länderumrisse von Natural Earth (`docs/vendor/natural-earth/`, [data.md](data.md#länderumrisse)). Raum-Zeit und Themen zeichnen ohne Bibliothek auf eine Zeichenfläche. Extern bleibt allein die Grundkarte von OpenFreeMap, ohne sie zeigt die Karte die Orte auf einfarbiger Fläche. Wikidata, GeoNames über Wikidata und correspSearch werden nur auf Aktion abgefragt ([ADR-006](specification.md#adr-006-externe-dienste-nur-auf-ausdrückliche-aktion)).
+Alle Bibliotheken liegen versioniert in `docs/vendor/` mit ihrer Lizenzdatei, dazu die Länderumrisse von Natural Earth (`docs/vendor/natural-earth/`, [data.md](data.md#länderumrisse)). Die Bausteine der Projektseiten liegen in `docs/assets/dhcraft/`. Raum-Zeit, das Raster der Themen, die untere Figur der Zeit und Kreis und Karte der Startansicht zeichnen ohne Bibliothek auf eine Zeichenfläche. Extern bleibt allein die Grundkarte von OpenFreeMap, ohne sie zeigt die Karte die Orte auf einfarbiger Fläche. Wikidata, GeoNames über Wikidata und correspSearch werden nur auf Aktion abgefragt ([ADR-006](specification.md#adr-006-externe-dienste-nur-auf-ausdrückliche-aktion)).
 
 ## Seiten
 
 | Seite | Skript | Aufgabe |
 |---|---|---|
-| `index.html` | `upload.js` mit `start-figures.js` | Startfigur, Wahl des Beispiels, Laden eigener Dateien, Dateilisten und Adressen, Dialog „Datensatz konfigurieren“ für die Anreicherung |
-| `explore.html` | `explore.js` | Explorer mit Gegenständen, Darstellungen, Seitenleiste, Briefauszug und Export |
+| `index.html` | `upload.js` mit `start-figures.js` und `start-compose.js` | Startseite aus dem gewählten Bestand, Element der Bestände mit eigenen Daten, Laden von Dateien, Dateilisten und Adressen, Dialog „Datensatz konfigurieren“ für die Anreicherung, Kopf und Fuß der Projektseiten |
+| `explore.html` | `explore.js` | Explorer mit Gegenständen, Darstellungen, Schiene, Auswahlzeile mit Briefauszug und Export |
 | `wissenskorb.html` | `wissenskorb.js` | Analyseseite des Korbs mit Listen, Zeitleiste, Netzwerk, Karte, Export und Teilen |
-| `about.html` | keines | Projektinformation, Lizenzen |
+| `about.html` | keines | Projektinformation, Lizenzen, Link auf das Tutorial |
 | `test.html` | `tests/run-all-tests.js` | Test-Runner, einziger Auslöser eines Laufs |
+
+Kopf und Fuß in der Form der Projektseiten hat bisher nur `index.html`. `explore.html` und `about.html` haben ihre eigenen Kopfzeilen ([plan.md](plan.md#kopf-und-fuß-für-explorer-und-projektseite)).
 
 ## Module
 
@@ -53,36 +56,71 @@ Die Module stehen in `docs/js/`, die Ansichten in `docs/js/views/`.
 - Daten: `cmif-parser.js` liest CMIF und TEI-Briefsätze, auch mehrere Dateien als einen Bestand (`parseCMIF()`, `parseCMIFFiles()`), führt Einträge gleicher Signatur zusammen, markiert Entsprechungen und unplausible Jahre ([data.md](data.md#was-der-parser-liest)). `correspsearch-api.js` lädt die correspSearch-API seitenweise. Beide bilden die Indizes mit `buildIndices()` aus `utils.js`.
 - Zustand: `state-manager.js` hält Daten, Filter und Darstellungszustand und ist der einzige Leser und Schreiber der URL (`toURLParams()`, `fromURLParams()`). Filter: `temporal` (Zeitraum oder undatiert), `year` (ein in einer Figur gewähltes Jahr neben dem Zeitraum), `languages`, `person` und `partner` (die Briefe zwischen zwei Personen), `subject`, `place`, `features` (Merkmale der Überlieferung) und `quality`. Darstellung: `currentView` und `drawerOpen`. `filterLetters()` filtert einen beliebigen Filtersatz, damit eine Ansicht die Briefe aller Filter außer ihrem eigenen zeichnen kann.
 - Helfer: `utils.js` (Escaping, Schlüssel `personKey` und `placeKey`, Datumsklassifikation `classifyDate()`, `datedYearRange()`, `isMultiYearSpan()`, Indizes, Dialoge, Toast), `formatters.js` (Datum, Person, Ort mit Unsicherheit), `constants.js` (`VIEWS`, `LETTER_FEATURES`, Sprachpalette, Vorgaben, Korbgrenzen), `dom-cache.js`, `export.js` (CSV und JSON).
-- Zählung: `research-paths.js` liefert `summarizeCorpus()` und `datasetQuality()`, die Quelle der Kennzahlen von Startansicht, Seitenleiste und Export. Die übrigen Funktionen des Moduls (`analyzeResearchQuestions()`, die Darstellung der Pfade) haben seit 2026-11-14 keinen Einstieg mehr in der Oberfläche.
-- Startfigur: `start-summary.js` definiert mit `summarizeLetters()` und `STATEMENTS`, welche Angaben des Datenmodells die Briefe tragen und welche Aggregate die Figur zeichnet. `start-figures.js` zeichnet die drei Bänder, markiert den Beispielbrief und lädt die Länderumrisse. Für das HSA liest sie `docs/data/examples.json`, das `preprocessing/build_examples.py` nach denselben Regeln erzeugt. Den Korrespondenzkreis übernimmt sie aus `network-view.js` (`egoGeometry()`, `egoLayout()`), lazy geladen.
+- Zählung: `research-paths.js` liefert `summarizeCorpus()` und `datasetQuality()`, die Quelle der Kennzahlen von Startansicht, Schiene, Export und Upload.
+- Geteilte Teile der Auswahl: `selection-ui.js` hält, was nach den [gemeinsamen Regeln](design.md#gemeinsame-regeln-aller-ansichten) jede Ansicht gleich tun soll. Bisher nutzen es die Startansicht, `explore.js` für die Titel der Ansichten und, für die Sprachfarben, das Netzwerk.
+  - `countOf(part, total, one, of)` gibt die eine Zählform („774 Orte“, unter einem Filter „95 von 774 Orten“, Regel 7).
+  - `renderLanguageKey(host, {counts, totals, chosen, onToggle, onRest, tip, others})` zeichnet die Sprachlegende, die zugleich Anteilsbalken und Sprachfilter ist (Regeln 2, 5, 11). `languageOrder()`, `languageCategory()`, `languageColor()` und `languageName()` geben die eine Reihenfolge und Farbe der Sprachen, `dominantLanguages()` die häufigste Sprache je Marke.
+  - `PALE_TOKEN` (`--color-border-light`) und `OUTSIDE_OPACITY` (0.3) sind die Werte, mit denen eine Figur das Ganze blass hinter die Auswahl stellt (Regel 6).
+  - `CHOOSABLE` und `OVER_MARK` sind die Klassen, die Zeiger und Umriss sagen lassen, dass ein Klick wählt (Regel 8).
+- Auswahl in `explore.js` und `view-support.js`: `revealLetters()` öffnet die Briefe einer eben gesetzten Auswahl im Briefauszug, in der Briefliste setzt es den Fokus auf deren Titel. Ansichten erhalten es über ihre `deps`. `updateSelectionLine()` und `renderSelectionSentence()` füllen die Auswahlzeile, `selectionMarks()` in `view-support.js` liefert ihre Marken. `renderDataTable(host, {caption, columns, rows, limit, label})` setzt die Tabelle einer Figur hinter einen ruhigen Schalter, dessen Text `label` ist (Vorgabe „Daten als Tabelle“). Der Zustand steht in `host.dataset.tableShown` und überlebt ein Neuzeichnen (Regel 4).
+- Kleine Figuren: `mini-figures.js` hält, was Startseite und Startansicht gemeinsam zeichnen: `loadLand()` lädt die Länderumrisse einmal je Seite, `mapFrame()`, `frameProjection()` und `landPath()` legen Ausschnitt und Projektion der kleinen Karte fest, `smallGeometry()` passt die Geometrie des Korrespondenzkreises (`egoGeometry()` aus `network-view.js`) an eine kleine Figur an.
+- Startseite: `start-summary.js` definiert mit `summarizeLetters()` und `STATEMENTS`, welche Angaben des Datenmodells die Briefe enthalten und welche Aggregate die Figur zeichnet. `start-compose.js` setzt mit `composeFigure(summary, {lettersInBrowser})` daraus die Figur nach festen Regeln zusammen und bildet mit `missingSentence()` den Satz über Fehlendes. Die Funktion ist rein und in `test-compose.js` geprüft. `start-figures.js` zeichnet die Figur, markiert den Beispielbrief mit nummerierten Marken und verwaltet die Wahl des Bestands. Für das HSA liest sie `docs/data/examples.json`, das `preprocessing/build_examples.py` nach denselben Regeln erzeugt. Kreis und Zeitseite übernimmt sie lazy aus `network-view.js` und `timeline-view.js`.
 - Anreicherung: `wikidata-enrichment.js`, `geonames-enrichment.js`, beide mit `AbortSignal`.
-- Korb und Führung: `basket.js` (ein Korb je Datensatz in localStorage, Tab-Synchronisation, Teilen per URL), `knowledge-path.js` (Korbabschnitt der Seitenleiste und die Pfadleiste ohne Einstieg), `demo-tour.js`.
-- Ansichten: je ein Modul für Übersicht (Arbeitsfläche), Karte, Raum-Zeit, Korrespondenten mit Personen-Dialog, Briefe mit Brief-Dialog, Zeitleiste, Themen, Orte, Netzwerk, Erwähnungsfluss, Chronik, Aktivität und Vergleich, dazu `letters-drawer.js` für den Briefauszug und `view-support.js` für Geteiltes (Filtersatz, Tokens für Grafiken, Tabellen als Textalternative, Stern des Korbs, Zeilen der Dialoge).
+- Korb und Führung: `basket.js` (ein Korb je Datensatz in localStorage, Tab-Synchronisation, Teilen per URL), `knowledge-path.js` (Korbabschnitt der Seitenleiste und die Pfadleiste ohne Einstieg), `demo-tour.js` (Tour des Tutorials, nur über `demo=true`).
+- Ansichten: je ein Modul für Startansicht (`overview-view.js`), Karte, Raum-Zeit, Korrespondenten mit Personen-Dialog, Briefe mit Brief-Dialog, Zeit, Themen, Orte, Netzwerk, Erwähnungsfluss und Vergleich, dazu `letters-drawer.js` für den Briefauszug und `view-support.js` für Geteiltes (Filtersatz, Tokens für Grafiken, Tabellen als Textalternative, Stern des Korbs, Zeilen der Dialoge).
 
 Einzelne Ansichten:
 
-- `network-view.js` hat zwei Betriebsarten. „Ego“ baut mit `buildEgoNetwork()` den Korrespondenzkreis um eine Person (Partner mit Briefzahl und erstem Brief, Sehnen zwischen Korrespondenten, erwähnte Personen als äußerer Ring) und legt ihn mit `egoGeometry()`, `egoScales()` und `egoLayout()` aus, alles reine Funktionen. „Gesamt“ ist das Kräftelayout mit den Bauern aus `NETWORK_BUILDERS` (Briefwechsel, Zeitgenossen, Themen).
+- `overview-view.js` zeichnet das Dashboard der Startansicht, Zeit mit Griffen und Sprachlegende als SVG, Kreis und Karte auf Zeichenflächen, Themen und Überlieferung als Knöpfe. `lettersBeside(dimension)` gibt jeder kleinen Darstellung die Briefe aller Filter außer ihres eigenen. `renderDatasetFacts()` füllt den Block des Bestands, den `initRail()` hinter das Info-Zeichen legt.
+- `network-view.js` hat zwei Betriebsarten. „Ego“ baut mit `buildEgoNetwork()` den Korrespondenzkreis um eine Person (Partner mit Briefzahl und erstem Brief, Sehnen zwischen Korrespondenten, erwähnte Personen als äußerer Ring) und legt ihn mit `egoGeometry()`, `egoScales()` und `egoLayout()` aus, alles reine Funktionen. Die Punkte färbt es mit `dominantLanguages()`. „Gesamt“ ist das Kräftelayout mit den Bauern aus `NETWORK_BUILDERS` (Briefwechsel, Zeitgenossen, Themen).
 - `spacetime-view.js` aggregiert Briefe je Ort und Jahr mit der häufigsten Sprache (`aggregatePlaceYears()`), projiziert orthographisch ohne Bibliothek (`groundLayout()`, `projectPoint()`, `fitBox()`) und zeichnet auf eine Zeichenfläche. Achse und Ortsnamen sind SVG darüber, der Zeiger wird über die Geometrie der letzten Zeichnung zugeordnet (`hitAt()`). `screenPositionOf()` liefert Prüfungen die Bildschirmposition einer Marke.
-- `topics-view.js` zeichnet die Themen als Kämme über einer gemeinsamen Zeitachse auf eine Zeichenfläche, die Namen sind HTML-Knöpfe darüber (`subjectProfiles()`, `orderSubjects()`, `matchSubjects()`, `topEntries()`).
-- `letters-drawer.js` zeigt die Briefe der Auswahl unter jeder Ansicht außer der Briefliste, wächst beim Scrollen in Schritten und nutzt Zeilen und Dialog aus `letters-view.js`.
+- `letters-view.js` sortiert (`sortLetters()`), gruppiert (`groupLetters()`) und zählt das Jahresprofil (`selectionProfile()`), alles rein. `rowCentre()` bestimmt die zentrale Person, `letterDirection()` die Richtung eines Briefs von ihr aus. `renderLetterGroups()` schreibt Zeilen erst, wenn ihre Gruppe in die Nähe des sichtbaren Teils kommt, und dient Briefliste und Briefauszug.
+- `letters-drawer.js` zeigt die Briefe der Auswahl über jeder Ansicht außer der Briefliste, mit Zeilen und Dialog aus `letters-view.js`. `drawerCountText()` bildet die Zahl der Auswahlzeile.
+- `timeline-view.js` ist die eine Zeitansicht mit dem Profil je Jahr oben und dem gewählten Zeitraum unten in der feinsten lesbaren Auflösung (`timeResolution()`, `binLetters()`, `periodLetters()`, `axisInterval()`, `letterSide()`), einzelne Briefe bis `LETTER_LIMIT`. Stelle im Briefwechsel, Lebensdaten und Alter liest sie aus `chronik-view.js`.
+- `chronik-view.js` hält nur noch den Index der Briefwechsel (`buildCorrespondenceIndex()`, `correspondenceContext()`, `contextText()`) und die Anreicherung mit Lebensdaten auf Aktion (`personAge()`, `lifeDatesOf()`), die die Zeitansicht von der Chronik übernimmt.
+- `topics-view.js` zeichnet das Raster aus Themen und Jahren auf eine Zeichenfläche, die Namen sind HTML-Optionen darüber (`subjectProfiles()`, `orderSubjects()`, `matchSubjects()`, `topEntries()`, `shadeStep()` mit `SHADE_BOUNDS`), und die Treemap „Anteile“ (`mapGroups()`, `splitTail()`, `restLabel()`, `restShare()`, `MIN_AREA`).
 
-`explore.js` orchestriert: Es lädt den Datensatz, hält die Filtereingaben der Seitenleiste, das gewählte Jahr und das Gegenüber als Arbeitskopie, wechselt die Ansicht, setzt den Satz der Auswahl und öffnet den Export. Die Ansichtsmodule erhalten ihre Abhängigkeiten über `init*View(deps)` und importieren `explore.js` nicht.
+`explore.js` orchestriert: Es lädt den Datensatz, hält die Filtereingaben der Schiene, das gewählte Jahr und das Gegenüber als Arbeitskopie, wechselt die Ansicht, füllt die Auswahlzeile, richtet die Schiene ein (`initRail()`, `openRailPanel()`, `syncRail()`) und öffnet den Export. Die Ansichtsmodule erhalten ihre Abhängigkeiten über `init*View(deps)` und importieren `explore.js` nicht.
+
+## Stylesheets
+
+Ladereihenfolge und Zuständigkeit führt `docs/css/CONTEXT-MAP.md`. Seit dem 2026-11-14 hinzugekommen:
+
+- `rail.css`: die Schiene, die Auswahlzeile und die Sprachlegende, also die Teile, die jede Ansicht teilt.
+- `dashboard.css`: Block des Bestands und Dashboard der Startansicht.
+- `letters.css`: Briefliste und Liste des Briefauszugs.
+- `time.css`: die Zeitansicht.
+- `topics.css`: Raster und Anteile.
+- `site-frame.css`: passt Kopf und Fuß der Projektseiten an das Werkzeug an. Die Bausteine aus `assets/dhcraft/` liegen in der Kaskadenebene `dh`, die ungeschichteten Regeln des Werkzeugs haben Vorrang, deshalb setzt die Datei Abstände und Farben von Kopf und Fuß neu. Kopf und Fuß nutzen die Schriften Sora und Instrument Sans, der Seitenkörper behält die Schriften des Werkzeugs. Bisher bindet nur `index.html` sie ein.
+
+`docs/assets/dhcraft/` enthält die unverändert kopierten Bausteine der Projektseiten aus dem Repository `brand-assets` mit Herkunft und Lizenz ([data.md](data.md#gemeinsame-bausteine-der-projektseiten)). Eine neuere Fassung wird durch erneutes Kopieren des Ordners übernommen, angepasst wird nur in `site-frame.css`.
+
+## Ungenutzt
+
+Im Code steht, was keine Oberfläche mehr erreicht. Das Entfernen ist der Schritt „refactoren“ der Promptotyping-Folge und wartet auf ihn ([plan.md](plan.md#aufräumen)).
+
+- `views/activity-view.js` mit der Kalender-Heatmap importiert keine Seite, nur `test-aggregation.js` prüft `buildActivityIndex()`. Die Knöpfe `data-view="activity"` und `data-view="chronik"` in `#view-variants` zeigt keine Gruppe mehr, `view=activity` und `view=chronik` leiten in die Zeitansicht. Nach dem Journal stehen die Regeln `.timeline-*`, `.chronik-*` und `.activity-*` in `explore.css` ohne Element.
+- Aus `chronik-view.js` sind die Layouts entfernt, das Modul selbst ist genutzt.
+- Die Maschinerie der Forschungspfade: `analyzeResearchQuestions()` und die Darstellung der Pfade in `research-paths.js` und `basketSelectionForView()` in `knowledge-path.js` prüfen nur noch Tests. `initKnowledgePath()` läuft weiter und hält die Pfadleiste `#knowledge-path-bar` verborgen.
+- Am Tutorial hängen die Tour in `demo-tour.js`, ihr Knopf im Block des Bestands (`startTour()` in `overview-view.js`), `demo=true` in `explore.js` und `upload.js`, die Smoke-Prüfungen „demo link“ und „tour once per browser“ und die Suite Demo. Die Datei `docs/data/demo-showcase.xml` löscht nur der Operator oder eine Session auf sein ausdrückliches Wort.
+- Kleinere Reste: `renderFilterNotice()` in `view-support.js` entfernt nur noch einen früheren Hinweis, `comparison-view.js` ruft es weiter. `persons-view.js` importiert `getPersonInitials()`, ohne es aufzurufen. Die Kacheln `#sidebar-dataset` sind ausgeblendet und werden befüllt.
 
 ## Wo eine neue Ansicht ansetzt
 
-1. Modul `docs/js/views/<name>-view.js` mit `init<Name>View(deps)` und `render<Name>()`, eigenes Stylesheet in `docs/css/`.
+1. Modul `docs/js/views/<name>-view.js` mit `init<Name>View(deps)` und einer Zeichenfunktion, eigenes Stylesheet in `docs/css/` mit `<link>` in `explore.html`.
 2. `VIEWS` in `constants.js`, damit `view=<name>` als Adresse gilt.
-3. In `explore.js`: Import und Aufruf von `init…`, Eintrag in `VIEW_GROUPS` unter ihrem Gegenstand, Bedingung in `detectAvailableViews()`, `case` im Render-Schalter, bei Bedarf `SIDEBAR_VIEWS` und `FILTER_INDICATOR_VIEWS`.
-4. In `explore.html`: Knopf in `#view-variants`, Bereich `<div id="<name>-view" class="tab-content">` mit `.view-header`, Stylesheet. Das Menü unter dem Reiter entsteht aus `VIEW_GROUPS`.
-5. `VIEWS` in `tests/browser/smoke.py`, eine Suite für die reinen Funktionen, `docs/js/views/CONTEXT-MAP.md`, und die Story in [specification.md](specification.md).
+3. In `explore.js`: Import und Aufruf von `init…` mit den `deps`, die die Ansicht braucht, `revealLetters` eingeschlossen, wenn sie Briefe öffnet. Eintrag in `VIEW_GROUPS` unter ihrem Gegenstand, Bedingung in `detectAvailableViews()`, `case` in `renderView()`, bei Bedarf ein Titel in `updateViewTitle()`. Setzt die Ansicht Zeitraum oder Sprache selbst, blendet `syncRail()` das Zeichen der Schiene für sie aus.
+4. In `explore.html`: Knopf in `#view-variants` mit `.view-btn-text`, aus dem das Menü unter dem Reiter seinen Namen liest, und ein Bereich `<div id="<name>-view" class="tab-content">` mit `.view-header` und `h2.view-header__title`. Das Menü entsteht aus `VIEW_GROUPS`.
+5. Die geteilten Teile verwenden statt eigener: `countOf()` für Zählungen, `renderLanguageKey()` für Sprachen, `PALE_TOKEN` oder `OUTSIDE_OPACITY` für das blasse Ganze, `CHOOSABLE` und `OVER_MARK` für wählbare Marken, `renderDataTable()` mit eigenem `label` für die Tabelle, `revealLetters()` für die Briefe. Die Ansicht setzt keine eigene Zahl der Auswahl und keinen eigenen Filtersatz, beides steht in der Auswahlzeile.
+6. `VIEWS` und `GROUP_OF` in `tests/browser/smoke.py`, eine Suite für die reinen Funktionen, registriert in `run-all-tests.js`, `docs/js/views/CONTEXT-MAP.md`, und die Story in [specification.md](specification.md).
 
 ## Datenfluss
 
 1. Laden. `upload.js` übergibt Datei, Dateien oder Adresse an den Parser, ergänzt Koordinaten aus `docs/data/geonames_coordinates.json` und auf Wunsch aus Wikidata, legt das Ergebnis in sessionStorage und leitet zum Explorer. `explore.html?json=data/….json` lädt einen vorprozessierten Datensatz direkt (nur relative Pfade unter `data/`), `?files=` eine Dateiliste, `demo=true` das Tutorial, `cs=` eine correspSearch-Abfrage. Ohne Datensatz leitet der Explorer zur Startseite mit Hinweis.
-2. Startfigur. `start-figures.js` lädt den gewählten Bestand (Tutorial im Browser, HSA aus `examples.json`, lokaler Bestand über die Dateiliste, eigene Daten aus dem Parser), fasst ihn mit `summarizeLetters()` zusammen und zeichnet die Bänder. Ein Link einer Angabe öffnet den Explorer in ihrer Darstellung.
+2. Startseite. `start-figures.js` lädt den gewählten Bestand (HSA aus `examples.json`, lokaler Bestand über die Dateiliste, eigene Daten aus dem Parser), fasst ihn mit `summarizeLetters()` zusammen, lässt `composeFigure()` die Figuren wählen und zeichnet sie. Ein Titel öffnet den Explorer in ihrer Darstellung, bei eigenen Daten über `upload.js`.
 3. Indizes und Kennzahlen. Beim Laden bildet `explore.js` einmal `summarizeCorpus()` und `datasetQuality()` über alle Briefe. Die Indexformen von Parser und HSA-Datei unterscheiden sich ([Datenmodell](#datenmodell)), Zählungen kommen deshalb aus den Briefen.
-4. Filter. `fromURLParams()` setzt alle Filter vor dem ersten Zeichnen. `applyFilters()` schreibt die Eingaben der Seitenleiste, das gewählte Jahr und das Gegenüber in den state-manager und liest die gefilterten Briefe zurück. Der Satz der Auswahl, die Titel der Ansichten und die Zeile des Briefauszugs folgen daraus.
-5. Ansichten. Die aktive Ansicht zeichnet die gefilterten Briefe. Raum-Zeit, Themen und der Korrespondenzkreis zeichnen die Briefe aller Filter außer dem, der in ihnen gewählt ist, und heben die Wahl hervor.
+4. Filter. `fromURLParams()` setzt alle Filter vor dem ersten Zeichnen. `applyFilters()` schreibt die Eingaben der Schiene, das gewählte Jahr und das Gegenüber in den state-manager und liest die gefilterten Briefe zurück. Auswahlzeile und Titel der Ansichten folgen daraus.
+5. Ansichten. Die aktive Ansicht zeichnet die gefilterten Briefe. Raum-Zeit, Themen, Korrespondenzkreis, das Profil der Zeitansicht und die kleinen Darstellungen der Startansicht zeichnen die Briefe aller Filter außer dem, der in ihnen gewählt ist, und heben die Wahl hervor.
 6. URL. `updateUrlState()` legt bei einem Ansichtswechsel einen Historieneintrag an und ersetzt ihn bei Filteränderungen. Bei Zurück wechselt der Explorer nur die Ansicht, wenn die Filter gleich sind, sonst lädt er neu.
 7. Korb. Ansichten legen Briefe, Personen und Orte über `basket.js` ab, unter einem Schlüssel je Datensatz. Die Analyseseite wertet die Vereinigung aus Briefen des Korbs und allen Briefen seiner Personen und Orte aus.
 8. Vorprozessierung außerhalb des Browsers: `build_hsa_data.py` erzeugt `hsa-letters.json`, `build_examples.py` daraus `examples.json`, `resolve_geonames_wikidata.py` die Koordinatentabelle.

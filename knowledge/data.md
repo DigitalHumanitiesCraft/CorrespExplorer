@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 template:
   name: Vorlage Datengrundlage
@@ -49,10 +49,10 @@ CMIF ist ein TEI-basiertes Format der TEI Correspondence SIG für den Austausch 
 
 | Datei | Inhalt | Rolle |
 |---|---|---|
-| `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 mit allen Erwähnungstypen des CMIF-v2-Entwurfs (Themen, Personen, Orte, Organisationen, Werke) und Sprachangaben | Tutorial-Datensatz mit geführter Tour, Vorgabe der Startfigur |
+| `docs/data/demo-showcase.xml` | Synthetisches Gelehrtennetzwerk 1880–1920 mit allen Erwähnungstypen des CMIF-v2-Entwurfs (Themen, Personen, Orte, Organisationen, Werke) und Sprachangaben | Tutorial-Datensatz mit geführter Tour. Seit `d38b4c8` bietet die Startseite ihn auf Auftrag des Operators nicht mehr an. Er bleibt im Repository, öffnet über `explore.html?demo=true` (Link in `about.html` über `index.html?demo=true`) und dient der Tour, der Suite Demo und zwei Smoke-Prüfungen. Ob die Datei gelöscht wird, entscheidet der Operator |
 | `docs/data/hsa.xml` | CMIF-Export des Hugo Schuchardt Archivs, byte-gleich mit `data/hsa/CMIF.xml` (geprüft mit `cmp` am 2026-10-29) | Ausgelieferte Kopie der CMIF-Datei. Die Vorprozessierung liest `data/hsa/CMIF.xml` |
 | `docs/data/hsa-letters.json` | Vorprozessierter HSA-Datensatz mit Indizes, teiHeader-Metadaten und Änderungsvermerk `meta.modifications` | Referenzdatensatz der Entwicklung und der festen Aufgaben ([specification.md](specification.md)) |
-| `docs/data/examples.json` | Zusammenfassung des HSA für die Startfigur, erzeugt aus `hsa-letters.json` ([Erzeugte Daten](#erzeugte-daten)) | Startfigur für das Archiv |
+| `docs/data/examples.json` | Zusammenfassung des HSA für die Startfigur, erzeugt aus `hsa-letters.json` ([Erzeugte Daten](#erzeugte-daten)) | Startseite für das Archiv |
 | `docs/data/geonames_coordinates.json` | Koordinaten zu GeoNames-IDs aus Wikidata, für Genf aus GeoNames ([Herkunft](#herkunft-von-docsdatageonames_coordinatesjson)) | Ergänzung von Orten ohne Koordinaten beim Laden |
 | `docs/data/schoenbach.xml` | Lokale Kopie der Schönbach-Briefe | Kleiner Realdatensatz |
 | `docs/data/test-uncertainty.xml` | Synthetische Unsicherheitsfälle | Testdatei, Fallliste in [uncertainty-specification.md](uncertainty-specification.md#test-cases) |
@@ -235,13 +235,31 @@ Das Werkzeug zeigt deshalb keinen Prüfstand von Aussagen, weder bestätigt noch
 
 ### docs/data/examples.json
 
-`preprocessing/build_examples.py` liest `docs/data/hsa-letters.json` und schreibt `docs/data/examples.json` mit einem Eintrag `data/hsa-letters.json`: welche Aussagen des Datenmodells die Briefe tragen und wie viele, die kleinen Aggregate der Startfigur (Korrespondenzkreis mit dem äußeren Ring der Erwähnten, Absendeorte und erwähnte Orte mit Koordinaten, Briefe je Jahr und Sprache, Verläufe der häufigsten Themen, Hosts der Editionslinks) und zwölf Beispielbriefe mit ihrer Stelle in jedem Aggregat. Die Regeln sind einmal in `docs/js/start-summary.js` definiert, das Skript überträgt sie Regel für Regel, weil die Datei des Archivs zu groß ist, um sie bei jedem Aufruf der Startseite im Browser zusammenzufassen. Tutorial und lokal eingebundene Bestände fasst der Browser selbst zusammen.
+`preprocessing/build_examples.py` liest `docs/data/hsa-letters.json` und schreibt `docs/data/examples.json` mit einem Eintrag `datasets["data/hsa-letters.json"]`. Die Regeln sind einmal in `docs/js/start-summary.js` (`summarizeLetters()`) definiert, das Skript überträgt sie Regel für Regel, weil die Datei des Archivs zu groß ist, um sie bei jedem Aufruf der Startseite im Browser zusammenzufassen. Lokal eingebundene Bestände und eigene Daten fasst der Browser selbst nach denselben Regeln zusammen. Welche Figuren aus der Zusammenfassung werden, entscheidet danach `composeFigure()` in `start-compose.js` ([design.md](design.md#startseite)).
 
-Die Datei trägt kein Erzeugungsdatum, ein unveränderter Quellstand ergibt eine unveränderte Datei. Dass die Datei mit der Definition in JavaScript übereinstimmt, prüft der Smoke-Test ([testing.md](testing.md#browser-smoke-test)). Nach jeder Neuerzeugung von `hsa-letters.json` ist `uv run preprocessing/build_examples.py` zu wiederholen.
+| Schlüssel | Inhalt |
+|---|---|
+| `letters`, `dated`, `first`, `last` | Zahl der Briefe, der Briefe mit Jahr, erstes und letztes Jahr |
+| `coverage` | je Angabe des Datenmodells (`STATEMENTS`) die Zahl der Briefe, die sie enthalten. `composeFigure()` gibt einer Angabe nur bei einer Zahl über null eine Figur |
+| `persons`, `places`, `languages` | Zahl der Personen und bekannten Absendeorte, Briefe je Sprache |
+| `ego` | der Korrespondenzkreis um die zentrale Person mit dem äußeren Ring der Erwähnten |
+| `located`, `mentionedLocated` | Absendeorte und erwähnte Orte mit Koordinaten und Briefzahl |
+| `perYear` | Briefe je Jahr und Sprache |
+| `mentioned`, `subjects` | Zahl und häufigste erwähnte Personen, Orte und Themen, die Jahresverläufe der gezeigten Themen |
+| `hosts` | die häufigsten Hosts der Links zur Edition |
+| `placesTop` | die fünf häufigsten Absendeorte mit Namen, für die Rangfolge ohne Koordinaten (seit `b189cb5`) |
+| `postmarkYears`, `recordCounts`, `recordsDiffer` | Poststempel je Jahr, Zahl der Briefe je Zahl ihrer Einträge, Briefe mit abweichenden Einträgen, für die Figuren der Briefsätze (seit `b189cb5`) |
+| `examples` | zwölf Beispielbriefe mit ihren Angaben und ihrer Stelle in jedem Aggregat |
+
+Für das Archiv sind `postmarkYears` leer und `recordsDiffer` null, weil es keine Briefsätze enthält. Die Datei enthält kein Erzeugungsdatum, ein unveränderter Quellstand ergibt eine unveränderte Datei. Dass die Datei mit der Definition in JavaScript übereinstimmt, prüft der Smoke-Test ([testing.md](testing.md#browser-smoke-test)). Nach jeder Neuerzeugung von `hsa-letters.json` ist `uv run preprocessing/build_examples.py` zu wiederholen.
 
 ### Länderumrisse
 
-`docs/vendor/natural-earth/countries-110m.geo.json` sind Länderumrisse im Maßstab 1:110 Millionen von Natural Earth (gemeinfrei), eine GeoJSON-Umwandlung aus dem npm-Paket world-atlas, Version 2. Herkunft und Weg in `docs/vendor/natural-earth/PROVENANCE.md`. Raum-Zeit-Ansicht und Startfigur zeichnen daraus nur die äußeren Ringe und lesen keine Namen.
+`docs/vendor/natural-earth/countries-110m.geo.json` sind Länderumrisse im Maßstab 1:110 Millionen von Natural Earth (gemeinfrei), eine GeoJSON-Umwandlung aus dem npm-Paket world-atlas, Version 2. Herkunft und Weg in `docs/vendor/natural-earth/PROVENANCE.md`. Raum-Zeit-Ansicht, Startseite und die kleine Karte der Startansicht (`loadLand()` in `mini-figures.js`) zeichnen daraus nur die äußeren Ringe und lesen keine Namen.
+
+### Gemeinsame Bausteine der Projektseiten
+
+`docs/assets/dhcraft/` enthält Kopf und Fuß der Projektseiten von Digital Humanities Craft, am 2026-11-14 unverändert kopiert aus dem Repository `DigitalHumanitiesCraft/brand-assets`, Ordner `web/`, bei Commit `b0641cc` (`PROVENANCE.md` im Ordner): `dhcraft-tokens.css`, `dhcraft-components.css`, `dhcraft-mark-watercolor-128.png`, `LICENSE.md` und vier WOFF2-Schriften (Sora, Instrument Sans) mit ihren OFL-Texten unter `fonts/`. Nach `LICENSE.md` stehen die Stylesheets unter MIT, die Schriften unter der SIL Open Font License 1.1, das DHCraft-Zeichen bleibt geschützt und darf auf DHCraft-Seiten gezeigt werden, die den Ordner kopieren. Eine neuere Fassung wird durch erneutes Kopieren übernommen, das Werkzeug passt die Bausteine nur in `docs/css/site-frame.css` an. Bisher bindet nur `index.html` sie ein.
 
 ## Grenzen
 
@@ -281,7 +299,7 @@ GeoNames liefert keine Koordinaten im CMIF. Sie kommen aus `docs/data/geonames_c
 
 Editionen, die je Korrespondenz eine Datei veröffentlichen, lädt `parseCMIFFiles()` als einen Bestand: mehrere Dateien im Dateidialog oder per Drag-and-Drop, oder eine Dateiliste `index.html?files=data/….json` mit `{"files": ["a.xml", …]}`, deren Dateinamen den Ordner der Liste nicht verlassen. Eine Datei ohne Briefe oder ohne gültiges XML wird übersprungen und in `meta.files.skipped` genannt. Der Kopf des Bestands nennt nur, was alle Dateien teilen.
 
-Für Bestände, die nicht ins Repository gehören, bindet `python verification/serve_local_corpus.py <Ordner>` einen Ordner außerhalb des Repositorys unter `data/local/` ein und erzeugt die Dateiliste. Startseite und Explorer bieten den Bestand dann als drittes Beispiel an.
+Für Bestände, die nicht ins Repository gehören, bindet `python verification/serve_local_corpus.py <Ordner>` einen Ordner außerhalb des Repositorys unter `data/local/` ein und erzeugt die Dateiliste. Startseite und Explorer bieten den Bestand dann als weiteren Eintrag neben dem Archiv an.
 
 ### Vorprozessierung
 
@@ -302,6 +320,7 @@ Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY
 | `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | Diese Tabelle. Das `licence`-Element der Datei bleibt absichtlich feindliche Eingabe |
 | `data/geonames_coordinates.json`, `docs/data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata über die GeoNames-ID (P1566) | Wikidata CC0, der Eintrag für Genf (2660646) aus GeoNames unter CC BY 4.0 | `meta` der Datei, Feld `source: "geonames"` am Eintrag |
 | `docs/vendor/natural-earth/countries-110m.geo.json` | Natural Earth über world-atlas | gemeinfrei, Build-Skripte ISC | `PROVENANCE.md` daneben |
+| `docs/assets/dhcraft/` | Bausteine der Projektseiten aus `brand-assets` bei `b0641cc` | Stylesheets MIT, Schriften OFL 1.1, DHCraft-Zeichen geschützt | `LICENSE.md` und `PROVENANCE.md` daneben, Lizenzzeile im Fuß der Startseite |
 
 Externe Quellen, die Nutzende zur Laufzeit laden, sind nicht gebündelt, ihre Lizenz steht im teiHeader der geladenen Datei und in der Übersicht. Die correspSearch-API gibt ihre Ergebnisse laut Dokumentation unter CC BY 4.0 aus.
 

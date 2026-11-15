@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-12-03
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 template:
   name: Vorlage Testing
@@ -42,10 +42,14 @@ Für jede Prüfung: ob sie gegen den Code läuft, den das Werkzeug nutzt, ob sie
 | Prüfung | Was sie behauptet | Code des Werkzeugs | echte Daten | kann fehlschlagen |
 |---|---|---|---|---|
 | Suite CMIF Parser | Briefsätze, Unsicherheit, weitere Handlungen, Datumsgrenzen, Registerkennungen, Entsprechungen, Zusammenführung, unplausible Jahre | ja, `cmif-parser.js` und `utils.js` | Fixtures, darunter unverändert übernommene Einträge dreier Grazer Editionen | ja |
-| Suites Aggregation, State Manager, Selection | Zählungen aus den Briefen, Filter, URL-Zustand mit Jahr, Gegenüber und Briefauszug | ja | Fixtures und das ganze HSA | ja |
-| Suites Spacetime, Network, Topics | Aggregation und Geometrie von Raum-Zeit, Korrespondenzkreis und Themen | ja, über die exportierten reinen Funktionen | das ganze HSA | ja |
+| Suites Aggregation, State Manager, Selection | Zählungen aus den Briefen, Filter, URL-Zustand mit Jahr, Gegenüber und Briefauszug, Marken und Zahl der Auswahlzeile (`selectionMarks()`, `drawerCountText()`) | ja | Fixtures und das ganze HSA | ja |
+| Suites Spacetime, Network, Topics | Aggregation und Geometrie von Raum-Zeit und Korrespondenzkreis, Zählung, Ordnung, feste Tönungsskala und Treemap der Themen | ja, über die exportierten reinen Funktionen | das ganze HSA, Raster und Anteile gegen eine unabhängige Zählung für Paris 1882 bis 1892 | ja |
+| Suite Letters (seit `c6185bc`) | Briefe ohne Platz auf der Zeitachse, Datumsordnung, Richtung von der zentralen Person aus, Gruppen nach Jahr und Monat, Jahresprofil | ja, `letters-view.js` | Fixtures und das HSA, die Spalten 1913 und ohne Jahr gegen eine eigene Zählung der Datei | ja |
+| Suite Time (seit `c6185bc`) | Intervall eines Briefs auf der Achse, Wahl der Auflösung, Seite eines Briefs zur zentralen Person, Briefe und Abschnitte eines Zeitraums | ja, `timeline-view.js` | das HSA für 1912 und 1900 bis 1905 gegen eine getrennte Zählung | ja |
+| Suite Dashboard (seit `c6185bc`) | Zählungen der Startansicht, `countOf()`, `languageOrder()` und `dominantLanguages()`, Rahmen und Projektion der kleinen Karte | ja, `overview-view.js`, `selection-ui.js`, `mini-figures.js` | Fixtures und das HSA | ja |
+| Suite Compose (seit `b189cb5`) | `composeFigure()` für reines CMIF, Briefsätze ohne Koordinaten, einen erweiterten Bestand, Bestände ohne Datum und erwähnte Orte ohne Koordinaten, `missingSentence()` | ja, `start-compose.js` | Zusammenfassungen aus Fixtures | ja |
 | Suites Formatters, Security, Basket, Research Paths, Demo, correspSearch, DOM Cache | Anzeige der Unsicherheit, Escaping, Korb, Zählungen, Tutorial, API-Antworten, DOM-Zugriff | ja | Fixtures, HSA, zwei gespeicherte API-Antworten | ja |
-| Smoke-Test | siehe [Browser-Smoke-Test](#browser-smoke-test) | ja, die ausgelieferten Seiten | HSA, Tutorial | ja, Exit-Code nur bei vollem Erfolg 0 |
+| Smoke-Test | siehe [Browser-Smoke-Test](#browser-smoke-test) | ja, die ausgelieferten Seiten | HSA, Tutorial über `demo=true` | ja, Exit-Code nur bei vollem Erfolg 0 |
 | Korpusprüfung | jeder Eintrag eines Bestands entspricht seiner Quelldatei | ja, der Parser über jsdom | ein ganzer externer Bestand | ja |
 | Fester Aufgabensatz | die Oberfläche gibt die aus den Daten berechnete Antwort | die Oberfläche, bedient von Hand oder von einem Agenten | das ganze HSA | ja, sobald jemand die Antwort abliest |
 
@@ -58,13 +62,13 @@ Die Modultests prüfen nicht das gezeichnete Bild (D3, MapLibre, Zeichenflächen
 | Liest das Werkzeug, was die Quelle sagt? | Modultests, Korpusprüfung, unabhängige Datenprüfung | automatisch und durch Agenten | Datenprüfung am Bestand von Stefan Zweig Digital vom 2026-11-14 ohne verlorenen oder doppelten Eintrag, die gefundenen Parserfehler behoben ([Journal](journal.md)) |
 | Zeigt jede Ansicht die richtige Zahl? | fester Aufgabensatz | Aufgabe mit berechneter Antwort | Antworten berechnet, in der Oberfläche noch nicht abgelesen |
 | Lässt sich die Oberfläche bedienen? | Bedienprüfung durch Agenten mit Zeiger und Tastatur | Agent im Browser | Raum-Zeit am 2026-11-14 geprüft und umgebaut |
-| Dient sie den Forschenden? | Urteil am Bildschirm | Operator, Forschende | ausstehend, nichts vom 2026-11-14 ist abgenommen |
+| Dient sie den Forschenden? | Urteil am Bildschirm | Operator, Forschende | nichts abgenommen. Gutgeheißen hat der Operator die Startansicht im Stand von `b189cb5`, die Startseite als Figur und die Wahl von Raster und Anteile ([design.md](design.md)) |
 
 ## Feste Aufgaben
 
 Jede Story in [specification.md](specification.md#epics-und-user-stories) trägt eine Aufgabe am gebündelten Hugo Schuchardt Archiv mit einer Rechenregel. Ein Skript berechnet die Antworten aus `docs/data/hsa-letters.json`, ohne Code des Werkzeugs zu laden. In jeder Runde liest ein Mensch oder ein Agent die Antwort in der Oberfläche ab, eine Abweichung ist ein Befund und wird einer Story, der Gestaltung oder den Daten zugeordnet. Die Arbeitsweise hat der Operator am 2026-11-14 angenommen.
 
-Das Skript lag am 2026-11-14 im Arbeitsordner der distillierenden Session und ist nicht Teil des Repositorys ([plan.md](plan.md#aufräumen)). Seine Regeln stehen in der Specification.
+Das Skript lag am 2026-11-14 im Arbeitsordner der distillierenden Session und ist nicht Teil des Repositorys ([plan.md](plan.md#aufgabensatz-und-prüfungen)). Seine Regeln stehen in der Specification. Seit dem Umbau der Ansichten hat niemand die Antworten in der Oberfläche abgelesen.
 
 Berechnete Antworten, Stand 2026-11-14, Datei `hsa-letters.json` mit `meta.generated` 2026-10-29:
 
@@ -102,28 +106,33 @@ Berechnete Antworten, Stand 2026-11-14, Datei `hsa-letters.json` mit `meta.gener
 | US-21 | 980 Zeilen |
 | US-35 | 2.371 Briefe |
 | US-39 | 304 Briefe „Ohne Datum“, alle übrigen Merkmale null |
+| US-46 | keine Figur zu Poststempeln, kein Brief hat `postmark` (Stand 2026-11-15) |
+| US-47 | wie US-06 |
+| US-48 | wie US-16 |
 
-Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit der Korpusprüfung), US-45 (nicht bedient), US-17 und US-33 (nicht mehr bedient).
+Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit der Korpusprüfung), US-45 (nicht bedient), US-17, US-32 und US-33 (nicht mehr bedient). Für US-28 und US-34 ist die Antwort berechnet, die Darstellung, in der sie abzulesen war, ist entfallen ([specification.md](specification.md#zeit)).
 
 ## Browser-Smoke-Test
 
-`tests/browser/smoke.py` startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile. Erwartete Zahlen liest es aus den gebündelten Daten. Die Liste steht in `_checks()`:
+`tests/browser/smoke.py` startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile. Erwartete Zahlen liest es aus den gebündelten Daten. Die Liste steht in `_checks()`, am Stand `ef0c0d4` achtzehn Prüfungen ohne `--online` und `--axe`:
 
 - Test-Runner ohne Fehlschlag
 - alle Ansichten mit dem HSA ohne Konsolen- und Seitenfehler, Laden unter der Zeitgrenze (`--load-limit`, Vorgabe 5 Sekunden, Entscheidung E10)
-- Demo-Link mit nicht leerem Netzwerk, Tour einmal je Browser
+- Demo-Link mit nicht leerem Netzwerk, Tour einmal je Browser, beide über `demo=true`
 - Link ohne Datensatz führt auf die Startseite mit Hinweis
 - Zurück führt zur vorigen Ansicht, geteilter Filterlink zeigt die gefilterten Briefe
 - CSV-Export mit BOM und Normdatenspalten, Stern legt die Person in den Korb
 - Balken „Spanne“ und Hinweis der Karte auf die Ortsliste
-- ein Jahresbalken öffnet seine Briefe im Briefauszug, die Zeitleiste bleibt
+- ein Jahresbalken öffnet seine Briefe im Briefauszug, die Zeitansicht bleibt
 - Seitenstruktur, ruhendes Netzwerk unter reduzierter Bewegung, Entscheidung E8 mit JSON-Indizes und Tabellen
-- Themen: eine Zeile je Thema der Datei, Enter setzt das Thema, alle Zeilen bleiben, ein Korrespondent des Streifens setzt den Personenfilter dazu (seit `34fedd9`)
-- Startfigur: `examples.json` gleicht der Zusammenfassung von `start-summary.js` über `hsa-letters.json`, Links und leere Angaben, Wechsel und Wiederherstellung des Beispielbriefs
+- Themen: eine Zeile je Thema der Datei, Enter setzt das Thema, alle Zeilen bleiben, ein Korrespondent des Streifens setzt den Personenfilter dazu
+- Startansicht, Filter (seit `c6185bc`): Ein Thema filtert Kreis, Karte und Auswahlzeile, die Zahl der Zeile gleicht einer Zählung der Datei, ein zweiter Klick löst, der Kreis wählt mit Pfeiltaste und Enter eine Person.
+- Startansicht, Skala des Zeitdiagramms (seit `d38b4c8`): Bei drei Fenstergrößen und nach Wahl und Lösen von Französisch in der Sprachlegende füllt die höchste blasse Säule die Fläche, kein Stapel ragt darüber, die Stapel haben mehrere Farben. Die Prüfung entstand, nachdem ein Bild des Operators Balken in voller Höhe und einer Farbe zeigte.
+- Startseite: `examples.json` gleicht der Zusammenfassung von `start-summary.js` über `hsa-letters.json`, das Archiv ist Vorgabe, der Link des Kreises öffnet das Netzwerk, eine Angabe ohne Briefe (Poststempel) hat keinen Platz, „anderer Brief“ wechselt und die Adresse stellt den Brief wieder her, ein unbekannter Brief und `dataset=demo` fallen auf das Archiv zurück.
 
-`--online` prüft zusätzlich einen geteilten correspSearch-Link gegen die API, `--axe <Pfad>` führt axe-core über alle Seiten und die Startansicht bei 390px.
+`--online` prüft zusätzlich einen geteilten correspSearch-Link gegen die API, über den Eintrag „Eigene Daten“ der Startseite. `--axe <Pfad>` führt axe-core über alle Seiten und die Startansicht bei 390px.
 
-Lücke: Die Liste `VIEWS` des Skripts kennt die Raum-Zeit-Ansicht nicht. „Alle Ansichten ohne Fehler“ und axe-core laufen deshalb nicht über sie ([plan.md](plan.md#aufräumen)).
+Lücke: Die Liste `VIEWS` des Skripts kennt die Raum-Zeit-Ansicht nicht und führt `chronik` und `activity`, die beide die Zeitansicht öffnen. „Alle Ansichten ohne Fehler“ und axe-core laufen deshalb nicht über Raum-Zeit ([plan.md](plan.md#aufgabensatz-und-prüfungen)). Kopf und Fuß der Startseite und die Schiene haben keine eigene Prüfung.
 
 ## Korpusprüfung
 
@@ -160,7 +169,8 @@ Die zwölf Aufgaben sind der Anfang eines Aufgabensatzes, der in jeder Runde wie
 
 - Das gezeichnete Bild von Karte, Netzwerk, Raum-Zeit, Themen und Startfigur. Gedeckt durch Bildschirmfotos der bauenden Sessions und die Aufgabenprüfung.
 - Die Raum-Zeit-Ansicht im Smoke-Test und unter axe-core.
-- Die neue Themenansicht über ihre Modultests und ihre Prüfung im Smoke-Test hinaus.
+- Raster und Anteile, Briefliste, Zeitansicht, Startansicht und Startseite über ihre Modultests und Smoke-Prüfungen hinaus. Gedeckt durch Lesetests frischer Leser an Startseite und Raster und Gegenzählungen der Bau-Agenten an `hsa-letters.json`, je in deren Berichten, nicht unabhängig wiederholt.
+- Alles vom Abend des 2026-11-14 und der Nacht zum 2026-11-15 bei 200 Prozent Zoom und mit einem Screenreader.
 - Zoom auf 200 Prozent, andere Browser als Chrome, Excel mit dem BOM.
 - Der Wissenskorb mit Einträgen, die dunkle Grundkarte, der Exportdialog und die Demo-Tour im neuen Farbschema.
 - Fachliche Richtigkeit von Zusammenführung, Entsprechungen und unplausiblen Jahren. Das entscheiden die Editionen.
@@ -180,4 +190,6 @@ uv run preprocessing/build_examples.py       # nach jeder Neuerzeugung von hsa-l
 
 ## Stand
 
-Nach dem Journal liefen am 2026-11-14 `test.html?test=true` ohne Fehlschlag und der Smoke-Test mit allen damaligen Prüfungen, im Lauf vor einem Commit fiel gelegentlich eine Prüfung aus, die nicht festgehalten ist. Die distillierende Session hat am 2026-11-14 keinen dieser Läufe wiederholt. Nach Bericht der koordinierenden Session liefen am Commit `34fedd9` (2026-11-14) 160 Modultests und 16 Prüfungen des Smoke-Tests ohne Fehlschlag. Danach entstandene, nicht eingecheckte Änderungen sind davon nicht gedeckt.
+Am 2026-11-15 registriert `run-all-tests.js` achtzehn Suites: CMIF Parser, Aggregation, Formatters, Security, Research Paths, Demo, correspSearch, Spacetime, Network, Topics, Selection, Letters, Time, Dashboard, Compose, State Manager, DOM Cache, Basket. Neu seit dem Stand von `34fedd9` sind Letters, Time und Dashboard (`c6185bc`) und Compose (`b189cb5`), Topics ist mit dem Raster neu gefasst (`7cbe3c3`). Der Smoke-Test hat achtzehn Prüfungen ohne `--online` und `--axe`, neu sind die beiden Prüfungen der Startansicht. Beides ist aus den Dateien gezählt, die Zahl der Modultests nicht, weil sie erst ein Lauf ausgibt.
+
+Nach Bericht der koordinierenden Session liefen am Commit `34fedd9` 160 Modultests und 16 Prüfungen des Smoke-Tests ohne Fehlschlag. Nach dem Journal liefen am Commit der Übergabe vom 2026-11-15 `test.html?test=true` ohne Fehlschlag und der Smoke-Test mit allen Prüfungen. Die distillierende Session vom 2026-11-15 hat keinen Lauf wiederholt.

@@ -2,7 +2,7 @@
 
 # Project instructions for CorrespExplorer
 
-CorrespExplorer is a browser tool that shows letter metadata as a few large figures over one shared selection: a correspondence circle, a map, a space-time view and topics, with the letters of the selection below every view and the start page as one figure of the letter record and its data model. Since 2026-11-14 it is being developed into the viewing tool for the shared letter model of the project GOSSIP. It is built with Promptotyping: the documents in `knowledge/` hold the domain knowledge and the specification from which the code is implemented, and the operator (Christopher Pollin) decides on scope, acceptance and anything that leaves the repository.
+CorrespExplorer is a browser tool that shows letter metadata as a few large figures over one shared selection: a correspondence circle, a map, a space-time view, one time view and topics, with one line for the selection and its letters at the lower edge of every view, a start view of small views that filter one another, and a start page composed from what the chosen holding contains. The rules every view is to follow are in `knowledge/design.md`, section "Gemeinsame Regeln aller Ansichten". Since 2026-11-14 it is being developed into the viewing tool for the shared letter model of the project GOSSIP. It is built with Promptotyping: the documents in `knowledge/` hold the domain knowledge and the specification from which the code is implemented, and the operator (Christopher Pollin) decides on scope, acceptance and anything that leaves the repository.
 
 ## Knowledge base
 

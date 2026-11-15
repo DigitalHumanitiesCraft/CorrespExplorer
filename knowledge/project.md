@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2026-10-28
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 template:
   name: Vorlage Projekt-Wissensdokument
@@ -32,7 +32,7 @@ CorrespExplorer ist ein Werkzeug im Browser, das Briefmetadaten als wenige groß
 
 ## Worum es geht
 
-Briefeditionen erschließen ihre Bestände über Metadaten zu Absendern, Empfängern, Orten, Daten und Themen, und Projekte wie GOSSIP fragen darüber hinaus, was die Briefe über dritte Personen sagen. CorrespExplorer soll beides lesbar machen. Seine Oberfläche besteht aus vier großen Ansichten über einer Auswahl, Netzwerk als Korrespondenzkreis einer Person, Karte, Raum-Zeit und Themen, dazu den Briefen der Auswahl unter jeder Ansicht. Die Startseite ist eine Figur des Datenmodells, gefüllt aus dem gewählten Bestand. Das Werkzeug macht die Datenlage sichtbar, also fehlende Koordinaten, unscharfe Datierungen, Personen ohne Normdaten und erschlossene Angaben. Was es für Forschende leisten soll, steht in [specification.md](specification.md).
+Briefeditionen erschließen ihre Bestände über Metadaten zu Absendern, Empfängern, Orten, Daten und Themen, und Projekte wie GOSSIP fragen darüber hinaus, was die Briefe über dritte Personen sagen. CorrespExplorer soll beides lesbar machen. Seine Oberfläche besteht aus vier großen Ansichten über einer Auswahl, Netzwerk als Korrespondenzkreis einer Person, Karte, Raum-Zeit und Themen, dazu den Briefen der Auswahl unter jeder Ansicht. Die Startseite ist eine Figur aus den kleinen Darstellungen des Explorers in der Ordnung des Datenmodells, zusammengesetzt aus dem, was der gewählte Bestand enthält. Das Werkzeug macht die Datenlage sichtbar, also fehlende Koordinaten, unscharfe Datierungen, Personen ohne Normdaten und erschlossene Angaben. Was es für Forschende leisten soll, steht in [specification.md](specification.md).
 
 ## Verhältnis zu GOSSIP und correspSearch
 
@@ -42,7 +42,7 @@ correspSearch der Berlin-Brandenburgischen Akademie der Wissenschaften aggregier
 
 ## Datengrundlage
 
-Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität Graz entwickelt, der als vorprozessierte Datei mitkommt und als einziger gebündelter Realdatensatz Themen, Erwähnungen, Sprachen und Koordinaten zugleich trägt. Ein synthetischer Tutorial-Datensatz führt durch die Funktionen. Die Briefsätze von Stefan Zweig Digital dienen als Bestand aus vielen TEI-Dateien und werden nur lokal geladen. Einträge dreier Grazer Editionen aus dem Kreis von GOSSIP liegen als Testdateien bei. Nutzende laden eigene CMIF- und TEI-Dateien oder Adressen. Quellen, Modell, Lizenzen und Grenzen beschreibt [data.md](data.md).
+Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität Graz entwickelt, der als vorprozessierte Datei mitkommt und als einziger gebündelter Realdatensatz Themen, Erwähnungen, Sprachen und Koordinaten zugleich trägt. Ein synthetischer Tutorial-Datensatz mit Tour liegt bei, die Startseite bietet ihn seit dem 2026-11-14 auf Auftrag des Operators nicht mehr an. Die Briefsätze von Stefan Zweig Digital dienen als Bestand aus vielen TEI-Dateien und werden nur lokal geladen. Einträge dreier Grazer Editionen aus dem Kreis von GOSSIP liegen als Testdateien bei. Nutzende laden eigene CMIF- und TEI-Dateien oder Adressen. Quellen, Modell, Lizenzen und Grenzen beschreibt [data.md](data.md).
 
 ## Abgrenzungen
 
