@@ -286,6 +286,30 @@ class Smoke:
             "JSON export without indices"
         )
 
+    def header_menu_keyboard(self) -> None:
+        # A subject's menu is a disclosure: focus on the tab opens nothing, Enter opens it, Escape
+        # closes it and leaves the focus on the tab
+        ctx = self.context()
+        page = ctx.new_page()
+        page.goto(f"{self.base}explore.html?view=letters&{HSA}")
+        _loaded(page)
+        page.focus('.view-group-btn[data-group="letters"]')
+        page.keyboard.press("Tab")
+        tab = page.locator('.view-group-btn[data-group="persons"]')
+        menu = page.locator("#view-group-menu-persons")
+        focused = page.evaluate("document.activeElement.dataset.group")
+        closed_on_focus = not menu.is_visible() and tab.get_attribute("aria-expanded") == "false"
+        page.keyboard.press("Enter")
+        opened = menu.is_visible() and tab.get_attribute("aria-expanded") == "true"
+        page.keyboard.press("Escape")
+        closed = not menu.is_visible() and tab.get_attribute("aria-expanded") == "false"
+        back = page.evaluate("document.activeElement.dataset.group")
+        ctx.close()
+        assert focused == "persons", f"Tab reached {focused}"
+        assert closed_on_focus, "focus on the tab opened its menu"
+        assert opened, "Enter did not open the menu"
+        assert closed and back == "persons", f"Escape left the menu open or focus on {back}"
+
     def basket_takes_person(self) -> None:
         ctx = self.context()
         page = ctx.new_page()
@@ -647,6 +671,7 @@ def _checks(
         ("Back returns to the previous view", smoke.back_returns_to_previous_view),
         ("shared HSA filter link shows the filtered letters", smoke.shared_filter_link),
         ("CSV export with BOM and authority columns", smoke.csv_export),
+        ("header menu: focus opens nothing, Enter opens, Escape closes", smoke.header_menu_keyboard),
         ("person star puts the person into the basket", smoke.basket_takes_person),
         (
             "span bin on the timeline, map hint opens the place list",

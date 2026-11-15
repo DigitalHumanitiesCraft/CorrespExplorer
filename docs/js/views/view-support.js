@@ -142,10 +142,12 @@ export function filterSentence(filters = state.filters, allLetters = state.getAl
  * Screen readers and keyboard users get every value without pointing at marks, and everyone can
  * read exact numbers. Every cell is escaped. The scrolling region takes focus, so the keyboard can
  * scroll it (axe scrollable-region-focusable). Without rows the host is emptied.
+ * Numbers get German digit grouping, except in the columns named in `rawColumns`: years and
+ * identifiers would read wrongly as „1.874“.
  * @param {HTMLElement|null} host - container below the chart
- * @param {{caption: string, columns: string[], rows: Array<Array<string|number>>, limit?: number, label?: string}} table
+ * @param {{caption: string, columns: string[], rows: Array<Array<string|number>>, limit?: number, label?: string, rawColumns?: string[]}} table
  */
-export function renderDataTable(host, { caption, columns, rows, limit = 500, label = 'Daten als Tabelle' }) {
+export function renderDataTable(host, { caption, columns, rows, limit = 500, label = 'Daten als Tabelle', rawColumns = [] }) {
     if (!host) return;
     if (rows.length === 0) {
         host.innerHTML = '';
@@ -155,7 +157,8 @@ export function renderDataTable(host, { caption, columns, rows, limit = 500, lab
     // place in every view, without a collapsed box (design.md, rule 4); its state survives redraws
     const shown = host.dataset.tableShown === 'true';
     const rowsShown = rows.slice(0, limit);
-    const cell = value => (typeof value === 'number' ? value.toLocaleString('de-DE') : escapeHtml(String(value ?? '')));
+    const raw = columns.map(c => rawColumns.includes(c));
+    const cell = (value, i) => (typeof value === 'number' && !raw[i] ? value.toLocaleString('de-DE') : escapeHtml(String(value ?? '')));
     const note = rows.length > limit
         ? `<p class="chart-table__note">Die ersten ${limit.toLocaleString('de-DE')} von ${rows.length.toLocaleString('de-DE')} Zeilen.</p>`
         : '';
@@ -168,7 +171,7 @@ export function renderDataTable(host, { caption, columns, rows, limit = 500, lab
                     <table>
                         <caption>${escapeHtml(caption)}</caption>
                         <thead><tr>${columns.map(c => `<th scope="col">${escapeHtml(c)}</th>`).join('')}</tr></thead>
-                        <tbody>${rowsShown.map(row => `<tr>${row.map((v, i) => (i === 0 ? `<th scope="row">${cell(v)}</th>` : `<td${typeof v === 'number' ? ' class="chart-table__num"' : ''}>${cell(v)}</td>`)).join('')}</tr>`).join('')}</tbody>
+                        <tbody>${rowsShown.map(row => `<tr>${row.map((v, i) => (i === 0 ? `<th scope="row">${cell(v, i)}</th>` : `<td${typeof v === 'number' ? ' class="chart-table__num"' : ''}>${cell(v, i)}</td>`)).join('')}</tr>`).join('')}</tbody>
                     </table>
                 </div>
                 ${note}

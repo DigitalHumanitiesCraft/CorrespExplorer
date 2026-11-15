@@ -3,7 +3,7 @@
 
 import { languageLabel } from '../constants.js';
 import { closeModal, debounce, escapeHtml, isKnownPlace, letterRecipients, openModal, personKey, placeKey } from '../utils.js';
-import { formatDateWithPrecision } from '../formatters.js';
+import { formatDateWithPrecision, plural } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { state } from '../state-manager.js';
 import { bindCombobox } from './view-support.js';
@@ -462,7 +462,7 @@ function renderComparisonMetrics(side, metrics, letterCount) {
     if (metrics.yearRange) {
         html += `
             <div class="comparison-metric">
-                <span class="metric-value">${metrics.yearRange.min} - ${metrics.yearRange.max}</span>
+                <span class="metric-value">${metrics.yearRange.min}–${metrics.yearRange.max}</span>
                 <span class="metric-label">Zeitraum</span>
             </div>
         `;
@@ -576,7 +576,7 @@ function renderComparisonOverlap(overlap, lettersA, lettersB) {
         html += `
             <div class="overlap-item">
                 <i class="fas fa-clock"></i>
-                <span>Zeitliche Überlappung: ${overlap.timeOverlap.from} - ${overlap.timeOverlap.to}</span>
+                <span>Zeitliche Überlappung: ${overlap.timeOverlap.from}–${overlap.timeOverlap.to}</span>
             </div>
         `;
     }
@@ -585,7 +585,7 @@ function renderComparisonOverlap(overlap, lettersA, lettersB) {
         html += `
             <div class="overlap-item">
                 <i class="fas fa-users"></i>
-                <span>${overlap.commonPersons} gemeinsame Korrespondenten</span>
+                <span>${plural(overlap.commonPersons, 'gemeinsamer Korrespondent', 'gemeinsame Korrespondenten')}</span>
             </div>
         `;
     }

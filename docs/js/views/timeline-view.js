@@ -18,7 +18,7 @@ import { addLettersToBasket } from '../basket.js';
 import { state } from '../state-manager.js';
 import { renderDataTable, readTokens } from './view-support.js';
 import { formatNumber as fmt } from '../formatters.js';
-import { countOf, PALE_TOKEN, OUTSIDE_OPACITY } from '../selection-ui.js';
+import { countOf, languageOrder, PALE_TOKEN, OUTSIDE_OPACITY } from '../selection-ui.js';
 import { rowCentre, letterDirection } from './letters-view.js';
 import { initChronikView, correspondenceContext, contextText, personAge, lifeDatesOf } from './chronik-view.js';
 
@@ -354,7 +354,7 @@ function renderProfile() {
         languageTotals[key] = (languageTotals[key] || 0) + 1;
     });
     // One order of the languages on the whole page, by their frequency in the whole dataset (rule 11)
-    const order = hasLanguages ? Object.keys(LANGUAGE_COLORS).filter(key => languageTotals[key] > 0) : ['_total'];
+    const order = hasLanguages ? languageOrder(languageTotals) : ['_total'];
 
     // The whole dataset per year stands pale behind the selection, on the same scale (rule 6)
     const whole = wholeYears(allLetters);

@@ -65,7 +65,6 @@ export const elements = {
     get languageCheckboxes() { return cache.byId('language-checkboxes'); },
 
     // Views
-    get mapLegend() { return cache.byId('map-legend'); },
     get mapColorToggle() { return cache.byId('map-color-toggle'); },
 
     get personSearch() { return cache.byId('person-search'); },

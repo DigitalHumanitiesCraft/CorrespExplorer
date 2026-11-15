@@ -4,7 +4,7 @@
 import { addEntityToBasket, isInBasket } from '../basket.js';
 import { enrichPerson, formatLifeDates, formatPlaces, buildExternalLinks } from '../wikidata-enrichment.js';
 import { debounce, escapeHtml, safeUrl, openModal, closeModal, showToast, personKey, personAuthority, letterRecipients, foldText } from '../utils.js';
-import { getPersonPrecisionClass, getPersonInitials } from '../formatters.js';
+import { getPersonPrecisionClass } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { authorityUrl, buildCorrespSearchUrl, detailRow, toggleBasketButton } from './view-support.js';
 import { dominantLanguages, languageColor, languageName } from '../selection-ui.js';

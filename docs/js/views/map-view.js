@@ -99,7 +99,7 @@ export function aggregateLettersByPlace(letters, placesIndex) {
         }
     });
 
-    // Convert Sets to arrays and calculate top senders + dominant language
+    // Convert Sets to arrays and calculate the top senders
     Object.values(places).forEach(place => {
         place.years = Array.from(place.years).sort();
         place.languages = Array.from(place.languages);
@@ -109,19 +109,6 @@ export function aggregateLettersByPlace(letters, placesIndex) {
             .slice(0, 5)
             .map(([id, data]) => ({ name: data.name, count: data.count, id }));
         place.senderCount = Object.keys(place.senderCounts).length;
-
-        // Calculate dominant language
-        const langEntries = Object.entries(place.languageCounts);
-        if (langEntries.length > 0) {
-            langEntries.sort((a, b) => b[1] - a[1]);
-            place.dominantLanguage = langEntries[0][0];
-            place.dominantLanguageCount = langEntries[0][1];
-            place.dominantLanguageRatio = langEntries[0][1] / place.letter_count;
-        } else {
-            place.dominantLanguage = null;
-            place.dominantLanguageCount = 0;
-            place.dominantLanguageRatio = 0;
-        }
     });
 
     return places;
@@ -297,7 +284,6 @@ function placesToGeoJSON(places) {
                 year_max: place.years.length > 0 ? Math.max(...place.years) : null,
                 top_senders: JSON.stringify(place.topSenders),
                 languages: place.languages.join(', '),
-                dominant_language: dominant,
                 language_color: langColor,
                 ...Object.fromEntries(counts.map((n, i) => [`n${i}`, n]))
             }
@@ -534,7 +520,7 @@ function showPlacePopup(lngLat, props) {
                 const moreText = props.sender_count > 5 ? `<li class="popup-more">... und ${props.sender_count - 5} weitere</li>` : '';
                 topSendersHtml = `
                     <div class="popup-top-senders">
-                        <p class="popup-label">Top Absender:</p>
+                        <p class="popup-label">Häufigste Absender:</p>
                         <ul>${senderItems}${moreText}</ul>
                     </div>
                 `;

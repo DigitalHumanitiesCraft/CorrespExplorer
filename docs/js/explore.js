@@ -1328,6 +1328,9 @@ function handleHistoryNavigation() {
 
 // View switching
 
+// The width from which the header hangs menus below the subjects; same breakpoint as style.css
+const WIDE_HEADER = window.matchMedia('(min-width: 768px)');
+
 function initViewSwitcher() {
     // Every subject with several representations lists them in a menu under its tab, so they
     // are found at the top of the page from every view
@@ -1339,6 +1342,9 @@ function initViewSwitcher() {
         btn.replaceWith(group);
         const menu = document.createElement('span');
         menu.className = 'view-group__menu';
+        menu.id = `view-group-menu-${btn.dataset.group}`;
+        btn.setAttribute('aria-controls', menu.id);
+        btn.setAttribute('aria-expanded', 'false');
         views.forEach(view => {
             const item = document.createElement('button');
             item.type = 'button';
@@ -1349,12 +1355,53 @@ function initViewSwitcher() {
             menu.append(item);
         });
         group.append(btn, menu);
+        // Disclosure: the pointer opens the menu on hover, the keyboard with Enter or Space on the
+        // tab, so focus alone opens nothing and the entries are tab stops only while it is open.
+        // Below the wide layout the menus are not shown; there the tab only switches the subject.
+        let byKeyboard = false;
+        const setOpen = (open, keyboard = false) => {
+            const shown = open && WIDE_HEADER.matches;
+            byKeyboard = shown && keyboard;
+            group.classList.toggle('view-group--open', shown);
+            btn.setAttribute('aria-expanded', String(shown));
+        };
         // A choice closes the menu until the pointer and the focus have left the tab; open, it
         // would cover the representation switch that stands below it in the view header
-        group.addEventListener('click', () => group.classList.add('view-group--closed'));
+        group.addEventListener('click', () => {
+            group.classList.add('view-group--closed');
+            setOpen(false);
+        });
+        group.addEventListener('pointerenter', (e) => {
+            if (e.pointerType === 'mouse' && !byKeyboard && !group.classList.contains('view-group--closed')) setOpen(true);
+        });
         // while the focus still rests on the tab the menu stays closed, or it would reopen under the pointer's way to the view
-        group.addEventListener('pointerleave', () => { if (!group.contains(document.activeElement)) group.classList.remove('view-group--closed'); });
-        group.addEventListener('focusout', (e) => { if (!group.contains(e.relatedTarget)) group.classList.remove('view-group--closed'); });
+        group.addEventListener('pointerleave', () => {
+            if (byKeyboard) return;
+            setOpen(false);
+            if (!group.contains(document.activeElement)) group.classList.remove('view-group--closed');
+        });
+        group.addEventListener('focusout', (e) => {
+            if (group.contains(e.relatedTarget)) return;
+            setOpen(false);
+            group.classList.remove('view-group--closed');
+        });
+        btn.addEventListener('keydown', (e) => {
+            if ((e.key !== 'Enter' && e.key !== ' ') || !WIDE_HEADER.matches) return;
+            // The key opens or closes the menu instead of switching the subject; its entries
+            // include the representation the tab would open
+            e.preventDefault();
+            group.classList.remove('view-group--closed');
+            setOpen(!(byKeyboard && group.classList.contains('view-group--open')), true);
+        });
+        // Space activates a button on keyup, which would still switch the subject
+        btn.addEventListener('keyup', (e) => { if (e.key === ' ' && WIDE_HEADER.matches) e.preventDefault(); });
+        group.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape' || !group.classList.contains('view-group--open')) return;
+            // Closing the menu must not also close the drawer or a dialog behind it
+            e.stopPropagation();
+            setOpen(false);
+            btn.focus();
+        });
     });
     document.querySelectorAll('.view-group-btn').forEach(btn => {
         btn.addEventListener('click', () => {

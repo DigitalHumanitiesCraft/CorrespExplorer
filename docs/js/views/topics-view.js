@@ -539,8 +539,8 @@ function renderAxis() {
 
 function tickStep(years, width) {
     // Labels at least about 44px apart, a year label and some air: every year where a period is
-    // short (a reader matched a cell to the wrong year when only every other year was labelled,
-    // reading test of 2026-11-14), every fifth year over the HSA's seven decades
+    // short (a reader matched a cell to the wrong year when only every other year was labelled),
+    // every fifth year over the HSA's seven decades
     const fit = Math.max(1, Math.floor(width / 44));
     return [1, 2, 5, 10, 20, 25, 50, 100].find(step => years / step <= fit) || 100;
 }
@@ -730,6 +730,7 @@ function renderTable() {
     renderDataTable(host, {
         caption: 'Themen mit Briefen, erstem Jahr, Jahr der meisten Briefe und letztem Jahr',
         columns: ['Thema', 'Art', 'Briefe', 'Erstes Jahr', 'Meiste Briefe', 'Letztes Jahr'],
+        rawColumns: ['Erstes Jahr', 'Meiste Briefe', 'Letztes Jahr'],
         rows: shown ? rows : rows.slice(0, 1),
         limit: Math.max(1, rows.length)
     });
@@ -781,7 +782,6 @@ function draw() {
 
     // Every other decade on a quiet band, so the eye finds a year in seventy columns; a period of
     // under twenty years has its year labels close enough, and a band there read as a meaning
-    // (reading test of 2026-11-14)
     if (yearMax - yearMin >= 20) {
         ctx.globalAlpha = 0.55;
         ctx.fillStyle = ink.band;
@@ -794,7 +794,7 @@ function draw() {
         ctx.globalAlpha = 1;
     }
     // Where a cell is wide enough, it carries its number: a first-time reader took a year of six
-    // letters for "10 und mehr" from the shade alone (reading test of 2026-11-14)
+    // letters for "10 und mehr" from the shade alone
     const numbered = cellW >= 22;
     if (numbered) {
         ctx.font = `12px ${getComputedStyle(canvas).fontFamily}`;

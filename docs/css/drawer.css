@@ -1,8 +1,8 @@
 /* Letters drawer (views/letters-drawer.js) and the selection sentence of the sidebar.
    The drawer is one line at the lower edge of the main area. Open, its list stands above the line
    and takes the height its rows need, up to a third of the main area; the view above keeps the
-   rest and refits to it (2026-11-14: a list over half the screen left the space-time figure an
-   unreadable strip). A hairline sets the line apart and an ink line the open list; neither is a box. */
+   rest and refits to it (a list over half the screen left the space-time figure an unreadable
+   strip). A hairline sets the line apart and an ink line the open list; neither is a box. */
 
 /* The view yields height to the drawer instead of pushing the drawer line out of the window */
 .main-content > .tab-content.active {
@@ -124,7 +124,7 @@
 
     /* On a phone the drawer is the way to the letters on every screen, and its "Alle in der Liste"
        opens the full list; the tab of the letter list gives way, so the drawer adds no control to
-       the crowded first screen (density limit of the network view at 360 px, 2026-11-14) */
+       the crowded first screen (density limit of the network view at 360 px) */
     .view-group-btn[data-group="letters"] {
         display: none;
     }

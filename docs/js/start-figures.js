@@ -313,7 +313,7 @@ function render(entry, dataset) {
     const hint = model.querySelector('.record-hint');
     if (hint) {
         // Two sentences for the two things a first reader asked: what the numbers are, and that the
-        // figures themselves choose letters (fresh-reader rounds of 2026-11-14)
+        // figures themselves choose letters
         hint.textContent = `Die Nummern zeigen diesen Brief in den Grafiken. ${entry.letters
             ? 'Ein Klick auf einen Punkt wählt einen anderen.'
             : 'Ein Klick auf einen umrandeten Punkt wählt einen anderen.'}`;

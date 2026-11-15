@@ -108,6 +108,9 @@ export const DashboardTests = {
                 ]);
                 const order = languageOrder(new Map([['fr', 1], ['de', 2], ['other', 0], [NO_LANGUAGE, 3]]));
                 assertEqual(order.join(','), `de,fr,${NO_LANGUAGE}`, 'Häufigkeit im Bestand, ohne leere Gruppen, ohne Angabe zuletzt');
+                // The time view's former own order, the keys of the colours with letters, is the same
+                const totals = { fr: 1, de: 2, other: 4, [NO_LANGUAGE]: 0, _total: 7 };
+                assertEqual(languageOrder(totals).join(','), Object.keys(LANGUAGE_COLORS).filter(key => totals[key] > 0).join(','), 'Reihenfolge der Zeitansicht');
                 assertEqual(languageCategory('xx'), 'other', 'Sprache ohne eigene Farbe gehört zum Rest');
                 assertEqual(languageCategory(null), NO_LANGUAGE, 'ohne Sprache');
                 const dominant = dominantLanguages([

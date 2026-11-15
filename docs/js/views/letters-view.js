@@ -252,7 +252,8 @@ function haystackOf(letter) {
             letter.sender?.name, ...letterRecipients(letter).map(r => r.name), letter.place_sent?.name,
             ...(letter.placeAlternatives || []).map(p => p.name),
             ...(letter.addresses || [letter.address]), letter.postmark, letter.signature, letter.dateText, letter.dateSupplied,
-            letter.language?.label || (letter.language?.code ? languageLabel(letter.language.code) : '')
+            letter.language?.label || (letter.language?.code ? languageLabel(letter.language.code) : ''),
+            letter.id, letter.url
         ].filter(Boolean).join('\n'));
         haystacks.set(letter, text);
     }
@@ -614,12 +615,12 @@ function letterRowHtml(letter, { centre = null, compactDate = false } = {}) {
         : formatDateWithPrecision(letter);
     const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
     const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision, letter.place_sent?.inferred);
-    // The language is a colour field explained by the key above the list (rule 2); its name stays
-    // for screen readers and in the tooltip, and the letter dialog names it in full
+    // The language is its colour field together with its name, so the meaning never rests on the
+    // colour alone; the colour ties the row to the key above the list
     const code = letter.language?.code;
     const languageName = code ? escapeHtml(letter.language.label || languageLabel(code)) : '';
     const language = code
-        ? `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" title="${languageName}" aria-hidden="true"></span><span class="visually-hidden">${languageName}</span>`
+        ? `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" aria-hidden="true"></span>${languageName}`
         : '';
 
     const labelled = (label, valueHtml) => (valueHtml

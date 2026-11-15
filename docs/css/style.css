@@ -322,7 +322,7 @@ button {
     font-weight: 700;
 }
 
-/* A subject with several representations shows them as a menu under its tab on hover and focus */
+/* A subject with several representations shows them as a menu under its tab on hover and on Enter */
 .view-group {
     position: relative;
     display: flex;
@@ -376,13 +376,9 @@ button {
         overflow: visible;
     }
 
-    .view-group:hover .view-group__menu,
-    .view-group:focus-within .view-group__menu {
+    /* Opened by explore.js on hover or on Enter and Space, never by focus alone */
+    .view-group--open .view-group__menu {
         display: flex;
-    }
-
-    .view-group.view-group--closed .view-group__menu {
-        display: none;
     }
 }
 

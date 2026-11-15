@@ -114,7 +114,7 @@ export function formatPlaceName(name, precision, inferred = false) {
 // Date formatters
 
 // German month names for date formatting
-const MONTH_NAMES = ['Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+const MONTH_NAMES = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
 
 /**
  * Format a single date string to readable format

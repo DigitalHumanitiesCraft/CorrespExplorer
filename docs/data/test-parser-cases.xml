@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Synthetic test file, created in the project (CC BY 4.0).
-     Cases from the parser review of 2026-11-15: two places of sending, addresses with places and
+     Cases: two places of sending, addresses with places and
      dates inside, several addresses, references that are no authority record, a note inside the
      sending action, placeholders for no date, a time of day, and records of one shelfmark with
      agreeing, contradicting and complementing values. All persons, places, shelfmarks and

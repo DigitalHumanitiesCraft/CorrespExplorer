@@ -108,7 +108,7 @@ export const ResearchPathTests = {
             }
         },
         {
-            // Fields of the parser review of 2026-11-15, appended after the earlier columns
+            // Fields of test-parser-cases.xml, appended after the earlier columns
             name: 'CSV-Export: ergänztes Datum, weitere Absendeorte, alle Anschriften, geteilte Signatur (test-parser-cases.xml)',
             async run() {
                 const header = lettersToCsv([]).slice(CSV_BOM.length).split(',');

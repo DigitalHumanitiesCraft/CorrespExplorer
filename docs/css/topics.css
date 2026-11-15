@@ -10,7 +10,7 @@
 
 /* The four shades of the grid, from the data tone. Wider apart than the heatmap scale
    (--color-scale-*), whose upper two steps a first-time reader could not tell apart in the grid
-   (reading test of 2026-11-14: a year of six letters read as "10 und mehr"); the top step leans
+   (a year of six letters read as "10 und mehr"); the top step leans
    towards ink, so the darkest shade stays apart from the one below it. */
 #topics-view {
     --tp-step-1: color-mix(in srgb, var(--color-data) 18%, var(--color-bg));

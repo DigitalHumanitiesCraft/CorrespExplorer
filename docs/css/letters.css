@@ -69,6 +69,7 @@
     --lv-date: 6rem;
     --lv-who: minmax(9rem, 3fr);
     --lv-where: minmax(6rem, 2fr);
+    --lv-lang: 8rem;
     --lv-notes: minmax(0, 4fr);
 }
 
@@ -97,8 +98,8 @@
 
 .lv-rows .letter-card {
     display: grid;
-    /* The language column holds only its colour field, which the key above the list explains */
-    grid-template-columns: 24px var(--lv-date) var(--lv-who) var(--lv-where) 1rem var(--lv-notes);
+    /* The language column holds its colour field and its name */
+    grid-template-columns: 24px var(--lv-date) var(--lv-who) var(--lv-where) var(--lv-lang) var(--lv-notes);
     column-gap: var(--space-md);
     align-items: baseline;
     max-width: 84rem;

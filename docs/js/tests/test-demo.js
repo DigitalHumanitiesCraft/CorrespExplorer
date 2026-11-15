@@ -79,6 +79,22 @@ export const DemoTests = {
         },
 
         {
+            name: 'Tabelle: Jahre bleiben ohne Tausenderpunkt, Anzahlen erhalten ihn',
+            run() {
+                const host = document.createElement('div');
+                renderDataTable(host, {
+                    caption: 'Orte',
+                    columns: ['Ort', 'Briefe', 'Erstes Jahr', 'Letztes Jahr'],
+                    rawColumns: ['Erstes Jahr', 'Letztes Jahr'],
+                    rows: [['Graz', 1234, 1874, 1927]]
+                });
+                const cells = [...host.querySelectorAll('tbody td')].map(td => td.textContent);
+                assert(cells[0] === '1.234', `Anzahl als „${cells[0]}“ statt „1.234“`);
+                assert(cells[1] === '1874' && cells[2] === '1927', `Jahre als „${cells[1]}“ und „${cells[2]}“`);
+            }
+        },
+
+        {
             // An ego-centred dataset: the dominant person is found, hiding it keeps only the
             // relations between the others, and organisations stay distinguishable from persons
             name: 'Netzwerk: Ego des Datensatzes, Verbindungen ohne Ego, Organisationen als Knotenart',

@@ -1087,7 +1087,7 @@ function updateNetworkStats(data, minYear, maxYear, yearColorScale) {
             legendDiv.innerHTML = `
                 <div class="legend-item">
                     <span class="legend-gradient" style="background: linear-gradient(to right, ${yearColorScale(minYear)}, ${yearColorScale((minYear + maxYear) / 2)}, ${yearColorScale(maxYear)});"></span>
-                    <span class="legend-years">${minYear} - ${maxYear}</span>
+                    <span class="legend-years">${minYear}–${maxYear}</span>
                 </div>
                 <div class="legend-size-hint"><i class="fas fa-circle"></i> ${sizeHint}</div>
                 <div class="legend-hint">Farbe = Eintrittsjahr | Hover zeigt Verbindungen</div>
@@ -2108,6 +2108,7 @@ function applyEgoLevel() {
     renderDataTable(elements.getById('network-table'), {
         caption: `Personen um ${model.centre.name} (${rows.length})`,
         columns: ['Person', `Briefe mit ${model.centre.name}`, 'Erster Brief', 'Letzter Brief', 'Erwähnungen'],
+        rawColumns: ['Erster Brief', 'Letzter Brief'],
         rows
     });
 }

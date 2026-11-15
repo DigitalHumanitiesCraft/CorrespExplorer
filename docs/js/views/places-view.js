@@ -252,7 +252,7 @@ export function renderPlacesList() {
     container.innerHTML = places.map(place => {
         const isActive = selectedPlaceId === place.id;
         const yearRange = place.yearMin && place.yearMax
-            ? `${place.yearMin}-${place.yearMax}`
+            ? `${place.yearMin}–${place.yearMax}`
             : '';
         const precisionClass = markMissing || place.precision === 'unknown' ? getPlacePrecisionClass(place.precision) : '';
         const noCoordIcon = markMissing && !place.hasCoordinates ? ' <span class="place-nocoord">ohne Koordinaten</span>' : '';
@@ -274,6 +274,7 @@ export function renderPlacesList() {
         caption: 'Absendeorte der Auswahl',
         label: 'Orte als Tabelle',
         columns: ['Ort', 'Briefe', 'Absender', 'Erstes Jahr', 'Letztes Jahr', 'Koordinaten'],
+        rawColumns: ['Erstes Jahr', 'Letztes Jahr'],
         rows: places.map(place => [place.name, place.filteredCount, place.senderCount,
             place.yearMin ?? '', place.yearMax ?? '', place.hasCoordinates ? 'ja' : 'nein'])
     });

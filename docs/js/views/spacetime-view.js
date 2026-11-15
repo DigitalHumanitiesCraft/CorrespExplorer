@@ -666,8 +666,8 @@ function draw() {
 /**
  * Column or year under a point of the figure. Where several marks lie under it, the one whose
  * centre is nearest in relation to its size wins: the middle of a small mark reaches it even inside
- * the reach of a large neighbour, and the body of a large mark stays its own. Until 2026-11-14 the
- * busiest place always won, so a place with few letters next to a busy one could not be picked.
+ * the reach of a large neighbour, and the body of a large mark stays its own; were the busiest
+ * place always to win, a place with few letters next to a busy one could not be picked.
  * @returns {{i: number, year: number|null}|null}
  */
 function hitAt(mx, my) {
