@@ -12,7 +12,8 @@ import {
     getDatePrecisionClass,
     getPersonPrecisionClass,
     getPlacePrecisionClass,
-    formatCountOf
+    formatCountOf,
+    sharedLetterLabel
 } from '../formatters.js';
 
 export const FormattersTests = {
@@ -23,6 +24,18 @@ export const FormattersTests = {
     },
 
     tests: [
+        {
+            name: 'sharedLetterLabel: Brief derselben Signatur mit Tag, ohne Datum und mit Datum nur in Worten',
+            async run() {
+                const data = await parseCMIF('data/test-parser-cases.xml');
+                const entry = data.letters.find(l => l.sharedSignature?.some(s => s.id === 'TP.M1b'))
+                    ?.sharedSignature.find(s => s.id === 'TP.M1b');
+                assert(entry, 'Fixture sollte einen Brief mit TP.M1b unter derselben Signatur enthalten');
+                assert(sharedLetterLabel(entry) === 'Brief vom 20.2.2019', `Erhalten: ${sharedLetterLabel(entry)}`);
+                assert(sharedLetterLabel({ id: 'x', date: null }) === 'Brief ohne Datum', 'Ohne Datum');
+                assert(sharedLetterLabel({ id: 'x', date: 'Frühjahr 1919' }) === 'Brief „Frühjahr 1919“', 'Datum in Worten');
+            }
+        },
         {
             name: 'formatCountOf: Gefilterter Anteil neben der Gesamtzahl, ungefiltert nur die Gesamtzahl',
             async run() {

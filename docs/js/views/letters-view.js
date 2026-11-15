@@ -5,7 +5,7 @@
 
 import { isInBasket } from '../basket.js';
 import { debounce, escapeHtml, safeUrl, openModal, closeModal, personKey, letterRecipients, foldText, isKnownPlace } from '../utils.js';
-import { formatDateWithPrecision, formatPersonName, formatPlaceName, getDatePrecisionClass } from '../formatters.js';
+import { formatDateWithPrecision, formatPersonName, formatPlaceName, getDatePrecisionClass, sharedLetterLabel } from '../formatters.js';
 import { LANGUAGE_COLORS, LETTER_FEATURES, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
 import { state } from '../state-manager.js';
 import { elements } from '../dom-cache.js';
@@ -250,7 +250,8 @@ function haystackOf(letter) {
     if (text === undefined) {
         text = foldText([
             letter.sender?.name, ...letterRecipients(letter).map(r => r.name), letter.place_sent?.name,
-            letter.address, letter.postmark, letter.signature, letter.dateText,
+            ...(letter.placeAlternatives || []).map(p => p.name),
+            ...(letter.addresses || [letter.address]), letter.postmark, letter.signature, letter.dateText, letter.dateSupplied,
             letter.language?.label || (letter.language?.code ? languageLabel(letter.language.code) : '')
         ].filter(Boolean).join('\n'));
         haystacks.set(letter, text);
@@ -300,7 +301,7 @@ export function renderLettersList() {
     }
     // The brackets are explained once where they occur, not only in a tooltip
     document.getElementById('letters-legend')?.classList.toggle('hidden',
-        !letters.some(l => l.dateInferred || l.place_sent?.inferred));
+        !letters.some(hasBrackets));
 
     const profileHost = document.getElementById('letters-profile');
     if (sorted.length === 0) {
@@ -569,11 +570,21 @@ function bindProfile(host) {
 
 const forwardedTo = letter => (letter.furtherActions || []).filter(a => a.type === 'forwarded').flatMap(a => a.persons);
 
+// Whether a letter shows a value in the editorial brackets, which the legend explains
+const hasBrackets = letter => Boolean(letter.dateInferred || letter.place_sent?.inferred
+    || letter.placeAlternatives?.some(p => p.inferred));
+
 // Whether a row has anything in its last column; a list without any drops that column
 function hasNotes(letter, centreKey) {
     return Boolean(letter.postmark || letter.address || letter.signature || letter.records?.length > 1
+        || letter.dateSupplied || letter.placeAlternatives?.length || letter.sharedSignature?.length
         || forwardedTo(letter).length || letterDirection(letter, centreKey)?.also.length);
 }
+
+// Further places of sending in the notation of the place column, an inferred one in brackets
+const alternativesHtml = letter => (letter.placeAlternatives || [])
+    .map(p => formatPlaceName(p.name, p.geonames_id ? 'exact' : 'region', p.inferred)).join('; ');
+const alternativesLabel = letter => (letter.placeAlternatives?.length === 1 ? 'Weiterer Absendeort' : 'Weitere Absendeorte');
 
 const namesHtml = persons => (persons.length
     ? persons.map(p => formatPersonName(p.name, p.precision)).join('; ')
@@ -616,6 +627,8 @@ function letterRowHtml(letter, { centre = null, compactDate = false } = {}) {
     const forwarded = forwardedTo(letter);
     const recordNote = letter.records?.length > 1
         ? `${letter.records.length} Einträge in der Quelle${letter.recordsDiffer ? ', Angaben weichen ab' : ''}` : '';
+    const sharedNote = letter.sharedSignature?.length
+        ? `Gleiche Signatur wie ${letter.sharedSignature.map(sharedLetterLabel).join('; ')}` : '';
     const inBasket = isInBasket('letters', letter.id);
 
     // The persons are the button that opens the letter; the star stays a sibling control
@@ -633,10 +646,15 @@ function letterRowHtml(letter, { centre = null, compactDate = false } = {}) {
         <span class="letter-meta lv-notes">${[
             direction?.also.length ? labelled('Auch an', namesHtml(direction.also)) : '',
             forwarded.length ? labelled('Weitergeleitet an', namesHtml(forwarded)) : '',
+            labelled('Ergänztes Datum', escapeHtml(letter.dateSupplied || '')),
+            labelled(alternativesLabel(letter), alternativesHtml(letter)),
             labelled('Poststempel', escapeHtml(letter.postmark || '')),
-            labelled('Anschrift', escapeHtml(letter.address || '')),
+            letter.addresses
+                ? labelled('Anschriften', letter.addresses.map(escapeHtml).join(' | '))
+                : labelled('Anschrift', escapeHtml(letter.address || '')),
             labelled('Signatur', escapeHtml(letter.signature || '')),
-            recordNote ? `<span class="letter-meta__note">${recordNote}</span>` : ''
+            recordNote ? `<span class="letter-meta__note">${recordNote}</span>` : '',
+            sharedNote ? `<span class="letter-meta__note">${escapeHtml(sharedNote)}</span>` : ''
         ].join('')}</span>
     </li>`;
 }
@@ -687,6 +705,8 @@ export function showLetterDetail(letterId) {
     html += '<h4>Grunddaten</h4>';
     // Date with its precision marker, as in the list (ADR-002)
     html += detailRow('Datum', formatDateWithPrecision(letter), getDatePrecisionClass(letter.datePrecision, letter.dateCertainty));
+    // A date element the edition marked as supplied stands beside the date read, which stays as it is
+    if (letter.dateSupplied) html += detailRow('Ergänztes Datum', escapeHtml(letter.dateSupplied));
     html += detailRow('Absender', buildPersonLink(letter.sender));
     // The source names several senders, such as a person and a publishing house
     if (letter.senders) html += detailRow('Absender laut Quelle', letter.senders.map(p => escapeHtml(p.name)).join('; '));
@@ -699,6 +719,11 @@ export function showLetterDetail(letterId) {
             ? formatPlaceName(letter.place_sent.name, letter.place_sent.precision, true)
             : buildPlaceLink(letter.place_sent));
     }
+    // Further places of sending the source names; the place above stays the one the views count
+    if (letter.placeAlternatives?.length) {
+        html += detailRow(alternativesLabel(letter), letter.placeAlternatives
+            .map(p => (p.inferred ? formatPlaceName(p.name, 'exact', true) : buildPlaceLink(p))).join('; '));
+    }
     // Actions besides sending and receiving, as the source states them
     for (const action of letter.furtherActions || []) {
         const label = action.type === 'forwarded' ? 'Weitergeleitet an' : `Weitere Handlung (${escapeHtml(action.type)})`;
@@ -706,11 +731,16 @@ export function showLetterDetail(letterId) {
         html += detailRow(label, parts.filter(Boolean).join(', ') || 'ohne Angabe');
     }
     if (letter.postmark) html += detailRow('Poststempel', escapeHtml(letter.postmark));
-    if (letter.address) html += detailRow('Anschrift', escapeHtml(letter.address));
+    // Each address on its own line where the letter carries several
+    if (letter.addresses) {
+        html += detailRow('Anschriften', letter.addresses.map(a => `<span class="letter-detail-line">${escapeHtml(a)}</span>`).join(''));
+    } else if (letter.address) {
+        html += detailRow('Anschrift', escapeHtml(letter.address));
+    }
     if (letter.signature) html += detailRow('Signatur', escapeHtml(letter.signature));
     if (letter.file) html += detailRow('Datei', escapeHtml(letter.file));
     if (letter.language?.label) html += detailRow('Sprache', escapeHtml(letter.language.label));
-    if (letter.dateInferred || letter.place_sent?.inferred) {
+    if (hasBrackets(letter)) {
         html += '<p class="list-legend">Eckige Klammern: von der Edition erschlossen, nicht dem Brief entnommen.</p>';
     }
     if (letter.recordsDiffer) {
@@ -726,6 +756,18 @@ export function showLetterDetail(letterId) {
         html += letter.parallels.map(p => `<li><span class="letter-records__id">${escapeHtml(p.id)}</span> ${escapeHtml(p.file)}</li>`).join('');
         html += '</ul>';
         html += '<p class="list-legend">Absender, Empfänger und Tag stimmen überein. Beide Einträge bleiben getrennt und zählen einzeln.</p>';
+        html += '</div>';
+    }
+
+    // Other letters the source files under the same shelfmark with another date; each opens here
+    const shared = (letter.sharedSignature || []).filter(s => s.id);
+    if (shared.length) {
+        html += '<div class="letter-detail-section">';
+        html += '<h4>Unter derselben Signatur</h4>';
+        html += '<ul class="letter-records">';
+        html += shared.map(s => `<li><button type="button" class="letter-open-link" data-letter-id="${escapeHtml(s.id)}">${escapeHtml(sharedLetterLabel(s))}</button> <span class="letter-records__id">${escapeHtml(s.id)}</span></li>`).join('');
+        html += '</ul>';
+        html += '<p class="list-legend">Die Signatur steht für mehrere Briefe mit verschiedenem Datum. Jeder zählt einzeln.</p>';
         html += '</div>';
     }
 
@@ -784,6 +826,12 @@ export function showLetterDetail(letterId) {
     html += '</div></div>';
 
     body.innerHTML = html;
+    // The dialog shows the other letter in place; its close button takes the focus the removed
+    // button had, and closing still returns to the row the dialog was opened from
+    body.querySelectorAll('.letter-open-link').forEach(btn => btn.addEventListener('click', () => {
+        showLetterDetail(btn.dataset.letterId);
+        modal.querySelector('.modal-close')?.focus();
+    }));
     body.querySelector('.btn-filter-person')?.addEventListener('click', (e) => {
         closeModal(modal);
         deps.showLettersOfPerson(e.currentTarget.dataset.personId);

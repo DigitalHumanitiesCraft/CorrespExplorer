@@ -10,7 +10,7 @@
 
 import { computeLanguageColors, languageLabel, NO_LANGUAGE } from './constants.js';
 import { parseCMIFFiles } from './cmif-parser.js';
-import { formatSingleDate, formatNumber as format } from './formatters.js';
+import { formatSingleDate, formatNumber as format, plural } from './formatters.js';
 import { summarizeLetters, recordOf, STATEMENTS, letterTime } from './start-summary.js';
 import { composeFigure } from './start-compose.js';
 import { prefersReducedMotion, httpErrorMessage, personKey, letterRecipients, placeKey } from './utils.js';
@@ -578,7 +578,7 @@ function drawCircle(context) {
             const p = pos.get(`i${i}`);
             const [name, letters] = ego.inner[i];
             const mark = node('circle', { cx: p.x, cy: p.y, r: Math.max(1.4, p.r * 0.75), class: 'mini-node' });
-            title(mark, `${name}, ${format(letters)} Briefe`);
+            title(mark, `${name}, ${plural(letters, 'Brief', 'Briefe')}`);
             const key = innerKeys?.[i];
             pickable(mark, pick(l => key && partnerKey(l, centreKey) === key, r => r.partner === i), { outline: outlined(context) });
             items.push(mark);
@@ -617,7 +617,7 @@ function drawRing({ data, marks, width, height, summary }) {
             const p = pos.get(`o${i}`);
             if (!p) return;
             const dot = node('circle', { cx: p.x, cy: p.y, r: 2.2, class: writes ? 'mini-mention' : 'mini-mention mini-mention--hollow' });
-            title(dot, `${name}, in ${format(mentions)} Briefen erwähnt${writes ? '' : ', schreibt selbst keinen Brief'}`);
+            title(dot, `${name}, in ${plural(mentions, 'Brief', 'Briefen')} erwähnt${writes ? '' : ', schreibt selbst keinen Brief'}`);
             items.push(dot);
         });
         data.replaceChildren(...items);

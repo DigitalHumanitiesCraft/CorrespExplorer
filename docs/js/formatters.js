@@ -141,6 +141,18 @@ export function formatSingleDate(dateStr) {
 }
 
 /**
+ * Another letter under the same shelfmark as the views name it (parser field sharedSignature):
+ * "Brief vom 20.2.2019"; a date the source gives only in words stands in quotation marks
+ * @param {{id: string, date: string|null}} entry
+ * @returns {string} plain text, to be escaped by the caller
+ */
+export function sharedLetterLabel(entry) {
+    const date = entry?.date;
+    if (!date) return 'Brief ohne Datum';
+    return /^\d{4}(-\d{2}){0,2}$/.test(date) ? `Brief vom ${formatSingleDate(date)}` : `Brief „${date}“`;
+}
+
+/**
  * Format date with precision indicator (icons for imprecise dates)
  * @param {Object} letter - Letter object with date, dateTo, datePrecision, dateCertainty
  * @returns {string} HTML string with date and optional icon

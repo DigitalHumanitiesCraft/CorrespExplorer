@@ -155,7 +155,9 @@ export function coordinateCoverage(index) {
  * Letters per place in a letter set, with the number whose place the edition inferred, and the
  * letters without any sending place
  * @param {Array} letters
- * @returns {{counts: Object<string, {count: number, inferred: number}>, withoutPlace: number}}
+ * Senders and years are those of the given letters, so every number of a place row counts the
+ * same selection (shared rule 7)
+ * @returns {{counts: Object<string, {count: number, inferred: number, senders: Set<string>, yearMin: ?number, yearMax: ?number}>, withoutPlace: number}}
  */
 export function countLettersByPlace(letters) {
     const counts = {};
@@ -165,9 +167,14 @@ export function countLettersByPlace(letters) {
             withoutPlace++;
             return;
         }
-        const entry = counts[placeKey(letter.place_sent)] ||= { count: 0, inferred: 0 };
+        const entry = counts[placeKey(letter.place_sent)] ||= { count: 0, inferred: 0, senders: new Set(), yearMin: null, yearMax: null };
         entry.count++;
         if (letter.place_sent.inferred) entry.inferred++;
+        if (letter.sender) entry.senders.add(personKey(letter.sender));
+        if (letter.year) {
+            entry.yearMin = entry.yearMin === null ? letter.year : Math.min(entry.yearMin, letter.year);
+            entry.yearMax = entry.yearMax === null ? letter.year : Math.max(entry.yearMax, letter.year);
+        }
     });
     return { counts, withoutPlace };
 }
@@ -211,7 +218,10 @@ export function renderPlacesList() {
         .map(place => ({
             ...place,
             filteredCount: counts[place.id].count,
-            inferredCount: counts[place.id].inferred
+            inferredCount: counts[place.id].inferred,
+            senderCount: counts[place.id].senders.size,
+            yearMin: counts[place.id].yearMin,
+            yearMax: counts[place.id].yearMax
         }));
 
     // Apply search filter

@@ -306,6 +306,13 @@ export const AggregationTests = {
 
                 const hsa = await (await fetch('data/hsa-letters.json')).json();
                 assert(coordinateCoverage(indexPlaces(hsa.letters)) === 'mixed', 'Das HSA mischt Orte mit und ohne Koordinaten');
+
+                // Senders and years of a place count the given letters only, as the letter count does (rule 7)
+                const graz = '2778067';
+                const all = countLettersByPlace(hsa.letters).counts[graz];
+                const year1900 = countLettersByPlace(hsa.letters.filter(l => l.year === 1900)).counts[graz];
+                assert(year1900.yearMin === 1900 && year1900.yearMax === 1900, `Jahre der Auswahl, ist ${year1900.yearMin}-${year1900.yearMax}`);
+                assert(year1900.senders.size < all.senders.size, `Absender der Auswahl ${year1900.senders.size} unter allen ${all.senders.size}`);
             }
         }
     ]

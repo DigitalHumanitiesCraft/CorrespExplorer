@@ -672,7 +672,7 @@ Wahl. Jede Anfrage an Wikidata oder GeoNames startet erst auf eine ausdrücklich
 
 Begründung. Nutzende sollen sehen und bestimmen, wann Daten das Werkzeug verlassen.
 
-Effekt. Gilt für Personen-Dialog, Zeitansicht, Orte und den Dialog nach dem Laden. Das Laden des Datensatzes selbst fällt nicht darunter: Ein Link mit `cs=` lädt die genannte correspSearch-Abfrage beim Öffnen (Entscheidung E3 vom 2026-11-05). Die Grundkarte von OpenFreeMap ist kein Dienst mit Personenbezug und wird beim Öffnen des Explorers angefragt ([plan.md](plan.md#orte-und-raum-zeit)).
+Effekt. Gilt für Personen-Dialog, Zeitansicht, Orte und den Dialog nach dem Laden. Das Laden des Datensatzes selbst fällt nicht darunter: Ein Link mit `cs=` lädt die genannte correspSearch-Abfrage beim Öffnen (Entscheidung E3 vom 2026-11-05). Die Grundkarte von OpenFreeMap ist kein Dienst mit Personenbezug. Seit 2026-11-15 wird sie erst angefragt, wenn die Kartenansicht zum ersten Mal erscheint, vorher bei jedem Öffnen des Explorers. Die kleine Karte der Startansicht und die Raum-Zeit-Ansicht zeichnen mitgelieferte Länderumrisse und fragen nichts an.
 
 ### ADR-007 Umfang der Stories nach dem Abgleich mit dem Code
 

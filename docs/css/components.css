@@ -933,6 +933,22 @@
     color: var(--color-text-light);
 }
 
+/* A letter the dialog can show in place, written as a link because it reads as one */
+.letter-open-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--color-link);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* One value of several in a row of the letter dialog, such as each address */
+.letter-detail-line {
+    display: block;
+}
+
 /* Correspondents: kind of record in words */
 .person-kind {
     font-size: var(--font-size-xs);

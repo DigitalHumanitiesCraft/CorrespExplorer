@@ -15,7 +15,7 @@ import {
 
 import { BASKET_LIMITS } from './constants.js';
 import { debounce, escapeHtml, safeUrl, downloadFile, showToast, personKey, placeKey, isAllowedJsonPath, ignoreMissingStyleImages, settleWithoutMotion, letterRecipients } from './utils.js';
-import { formatDateWithPrecision, formatSingleDate, formatPlaceName } from './formatters.js';
+import { formatDateWithPrecision, formatSingleDate, formatPlaceName, sharedLetterLabel, plural } from './formatters.js';
 import { lettersToCsv, letterExportRow } from './export.js';
 import { readTokens } from './views/view-support.js';
 
@@ -483,10 +483,19 @@ function placeHtml(letter) {
     return formatPlaceName(place.name, place.precision, place.inferred);
 }
 
-// What the source records about the transmission of the letter, each value with its name;
-// a letter without any of them gets no line
+// What the source records about the transmission of the letter, each value with its name and each
+// of several addresses on its own; a letter without any of them gets no line. An inferred place
+// keeps the editorial brackets of the letter list
 function transmissionHtml(letter, className) {
-    const parts = [['Signatur', letter.signature], ['Poststempel', letter.postmark], ['Anschrift', letter.address]]
+    const alternatives = (letter.placeAlternatives || []).map(p => (p.inferred ? `[${p.name}]` : p.name)).join('; ');
+    const parts = [
+        ['Ergänztes Datum', letter.dateSupplied],
+        [letter.placeAlternatives?.length === 1 ? 'Weiterer Absendeort' : 'Weitere Absendeorte', alternatives],
+        ['Signatur', letter.signature],
+        ['Gleiche Signatur wie', (letter.sharedSignature || []).map(sharedLetterLabel).join('; ')],
+        ['Poststempel', letter.postmark],
+        ...(letter.addresses || [letter.address]).map(address => ['Anschrift', address])
+    ]
         .filter(([, value]) => value)
         .map(([label, value]) => `<span>${label}: ${escapeHtml(value)}</span>`);
     return parts.length ? `<div class="${className} letter-transmission">${parts.join('')}</div>` : '';
@@ -507,7 +516,7 @@ function renderPlaceList(places) {
                     <i class="fas fa-map-marker-alt item-row-icon" aria-hidden="true"></i>
                     ${escapeHtml(place.name)}
                 </div>
-                <div class="item-row-meta">${place.letterCount} Briefe</div>
+                <div class="item-row-meta">${plural(place.letterCount, 'Brief', 'Briefe')}</div>
             </div>
             <button type="button" class="item-remove-btn" data-type="places" data-id="${escapeHtml(place.id)}" title="Entfernen" aria-label="${escapeHtml(place.name)} aus dem Korb entfernen">
                 <i class="fas fa-times" aria-hidden="true"></i>
