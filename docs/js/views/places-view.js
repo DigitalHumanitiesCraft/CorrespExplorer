@@ -1,11 +1,13 @@
 // Places View
 // Place browsing, filtering and coordinate resolution
 
-import { escapeHtml, debounce, showToast, placeKey, personKey, foldText } from '../utils.js';
+import { escapeHtml, debounce, showToast, placeKey, personKey, foldText, isKnownPlace } from '../utils.js';
 import { addEntityToBasket } from '../basket.js';
 import { getPlacePrecisionClass } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { LANGUAGE_COLORS, languageLabel } from '../constants.js';
+import { countOf } from '../selection-ui.js';
+import { renderDataTable } from './view-support.js';
 
 // Module state
 let placesIndex = {};
@@ -257,6 +259,15 @@ export function renderPlacesList() {
         `;
     }).join('');
 
+    // The table of the places at the place of every view's table, under one quiet link (rule 4)
+    renderDataTable(elements.getById('places-table'), {
+        caption: 'Absendeorte der Auswahl',
+        label: 'Orte als Tabelle',
+        columns: ['Ort', 'Briefe', 'Absender', 'Erstes Jahr', 'Letztes Jahr', 'Koordinaten'],
+        rows: places.map(place => [place.name, place.filteredCount, place.senderCount,
+            place.yearMin ?? '', place.yearMax ?? '', place.hasCoordinates ? 'ja' : 'nein'])
+    });
+
     // Add click handlers
     container.querySelectorAll('.entity-card').forEach(card => {
         card.addEventListener('click', () => {
@@ -360,7 +371,9 @@ function renderPlaceDetail(placeId) {
         // The inferred number leads to exactly those letters, through the existing feature filter
         const inferredCount = placeLetters.filter(l => l.place_sent.inferred).length;
         const canShow = inferredCount > 0 && document.querySelector('input[name="feature"][value="placeInferred"]');
-        countEl.innerHTML = `${filteredCount.toLocaleString('de-DE')} ${filteredCount === 1 ? 'Brief' : 'Briefe'}` + (inferredCount === 0 ? ''
+        // The one count form of the page: the letters of the place under the filter of all its letters
+        const ofAll = countOf(filteredCount, place.letterCount, place.letterCount === 1 ? 'Brief' : 'Briefe', 'Briefen');
+        countEl.innerHTML = escapeHtml(ofAll) + (inferredCount === 0 ? ''
             : canShow ? `, davon <button type="button" class="view-header__link place-inferred-btn" title="Briefe dieses Orts zeigen, deren Ort die Edition erschlossen hat">${inferredCount} erschlossen</button>`
             : `, davon ${inferredCount} erschlossen`);
         // The button is rebuilt with the count, so it is found in its container, not via the id cache
@@ -442,7 +455,9 @@ function updateMissingCoordinatesBanner() {
     });
 
     if (missingCount > 0) {
-        countSpan.textContent = missingCount;
+        // Counted as the title counts places: a placeholder for an unknown place is no place (rule 7)
+        const total = Object.values(placesIndex).filter(isKnownPlace).length;
+        countSpan.textContent = countOf(missingCount, total, missingCount === 1 && total === 1 ? 'Ort' : 'Orte', 'Orten');
         banner.classList.remove('hidden');
         banner.dataset.missingIds = JSON.stringify(missingIds);
     } else {

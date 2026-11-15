@@ -5,6 +5,8 @@ import { escapeHtml, motionMs, openModal, closeModal, personKey } from '../utils
 import { formatDateWithPrecision } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { bindCombobox, readTokens, renderDataTable } from './view-support.js';
+import { languageCategory, languageColor, languageName } from '../selection-ui.js';
+import { LANGUAGE_COLORS } from '../constants.js';
 
 // Module state
 let selectedMentionsPerson = null;
@@ -12,6 +14,7 @@ let selectedMentionsPerson = null;
 // External dependencies - injected via init
 let getFilteredLetters = null;
 let showLetterDetail = null;
+let renderLanguageKey = null;
 
 // Below this width the side columns get short labels, the full name stays in a <title>
 const NARROW_WIDTH = 480;
@@ -23,6 +26,7 @@ const NARROW_WIDTH = 480;
 export function initMentionsView(deps) {
     getFilteredLetters = deps.getFilteredLetters;
     showLetterDetail = deps.showLetterDetail;
+    renderLanguageKey = deps.renderLanguageKey;
 
     initMentionsFlowViewInternal();
 }
@@ -66,7 +70,7 @@ function initMentionsPersonAutocomplete() {
 
         const selectedDisplay = elements.getById('mentions-flow-selected-person');
         if (selectedDisplay) {
-            selectedDisplay.innerHTML = `<strong>${escapeHtml(person.name)}</strong> - ${person.mentionCount} Erwähnungen`;
+            selectedDisplay.textContent = `${person.mentionCount.toLocaleString('de-DE')} ${person.mentionCount === 1 ? 'Erwähnung' : 'Erwähnungen'} in der Auswahl`;
         }
 
         renderMentionsFlowForPerson(person);
@@ -116,6 +120,7 @@ function initMentionsPersonAutocomplete() {
 export function renderMentionsFlow() {
     const placeholder = elements.mentionsFlowPlaceholder;
     const filteredLetters = getFilteredLetters();
+    renderLanguageKey?.(document.getElementById('mentions-flow-key'));
 
     // If no person selected, auto-select the most mentioned person
     if (!selectedMentionsPerson) {
@@ -180,6 +185,15 @@ function renderMentionsFlowForPerson(person) {
 
     const mentionedByPerson = [];  // Person mentions these people
     const personMentionedBy = [];  // These people mention the person
+    // Each flow counts its letters by language, so it can stand in the colour of the most frequent
+    // one, as every mark of the explorer does (design.md, rule 5)
+    const tally = (list, id, name, letter) => {
+        let entry = list.find(x => x.id === id);
+        if (!entry) list.push(entry = { id, name, count: 0, languages: new Map() });
+        entry.count++;
+        const category = languageCategory(letter.language?.code);
+        entry.languages.set(category, (entry.languages.get(category) || 0) + 1);
+    };
 
     filteredLetters.forEach(letter => {
         const senderId = letter.sender?.id;
@@ -192,17 +206,7 @@ function renderMentionsFlowForPerson(person) {
                 const mentionId = personKey(m);
                 // Skip self-references
                 if (mentionId === person.id) return;
-
-                const existingIdx = mentionedByPerson.findIndex(x => x.id === mentionId);
-                if (existingIdx >= 0) {
-                    mentionedByPerson[existingIdx].count++;
-                } else {
-                    mentionedByPerson.push({
-                        id: mentionId,
-                        name: m.name || m.id,
-                        count: 1
-                    });
-                }
+                tally(mentionedByPerson, mentionId, m.name || m.id, letter);
             });
         }
 
@@ -210,22 +214,19 @@ function renderMentionsFlowForPerson(person) {
         const isMentioned = mentions.some(m => personKey(m) === person.id);
         // Skip if sender is the same person (self-reference)
         if (isMentioned && senderId && senderId !== person.id) {
-            const existingIdx = personMentionedBy.findIndex(x => x.id === senderId);
-            if (existingIdx >= 0) {
-                personMentionedBy[existingIdx].count++;
-            } else {
-                personMentionedBy.push({
-                    id: senderId,
-                    name: senderName,
-                    count: 1
-                });
-            }
+            tally(personMentionedBy, senderId, senderName, letter);
         }
     });
 
-    // Sort by count
-    mentionedByPerson.sort((a, b) => b.count - a.count);
-    personMentionedBy.sort((a, b) => b.count - a.count);
+    // Sort by count; the language of a flow is the most frequent among its letters, ties going to
+    // the earlier language of the page order
+    const order = Object.keys(LANGUAGE_COLORS);
+    [mentionedByPerson, personMentionedBy].forEach(list => {
+        list.sort((a, b) => b.count - a.count);
+        list.forEach(entry => {
+            entry.language = [...entry.languages].sort((a, b) => b[1] - a[1] || order.indexOf(a[0]) - order.indexOf(b[0]))[0][0];
+        });
+    });
 
     // Text alternative with every pair, also those beyond the 15 nodes per side of the chart
     renderDataTable(document.getElementById('mentions-flow-table'), {
@@ -254,7 +255,7 @@ function renderMentionsFlowForPerson(person) {
     personMentionedBy.slice(0, 15).forEach(p => {
         const idx = nodes.length;
         nodeIndexMap.set('left-' + p.id, idx);
-        nodes.push({ name: p.name, id: p.id, column: 0 });
+        nodes.push({ name: p.name, id: p.id, column: 0, language: p.language });
     });
 
     // Add central person
@@ -266,7 +267,7 @@ function renderMentionsFlowForPerson(person) {
     mentionedByPerson.slice(0, 15).forEach(p => {
         const idx = nodes.length;
         nodeIndexMap.set('right-' + p.id, idx);
-        nodes.push({ name: p.name, id: p.id, column: 2 });
+        nodes.push({ name: p.name, id: p.id, column: 2, language: p.language });
     });
 
     // Create links from left to center
@@ -300,14 +301,15 @@ function renderMentionsFlowForPerson(person) {
     const narrow = width < NARROW_WIDTH;
     const tokens = readTokens({
         center: '--color-primary',
-        sender: '--color-role-sender',
-        mentioned: '--color-role-mentioned',
         text: '--color-text',
         textLight: '--color-text-light',
         fontXs: '--font-size-xs',
         fontSm: '--font-size-sm'
     });
-    const nodeColor = d => d.isCenter ? tokens.center : (d.column === 0 ? tokens.sender : tokens.mentioned);
+    // The chosen person in the selection colour, every other node and flow in the colour of the
+    // language of its letters; the shared key above the figure explains them (rules 2 and 5)
+    const nodeColor = d => d.isCenter ? tokens.center : languageColor(d.language);
+    const linkColor = d => nodeColor(d.source.isCenter ? d.target : d.source);
 
     // Side labels sit outside the node columns; reserve their width, so long names are not clipped
     const labelChars = narrow ? 12 : 25;
@@ -343,7 +345,7 @@ function renderMentionsFlowForPerson(person) {
             .attr('text-anchor', 'start')
             .style('font-size', tokens.fontXs)
             .style('font-weight', '600')
-            .style('fill', tokens.sender)
+            .style('fill', tokens.text)
             .text('ERWÄHNT VON');
 
         if (!narrow) {
@@ -364,7 +366,7 @@ function renderMentionsFlowForPerson(person) {
         .attr('text-anchor', 'middle')
         .style('font-size', tokens.fontXs)
         .style('font-weight', '600')
-        .style('fill', tokens.center)
+        .style('fill', tokens.text)
         .text('PERSON');
 
     // Right column: People mentioned by the selected person (only show if data exists)
@@ -375,7 +377,7 @@ function renderMentionsFlowForPerson(person) {
             .attr('text-anchor', 'end')
             .style('font-size', tokens.fontXs)
             .style('font-weight', '600')
-            .style('fill', tokens.mentioned)
+            .style('fill', tokens.text)
             .text('ERWÄHNT');
 
         if (!narrow) {
@@ -404,22 +406,6 @@ function renderMentionsFlowForPerson(person) {
         links: links.map(d => Object.assign({}, d))
     });
 
-    // Gradients
-    const defs = svg.append('defs');
-    layoutLinks.forEach((link, i) => {
-        const gradient = defs.append('linearGradient')
-            .attr('id', `person-link-gradient-${i}`)
-            .attr('gradientUnits', 'userSpaceOnUse')
-            .attr('x1', link.source.x1)
-            .attr('x2', link.target.x0);
-
-        const sourceColor = nodeColor(link.source);
-        const targetColor = nodeColor(link.target);
-
-        gradient.append('stop').attr('offset', '0%').attr('stop-color', sourceColor);
-        gradient.append('stop').attr('offset', '100%').attr('stop-color', targetColor);
-    });
-
     // Create tooltip. The look should move to a .sankey-tooltip rule in the CSS; until then the
     // inline declarations use tokens only, so the floating box stays readable
     let tooltip = document.getElementById('sankey-tooltip');
@@ -438,7 +424,7 @@ function renderMentionsFlowForPerson(person) {
         .data(layoutLinks)
         .join('path')
         .attr('d', d3.sankeyLinkHorizontal())
-        .attr('stroke', (d, i) => `url(#person-link-gradient-${i})`)
+        .attr('stroke', linkColor)
         .attr('stroke-width', d => Math.max(2, d.width))
         .attr('fill', 'none')
         .attr('opacity', 0.6)
@@ -447,7 +433,8 @@ function renderMentionsFlowForPerson(person) {
             d3.select(this).attr('opacity', 0.9);
             const sourceName = d.source.name;
             const targetName = d.target.name;
-            tooltip.innerHTML = `<strong>${escapeHtml(sourceName)}</strong> erwähnt <strong>${escapeHtml(targetName)}</strong> in ${d.value} Brief(en)`;
+            const side = d.source.isCenter ? d.target : d.source;
+            tooltip.innerHTML = `<strong>${escapeHtml(sourceName)}</strong> erwähnt <strong>${escapeHtml(targetName)}</strong> in ${d.value} ${d.value === 1 ? 'Brief' : 'Briefen'}, meist ${escapeHtml(languageName(side.language))}`;
             tooltip.style.display = 'block';
         })
         .on('mousemove', function(event) {

@@ -49,6 +49,11 @@
     transform: rotate(180deg);
 }
 
+/* In the letter list the count leads to the list itself and opens nothing */
+.letters-drawer__toggle--list .letters-drawer__chevron {
+    display: none;
+}
+
 /* A text control beside the count, there only while the list is open */
 .letters-drawer__all {
     min-height: 24px;

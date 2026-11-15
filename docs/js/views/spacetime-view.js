@@ -14,6 +14,7 @@ import { readTokens } from './view-support.js';
 import { formatNumber as fmt, plural } from '../formatters.js';
 import { loadLand as loadLandFeatures } from '../mini-figures.js';
 import { LANGUAGE_COLORS, NO_LANGUAGE, isRestLanguage, languageLabel } from '../constants.js';
+import { OUTSIDE_OPACITY } from '../selection-ui.js';
 
 export const CAMERAS = {
     schraeg: { yaw: -0.55, pitch: 0.62 },
@@ -242,6 +243,7 @@ function niceStep(span, count) {
  * @param {Function} dependencies.togglePlace - sets or releases the place filter
  * @param {Function} dependencies.showLettersOfPlaceYear - selects one place in one year and opens its letters
  * @param {Function} dependencies.pickYear - picks one year of the selection or releases it (null)
+ * @param {Function} dependencies.renderLanguageKey - draws the shared language key into a host
  */
 export function initSpacetimeView(dependencies) {
     deps = dependencies;
@@ -294,6 +296,7 @@ export function renderSpacetime() {
     renderList();
     renderNote();
     renderLegend();
+    deps.renderLanguageKey?.(el('spacetime-key'));
     syncCameraButtons();
     draw();
 }
@@ -543,7 +546,8 @@ function draw() {
     const drawColumn = ({ place, i, foot, depth }) => {
         const selected = place.id === model.selected;
         const hovered = place.id === hoverPlace;
-        const alpha = selected || hovered ? 1 : fade(depth) * (hasSelection ? 0.5 : 1);
+        // Rule 6: a chosen place in full colour before the others at the opacity of the pale whole
+        const alpha = selected || hovered ? 1 : hasSelection ? OUTSIDE_OPACITY : fade(depth);
         const X = foot.X;
         const points = place.years.map(({ year, count, lang }) => ({ year, lang, Y: pr.at(place.x, place.z, yearToHeight(year)).Y, w: halfWidth(count) }));
         const bottomY = points[0].Y;
@@ -717,7 +721,8 @@ function renderLegend() {
     const samples = [...new Set([1, Math.round(Math.sqrt(model.maxCount)), model.maxCount])].filter(n => n >= 1);
     const r = n => Math.max(1.6, 9 * Math.sqrt(n / model.maxCount));
     const marks = samples.map(n => `<span class="st-legend__item"><svg width="${Math.ceil(r(n) * 2 + 2)}" height="14" aria-hidden="true"><ellipse class="st-mark" cx="${(r(n) + 1).toFixed(1)}" cy="7" rx="${r(n).toFixed(1)}" ry="5"/></svg>${fmt(n)}</span>`).join('');
-    legend.innerHTML = `<span class="st-legend__group">${marks}<span>Breite der Säule: Briefe in einem Jahr. Farbe: häufigste Sprache des Jahres</span></span>`
+    // The colours are explained by the shared language key above the figure
+    legend.innerHTML = `<span class="st-legend__group">${marks}<span>Breite der Säule: Briefe in einem Jahr</span></span>`
         + '<span class="st-legend__group"><svg width="20" height="12" aria-hidden="true"><ellipse class="st-foot" cx="10" cy="6" rx="8" ry="4"/></svg><span>Ring am Boden: alle Briefe des Orts</span></span>';
 }
 

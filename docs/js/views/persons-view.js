@@ -7,6 +7,8 @@ import { debounce, escapeHtml, safeUrl, openModal, closeModal, showToast, person
 import { getPersonPrecisionClass, getPersonInitials } from '../formatters.js';
 import { elements } from '../dom-cache.js';
 import { authorityUrl, buildCorrespSearchUrl, detailRow, toggleBasketButton } from './view-support.js';
+import { dominantLanguages, languageColor, languageName } from '../selection-ui.js';
+import { NO_LANGUAGE } from '../constants.js';
 
 let deps = {};
 let personsSortOrder = 'letters-desc';
@@ -19,6 +21,7 @@ let personsKind = 'all';
  * @param {Function} dependencies.getAllLetters
  * @param {Function} dependencies.getDataIndices
  * @param {Function} dependencies.showLettersOfPerson - sets the person filter and opens the letter list
+ * @param {Function} dependencies.renderLanguageKey - draws the shared language key into a host
  */
 export function initPersonsView(dependencies) {
     deps = dependencies;
@@ -75,11 +78,16 @@ export function renderPersonsList() {
         seenInLetter.add(key);
     };
     let seenInLetter = new Set();
-    deps.getFilteredLetters().forEach(letter => {
+    const filtered = deps.getFilteredLetters();
+    filtered.forEach(letter => {
         seenInLetter = new Set();
         count(letter.sender, 'sent');
         letterRecipients(letter).forEach(recipient => count(recipient, 'received'));
     });
+    // Each person in the colour of the most frequent language of their letters, as in the circle,
+    // explained by the shared key above the list (rules 2 and 5)
+    deps.renderLanguageKey?.(document.getElementById('persons-key'));
+    const languageOf = dominantLanguages(filtered, letter => [letter.sender, ...letterRecipients(letter)].map(personKey));
 
     let persons = Object.values(personsMap);
 
@@ -143,6 +151,10 @@ export function renderPersonsList() {
         const precisionClass = getPersonPrecisionClass(person.precision);
         const hasWikidataEnrichment = enrichmentData[person.key]?.source === 'wikidata';
         const name = escapeHtml(person.name);
+        const language = languageOf.get(person.key);
+        const swatch = language && language !== NO_LANGUAGE
+            ? `<span class="lang-swatch" style="background: ${languageColor(language)}" title="Häufigste Sprache: ${escapeHtml(languageName(language))}" aria-hidden="true"></span><span class="visually-hidden">Häufigste Sprache: ${escapeHtml(languageName(language))}</span>`
+            : '';
 
         const wikidataIndicator = hasWikidataEnrichment ? `
             <span class="wikidata-indicator" title="Wikidata-Anreicherung" role="img" aria-label="Wikidata-Anreicherung">
@@ -157,7 +169,7 @@ export function renderPersonsList() {
         return `
             <div class="person-card ${precisionClass}" data-id="${escapeHtml(person.key)}" data-name="${name}">
                 <div class="person-info">
-                    <div class="person-name" title="${name}"><button type="button" class="person-filter-btn" data-id="${escapeHtml(person.key)}" title="Briefe von ${name} anzeigen">${name}</button>${wikidataIndicator}</div>
+                    <div class="person-name" title="${name}">${swatch}<button type="button" class="person-filter-btn" data-id="${escapeHtml(person.key)}" title="Briefe von ${name} anzeigen">${name}</button>${wikidataIndicator}</div>
                     <div class="person-stats">
                         <span><i class="fas fa-paper-plane" aria-hidden="true"></i> ${person.sent.toLocaleString('de-DE')} gesendet</span>
                         <span><i class="fas fa-inbox" aria-hidden="true"></i> ${person.received.toLocaleString('de-DE')} empfangen</span>

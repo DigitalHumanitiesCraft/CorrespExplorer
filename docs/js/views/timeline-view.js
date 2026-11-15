@@ -18,6 +18,7 @@ import { addLettersToBasket } from '../basket.js';
 import { state } from '../state-manager.js';
 import { renderDataTable, readTokens } from './view-support.js';
 import { formatNumber as fmt } from '../formatters.js';
+import { countOf, PALE_TOKEN, OUTSIDE_OPACITY } from '../selection-ui.js';
 import { rowCentre, letterDirection } from './letters-view.js';
 import { initChronikView, correspondenceContext, contextText, personAge, lifeDatesOf } from './chronik-view.js';
 
@@ -48,9 +49,9 @@ let focusDetailAfterRender = false;
  * @param {Function} dependencies.getFilteredLetters - letters under every filter, the period included
  * @param {Function} dependencies.getAllLetters
  * @param {Function} dependencies.setPeriod - (start, end) chooses a period of years; (null) releases it
- * @param {Function} dependencies.revealLetters - opens the letters of the selection in the drawer
  * @param {Function} dependencies.showUndatedLetters
  * @param {Function} dependencies.showLetterDetail
+ * @param {Function} dependencies.renderLanguageKey - draws the shared language key into a host
  */
 export function initTimelineView(dependencies) {
     deps = dependencies;
@@ -59,7 +60,6 @@ export function initTimelineView(dependencies) {
         getAllLetters: deps.getAllLetters,
         onEnriched: () => renderDetail()
     });
-    document.getElementById('tv-show-letters')?.addEventListener('click', () => deps.revealLetters());
     bindDetail();
 }
 
@@ -298,6 +298,19 @@ function uncertainPhrase(imprecise, inferred) {
 
 const isImprecise = letter => ['range', 'year', 'month'].includes(letter.datePrecision) || letter.dateCertainty === 'low';
 
+// Letters per year of the whole dataset, counted once per loaded dataset
+const wholeCache = { source: null, years: new Map() };
+function wholeYears(allLetters) {
+    if (wholeCache.source !== allLetters) {
+        wholeCache.source = allLetters;
+        wholeCache.years = new Map();
+        allLetters.forEach(l => {
+            if (l.year && !isMultiYearSpan(l)) wholeCache.years.set(l.year, (wholeCache.years.get(l.year) || 0) + 1);
+        });
+    }
+    return wholeCache.years;
+}
+
 function renderProfile() {
     const container = document.getElementById('timeline-chart');
     if (!container) return;
@@ -340,10 +353,15 @@ function renderProfile() {
         undatedByLang[key] = (undatedByLang[key] || 0) + 1;
         languageTotals[key] = (languageTotals[key] || 0) + 1;
     });
-    const order = Object.entries(languageTotals).sort((a, b) => b[1] - a[1]).map(([key]) => key);
+    // One order of the languages on the whole page, by their frequency in the whole dataset (rule 11)
+    const order = hasLanguages ? Object.keys(LANGUAGE_COLORS).filter(key => languageTotals[key] > 0) : ['_total'];
 
+    // The whole dataset per year stands pale behind the selection, on the same scale (rule 6)
+    const whole = wholeYears(allLetters);
     let maxCount = Math.max(1, undatedLetters.length, spanLetters.length);
-    for (let y = minYear; y <= maxYear; y++) maxCount = Math.max(maxCount, yearData[y].total);
+    for (let y = minYear; y <= maxYear; y++) maxCount = Math.max(maxCount, yearData[y].total, whole.get(y) || 0);
+    container.style.setProperty('--tv-pale', `var(${PALE_TOKEN})`);
+    container.style.setProperty('--tv-outside', String(OUTSIDE_OPACITY));
 
     // About one year label per 48px of width
     const yearSpan = Math.max(0, maxYear - minYear + 1);
@@ -366,9 +384,12 @@ function renderProfile() {
         }).join('');
         const hatch = data.uncertain ? `<span class="tv-hatch" style="height: ${(data.uncertain / data.total) * 100}%"></span>` : '';
         const chosen = period && y >= period.start && y <= period.end;
-        const label = `${y}: ${fmt(data.total)} ${data.total === 1 ? 'Brief' : 'Briefe'}${data.uncertain ? `, ${uncertainPhrase(data.imprecise, data.inferred)}` : ''}`;
+        const wholeCount = whole.get(y) || 0;
+        const label = `${y}: ${countOf(data.total, wholeCount, wholeCount === 1 ? 'Brief' : 'Briefe', 'Briefen')}${data.uncertain ? `, ${uncertainPhrase(data.imprecise, data.inferred)}` : ''}`;
         const showLabel = (y % labelEvery === 0) || (yearSpan <= 3);
+        const pale = wholeCount > data.total ? `<span class="tv-whole" style="height: ${Math.max(3, (wholeCount / maxCount) * 100)}%"></span>` : '';
         bars.push(`<span class="tv-bar${chosen ? ' is-chosen' : ''}" role="button" tabindex="-1" data-year="${y}" aria-label="${escapeHtml(label)}" aria-pressed="${Boolean(chosen)}">`
+            + pale
             + `<span class="tv-stack" style="height: ${height}%">${segments}${hatch}</span>`
             + (showLabel ? `<span class="tv-bar__label" aria-hidden="true">${y}</span>` : '')
             + '</span>');
@@ -380,7 +401,7 @@ function renderProfile() {
 
     renderUndatedBin(undatedLetters, undatedByLang, order, maxCount, offAxis, undatedChosen);
     renderSpanBin(spanLetters, maxCount);
-    renderLegend(order, languageTotals, hasLanguages, totals);
+    renderLegend(hasLanguages, totals);
     bindProfile(container, letters);
 
     // Text alternative: every year with its values, then the letters off the axis
@@ -397,18 +418,13 @@ function renderProfile() {
     if (offAxis.mixed) offAxis.groups.forEach(g => rows.push(row(g.label, g.count, '', '', '')));
     else if (undatedLetters.length) rows.push(row('ohne Datum', undatedLetters.length, '', '', languageText(undatedByLang)));
     if (spanLetters.length) rows.push(row('Spanne über mehrere Jahre', spanLetters.length, spanLetters.length, spanLetters.filter(l => l.dateInferred).length, ''));
+    // Two tables stand under the view; each link says which figure it gives in numbers
     renderDataTable(document.getElementById('timeline-table'), {
         caption: 'Briefe je Jahr, ohne den gewählten Zeitraum',
+        label: 'Briefe je Jahr als Tabelle',
         columns: ['Jahr', 'Briefe', 'davon unscharf datiert', ...(withInferred ? ['davon erschlossen'] : []), ...(hasLanguages ? ['Sprachen'] : [])],
         rows
     });
-    nameTable('timeline-table', 'Briefe je Jahr als Tabelle');
-}
-
-// Two tables stand under the view; each summary says which figure it gives in numbers
-function nameTable(id, text) {
-    const summary = document.querySelector(`#${id} summary`);
-    if (summary) summary.textContent = text;
 }
 
 // Label steps of 1, 2, 5, 10, 20, 25, 50 years, so labels fall on round years
@@ -487,19 +503,14 @@ function renderSpanBin(spans, maxCount) {
     bin.setAttribute('aria-label', text);
 }
 
-// The legend names the colours; the language filter itself stands in the sidebar, whose list of
-// languages is the legend of every figure (design.md, Sprachfarben). A second set of switches here
-// counted against the controls of the first screen on a phone.
-function renderLegend(order, totals, hasLanguages, uncertain) {
+// The colours are explained by the shared language key, which is also the language filter (rules 2
+// and 11); this line names only what the key does not: the mark of an uncertain date, and that a
+// dataset without languages draws its bars in one colour
+function renderLegend(hasLanguages, uncertain) {
+    deps.renderLanguageKey?.(document.getElementById('timeline-key'));
     const legend = document.getElementById('timeline-stack-legend');
     if (!legend) return;
-    const items = hasLanguages
-        ? order.filter(key => totals[key] > 0 && key !== '_total').map(key => {
-            const title = key === NO_LANGUAGE ? 'Keine Sprachzuordnung in den Quelldaten'
-                : key === 'other' ? 'Alle übrigen Sprachen, einzeln im Filter der Seitenleiste' : '';
-            return `<span class="tv-legend__item"${title ? ` title="${title}"` : ''}><span class="tv-swatch" style="background: ${colourOf(key)}"></span>${escapeHtml(languageLabel(key))}</span>`;
-        })
-        : ['<span class="tv-legend__item">Keine Sprachdaten im Korpus</span>'];
+    const items = hasLanguages ? [] : ['<span class="tv-legend__item">Keine Sprachdaten im Korpus</span>'];
     // One mark for every date that is no exact reading of the source: hatching in the profile, an
     // open ring with its span below
     if (uncertain.uncertain > 0) {
@@ -770,10 +781,8 @@ function renderDetail() {
     }
     entries.sort((a, b) => a.iv.start - b.iv.start || a.iv.end - b.iv.end);
 
+    // The letters of the selection open from the count in the line at the lower edge (rule 1)
     const empty = document.getElementById('tv-empty');
-    const showButton = document.getElementById('tv-show-letters');
-    showButton?.classList.toggle('hidden', letters.length === 0);
-    if (showButton) showButton.textContent = letters.length === 1 ? 'Den Brief zeigen' : `${fmt(letters.length)} Briefe zeigen`;
     if (!entries.length) {
         scene = null;
         canvas.classList.add('hidden');
@@ -1013,7 +1022,10 @@ function drawScene(canvas, s) {
             for (const side of s.sides) {
                 const lane = s.lanes[side];
                 let offset = 0;
-                const langs = Object.entries(m.bin.langs[side]).sort((a, b) => b[1] - a[1]);
+                // Stacked in the one order of the page, the most frequent language of the whole
+                // dataset at the axis (rule 11)
+                const rank = lang => { const i = Object.keys(LANGUAGE_COLORS).indexOf(lang); return i < 0 ? Infinity : i; };
+                const langs = Object.entries(m.bin.langs[side]).sort((a, b) => rank(a[0]) - rank(b[0]));
                 for (const [lang, n] of langs) {
                     const h = n * s.perLetter;
                     ctx.fillStyle = colourOf(lang) || t.data;
@@ -1227,17 +1239,17 @@ function renderDetailTable(s, names) {
         });
         renderDataTable(host, {
             caption: 'Die Briefe des Zeitraums in zeitlicher Folge',
+            label: 'Die Briefe des Zeitraums als Tabelle',
             columns: ['Datum', ...(withSide ? ['Seite'] : []), 'Brief', 'Ort', 'Stelle im Briefwechsel'],
             rows
         });
-        nameTable('tv-table', 'Die Briefe des Zeitraums als Tabelle');
         return;
     }
     const sides = names ? s.sides : [];
     renderDataTable(host, {
         caption: `Briefe ${UNIT[s.binMonths]}`,
+        label: `Briefe ${UNIT[s.binMonths]} als Tabelle`,
         columns: ['Zeitraum', 'Briefe', ...sides.map(side => names[side])],
         rows: s.bins.filter(b => b.total).map(b => [binLabel(b, s.binMonths, s.axisYears.startYear), b.total, ...sides.map(side => b.sides[side])])
     });
-    nameTable('tv-table', `Briefe ${UNIT[s.binMonths]} als Tabelle`);
 }

@@ -97,7 +97,8 @@
 
 .lv-rows .letter-card {
     display: grid;
-    grid-template-columns: 24px var(--lv-date) var(--lv-who) var(--lv-where) 8rem var(--lv-notes);
+    /* The language column holds only its colour field, which the key above the list explains */
+    grid-template-columns: 24px var(--lv-date) var(--lv-who) var(--lv-where) 1rem var(--lv-notes);
     column-gap: var(--space-md);
     align-items: baseline;
     max-width: 84rem;
@@ -264,6 +265,17 @@
    where the list is; a column jumps there. */
 .lv-profile {
     padding: var(--space-sm) var(--space-lg) calc(var(--space-lg) + var(--font-size-xs)) calc(var(--space-md) + 4.5rem + var(--space-md));
+}
+
+/* The key stands under the profile and begins where its columns begin */
+#letters-key {
+    padding: 0 var(--space-lg) var(--space-sm) calc(var(--space-md) + 4.5rem + var(--space-md));
+}
+
+@media (max-width: 767px) {
+    #letters-key {
+        padding: 0 var(--space-sm) var(--space-sm);
+    }
 }
 
 .lv-profile__bars {

@@ -20,17 +20,6 @@
     min-height: 0;
 }
 
-/* The switches start beside the hidden title; the representation switch keeps the right edge */
-.network-switches {
-    justify-content: flex-start;
-}
-
-@media (min-width: 768px) {
-    #network-view .view-header__actions.network-switches {
-        justify-content: flex-start;
-    }
-}
-
 /* Segmented control: one group, the chosen segment in the selection colour */
 .net-seg {
     display: inline-flex;
@@ -161,12 +150,13 @@
     width: 9px;
     height: 9px;
     border-radius: var(--radius-full);
-    background: var(--color-data);
+    /* --ego-sign: the language colour of a correspondent; the mentioned persons stand in ink */
+    background: var(--ego-sign, var(--color-text));
 }
 
 .ego-sign--hollow {
     background: transparent;
-    border: 1.5px solid var(--color-data);
+    border: 1.5px solid var(--color-text);
 }
 
 .ego-sign--centre {
@@ -175,26 +165,34 @@
     background: var(--color-primary);
 }
 
+/* An organisation differs by its shape; its colour is the language as for a person (rule 5) */
 .ego-sign--square {
     border-radius: 1px;
-    background: var(--color-role-organization);
 }
 
-.ego-sign--square.ego-sign--hollow {
-    background: transparent;
-    border-color: var(--color-role-organization);
+/* The controls of the figure in one line over it: the levels, the info sign, the way back and the
+   release of the choice (design.md, rule 10) */
+.net-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-md);
+    padding: 0 0 var(--space-xs);
 }
 
-/* Way back and release of the choice, quiet in the corner of the figure */
+#network-key {
+    padding: 0 0 var(--space-sm);
+}
+
+/* Way back and release of the choice, quiet beside the levels */
 .ego-corner {
-    position: absolute;
-    top: var(--space-sm);
-    left: var(--space-sm);
-    z-index: var(--z-raised);
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
-    max-width: calc(100% - 2 * var(--space-sm));
+}
+
+.ego-corner:empty {
+    display: none;
 }
 
 .ego-corner__btn {
@@ -299,10 +297,8 @@
     stroke-width: 2px;
 }
 
-rect.ego-mark--filled {
-    fill: var(--color-role-organization);
-}
-
+/* The ring of the mentioned persons in ink, a colour no language carries (rule 5); the language
+   key names it while the ring is shown. Filled: the person writes letters of its own */
 .ego-out {
     stroke-width: 1px;
     cursor: pointer;
@@ -310,11 +306,11 @@ rect.ego-mark--filled {
 
 .ego-out--hollow {
     fill: var(--color-bg);
-    stroke: var(--color-data);
+    stroke: var(--color-text);
 }
 
 .ego-out--filled {
-    fill: var(--color-data);
+    fill: var(--color-text);
     stroke: var(--color-bg);
 }
 

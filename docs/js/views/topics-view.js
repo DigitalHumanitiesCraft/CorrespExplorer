@@ -17,6 +17,8 @@ import { state } from '../state-manager.js';
 import { renderDataTable } from './view-support.js';
 import { formatNumber as fmt, plural } from '../formatters.js';
 import { findEgo } from './network-view.js';
+import { languageCategory, languageColor } from '../selection-ui.js';
+import { languageLabel } from '../constants.js';
 
 const ORDERS = ['peak', 'size', 'first'];
 const VARIANTS = ['grid', 'treemap'];
@@ -142,12 +144,21 @@ const byYear = field => (a, b) => (a[field] ?? Infinity) - (b[field] ?? Infinity
  * Order of the rows. By size the subjects run from most to fewest letters. By peak year or first
  * appearance the subjects are first ranked by size and cut into blocks of `block` rows; each block
  * runs from early to late, so the first screen holds the most frequent subjects and reads in time.
+ * With `languagesApart` the subjects that are languages follow the other subjects as a group of
+ * their own, ordered the same way (US-44: languages apart from the other subjects). They follow,
+ * because an archive can name hundreds of dialects, which would push every other subject off the
+ * first screen.
  * @param {Array} subjects - entries of subjectProfiles
  * @param {'peak'|'size'|'first'} by
  * @param {number} block - rows per block, the rows that fit the screen
+ * @param {{languagesApart?: boolean}} [options]
  * @returns {Array}
  */
-export function orderSubjects(subjects, by, block) {
+export function orderSubjects(subjects, by, block, { languagesApart = false } = {}) {
+    if (languagesApart) {
+        return [...orderSubjects(subjects.filter(s => s.kind !== 'language'), by, block),
+            ...orderSubjects(subjects.filter(s => s.kind === 'language'), by, block)];
+    }
     const ranked = [...subjects].sort(bySize);
     if (by === 'size') return ranked;
     const compare = byYear(by === 'first' ? 'first' : 'peak');
@@ -300,9 +311,29 @@ function datasetContext() {
         egoCache.letters = all;
         egoCache.ego = findEgo(all);
         egoCache.totals = new Set(all.flatMap(l => (l.mentions?.subjects || []).map(subjectKey))).size;
+        egoCache.languages = [...new Set(all.map(l => l.language?.code).filter(Boolean))];
     }
     return egoCache;
 }
+
+/**
+ * The colour of a subject (rule 5), as on the start view: a subject named like a language of the
+ * letters takes the colour of that language, a language subject outside the coloured languages the
+ * grey of the rest. Every other subject keeps the data tone of the figure (null).
+ * @param {{kind: string, label: string}} subject
+ * @returns {string|null}
+ */
+function subjectHue(subject) {
+    if (subject.kind !== 'language') return null;
+    const code = datasetContext().languages.find(c => languageLabel(c) === subject.label);
+    return languageColor(code ? languageCategory(code) : 'other');
+}
+
+// The four shades of a hue, mixed as the data shades --tp-step-1 to 4 in topics.css
+const hueSteps = (hue, paper, text) => [
+    `color-mix(in srgb, ${hue} 18%, ${paper})`, `color-mix(in srgb, ${hue} 40%, ${paper})`,
+    `color-mix(in srgb, ${hue} 66%, ${paper})`, `color-mix(in srgb, ${hue} 55%, ${text})`
+];
 
 /**
  * Subjects shown and in the dataset, for the title of the view; null before the first render
@@ -324,7 +355,16 @@ export function renderTopicsList() {
     readInk();
     const beside = lettersBesideSubject();
     const profiles = subjectProfiles(beside);
+    profiles.subjects.forEach(s => {
+        s.hue = subjectHue(s);
+        s.steps = s.hue ? hueSteps(s.hue, ink.paper, ink.text) : null;
+    });
     const kinds = new Set(profiles.subjects.map(s => s.kind));
+    // The shared key explains the language colours of the subjects and is the language filter;
+    // its last mark names the data tone of the other subjects
+    deps.renderLanguageKey?.(el('topics-language-key'), {
+        others: profiles.subjects.some(s => !s.hue) ? [{ label: 'Übrige Themen', color: ink.steps[2] }] : []
+    });
     model = {
         profiles,
         letterCount: beside.length,
@@ -372,7 +412,9 @@ function writeVariant() {
 function arrange() {
     const block = geom ? geom.block : 30;
     model.block = block;
-    model.rows = orderSubjects(matchSubjects(model.profiles.subjects, query), order, block);
+    model.rows = orderSubjects(matchSubjects(model.profiles.subjects, query), order, block, { languagesApart: model.twoKinds });
+    // The first row of the languages, where a rule in ink separates them from the other subjects
+    model.groupBreak = model.twoKinds ? model.rows.findIndex(s => s.kind === 'language') : -1;
     model.index = new Map(model.rows.map((s, i) => [s.key, i]));
     renderRows();
 }
@@ -448,7 +490,8 @@ function renderRows() {
     // A single-select listbox: one tab stop, the options carry name and numbers
     list.innerHTML = rows.map((s, i) => {
         const chosen = s.key === model.chosen;
-        return `<li role="option" class="tp-row${chosen ? ' tp-row--chosen' : ''}" data-i="${i}" data-key="${escapeHtml(s.key)}" aria-selected="${chosen}" aria-label="${escapeHtml(`${s.label}: ${describe(s)}`)}" tabindex="${s.key === current ? 0 : -1}"><span class="tp-row__name">${escapeHtml(s.label)}</span></li>`;
+        const kind = model.twoKinds && s.kind === 'language' ? ' (Sprache)' : '';
+        return `<li role="option" class="tp-row${chosen ? ' tp-row--chosen' : ''}" data-i="${i}" data-key="${escapeHtml(s.key)}" aria-selected="${chosen}" aria-label="${escapeHtml(`${s.label}${kind}: ${describe(s)}`)}" tabindex="${s.key === current ? 0 : -1}"><span class="tp-row__name">${escapeHtml(s.label)}</span></li>`;
     }).join('');
     if (geom) {
         list.style.setProperty('--tp-pitch', `${geom.pitch}px`);
@@ -634,7 +677,9 @@ function renderMap() {
         const fits = w >= 72 && h >= 30;
         const inner = d.rest && h >= 46 ? `${escapeHtml(name)}, ${escapeHtml(share)}` : escapeHtml(name);
         const cls = `tp-area${d.rest ? ' tp-area--rest' : ''}${chosen ? ' tp-area--chosen' : ''}`;
-        return `<li role="option" class="${cls}" data-i="${i}" data-key="${escapeHtml(key)}" aria-selected="${chosen}" aria-label="${escapeHtml(label)}" tabindex="${key === current ? 0 : -1}" style="left:${n.x0.toFixed(1)}px;top:${n.y0.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px">${fits ? `<span class="tp-area__name">${inner}</span>` : ''}</li>`;
+        // A language takes its colour here as in the grid (rule 5)
+        const hue = d.s?.hue ? `--tp-hue:${d.s.hue};` : '';
+        return `<li role="option" class="${cls}" data-i="${i}" data-key="${escapeHtml(key)}" aria-selected="${chosen}" aria-label="${escapeHtml(label)}" tabindex="${key === current ? 0 : -1}" style="${hue}left:${n.x0.toFixed(1)}px;top:${n.y0.toFixed(1)}px;width:${w.toFixed(1)}px;height:${h.toFixed(1)}px">${fits ? `<span class="tp-area__name">${inner}</span>` : ''}</li>`;
     }).join('');
     model.mapMentions = mentions;
     if (focusedKey) list.querySelector(`[data-key="${CSS.escape(focusedKey)}"]`)?.focus();
@@ -764,7 +809,13 @@ function draw() {
         const s = model.rows[i];
         const y0 = i * pitch - top + pitch - cellH - 3;
         const chosen = s.key === model.chosen;
-        if (blocked && i > 0 && i % block === 0) {
+        // The languages stand apart as their own group, under a rule in ink; the blocks of each
+        // group count from its first row
+        const groupStart = model.groupBreak > 0 && i >= model.groupBreak ? model.groupBreak : 0;
+        if (i === model.groupBreak && i > 0) {
+            ctx.fillStyle = ink.text;
+            ctx.fillRect(0, Math.round(i * pitch - top) - 1, width, 2);
+        } else if (blocked && i > groupStart && (i - groupStart) % block === 0) {
             ctx.fillStyle = ink.rule;
             ctx.fillRect(0, Math.round(i * pitch - top), width, 1);
         }
@@ -773,12 +824,13 @@ function draw() {
         ctx.fillRect(plotX0, y0 + cellH, plotX1 - plotX0, 1);
         for (const [year, count] of s.years) {
             const step = shadeStep(count);
-            // The chosen subject in rust at the same four steps, all others in the data tone
+            // The chosen subject in rust at the same four steps, a language in its colour, all
+            // other subjects in the data tone
             if (chosen) {
                 ctx.globalAlpha = [0.3, 0.5, 0.75, 1][step - 1];
                 ctx.fillStyle = ink.chosen;
             } else {
-                ctx.fillStyle = ink.steps[step - 1];
+                ctx.fillStyle = (s.steps || ink.steps)[step - 1];
             }
             ctx.fillRect(plotX0 + (year - yearMin) * cellW + 0.5, y0, Math.max(1, cellW - 1), cellH);
             ctx.globalAlpha = 1;

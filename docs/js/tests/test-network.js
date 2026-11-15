@@ -5,7 +5,7 @@
 // do not overlap
 
 import { parseCMIF } from '../cmif-parser.js';
-import { buildEgoNetwork, egoGeometry, egoLayout, mostConnectedPerson, placeEgoLabels } from '../views/network-view.js';
+import { buildEgoNetwork, chordHitWidth, chordPaintOrder, egoGeometry, egoLayout, mostConnectedPerson, placeEgoLabels } from '../views/network-view.js';
 import { personKey, letterRecipients } from '../utils.js';
 import { assert } from './test-runner.js';
 
@@ -153,6 +153,24 @@ export const NetworkTests = {
                 }).length;
                 const counted = model.chords.reduce((sum, c) => sum + c.letters, 0);
                 assert(counted === between, `Sehnen zählen ${counted} Briefe, zwischen den Partnern liegen ${between}`);
+            }
+        },
+        {
+            // A click on a broad chord opened the narrow one beside it, because the narrow chords
+            // were drawn last and SVG gives the pointer to the element drawn last
+            name: 'Sehnen: die breitere Sehne liegt beim Zeigen oben, ihre Trefferfläche ist breiter als die Linie',
+            run() {
+                const chords = [
+                    { key: 'a|b', letters: 40 },
+                    { key: 'a|c', letters: 1 },
+                    { key: 'b|c', letters: 12 },
+                    { key: 'a|d', letters: 1 }
+                ];
+                const order = chordPaintOrder(chords).map(c => c.key).join(' ');
+                assert(order === 'a|c a|d b|c a|b', `Zeichenfolge ${order}`);
+                assert(chords[0].key === 'a|b', 'Die Eingabe bleibt unverändert');
+                assert(chordHitWidth(1) === 10, 'Eine dünne Sehne behält 10px Trefferfläche');
+                assert(chordHitWidth(5) > 5 && chordHitWidth(5) >= 10, 'Die Trefferfläche der breitesten Sehne ist breiter als ihre Linie');
             }
         }
     ]

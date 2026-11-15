@@ -11,6 +11,7 @@ import { state } from '../state-manager.js';
 import { elements } from '../dom-cache.js';
 import { findEgo } from './network-view.js';
 import { buildCorrespSearchUrl, buildPersonLink, buildPlaceLink, correspSearchLink, detailRow, toggleBasketButton } from './view-support.js';
+import { countOf } from '../selection-ui.js';
 
 let deps = {};
 let lettersSortOrder = 'date-desc';
@@ -29,6 +30,7 @@ export function clearLetterSearch() {
  * @param {Function} dependencies.getAllLetters
  * @param {Function} dependencies.hasActiveFilter
  * @param {Function} dependencies.showLettersOfPerson - sets the person filter and opens the letter list
+ * @param {Function} dependencies.renderLanguageKey - draws the shared language key into a host
  */
 export function initLettersView(dependencies) {
     deps = dependencies;
@@ -263,8 +265,9 @@ export function renderLettersList() {
     const container = elements.lettersList;
     if (!container) return;
 
-    const allLetters = deps.getAllLetters();
     const filtered = deps.getFilteredLetters();
+    // The key under the profile is its legend and the language filter (rules 2 and 5)
+    deps.renderLanguageKey?.(document.getElementById('letters-key'));
     // The same letters in the same order keep their rows, scroll position and focus: switching
     // back to the list or a filter set to the value it has hands out a new array of the same letters
     const key = `${lettersSearchTerm}|${lettersSortOrder}`;
@@ -284,16 +287,16 @@ export function renderLettersList() {
     const centre = rowCentre();
     const sorted = sortLetters(letters, lettersSortOrder, centre?.key);
 
-    // The count stands once, above the list: the whole dataset or the part filter and search leave
+    // The count of the selection stands in the line at the lower edge, as in every view (rule 1).
+    // Above the list stand only what the search leaves of it and how the rows are told
     const result = document.getElementById('letters-result');
     if (result) {
-        const total = allLetters.length.toLocaleString('de-DE');
-        const count = letters.length === allLetters.length
-            ? `${total} ${allLetters.length === 1 ? 'Brief' : 'Briefe'}`
-            : `${letters.length.toLocaleString('de-DE')} von ${total} Briefen`;
+        const hits = lettersSearchTerm
+            ? `${countOf(letters.length, filtered.length, letters.length === 1 ? 'Brief' : 'Briefe', 'Briefen')} ${letters.length === 1 ? 'enthält' : 'enthalten'} den Suchbegriff`
+            : '';
         // No hit: the sentence of the empty state says it, a zero above it would repeat it
         result.innerHTML = letters.length === 0 ? ''
-            : `${escapeHtml(count)}${centre ? `<span class="lv-centre"> mit ${escapeHtml(centre.name)}: „von“ nennt den Absender, „an“ den Empfänger</span>` : ''}`;
+            : `${escapeHtml(hits)}${centre ? `<span class="lv-centre">${hits ? '. ' : ''}Mit ${escapeHtml(centre.name)}: „von“ nennt den Absender, „an“ den Empfänger</span>` : ''}`;
     }
     // The brackets are explained once where they occur, not only in a tooltip
     document.getElementById('letters-legend')?.classList.toggle('hidden',
@@ -600,9 +603,12 @@ function letterRowHtml(letter, { centre = null, compactDate = false } = {}) {
         : formatDateWithPrecision(letter);
     const dateClass = getDatePrecisionClass(letter.datePrecision, letter.dateCertainty);
     const placeName = formatPlaceName(letter.place_sent?.name, letter.place_sent?.precision, letter.place_sent?.inferred);
+    // The language is a colour field explained by the key above the list (rule 2); its name stays
+    // for screen readers and in the tooltip, and the letter dialog names it in full
     const code = letter.language?.code;
+    const languageName = code ? escapeHtml(letter.language.label || languageLabel(code)) : '';
     const language = code
-        ? `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" aria-hidden="true"></span>${escapeHtml(letter.language.label || languageLabel(code))}`
+        ? `<span class="lang-swatch" style="background: ${LANGUAGE_COLORS[code] || LANGUAGE_COLORS.other}" title="${languageName}" aria-hidden="true"></span><span class="visually-hidden">${languageName}</span>`
         : '';
 
     const labelled = (label, valueHtml) => (valueHtml

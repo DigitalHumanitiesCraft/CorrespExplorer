@@ -49,6 +49,7 @@ let applyPlaceFilter = null;
 let applyFilters = null;
 let switchView = null;
 let showLetterDetail = null;
+let renderLanguageKey = null;
 
 /**
  * Initialize comparison view with external dependencies
@@ -63,6 +64,7 @@ export function initComparisonView(deps) {
     applyFilters = deps.applyFilters;
     switchView = deps.switchView;
     showLetterDetail = deps.showLetterDetail;
+    renderLanguageKey = deps.renderLanguageKey;
 }
 
 /**
@@ -270,6 +272,8 @@ export function renderComparison() {
     const container = document.getElementById('comparison-view');
     if (!container) return;
 
+    // The view has no sidebar of its own; the shared key is its language filter (rule 2)
+    renderLanguageKey?.(document.getElementById('comparison-key'));
     setupComparisonModeSelector();
     renderComparisonQuickSelect();
     updatePeriodInputHint();

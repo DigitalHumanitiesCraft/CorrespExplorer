@@ -363,7 +363,8 @@
     position: absolute;
     overflow: hidden;
     padding: 2px var(--space-xs);
-    background: color-mix(in srgb, var(--color-data) 22%, var(--color-bg));
+    /* --tp-hue: the colour of a subject named like a language (topics-view.js, rule 5) */
+    background: color-mix(in srgb, var(--tp-hue, var(--color-data)) 22%, var(--color-bg));
     font-size: var(--font-size-xs);
     line-height: 1.25;
     color: var(--color-text);
@@ -371,7 +372,7 @@
 }
 
 .tp-area:hover {
-    background: color-mix(in srgb, var(--color-data) 36%, var(--color-bg));
+    background: color-mix(in srgb, var(--tp-hue, var(--color-data)) 36%, var(--color-bg));
 }
 
 .tp-area:focus-visible {

@@ -50,6 +50,7 @@ let applyPersonFilter = null;
 let applySubjectFilter = null;
 let showLettersBetween = null;
 let revealLetters = null;
+let renderLanguageKey = null;
 // Centre kept while a tie between two other persons is selected: the person filter then names
 // one of the two, and the circle would otherwise turn to that person
 let pinnedCentre = null;
@@ -65,6 +66,7 @@ export function initNetworkView(deps) {
     applySubjectFilter = deps.applySubjectFilter;
     showLettersBetween = deps.showLettersBetween;
     revealLetters = deps.revealLetters;
+    renderLanguageKey = deps.renderLanguageKey;
 
     setupNetworkEventHandlers();
     setupEgoControls();
@@ -631,6 +633,7 @@ export function renderNetwork() {
         const centreId = egoCentreId(letters);
         renderLevelSwitch(centreId ? buildEgoNetwork(letters, centreId) : null,
             letters.some(l => l.mentions?.persons?.length > 0));
+        renderNetworkKey();
         renderWholeNetwork();
     }
 }
@@ -1554,8 +1557,8 @@ function setupEgoControls() {
         if (fromWhole) renderNetwork(); else applyEgoLevel();
     });
 
-    // The way back and the release of the choice sit in the corner of the figure
-    elements.getById('network-graph')?.addEventListener('click', event => {
+    // The way back and the release of the choice sit in the bar of the figure
+    elements.getById('network-corner')?.addEventListener('click', event => {
         const action = event.target.closest('[data-ego]')?.dataset.ego;
         if (action === 'back') {
             const previous = egoHistory.pop();
@@ -1620,6 +1623,7 @@ function syncModeParts() {
         elements.getById(id)?.classList.toggle('hidden', ego);
     });
     document.querySelector('#network-view .network-controls')?.classList.toggle('hidden', ego);
+    if (!ego) elements.getById('network-corner')?.replaceChildren();
     if (ego) elements.getById('network-ego-note')?.classList.add('hidden');
     document.querySelector('#network-view .network-container')?.classList.toggle('network-container--ego', ego);
     syncSwitch();
@@ -1705,12 +1709,14 @@ function renderEgoNetwork() {
     if (!model || model.inner.length === 0) {
         egoDrawn = null;
         const name = model?.centre.name;
-        container.innerHTML = `${cornerControls()}<div class="network-empty"><i class="fas fa-project-diagram" aria-hidden="true"></i><div>${name
+        renderCorner();
+        container.innerHTML = `<div class="network-empty"><i class="fas fa-project-diagram" aria-hidden="true"></i><div>${name
             ? `${escapeHtml(name)} hat unter den gewählten Filtern keinen Briefwechsel mit einer anderen Person.`
             : 'Unter den gewählten Filtern gibt es keinen Briefwechsel zwischen zwei Personen.'}</div></div>`;
         const list = elements.getById('network-ego-list');
         if (list) list.innerHTML = '';
         renderDataTable(elements.getById('network-table'), { caption: '', columns: [], rows: [] });
+        renderNetworkKey();
         return;
     }
 
@@ -1794,13 +1800,15 @@ function renderEgoNetwork() {
         return `M${a.x},${a.y}Q${mx},${my} ${b.x},${b.y}`;
     };
     const chord = svg.append('g').attr('class', 'ego-chords').attr('aria-hidden', 'true')
-        .selectAll('g').data(model.chords, c => c.key).join('g').attr('class', 'ego-chord')
+        .selectAll('g').data(chordPaintOrder(model.chords), c => c.key).join('g').attr('class', 'ego-chord')
         // The tie whose letters are the selection carries the selection colour
         .classed('is-chosen', c => Boolean(state.filters.partner) &&
             [c.a, c.b].includes(state.filters.person) && [c.a, c.b].includes(state.filters.partner));
     chord.append('path').attr('class', 'ego-chord__line').attr('d', chordPath).attr('stroke-width', c => chordWidth(c.letters));
-    // A wider transparent stroke makes thin chords reachable for the pointer
-    chord.append('path').attr('class', 'ego-chord__hit').attr('d', chordPath);
+    // A wider transparent stroke makes thin chords reachable for the pointer; it grows with the
+    // drawn width, so the pointer on a broad chord stays on it
+    chord.append('path').attr('class', 'ego-chord__hit').attr('d', chordPath)
+        .style('stroke-width', c => `${chordHitWidth(chordWidth(c.letters))}px`);
 
     // Lines of mentions appear only for the person under the pointer or in focus
     const hoverLines = svg.append('g').attr('class', 'ego-mention-lines').attr('aria-hidden', 'true');
@@ -1975,9 +1983,9 @@ function renderEgoNetwork() {
             showTieLetters(c);
         });
 
-    container.insertAdjacentHTML('afterbegin', cornerControls());
+    renderCorner();
 
-    egoDrawn = { model, g, pos, people, letters, svg, node, label, nameOf };
+    egoDrawn = { model, g, pos, people, letters, svg, node, label, nameOf, languageOf };
     renderEgoList(model);
     applyEgoLevel();
 
@@ -1990,8 +1998,32 @@ function renderEgoNetwork() {
     }
 }
 
-// The way back and the release of the choice, only where they apply
-function cornerControls() {
+/**
+ * The order in which the chords are drawn, from the fewest letters to the most. SVG gives the
+ * pointer to the element drawn last, so where the hit strokes of a broad and a narrow chord
+ * overlap, the broad chord under the pointer wins; drawn the other way round, a click on a broad
+ * chord often opened the narrow one beside it.
+ * @param {Array<{key: string, letters: number}>} chords
+ * @returns {Array} a new array; ties keep a fixed order by key
+ */
+export function chordPaintOrder(chords) {
+    return [...chords].sort((x, y) => x.letters - y.letters || (x.key < y.key ? -1 : x.key > y.key ? 1 : 0));
+}
+
+/**
+ * Width of the invisible stroke that takes the pointer for a chord: at least 10px, so a thin
+ * chord stays reachable, and always wider than the drawn line
+ * @param {number} drawn - stroke width of the visible chord in px
+ * @returns {number}
+ */
+export function chordHitWidth(drawn) {
+    return Math.max(10, drawn + 6);
+}
+
+// The way back and the release of the choice, only where they apply, in the bar of the figure
+function renderCorner() {
+    const corner = elements.getById('network-corner');
+    if (!corner) return;
     const previous = egoHistory[egoHistory.length - 1];
     const parts = [];
     if (previous) {
@@ -2000,7 +2032,7 @@ function cornerControls() {
     if (state.filters.person) {
         parts.push('<button type="button" class="ego-corner__btn" data-ego="clear">Auswahl aufheben</button>');
     }
-    return parts.length ? `<div class="ego-corner">${parts.join('')}</div>` : '';
+    corner.innerHTML = parts.join('');
 }
 
 // Years of an exchange in words
@@ -2041,6 +2073,19 @@ function chordLines(c, nameOf) {
         'Klick öffnet die Briefe'];
 }
 
+/**
+ * The shared language key over the figure (rules 2 and 5). In the circle each correspondent has the
+ * colour of its language; the persons on the ring of the mentioned stand in ink, which no language
+ * carries, and the key names that colour while the ring is shown. The whole network colours by kind
+ * or year with its own legend, so there the key is the language filter alone.
+ */
+function renderNetworkKey() {
+    const ringShown = networkMode === 'ego' && egoLevel === 'mentions' && egoDrawn?.model.outer.length > 0;
+    renderLanguageKey?.(elements.getById('network-key'), {
+        others: ringShown ? [{ label: 'Nur erwähnte Person', color: 'var(--color-text)' }] : []
+    });
+}
+
 // Show or hide the second level without moving anything that stays
 function applyEgoLevel() {
     if (!egoDrawn) return;
@@ -2056,6 +2101,7 @@ function applyEgoLevel() {
         row.classList.toggle('hidden', !mentions);
     });
     syncSwitch();
+    renderNetworkKey();
 
     const rows = model.inner.map(p => [p.name, p.letters, p.firstYear ?? '', p.lastYear ?? '', p.mentions]);
     if (mentions) model.outer.forEach(p => rows.push([p.name, 0, '', '', p.mentions]));
@@ -2072,7 +2118,9 @@ function renderEgoList(model) {
     if (!list) return;
     const centre = model.centre;
     list.innerHTML = [centre, ...model.inner, ...model.outer].map(p => {
-        const sign = `<span class="ego-sign ${p.isOrganization ? 'ego-sign--square ' : ''}ego-sign--${p.ring === 'centre' ? 'centre' : p.writesLetters ? 'filled' : 'hollow'}" aria-hidden="true"></span>`;
+        // A correspondent's sign in the colour of its mark, a mentioned person's in ink, as in the figure
+        const colour = p.ring === 'inner' ? ` style="--ego-sign: ${languageColor(egoDrawn?.languageOf.get(p.id) || 'other')}"` : '';
+        const sign = `<span class="ego-sign ${p.isOrganization ? 'ego-sign--square ' : ''}ego-sign--${p.ring === 'centre' ? 'centre' : p.writesLetters ? 'filled' : 'hollow'}"${colour} aria-hidden="true"></span>`;
         const name = escapeHtml(p.name);
         let nameEl;
         let count;

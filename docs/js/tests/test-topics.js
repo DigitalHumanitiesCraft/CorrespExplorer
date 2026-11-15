@@ -84,6 +84,21 @@ export const TopicsTests = {
             }
         },
         {
+            name: 'orderSubjects: Sprachen als eigene Gruppe nach den übrigen Themen (US-44)',
+            run() {
+                const subjects = [
+                    { key: 'french', label: 'Französisch', kind: 'language', total: 9, peak: 1900, first: 1870 },
+                    { key: 'travel', label: 'Reisen', kind: 'topic', total: 3, peak: 1880, first: 1880 },
+                    { key: 'basque', label: 'Baskisch', kind: 'language', total: 7, peak: 1885, first: 1880 },
+                    { key: 'review', label: 'Rezension', kind: 'topic', total: 5, peak: 1910, first: 1890 }
+                ];
+                const keys = list => list.map(s => s.key).join(' ');
+                assertEqual(keys(orderSubjects(subjects, 'size', 10, { languagesApart: true })), 'review travel french basque', 'Umfang je Gruppe');
+                assertEqual(keys(orderSubjects(subjects, 'peak', 10, { languagesApart: true })), 'travel review basque french', 'Höhepunkt je Gruppe');
+                assertEqual(keys(orderSubjects(subjects, 'size', 10)), 'french basque review travel', 'ohne Trennung wie bisher');
+            }
+        },
+        {
             name: 'matchSubjects: Suche ohne Groß- und Kleinschreibung und Diakritika',
             run() {
                 const subjects = subjectProfiles(fixture()).subjects;

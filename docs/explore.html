@@ -325,6 +325,8 @@
                         <h2 class="view-header__title">Karte der Korrespondenz</h2>
                         <p class="view-header__description">Briefe nach Absendeort, die Kreisgröße zeigt die Zahl der Briefe</p>
                     </div>
+                    <!-- The shared language key: the colour of places and clusters, and the language filter -->
+                    <div class="view-key" id="map-key"></div>
                     <div class="map-stage">
                         <div id="map" role="application" aria-label="Interaktive Karte der Korrespondenz"></div>
                         <div class="map-controls">
@@ -336,8 +338,7 @@
                             </button>
                         </div>
                         <div id="map-legend" class="map-legend">
-                            <div class="map-legend-note">Kreisgröße und Zahl nach Briefen. Farbe nach häufigster Sprache eines Orts, grau fasst mehrere Orte zusammen.</div>
-                            <div class="map-legend-items"></div>
+                            <p class="map-legend-note">Kreisgröße und Zahl nach Briefen, ein Kreis mit Zahl fasst nahe Orte zusammen. Farbe nach häufigster Sprache.</p>
                         </div>
                     </div>
                 </div>
@@ -362,6 +363,8 @@
                             </div>
                         </div>
                     </div>
+                    <!-- The shared language key: the colour of every year of a column, and the language filter -->
+                    <div class="view-key" id="spacetime-key"></div>
                     <div class="st-stage">
                         <div class="st-figure-wrap">
                             <svg id="spacetime-figure" tabindex="0" role="application" aria-label="Raum-Zeit-Figur der Absendeorte" aria-describedby="spacetime-keys"></svg>
@@ -401,6 +404,8 @@
                             </select>
                         </div>
                     </div>
+                    <!-- The shared language key: explains the colour of each person and filters by language -->
+                    <div class="view-key" id="persons-key"></div>
                     <div id="persons-list" class="entity-list"></div>
                 </div>
 
@@ -426,6 +431,8 @@
                     <p class="list-legend hidden" id="letters-legend">Eckige Klammern: von der Edition erschlossen, nicht dem Brief entnommen.</p>
                     <!-- The selection per year or initial; a column jumps to its letters (letters-view.js) -->
                     <div class="lv-profile hidden" id="letters-profile" role="listbox" tabindex="0"></div>
+                    <!-- The shared language key: legend of the profile and the colour fields, and the language filter -->
+                    <div class="view-key" id="letters-key"></div>
                     <div id="letters-list" class="entity-list"></div>
                 </div>
 
@@ -456,13 +463,14 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- The shared language key: the colours of both figures, and the language filter -->
+                        <div class="view-key" id="timeline-key"></div>
                         <div id="timeline-stack-legend" class="tv-legend"></div>
                         <div class="tv-detail">
                             <div class="tv-detail__head">
                                 <span id="tv-unit" class="tv-unit"></span>
                                 <button type="button" id="chronik-enrich-btn" class="tv-quiet" title="Fragt Wikidata nach den Lebensdaten der Personen mit Normdaten, erst nach Ihrer Bestätigung">Lebensdaten der Personen aus Wikidata laden</button>
                                 <span id="chronik-enrich-status" class="tv-quiet-status hidden">Lebensdaten aus Wikidata geladen</span>
-                                <button type="button" id="tv-show-letters" class="btn btn-secondary tv-show"></button>
                             </div>
                             <div id="tv-figure" class="tv-figure">
                                 <canvas id="tv-canvas" class="tv-canvas" aria-hidden="true"></canvas>
@@ -491,6 +499,8 @@
                             </div>
                         </div>
                     </div>
+                    <!-- The shared language key: the colours of subjects named like languages, and the language filter -->
+                    <div class="view-key" id="topics-language-key"></div>
                     <div class="tp-stage">
                         <!-- The controls of the figure stand in the figure (design.md, rule 10) -->
                         <div class="tp-bar">
@@ -536,7 +546,7 @@
                         <div id="places-missing-coords-banner" class="info-banner hidden">
                             <i class="fas fa-info-circle" aria-hidden="true"></i>
                             <div class="info-banner-content">
-                                <strong><span id="places-missing-count">0</span> Orte ohne Koordinaten</strong>
+                                <strong><span id="places-missing-count">0</span> ohne Koordinaten</strong>
                                 <p>Diese Orte erscheinen nicht auf der Karte.</p>
                             </div>
                             <button id="resolve-coords-btn" class="btn btn-secondary btn-sm">
@@ -598,6 +608,8 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- The places as a table under the quiet link of every view (rule 4) -->
+                        <div id="places-table"></div>
                     </div>
                 </div>
 
@@ -607,13 +619,18 @@
                         <div class="view-header">
                             <h2 class="view-header__title">Netzwerk-Analyse</h2>
                             <p class="view-header__description" id="network-info-text">Korrespondenten die in denselben Jahren aktiv sind</p>
-                            <div class="view-header__actions network-switches">
-                                <!-- Levels of the ego network with their counts and the whole network, filled by network-view.js -->
-                                <div class="net-seg" id="network-levels" role="radiogroup" aria-label="Was das Netzwerk zeigt"></div>
-                                <!-- What distance and angle of the circle mean; the same sentence is the description of the figure -->
-                                <span class="net-info" tabindex="0" role="img" aria-label="Je näher an der Mitte, desto mehr Briefe; der Winkel zeigt, wann der Briefwechsel beginnt, im Uhrzeigersinn ab oben. Linien verbinden Korrespondenten, die einander schrieben." data-tip="Je näher an der Mitte, desto mehr Briefe; der Winkel zeigt, wann der Briefwechsel beginnt, im Uhrzeigersinn ab oben. Linien verbinden Korrespondenten, die einander schrieben."><i class="fas fa-info-circle" aria-hidden="true"></i></span>
-                            </div>
                         </div>
+                        <!-- The controls of the figure stand in the figure (design.md, rule 10): the levels,
+                             what the circle means, and the way back and the release of the choice -->
+                        <div class="net-bar">
+                            <!-- Levels of the ego network with their counts and the whole network, filled by network-view.js -->
+                            <div class="net-seg" id="network-levels" role="radiogroup" aria-label="Was das Netzwerk zeigt"></div>
+                            <!-- What distance and angle of the circle mean; the same sentence is the description of the figure -->
+                            <span class="net-info" tabindex="0" role="img" aria-label="Je näher an der Mitte, desto mehr Briefe; der Winkel zeigt, wann der Briefwechsel beginnt, im Uhrzeigersinn ab oben. Linien verbinden Korrespondenten, die einander schrieben." data-tip="Je näher an der Mitte, desto mehr Briefe; der Winkel zeigt, wann der Briefwechsel beginnt, im Uhrzeigersinn ab oben. Linien verbinden Korrespondenten, die einander schrieben."><i class="fas fa-info-circle" aria-hidden="true"></i></span>
+                            <div class="ego-corner" id="network-corner"></div>
+                        </div>
+                        <!-- The shared language key: the colour of every correspondent, and the language filter -->
+                        <div class="view-key" id="network-key"></div>
                         <div class="network-controls">
                             <div class="network-control-group">
                                 <label for="network-type">Netzwerk-Typ:</label>
@@ -670,19 +687,22 @@
                         <div class="view-header view-header--inset">
                             <h2 class="view-header__title">Erwähnungen</h2>
                             <p class="view-header__description">Wer in wessen Briefen erwähnt wird</p>
-                            <div class="view-header__actions">
-                                <div class="autocomplete-container mentions-autocomplete">
-                                    <input type="search"
-                                           id="mentions-person-search"
-                                           class="autocomplete-input"
-                                           placeholder="Person suchen..."
-                                           autocomplete="off"
-                                           aria-label="Person suchen">
-                                    <div id="mentions-person-dropdown" class="autocomplete-dropdown hidden"></div>
-                                </div>
-                            </div>
-                            <p class="view-header__description" id="mentions-flow-selected-person"></p>
                         </div>
+                        <!-- The controls of the figure stand in the figure (design.md, rule 10) -->
+                        <div class="mf-bar">
+                            <div class="autocomplete-container mentions-autocomplete">
+                                <input type="search"
+                                       id="mentions-person-search"
+                                       class="autocomplete-input"
+                                       placeholder="Person suchen..."
+                                       autocomplete="off"
+                                       aria-label="Person suchen">
+                                <div id="mentions-person-dropdown" class="autocomplete-dropdown hidden"></div>
+                            </div>
+                            <p class="mf-bar__note" id="mentions-flow-selected-person"></p>
+                        </div>
+                        <!-- The shared language key: the colour of every flow, and the language filter -->
+                        <div class="view-key" id="mentions-flow-key"></div>
                         <div id="mentions-flow-graph" class="mentions-flow-graph"></div>
                         <div id="mentions-flow-table"></div>
                         <div id="mentions-flow-placeholder">
@@ -710,6 +730,9 @@
                                 </button>
                             </div>
                         </div>
+
+                        <!-- The shared language key, the language filter of a view without sidebar -->
+                        <div class="view-key" id="comparison-key"></div>
 
                         <!-- Auswahl-Bereich -->
                         <div class="comparison-selectors">

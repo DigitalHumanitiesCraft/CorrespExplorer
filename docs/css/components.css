@@ -131,6 +131,27 @@
     line-height: 1.4;
 }
 
+/* The shared language key in a view (renderLanguageKey, design.md rule 2): one row over the width
+   of its figure, the same as on the start view; empty without language data */
+.view-key {
+    padding: var(--space-xs) var(--space-lg) var(--space-sm);
+}
+
+.view-key:empty {
+    display: none;
+}
+
+/* In a view that pads itself the key takes no padding of its own */
+#comparison-key {
+    padding: 0 0 var(--space-md);
+}
+
+@media (max-width: 767px) {
+    .view-key {
+        padding: var(--space-xs) var(--space-sm) var(--space-sm);
+    }
+}
+
 /* Text alternative of a chart: the shown values as a table under one quiet switch, at the same
    place in every view and without a box around it (renderDataTable, design.md rule 4) */
 .chart-table {

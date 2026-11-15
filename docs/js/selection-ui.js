@@ -2,7 +2,7 @@
 // "Gemeinsame Regeln aller Ansichten"): one form for counts (rule 7), the language key that is the
 // language filter, in one order of languages (rules 2, 5 and 11), the values with which a figure
 // sets the selection before the pale whole (rule 6), and the classes that say a mark can be chosen
-// (rule 8). The dashboard of the start view uses them now; the other figures can take them over.
+// (rule 8). The start view and every other view with a language colour use them.
 
 import { LANGUAGE_COLORS, NO_LANGUAGE, isRestLanguage, languageLabel } from './constants.js';
 import { formatNumber as format } from './formatters.js';
@@ -25,8 +25,8 @@ export function countOf(part, total, one, of = one) {
  * dataset in PALE_TOKEN (or, where it fades marks instead, at OUTSIDE_OPACITY) and the selection
  * in the colour of its language or the data colour.
  */
-const PALE_TOKEN = '--color-border-light';
-const OUTSIDE_OPACITY = 0.3;
+export const PALE_TOKEN = '--color-border-light';
+export const OUTSIDE_OPACITY = 0.3;
 
 /**
  * Rule 8: a figure whose marks can be chosen sets CHOOSABLE on itself, and OVER_MARK while the

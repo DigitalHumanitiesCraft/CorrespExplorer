@@ -7,7 +7,7 @@ import { debounce, escapeHtml, isAllowedJsonPath, sameFilterParams, datedYearRan
 import { datasetQuality, summarizeCorpus } from './research-paths.js';
 import { datasetToJson, lettersToCsv } from './export.js';
 import { initKnowledgePath } from './knowledge-path.js';
-import { formatCountOf, formatNumber as formatCount } from './formatters.js';
+import { formatCountOf } from './formatters.js';
 import { loadUrlDataset } from './cmif-parser.js';
 import { isCorrespSearchUrl, correspSearchShareUrl } from './correspsearch-api.js';
 import { state } from './state-manager.js';
@@ -15,7 +15,7 @@ import { elements, initDOMCache } from './dom-cache.js';
 import { filterSentence, focusViewHeading, selectionMarks } from './views/view-support.js';
 import { initLettersDrawer, updateLettersDrawer, setDrawerOpen } from './views/letters-drawer.js';
 import { initOverviewView, renderOverview, renderDatasetFacts } from './views/overview-view.js';
-import { countOf } from './selection-ui.js';
+import { countOf, renderLanguageKey, languageCategory } from './selection-ui.js';
 import { initMapView, updateMapPlaces, resizeMap, aggregateLettersByPlace } from './views/map-view.js';
 import { initSpacetimeView, renderSpacetime } from './views/spacetime-view.js';
 import { initPersonsView, renderPersonsList } from './views/persons-view.js';
@@ -32,6 +32,8 @@ import { initPlacesView, renderPlacesList as renderPlacesListView } from './view
 let allLetters = [];
 let filteredLetters = [];
 let placeAggregation = {};
+// Places of the whole dataset that the map can draw, the total of its title
+let mapPlacesTotal = 0;
 let dataIndices = {};
 let temporalFilter = null;
 let dateRange = { min: 1800, max: 2000 };
@@ -204,8 +206,8 @@ function updateViewTitle() {
     if (currentView === 'comparison') {
         title.textContent = { persons: 'Zwei Personen im Vergleich', places: 'Zwei Orte im Vergleich', time: 'Zwei Zeiträume im Vergleich' }[group];
     } else if (currentView === 'map') {
-        // The map draws the places that have coordinates
-        title.textContent = `${formatCount(Object.keys(placeAggregation).length)} Orte auf der Karte`;
+        // The map draws the places that have coordinates; the same count form as every title (rule 7)
+        title.textContent = `${countOf(Object.keys(placeAggregation).length, mapPlacesTotal, 'Orte', 'Orten')} auf der Karte`;
     } else if (currentView === 'network' || currentView === 'mentions-flow') {
         // Not visible: both name what they show in their own line under the header
         title.textContent = currentView === 'network' ? 'Netzwerk der Personen' : 'Erwähnungen';
@@ -280,6 +282,7 @@ async function init() {
         }
 
         placeAggregation = aggregateLettersByPlace(allLetters, dataIndices.places || {});
+        mapPlacesTotal = Object.keys(placeAggregation).length;
 
         // Update state with placeAggregation
         state.data.placeAggregation = placeAggregation;
@@ -339,7 +342,8 @@ async function init() {
             getPlaceAggregation: () => placeAggregation,
             applyPlaceFilter,
             applyPersonFilter,
-            revealLetters
+            revealLetters,
+            renderLanguageKey: renderViewLanguageKey
         });
         initSpacetimeView({
             getDataIndices: () => dataIndices,
@@ -358,34 +362,38 @@ async function init() {
             pickYear: year => {
                 pickedYearFilter = year;
                 applyFilters();
-            }
+            },
+            renderLanguageKey: renderViewLanguageKey
         });
         initPersonsView({
             getFilteredLetters: () => filteredLetters,
             getAllLetters: () => allLetters,
             getDataIndices: () => dataIndices,
-            showLettersOfPerson
+            showLettersOfPerson,
+            renderLanguageKey: renderViewLanguageKey
         });
         initLettersView({
             getFilteredLetters: () => filteredLetters,
             getAllLetters: () => allLetters,
             hasActiveFilter,
-            showLettersOfPerson
+            showLettersOfPerson,
+            renderLanguageKey: renderViewLanguageKey
         });
         initTimelineView({
             getFilteredLetters: () => filteredLetters,
             getAllLetters: () => allLetters,
-            revealLetters,
             showUndatedLetters,
             showLetterDetail,
-            setPeriod
+            setPeriod,
+            renderLanguageKey: renderViewLanguageKey
         });
         initTopicsView({
             getFilteredLetters: () => filteredLetters,
             getAllLetters: () => allLetters,
             toggleSubject: key => (activeSubjectFilter === key ? clearSubjectFilter() : applySubjectFilter(key)),
             togglePerson: key => (selectedPersonId === key ? clearPersonFilter() : applyPersonFilter(key)),
-            togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key))
+            togglePlace: key => (selectedPlaceFilter === key ? clearPlaceFilter() : applyPlaceFilter(key)),
+            renderLanguageKey: renderViewLanguageKey
         });
         initPlacesView({
             getFilteredLetters: () => filteredLetters,
@@ -401,11 +409,13 @@ async function init() {
             applyPersonFilter,
             applySubjectFilter,
             showLettersBetween,
-            revealLetters
+            revealLetters,
+            renderLanguageKey: renderViewLanguageKey
         });
         initMentionsView({
             getFilteredLetters: () => state.getFilteredLetters(),
-            showLetterDetail
+            showLetterDetail,
+            renderLanguageKey: renderViewLanguageKey
         });
         initComparisonView({
             getFilteredLetters: () => state.getFilteredLetters(),
@@ -415,7 +425,8 @@ async function init() {
             applyPlaceFilter,
             applyFilters,
             switchView,
-            showLetterDetail
+            showLetterDetail,
+            renderLanguageKey: renderViewLanguageKey
         });
         initLettersDrawer({
             getFilteredLetters: () => filteredLetters,
@@ -825,6 +836,48 @@ function languageSelection() {
     return checked.length === boxes.length ? null : checked.map(cb => cb.value);
 }
 
+// Letters per language category of the whole dataset, counted once after loading
+let languageTotals = null;
+
+/**
+ * The shared language key (design.md, rules 2 and 11) in a view: the same marks, order and toggles
+ * as on the start view. A mark counts the letters under every filter but the language, so a
+ * language filtered out keeps its share and can be chosen again. Without language data the host
+ * stays empty, because the bars are then drawn in the data colour alone.
+ * @param {HTMLElement|null} host
+ * @param {{others?: Array<{label: string, color: string}>}} [options] - colours that are no language
+ */
+function renderViewLanguageKey(host, { others = [] } = {}) {
+    if (!host) return;
+    if (!languageTotals) {
+        languageTotals = new Map();
+        allLetters.forEach(letter => {
+            const key = languageCategory(letter.language?.code);
+            languageTotals.set(key, (languageTotals.get(key) || 0) + 1);
+        });
+    }
+    if ([...languageTotals.keys()].every(key => key === NO_LANGUAGE)) {
+        host.replaceChildren();
+        return;
+    }
+    const beside = state.filters.languages ? state.filterLetters({ ...state.filters, languages: null }) : filteredLetters;
+    const counts = new Map();
+    beside.forEach(letter => {
+        const key = languageCategory(letter.language?.code);
+        counts.set(key, (counts.get(key) || 0) + 1);
+    });
+    renderLanguageKey(host, {
+        counts,
+        totals: languageTotals,
+        chosen: languageSelection(),
+        onToggle: toggleLanguage,
+        onRest: button => openRailPanel('lang', button),
+        // The count stands in the accessible name; the pointer reads it in the native tooltip
+        tip: (el, text) => { if (el) el.title = text; },
+        others
+    });
+}
+
 // One language or the rest alone; the same choice again releases it
 function toggleLanguage(code) {
     const matches = value => (code === 'other' ? isRestLanguage(value) : value === code);
@@ -952,15 +1005,13 @@ function hasActiveFilter() {
 /**
  * The one place of the selection (design.md, rule 1): the line at the lower edge of every view
  * holds the count of its letters, which opens them, the filters as removable marks and the release
- * of all. It stands in the letter list as well, there without the count, which the list names.
- * The dots on the buttons of the representations that once marked a filter are gone with it.
+ * of all. It stands in the letter list as well, with the same count, which there leads to the list
+ * itself instead of opening a drawer over it.
  */
 function updateSelectionLine() {
     const inList = currentView === 'letters';
-    updateLettersDrawer({ hidden: false });
-    document.getElementById('letters-drawer-toggle')?.classList.toggle('hidden', inList);
-    document.getElementById('letters-drawer')?.classList.toggle('hidden', inList && !hasActiveFilter());
     if (inList) setDrawerOpen(false);
+    updateLettersDrawer({ hidden: false, inList });
 }
 
 // What removing one mark of the selection sentence releases; each goes through the same inputs as

@@ -163,39 +163,6 @@
     display: none;
 }
 
-.map-legend-items {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.map-legend-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-}
-
-.map-legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: 1px solid var(--color-border-light);
-}
-
-.map-legend-label {
-    color: var(--color-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.map-legend-count {
-    color: var(--color-text-light);
-    font-size: var(--font-size-xs);
-    margin-left: auto;
-}
-
 /* List View Header */
 .list-header {
     display: flex;
@@ -1371,6 +1338,32 @@
     position: relative;
 }
 
+/* The controls of the flow, at the top of the figure: the person and how often the selection
+   mentions it */
+.mf-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-md);
+    padding: var(--space-sm) var(--space-lg) 0;
+}
+
+.mf-bar__note {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+}
+
+.mf-bar__note:empty {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .mf-bar {
+        padding: var(--space-sm) var(--space-sm) 0;
+    }
+}
+
 .mentions-flow-graph {
     flex: 1;
     position: relative;
@@ -2098,14 +2091,21 @@
     border-radius: 2px;
 }
 
+/* The colour of a person's most frequent language, before the name in the person list */
+.person-name .lang-swatch {
+    display: inline-block;
+    margin-right: var(--space-sm);
+}
+
+/* What size and number of a circle mean; the colours are explained by the language key above */
 .map-legend-note {
-    margin-bottom: var(--space-xs);
+    margin: 0;
     font-size: var(--font-size-xs);
     color: var(--color-text-light);
 }
 
-/* The letter list names its count in the line above the list and the start view opens with the
-   figures of the dataset whose name the header carries, so neither repeats a title */
+/* The letter list names its count in the selection line at the lower edge and the start view opens
+   with the figures of the dataset whose name the header carries, so neither repeats a title */
 #letters-view .view-header__title,
 .workspace__meta .view-header__title,
 #network-view .view-header__title,

@@ -86,9 +86,20 @@
     pointer-events: none;
 }
 
-/* A chosen period stands in full colour, the rest of the dataset recedes behind it */
+/* The whole dataset of a year, pale behind the selection (rule 6). Tone and opacity are set from
+   PALE_TOKEN and OUTSIDE_OPACITY of selection-ui.js on the bars */
+.tv-whole {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--tv-pale);
+    pointer-events: none;
+}
+
+/* A chosen period stands in full colour, the rest of the selection recedes behind it */
 .tv-bars.is-narrowed .tv-bar:not(.is-chosen) .tv-stack {
-    opacity: 0.3;
+    opacity: var(--tv-outside);
 }
 
 .tv-bar.is-chosen::after,
@@ -202,7 +213,16 @@
     outline-offset: 2px;
 }
 
-/* Legend of the colours; the switches of the languages stand in the sidebar */
+/* The language key stands flush with the figure; the view sets its own padding */
+#timeline-key {
+    padding: 0;
+}
+
+/* What the language key does not name: the mark of an uncertain date */
+.tv-legend:empty {
+    display: none;
+}
+
 .tv-legend {
     display: flex;
     flex-wrap: wrap;
@@ -285,10 +305,6 @@
 
 .tv-quiet:hover {
     color: var(--color-link);
-}
-
-.tv-show {
-    margin-left: auto;
 }
 
 .tv-figure {

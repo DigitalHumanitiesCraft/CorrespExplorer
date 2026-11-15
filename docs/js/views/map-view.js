@@ -1,7 +1,9 @@
 // Map view: the sending places of the filtered letters as clustered circles on a MapLibre map,
-// coloured by dominant language, with a popup per place.
+// places and clusters coloured by their dominant language, with a popup per place. The map and
+// its external basemap are created when the view is first shown.
 
 import { LANGUAGE_COLORS, MAP_DEFAULTS, NO_LANGUAGE, languageLabel } from '../constants.js';
+import { languageCategory, languageColor } from '../selection-ui.js';
 import { isInBasket } from '../basket.js';
 import { escapeHtml, ignoreMissingStyleImages, showToast, personKey, placeKey } from '../utils.js';
 import { elements } from '../dom-cache.js';
@@ -21,23 +23,28 @@ let mapColorMode = 'language';
  * @param {Function} dependencies.applyPlaceFilter
  * @param {Function} dependencies.applyPersonFilter
  * @param {Function} dependencies.revealLetters - opens the letters of the selection below the map
+ * @param {Function} dependencies.renderLanguageKey - draws the shared language key into a host
  */
 export function initMapView(dependencies) {
     deps = dependencies;
-    createMap();
+    bindMapControls();
 }
 
-// Redraw markers and legend after the aggregation changed; before the map has loaded, its load
-// handler draws the current aggregation itself
+// Redraw the markers after the aggregation changed; before the map has loaded, its load handler
+// draws the current aggregation itself. The key follows with the render of the view (resizeMap)
 export function updateMapPlaces() {
     if (!map || !mapInitialized) return;
     renderPlaceMarkers(deps.getPlaceAggregation());
-    updateMapLegend();
 }
 
-// The map measures its container only while visible
+/**
+ * Show the map: the first call creates it, so style and tiles of the external basemap are
+ * requested only when a reader opens the map (ADR-006); later calls let it measure its container,
+ * which it can only while visible
+ */
 export function resizeMap() {
-    map?.resize();
+    deps.renderLanguageKey?.(elements.getById('map-key'));
+    if (!map) createMap(); else map.resize();
 }
 
 // Aggregate letters by place_sent for the map; places are keyed with placeKey (ADR-001), so a
@@ -182,23 +189,17 @@ function createMap() {
         renderPlaceMarkers(deps.getPlaceAggregation());
         updateLayerSwitcherButton(currentMapStyle);
         mapInitialized = true;
-        updateMapLegend();
     });
+}
 
-    // Layer switcher button
-    const layerSwitcherBtn = elements.getById('layer-switcher');
-    if (layerSwitcherBtn) {
-        layerSwitcherBtn.addEventListener('click', () => {
-            currentMapStyle = (currentMapStyle === 'light') ? 'dark' : 'light';
-            setMapStyle(currentMapStyle);
-        });
-    }
-
-    // Color mode toggle button
-    const colorToggleBtn = elements.mapColorToggle;
-    if (colorToggleBtn) {
-        colorToggleBtn.addEventListener('click', toggleMapColorMode);
-    }
+// The two buttons in the corner of the map work before the map exists; they act on it once it does
+function bindMapControls() {
+    elements.getById('layer-switcher')?.addEventListener('click', () => {
+        if (!map) return;
+        currentMapStyle = (currentMapStyle === 'light') ? 'dark' : 'light';
+        setMapStyle(currentMapStyle);
+    });
+    elements.mapColorToggle?.addEventListener('click', toggleMapColorMode);
 }
 
 // Land layers of the Positron style that take the paper colour; missing layers are skipped,
@@ -245,15 +246,40 @@ function updateLayerSwitcherButton(styleKey) {
     }
 }
 
+// The language categories of the page (rule 11): each place carries its letters per category as
+// properties n0, n1, ..., which the clusters sum, so a cluster takes the colour of the category with
+// the most letters, as a single place does (design.md, rule 5)
+const categories = () => Object.keys(LANGUAGE_COLORS);
+
+/**
+ * Letters of a place per language category, in the order of categories()
+ * @param {Object} place - from aggregateLettersByPlace
+ * @param {string[]} order
+ * @returns {number[]}
+ */
+export function placeCategoryCounts(place, order) {
+    const counts = order.map(() => 0);
+    let withLanguage = 0;
+    Object.entries(place.languageCounts).forEach(([code, n]) => {
+        const index = order.indexOf(languageCategory(code));
+        if (index >= 0) counts[index] += n;
+        withLanguage += n;
+    });
+    const none = order.indexOf(NO_LANGUAGE);
+    if (none >= 0) counts[none] += place.letter_count - withLanguage;
+    return counts;
+}
+
 // Convert place aggregation to GeoJSON
 function placesToGeoJSON(places) {
     const features = [];
+    const order = categories();
 
     Object.values(places).forEach(place => {
-        // Get color for dominant language
-        const langColor = place.dominantLanguage
-            ? (LANGUAGE_COLORS[place.dominantLanguage] || LANGUAGE_COLORS['other'])
-            : LANGUAGE_COLORS[NO_LANGUAGE];
+        const counts = placeCategoryCounts(place, order);
+        // The first of the largest counts, so ties go to the earlier category of the page order
+        const dominant = order[counts.indexOf(Math.max(...counts))] || NO_LANGUAGE;
+        const langColor = languageColor(dominant);
 
         features.push({
             type: 'Feature',
@@ -271,9 +297,9 @@ function placesToGeoJSON(places) {
                 year_max: place.years.length > 0 ? Math.max(...place.years) : null,
                 top_senders: JSON.stringify(place.topSenders),
                 languages: place.languages.join(', '),
-                dominant_language: place.dominantLanguage || NO_LANGUAGE,
-                dominant_language_ratio: place.dominantLanguageRatio || 0,
-                language_color: langColor
+                dominant_language: dominant,
+                language_color: langColor,
+                ...Object.fromEntries(counts.map((n, i) => [`n${i}`, n]))
             }
         });
     });
@@ -298,7 +324,8 @@ function renderPlaceMarkers(places) {
             clusterMaxZoom: MAP_DEFAULTS.clusterMaxZoom,
             clusterRadius: MAP_DEFAULTS.clusterRadius,
             clusterProperties: {
-                'total_letters': ['+', ['get', 'letter_count']]
+                'total_letters': ['+', ['get', 'letter_count']],
+                ...Object.fromEntries(categories().map((_, i) => [`n${i}`, ['+', ['get', `n${i}`]]]))
             }
         });
     }
@@ -315,17 +342,16 @@ function renderPlaceMarkers(places) {
 
 // Add map layers
 function addMapLayers() {
-    // A cluster mixes languages, so it takes a neutral tone that no language carries
-    const { primary, outline } = readTokens({ primary: '--color-text-light', outline: '--color-bg' });
+    const { outline, text } = readTokens({ outline: '--color-bg', text: '--color-text' });
 
-    // Cluster layer
+    // Cluster layer: in the colour of the language with the most letters among its places
     map.addLayer({
         id: 'places-clusters',
         type: 'circle',
         source: 'places',
         filter: ['has', 'point_count'],
         paint: {
-            'circle-color': primary,
+            'circle-color': getClusterColorExpression(),
             'circle-radius': [
                 'step',
                 ['get', 'total_letters'],
@@ -352,8 +378,11 @@ function addMapLayers() {
             'text-font': ['Noto Sans Regular'],
             'text-size': 12
         },
+        // Ink on a paper halo stays legible on every language colour of the clusters
         paint: {
-            'text-color': outline
+            'text-color': text,
+            'text-halo-color': outline,
+            'text-halo-width': 1.5
         }
     });
 
@@ -388,21 +417,27 @@ function getMapCircleColorExpression() {
         return readTokens({ data: '--color-data' }).data;
     }
 
-    // Build dynamic match expression based on available languages
-    const defaultColor = LANGUAGE_COLORS['other'] || LANGUAGE_COLORS[NO_LANGUAGE];
-    const matchExpr = ['match', ['get', 'dominant_language']];
+    // A place carries the colour of its dominant category as a property
+    return ['get', 'language_color'];
+}
 
-    // Add only defined language colors (skip undefined values)
-    Object.entries(LANGUAGE_COLORS).forEach(([lang, color]) => {
-        if (lang !== 'other' && color) {
-            matchExpr.push(lang, color);
-        }
+/**
+ * The colour of a cluster: the category whose summed letters are largest, ties going to the earlier
+ * category of the page order; in the uniform mode the data colour
+ * @returns {Array|string} MapLibre expression
+ */
+function getClusterColorExpression() {
+    if (mapColorMode === 'uniform') return readTokens({ data: '--color-data' }).data;
+    const order = categories();
+    const n = i => ['get', `n${i}`];
+    const cases = ['case'];
+    order.forEach((key, i) => {
+        // Larger than every earlier category and not smaller than every later one
+        const wins = order.map((_, j) => (j === i ? null : [j < i ? '>' : '>=', n(i), n(j)])).filter(Boolean);
+        cases.push(wins.length ? ['all', ...wins] : true, languageColor(key));
     });
-
-    // Default fallback (required by MapLibre match expression)
-    matchExpr.push(defaultColor);
-
-    return matchExpr;
+    cases.push(languageColor('other'));
+    return cases;
 }
 
 // Update map marker colors when color mode changes
@@ -410,7 +445,7 @@ function updateMapColors() {
     if (!map || !map.getLayer('places-layer')) return;
 
     map.setPaintProperty('places-layer', 'circle-color', getMapCircleColorExpression());
-    updateMapLegend();
+    map.setPaintProperty('places-clusters', 'circle-color', getClusterColorExpression());
 }
 
 // Toggle map color mode
@@ -426,55 +461,6 @@ function toggleMapColorMode() {
         btn.innerHTML = byLanguage ? '<i class="fas fa-palette" aria-hidden="true"></i>' : '<i class="fas fa-circle" aria-hidden="true"></i>';
         btn.title = byLanguage ? 'Einheitliche Farbe verwenden' : 'Nach Sprache einfärben';
     }
-}
-
-// Update the map legend based on current data and color mode
-function updateMapLegend() {
-    const legend = elements.mapLegend;
-    const legendItems = legend?.querySelector('.map-legend-items');
-    if (!legend || !legendItems) return;
-
-    // Hide legend in uniform mode
-    if (mapColorMode === 'uniform') {
-        legend.classList.add('hidden');
-        return;
-    }
-
-    legend.classList.remove('hidden');
-
-    // Count places per dominant language
-    const langCounts = {};
-    Object.values(deps.getPlaceAggregation()).forEach(place => {
-        // Languages without a colour of their own share one legend entry
-        const lang = !place.dominantLanguage ? NO_LANGUAGE
-            : LANGUAGE_COLORS[place.dominantLanguage] ? place.dominantLanguage : 'other';
-        if (!langCounts[lang]) {
-            langCounts[lang] = { places: 0, letters: 0 };
-        }
-        langCounts[lang].places++;
-        langCounts[lang].letters += place.letter_count;
-    });
-
-    // By letter count; the rest and the places without a language close the list
-    const rank = lang => (lang === 'other' ? 1 : lang === NO_LANGUAGE ? 2 : 0);
-    const sortedLangs = Object.entries(langCounts)
-        .sort((a, b) => rank(a[0]) - rank(b[0]) || b[1].letters - a[1].letters);
-
-    // Build legend HTML
-    let html = '';
-    for (const [lang, counts] of sortedLangs) {
-        const color = LANGUAGE_COLORS[lang] || LANGUAGE_COLORS['other'];
-        const label = languageLabel(lang);
-        html += `
-            <div class="map-legend-item">
-                <span class="map-legend-color" style="background-color: ${color}"></span>
-                <span class="map-legend-label">${escapeHtml(label)}</span>
-                <span class="map-legend-count">${counts.places}</span>
-            </div>
-        `;
-    }
-
-    legendItems.innerHTML = html;
 }
 
 // Setup event handlers

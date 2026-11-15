@@ -9,6 +9,7 @@ import { formatNumber as fmt } from '../formatters.js';
 let deps = {};
 let isOpen = false;
 let visible = true;
+let inLetterList = false;
 let renderedFrom = null;
 
 const el = id => document.getElementById(id);
@@ -38,7 +39,9 @@ export function initLettersDrawer(dependencies) {
     const drawer = el('letters-drawer');
     const list = el('letters-drawer-list');
     if (!drawer || !list) return;
-    el('letters-drawer-toggle').addEventListener('click', () => setDrawerOpen(!isOpen, { focus: true }));
+    el('letters-drawer-toggle').addEventListener('click', () => {
+        if (inLetterList) deps.openLetterList(); else setDrawerOpen(!isOpen, { focus: true });
+    });
     el('letters-drawer-all').addEventListener('click', () => deps.openLetterList());
     // Escape inside the drawer closes it; dialogs over it take Escape first and mark it handled
     drawer.addEventListener('keydown', (e) => {
@@ -122,11 +125,23 @@ export function setDrawerOpen(open, { focus = false } = {}) {
  * Count of the line and, when open, the list; called after every change of filter or view
  * @param {{hidden: boolean}} options - hidden in the letter list itself
  */
-export function updateLettersDrawer({ hidden }) {
+export function updateLettersDrawer({ hidden, inList = false }) {
     const drawer = el('letters-drawer');
     if (!drawer || !deps.getFilteredLetters) return;
     visible = !hidden;
+    inLetterList = inList;
     drawer.classList.toggle('hidden', hidden);
+    // In the letter list the count stands at the same place, but the list it would open is the
+    // view itself, so it is no disclosure there
+    const toggle = el('letters-drawer-toggle');
+    toggle.classList.toggle('letters-drawer__toggle--list', inList);
+    if (inList) {
+        toggle.removeAttribute('aria-expanded');
+        toggle.removeAttribute('aria-controls');
+    } else {
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        toggle.setAttribute('aria-controls', 'letters-drawer-panel');
+    }
     const letters = deps.getFilteredLetters();
     el('letters-drawer-count').textContent = drawerCountText(letters.length, deps.getTotal(), deps.hasActiveFilter());
     if (isOpen && visible) renderList();
