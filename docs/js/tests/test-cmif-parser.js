@@ -331,12 +331,12 @@ export const CMIFParserTests = {
                 const [l18, l201, l7327] = letters;
                 assert(l18.furtherActions?.length === 1 && l18.furtherActions[0].type === 'forwarded',
                     `Eine Handlung forwarded erwartet, erhalten ${JSON.stringify(l18.furtherActions)}`);
-                assert(l18.furtherActions[0].persons[0].name === 'Hammer-Purgstall, Joseph', 'Die Person der Weiterleitung bleibt erhalten');
+                assert(l18.furtherActions[0].persons[0].name === 'Muster-Beispiel, Joseph', 'Die Person der Weiterleitung bleibt erhalten');
                 assert(!('date' in l18.furtherActions[0]) && !('place' in l18.furtherActions[0]), 'Die Weiterleitung erbt weder Datum noch Ort des Versands');
                 assert(l18.recipient.precision === 'unknown', `Der Empfänger bleibt unbekannt, erhalten ${l18.recipient.precision}`);
-                assert(!indices.persons['118545426'] || indices.persons['118545426'].letter_count === 2,
-                    `Die Weiterleitung zählt nicht als Brief der Person, erhalten ${indices.persons['118545426']?.letter_count}`);
-                const smith = 'https://gams.uni-graz.at/o:hpe.persons#P.701';
+                assert(!indices.persons['999002000'] || indices.persons['999002000'].letter_count === 2,
+                    `Die Weiterleitung zählt nicht als Brief der Person, erhalten ${indices.persons['999002000']?.letter_count}`);
+                const smith = 'https://example.org/edition/persons#P.701';
                 assert(l201.sender.id === null && l201.sender.localRef === smith && l201.sender.precision === 'named',
                     `Registerkennung ohne Normdatum erwartet, erhalten ${JSON.stringify(l201.sender)}`);
                 assert(indices.persons[smith]?.as_sender === 1, 'Die Registerkennung ist der Schlüssel im Personenindex');
@@ -344,7 +344,7 @@ export const CMIFParserTests = {
                 assert(l7327.dateBound === 'notAfter' && l7327.date === '1848' && l7327.year === null && l7327.dateTo === null,
                     `Obere Grenze ohne Jahr erwartet, erhalten ${JSON.stringify([l7327.dateBound, l7327.date, l7327.year, l7327.dateTo])}`);
                 assert(l7327.place_sent.precision === 'unknown', `"ohne Ort" ist kein Ort, erhalten ${l7327.place_sent.precision}`);
-                assert(l7327.sender.localRef === 'https://gams.uni-graz.at/o:hpe.persons#P.88' && l7327.sender.id === '104141581',
+                assert(l7327.sender.localRef === 'https://example.org/edition/persons#P.88' && l7327.sender.id === '999000088',
                     'Normdatum und Registerkennung stehen nebeneinander, das Normdatum ist der Schlüssel');
             }
         },

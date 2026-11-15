@@ -558,7 +558,7 @@ rect.mini-hit.is-pickable:hover {
 }
 
 /* On hover and focus a sheet names the part of the model its lines belong to, so the page needs
-   no band headings (the operator removed them on 2026-11-14) */
+   no band headings */
 .record-sheet::before {
     content: attr(data-caption);
     position: absolute;

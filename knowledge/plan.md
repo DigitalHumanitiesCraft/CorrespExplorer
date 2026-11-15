@@ -153,7 +153,7 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 
 ## Veröffentlichung
 
-- Push. Der Operator hat den Push freigegeben, er ist nicht erfolgt. Vorher fehlen die unabhängige Durchsicht am gebauten `docs/` und sein Blick auf die umgebauten Ansichten. `origin/main` steht auf `2f78951` vom Mittag des 2026-11-14. Vor einem Push wird `docs/` nach [ADR-008](specification.md#adr-008-wissensbasis-nicht-auf-der-website) geprüft, und der Operator sieht die Auslegung zur Testdatei unter CC BY-NC 4.0 ([data.md](data.md#rechte-und-lizenzen)). Herkunft: Operator.
+- Version. Der Stand ist seit 2026-11-15 auf `origin/main` gepusht. Nummer, Tag und Release vergibt der Operator, der Vorschlag steht im [Journal](journal.md#2026-11-15-übergabe-prüfung-des-ausgelieferten-stands-und-push).
 - Auf einer Folie für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der öffentlichen Demo. Herkunft: Operator.
 - Das Aufräumen der Branches neben main. Wartet auf den Operator.
 - Der Abschnitt des Aufsatzes zur Promptotyping-Methode, der das Werkzeug als Explorer für CMIF beschreibt, ändert mit der Richtung seinen Gegenstand. Der Aufsatz ist bis zur Wiederaufnahme der Schreibarbeit nicht angefasst. Herkunft: Bauende.

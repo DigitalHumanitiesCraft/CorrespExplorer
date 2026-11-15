@@ -902,7 +902,7 @@ function bind() {
     // choice lengthened the title, and the figure jumped under the pointer
     // The three views are the main control of the figure and stand in it, at the upper left
     // where the eye enters; at the right end of the header they were found late and the
-    // tooltip of a mark covered them (operator, 2026-11-14)
+    // tooltip of a mark covered them
     const cams = el('spacetime-cams');
     if (cams) {
         cams.classList.add('st-cams');

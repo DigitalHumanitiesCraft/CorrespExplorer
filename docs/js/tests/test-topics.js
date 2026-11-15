@@ -150,7 +150,7 @@ export const TopicsTests = {
             name: 'Raster und Anteile: HSA in Paris 1882 bis 1892 stimmt mit einer unabhängigen Zählung überein',
             async run() {
                 const data = await (await fetch('data/hsa-letters.json')).json();
-                // The operator's filter: sending place Paris (GeoNames 2988507), years 1882 to 1892
+                // The filter of the case: sending place Paris (GeoNames 2988507), years 1882 to 1892
                 const letters = data.letters.filter(l => l.place_sent?.geonames_id === '2988507' && l.year >= 1882 && l.year <= 1892);
                 const profiles = subjectProfiles(letters);
                 const sum = profiles.subjects.reduce((n, s) => n + s.total, 0);

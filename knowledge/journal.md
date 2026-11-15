@@ -23,14 +23,14 @@ related: [project, specification, plan]
 
 ## Open
 
-Stand vom 2026-11-15 nach Distillation, Refactoring und Kuration. `origin/main` steht auf `2f78951` vom Mittag des 2026-11-14, nichts vom Abend und von diesem Tag ist öffentlich. Der Operator hat den Push freigegeben, er ist nicht erfolgt: Vorher fehlen eine unabhängige Durchsicht am gebauten `docs/` und sein Blick auf die Ansichten, die er seit ihrem Umbau nicht gesehen hat. Seine Sätze stehen wörtlich in [design.md](design.md#rückmeldungen-des-operators).
+Stand vom 2026-11-15 nach Distillation, Kuration, Refactoring und Übergabe. Der Stand ist mit dem Commit dieser Übergabe auf `origin/main` gepusht, auf den Auftrag des Operators vom 2026-11-15, die vier Schritte abzuschließen und danach zu pushen. GitHub Pages liefert damit `docs/` dieses Stands aus. Vor dem Push hat ein unabhängiger Prüfer den Stand gelesen, den Pages ausliefert, seine Befunde stehen im [Eintrag der Übergabe](#2026-11-15-übergabe-prüfung-des-ausgelieferten-stands-und-push). Der Operator hat die Ansichten seit ihrem Umbau nicht am Bildschirm abgenommen. Tag, Version und Release liegen bei ihm, ein Vorschlag steht im selben Eintrag. Seine Sätze stehen wörtlich in [design.md](design.md#rückmeldungen-des-operators).
 
 Die Promptotyping-Folge auf seinen Auftrag an alle Projekte („kuratieren, destillieren, refactoren, handoff“), jeder Schritt mit eigenem Commit:
 
 1. Distillieren. Erledigt in `db2befc`.
 2. Kuratieren gegen Code und Daten. Erledigt mit den Commits dieses Schritts ([Eintrag](#2026-11-15-refactoring-und-kuration-nach-der-distillation)).
 3. Refactoren. Erledigt mit den Commits dieses Schritts: Tutorial und Tour, die Tagesansicht, die Maschinerie der Forschungspfade, tote Regeln, ungenutzte Exporte und Getter und `renderFilterNotice()` sind entfernt. Was ungenutzt bleibt, führen [architecture.md](architecture.md#ungenutzt) und [plan.md](plan.md#aufräumen).
-4. Übergabe.
+4. Übergabe. Erledigt mit dem Commit dieses Stands.
 
 Beauftragt und nicht gebaut:
 
@@ -61,7 +61,8 @@ Wartet auf den Operator:
 - Die Form des Netzwerks, fünf Fragen in [network-figures.md](network-figures.md).
 - Ob die Dateien gelöscht werden, auf die keine Seite verweist: `docs/data/hsa.xml` (nur die Aufgaben zu US-01 und US-02 nennen sie), `docs/data/schoenbach.xml`, `docs/assets/logo-no-background.png`, `docs/assets/logo.jpg` und `docs/favicon.svg`. Die Datei des Tutorials ist keine Frage mehr, sie dient seit dem Refactoring als Testdatei.
 - Ob der Dialog nach dem Laden eigener Daten entfällt, ob der Fuß unter dem ersten Bildschirm bleibt, ob das Raster eine fünfte Stufe bekommt und die Restfläche der Treemap so groß bleiben soll, was von der Chronik endgültig entfällt, ob der Zeitraum feiner als ein Jahr wählbar wird, die Signatur in der Briefzeile, dazu die älteren Fragen in [plan.md](plan.md).
-- Die Abnahme aller Ansichten am Bildschirm und danach der Push. Auf einer Folie für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der öffentlichen Demo.
+- Die Abnahme aller Ansichten am Bildschirm, jetzt an der öffentlichen Demo möglich. Auf einer Folie für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der öffentlichen Demo, die Kartenansicht besteht weiter.
+- Die erste Version: Nummer, Tag und Release, dazu `version` und `date-released` in `CITATION.cff` und `codemeta.json`. Bis dahin führt `CHANGELOG.md` alles unter „Unreleased“.
 
 Offen ohne Entscheidung:
 
@@ -69,8 +70,19 @@ Offen ohne Entscheidung:
 - In den Themenzeilen der Startansicht stehen drei Farbfamilien ohne Erklärung, die Zahl der Briefe steht allein in der Fußzeile (Befund der koordinierenden Session am Bild). Die Sprachlegende nennt am Ende „Übrige Sprachen“ und „Thema“ (am 2026-11-15 im Browser gesehen), ob das den Befund erledigt, hat niemand beurteilt.
 - Im Korrespondenzkreis trifft ein Klick auf eine breite Linie zuweilen die schmale daneben. Ein Ort des Hugo Schuchardt Archivs steht unter zwei Kennungen.
 - Nichts vom Abend ist bei 200 Prozent Zoom oder mit einem Screenreader geprüft.
+- Aus der Prüfung des ausgelieferten Stands, nicht behoben: `about.html` hat die alte Form ohne Kopf, Fuß und Impressum der Startseite, nennt „Absendeort (mit Geokoordinaten)“, „Timeline-Ansicht“ und „Seitenleiste“ und erwähnt im Abschnitt zum Datenschutz die Anfragen an die Grundkarte nicht. Die Logodateien unter `docs/assets/` haben keine Herkunfts- und Lizenzangabe. `geonames_coordinates.json` nennt seine Quellen und keine Lizenz, die Tabelle in [data.md](data.md#rechte-und-lizenzen) führt die beiden Testdateien zu correspSearch nicht. Die Startseite fragt eine Dateiliste lokaler Bestände ab, die es auf der öffentlichen Seite nicht gibt, die Konsole meldet dort einen Fehler 404. Jede Seite verlinkt die Wissensbasis auf GitHub, die wörtliche Sätze des Operators und Notizen der Sessions enthält. Die vier Modulübersichten unter `docs/` sind deutsch. Das Jahr in `LICENSE` ist 2026, die Arbeit begann 2025.
 
 ## Einträge
+
+### 2026-11-15 Übergabe: Prüfung des ausgelieferten Stands und Push
+
+- Anlass: Auftrag des Operators vom 2026-11-15, über die koordinierende Session weitergegeben („ja!“ auf die Frage, ob die Session die vier offenen Schritte abschließt und den Stand danach pusht, damit er anschließend eine Version vergeben kann).
+- Geprüft vor dem Push: ein unabhängiger Prüfer (Subagent, Claude Opus 5.5, nur lesend, ohne die Einschätzung der bauenden Session) las den Arbeitsbaum als das, was GitHub Pages ausliefert. Ohne Befund blieben Daten von Stefan Zweig Digital im Repository, lokale Pfade und Schlüssel, defekte Verweise, Reste der entfernten Funktionen im sichtbaren Text und Konsolenfehler auf den Seiten. Nach außen geht nur die Anfrage an die Grundkarte.
+- Behoben vor dem Push: Die Testdatei `docs/data/test-graz-cases.xml` zitierte drei Kopfdatensätze einer Edition unter CC BY-NC 4.0, und die Frage, ob das eine nicht kommerzielle Nutzung ist, war offen. Die Datei enthält jetzt erfundene Einträge mit derselben Struktur, die Tests sind angepasst. Der frühere Auszug steht in den Commits vom 2026-11-14 weiter in der Geschichte des Repositorys, gekennzeichnet und mit Quelle. Die Startseite nennt im Fuß Herausgeber, Lizenz und Bearbeitung der Daten des Hugo Schuchardt Archivs. Kommentare im ausgelieferten Code nennen den Grund ohne Vermerke, wer wann entschied. README und CHANGELOG sind berichtigt, die Verweise der Modulübersichten zeigen auf GitHub, der User-Agent der Wikidata-Anfrage nennt das richtige Repository.
+- Nicht behoben: die Punkte unter „Offen ohne Entscheidung“ oben.
+- Entscheidungen der Session: zwei verwaiste Module und keine weitere Datei gelöscht (`demo-tour.js`, `activity-view.js`, je einzeln mit `git rm`), weil der Schritt Refactoren sie benannte. Die Testdatei ersetzt statt den Push anzuhalten, weil die ausgelieferte Seite damit kein Material mit ungeklärten Rechten enthält.
+- Versionsvorschlag, nicht ausgeführt: `v0.9.0` als erste getaggte Fassung. Das Repository hat keinen Tag, `CITATION.cff` und `codemeta.json` nennen keine Version. Für eine Null vor dem Punkt spricht, dass die Oberfläche nicht abgenommen und die Form des Netzwerks offen ist, für die hohe Nebenversion, dass Parser, Datenmodell und Prüfungen seit einem Jahr gewachsen sind. `1.0.0` passt nach seiner Abnahme der Ansichten. Zum Tag gehören `version` und `date-released` in `CITATION.cff`, `version` und `datePublished` in `codemeta.json` und die Überschrift der Fassung in `CHANGELOG.md` anstelle von „Unreleased“.
+- Belege: am Commit dieses Eintrags `test.html?test=true` mit 181 von 181 Tests, `tests/browser/smoke.py` mit 18 von 18 Prüfungen, `node --check` an den geänderten Skripten. Bildvergleich von siebzehn Seiten und Ansichten vor und nach dem Refactoring bei 1280 × 800 im Bericht des Refactoring-Agenten, von dieser Session an drei Bildern gelesen. Stand: gebaut und geprüft wie genannt, veröffentlicht, vom Operator nicht abgenommen.
 
 ### 2026-11-15 Refactoring und Kuration nach der Distillation
 

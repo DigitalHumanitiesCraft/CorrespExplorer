@@ -34,7 +34,7 @@ Die Spalte Exporte nennt, was andere Module importieren. Was nur die Tests impor
 
 ## Farben der Grafiken
 
-Netzwerk und Erwähnungsfluss nehmen ihre Farben aus Tokens ([design.md](../../../knowledge/design.md#datenvisualisierung)).
+Netzwerk und Erwähnungsfluss nehmen ihre Farben aus Tokens ([design.md](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/design.md#datenvisualisierung)).
 
 - Netzwerk aller: Personen in Briefwechsel und Zeitgenossen `--color-role-sender`, Themen `--color-role-topic`, Organisationen `--color-role-organization`, Kanten `--color-text-light`, hervorgehobene Kanten und Beschriftung `--color-text`, Knotenrand `--color-bg`
 - Korrespondenzkreis: Personen in der Farbe der häufigsten Sprache ihrer Briefe (`languageColor()`)

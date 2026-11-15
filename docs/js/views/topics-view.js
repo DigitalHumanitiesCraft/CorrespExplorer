@@ -1,6 +1,5 @@
 // Topics view: what the letters are about, when, how much, and with whom. Two figures of the same
-// subjects, chosen by the operator on 2026-11-14 ("Raster als Hauptfigur, Treemap als Anteile
-// daneben"):
+// subjects:
 // - The grid, the default: one row per subject, one cell per year, shaded on one fixed scale for
 //   every figure; a bar at the end of the row counts all letters of the subject. The rows that fit
 //   the screen are the most frequent subjects, ordered from early to late peak; scrolling leads to

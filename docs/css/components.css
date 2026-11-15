@@ -610,8 +610,7 @@
 
 /* From 768 px title, representation switch and actions share one line. The switch follows the
    title at the left, where the eye enters the view; the controls of the representation keep the
-   right edge (operator, 2026-11-14: the choice between the representations should be more
-   present). */
+   right edge. */
 @media (min-width: 768px) {
     .view-header {
         display: flex;

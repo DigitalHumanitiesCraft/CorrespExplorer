@@ -75,7 +75,7 @@ export function letterExportRow(letter) {
 }
 
 // Byte order mark: Excel reads a UTF-8 CSV without it in the system code page and breaks umlauts
-// (decision E4 of 2026-11-05; the effect in Excel is not yet checked)
+// (not verified in Excel itself)
 export const CSV_BOM = '\uFEFF';
 
 /**

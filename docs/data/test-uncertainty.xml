@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Test CMIF covering all uncertainty cases for CorrespExplorer -->
-<!-- Use: Load via "Uncertainty Test" on index.html -->
+<!-- Use: fixture of the test suites -->
 <!-- 22 test cases covering all uncertainty types -->
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>

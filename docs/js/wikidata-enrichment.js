@@ -60,7 +60,7 @@ async function querySparql(query) {
     const response = await fetch(url, {
         headers: {
             'Accept': 'application/sparql-results+json',
-            'User-Agent': 'CorrespExplorer/1.0 (https://github.com/DHCraft/CorrespExplorer)'
+            'User-Agent': 'CorrespExplorer/1.0 (https://github.com/DigitalHumanitiesCraft/CorrespExplorer)'
         }
     });
 

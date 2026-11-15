@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Test file with three communication headers taken unchanged from the letter files of the
-     edition "Joseph von Hammer-Purgstall. Korrespondenz" (GAMS, Universität Graz), fetched on
-     2026-11-14 from https://gams.uni-graz.at/o:hpe.letter.{18,201,7327}/TEI_SOURCE. Publisher
-     Zentrum für Wissenschaftsgeschichte, Universität Graz, with the Institut für Digitale
-     Geisteswissenschaften, distributed by GAMS. Licence of the source, as its files state:
-     Creative Commons BY-NC 4.0, http://creativecommons.org/licenses/by-nc/4.0/. This file is
-     third-party material and excluded from the MIT and CC BY 4.0 terms of the repository.
-     Only correspDesc is quoted, joined here in one file. The cases: a third
-     action "forwarded" without date and place, a person with a link into the register of the
-     edition and no authority record, a date given only as an upper bound, and the placeholder
-     "ohne Ort". -->
+<!-- Synthetic test file, created in the project (CC BY 4.0). Persons, identifiers and addresses
+     are invented. The three communication headers reproduce the structure of four cases observed
+     in letter files of editions hosted at GAMS, Universität Graz: a third action "forwarded"
+     without date and place, a person with a link into the register of the edition and no
+     authority record, a date given only as an upper bound, and the placeholder "ohne Ort". -->
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
     <fileDesc><titleStmt><title>Test Dataset: Graz Cases</title></titleStmt>
       <publicationStmt><publisher><orgName>CorrespExplorer Test</orgName></publisher></publicationStmt>
-      <sourceDesc><p>Excerpts, see the comment above</p></sourceDesc></fileDesc>
+      <sourceDesc><p>Synthetic, see the comment above</p></sourceDesc></fileDesc>
     <profileDesc>
-      <correspDesc ref="https://gams.uni-graz.at/o:hpe.letter.18">
+      <correspDesc ref="https://example.org/edition/letter.18">
         <correspAction type="sent">
-          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.355" ref="https://d-nb.info/gnd/119100193">
-            <surname>Ilgen</surname>
-            <forename>Karl David</forename>
+          <persName corresp="https://example.org/edition/persons#P.355" ref="https://d-nb.info/gnd/999000355">
+            <surname>Absender</surname>
+            <forename>Karl</forename>
           </persName>
           <placeName key="#GID.1" ref="https://sws.geonames.org/2895044">Jena</placeName>
           <date when="1797-03-14"></date>
@@ -29,42 +23,42 @@
           <persName>Unbekannt</persName>
         </correspAction>
         <correspAction type="forwarded">
-          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.2000" ref="https://d-nb.info/gnd/118545426">
-            <surname>Hammer-Purgstall</surname>
+          <persName corresp="https://example.org/edition/persons#P.2000" ref="https://d-nb.info/gnd/999002000">
+            <surname>Muster-Beispiel</surname>
             <forename>Joseph</forename>
             <nameLink>von</nameLink>
           </persName>
         </correspAction>
       </correspDesc>
-      <correspDesc ref="https://gams.uni-graz.at/o:hpe.letter.201">
+      <correspDesc ref="https://example.org/edition/letter.201">
         <correspAction type="sent">
-          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.701">
-            <surname>Smith</surname>
-            <forename>Edward Herbert</forename>
+          <persName corresp="https://example.org/edition/persons#P.701">
+            <surname>Register</surname>
+            <forename>Edward</forename>
           </persName>
           <placeName key="#GID.1" ref="https://sws.geonames.org/12264699">Clifton</placeName>
           <date when="1801"></date>
         </correspAction>
         <correspAction type="received">
-          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.2000" ref="https://d-nb.info/gnd/118545426">
-            <surname>Hammer-Purgstall</surname>
+          <persName corresp="https://example.org/edition/persons#P.2000" ref="https://d-nb.info/gnd/999002000">
+            <surname>Muster-Beispiel</surname>
             <forename>Joseph</forename>
             <nameLink>von</nameLink>
           </persName>
         </correspAction>
       </correspDesc>
-      <correspDesc ref="https://gams.uni-graz.at/o:hpe.letter.7327">
+      <correspDesc ref="https://example.org/edition/letter.7327">
         <correspAction type="sent">
-          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.88" ref="https://d-nb.info/gnd/104141581">
-            <surname>Bland</surname>
-            <forename>Natalius</forename>
+          <persName corresp="https://example.org/edition/persons#P.88" ref="https://d-nb.info/gnd/999000088">
+            <surname>Grenze</surname>
+            <forename>Natalie</forename>
           </persName>
           <placeName>ohne Ort</placeName>
           <date notAfter="1848"></date>
         </correspAction>
         <correspAction type="received">
-          <persName corresp="https://gams.uni-graz.at/o:hpe.persons#P.2000" ref="https://d-nb.info/gnd/118545426">
-            <surname>Hammer-Purgstall</surname>
+          <persName corresp="https://example.org/edition/persons#P.2000" ref="https://d-nb.info/gnd/999002000">
+            <surname>Muster-Beispiel</surname>
             <forename>Joseph</forename>
             <nameLink>von</nameLink>
           </persName>

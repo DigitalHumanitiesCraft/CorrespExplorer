@@ -1,6 +1,6 @@
 # JavaScript Context Map
 
-ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md](../../knowledge/architecture.md), die Ansichtsmodule [views/CONTEXT-MAP.md](views/CONTEXT-MAP.md), die Tests [tests/CONTEXT-MAP.md](tests/CONTEXT-MAP.md).
+ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/architecture.md), die Ansichtsmodule [views/CONTEXT-MAP.md](views/CONTEXT-MAP.md), die Tests [tests/CONTEXT-MAP.md](tests/CONTEXT-MAP.md).
 
 ## Einstiegspunkte
 

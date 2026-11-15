@@ -2,7 +2,7 @@
   "@context": "https://w3id.org/codemeta/3.0",
   "@type": "SoftwareSourceCode",
   "name": "CorrespExplorer",
-  "description": "Interactive browser visualization tool for correspondence metadata in the CMIF format.",
+  "description": "Interactive browser visualization tool for correspondence metadata in the CMIF format and in TEI letter records.",
   "codeRepository": "https://github.com/DigitalHumanitiesCraft/CorrespExplorer",
   "author": [
     {
@@ -18,5 +18,5 @@
     }
   ],
   "license": "https://spdx.org/licenses/MIT",
-  "dateModified": "2026-10-29"
+  "dateModified": "2026-11-15"
 }
