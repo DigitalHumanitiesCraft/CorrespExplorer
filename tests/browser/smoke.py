@@ -45,6 +45,7 @@ DOCS = Path(__file__).resolve().parents[2] / "docs"
 VIEWS = (
     "overview",
     "map",
+    "spacetime",
     "persons",
     "letters",
     "timeline",
@@ -76,7 +77,7 @@ def _serve() -> tuple[ThreadingHTTPServer, str]:
 # The header offers subjects; a view is reached through its subject and, where the subject has
 # several representations, through the switch in the view header
 GROUP_OF = {"overview": "overview", "letters": "letters", "persons": "persons", "network": "persons",
-            "mentions-flow": "persons", "comparison": "persons", "map": "places", "places": "places",
+            "mentions-flow": "persons", "comparison": "persons", "map": "places", "spacetime": "places", "places": "places",
             "timeline": "time", "topics": "topics"}
 
 
@@ -233,7 +234,9 @@ class Smoke:
             f"{self.base}explore.html?view=letters&{HSA}&yearMin=1890&yearMax=1891"
         )
         _loaded(page)
-        shown = page.inner_text("#letters-result").split(" ")[0].replace(".", "")
+        # The letter list states its count in the selection line at the lower edge, like every
+        # view (design.md, rule 1); the line above the list names only search hits
+        shown = page.inner_text("#letters-drawer-count").split(" ")[0].replace(".", "")
         ctx.close()
         assert shown == str(expected), (
             f"letter list shows {shown}, data hold {expected} letters 1890-1891"
@@ -317,10 +320,10 @@ class Smoke:
         assert "view=places" in url, f"map hint did not open the place list: {url}"
 
     def drawer_keeps_the_view(self) -> None:
-        # A year bar of the time view chooses that year, and the view's own action opens its
-        # letters in the drawer below the view instead of switching to the letter list (since the
-        # merge of the time views a choice narrows the figure and leaves the drawer closed); the
-        # count comes from the data file
+        # A year bar of the time view chooses that year, and the selection line opens its letters
+        # in the drawer below the view instead of switching to the letter list (since the merge of
+        # the time views a choice narrows the figure and leaves the drawer closed); the count comes
+        # from the data file
         expected = _hsa_letters_between(1900, 1900)
         ctx = self.context()
         page = ctx.new_page()
@@ -328,7 +331,9 @@ class Smoke:
         _loaded(page)
         page.click('.tv-bar[data-year="1900"]', position={"x": 2, "y": 4})
         page.wait_for_function("new URLSearchParams(location.search).get('yearMin') === '1900'")
-        page.click("#tv-show-letters")
+        # The time view has no show-letters button of its own any more; the selection line opens
+        # the drawer, as under every view
+        page.click("#letters-drawer-toggle")
         page.wait_for_selector("#letters-drawer-panel:not(.hidden)")
         count = page.inner_text("#letters-drawer-count").split(" ")[0].replace(".", "")
         url = page.url
