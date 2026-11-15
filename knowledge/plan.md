@@ -27,22 +27,22 @@ Herkunft der Punkte: Operator, unabhängige Prüfung (Agent ohne Kenntnis der Ba
 
 ## Richtung
 
-Der Operator hat am 2026-11-14 entschieden, dass CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell des Projekts GOSSIP wird, mit wenigen großen Ansichten über einer gemeinsamen Auswahl ([design.md](design.md#rückmeldungen-des-operators)). Seine Urteile vom Abend sind als [gemeinsame Regeln aller Ansichten](design.md#gemeinsame-regeln-aller-ansichten) zusammengefasst. Gebaut sind Startseite, Startansicht, Briefliste, Zeit als eine Ansicht, Themen als Raster und Anteile und die geteilten Teile der Auswahl. Am 2026-11-14 hat er für alle Projekte die Promptotyping-Folge verlangt: distillieren (am 2026-11-15 erledigt), kuratieren, refactoren, übergeben, jeder Schritt mit eigenem Commit.
+Der Operator hat am 2026-11-14 entschieden, dass CorrespExplorer das Sichtwerkzeug für das gemeinsame Briefmodell des Projekts GOSSIP wird, mit wenigen großen Ansichten über einer gemeinsamen Auswahl ([design.md](design.md#rückmeldungen-des-operators)). Seine Urteile vom Abend sind als [gemeinsame Regeln aller Ansichten](design.md#gemeinsame-regeln-aller-ansichten) zusammengefasst. Gebaut sind Startseite, Startansicht, Briefliste, Zeit als eine Ansicht, Themen als Raster und Anteile und die geteilten Teile der Auswahl. Am 2026-11-14 hat er für alle Projekte die Promptotyping-Folge verlangt: distillieren, kuratieren, refactoren, übergeben, jeder Schritt mit eigenem Commit. Die Distillation steht in `db2befc`, Refactoring und Kuratieren sind am 2026-11-15 gelaufen und werden mit den Commits dieses Schritts gesichert, die Übergabe folgt.
 
 ## Durchgang nach den gemeinsamen Regeln
 
 Beauftragt vom Operator („Können wir das jetzt auch noch mal vereinheitlichen mit dem anderen Feedback, das wir haben?“), nicht gebaut. Die geteilten Teile sind gebaut ([architecture.md](architecture.md#module)), die Ansichten nutzen sie noch nicht. Was je Ansicht zu ändern ist, nach dem Bericht des Bau-Agenten, Regelnummern in Klammern. Herkunft: Operator, Bauende.
 
-- Start: bei 360 Pixel zu viele Bedienelemente (8), Kreis und Karte ohne sichtbare Erklärung von Lage und Größe (5, 8). In den Themenzeilen drei Farbfamilien ohne Erklärung (Befund der koordinierenden Session am Bild).
+- Start: bei 360 Pixel zu viele Bedienelemente (8), Kreis und Karte ohne sichtbare Erklärung von Lage und Größe (5, 8). In den Themenzeilen drei Farbfamilien ohne Erklärung (Befund der koordinierenden Session am Bild). Die Sprachlegende nennt am Ende „Übrige Sprachen“ und „Thema“ (am 2026-11-15 im Browser gesehen), ob das den Befund erledigt, ist nicht beurteilt.
 - Briefe: Die Zeile über der Liste wiederholt die Briefzahl (1), die Sprachfelder je Brief wiederholen die Legende (2).
 - Personen, Liste: keine Sprachfarbe (5). Erwähnungen: keine Sprachfarbe und keine Legende (5), Kopfzeile prüfen (10).
 - Netzwerk: Die Sprachfarben brauchen die gemeinsame Legende (2, 5), eigene Bedienelemente in der Ecke und der Stufenschalter gegen Regel 10, der Ring der Erwähnten ohne erklärte Farbe (5).
 - Karte: eigene Legende durch die gemeinsame ersetzen (2), Titel mit `countOf()` (7), Farbe der Bündel (5).
-- Raum-Zeit: eigene Legende durch die gemeinsame ersetzen (2), Verblassen mit `OUTSIDE_OPACITY` (6).
+- Raum-Zeit: eigene Legende durch die gemeinsame ersetzen (2), Verblassen mit `OUTSIDE_OPACITY` (6), das dafür wieder aus `selection-ui.js` zu exportieren ist.
 - Orte, Liste: Zählform (7), kein Link zur Tabelle (4).
-- Zeit: Legende durch die gemeinsame ersetzen (2, 11), der Knopf „Briefe zeigen“ entfällt zugunsten von `revealLetters()` (1), beide Tabellenschalter brauchen ihr `label` und heißen derzeit gleich (4), blasser Ton aus `PALE_TOKEN` (6), der Zeitraum hat keinen Tastaturweg ohne den Regler (8).
-- Themen: Nach dem Bericht baut die Ansicht ein eigenes `<details>` um die Tabelle, das sich beim Neuzeichnen schließt (4). Am Stand `ef0c0d4` liest `topics-view.js` bereits `host.dataset.tableShown`, ob der Befund noch gilt, ist ungeprüft. Farbe der Themen, die wie Sprachen heißen, wie in der Startansicht (5).
-- Vergleichen: Ohne Seitenleiste ist der Sprachfilter nur über die Marken erreichbar (2), der Aufruf von `renderFilterNotice()` ist wirkungslos und kann entfallen (1).
+- Zeit: Legende durch die gemeinsame ersetzen (2, 11), der Knopf „Briefe zeigen“ entfällt zugunsten von `revealLetters()` (1), beide Tabellenschalter brauchen ihr `label` und heißen derzeit gleich „Daten als Tabelle“, weil `nameTable()` in `timeline-view.js` ein `summary` sucht, das `renderDataTable()` nicht mehr schreibt (4, am 2026-11-15 im Browser gesehen), blasser Ton aus `PALE_TOKEN` (6), der Zeitraum hat keinen Tastaturweg ohne den Regler (8).
+- Themen: Farbe der Themen, die wie Sprachen heißen, wie in der Startansicht (5). Im Raster stehen Sprachen und übrige Themen gemischt in einem Datenton, getrennt nennt sie nur die Spalte „Art“ der Tabelle und die Gruppen der Anteile (am 2026-11-15 im Browser gesehen, [US-44](specification.md#us-44-themen-als-verläufe-über-die-zeit)).
+- Vergleichen: Ohne Seitenleiste ist der Sprachfilter nur über die Marken erreichbar (2).
 - Ein Bild des Operators zeigte das Zeitdiagramm der Startansicht mit Balken in voller Höhe und einer Farbe. Der Zustand ließ sich nicht nachstellen, ein Codepfad, der ihn erzeugen konnte, ist behoben und hat eine Smoke-Prüfung ([testing.md](testing.md#browser-smoke-test)). Ob das Bild damit erklärt ist, ist offen.
 
 Regel 9 sieht vor, dass ein Bestand, dem etwas fehlt, das einmal als ruhigen Satz sagt. Auf der Startseite hat der Operator diesen Satz entfernen lassen, er steht dort nur in der Textalternative. Herkunft: distillierende Session.
@@ -53,33 +53,34 @@ Briefe, Personen und Orte als ein Register mit Facetten, zuerst als kleine echte
 
 ## Kopf und Fuß für Explorer und Projektseite
 
-Kopf und Fuß der Startseite auch für `explore.html` und `about.html`. Die Bausteine liegen in `site-frame.css` und `docs/assets/dhcraft/`. Der Operator hat danach nicht ausdrücklich verlangt. Die Projektseite beschreibt zudem noch den alten Aufbau. Herkunft: Bauende, Durchsicht.
+Kopf und Fuß der Startseite auch für `explore.html` und `about.html`. Die Bausteine liegen in `site-frame.css` und `docs/assets/dhcraft/`. Der Operator hat danach nicht ausdrücklich verlangt. Der Text der Projektseite nennt seit dem Refactoring die bestehenden Ansichten, ihre Form ist die alte. Herkunft: Bauende, Durchsicht.
 
 ## Aufgabensatz und Prüfungen
 
 - Das Skript des festen Aufgabensatzes und die zwölf Aufgaben der Bedienprüfung der Raum-Zeit-Ansicht ins Repository (`verification/`), damit sie in jeder Runde laufen. Seit dem Umbau der Ansichten hat niemand die Antworten in der Oberfläche abgelesen. Herkunft: distillierende Session.
-- `VIEWS` im Smoke-Test um `spacetime` ergänzen, `chronik` und `activity` dort durch die Zeitansicht ersetzen. Herkunft: distillierende Session.
+- `VIEWS` im Smoke-Test um `spacetime` ergänzen. `chronik` und `activity` hat das Refactoring daraus entfernt. Herkunft: distillierende Session.
 - Eine unabhängige Durchsicht am gebauten `docs/` vor dem Push, mit Raum-Zeit unter axe-core. Herkunft: Operator (Vorbedingung des Pushs).
 - Eine unabhängige Prüfung des Korrespondenzkreises mit Zeiger und Tastatur und am Aufgabensatz. Herkunft: Bauende.
 - Nichts vom Abend des 2026-11-14 und der Nacht zum 2026-11-15 ist bei 200 Prozent Zoom oder mit einem Screenreader geprüft. Herkunft: Bauende.
 
 ## Aufräumen
 
-Der Schritt „refactoren“ der Promptotyping-Folge kommt nach dem Kuratieren und listet erst auf, bevor er entfernt. Was ungenutzt im Code steht, führt [architecture.md](architecture.md#ungenutzt). Herkunft: Operator (Folge der Schritte), Bauende.
+Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren Knöpfen und Regeln, die Maschinerie der Forschungspfade, tote Regeln, ungenutzte Exporte und Getter und `renderFilterNotice()` entfernt und gemeinsame Helfer zusammengeführt ([Journal](journal.md)). Was danach ungenutzt bleibt, führt [architecture.md](architecture.md#ungenutzt). Herkunft: Operator (Folge der Schritte), Bauende, kuratierende Session.
 
-- `activity-view.js` und die Regeln `.timeline-*`, `.chronik-*`, `.activity-*` in `explore.css`, die Knöpfe „Chronik“ und „Tage“ in `#view-variants`.
-- Die Maschinerie der Forschungspfade (`research-paths.js` außer den Zählungen, `knowledge-path.js` außer dem Korb, `#knowledge-path-bar`, Prüfung „one path bar“ im Smoke-Test), nach der Streichung von US-33 durch den Operator.
-- Was am Tutorial hängt: die Tour in `demo-tour.js`, `demo=true` in `explore.js` und `upload.js`, zwei Smoke-Prüfungen, die Suite Demo und weitere Testdateien, `about.html` und README. Die Datei `docs/data/demo-showcase.xml` löscht nur der Operator oder eine Session auf sein ausdrückliches Wort.
-- Tote Regeln in `base.css` und `components.css`, die Eintragungsstellen einer Ansicht, doppelte Helfer, `getPersonInitials()` ohne Aufruf in `persons-view.js`.
+- Dateien ohne Verweis einer Seite: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, `docs/assets/logo-no-background.png`, `docs/assets/logo.jpg`, `docs/favicon.svg`. Ob sie gelöscht werden, entscheidet der Operator ([Warten auf den Operator](#warten-auf-den-operator)). `hsa.xml` nennen die Aufgaben zu US-01 und US-02.
+- Irreführende Modulnamen: `knowledge-path.js` enthält nur noch den Korb, `research-paths.js` nur noch die Zählung. Ein Umbenennen ändert Importe, Tests und die Context Maps.
+- Mehrfach gebaute Helfer: Hinweisfelder in Startansicht, Zeit, Raum-Zeit und Themen, Trefferprüfung auf Zeichenflächen, die zentrale Person in Briefliste (`rowCentre()`), Zeit und Netzwerk.
+- Tokens in `tokens.css`, die weder ein Stylesheet noch ein Skript liest, darunter `--color-scale-1` bis `--color-scale-4`, `--border-card`, `--border-focus`, `--radius-xl`, `--space-4xl`, `--line-height-loose`, `--z-modal-backdrop` und die Breakpoints, die als Custom Properties in Media Queries ohnehin nicht greifen. `PALE_TOKEN` und `OUTSIDE_OPACITY` in `selection-ui.js` liest ebenfalls niemand, bis der [Durchgang](#durchgang-nach-den-gemeinsamen-regeln) sie braucht.
+- `getPersonInitials()` ohne Aufruf in `persons-view.js` importiert.
 - Ausgeblendete Kacheln der Seitenleiste und verborgene Moduswahl des Vergleichs stehen im Markup und werden befüllt. Herkunft: Durchsicht.
-- `style.display` in `mentions-view.js`, `network-view.js` und `places-view.js` gegen die Regel `.hidden`. `wissenskorb.css` und `test-runner.js` setzen einzelne Werte ohne Token. Herkunft: Durchsicht.
+- `style.display` in `mentions-view.js` und `places-view.js` gegen die Regel `.hidden`. `wissenskorb.css` und `test-runner.js` setzen einzelne Werte ohne Token. Herkunft: Durchsicht.
 - `explore.js` hält die Filtereingaben neben dem state-manager und gleicht beide ab ([ADR-003](specification.md#adr-003-ein-zentraler-filterzustand)). Ein Besitzer des Filterzustands würde den Abgleich ersparen, der Umbau ändert Verhalten. Herkunft: Bauende.
 
 ## Warten auf den Operator
 
 - Die Abnahme aller Ansichten am Bildschirm, die er seit ihrem Umbau nicht gesehen hat, und danach der Push.
 - Die Form des Netzwerks, fünf Fragen in [network-figures.md](network-figures.md).
-- Ob die Datei des Tutorials gelöscht wird.
+- Ob die Dateien ohne Verweis einer Seite gelöscht werden: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, zwei Logodateien in `docs/assets/` und `docs/favicon.svg` ([Aufräumen](#aufräumen)). Die Datei des Tutorials ist keine Frage mehr, sie dient als Testdatei.
 - Ob der Dialog „Datensatz konfigurieren“ nach dem Laden eigener Daten entfällt. Er fragt vor dem ersten Blick nach der Anreicherung, setzt sie als Vorgabe, und sein Schließen-Kreuz verwirft den Bestand.
 - Ob der Fuß der Startseite unter dem ersten Bildschirm bleibt.
 - Ob das Raster eine fünfte Tönungsstufe bekommt und die Restfläche der Treemap so groß bleibt, und ob die Anteile, wie gebaut, hinter einem Schalter stehen dürfen, wo er „daneben“ sagte.
@@ -104,7 +105,6 @@ Der Schritt „refactoren“ der Promptotyping-Folge kommt nach dem Kuratieren u
 ## Startfigur
 
 - Ein Link auf einen lokal eingebundenen Bestand führt in einem neuen Tab auf die Startseite mit einer Begründung, die nicht zutrifft. Herkunft: Durchsicht.
-- Der Satz über Fehlendes in `missingSentence()` lautet „Dieser Bestand trägt keine …“ und steht in der Textalternative. Herkunft: distillierende Session.
 
 ## Netzwerk
 
@@ -149,7 +149,7 @@ Der Schritt „refactoren“ der Promptotyping-Folge kommt nach dem Kuratieren u
 - Bei 360px zeigen die Kopfknöpfe und die nicht aktiven Reiter nur Symbole. Mehrere Ziele sind niedriger als 24px. Herkunft: Durchsicht.
 - Mehrere Sprachfarben erreichen den Kontrast für Grafikteile nicht, das Werkzeug stützt sich auf die Tabellen. Herkunft: Durchsicht.
 - Die Dialoge sind `div role="dialog"` mit eigener Fokusfalle statt `<dialog>`. Herkunft: Durchsicht.
-- Nicht geprüft: Wissenskorb mit Einträgen, dunkle Grundkarte, Exportdialog und Tour im neuen Farbschema. Herkunft: Bauende.
+- Nicht geprüft: Wissenskorb mit Einträgen, dunkle Grundkarte und Exportdialog im neuen Farbschema. Herkunft: Bauende.
 
 ## Veröffentlichung
 

@@ -21,7 +21,7 @@ related: [specification, architecture, uncertainty-specification]
 
 # Design
 
-CorrespExplorer ist ein Forschungswerkzeug, dessen Oberfläche aus wenigen großen Figuren über einer gemeinsamen Auswahl besteht, mit ruhigem, papiernahem Charakter aus dem Logo. Dieses Dokument beschreibt den Aufbau, wie er am 2026-11-15 im Code steht (main bei `ef0c0d4`), die Gestaltungsregeln und ihre Gründe und die Rückmeldungen des Operators, aus denen er entstanden ist. Die Werte (Farben, Abstände, Schriftgrößen, Radien, Schatten, Ebenen, Breakpoints) stehen allein in `docs/css/tokens.css`, Ladereihenfolge und Zuständigkeit der Stylesheets in `docs/css/CONTEXT-MAP.md`.
+CorrespExplorer ist ein Forschungswerkzeug, dessen Oberfläche aus wenigen großen Figuren über einer gemeinsamen Auswahl besteht, mit ruhigem, papiernahem Charakter aus dem Logo. Dieses Dokument beschreibt den Aufbau, wie er am 2026-11-15 nach dem Refactoring im Code steht, die Gestaltungsregeln und ihre Gründe und die Rückmeldungen des Operators, aus denen er entstanden ist. Die Werte (Farben, Abstände, Schriftgrößen, Radien, Schatten, Ebenen, Breakpoints) stehen allein in `docs/css/tokens.css`, Ladereihenfolge und Zuständigkeit der Stylesheets in `docs/css/CONTEXT-MAP.md`.
 
 Abgenommen hat der Operator keinen Stand. Gesehen und gutgeheißen hat er die Startansicht des Explorers im Stand von `b189cb5`, die Startseite als Figur und das Raster als Themenansicht mit der Treemap als Anteile, jeweils im Abschnitt der Ansicht genannt. Alles andere vom 2026-11-14 und der Nacht zum 2026-11-15 ist von Subagenten gebaut, von der koordinierenden Session am Bild gelesen, durch Modultests und Smoke-Test geprüft, nicht unabhängig durchgesehen und vom Operator nicht gesehen. Nichts davon ist veröffentlicht, `origin/main` steht auf einem Commit vom Mittag des 2026-11-14.
 
@@ -72,7 +72,7 @@ Die Startseite `index.html` ist eine Figur aus den kleinen Darstellungen des Exp
 
 Kopf und Fuß folgen der Form der Projektseiten des Operators. Die Bausteine kommen unverändert aus dem Repository `brand-assets` (`docs/assets/dhcraft/`, [data.md](data.md#gemeinsame-bausteine-der-projektseiten)), `docs/css/site-frame.css` passt sie an das Werkzeug an. Der Kopf nennt das Werkzeug mit dem DHCraft-Zeichen, einen Link „Forschungsprototyp“ auf den Hinweis im Fuß und About, Wissensbasis und Quellcode. Der Fuß führt zu Quellcode, Rückmeldungen, Promptotyping und Impressum, nennt die Lizenzen und enthält den Hinweis auf das Experiment. Über der Figur steht ein Satz zu dem, was das Werkzeug zeigt, ohne den Namen zu wiederholen.
 
-Ein Element wählt den Bestand, mit dem Hugo Schuchardt Archiv als Vorgabe, Stefan Zweig Digital nur dort, wo die lokale Dateiliste besteht, und „Eigene Daten“. „Eigene Daten“ öffnet an Ort und Stelle Dateiwahl, Adressfeld und den Hinweis auf correspSearch, die ganze Seite nimmt gezogene Dateien an. Geladene eigene Daten füllen die Figur, der Eintrag zeigt dann ihren Namen. Daneben öffnet „Im Explorer öffnen“ den gewählten Bestand. Einen Eintrag für das Tutorial gibt es nicht. Eine Adresse mit `dataset=demo` fällt auf das Archiv zurück, `index.html?demo=true` leitet in den Explorer mit dem Tutorial weiter, auf den `about.html` verweist.
+Ein Element wählt den Bestand, mit dem Hugo Schuchardt Archiv als Vorgabe, Stefan Zweig Digital nur dort, wo die lokale Dateiliste besteht, und „Eigene Daten“. „Eigene Daten“ öffnet an Ort und Stelle Dateiwahl, Adressfeld und den Hinweis auf correspSearch, die ganze Seite nimmt gezogene Dateien an. Geladene eigene Daten füllen die Figur, der Eintrag zeigt dann ihren Namen. Daneben öffnet „Im Explorer öffnen“ den gewählten Bestand. Tutorial und Tour sind seit dem Refactoring vom 2026-11-15 entfernt. Eine Adresse mit `dataset=demo` fällt auf das Archiv zurück, `index.html?demo=true` bleibt auf der Startseite und zeigt das Archiv (am 2026-11-15 im Browser gesehen).
 
 `composeFigure()` setzt die Figur nach festen Regeln zusammen:
 
@@ -85,7 +85,7 @@ Ein Element wählt den Bestand, mit dem Hugo Schuchardt Archiv als Vorgabe, Stef
 
 Die Reihenfolge folgt dem Datenmodell, Kern des CMIF, Erweiterungen im CMIF und TEI-Briefsätze, die Namen dieser Teile stehen aber nicht auf der Seite. Sie erscheinen in der Textalternative und als Hinweis an den Blättern des Briefs. Der Satz darüber, was dem Bestand fehlt, steht nur in der Textalternative. Der Beispielbrief steht links als Blätter eines Umschlags, eines je Teil. Jede seiner Zeilen und die Marke dieser Zeile in einer Figur zeigen dieselbe Nummer in der Auswahlfarbe, und das Zeigen auf eines hebt beide hervor. Ein Klick auf eine Marke macht einen ihrer Briefe zum Beispiel, beim Archiv nur auf umrandete Marken, deren Brief unter den vorbereiteten Beispielen liegt. „anderer Brief“ geht zum nächsten Beispiel, die Adresse hält Bestand und Brief fest. Jeder Titel einer Figur öffnet ihre Darstellung im Explorer.
 
-Der Operator hat die Startseite als Figur zweimal gesehen. Zur ersten Fassung sagte er, das seien schon die echten Visualisierungen, zur aus dem Bestand zusammengesetzten Fassung mit dem Tutorial als Wahl „Das finde ich ehrlich gesagt jetzt schon sehr gut“ und gab Aufträge ([Rückmeldungen](#rückmeldungen-des-operators)). Diese Aufträge sind in `d38b4c8` gebaut: Archiv als Vorgabe, Tutorial und Bandnamen entfernt, Bestände und eigene Daten in einem Element, Kopf und Fuß. Den gebauten Stand hat er nicht gesehen.
+Der Operator hat die Startseite als Figur zweimal gesehen. Zur ersten Fassung sagte er, das seien schon die echten Visualisierungen, zur aus dem Bestand zusammengesetzten Fassung mit dem Tutorial als Wahl „Das finde ich ehrlich gesagt jetzt schon sehr gut“ und gab Aufträge ([Rückmeldungen](#rückmeldungen-des-operators)). Diese Aufträge sind in `d38b4c8` gebaut: Archiv als Vorgabe, Tutorial und Bandnamen entfernt, Bestände und eigene Daten in einem Element, Kopf und Fuß. Den gebauten Stand hat er nicht gesehen. Kopf, Fuß, den Satz über der Figur, das Element der Bestände und die Textalternative hat die kuratierende Session am 2026-11-15 im Browser mit dieser Beschreibung verglichen.
 
 ### Startansicht des Explorers
 
@@ -95,12 +95,12 @@ Die Startansicht ist ein Dashboard kleiner echter Darstellungen über der Auswah
 - Darunter die Sprachlegende über die Breite des Diagramms (`renderLanguageKey()`). Jede Sprache ist eine Marke so breit wie ihr Anteil an der Auswahl, mindestens so breit wie ihr Name, und schaltet ihren Filter. Die übrigen Sprachen sind eine Marke, die ihre Liste neben der Marke öffnet. Die Legende ist damit Anteilsbalken, Erklärung der Farben und Sprachfilter zugleich.
 - Personen: der Korrespondenzkreis im Kleinen auf einer Zeichenfläche, jede Person in der Farbe der häufigsten Sprache ihrer Briefe mit der Mitte, die Auswahl füllt jede Marke nach ihrem Anteil. Pfeiltasten, Enter und Escape wählen und lösen.
 - Orte: die Absendeorte auf Länderumrissen, jeder in der Farbe seiner häufigsten Sprache, der Bestand als blasse Ringe, die Auswahl als gefüllte Kreise auf derselben Skala. Stehen weniger als die Hälfte der Briefe mit bekanntem Ort auf der Karte, erscheinen die häufigsten Orte als Rangfolge.
-- Themen: die häufigsten Themen der Auswahl als kleine Jahresprofile auf einer Skala. Ein Thema, das wie eine Sprache der Briefe heißt, steht in deren Farbe, jedes andere in der Themenfarbe.
+- Themen: die häufigsten Themen der Auswahl als kleine Jahresprofile auf einer Skala. Ein Thema, das wie eine Sprache der Briefe heißt, steht in deren Farbe, jedes andere in der Themenfarbe, die die Sprachlegende an ihrem Ende als „Thema“ nennt.
 - Überlieferung: der Anteil jedes Merkmals der Briefsätze als dünner Balken, nur wo der Bestand mindestens zwei Merkmale enthält.
 
 Die Zahlen von Personen, Orten und Themen stehen als Überschriften in der Form „95 von 774 Orten“ (`countOf()`), die Zahl der Briefe in der Auswahlzeile.
 
-Der Operator hat diese Ansicht im Stand von `b189cb5` am Hugo Schuchardt Archiv bei rund 1840 Pixel Breite gesehen und gutgeheißen („Ja, das finde ich gut.“). Schmale Schiene, Legende als Sprachbalken, Farbe nach Sprache in Kreis, Karte und Themen und die Zahlen als Überschriften entfallen nur auf sein Wort. Seither hat sich die Ansicht weiterbewegt: Filterzustand und Briefzahl stehen in der Auswahlzeile, die Hinweiszeile zum Auswählen ist hinzugekommen, der graue Ring der Erwähnten im kleinen Kreis ist entfallen. Diesen Stand hat er nicht gesehen.
+Der Operator hat diese Ansicht im Stand von `b189cb5` am Hugo Schuchardt Archiv bei rund 1840 Pixel Breite gesehen und gutgeheißen („Ja, das finde ich gut.“). Schmale Schiene, Legende als Sprachbalken, Farbe nach Sprache in Kreis, Karte und Themen und die Zahlen als Überschriften entfallen nur auf sein Wort. Seither hat sich die Ansicht weiterbewegt: Filterzustand und Briefzahl stehen in der Auswahlzeile, die Hinweiszeile zum Auswählen ist hinzugekommen, der graue Ring der Erwähnten im kleinen Kreis ist entfallen, mit dem Refactoring auch der Knopf der Tour im Block des Bestands. Diesen Stand hat er nicht gesehen. Die kuratierende Session hat ihn am 2026-11-15 am Hugo Schuchardt Archiv im Browser mit dieser Beschreibung verglichen.
 
 ### Briefe
 
@@ -163,13 +163,13 @@ Diese Regeln fassen die Urteile des Operators vom 2026-11-14 zusammen, auf seine
 
 1. Der Filterzustand und die Zahl der Briefe der Auswahl stehen an einem Ort, in jeder Ansicht demselben. Von dort öffnen sich die Briefe. Titel, Regler und Fußzeile wiederholen ihn nicht.
 2. Die Legende ist der Sprachfilter, überall. Eine zweite Sprachliste gibt es nicht.
-3. Die Seitenleiste ist eine schmale Schiene aus Zeichen mit Hinweis am Zeiger und zugänglichem Namen. Sie lässt sich zu vollen Beschriftungen öffnen, dort trägt jede Gruppe ihren Namen. Was den Bestand beschreibt, steht hinter einem Info-Zeichen.
+3. Die Seitenleiste ist eine schmale Schiene aus Zeichen mit Hinweis am Zeiger und zugänglichem Namen. Sie lässt sich zu vollen Beschriftungen öffnen, dort zeigt jede Gruppe ihren Namen. Was den Bestand beschreibt, steht hinter einem Info-Zeichen.
 4. Keine Untermenüs und keine Aufklapper. Was nachrangig ist, bekommt einen Link oder einen Schalter. Die Tabelle als Alternative zu einer Figur ist ein ruhiger Link an derselben Stelle jeder Ansicht.
-5. Farbe bedeutet in jeder Figur dasselbe, die Sprache. Was wie eine Sprache heißt, trägt deren Farbe oder steht erkennbar außerhalb dieser Kodierung. Rostrot bleibt dem Gewählten und dem Anklickbaren vorbehalten.
+5. Farbe bedeutet in jeder Figur dasselbe, die Sprache. Was wie eine Sprache heißt, hat deren Farbe oder steht erkennbar außerhalb dieser Kodierung. Rostrot bleibt dem Gewählten und dem Anklickbaren vorbehalten.
 6. Die Auswahl steht in voller Farbe vor dem blassen Ganzen, in jeder Figur.
 7. Zählangaben haben eine Form, „x von y“ mit der Sache dahinter, und jede Sache wird auf der ganzen Seite gleich gezählt.
 8. Auswählen ist auf den ersten Blick erkennbar und geht in jeder Figur gleich: Zeiger und Fokus zeigen, was sich wählen lässt, ein Klick wählt, derselbe Klick oder Escape gibt frei.
-9. Eine Ansicht zeigt nur, was der Bestand trägt. Was ihm fehlt, bekommt keinen Platz und steht einmal als ruhiger Satz.
+9. Eine Ansicht zeigt nur, was der Bestand enthält. Was ihm fehlt, bekommt keinen Platz und steht einmal als ruhiger Satz.
 10. Eine Kopfzeile je Ansicht: der Titel und der Schalter der Darstellungen. Bedienelemente einer Figur stehen in der Figur.
 11. Die Reihenfolge der Sprachen ist überall dieselbe, nach Häufigkeit im ganzen Bestand.
 
@@ -180,7 +180,7 @@ Die Palette aus Papier, Tinte und Rostrot ist aus dem Logo abgeleitet und vom Op
 - `--color-bg` (Papier) ist der Hintergrund, `--color-bg-light` (Manila) der Grund von Steuerleisten, Feldern und der Zeile unter dem Mauszeiger.
 - `--color-text` ist Haupttext und Kontur, `--color-text-light` Nebentext.
 - `--color-border-light` dient nur für Trennlinien, `--color-border-control` ist der Rand von Eingaben und Knöpfen und erreicht den Kontrast nach WCAG 1.4.11.
-- `--color-primary` (Rostrot) ist die Interaktionsfarbe: gefüllte Knöpfe, aktiver Reiter, Auswahl, Fokusrahmen und die Marken des Beispielbriefs der Startfigur. Daten, Kennzahlen, Überschriften und Symbole ohne Funktion tragen sie nicht, weil ein Ziel umso schwerer zu finden ist, je mehr andere Elemente seine Farbe teilen (Wolfe & Horowitz, 2017). Die Anwendung dieses Befunds aus der Suchforschung auf eine Oberfläche ist eine eigene Übertragung. `--color-link` ist die dunklere Stufe, weil Rostrot auf Manila den Kontrast für Text verfehlt.
+- `--color-primary` (Rostrot) ist die Interaktionsfarbe: gefüllte Knöpfe, aktiver Reiter, Auswahl, Fokusrahmen und die Marken des Beispielbriefs der Startfigur. Daten, Kennzahlen, Überschriften und Symbole ohne Funktion erhalten sie nicht, weil ein Ziel umso schwerer zu finden ist, je mehr andere Elemente seine Farbe teilen (Wolfe & Horowitz, 2017). Die Anwendung dieses Befunds aus der Suchforschung auf eine Oberfläche ist eine eigene Übertragung. `--color-link` ist die dunklere Stufe, weil Rostrot auf Manila den Kontrast für Text verfehlt.
 - `--color-data` (Tintenblau) ist die Farbe einzelner Datenreihen ohne Sprache: Kartenpunkte im einheitlichen Modus, Personen im ganzen Netzwerk, Themen in Raster und Anteile, die Stufen `--color-scale-1` bis `--color-scale-4`. Die Trennung von Interaktions- und Datenfarbe folgt dem Muster Functional Color Semantics des Hauswissens.
 - Farbe bedeutet in jeder Figur die Sprache (Regel 5). Kreis und Karte der Startansicht, der Korrespondenzkreis, Karte und Raum-Zeit färben eine Marke nach der häufigsten Sprache ihrer Briefe (`dominantLanguages()` in `selection-ui.js`). Ein Thema, das wie eine Sprache heißt, steht in deren Farbe, jedes andere Thema in der Themenfarbe außerhalb dieser Kodierung.
 - `--color-success`, `--color-warning`, `--color-info`, `--color-error` sind Statusfarben und die Farben der Unsicherheit.
@@ -201,7 +201,7 @@ Unsicherheit spricht in allen Ansichten dieselbe visuelle Sprache. Symbole, Tool
 
 - Unvollständiges Datum in `--color-warning`, Zeitraum in `--color-text-light` mit Symbol, unsichere Datierung (`cert="low"`) in `--color-error`, unbekanntes Datum kursiv.
 - Erschlossenes in eckigen Klammern und gedämpft, ein Datum nur als Text kursiv, ein unplausibles Jahr mit dem Wort „unplausibel“, eine einzelne Grenze als „nicht nach 1848“.
-- Exakte Daten und der Normalfall eines Datensatzes bleiben unmarkiert. Ein Ort ohne GeoNames-ID trägt keine Marke, fehlen allen Orten die Koordinaten, sagt die Ansicht das in einem Satz.
+- Exakte Daten und der Normalfall eines Datensatzes bleiben unmarkiert. Ein Ort ohne GeoNames-ID erhält keine Marke, fehlen allen Orten die Koordinaten, sagt die Ansicht das in einem Satz.
 
 ## Zeichenflächen für große Szenen
 
@@ -218,9 +218,9 @@ Raum-Zeit, das Raster der Themen, die untere Figur der Zeit und Kreis und Karte 
 
 Schriftfamilien und Größenskala stehen als `--font-*` und `--font-size-*` in `tokens.css`. Überschriften stehen in Merriweather, Fließtext in der Grundschrift mit Zeilenhöhe 1.6, Zahlen in Kennzahlen und Tabellen mit gleich breiten Ziffern und Tausenderpunkt. Keine Schrift unterschreitet `--font-size-xs`. Abstände nutzen die Skala `--space-*`, Rundungen `--radius-*`.
 
-Rahmen geben Abgrenzung, Schatten erhalten nur schwebende Elemente (Dialoge, Tour, Toasts, Menüs, Tooltips, Kartenpopups, mobile Seitenleiste), gesetzt allein in `shadows.css`. Listen sind Zeilen mit Haarlinie statt Kacheln, weil Kacheln bei gleichartigen Einträgen in großer Zahl Platz kosten und den Vergleich erschweren (Laubheimer, 2016, eine Praxisempfehlung ohne Messung). Bewegung beschränkt sich auf Hover-Übergänge, das Einblenden von Dialogen und kurze Kamerafahrten. Bei `prefers-reduced-motion: reduce` setzt `base.css` Übergänge auf ihren Endzustand, `motionMs()` liefert 0ms, das Netzwerk berechnet sein Layout vor dem Zeichnen.
+Rahmen geben Abgrenzung, Schatten erhalten nur schwebende Elemente (Dialoge, Toasts, Menüs, Tooltips, Kartenpopups, mobile Seitenleiste), gesetzt allein in `shadows.css`. Listen sind Zeilen mit Haarlinie statt Kacheln, weil Kacheln bei gleichartigen Einträgen in großer Zahl Platz kosten und den Vergleich erschweren (Laubheimer, 2016, eine Praxisempfehlung ohne Messung). Bewegung beschränkt sich auf Hover-Übergänge, das Einblenden von Dialogen und kurze Kamerafahrten. Bei `prefers-reduced-motion: reduce` setzt `base.css` Übergänge auf ihren Endzustand, `motionMs()` liefert 0ms, das Netzwerk berechnet sein Layout vor dem Zeichnen.
 
-Regeln für Stylesheets: `components.css` ist die einzige Quelle für Knöpfe, Dialoggrundform und Ansichtskopf. Ebenen nur als `--z-*`, Übergänge über `--transition-*`. Sichtbarkeit schaltet die Klasse `.hidden`, Erwähnungsfluss, Netzwerk und Ortsliste schalten einzelne Elemente noch über `style.display` ([plan.md](plan.md#aufräumen)).
+Regeln für Stylesheets: `components.css` ist die einzige Quelle für Knöpfe, Dialoggrundform und Ansichtskopf. Ebenen nur als `--z-*`, Übergänge über `--transition-*`. Sichtbarkeit schaltet die Klasse `.hidden`, Erwähnungsfluss und Ortsliste schalten einzelne Elemente noch über `style.display` ([plan.md](plan.md#aufräumen)).
 
 ## Barrierefreiheit
 
@@ -245,7 +245,7 @@ Berechnet nach der WCAG-Formel am 2026-10-29, 2026-11-05 und 2026-11-14. Die ver
 
 - Alle interaktiven Elemente haben einen sichtbaren Fokus, global ein 3px-Umriss in `--color-primary`. Ziele sind mindestens 24 x 24px. Die Ausnahme E6 galt den Zellen der Kalender-Heatmap, die mit der Darstellung Tage aus der Oberfläche entfallen ist.
 - Jede Figur hat einen Tastaturweg zu denselben Daten: die Ortsliste für Karte und Raum-Zeit, die Liste unter dem Korrespondenzkreis, die Namen als Knöpfe in Themen, die Legende der Zeit für die Sprachsegmente, Pfeiltasten in Kreis, Karte und Zeitdiagramm der Startansicht, die Tabelle hinter einem ruhigen Schalter unter Zeit, Netzwerk, Erwähnungsfluss und Themen (`renderDataTable()`, Regel 4).
-- Dialoge, Tour, mobile Seitenleiste, die Felder der Schiene und der Briefauszug schließen mit Escape und geben den Fokus zurück. Dialoge tragen `role="dialog"`, `aria-modal` und `aria-labelledby` und halten den Fokus.
+- Dialoge, mobile Seitenleiste, die Felder der Schiene und der Briefauszug schließen mit Escape und geben den Fokus zurück. Dialoge haben `role="dialog"`, `aria-modal` und `aria-labelledby` und halten den Fokus.
 - `explore.html` hat ein `h1` vor der Seitenleiste, die Ansichtstitel sind `h2`. Erklärende Zeilen unter den Titeln sind unsichtbar und bleiben für Screenreader im Dokument.
 - Unter 768px sind alle Reiter beschriftet, der Schalter der Darstellungen bricht um, die geschlossene Seitenleiste verlässt die Tab-Folge. Kein Dokument scrollt seitlich, breite Grafiken scrollen in ihrem eigenen Bereich.
 
@@ -264,7 +264,7 @@ Die Befunde hat ein lesender Agent am 2026-11-14 aus den Volltexten zusammengetr
 
 ## Rückmeldungen des Operators
 
-Die Sätze des Operators stehen hier wörtlich und vollständig, in der Folge, in der er sie gab, damit sie jeden Umbau überleben. Die Sätze vom 2026-11-14 stammen aus diktierten Eingaben, „Fuse“ ist als „Views“ zu lesen, „Staat“ als „Start“, Namen in eckigen Klammern sind ergänzt. Jeder Satz hat eine Zeile dazu, was daraus folgte und ob es am Bildschirm steht. „Am Bildschirm“ heißt im Code vom 2026-11-15 (`ef0c0d4`) vorhanden. Abgenommen hat der Operator nichts davon, seine Zustimmungen sind als solche genannt.
+Die Sätze des Operators stehen hier wörtlich und vollständig, in der Folge, in der er sie gab, damit sie jeden Umbau überleben. Die Sätze vom 2026-11-14 stammen aus diktierten Eingaben, „Fuse“ ist als „Views“ zu lesen, „Staat“ als „Start“, Namen in eckigen Klammern sind ergänzt. Jeder Satz hat eine Zeile dazu, was daraus folgte und ob es am Bildschirm steht. „Am Bildschirm“ heißt im Code vom 2026-11-15 nach dem Refactoring vorhanden. Abgenommen hat der Operator nichts davon, seine Zustimmungen sind als solche genannt.
 
 ### 2026-11-13 und 2026-11-14, Iteration an den Briefen von Stefan Zweig Digital
 
@@ -314,7 +314,7 @@ Folge: Arbeitsfläche, später die vier großen Ansichten mit dem Briefauszug. B
 
 > Es ist sehr viel blau. Können wir hier nicht einen Stacked Bar Chart machen? Was kann man im User Interface noch verbessern? Ich würde eher erwarten, dass ich hier auf der Sidebar diese Ansicht filtern kann. Die Forschungspfade finde ich eigentlich gar keine gute Idee. Das schaut mir, das versteht keiner. Warum nicht gleich direkt in die Daten gehen? Und alle Forschungspfade waren quasi nur der Gedanke, dass wir alle Forschungs-User-Stories entwickeln. Alle diese wollen wir mit diesen Views, die wir haben, umsetzen. Vielleicht müssen wir alle Views nochmal evoluieren und deutlich ausbauen und vielleicht noch einen weiteren View hinzusetzen, damit alle Forschungspfade mit diesen Views bearbeitbar sind.
 
-Folge: Zeitleiste der Startansicht nach Sprache gestapelt, Seitenleiste auf der Startansicht, Forschungspfade aus der Oberfläche genommen, ein Feld Themen. Die Zuordnung jeder Story zu einer Ansicht steht seit 2026-11-14 in [specification.md](specification.md). Die Maschinerie der Pfade steht noch im Code. Am Bildschirm.
+Folge: Zeitleiste der Startansicht nach Sprache gestapelt, Seitenleiste auf der Startansicht, Forschungspfade aus der Oberfläche genommen, ein Feld Themen. Die Zuordnung jeder Story zu einer Ansicht steht seit 2026-11-14 in [specification.md](specification.md). Die Maschinerie der Pfade hat das Refactoring vom 2026-11-15 aus dem Code entfernt. Am Bildschirm.
 
 > Und wo ist die Kartenansicht? Die war eigentlich eine Kernkomponente des ganzen Projektes.
 
@@ -426,7 +426,7 @@ Folge: gebaut in `b189cb5` und danach. Legende als Sprachfilter, schmale Schiene
 
 Zur Startansicht des Explorers nach dem Straffen (schmale Schiene links, Zeitdiagramm mit Griffen an beiden Enden, der Sprachbalken mit seinen Namen als Legende, die Zahlen von Personen, Orten und Themen als Überschriften, Kreis und Karte nach Sprache gefärbt), über die koordinierende Session weitergegeben: „Ja, das finde ich gut.“
 
-Folge: Zustimmung zu diesem Stand der Startansicht, festgehalten mit dem Commit, der auf diesen Eintrag folgt. Sie gilt dem, was das Bild zeigte, am Hugo Schuchardt Archiv bei rund 1840 Pixel Breite. Sie gilt keiner anderen Ansicht und ist keine Freigabe zum Push. Schmale Schiene, Legende als Sprachbalken, Farbe nach Sprache in Kreis, Karte und Themen und die Zahlen als Überschriften entfallen von hier an nur auf sein Wort. Offen aus demselben Bild, als Befund der koordinierenden Session: Die Themenzeilen tragen drei Farbfamilien, und nichts sagt, was Grau und Violett bedeuten. Die Zahl der Briefe steht allein in der Fußzeile, die drei anderen Zahlen als Überschriften.
+Folge: Zustimmung zu diesem Stand der Startansicht, festgehalten mit dem Commit, der auf diesen Eintrag folgt. Sie gilt dem, was das Bild zeigte, am Hugo Schuchardt Archiv bei rund 1840 Pixel Breite. Sie gilt keiner anderen Ansicht und ist keine Freigabe zum Push. Schmale Schiene, Legende als Sprachbalken, Farbe nach Sprache in Kreis, Karte und Themen und die Zahlen als Überschriften entfallen von hier an nur auf sein Wort. Offen aus demselben Bild, als Befund der koordinierenden Session: Die Themenzeilen zeigen drei Farbfamilien, und nichts sagt, was Grau und Violett bedeuten. Die Zahl der Briefe steht allein in der Fußzeile, die drei anderen Zahlen als Überschriften.
 
 Zur Zeitansicht, gefiltert auf einen Ort und einen Zeitraum, über die koordinierende Session weitergegeben:
 
@@ -448,7 +448,7 @@ Zur Startseite nach dem Zusammensetzen aus dem Bestand, Tutorial gewählt, über
 > * Wer schrieb wem, wann und von wo: CorrespExplorer zeigt die Metadaten einer Korrespondenz als Liste, Karte, Zeitleiste und Netzwerk. --> Diesen Text vielleicht noch optimieren und verbessern? So haben wir mit dem Icon jetzt zweimal CorrespExplorer oben. Das ist also Redundanz, das heißt, wir können das besser machen.
 > Experiment: ein Forschungsprototyp, mit Coding-Agenten nach Promptotyping entwickelt, kein betreutes Produkt. Ergebnisse vor der Weiterverwendung prüfen, Rückmeldungen in die Issues. --> Das kommt in einen sauberen Header und in einen sauberen Footer, einen, der sozusagen meinen Projekten entspricht. Damit das wirklich tip top passt
 
-Folge: gebaut in `d38b4c8`, von ihm nicht gesehen. Das Hugo Schuchardt Archiv als erster Bestand, das Tutorial aus der Startseite, die Bandnamen und die Zeile über Fehlendes entfallen, die Wahl des Bestands und das Laden eigener Daten in einem Element, der Satz ohne den Namen, Kopf und Fuß nach der Form seiner Projektseiten. Die Datei des Tutorials und die Tour im Explorer bleiben, bis er das Löschen der Datei ausdrücklich freigibt und der Durchgang über die Ansichten die Tour erreicht.
+Folge: gebaut in `d38b4c8`, von ihm nicht gesehen. Das Hugo Schuchardt Archiv als erster Bestand, das Tutorial aus der Startseite, die Bandnamen und die Zeile über Fehlendes entfallen, die Wahl des Bestands und das Laden eigener Daten in einem Element, der Satz ohne den Namen, Kopf und Fuß nach der Form seiner Projektseiten. Tour und Einstieg `demo=true` hat das Refactoring vom 2026-11-15 entfernt, die Datei des Tutorials bleibt als Testdatei.
 
 Zum Aufbau des Explorers, über die koordinierende Session weitergegeben, eine Frage mit klarer Neigung und noch kein Auftrag zum Umbau:
 

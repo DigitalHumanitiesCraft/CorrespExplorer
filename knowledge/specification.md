@@ -37,7 +37,7 @@ Die funktionalen Anforderungen stehen als Kriterien bei den Stories.
 
 Die Stories adressieren Forschende in den Digital Humanities, der Geschichts- und Literaturwissenschaft, Archive, Bibliotheken und Editionsprojekte. Sie sind aus der Entwicklungspraxis abgeleitet und nicht mit Forschenden validiert. Die Stories US-01 bis US-39 hat der Operator über die Entwicklung hinweg angenommen oder entschieden (zuletzt [ADR-007](#adr-007-umfang-der-stories-nach-dem-abgleich-mit-dem-code)). Die Stories US-40 bis US-45 sind Vorschläge der distillierenden Session vom 2026-11-14, US-46 bis US-48 der distillierenden Session vom 2026-11-15, für Funktionen, die der Operator verlangt hat und die bis dahin keine Story abdeckte. Sie bleiben Vorschläge, bis der Operator sie annimmt.
 
-Jede Story nennt ihren Stand im Werkzeug, festgestellt am Code vom 2026-11-15 (main bei `ef0c0d4`). Vom Operator gesehen ist davon nur, was bei der Story so genannt ist.
+Jede Story nennt ihren Stand im Werkzeug, festgestellt am Code vom 2026-11-15 nach dem Refactoring, das auf die Distillation in `db2befc` folgte. Vom Operator gesehen ist davon nur, was bei der Story so genannt ist.
 
 - bedient: Das Werkzeug erfüllt die Kriterien, an der genannten Stelle.
 - geändert: Das Werkzeug dient der Story auf anderem Weg als ihre Kriterien beschreiben. Die Abweichung ist genannt.
@@ -55,7 +55,7 @@ Als neue Nutzerin möchte ich einen Beispieldatensatz laden, um die Funktionen d
 - Tutorial und Hugo Schuchardt Archiv sind mit einem Klick zu öffnen.
 - Links auf den Tutorial-Datensatz (`explore.html?…&demo=true`) öffnen ihn auch in einem neuen Tab, die Tour erscheint einmal je Browser und entfällt mit `tour=0`.
 
-Stand: geändert. Die Startseite bietet das Hugo Schuchardt Archiv als Vorgabe und „Im Explorer öffnen“, das Tutorial hat sie auf Auftrag des Operators verlassen (`d38b4c8`). Das Tutorial öffnet weiter über `explore.html?demo=true`, auf das `about.html` über `index.html?demo=true` verweist, die Tour erscheint dort einmal je Browser. Die Tour stammt aus der Zeit der zwölf Ansichten. Ob die Datei des Tutorials gelöscht wird, entscheidet der Operator ([plan.md](plan.md#warten-auf-den-operator)).
+Stand: geändert. Die Startseite bietet das Hugo Schuchardt Archiv als Vorgabe und „Im Explorer öffnen“, das Tutorial hat sie auf Auftrag des Operators verlassen (`d38b4c8`, „das Tutorial wird komplett entfernt“). Das Refactoring vom 2026-11-15 hat Tutorial und Tour auch aus Explorer und `about.html` entfernt. Ältere Links mit `demo=true` oder `tour=0` öffnen ohne Fehler, ohne Datensatz auf der Startseite mit dem Archiv. Das zweite Kriterium bedient das Werkzeug damit nicht mehr. `docs/data/demo-showcase.xml` bleibt als Testdatei ([data.md](data.md#datensätze-im-repository)).
 
 Aufgabe: Öffnen Sie das Archiv von der Startseite. Wie viele Briefe nennt der Explorer? Antwort: Zahl der Einträge in `letters`.
 
@@ -86,7 +86,7 @@ Aufgabe: Wie viele Briefe sind auf den Tag datiert? Antwort: Zahl der Briefe mit
 
 Vorschlag, Agent, 2026-11-14. Grundlage ist die Rückmeldung des Operators zur Startseite ([design.md](design.md#rückmeldungen-des-operators)).
 
-Als Forschende möchte ich auf der Startseite sehen, welche Angaben des Datenmodells ein Bestand trägt und wie viele seiner Briefe sie tragen, um vor dem Öffnen zu wissen, welche Fragen er beantworten kann.
+Als Forschende möchte ich auf der Startseite sehen, welche Angaben des Datenmodells ein Bestand enthält und wie viele seiner Briefe sie nennen, um vor dem Öffnen zu wissen, welche Fragen er beantworten kann.
 
 - Jede Angabe des Modells steht an ihrem Platz, gefüllt mit einer kleinen echten Figur des Bestands, oder leer und benannt, wo er sie nicht enthält.
 - Jede Angabe führt in die Ansicht, die sie zeigt.
@@ -231,7 +231,7 @@ Als Forschende möchte ich sehen, wann Themen in der Korrespondenz aufkommen und
 - Jedes Thema ist eine Zeile mit seinen Briefen je Jahr auf gemeinsamer Achse, die häufigsten oben, geordnet nach ihrem Höhepunkt.
 - Sprachen als Themen stehen getrennt von den übrigen Themen.
 
-Stand: geändert, nicht abgenommen. Themen, Darstellung „Raster“, `topics-view.js`, gebaut in `7cbe3c3` nach der Wahl des Operators („Raster als Hauptfigur, Treemap als Anteile daneben“). Die Zeile ist eine Folge von Zellen je Jahr auf einer festen Skala statt eines Kamms, die Ordnung lässt sich auf Umfang und erstes Auftreten umstellen. Die Treemap „Anteile“ gruppiert nach der Art des Themas, Sprachen eingeschlossen. Ob das Raster Sprachen getrennt führt, ist am gebauten Stand nicht festgestellt. Den Endstand hat der Operator nicht gesehen.
+Stand: geändert, nicht abgenommen. Themen, Darstellung „Raster“, `topics-view.js`, gebaut in `7cbe3c3` nach der Wahl des Operators („Raster als Hauptfigur, Treemap als Anteile daneben“). Die Zeile ist eine Folge von Zellen je Jahr auf einer festen Skala statt eines Kamms, die Ordnung lässt sich auf Umfang und erstes Auftreten umstellen. Die Treemap „Anteile“ gruppiert nach der Art des Themas, Sprachen eingeschlossen. Das Raster führt Sprachen nicht getrennt, sie stehen zwischen den übrigen Themen im selben Datenton, nur die Spalte „Art“ der Tabelle unterscheidet sie (am 2026-11-15 von der kuratierenden Session im Browser am HSA gesehen). Das zweite Kriterium erfüllt das Raster damit nicht. Den Endstand hat der Operator nicht gesehen.
 
 Aufgabe: In welchem Jahr erreicht „Publikationsversand“ seinen Höhepunkt? Antwort: Briefe des Themas je gültigem Jahr, das Jahr mit der größten Zahl.
 
@@ -335,7 +335,7 @@ Als Forschende möchte ich von einer Person zu ihrer Suche bei correspSearch nav
 
 Stand: bedient im Personen-Dialog.
 
-Aufgabe: Welche Kennung trägt der Link für Leo Spitzer? Antwort: `sender.id` der Briefe von Spitzer mit `authority` „viaf“.
+Aufgabe: Welche Kennung enthält der Link für Leo Spitzer? Antwort: `sender.id` der Briefe von Spitzer mit `authority` „viaf“.
 
 #### US-37 Elemente vergleichen
 
@@ -376,7 +376,7 @@ Als Forschende möchte ich alle Briefe auf einem Zeitstrahl sehen, um den Verlau
 
 - Älteste zuerst, undatierte am Ende, Gruppierung nach Jahren, Nachladen in Blöcken.
 
-Stand: geändert. Die Chronik ist in die Zeitansicht aufgegangen, deren untere Figur zeigt einen Zeitraum mit wenigen Briefen als einzelne Briefe auf einer echten Zeitachse. Älteste zuerst, undatierte am Ende und Gruppen nach Jahren bietet die Briefliste in der Ordnung „Datum (älteste)“. Was aus der Chronik entfällt, haben die Bau-Agenten entschieden, der Operator hat es nicht bestätigt ([plan.md](plan.md#warten-auf-den-operator)).
+Stand: geändert. Die Chronik ist in die Zeitansicht aufgegangen, deren untere Figur zeigt einen Zeitraum mit wenigen Briefen als einzelne Briefe auf einer echten Zeitachse. Älteste zuerst, undatierte am Ende und Gruppen nach Jahren bietet die Briefliste in der Ordnung „Datum (älteste)“. Was aus der Chronik entfällt, haben die Bau-Agenten entschieden, der Operator hat es nicht bestätigt ([plan.md](plan.md#warten-auf-den-operator)). Die Antwort der Aufgabe ist in der Zeitansicht ablesbar: Mit dem Zeitraum 1859 nennt die Tabelle der unteren Figur den Brief vom 12.1.1859 von Felix von Brusselle an Schuchardt (am 2026-11-15 von der kuratierenden Session im Browser abgelesen).
 
 Aufgabe: Welcher Brief steht zuerst, von wem, an welchem Tag? Antwort: der Brief mit dem kleinsten `date`.
 
@@ -404,7 +404,7 @@ Als Forschende möchte ich den Kontext einer Korrespondenzbeziehung sehen, um Br
 
 - Marke des ersten Briefs zweier Personen, „Brief X von Y“, Lücken ab zwei Jahren.
 
-Stand: geändert. In der Zeitansicht nennt jeder Brief seine Stelle im Briefwechsel („Erster von …“, „493. von 521 Briefen zwischen beiden“, „nach einer Lücke seit …“, `contextText()` in `chronik-view.js`). Eine eigene Marke in der Figur hat der erste Brief nicht mehr.
+Stand: geändert. In der Zeitansicht nennt jeder Brief seine Stelle im Briefwechsel („Erster von …“, „493. von 521 Briefen zwischen beiden“, „nach einer Lücke seit …“, `contextText()` in `chronik-view.js`). Eine eigene Marke in der Figur hat der erste Brief nicht mehr. Mit Leo Spitzer und dem Zeitraum 1912 nennt die Tabelle der unteren Figur den Brief vom 3.2.1912 als „Erster von 447 Briefen zwischen beiden“, die berechnete Antwort (am 2026-11-15 von der kuratierenden Session im Browser abgelesen).
 
 Aufgabe: Wann beginnt der Briefwechsel zwischen Schuchardt und Spitzer, und wie viele Briefe umfasst er? Antwort: Briefe mit beiden als Beteiligten, der früheste `date` und die Zahl.
 
@@ -422,7 +422,7 @@ Als Forschende möchte ich die Korrespondenz als Kalender sehen, um Aktivitätsp
 
 - Heatmap je Tag, Jahresauswahl, Klick auf einen Tag zeigt seine Briefe, der aktivste Tag nur aus tagesgenauen Daten.
 
-Stand: geändert. Die Kalender-Heatmap ist mit der Darstellung „Tage“ entfallen, `activity-view.js` besteht ungenutzt. Die untere Figur der Zeitansicht zählt einen langen Zeitraum in Monaten und zeigt einen kurzen, auch jedes einzelne Jahr, Brief für Brief auf der Zeitachse. Den Satz zum briefreichsten Tag gibt es nicht mehr. Ob die Aufgabe dort ablesbar ist, ist nicht geprüft.
+Stand: geändert. Die Kalender-Heatmap ist mit der Darstellung „Tage“ entfallen, `activity-view.js` hat das Refactoring vom 2026-11-15 gelöscht. Die untere Figur der Zeitansicht zählt einen langen Zeitraum in Monaten und zeigt einen kurzen, auch jedes einzelne Jahr, Brief für Brief auf der Zeitachse. Den Satz zum briefreichsten Tag gibt es nicht mehr. Die Aufgabe ist nur mittelbar ablesbar: Mit dem Zeitraum 1912 listet die Tabelle der unteren Figur 23 Briefe vom 4.2.1912, die berechnete Zahl, aber kein Element nennt den briefreichsten Tag, und die Tabelle zeigt nur die ersten 500 der 510 Briefe des Jahrs (am 2026-11-15 von der kuratierenden Session im Browser abgelesen).
 
 Aufgabe: Welcher Tag hat die meisten tagesgenau datierten Briefe, wie viele? Antwort: Briefe mit `datePrecision` „day“ je `date`, Maximum.
 
@@ -498,7 +498,7 @@ Als Forschende möchte ich von einer Forschungsfrage geleitet durch die Ansichte
 
 - Der Wissenskorb sammelt je Datensatz in localStorage, synchronisiert zwischen Tabs und führt zur Analyseseite `wissenskorb.html`, die ihn per Link teilen kann.
 
-Stand: geändert. Der Korb ist bedient. Die Leitung durch eine Forschungsfrage ist nicht mehr bedient, weil die Forschungspfade seit 2026-11-14 keinen Einstieg haben (Entscheidung des Operators). Leiste und Maschinerie stehen noch im Code ([Funktionsumfang](#funktionsumfang)).
+Stand: geändert. Der Korb ist bedient. Die Leitung durch eine Forschungsfrage ist nicht mehr bedient, weil die Forschungspfade seit 2026-11-14 keinen Einstieg haben (Entscheidung des Operators). Leiste und Maschinerie hat das Refactoring vom 2026-11-15 aus dem Code entfernt.
 
 Aufgabe: Legen Sie Graz in den Korb. Wie viele Briefe wertet die Analyseseite aus? Antwort: Briefe mit GeoNames-ID 2778067.
 
@@ -516,7 +516,7 @@ Aufgabe: Setzen Sie den Stern bei Leo Spitzer. Wie viele Briefe wertet die Analy
 
 Als Forschende möchte ich sehen, welche Forschungsfragen mit dem aktuellen Datensatz beantwortbar sind, um meine Analyse methodisch zu strukturieren.
 
-Stand: nicht mehr bedient. Der Operator hat die Forschungspfade am 2026-11-14 aus der Oberfläche genommen, ihre Fragen sollen in den Ansichten selbst bearbeitbar sein. `analyzeResearchQuestions()` und die Pfadleiste bestehen im Code. Kandidat zur Streichung samt Code, mit [ADR-004](#adr-004-epistemische-kategorien-für-forschungsfragen).
+Stand: nicht mehr bedient. Der Operator hat die Forschungspfade am 2026-11-14 aus der Oberfläche genommen, ihre Fragen sollen in den Ansichten selbst bearbeitbar sein. `analyzeResearchQuestions()` und die Pfadleiste hat das Refactoring vom 2026-11-15 entfernt. Kandidat zur Streichung, mit [ADR-004](#adr-004-epistemische-kategorien-für-forschungsfragen).
 
 Aufgabe: entfällt mit der Story.
 
@@ -524,7 +524,7 @@ Aufgabe: entfällt mit der Story.
 
 #### US-39 Überlieferung eines Briefs sehen und filtern
 
-Als Forschende möchte ich sehen, was die Edition erschlossen hat und was der Brief selbst trägt, um Datierung und Ort eines Briefs einschätzen zu können.
+Als Forschende möchte ich sehen, was die Edition erschlossen hat und was auf dem Brief selbst steht, um Datierung und Ort eines Briefs einschätzen zu können.
 
 - Erschlossene Daten und Orte in eckigen Klammern mit Legende. Poststempel, Anschrift und Signatur benannt, nie als Absendeort. Alle Empfänger genannt und gezählt.
 - Die Seitenleiste bietet je vorhandenem Merkmal einen Filter mit Zahl, der Zustand steht in der URL.
@@ -576,7 +576,7 @@ Aufgabe: Wählen Sie in der Startansicht die Sprache Französisch. Welche Zahl n
 
 ## Lücken, Unsicherheit und Prüfstand
 
-- Unsichere Werte tragen Farbe und Symbol, exakte bleiben unmarkiert ([ADR-002](#adr-002-unsicherheit-sichtbar-machen), [uncertainty-specification.md](uncertainty-specification.md)).
+- Unsichere Werte haben Farbe und Symbol, exakte bleiben unmarkiert ([ADR-002](#adr-002-unsicherheit-sichtbar-machen), [uncertainty-specification.md](uncertainty-specification.md)).
 - Briefe ohne Jahr, mit einer einzelnen Datumsgrenze, mit unplausiblem Jahr oder einem Zeitraum über mehrere Jahre stehen neben der Zeitachse in eigenen Balken und werden in jeder Figur gezählt, die sie nicht zeichnet. Raum-Zeit nennt die Briefe ohne Jahr und ohne Koordinaten in einer Notiz.
 - Eine Angabe des Datenmodells, die ein Bestand nicht enthält, erhält auf der Startseite keinen Platz. Ein Satz in der Textalternative nennt, was fehlt. Den sichtbaren Satz hat der Operator am 2026-11-14 entfernen lassen, Regel 9 der gemeinsamen Regeln sieht ihn einmal als ruhigen Satz vor.
 - Lücken in fremden Daten heißen Anreicherungspotential ([ADR-005](#adr-005-nicht-wertende-sprache-für-partnerdaten)).
@@ -604,11 +604,9 @@ Ansichten und Funktionen von `explore.html` und `index.html` mit den Stories, de
 Ohne Story und damit Kandidaten zur Streichung, die der Operator entscheidet:
 
 - Die Darstellung „Erwähnungen“ (Erwähnungsfluss, `mentions-view.js`). Keine Story verlangt sie, die Stufe „Erwähnte“ des Korrespondenzkreises zeigt dieselben Personen.
-- Leiste und Maschinerie der Forschungspfade (`research-paths.js` außer den Zählungen, `knowledge-path.js` außer dem Korb, `#knowledge-path-bar`), nach dem Wegfall von US-33.
 - Der Dialog „Datensatz konfigurieren“ nach dem Laden eigener Daten dient mit der Personenanreicherung US-29, mit der Georeferenzierung keiner Story. Ob er bleibt, fragt [plan.md](plan.md#startfigur).
 - Ausgeblendete Reste im Markup, die weiter befüllt werden: die Kacheln der Seitenleiste und die verborgene Moduswahl des Vergleichs.
-- Die Tour des Tutorials (`demo-tour.js`), erreichbar nur noch über `demo=true`, und ihr Knopf im Block des Bestands. US-03 nennt sie, die Startseite bietet das Tutorial nicht mehr an.
-- Ungenutzte Module ohne Einstieg: `activity-view.js` mit der Kalender-Heatmap, die Darstellungsknöpfe „Chronik“ und „Tage“ in `#view-variants`, die keine Gruppe mehr zeigt ([architecture.md](architecture.md#ungenutzt)).
+Forschungspfade, Tour des Tutorials, Kalender-Heatmap und die Knöpfe „Chronik“ und „Tage“ standen hier als Kandidaten, das Refactoring vom 2026-11-15 hat sie entfernt ([architecture.md](architecture.md#ungenutzt)).
 
 Funktionen, die der Operator verlangt hat und die noch keine angenommene Story haben, sind US-40 bis US-48.
 
@@ -654,7 +652,7 @@ Wahl. Fragen werden nach der Art der nötigen Erkenntnis eingeteilt in deskripti
 
 Begründung. Die Kategorie macht den epistemischen Status einer Antwort sichtbar, bevor man sie sucht.
 
-Effekt. Seit 2026-11-14 hat die Funktion keinen Einstieg in der Oberfläche (Entscheidung des Operators, [US-33](#us-33-methodisch-geleitete-exploration)). Sie besteht im Code und in den Tests.
+Effekt. Seit 2026-11-14 hat die Funktion keinen Einstieg in der Oberfläche (Entscheidung des Operators, [US-33](#us-33-methodisch-geleitete-exploration)). Das Refactoring vom 2026-11-15 hat sie mit ihren Tests aus dem Code entfernt, die Entscheidung gilt damit für keinen Teil des Werkzeugs mehr.
 
 ### ADR-005 Nicht wertende Sprache für Partnerdaten
 
@@ -710,7 +708,7 @@ Effekt. Die Übersicht nennt Einträge und Briefe, die Seitenleiste filtert „M
 
 Kontext. Das Projekt korrigiert keine Daten ([project.md](project.md)). Eine Quelle kann ein zweistelliges Jahr ins falsche Jahrhundert auflösen.
 
-Wahl. Trennt eine Lücke von mindestens 40 Jahren weniger als ein Zwanzigstel der datierten Briefe vom Rest, gelten diese Briefe als unplausibel datiert. Sie behalten ihr Datum, verlieren ihr Jahr und tragen das Wort „unplausibel“.
+Wahl. Trennt eine Lücke von mindestens 40 Jahren weniger als ein Zwanzigstel der datierten Briefe vom Rest, gelten diese Briefe als unplausibel datiert. Sie behalten ihr Datum, verlieren ihr Jahr und erhalten das Wort „unplausibel“.
 
 Begründung. Eine stille Korrektur wäre eine Aussage über die Quelle, die dem Werkzeug nicht zusteht.
 

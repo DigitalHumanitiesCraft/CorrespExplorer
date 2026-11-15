@@ -18,13 +18,13 @@ CorrespExplorer lets researchers load letter metadata in the browser and see who
 - Wikidata enrichment on explicit request, links to the correspSearch search
 - CSV and JSON export, a basket (Wissenskorb) with its own analysis page, URL-based state sharing
 
-State on 2026-11-15: the start page, the start view, the letter list, the time view and the topics grid were rebuilt on 2026-11-14 and in the following night and are not yet published. The operator approved the start view as of commit `b189cb5` and the start page as a figure. He has not seen the rest. The form of the network is an open research question.
+State on 2026-11-15: the start page, the start view, the letter list, the time view and the topics grid were rebuilt on 2026-11-14 and in the following night and are not yet published. On 2026-11-15 a refactoring removed the tutorial with its tour, the retired day and chronicle views and the unused research-path machinery from the code; old links to them still open. The operator approved the start view as of commit `b189cb5` and the start page as a figure. He has not seen the rest. The form of the network is an open research question.
 
 Scope and its deliberate limits are in [project.md](knowledge/project.md).
 
 ## Data and rights
 
-The tool reads CMIF, the TEI-based exchange format for correspondence metadata. Uploaded data stay in the browser. Two example datasets are bundled: the Hugo Schuchardt Archiv (HSA), the correspondence of the linguist Hugo Schuchardt (1842–1927), on which the tool is developed and tested and which the start page offers, and a synthetic tutorial dataset with a guided tour, which the start page no longer offers and the About page still links. The letter records of Stefan Zweig Digital, which carry no licence statement, are loaded only locally and are not bundled. Its figures, the further datasets and their sources are documented in [data.md](knowledge/data.md), and the handling of uncertain and missing values in [uncertainty-specification.md](knowledge/uncertainty-specification.md).
+The tool reads CMIF, the TEI-based exchange format for correspondence metadata. Uploaded data stay in the browser. The bundled example dataset is the Hugo Schuchardt Archiv (HSA), the correspondence of the linguist Hugo Schuchardt (1842–1927), on which the tool is developed and tested and which the start page offers. The synthetic dataset of the former tutorial stays in the repository only as a test file; the tutorial and its guided tour were removed on 2026-11-15. The letter records of Stefan Zweig Digital, which carry no licence statement, are loaded only locally and are not bundled. Its figures, the further datasets and their sources are documented in [data.md](knowledge/data.md), and the handling of uncertain and missing values in [uncertainty-specification.md](knowledge/uncertainty-specification.md).
 
 The bundled datasets keep the licences their publishers state, see [Licence and citation](#licence-and-citation).
 

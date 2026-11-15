@@ -48,8 +48,10 @@ Für jede Prüfung: ob sie gegen den Code läuft, den das Werkzeug nutzt, ob sie
 | Suite Time (seit `c6185bc`) | Intervall eines Briefs auf der Achse, Wahl der Auflösung, Seite eines Briefs zur zentralen Person, Briefe und Abschnitte eines Zeitraums | ja, `timeline-view.js` | das HSA für 1912 und 1900 bis 1905 gegen eine getrennte Zählung | ja |
 | Suite Dashboard (seit `c6185bc`) | Zählungen der Startansicht, `countOf()`, `languageOrder()` und `dominantLanguages()`, Rahmen und Projektion der kleinen Karte | ja, `overview-view.js`, `selection-ui.js`, `mini-figures.js` | Fixtures und das HSA | ja |
 | Suite Compose (seit `b189cb5`) | `composeFigure()` für reines CMIF, Briefsätze ohne Koordinaten, einen erweiterten Bestand, Bestände ohne Datum und erwähnte Orte ohne Koordinaten, `missingSentence()` | ja, `start-compose.js` | Zusammenfassungen aus Fixtures | ja |
-| Suites Formatters, Security, Basket, Research Paths, Demo, correspSearch, DOM Cache | Anzeige der Unsicherheit, Escaping, Korb, Zählungen, Tutorial, API-Antworten, DOM-Zugriff | ja | Fixtures, HSA, zwei gespeicherte API-Antworten | ja |
-| Smoke-Test | siehe [Browser-Smoke-Test](#browser-smoke-test) | ja, die ausgelieferten Seiten | HSA, Tutorial über `demo=true` | ja, Exit-Code nur bei vollem Erfolg 0 |
+| Suites Formatters, Security, Basket, correspSearch, DOM Cache | Anzeige der Unsicherheit, Escaping, Korb, API-Antworten, DOM-Zugriff | ja | Fixtures, HSA, zwei gespeicherte API-Antworten | ja |
+| Suite Research Paths and Export | Zählungen aus `summarizeCorpus()`, Korbauswahl einer Ansicht (`basketSelectionForView()`), CSV- und JSON-Export, Filtersatz, Personenindex mit Normdaten | ja, `research-paths.js`, `knowledge-path.js`, `export.js`, `view-support.js`, `utils.js` | Fixtures und das HSA | ja |
+| Suite Demo | Standardschwelle, Kanten, Ego und Organisationen des Netzwerks an der Testdatei `demo-showcase.xml`, escapte Tabelle der Textalternative an `test-hostile.xml` | ja, `network-view.js` und `view-support.js` | nur Testdateien, darunter die synthetische Datei des früheren Tutorials | ja |
+| Smoke-Test | siehe [Browser-Smoke-Test](#browser-smoke-test) | ja, die ausgelieferten Seiten | HSA, die Testdatei `demo-showcase.xml` über den Datei-Upload der Startseite | ja, Exit-Code nur bei vollem Erfolg 0 |
 | Korpusprüfung | jeder Eintrag eines Bestands entspricht seiner Quelldatei | ja, der Parser über jsdom | ein ganzer externer Bestand | ja |
 | Fester Aufgabensatz | die Oberfläche gibt die aus den Daten berechnete Antwort | die Oberfläche, bedient von Hand oder von einem Agenten | das ganze HSA | ja, sobald jemand die Antwort abliest |
 
@@ -66,7 +68,7 @@ Die Modultests prüfen nicht das gezeichnete Bild (D3, MapLibre, Zeichenflächen
 
 ## Feste Aufgaben
 
-Jede Story in [specification.md](specification.md#epics-und-user-stories) trägt eine Aufgabe am gebündelten Hugo Schuchardt Archiv mit einer Rechenregel. Ein Skript berechnet die Antworten aus `docs/data/hsa-letters.json`, ohne Code des Werkzeugs zu laden. In jeder Runde liest ein Mensch oder ein Agent die Antwort in der Oberfläche ab, eine Abweichung ist ein Befund und wird einer Story, der Gestaltung oder den Daten zugeordnet. Die Arbeitsweise hat der Operator am 2026-11-14 angenommen.
+Jede Story in [specification.md](specification.md#epics-und-user-stories) hat eine Aufgabe am gebündelten Hugo Schuchardt Archiv mit einer Rechenregel. Ein Skript berechnet die Antworten aus `docs/data/hsa-letters.json`, ohne Code des Werkzeugs zu laden. In jeder Runde liest ein Mensch oder ein Agent die Antwort in der Oberfläche ab, eine Abweichung ist ein Befund und wird einer Story, der Gestaltung oder den Daten zugeordnet. Die Arbeitsweise hat der Operator am 2026-11-14 angenommen.
 
 Das Skript lag am 2026-11-14 im Arbeitsordner der distillierenden Session und ist nicht Teil des Repositorys ([plan.md](plan.md#aufgabensatz-und-prüfungen)). Seine Regeln stehen in der Specification. Seit dem Umbau der Ansichten hat niemand die Antworten in der Oberfläche abgelesen.
 
@@ -110,15 +112,16 @@ Berechnete Antworten, Stand 2026-11-14, Datei `hsa-letters.json` mit `meta.gener
 | US-47 | wie US-06 |
 | US-48 | wie US-16 |
 
-Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit der Korpusprüfung), US-45 (nicht bedient), US-17, US-32 und US-33 (nicht mehr bedient). Für US-28 und US-34 ist die Antwort berechnet, die Darstellung, in der sie abzulesen war, ist entfallen ([specification.md](specification.md#zeit)).
+Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit der Korpusprüfung), US-45 (nicht bedient), US-17, US-32 und US-33 (nicht mehr bedient). Für US-28 und US-34 ist die Antwort berechnet, die Darstellung, in der sie abzulesen war, ist entfallen. Am 2026-11-15 hat die kuratierende Session in der Tabelle der unteren Zeitfigur die Antworten zu US-28 und US-31 abgelesen und die 23 Briefe vom 4.2.1912 gezählt, den briefreichsten Tag nennt dort aber kein Element ([specification.md](specification.md#zeit)). Die übrigen Antworten sind seit dem Umbau nicht abgelesen.
 
 ## Browser-Smoke-Test
 
-`tests/browser/smoke.py` startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile. Erwartete Zahlen liest es aus den gebündelten Daten. Die Liste steht in `_checks()`, am Stand `ef0c0d4` achtzehn Prüfungen ohne `--online` und `--axe`:
+`tests/browser/smoke.py` startet einen lokalen Server auf `docs/`, steuert Chrome headless über Playwright und meldet je Prüfung eine Zeile. Erwartete Zahlen liest es aus den gebündelten Daten. Die Liste steht in `_checks()`, am Stand nach dem Refactoring vom 2026-11-15 achtzehn Prüfungen ohne `--online` und `--axe`:
 
 - Test-Runner ohne Fehlschlag
-- alle Ansichten mit dem HSA ohne Konsolen- und Seitenfehler, Laden unter der Zeitgrenze (`--load-limit`, Vorgabe 5 Sekunden, Entscheidung E10)
-- Demo-Link mit nicht leerem Netzwerk, Tour einmal je Browser, beide über `demo=true`
+- alle Ansichten der Liste `VIEWS` des Skripts mit dem HSA ohne Konsolen- und Seitenfehler, Laden unter der Zeitgrenze (`--load-limit`, Vorgabe 5 Sekunden, Entscheidung E10)
+- Testdatei (seit dem Refactoring, ersetzt den Demo-Link): `demo-showcase.xml` wird über den Datei-Upload der Startseite geladen, der Dialog „Datensatz konfigurieren“ übersprungen, das Netzwerk hat mit seiner Standardschwelle Knoten. Die Prüfung sichert den Weg eigener Daten von der Startseite in den Explorer.
+- Stillgelegte Links (seit dem Refactoring, ersetzt „Tour einmal je Browser“): `view=activity` und `view=chronik` mit `demo=true&tour=0` öffnen die Zeitansicht ohne Konsolen- und Seitenfehler, ein Link mit `demo=true` ohne Datensatz führt auf die Startseite ohne den Hinweis auf den fehlenden Datensatz, `index.html?demo=true` bleibt auf der Startseite. Die Prüfung sichert, dass ältere Links nach dem Entfernen von Tutorial, Tagen und Chronik weiter öffnen.
 - Link ohne Datensatz führt auf die Startseite mit Hinweis
 - Zurück führt zur vorigen Ansicht, geteilter Filterlink zeigt die gefilterten Briefe
 - CSV-Export mit BOM und Normdatenspalten, Stern legt die Person in den Korb
@@ -132,11 +135,11 @@ Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit d
 
 `--online` prüft zusätzlich einen geteilten correspSearch-Link gegen die API, über den Eintrag „Eigene Daten“ der Startseite. `--axe <Pfad>` führt axe-core über alle Seiten und die Startansicht bei 390px.
 
-Lücke: Die Liste `VIEWS` des Skripts kennt die Raum-Zeit-Ansicht nicht und führt `chronik` und `activity`, die beide die Zeitansicht öffnen. „Alle Ansichten ohne Fehler“ und axe-core laufen deshalb nicht über Raum-Zeit ([plan.md](plan.md#aufgabensatz-und-prüfungen)). Kopf und Fuß der Startseite und die Schiene haben keine eigene Prüfung.
+Lücke: Die Liste `VIEWS` des Skripts kennt die Raum-Zeit-Ansicht nicht, `chronik` und `activity` hat das Refactoring daraus entfernt. „Alle Ansichten ohne Fehler“ und axe-core laufen deshalb nicht über Raum-Zeit ([plan.md](plan.md#aufgabensatz-und-prüfungen)). Kopf und Fuß der Startseite und die Schiene haben keine eigene Prüfung.
 
 ## Korpusprüfung
 
-`verification/check-corpus.mjs` lässt den Parser über einen Ordner mit TEI- oder CMIF-Dateien laufen und vergleicht jeden Eintrag mit seiner Quelldatei: jeder `correspDesc` wird ein Eintrag, IDs sind eindeutig, kein Poststempel und keine Anschrift steht als Absendeort, jede als ergänzt ausgezeichnete Angabe ist als erschlossen markiert, jeder Empfänger und jede Adresszeile bleibt erhalten, kein interner Verweis gilt als identifiziert. Danach prüft es den zusammengeführten Bestand: jeder Eintrag gehört zu genau einem Brief, zusammengeführte Einträge teilen eine Signatur ohne widersprechende Datierung, kein unplausibles Jahr steht auf der Zeitachse, der Personenindex zählt jeden Empfänger. Am Ende gibt es die Kennzahlen des Laufs aus. Es ist der Beleg für Bestände, deren Daten nicht gebündelt werden dürfen. Die Datenprüfung vom 2026-11-14 fand Parserfehler, die es nicht abdeckte, seither trägt es vier weitere Prüfungen.
+`verification/check-corpus.mjs` lässt den Parser über einen Ordner mit TEI- oder CMIF-Dateien laufen und vergleicht jeden Eintrag mit seiner Quelldatei: jeder `correspDesc` wird ein Eintrag, IDs sind eindeutig, kein Poststempel und keine Anschrift steht als Absendeort, jede als ergänzt ausgezeichnete Angabe ist als erschlossen markiert, jeder Empfänger und jede Adresszeile bleibt erhalten, kein interner Verweis gilt als identifiziert. Danach prüft es den zusammengeführten Bestand: jeder Eintrag gehört zu genau einem Brief, zusammengeführte Einträge teilen eine Signatur ohne widersprechende Datierung, kein unplausibles Jahr steht auf der Zeitachse, der Personenindex zählt jeden Empfänger. Am Ende gibt es die Kennzahlen des Laufs aus. Es ist der Beleg für Bestände, deren Daten nicht gebündelt werden dürfen. Die Datenprüfung vom 2026-11-14 fand Parserfehler, die es nicht abdeckte, seither enthält es vier weitere Prüfungen.
 
 ## Messungen
 
@@ -172,7 +175,7 @@ Die zwölf Aufgaben sind der Anfang eines Aufgabensatzes, der in jeder Runde wie
 - Raster und Anteile, Briefliste, Zeitansicht, Startansicht und Startseite über ihre Modultests und Smoke-Prüfungen hinaus. Gedeckt durch Lesetests frischer Leser an Startseite und Raster und Gegenzählungen der Bau-Agenten an `hsa-letters.json`, je in deren Berichten, nicht unabhängig wiederholt.
 - Alles vom Abend des 2026-11-14 und der Nacht zum 2026-11-15 bei 200 Prozent Zoom und mit einem Screenreader.
 - Zoom auf 200 Prozent, andere Browser als Chrome, Excel mit dem BOM.
-- Der Wissenskorb mit Einträgen, die dunkle Grundkarte, der Exportdialog und die Demo-Tour im neuen Farbschema.
+- Der Wissenskorb mit Einträgen, die dunkle Grundkarte und der Exportdialog im neuen Farbschema.
 - Fachliche Richtigkeit von Zusammenführung, Entsprechungen und unplausiblen Jahren. Das entscheiden die Editionen.
 
 ## Ausführen
@@ -190,6 +193,6 @@ uv run preprocessing/build_examples.py       # nach jeder Neuerzeugung von hsa-l
 
 ## Stand
 
-Am 2026-11-15 registriert `run-all-tests.js` achtzehn Suites: CMIF Parser, Aggregation, Formatters, Security, Research Paths, Demo, correspSearch, Spacetime, Network, Topics, Selection, Letters, Time, Dashboard, Compose, State Manager, DOM Cache, Basket. Neu seit dem Stand von `34fedd9` sind Letters, Time und Dashboard (`c6185bc`) und Compose (`b189cb5`), Topics ist mit dem Raster neu gefasst (`7cbe3c3`). Der Smoke-Test hat achtzehn Prüfungen ohne `--online` und `--axe`, neu sind die beiden Prüfungen der Startansicht. Beides ist aus den Dateien gezählt, die Zahl der Modultests nicht, weil sie erst ein Lauf ausgibt.
+Am 2026-11-15 nach dem Refactoring registriert `run-all-tests.js` achtzehn Suites: CMIF Parser, Aggregation, Formatters, Security, Research Paths and Export, Demo, correspSearch, Spacetime, Network, Topics, Selection, Letters, Time, Dashboard, Compose, State Manager, DOM Cache, Basket. Neu seit dem Stand von `34fedd9` sind Letters, Time und Dashboard (`c6185bc`) und Compose (`b189cb5`), Topics ist mit dem Raster neu gefasst (`7cbe3c3`). Das Refactoring hat mit der Tagesansicht und den Forschungspfaden deren Tests entfernt, die Zahl der Modultests sank von 191 auf 181. Der Smoke-Test hat achtzehn Prüfungen ohne `--online` und `--axe`, zwei davon hat das Refactoring ersetzt ([Browser-Smoke-Test](#browser-smoke-test)). Suites und Smoke-Prüfungen sind aus den Dateien gezählt.
 
-Nach Bericht der koordinierenden Session liefen am Commit `34fedd9` 160 Modultests und 16 Prüfungen des Smoke-Tests ohne Fehlschlag. Nach dem Journal liefen am Commit der Übergabe vom 2026-11-15 `test.html?test=true` ohne Fehlschlag und der Smoke-Test mit allen Prüfungen. Die distillierende Session vom 2026-11-15 hat keinen Lauf wiederholt.
+Nach Bericht der koordinierenden Session liefen am Commit `34fedd9` 160 Modultests und 16 Prüfungen des Smoke-Tests ohne Fehlschlag. Am Arbeitsbaum nach dem Refactoring lief `test.html?test=true` am 2026-11-15 in der kuratierenden Session mit 181 von 181 Modultests ohne Fehlschlag (Browser der Desktop-App gegen den lokalen Server). Den Smoke-Test hat die kuratierende Session nicht ausgeführt, sein Lauf am Stand des Refactorings ist von der Hauptsession zu bestätigen.

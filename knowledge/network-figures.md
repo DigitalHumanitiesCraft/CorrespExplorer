@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2026-11-14
-updated: 2026-11-14
+updated: 2026-11-15
 authors: [Christopher Pollin]
 related: [data, design, plan, specification]
 ---
@@ -31,12 +31,12 @@ Als Übertragung des Agenten auf das Werkzeug: In einem Netz sollten nur belegte
 | Briefwechsel, gerichtet, gewichtet, datiert | A schrieb an B, n Briefe, in einem Zeitraum | Identifizierte Beteiligte, Datum, Richtung, Normdaten über Bestände. Zentralität spiegelt die Sammlungspraxis, fehlende Daten sind systematisch (Weingart, 2011; Ryan et al., 2020) |
 | Ego-Netz einer Person | Ego und Korrespondent, dazu Kanten zwischen Korrespondenten, wo überliefert | Ohne Kanten zwischen den Korrespondenten bleiben Zählungen. Geschichtete Knoten-Kanten-Figuren schnitten in einem Versuch besser ab als Matrizen (Ehlers et al., 2024) |
 | Vereinigung mehrerer Ego-Bestände | wie Briefwechsel, neu sind die gemeinsamen Korrespondenten | Abgeglichene Identitäten und Erkennung doppelt verzeichneter Briefe. Schwache Normdatenabdeckung verdeckt Überschneidungen, Abgleich über Namen erfindet sie (Ryan et al., 2020) |
-| Schreibende nennen Dritte | Briefschreiber A nennt X | Erwähnung je Brief mit Identität und der Angabe, ob Brieftext oder Kommentar nennt. CMIF trägt diese Unterscheidung nicht |
+| Schreibende nennen Dritte | Briefschreiber A nennt X | Erwähnung je Brief mit Identität und der Angabe, ob Brieftext oder Kommentar nennt. CMIF enthält diese Unterscheidung nicht |
 | Gemeinsame Nennung im selben Brief | X und Y kommen im selben Brief vor | Wirft Absender, Empfänger und Rolle weg, die eine Nennung im Brief hat (Warren et al., 2016, als Grenze des eigenen Ansatzes) |
 | Zwei-Modus-Netze und Projektionen | Person und Brief, Ort oder Thema | Zentralität misst dort etwas anderes. Projektionen zeigen Gleichzeitigkeit, keine Beziehung zwischen Personen (Weingart, 2011; van Vugt, 2017) |
 | Typisierte Aussagen | Sprecher über dritte Person, mit Rolle, Stimme, Prüfstand und Stelle | Eine Visualisierung genau dieser Struktur fand der Agent in keiner gelesenen Quelle |
 | Zeit | Reihenfolge der Kanten | Netzmaße setzen meist statische Netze voraus. Eine Linie je Person über der Zeitachse, das Ego gerade, die Richtung über und unter der Linie (Kuo et al., 2024) |
-| Geographie | Absende- und Empfangsort, erwähnte Orte, Wege | Linien zwischen Orten brauchen einen Empfangsort, den kein geprüfter Bestand trägt |
+| Geographie | Absende- und Empfangsort, erwähnte Orte, Wege | Linien zwischen Orten brauchen einen Empfangsort, den kein geprüfter Bestand enthält |
 
 ## Was daraus für die drei Datenlagen folgt (Vorschlag, Agent, 2026-11-14)
 

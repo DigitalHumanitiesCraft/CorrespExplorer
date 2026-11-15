@@ -59,7 +59,7 @@ Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents,
 
 ## Konvention
 
-Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vorlagen (https://dhcraft.org/Promptotyping/templates/convention.md). Bis Oktober 2026 (Commit `29dfc15`) bestand sie aus Journal, Context Map, einer Liste bekannter Probleme und Themendokumenten. Am 2026-11-14 wurde sie nach der neuen Richtung des Werkzeugs distilliert, am 2026-11-15 nach dem Umbau von Startseite, Startansicht, Briefliste, Zeit und Themen erneut ([Journal](journal.md)).
+Die Wissensbasis folgt der Konvention für Promptotyping Documents mit ihren Vorlagen (https://dhcraft.org/Promptotyping/templates/convention.md). Bis Oktober 2026 (Commit `29dfc15`) bestand sie aus Journal, Context Map, einer Liste bekannter Probleme und Themendokumenten. Am 2026-11-14 wurde sie nach der neuen Richtung des Werkzeugs distilliert, am 2026-11-15 nach dem Umbau von Startseite, Startansicht, Briefliste, Zeit und Themen erneut und nach dem anschließenden Refactoring kuratiert ([Journal](journal.md)).
 
 ## Begriffe
 
@@ -141,4 +141,4 @@ Sammlung ausgewählter Briefe, Personen und Orte eines Datensatzes, im localStor
 
 ### Forschungspfad, Wissenspfad
 
-Eine Folge von Ansichten zu einer Forschungsfrage und ihre geführte Leiste. Seit 2026-11-14 ohne Einstieg in der Oberfläche, der Code besteht ([specification.md](specification.md#us-33-methodisch-geleitete-exploration)).
+Eine Folge von Ansichten zu einer Forschungsfrage und ihre geführte Leiste. Seit 2026-11-14 ohne Einstieg in der Oberfläche, seit dem Refactoring vom 2026-11-15 auch aus dem Code entfernt ([specification.md](specification.md#us-33-methodisch-geleitete-exploration)). Der Name lebt nur in den Modulnamen `knowledge-path.js` und `research-paths.js` fort, die heute Korb und Zählung enthalten.

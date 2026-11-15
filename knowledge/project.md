@@ -42,7 +42,7 @@ correspSearch der Berlin-Brandenburgischen Akademie der Wissenschaften aggregier
 
 ## Datengrundlage
 
-Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität Graz entwickelt, der als vorprozessierte Datei mitkommt und als einziger gebündelter Realdatensatz Themen, Erwähnungen, Sprachen und Koordinaten zugleich trägt. Ein synthetischer Tutorial-Datensatz mit Tour liegt bei, die Startseite bietet ihn seit dem 2026-11-14 auf Auftrag des Operators nicht mehr an. Die Briefsätze von Stefan Zweig Digital dienen als Bestand aus vielen TEI-Dateien und werden nur lokal geladen. Einträge dreier Grazer Editionen aus dem Kreis von GOSSIP liegen als Testdateien bei. Nutzende laden eigene CMIF- und TEI-Dateien oder Adressen. Quellen, Modell, Lizenzen und Grenzen beschreibt [data.md](data.md).
+Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität Graz entwickelt, der als vorprozessierte Datei mitkommt und als einziger gebündelter Realdatensatz Themen, Erwähnungen, Sprachen und Koordinaten zugleich enthält. Der synthetische Datensatz des früheren Tutorials liegt nur noch als Testdatei bei, Tutorial und Tour sind entfernt. Die Briefsätze von Stefan Zweig Digital dienen als Bestand aus vielen TEI-Dateien und werden nur lokal geladen. Einträge dreier Grazer Editionen aus dem Kreis von GOSSIP liegen als Testdateien bei. Nutzende laden eigene CMIF- und TEI-Dateien oder Adressen. Quellen, Modell, Lizenzen und Grenzen beschreibt [data.md](data.md).
 
 ## Abgrenzungen
 
