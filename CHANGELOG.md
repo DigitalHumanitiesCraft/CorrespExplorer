@@ -4,6 +4,10 @@ Changes to CorrespExplorer that a user or a maintainer notices. Version 0.9.0 wa
 
 ## Unreleased
 
+Verification status `built`.
+
+- Show on the start page how many letters mention people, as task US-40 asks, in place of the number of distinct mentioned people. Decided by the operator on 2026-11-16.
+
 ## 0.9.0 (2026-11-16)
 
 Verification status `reviewed`. Module and browser smoke tests pass. A fresh independent agent found no material code or rendering blocker in the reviewed scope. The fixed task set retains one unresolved mismatch and manual tasks. This is a research preview, without scholarly validation or a guarantee of stable interfaces.

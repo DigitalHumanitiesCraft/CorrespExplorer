@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Specification
@@ -96,7 +96,7 @@ Stand: geändert. Startseite, `start-figures.js`. Seit `d38b4c8` erhält eine An
 
 Aufgabe: Wie viele Briefe des Archivs nennen erwähnte Personen? Antwort: Zahl der Briefe mit mindestens einem Eintrag in `mentions.persons`.
 
-Befund, offen (kuratierende Session, 2026-11-15, am Code von `start-figures.js` und an `verification/task_set.py`): Die Aufgabe fragt nach Briefen, die Startseite nennt bei „Erwähnte Personen“ die Zahl der verschiedenen erwähnten Personen (`mentioned.persons.distinct`), die Zahl der Briefe steht nirgends auf der Seite. Das Kriterium „wie viele seiner Briefe sie nennen“ erfüllt die Startseite damit nicht. Ob die Story auf Personen umgestellt wird oder die Startseite die Briefe zählt, ist nicht entschieden. Bis dahin bleibt die Aufgabe im Aufgabensatz von Hand abzulesen.
+Befund, erledigt (kuratierende Session, 2026-11-15, am Code von `start-figures.js` und an `verification/task_set.py`): Die Aufgabe fragt nach Briefen, die Startseite nannte bei „Erwähnte Personen“ die Zahl der verschiedenen erwähnten Personen (`mentioned.persons.distinct`). Der Operator hat am 2026-11-16 entschieden, dass die Startseite die Briefe zählt ([design.md](design.md#2026-11-16-zählgröße-bei-den-erwähnten-personen)). Sie nennt seither `coverage.mentionsPerson`, die Zahl der Briefe mit mindestens einer erwähnten Person, und der Browserlauf des Aufgabensatzes liest die Antwort von der Seite ab. Erwähnte Orte und Themen nennen weiter die Zahl der verschiedenen Orte und Themen, dazu liegt keine Entscheidung vor.
 
 #### US-46 Startseite aus dem zusammengesetzt, was ein Bestand enthält
 

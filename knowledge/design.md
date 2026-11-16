@@ -470,6 +470,14 @@ Folge: Entscheidung des Operators. Das Raster aus Themen und Jahren ist die Them
 
 Folge zur Themenansicht davor: Zwei kleine echte Fassungen am selben gefilterten Bestand, eine Treemap und ein Raster aus Themen und Jahren auf gemeinsamer Skala, zur Wahl nebeneinander. Die bestehende Ansicht bleibt bis zu seiner Entscheidung.
 
+### 2026-11-16, Zählgröße bei den erwähnten Personen
+
+Auf die Frage der Research Coordination „Soll die Startseite die Zahl der erwähnten Personen behalten?“ antwortete der Operator im Chat:
+
+> nein
+
+Folge: Die Startseite nennt bei „Erwähnte Personen“ die Zahl der Briefe, die mindestens eine Person erwähnen, wie US-40 es verlangt. Gebaut, vom Operator nicht gesehen.
+
 ### Entscheidungen des Operators ohne wörtlichen Satz
 
 Diese Entscheidungen stehen im Journal mit ihrem Tag und sind hier nur mit ihrer Wirkung genannt: die Palette aus dem Logo bleibt (2026-11-14), die Einstiegskacheln der Übersicht entfallen (2026-11-14), der Brief-Dialog bleibt vollständig (2026-11-14), die Forschungspfade verlassen die Oberfläche, die Startansicht wird über die Seitenleiste gefiltert, die Unteransichten sind oben zu finden (2026-11-14), keine Ampel für die Datenlage (2026-10-29), die Ausnahme für die Zellen der Heatmap (E6, 2026-11-05).

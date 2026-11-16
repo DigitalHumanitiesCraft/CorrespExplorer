@@ -49,7 +49,7 @@ Kopf und Fuß der Startseite hat seit `8464b92` auch `about.html`. Für `explore
 
 ## Aufgabensatz und Prüfungen
 
-- Die als „von Hand“ markierten Aufgaben bleiben offen. Der automatisierte Browserlauf vom 2026-11-16 ist in [testing.md](testing.md) dokumentiert. US-40 bleibt eine unentschiedene Anforderung.
+- Die als „von Hand“ markierten Aufgaben bleiben offen. Der automatisierte Browserlauf vom 2026-11-16 ist in [testing.md](testing.md) dokumentiert. US-40 ist seit der Entscheidung des Operators vom 2026-11-16 gebaut und im Browserlauf bestanden.
 - Die zwölf Aufgaben der Bedienprüfung der Raum-Zeit-Ansicht sind im Repository nicht festgehalten. `task_set.py` führt ihre Gegenstände als ST-a bis ST-l, aus den Skripten der Prüfung rekonstruiert. Herkunft: Bauende.
 - Die unabhängige Durchsicht der Abschlussrunde ist erfolgt. Ein neuer axe-core-Lauf über alle Ansichten bleibt offen.
 - Die weitere fachliche Prüfung des Korrespondenzkreises bleibt offen. Enter, Escape und Fokus wurden unabhängig geprüft.
@@ -80,7 +80,7 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 - Ob das Raster eine fünfte Tönungsstufe bekommt und die Restfläche der Treemap so groß bleibt, und ob die Anteile, wie gebaut, hinter einem Schalter stehen dürfen, wo er „daneben“ sagte.
 - Was von der Chronik endgültig entfällt, und ob der Zeitraum feiner als ein Jahr wählbar wird.
 - Die Signatur in der Briefzeile.
-- Die Story-Vorschläge US-40 bis US-48 und die Streichung von US-17, US-32 und US-33 ([specification.md](specification.md#funktionsumfang)), die Darstellung „Erwähnungen“ ohne Story, und der Befund zu US-40, dass die Startseite erwähnte Personen zählt und nicht Briefe.
+- Die Story-Vorschläge US-40 bis US-48 und die Streichung von US-17, US-32 und US-33 ([specification.md](specification.md#funktionsumfang)) und die Darstellung „Erwähnungen“ ohne Story. Offen ist nach der Entscheidung zu US-40, ob auch erwähnte Orte und Themen auf der Startseite Briefe zählen sollen.
 - Die älteren Fragen in den Abschnitten unten, je mit dem Vermerk.
 
 ## Daten und Parser

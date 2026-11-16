@@ -27,13 +27,21 @@ Die Abschlussrunde vom 2026-11-16 ist unabhängig geprüft, Prüfstand `reviewed
 
 Beauftragt und zurückgestellt bleiben das gemeinsame Register aus Briefen, Personen und Orten sowie die Anpassung von Kopf und Fuß des Explorers. Die akzeptierte Startseite, die Startansicht und die Wahl von Raster und Treemap bleiben erhalten.
 
-Beim Operator bleiben die fachlichen und gestalterischen Entscheidungen aus [plan.md](plan.md#warten-auf-den-operator), insbesondere die Form des Netzwerks, die Zählgröße von US-40, die Darstellung des gemeinsamen Briefmodells und die Herkunft der Altlogos. Die Altlogos liegen unverändert außerhalb der Website. Zur Sprachlegende wurde kein Überlauf reproduziert, sie kann jetzt umbrechen. Die übrigen Fragen zu sichtbaren Gruppennamen, gemeinsamer Zeitskala und Organisationen bleiben offen.
+Beim Operator bleiben die fachlichen und gestalterischen Entscheidungen aus [plan.md](plan.md#warten-auf-den-operator), insbesondere die Form des Netzwerks, die Zählgröße bei erwähnten Orten und Themen auf der Startseite, die Darstellung des gemeinsamen Briefmodells und die Herkunft der Altlogos. Die Altlogos liegen unverändert außerhalb der Website. Zur Sprachlegende wurde kein Überlauf reproduziert, sie kann jetzt umbrechen. Die übrigen Fragen zu sichtbaren Gruppennamen, gemeinsamer Zeitskala und Organisationen bleiben offen.
 
 Ohne fachliche Entscheidung offen bleiben die manuellen Aufgaben, Screenreader, andere Browser, eine vollständige Zoom-Prüfung und der neue axe-core-Lauf. Die Dichtemessung meldet Überschreitungen, dokumentiert in [testing.md](testing.md). Weitere Befunde wie doppelte Ortskennungen, zusätzliche Sprachlisten und die Bedienung des Wissenskorbs bleiben im Plan.
 
 Der README wurde auf ausdrücklichen Auftrag vom 2026-11-16 neu gefasst. Die Entwicklungsgeschichte steht im folgenden Eintrag, die bekannten fachlichen und gestalterischen Grenzen bleiben unverändert.
 
 ## Einträge
+
+### 2026-11-16 Startseite zählt bei erwähnten Personen die Briefe
+
+- Anlass: Der Operator hat die offene Zählgröße von US-40 entschieden. Auf die Frage, ob die Startseite die Zahl der erwähnten Personen behalten soll, antwortete er „nein“ ([design.md](design.md#2026-11-16-zählgröße-bei-den-erwähnten-personen)).
+- Befund: Die Zusammenfassung führt die verlangte Zahl bereits als `coverage.mentionsPerson`, ein neuer Zähler war nicht nötig.
+- Geändert: `docs/js/start-figures.js` nennt bei „Erwähnte Personen“ die Briefe mit mindestens einer erwähnten Person. [specification.md](specification.md), [plan.md](plan.md), [design.md](design.md) und `CHANGELOG.md` unter Unreleased sind nachgezogen. Die veröffentlichte Version 0.9.0 und ihr Tag bleiben unberührt.
+- Offen: Erwähnte Orte und Themen nennen weiter die Zahl der verschiedenen Orte und Themen.
+- Belege (Research Coordination, nicht unabhängig gelesen, vom Operator nicht gesehen): `tests/browser/smoke.py` mit 20 von 20 Prüfungen, darunter der Vergleich von `examples.json` mit `start-summary.js`. `verification/task_set.py --browser` mit 35 übereinstimmenden Antworten, keiner Abweichung und 22 Aufgaben von Hand, US-40 liest „6.551“ von der Startseite ab. Die Startseite am lokalen Server gelesen, der Link lautet „Erwähnte Personen, 6.551 Briefe“.
 
 ### 2026-11-16 GitHub Pre-release veröffentlicht
 
