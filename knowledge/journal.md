@@ -35,6 +35,14 @@ Der README wurde auf ausdrücklichen Auftrag vom 2026-11-16 neu gefasst. Die Ent
 
 ## Einträge
 
+### 2026-11-16 Lehren des Projekts in project.md
+
+- Anlass: Ein fremder Leser stellte fest, dass die Lehren des Projekts nur als Vorfälle im Journal stehen. Dieselbe Lektüre lief für zwei Schwesterprojekte, die dieselbe Kernlehre unabhängig gezogen haben. Die koordinierende Session gab den Eintrag in Auftrag.
+- Geändert: [project.md](project.md#was-das-projekt-gelernt-hat) hat den Abschnitt „Was das Projekt gelernt hat“ mit drei Lehren und dem Unterabschnitt „Geteilt mit Schwesterprojekten“. Die Konvention des Ordners sieht für Lehren keinen eigenen Ort vor.
+- Befund: Die Lehre zu plausibel wirkenden Ansichten ist an den Einträgen vom 2026-11-14 und 2026-10-29 belegt. Der Eintrag vom 2026-10-28 belegt eine eigene Lehre zu Tests ohne Produktionscode. Die Lehre zum Bestand um eine Person ist im Umfang von [data.md](data.md#grenzen) eingetragen, der Literaturbezug nur als Verweis auf den ungeprüften Agentenbericht in [network-figures.md](network-figures.md).
+- Belege: die genannten Journaleinträge und Abschnitte, vollständig gelesen. Die Aussagen über die Schwesterprojekte stammen aus der Lektüre ihrer Wissensordner vom 2026-11-16 und sind nicht nachgeprüft.
+- Wer was tat: Ein Agent (Claude Opus 5.5 in Claude Code) prüfte die Stellen und schrieb den Abschnitt im Auftrag der koordinierenden Session. Die koordinierende Session schlug drei der zitierten Stellen nach. Nicht unabhängig gelesen, vom Operator nicht gesehen.
+
 ### 2026-11-16 Startseite zählt bei erwähnten Personen die Briefe
 
 - Anlass: Der Operator hat die offene Zählgröße von US-40 entschieden. Auf die Frage, ob die Startseite die Zahl der erwähnten Personen behalten soll, antwortete er „nein“ ([design.md](design.md#2026-11-16-zählgröße-bei-den-erwähnten-personen)).
