@@ -3,7 +3,17 @@
     "source": "Wikidata SPARQL",
     "total_requested": 949,
     "total_resolved": 791,
-    "coverage_pct": 83.4
+    "coverage_pct": 83.4,
+    "default_source": "wikidata",
+    "source_licenses": {
+      "wikidata": {
+        "name": "Wikidata",
+        "url": "https://www.wikidata.org/",
+        "license": "CC0-1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "policy_url": "https://www.wikidata.org/wiki/Wikidata:Licensing"
+      }
+    }
   },
   "coordinates": {
     "2363686": {

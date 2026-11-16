@@ -48,7 +48,7 @@ export function computeLanguageColors(letters) {
     const langCounts = {};
     letters.forEach(letter => {
         const lang = letter.language?.code;
-        if (lang) langCounts[lang] = (langCounts[lang] || 0) + 1;
+        if (lang && lang !== NO_LANGUAGE) langCounts[lang] = (langCounts[lang] || 0) + 1;
     });
 
     Object.keys(LANGUAGE_COLORS).forEach(key => delete LANGUAGE_COLORS[key]);

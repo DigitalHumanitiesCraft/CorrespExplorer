@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2026-10-28
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Projekt-Wissensdokument
@@ -28,7 +28,7 @@ related: [data, specification, architecture, design, plan]
 
 # Project
 
-CorrespExplorer ist ein Werkzeug im Browser, das Briefmetadaten als wenige große Figuren über einer gemeinsamen Auswahl zeigt: wer wem schrieb, wann, von wo und worüber, und welche Briefe hinter jedem Muster stehen. Am 2026-11-14 hat der Operator entschieden, dass es das Sichtwerkzeug für das gemeinsame Briefmodell wird, das das Projekt GOSSIP für die Briefe von fünf Grazer Editionen entwickelt. Die Anwendung ist unter https://dhcraft.org/CorrespExplorer erreichbar, die veröffentlichte Fassung liegt hinter dem Stand der Entwicklung zurück ([plan.md](plan.md#veröffentlichung)).
+CorrespExplorer ist ein Werkzeug im Browser, das Briefmetadaten als wenige große Figuren über einer gemeinsamen Auswahl zeigt: wer wem schrieb, wann, von wo und worüber, und welche Briefe hinter jedem Muster stehen. Am 2026-11-14 hat der Operator entschieden, dass es das Sichtwerkzeug für das gemeinsame Briefmodell wird, das das Projekt GOSSIP für die Briefe von fünf Grazer Editionen entwickelt. Die Anwendung ist unter https://dhcraft.org/CorrespExplorer erreichbar, GitHub Pages liefert den gepushten Stand von `main` aus ([plan.md](plan.md#veröffentlichung)).
 
 ## Worum es geht
 
@@ -63,7 +63,7 @@ Das Werkzeug wird am Briefbestand des Hugo Schuchardt Archivs der Universität G
 
 ## Technische Umsetzung
 
-Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. Daten werden im Browser geparst, große Datensätze in Python vorprozessiert. Bibliotheken und Schriften liegen versioniert in `docs/vendor/`, extern lädt die Seite nur die Grundkarte von OpenFreeMap, und diese erst, wenn die Kartenansicht geöffnet wird. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code, die Commit-Trailer nennen die beteiligten LLMs. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md), Gestaltung und Rückmeldungen des Operators [design.md](design.md).
+Die Anwendung ist eine statische Seite ohne Backend und ohne Build-Schritt, ausgeliefert über GitHub Pages aus `docs/` auf main. Daten werden im Browser geparst, große Datensätze in Python vorprozessiert. Bibliotheken und Schriften liegen versioniert in `docs/vendor/`, die Grundkarte von OpenFreeMap lädt erst beim Öffnen der Kartenansicht. Weitere externe Zugriffe entstehen durch Quellen-URLs, correspSearch und ausdrücklich angeforderte Anreicherungen. Christopher Pollin entwickelt das Werkzeug mit Promptotyping in Claude Code, die Commit-Trailer nennen die beteiligten LLMs. Aufbau und Datenfluss beschreibt [architecture.md](architecture.md), Gestaltung und Rückmeldungen des Operators [design.md](design.md).
 
 ## Herkunft
 

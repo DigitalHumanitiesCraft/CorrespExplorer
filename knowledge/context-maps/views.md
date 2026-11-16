@@ -1,6 +1,21 @@
+---
+title: Views Context Map
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2026-11-16
+updated: 2026-11-16
+related: [../architecture, ../testing, ../design]
+---
+
 # Views Context Map
 
-Ansichtsmodule des Explorers. `explore.js` ruft beim Start `init*View(deps)` mit den Abhängigkeiten auf, die Render-Funktion der aktuellen Ansicht bei jedem Wechsel in die Ansicht und nach jeder Filteränderung (`renderView()`). Die Module importieren `explore.js` nicht, damit keine zirkulären Importe entstehen. Gefilterte und alle Briefe lesen sie über die injizierten Funktionen oder über `state` aus `../state-manager.js`. Eigener Zustand ist Darstellungszustand wie Auswahl, Layout, Zoom und die Brief-IDs des offenen Details. Eine Wahl in einer Ansicht setzt dieselben Filter wie die Seitenleiste, die Briefe der Auswahl öffnet die Briefleiste (`letters-drawer.js`).
+Ansichtsmodule des Explorers. `explore.js` ruft beim Start `init*View(deps)` mit den Abhängigkeiten auf, die Render-Funktion der aktuellen Ansicht bei jedem Wechsel in die Ansicht und nach jeder Filteränderung (`renderView()`). Die Module importieren `explore.js` nicht, damit keine zirkulären Importe entstehen. Gefilterte und alle Briefe lesen sie über die injizierten Funktionen oder über `state` aus `docs/js/state-manager.js`. Eigener Zustand ist Darstellungszustand wie Auswahl, Layout, Zoom und die Brief-IDs des offenen Details. Eine Wahl in einer Ansicht setzt dieselben Filter wie die Seitenleiste, die Briefe der Auswahl öffnet die Briefleiste (`letters-drawer.js`).
 
 Die Spalte Exporte nennt, was andere Module importieren. Was nur die Tests importieren, steht unter [Reine Teile für die Tests](#reine-teile-für-die-tests).
 
@@ -30,7 +45,7 @@ Die Spalte Exporte nennt, was andere Module importieren. Was nur die Tests impor
 - Aus `../mini-figures.js`: `loadLand()` lädt die Ländergrenzen einmal je Seite für die kleine Karte der Startansicht und für die Raum-Zeit-Figur, `mapFrame()`, `frameProjection()`, `landPath()` und `smallGeometry()` zeichnen die kleine Karte und den kleinen Korrespondenzkreis der Startansicht.
 - Sprachbezeichnungen und -farben über `languageLabel()`, `LANGUAGE_COLORS`, `isRestLanguage()` und `NO_LANGUAGE` aus `../constants.js`. Eine Sprache ohne Eintrag in `LANGUAGE_COLORS` gehört zu den übrigen Sprachen (`other`). Netzwerkvorgaben über `NETWORK_DEFAULTS`, Kartenvorgaben über `MAP_DEFAULTS`.
 - Korbaktionen über `addLettersToBasket()` (Zeitansicht) und `addEntityToBasket()` (Korrespondenten, Orte) aus `../basket.js`, Elemente aus `../dom-cache.js`.
-- `chronik-view.js` nutzt zusätzlich `enrichPerson()` und `formatLifeDates()` aus `../wikidata-enrichment.js` und fällt ohne `getAllLetters` auf `state.getAllLetters()` aus `../state-manager.js` zurück.
+- `chronik-view.js` nutzt zusätzlich `enrichPerson()` und `formatLifeDates()` aus `../wikidata-enrichment.js` und fällt ohne `getAllLetters` auf `state.getAllLetters()` aus `docs/js/state-manager.js` zurück.
 
 ## Farben der Grafiken
 
@@ -50,7 +65,7 @@ Farbe bedeutet in jeder Figur die Sprache (Regel 5). Netzwerk und Erwähnungsflu
 
 ## Reine Teile für die Tests
 
-Diese Exporte sind reine Funktionen, die nur die Suites in `../tests/` importieren.
+Diese Exporte sind reine Funktionen, die nur die Suites in `docs/js/tests/` importieren.
 
 - overview-view.js: `licenceName`, `partnerCounts`, `mentionCounts`, `placeCounts`, `yearLanguageCounts`
 - spacetime-view.js: `CAMERAS`, `aggregatePlaceYears`, `groundLayout`, `projectPoint`, `fitBox`

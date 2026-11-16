@@ -27,6 +27,22 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+WIKIDATA_LICENSE = {
+    "name": "Wikidata",
+    "url": "https://www.wikidata.org/",
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "policy_url": "https://www.wikidata.org/wiki/Wikidata:Licensing",
+}
+GEONAMES_LICENSE = {
+    "name": "GeoNames",
+    "url": "https://www.geonames.org/",
+    "license": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "policy_url": "https://www.geonames.org/about.html",
+    "modifications": "Coordinates and name extracted from RDF and converted to JSON.",
+}
+
 WIKIDATA_SPARQL_ENDPOINT = "https://query.wikidata.org/sparql"
 
 # User-Agent für Wikidata (erforderlich)
@@ -35,16 +51,16 @@ USER_AGENT = "CorrespExplorer/1.0 (https://github.com/chpollin/CorrespExplorer)"
 
 def sparql_query(query: str) -> dict:
     """Führt eine SPARQL-Abfrage gegen Wikidata aus."""
-    params = urlencode({'query': query, 'format': 'json'})
+    params = urlencode({"query": query, "format": "json"})
     url = f"{WIKIDATA_SPARQL_ENDPOINT}?{params}"
 
     request = Request(url)
-    request.add_header('User-Agent', USER_AGENT)
-    request.add_header('Accept', 'application/sparql-results+json')
+    request.add_header("User-Agent", USER_AGENT)
+    request.add_header("Accept", "application/sparql-results+json")
 
     try:
         with urlopen(request, timeout=60) as response:
-            return json.loads(response.read().decode('utf-8'))
+            return json.loads(response.read().decode("utf-8"))
     except HTTPError as e:
         print(f"HTTP Error {e.code}: {e.reason}")
         return None
@@ -62,11 +78,13 @@ def batch_resolve_geonames(geonames_ids: list, batch_size: int = 50) -> dict:
     total = len(geonames_ids)
 
     for i in range(0, total, batch_size):
-        batch = geonames_ids[i:i + batch_size]
+        batch = geonames_ids[i : i + batch_size]
         batch_num = i // batch_size + 1
         total_batches = (total + batch_size - 1) // batch_size
 
-        print(f"Batch {batch_num}/{total_batches}: Resolving {len(batch)} GeoNames IDs...")
+        print(
+            f"Batch {batch_num}/{total_batches}: Resolving {len(batch)} GeoNames IDs..."
+        )
 
         # SPARQL Query für Batch
         values = " ".join(f'"{gid}"' for gid in batch if gid)
@@ -85,14 +103,14 @@ def batch_resolve_geonames(geonames_ids: list, batch_size: int = 50) -> dict:
 
         response = sparql_query(query)
 
-        if response and 'results' in response:
-            for binding in response['results']['bindings']:
-                gid = binding['geonamesId']['value']
+        if response and "results" in response:
+            for binding in response["results"]["bindings"]:
+                gid = binding["geonamesId"]["value"]
                 results[gid] = {
-                    'lat': float(binding['lat']['value']),
-                    'lon': float(binding['lon']['value']),
-                    'label_en': binding.get('label', {}).get('value'),
-                    'label_de': binding.get('labelDe', {}).get('value')
+                    "lat": float(binding["lat"]["value"]),
+                    "lon": float(binding["lon"]["value"]),
+                    "label_en": binding.get("label", {}).get("value"),
+                    "label_de": binding.get("labelDe", {}).get("value"),
                 }
 
         # Rate limiting: Wikidata empfiehlt max 1 Request/Sekunde
@@ -104,31 +122,33 @@ def batch_resolve_geonames(geonames_ids: list, batch_size: int = 50) -> dict:
 
 def load_hsa_places(hsa_json_path: Path) -> list:
     """Lädt die GeoNames-IDs aus der HSA-JSON-Datei."""
-    with open(hsa_json_path, 'r', encoding='utf-8') as f:
+    with open(hsa_json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     geonames_ids = set()
 
     # Aus dem Places-Index
-    for place_id, place_data in data.get('indices', {}).get('places', {}).items():
-        if place_data.get('geonames_id'):
-            geonames_ids.add(place_data['geonames_id'])
+    for place_data in data.get("indices", {}).get("places", {}).values():
+        if place_data.get("geonames_id"):
+            geonames_ids.add(place_data["geonames_id"])
 
     # Aus den Briefen (mentionsPlace)
-    for letter in data.get('letters', []):
-        for place in letter.get('mentions', {}).get('places', []):
-            if place.get('geonames_id'):
-                geonames_ids.add(place['geonames_id'])
+    for letter in data.get("letters", []):
+        for place in letter.get("mentions", {}).get("places", []):
+            if place.get("geonames_id"):
+                geonames_ids.add(place["geonames_id"])
 
     return list(geonames_ids)
 
 
-GEONAMES_REF = re.compile(r'<placeName\b[^>]*\bref="https?://(?:sws\.|www\.)?geonames\.org/(\d+)')
-GEONAMES_RDF = 'https://sws.geonames.org/{}/about.rdf'
+GEONAMES_REF = re.compile(
+    r'<placeName\b[^>]*\bref="https?://(?:sws\.|www\.)?geonames\.org/(\d+)'
+)
+GEONAMES_RDF = "https://sws.geonames.org/{}/about.rdf"
 RDF_FIELDS = {
-    'lat': re.compile(r'<wgs84_pos:lat>([-\d.]+)<'),
-    'lon': re.compile(r'<wgs84_pos:long>([-\d.]+)<'),
-    'name': re.compile(r'<gn:name>([^<]+)<'),
+    "lat": re.compile(r"<wgs84_pos:lat>([-\d.]+)<"),
+    "lon": re.compile(r"<wgs84_pos:long>([-\d.]+)<"),
+    "name": re.compile(r"<gn:name>([^<]+)<"),
 }
 
 
@@ -139,23 +159,23 @@ def resolve_via_geonames(geonames_id: str) -> dict | None:
     and logs when the service fails or the record lacks coordinates.
     """
     request = Request(GEONAMES_RDF.format(geonames_id))
-    request.add_header('User-Agent', USER_AGENT)
+    request.add_header("User-Agent", USER_AGENT)
     try:
         with urlopen(request, timeout=30) as response:
-            rdf = response.read().decode('utf-8')
+            rdf = response.read().decode("utf-8")
     except (HTTPError, URLError) as e:
         print(f"GeoNames {geonames_id}: {e}")
         return None
     found = {key: pattern.search(rdf) for key, pattern in RDF_FIELDS.items()}
-    if not (found['lat'] and found['lon']):
+    if not (found["lat"] and found["lon"]):
         print(f"GeoNames {geonames_id}: no coordinates in RDF")
         return None
     return {
-        'lat': float(found['lat'].group(1)),
-        'lon': float(found['lon'].group(1)),
-        'label_en': found['name'].group(1) if found['name'] else None,
-        'label_de': None,
-        'source': 'geonames',
+        "lat": float(found["lat"].group(1)),
+        "lon": float(found["lon"].group(1)),
+        "label_en": found["name"].group(1) if found["name"] else None,
+        "label_de": None,
+        "source": "geonames",
     }
 
 
@@ -167,17 +187,21 @@ def build_served_table(base_dir: Path) -> None:
     first via Wikidata, then via GeoNames. hsa.xml is skipped because its IDs
     fed the table already. Exits non-zero if an ID stays unresolved.
     """
-    source_file = base_dir / 'data' / 'geonames_coordinates.json'
-    served_file = base_dir / 'docs' / 'data' / 'geonames_coordinates.json'
-    with open(source_file, encoding='utf-8') as f:
-        coordinates = json.load(f)['coordinates']
+    source_file = base_dir / "data" / "geonames_coordinates.json"
+    served_file = base_dir / "docs" / "data" / "geonames_coordinates.json"
+    with open(source_file, encoding="utf-8") as f:
+        coordinates = json.load(f)["coordinates"]
 
     bundled_ids = set()
-    for xml_file in sorted((base_dir / 'docs' / 'data').glob('*.xml')):
-        if xml_file.name != 'hsa.xml':
-            bundled_ids.update(GEONAMES_REF.findall(xml_file.read_text(encoding='utf-8')))
+    for xml_file in sorted((base_dir / "docs" / "data").glob("*.xml")):
+        if xml_file.name != "hsa.xml":
+            bundled_ids.update(
+                GEONAMES_REF.findall(xml_file.read_text(encoding="utf-8"))
+            )
     missing = sorted(bundled_ids - coordinates.keys())
-    print(f"Bundled CMIF files: {len(bundled_ids)} GeoNames IDs, {len(missing)} not in {source_file.name}")
+    print(
+        f"Bundled CMIF files: {len(bundled_ids)} GeoNames IDs, {len(missing)} not in {source_file.name}"
+    )
 
     added = batch_resolve_geonames(missing) if missing else {}
     for geonames_id in sorted(set(missing) - added.keys()):
@@ -188,15 +212,20 @@ def build_served_table(base_dir: Path) -> None:
     unresolved = sorted(set(missing) - added.keys())
 
     output = {
-        'meta': {
-            'source': 'Wikidata SPARQL (P625 via GeoNames ID P1566); '
+        "meta": {
+            "source": "Wikidata SPARQL (P625 via GeoNames ID P1566); "
             'entries with source "geonames" from sws.geonames.org',
-            'derived_from': 'data/geonames_coordinates.json',
-            'added_for_bundled_cmif': sorted(added),
+            "derived_from": "data/geonames_coordinates.json",
+            "default_source": "wikidata",
+            "source_licenses": {
+                "wikidata": WIKIDATA_LICENSE,
+                "geonames": GEONAMES_LICENSE,
+            },
+            "added_for_bundled_cmif": sorted(added),
         },
-        'coordinates': coordinates,
+        "coordinates": coordinates,
     }
-    with open(served_file, 'w', encoding='utf-8') as f:
+    with open(served_file, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
     print(f"Output: {served_file} ({len(coordinates)} entries)")
     if unresolved:
@@ -206,11 +235,11 @@ def build_served_table(base_dir: Path) -> None:
 
 def main():
     base_dir = Path(__file__).parent.parent
-    if '--served' in sys.argv[1:]:
+    if "--served" in sys.argv[1:]:
         build_served_table(base_dir)
         return
-    hsa_json = base_dir / 'docs' / 'data' / 'hsa-letters.json'
-    output_file = base_dir / 'data' / 'geonames_coordinates.json'
+    hsa_json = base_dir / "docs" / "data" / "hsa-letters.json"
+    output_file = base_dir / "data" / "geonames_coordinates.json"
 
     # 1. GeoNames-IDs aus HSA-Daten laden
     print("Loading GeoNames IDs from HSA data...")
@@ -229,22 +258,26 @@ def main():
     # 3. Statistik
     resolved = len(coordinates)
     missing = len(geonames_ids) - resolved
-    print(f"\nResolved: {resolved}/{len(geonames_ids)} ({resolved/len(geonames_ids)*100:.1f}%)")
+    print(
+        f"\nResolved: {resolved}/{len(geonames_ids)} ({resolved / len(geonames_ids) * 100:.1f}%)"
+    )
     print(f"Missing: {missing}")
 
     # 4. Speichern
     output = {
-        'meta': {
-            'source': 'Wikidata SPARQL',
-            'total_requested': len(geonames_ids),
-            'total_resolved': resolved,
-            'coverage_pct': round(resolved / len(geonames_ids) * 100, 1)
+        "meta": {
+            "source": "Wikidata SPARQL",
+            "default_source": "wikidata",
+            "source_licenses": {"wikidata": WIKIDATA_LICENSE},
+            "total_requested": len(geonames_ids),
+            "total_resolved": resolved,
+            "coverage_pct": round(resolved / len(geonames_ids) * 100, 1),
         },
-        'coordinates': coordinates
+        "coordinates": coordinates,
     }
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_file, 'w', encoding='utf-8') as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print(f"\nOutput: {output_file}")
@@ -252,11 +285,11 @@ def main():
     # 5. Fehlende IDs ausgeben (für manuelle Prüfung)
     missing_ids = [gid for gid in geonames_ids if gid not in coordinates]
     if missing_ids:
-        missing_file = base_dir / 'data' / 'geonames_missing.json'
-        with open(missing_file, 'w', encoding='utf-8') as f:
+        missing_file = base_dir / "data" / "geonames_missing.json"
+        with open(missing_file, "w", encoding="utf-8") as f:
             json.dump(missing_ids, f, indent=2)
         print(f"Missing IDs saved to: {missing_file}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

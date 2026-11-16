@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2026-10-28
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Plan
@@ -31,10 +31,9 @@ Der Operator hat am 2026-11-14 entschieden, dass CorrespExplorer das Sichtwerkze
 
 ## Durchgang nach den gemeinsamen Regeln
 
-Beauftragt vom Operator („Können wir das jetzt auch noch mal vereinheitlichen mit dem anderen Feedback, das wir haben?“), gebaut in `7e04269` und `65ea4b8` ([Journal](journal.md)), von ihm nicht gesehen. Vier Fragen daraus liegen bei ihm ([Journal](journal.md#open)). Offen geblieben, Regelnummern in Klammern, Herkunft: Bauende, koordinierende Session:
+Beauftragt vom Operator („Können wir das jetzt auch noch mal vereinheitlichen mit dem anderen Feedback, das wir haben?“), gebaut in `7e04269` und `65ea4b8` ([Journal](journal.md)), von ihm nicht gesehen. Drei Fragen daraus liegen bei ihm ([Journal](journal.md#open)). Offen geblieben, Regelnummern in Klammern, Herkunft: Bauende, koordinierende Session:
 
-- Start: Kreis und Karte ohne sichtbare Erklärung von Lage und Größe (5, 8). In den Themenzeilen drei Farbfamilien ohne Erklärung (Befund der koordinierenden Session am Bild). Die Sprachlegende nennt am Ende „Übrige Sprachen“ und „Thema“, ob das den Befund erledigt, ist nicht beurteilt.
-- Bei 360 Pixel übersteigt die Sprachlegende in jeder Ansicht die Grenze der Bedienelemente (8). Wartet auf den Operator.
+- Start: Kreis und Karte ohne sichtbare Erklärung von Lage und Größe (5, 8). Die Themenfarbe ist seit der Abschlussrunde vereinheitlicht. Ob die vorhandene Legende für Forschende genügt, bleibt eine Frage der fachlichen Nutzung.
 - Außerhalb der Startansicht steht neben der Sprachlegende weiter das Zeichen „Sprache“ der Schiene mit der vollen Sprachliste (`syncRail()` in `explore.js` blendet es nur auf der Startansicht aus), die Marke „Übrige Sprachen“ öffnet dieselbe Liste. Ob das die zweite Sprachliste ist, die Regel 2 ausschließt, ist nicht beurteilt (kuratierende Session, am Code).
 - Ein Bild des Operators zeigte das Zeitdiagramm der Startansicht mit Balken in voller Höhe und einer Farbe. Der Zustand ließ sich nicht nachstellen, ein Codepfad, der ihn erzeugen konnte, ist behoben und hat eine Smoke-Prüfung ([testing.md](testing.md#browser-smoke-test)). Ob das Bild damit erklärt ist, ist offen.
 
@@ -50,17 +49,17 @@ Kopf und Fuß der Startseite hat seit `8464b92` auch `about.html`. Für `explore
 
 ## Aufgabensatz und Prüfungen
 
-- Die Antworten des Aufgabensatzes in der Oberfläche ablesen, mit `uv run verification/task_set.py --browser` gegen den lokalen Server und die Aufgaben „von Hand“ mit Zeiger und Tastatur. Seit dem Umbau der Ansichten hat niemand sie abgelesen. Herkunft: distillierende Session.
+- Die als „von Hand“ markierten Aufgaben bleiben offen. Der automatisierte Browserlauf vom 2026-11-16 ist in [testing.md](testing.md) dokumentiert. US-40 bleibt eine unentschiedene Anforderung.
 - Die zwölf Aufgaben der Bedienprüfung der Raum-Zeit-Ansicht sind im Repository nicht festgehalten. `task_set.py` führt ihre Gegenstände als ST-a bis ST-l, aus den Skripten der Prüfung rekonstruiert. Herkunft: Bauende.
-- Die unabhängige Durchsicht dieser Runde vor dem Eintrag der Versionsnummer, mit axe-core über alle Ansichten. Herkunft: Operator (Vorbedingung der Version), koordinierende Session.
-- Eine unabhängige Prüfung des Korrespondenzkreises mit Zeiger und Tastatur und am Aufgabensatz. Herkunft: Bauende.
-- Nichts vom 2026-11-14 und 2026-11-15 ist bei 200 Prozent Zoom oder mit einem Screenreader geprüft. Herkunft: Bauende.
+- Die unabhängige Durchsicht der Abschlussrunde ist erfolgt. Ein neuer axe-core-Lauf über alle Ansichten bleibt offen.
+- Die weitere fachliche Prüfung des Korrespondenzkreises bleibt offen. Enter, Escape und Fokus wurden unabhängig geprüft.
+- Screenreader und eine vollständige Prüfung aller Ansichten bei 200 Prozent Zoom bleiben offen.
 
 ## Aufräumen
 
 Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren Knöpfen und Regeln, die Maschinerie der Forschungspfade, tote Regeln, ungenutzte Exporte und Getter und `renderFilterNotice()` entfernt und gemeinsame Helfer zusammengeführt ([Journal](journal.md)). Was danach ungenutzt bleibt, führt [architecture.md](architecture.md#ungenutzt). Herkunft: Operator (Folge der Schritte), Bauende, kuratierende Session.
 
-- Dateien ohne Verweis einer Seite: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, `docs/assets/logo-no-background.png`, `docs/assets/logo.jpg`, `docs/favicon.svg`. Ob sie gelöscht werden, entscheidet der Operator ([Warten auf den Operator](#warten-auf-den-operator)). `hsa.xml` liest `verification/task_set.py` für die Antwort zu US-01 und US-02, ohne die Datei meldet es dort „hsa.xml fehlt“.
+- Dateien ohne Verweis einer Seite: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, `docs/favicon.svg`. Ob sie gelöscht werden, entscheidet der Operator ([Warten auf den Operator](#warten-auf-den-operator)). `hsa.xml` liest `verification/task_set.py` für die Antwort zu US-01 und US-02, ohne die Datei meldet es dort „hsa.xml fehlt“.
 - Irreführende Modulnamen: `knowledge-path.js` enthält nur noch den Korb, `research-paths.js` nur noch die Zählung. Ein Umbenennen ändert Importe, Tests und die Context Maps.
 - Mehrfach gebaute Helfer: Hinweisfelder in Startansicht, Zeit, Raum-Zeit und Themen, Trefferprüfung auf Zeichenflächen, die zentrale Person in Briefliste (`rowCentre()`), Zeit und Netzwerk.
 - Tokens in `tokens.css`, die weder ein Stylesheet noch ein Skript liest, darunter `--color-scale-1` bis `--color-scale-4`, `--border-card`, `--border-focus`, `--radius-xl`, `--space-4xl`, `--line-height-loose`, `--z-modal-backdrop` und die Breakpoints, die als Custom Properties in Media Queries ohnehin nicht greifen.
@@ -72,10 +71,10 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 ## Warten auf den Operator
 
 - Die Abnahme aller Ansichten am Bildschirm, die er seit ihrem Umbau nicht gesehen hat.
-- Die vier Fragen aus dem Durchgang über die Ansichten, im Wortlaut im [Journal](journal.md#open).
+- Die verbleibenden Fragen aus dem Durchgang über die Ansichten, im Wortlaut im [Journal](journal.md#open).
 - Herkunft und Rechteinhaber des Logos des Werkzeugs ([data.md](data.md#rechte-und-lizenzen)).
 - Die Form des Netzwerks, fünf Fragen in [network-figures.md](network-figures.md).
-- Ob die Dateien ohne Verweis einer Seite gelöscht werden: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, zwei Logodateien in `docs/assets/` und `docs/favicon.svg` ([Aufräumen](#aufräumen)). Die Datei des Tutorials ist keine Frage mehr, sie dient als Testdatei.
+- Ob die Dateien ohne Verweis einer Seite gelöscht werden: `docs/data/hsa.xml`, `docs/data/schoenbach.xml`, `docs/favicon.svg` ([Aufräumen](#aufräumen)). Die Datei des Tutorials ist keine Frage mehr, sie dient als Testdatei.
 - Ob der Dialog „Datensatz konfigurieren“ nach dem Laden eigener Daten entfällt. Er fragt vor dem ersten Blick nach der Anreicherung, setzt sie als Vorgabe, und sein Schließen-Kreuz verwirft den Bestand.
 - Ob der Fuß der Startseite unter dem ersten Bildschirm bleibt.
 - Ob das Raster eine fünfte Tönungsstufe bekommt und die Restfläche der Treemap so groß bleibt, und ob die Anteile, wie gebaut, hinter einem Schalter stehen dürfen, wo er „daneben“ sagte.
@@ -146,7 +145,7 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 
 ## Veröffentlichung
 
-- Version. Der Operator hat `v0.9.0` entschieden (über die koordinierende Session, 2026-11-15). Die Nummer kommt in `CITATION.cff`, `codemeta.json` und `CHANGELOG.md`, nachdem die unabhängige Durchsicht dieser Runde gelaufen ist. Tag und Release setzt er selbst. `origin/main` steht auf `ce4dcf4`, die Commits dieser Runde sind beim Schreiben nicht gepusht.
+- Version. Der Operator hat `v0.9.0` entschieden (über die koordinierende Session, 2026-11-15). Die Nummer kommt in `CITATION.cff`, `codemeta.json` und `CHANGELOG.md`, nachdem die unabhängige Durchsicht dieser Runde gelaufen ist. Tag und Release setzt er selbst. Der Stand vom 2026-11-15 und die Zitierkorrektur sind gepusht. Die Abschlussrunde vom 2026-11-16 hat den Prüfstand `reviewed`. Die Veröffentlichung der Programmänderungen wird vor dem Eintrag des Versionsdatums geprüft. Tag und GitHub Release bleiben beim Operator.
 - Auf einer Folie für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der öffentlichen Demo. Herkunft: Operator.
 - Das Aufräumen der Branches neben main. Wartet auf den Operator.
 - Der Abschnitt des Aufsatzes zur Promptotyping-Methode, der das Werkzeug als Explorer für CMIF beschreibt, ändert mit der Richtung seinen Gegenstand. Der Aufsatz ist bis zur Wiederaufnahme der Schreibarbeit nicht angefasst. Herkunft: Bauende.

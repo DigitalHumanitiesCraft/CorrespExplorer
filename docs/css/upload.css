@@ -426,7 +426,7 @@ body:has(.landing) {
     stroke-width: 0.8;
 }
 
-.mini-subject {
+.mini-subject:not(.mini-subject--topic) {
     fill: var(--color-data);
 }
 

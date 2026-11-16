@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Datengrundlage
@@ -330,10 +330,10 @@ Code steht unter MIT (`LICENSE`), Dokumentation und Wissensdokumente unter CC BY
 | `docs/data/demo-showcase.xml`, `test-uncertainty.xml`, `test-letter-records*.xml`, `test-parser-cases.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | teiHeader oder diese Tabelle |
 | `docs/data/test-hostile.xml` | Synthetisch, im Projekt erstellt | CC BY 4.0 | Diese Tabelle. Das `licence`-Element der Datei bleibt absichtlich feindliche Eingabe |
 | `docs/data/test-correspsearch.json`, `test-correspsearch-empty.json` | Antworten der correspSearch-API v2.0 vom 2026-11-05, Publisher Berlin-Brandenburgische Akademie der Wissenschaften, unverändert gespeichert. Die erste Datei verzeichnet Briefe aus mehreren Editionen, die ihre `sourceDesc/bibl` nennt, die zweite ist ein leeres Ergebnis | CC BY 4.0 | `publicationStmt/availability/licence` im Kopf jeder Datei |
-| `data/geonames_coordinates.json`, `docs/data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata über die GeoNames-ID (P1566) | Wikidata CC0, der Eintrag für Genf (2660646), nur in der ausgelieferten Datei, aus GeoNames unter CC BY 4.0 | `meta.source` der ausgelieferten Datei nennt beide Quellen, das Feld `source: "geonames"` den Eintrag aus GeoNames. Ein Lizenzfeld hat `meta` nicht, die Lizenzangabe steht nur in dieser Tabelle |
+| `data/geonames_coordinates.json`, `docs/data/geonames_coordinates.json` | Ausgabe von `resolve_geonames_wikidata.py`, Koordinaten (P625) aus Wikidata über die GeoNames-ID (P1566) | Wikidata CC0, der Eintrag für Genf (2660646), nur in der ausgelieferten Datei, aus GeoNames unter CC BY 4.0 | `meta.source` der ausgelieferten Datei nennt beide Quellen, das Feld `source: "geonames"` den Eintrag aus GeoNames. `meta.default_source` und `meta.source_licenses` ordnen jedem Eintrag die Quelle mit Lizenz- und Quellen-URL zu; beide Ausgabestellen des Generators erhalten diese Angaben |
 | `docs/vendor/natural-earth/countries-110m.geo.json` | Natural Earth über world-atlas | gemeinfrei, Build-Skripte ISC | `PROVENANCE.md` daneben |
 | `docs/assets/dhcraft/` | Bausteine der Projektseiten aus `brand-assets` bei `b0641cc` | Stylesheets MIT, Schriften OFL 1.1, DHCraft-Zeichen geschützt | `LICENSE.md` und `PROVENANCE.md` daneben, Lizenzzeile im Fuß der Startseite |
-| `docs/assets/logo.jpg`, `logo-no-background.png`, `logo-no-background-no-text.png` | Das Logo des Werkzeugs (Umschlag mit Zahnrad und Auge, in zwei Dateien mit dem Schriftzug „CorrespExplorer“), eingeführt in `b79a95e` am 2025-11-26 ohne Herkunftsangabe. Es ist nicht das DHCraft-Zeichen und liegt nicht im Repository `brand-assets` (Abgleich der Prüfsummen am 2026-11-15 ohne Treffer) | Nicht festgelegt | Keine. Die Lizenzhinweise von `brand-assets` gelten für die Logos jenes Repositorys und erfassen diese Dateien nicht. Herkunft und Rechteinhaber klärt der Operator |
+| `source-material/legacy-logo/logo.jpg`, `logo-no-background.png`, `logo-no-background-no-text.png` | Das Logo des Werkzeugs (Umschlag mit Zahnrad und Auge, in zwei Dateien mit dem Schriftzug „CorrespExplorer“), eingeführt in `b79a95e` am 2025-11-26 ohne Herkunftsangabe. Es ist nicht das DHCraft-Zeichen und liegt nicht im Repository `brand-assets` (Abgleich der Prüfsummen am 2026-11-15 ohne Treffer) | Nicht festgelegt | Keine. Die Lizenzhinweise von `brand-assets` gelten für die Logos jenes Repositorys und erfassen diese Dateien nicht. Die Dateien bleiben außerhalb von `docs/` erhalten und werden nicht ausgeliefert. Die Oberfläche verwendet die DHCraft-Marke mit der Nutzungserlaubnis aus `docs/assets/dhcraft/LICENSE.md`; Herkunft und Rechteinhaber der alten Dateien bleiben offen |
 
 Externe Quellen, die Nutzende zur Laufzeit laden, sind nicht gebündelt, ihre Lizenz steht im teiHeader der geladenen Datei und in der Übersicht. Die correspSearch-API gibt ihre Ergebnisse laut Dokumentation unter CC BY 4.0 aus.
 

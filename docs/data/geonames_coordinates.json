@@ -7,7 +7,25 @@
       "2660646",
       "3061643",
       "3079273"
-    ]
+    ],
+    "default_source": "wikidata",
+    "source_licenses": {
+      "wikidata": {
+        "name": "Wikidata",
+        "url": "https://www.wikidata.org/",
+        "license": "CC0-1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "policy_url": "https://www.wikidata.org/wiki/Wikidata:Licensing"
+      },
+      "geonames": {
+        "name": "GeoNames",
+        "url": "https://www.geonames.org/",
+        "license": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "policy_url": "https://www.geonames.org/about.html",
+        "modifications": "Coordinates and name extracted from RDF and converted to JSON."
+      }
+    }
   },
   "coordinates": {
     "2363686": {

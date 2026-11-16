@@ -1,6 +1,21 @@
+---
+title: JavaScript Context Map
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2026-11-16
+updated: 2026-11-16
+related: [../architecture, ../testing, ../design]
+---
+
 # JavaScript Context Map
 
-ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/architecture.md), die Ansichtsmodule [views/CONTEXT-MAP.md](views/CONTEXT-MAP.md), die Tests [tests/CONTEXT-MAP.md](tests/CONTEXT-MAP.md).
+ES-Module ohne Build-Schritt. Aufbau und Datenfluss beschreibt [architecture.md](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/architecture.md), die Ansichtsmodule [views.md](views.md), die Tests [tests.md](tests.md).
 
 ## Einstiegspunkte
 

@@ -17,7 +17,7 @@ import { initLettersDrawer, updateLettersDrawer, setDrawerOpen } from './views/l
 import { initOverviewView, renderOverview, renderDatasetFacts } from './views/overview-view.js';
 import { countOf, renderLanguageKey, languageCategory } from './selection-ui.js';
 import { initMapView, updateMapPlaces, resizeMap, aggregateLettersByPlace } from './views/map-view.js';
-import { initSpacetimeView, renderSpacetime } from './views/spacetime-view.js';
+import { initSpacetimeView, renderSpacetime, spacetimeCounts } from './views/spacetime-view.js';
 import { initPersonsView, renderPersonsList } from './views/persons-view.js';
 import { initLettersView, renderLettersList, showLetterDetail, clearLetterSearch } from './views/letters-view.js';
 import { initTimelineView, renderTimeline as renderTimelineView } from './views/timeline-view.js';
@@ -208,6 +208,11 @@ function updateViewTitle() {
     } else if (currentView === 'map') {
         // The map draws the places that have coordinates; the same count form as every title (rule 7)
         title.textContent = `${countOf(Object.keys(placeAggregation).length, mapPlacesTotal, 'Orte', 'Orten')} auf der Karte`;
+    } else if (currentView === 'spacetime') {
+        const places = spacetimeCounts();
+        title.textContent = places
+            ? `${countOf(places.shown, places.total, 'Orte', 'Orten')} mit Koordinaten und Jahr`
+            : 'Orte mit Koordinaten und Jahr';
     } else if (currentView === 'network' || currentView === 'mentions-flow') {
         // Not visible: both name what they show in their own line under the header
         title.textContent = currentView === 'network' ? 'Netzwerk der Personen' : 'Erwähnungen';

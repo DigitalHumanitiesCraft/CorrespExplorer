@@ -1,3 +1,18 @@
+---
+title: CSS Context Map
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2026-11-16
+updated: 2026-11-16
+related: [../architecture, ../testing, ../design]
+---
+
 # CSS Context Map
 
 Border-basiertes Design mit Design-Tokens. Werte und Begründungen stehen in [design.md](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/design.md), `tokens.css` ist für Farben, Abstände und Schrift maßgeblich.

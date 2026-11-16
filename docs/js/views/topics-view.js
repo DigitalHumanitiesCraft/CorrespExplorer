@@ -363,7 +363,7 @@ export function renderTopicsList() {
     // The shared key explains the language colours of the subjects and is the language filter;
     // its last mark names the data tone of the other subjects
     deps.renderLanguageKey?.(el('topics-language-key'), {
-        others: profiles.subjects.some(s => !s.hue) ? [{ label: 'Übrige Themen', color: ink.steps[2] }] : []
+        others: profiles.subjects.some(s => !s.hue) ? [{ label: 'Thema', color: ink.topic }] : []
     });
     model = {
         profiles,
@@ -425,7 +425,7 @@ function readInk() {
     ink = {
         chosen: token('--color-primary'), text: token('--color-text'), grid: token('--color-border-light'),
         rule: token('--color-border-control'), quiet: token('--color-text-light'), band: token('--color-bg-light'),
-        paper: token('--color-bg'),
+        paper: token('--color-bg'), topic: token('--color-role-topic'),
         steps: [1, 2, 3, 4].map(n => token(`--tp-step-${n}`))
     };
 }

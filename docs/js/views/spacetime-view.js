@@ -264,6 +264,11 @@ function lettersBesidePick() {
     return state.filterLetters({ ...state.filters, place: null, year: null });
 }
 
+// Count the places actually drawable in this view, which also requires a dated letter.
+export function spacetimeCounts() {
+    return model ? { shown: model.places.length, total: groundCache.placeCount } : null;
+}
+
 export function renderSpacetime() {
     const svg = el('spacetime-figure');
     if (!svg) return;
@@ -276,6 +281,7 @@ export function renderSpacetime() {
         groundCache.letters = all;
         const whole = aggregatePlaceYears(all, placesIndex);
         groundCache.layout = groundLayout(whole.places);
+        groundCache.placeCount = whole.places.length;
         groundCache.land = null;
         // Widths and rings are scaled to the whole dataset, so the same width means the same
         // number of letters under every filter

@@ -1,8 +1,30 @@
 # Changelog
 
-Changes to CorrespExplorer that a user or a maintainer notices. The repository carries no release tag yet, so everything stands under Unreleased until the first version is tagged. The reasons behind each change are in [knowledge/journal.md](knowledge/journal.md).
+Changes to CorrespExplorer that a user or a maintainer notices. Version 0.9.0 is prepared below; its Git tag and GitHub Release are pending. The reasons behind each change are in [knowledge/journal.md](knowledge/journal.md).
 
 ## Unreleased
+
+## 0.9.0 (prepared 2026-11-16)
+
+Release preparation, verification status `reviewed`. Module and browser smoke tests pass. A fresh independent agent found no material code or rendering blocker in the reviewed scope. The fixed task set retains one unresolved mismatch and manual tasks. This is a research preview, without scholarly validation or a guarantee of stable interfaces.
+
+### Release corrections
+
+- Use the same language colours on the start page and in the explorer, including languages outside the former three-language subset.
+- Use one topic colour across the start page, dashboard and topics view.
+- Let the shared language key wrap within its available width.
+- Label the network level containing correspondents and mentioned persons as a union, and distinguish the places drawable on the map from those with dates in space-time.
+- Clear an ego-network person selection with Escape and restore keyboard focus.
+- Move internal module maps and the legacy tool logos out of the Pages directory; use the DHCraft mark under its existing permission.
+- Include source-specific licence metadata in the coordinate tables and their generator, preserving all coordinate values.
+
+### Known limitations
+
+- The proposed task US-40 asks for letters mentioning people; the start page shows the number of distinct mentioned people. This remains an undecided requirement, not a passing task.
+- The shared letter-model statements and the combined register are future work.
+- The interface density checker reports threshold exceedances on entry pages and narrow explorer views. The existing layouts remain in place. Full UI acceptance is pending.
+- Screen-reader use and browsers other than Chrome have not been systematically tested. External services remain subject to availability.
+- The original tool logos remain outside the website until their provenance and rights are established.
 
 Work of November 2026.
 

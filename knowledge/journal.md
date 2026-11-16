@@ -23,48 +23,26 @@ related: [project, specification, plan]
 
 ## Open
 
-Stand vom 2026-11-15 abends, kontrolliertes Ende auf Wunsch des Operators. Am Commit `c516485` und dem Commit dieses Abschnitts bestehen 193 von 193 Modultests, 19 von 19 Smoke-Prüfungen und die Korpusprüfung am Bestand von Stefan Zweig Digital. Eine unabhängige Prüfung (Opus 5.5, frischer Kontext) der Runde fand drei wesentliche Fehler, alle behoben in `c516485` ([Eintrag](#2026-11-15-unabhängige-prüfung-der-runde-1-und-behebung)). Gepusht ist dieser Stand mit dem Commit dieses Abschnitts. Die Version ist noch nicht eingetragen. Seine Sätze stehen wörtlich in [design.md](design.md#rückmeldungen-des-operators).
+Die Abschlussrunde vom 2026-11-16 ist unabhängig geprüft, Prüfstand `reviewed`. Programmänderungen und Release-Unterlagen sind für 0.9.0 vorbereitet. Tag und GitHub Release setzt der Operator. Das Versionsdatum wird erst nach einem verifizierten Pages-Deployment eingetragen. Prüfungen und ihre Grenzen stehen im neuesten Eintrag und in [testing.md](testing.md).
 
-Beim Wiedereinstieg, in dieser Folge:
+Beauftragt und zurückgestellt bleiben das gemeinsame Register aus Briefen, Personen und Orten sowie die Anpassung von Kopf und Fuß des Explorers. Die akzeptierte Startseite, die Startansicht und die Wahl von Raster und Treemap bleiben erhalten.
 
-1. Abnahme nach der Anweisung des Operators vom 2026-11-15, über die koordinierende Session weitergegeben: „Gerade keine Frontends mehr abnehmen. Du kannst das einfach mit eigenen Subagents jeweils machen. Wenn die das sehr gut finden, dann ist es abgenommen.“ Ein frischer Opus-5.5-Subagent ohne Vorwissen sieht die Oberfläche bei 2000, 1280 und 360 Pixel an, beschreibt jede Ansicht, löst den Aufgabensatz (`verification/task_set.py`) an der Oberfläche und prüft gegen `Coding/Webentwicklung/UI-Praxis für agentisch erzeugte Frontends.md` im Vault. Nur ein Urteil ohne wesentlichen Befund gilt, sonst nachbessern und einen neuen frischen Leser lesen lassen. Das Urteil kommt mit seinen Worten in dieses Journal.
-2. Danach `0.9.0` mit dem erreichten Prüfstand (höchstens `reviewed`) nach der Konvention „Versionen und Prüfstand“ im Vault eintragen: `CHANGELOG.md` mit Nummer, Datum, Prüfstand, wer geprüft hat und was ungeprüft blieb, `CITATION.cff` (`version`, `date-released`), `codemeta.json` (`version`, `datePublished`) und README. Der Operator hat entschieden: „ja, v0.9.0 passt“. Dann pushen, die Live-Seite prüfen und der koordinierenden Session den Commit und die Befehle für Tag und Release nennen, die er oder sie auf sein Wort setzt.
-3. Die nicht wesentlichen Befunde der unabhängigen Prüfung, soweit sie keine Entscheidung brauchen (siehe den Eintrag).
+Beim Operator bleiben die fachlichen und gestalterischen Entscheidungen aus [plan.md](plan.md#warten-auf-den-operator), insbesondere die Form des Netzwerks, die Zählgröße von US-40, die Darstellung des gemeinsamen Briefmodells und die Herkunft der Altlogos. Die Altlogos liegen unverändert außerhalb der Website. Zur Sprachlegende wurde kein Überlauf reproduziert, sie kann jetzt umbrechen. Die übrigen Fragen zu sichtbaren Gruppennamen, gemeinsamer Zeitskala und Organisationen bleiben offen.
 
-Beauftragt und nicht gebaut:
+Ohne fachliche Entscheidung offen bleiben die manuellen Aufgaben, Screenreader, andere Browser, eine vollständige Zoom-Prüfung und der neue axe-core-Lauf. Die Dichtemessung meldet Überschreitungen, dokumentiert in [testing.md](testing.md). Weitere Befunde wie doppelte Ortskennungen, zusätzliche Sprachlisten und die Bedienung des Wissenskorbs bleiben im Plan.
 
-- Briefe, Personen und Orte als ein Register mit Facetten ([US-47](specification.md#us-47-briefe-personen-und-orte-in-einem-register)). Zurückgestellt, bis der Operator die Ansichten abgenommen hat, dann als benannte Fassung neben den bestehenden Ansichten am Hugo Schuchardt Archiv. Derselbe Schritt führt Liste und Vergleich zusammen.
-- Kopf und Fuß der Startseite für `explore.html`. Zurückgestellt, weil die Kopfzeile des Explorers seine Navigation ist. `about.html` hat sie seit `8464b92`.
-
-Vom Operator gesehen und gutgeheißen, entfällt nur auf sein Wort:
-
-- Die Startansicht des Explorers im Stand von `b189cb5` („Ja, das finde ich gut“).
-- Die Startseite als Figur („Das finde ich ehrlich gesagt jetzt schon sehr gut“), mit seinen Aufträgen dazu, die in `d38b4c8` gebaut sind und die er noch nicht gesehen hat.
-- Das Raster als Themenansicht mit der Treemap als Anteile (seine Wahl), gebaut, von ihm im Endstand nicht gesehen.
-
-Wartet auf den Operator:
-
-- Vier Fragen aus dem Durchgang über die Ansichten, je mit dem gebauten Stand:
-  1. Die Themen, die Sprachen sind, stehen im Raster als eigene Gruppe nach den übrigen Themen, getrennt nur durch eine Linie und mit „(Sprache)“ im zugänglichen Namen, ohne sichtbaren Gruppennamen. Genügt das, oder braucht die Gruppe einen sichtbaren Namen?
-  2. Die Sprachlegende in jeder Ansicht übersteigt bei 360 Pixel Breite die Grenze der Bedienelemente. Wird sie auf dem Telefon kompakt, oder tritt dort Regel 2 (die Legende ist überall der Sprachfilter) zurück?
-  3. Die Zeitansicht zeigt den ganzen Bestand blass hinter der Auswahl auf derselben Skala. Eine kleine Auswahl wird dadurch flach. Bleibt die gemeinsame Skala?
-  4. Der Ring der nur erwähnten Personen im Korrespondenzkreis steht in Tinte, Organisationen stehen in der Sprachfarbe und unterscheiden sich von Personen nur durch die Form. Ist das so recht?
-- Das Logo des Werkzeugs (Umschlag mit Zahnrad und Auge, `docs/assets/logo.jpg`, `logo-no-background.png`, `logo-no-background-no-text.png`) hat keine dokumentierte Herkunft ([data.md](data.md#rechte-und-lizenzen)). Vorschlag für die Seite, bis er antwortet: „Logo des Werkzeugs, Digital Humanities Craft OG“ nur, wenn er den Rechteinhaber bestätigt, sonst keine Angabe.
-- Ob die fünf Dateien gelöscht werden, auf die keine Seite verweist: `docs/data/hsa.xml` (19.476.438 Byte), `docs/data/schoenbach.xml` (4.957 Byte), `docs/assets/logo-no-background.png` (855.801 Byte), `docs/assets/logo.jpg` (384.730 Byte), `docs/favicon.svg` (255 Byte). Suche nach den Dateinamen über `docs/`, `tests/`, `verification/`, `preprocessing/` und `README.md` am 2026-11-15: `schoenbach.xml` nennt nur sich selbst, die beiden Logodateien und `favicon.svg` nennt nichts. `hsa.xml` liest `verification/task_set.py` für die Antwort zu US-01 und US-02 (ohne die Datei meldet es „hsa.xml fehlt“), `preprocessing/resolve_geonames_wikidata.py` überspringt sie beim Namen. Ein Löschen von `hsa.xml` verlangt deshalb eine Änderung des Aufgabensatzes. `logo-no-background-no-text.png` ist Favicon aller Seiten und Zeichen der Startseite und kein Kandidat.
-- Die Form des Netzwerks, fünf Fragen in [network-figures.md](network-figures.md).
-- Ob der Dialog nach dem Laden eigener Daten entfällt, ob der Fuß unter dem ersten Bildschirm bleibt, ob das Raster eine fünfte Stufe bekommt und die Restfläche der Treemap so groß bleiben soll, was von der Chronik endgültig entfällt, ob der Zeitraum feiner als ein Jahr wählbar wird, die Signatur in der Briefzeile, der Befund zu US-40 (die Startseite zählt erwähnte Personen, die Aufgabe fragt nach Briefen), dazu die älteren Fragen in [plan.md](plan.md#warten-auf-den-operator).
-- Die Abnahme der Oberfläche geht vorerst nicht an ihn, sie ist das Urteil eines frischen Subagenten (oben, Schritt 1). Auf einer Folie für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der öffentlichen Demo, die Kartenansicht besteht weiter.
-
-Offen ohne Entscheidung:
-
-- In den Themenzeilen der Startansicht stehen drei Farbfamilien ohne Erklärung, die Zahl der Briefe steht allein in der Auswahlzeile (Befund der koordinierenden Session am Bild). Die Sprachlegende nennt am Ende „Übrige Sprachen“ und „Thema“, ob das den Befund erledigt, hat niemand beurteilt.
-- Ein Ort des Hugo Schuchardt Archivs (Wien) steht unter zwei Kennungen.
-- Mit einem Screenreader ist nichts geprüft. Bei 200 Prozent Zoom halten Startseite, Startansicht und Briefliste ohne seitliches Scrollen (unabhängige Prüfung vom 2026-11-15), die übrigen Ansichten sind dabei nicht geprüft.
-- Aus der unabhängigen Prüfung, nicht wesentlich und nicht behoben, weil sie eine Entscheidung brauchen: Neben der Sprachlegende steht außerhalb der Startansicht das Sprachfeld der Schiene, das Ortsdetail und der Vergleich führen eigene Sprachlisten (Regel 2 und 11). Themen, die keine Sprache sind, haben in der Startansicht Violett und die Marke „Thema“, in der Themenansicht den Datenton und „Übrige Themen“, die Startseite färbt Spanisch als übrige Sprache (Regel 5). Karte und Raum-Zeit zählen Orte nach verschiedenen Definitionen, der Netzwerkschalter nennt „Erwähnte 2.486“ (Korrespondenten und nur Erwähnte), die Startseite „Erwähnte Personen 2.080“ (Regel 7). Unter Filtern, die nicht in der Figur gesetzt sind, zeigen Karte, Netzwerk und Raum-Zeit kein blasses Ganzes (Regel 6, nach ADR-003 vermutlich gewollt). Netzwerk und Erwähnungen haben keinen sichtbaren Titel (Regel 10). Escape gibt im Korrespondenzkreis die Wahl einer Person nicht frei (Regel 8). Die Tabellenlinks heißen und stehen je Ansicht verschieden (Regel 4). Der Änderungsvermerk des Archivs steht im Bestandsfeld englisch. Die Zeitspanne der Seitenleiste schreibt „min - max“.
-- Der Fehler 404 im Lauf der Modultests ist `data/does-not-exist.xml`, eine Anfrage, die ein Test absichtlich ins Leere schickt.
-- Aus der Prüfung des ausgelieferten Stands, nicht behoben: `geonames_coordinates.json` nennt seine Quellen und keine Lizenz, die Angabe steht nur in [data.md](data.md#rechte-und-lizenzen). Jede Seite verlinkt die Wissensbasis auf GitHub, die wörtliche Sätze des Operators und Notizen der Sessions enthält. Die vier Modulübersichten unter `docs/` sind deutsch.
+Der README-Vorschlag vom 2026-11-16 konzentriert den Einstieg auf Forschungszweck und Nutzung. Eine umfassende Neufassung ist nicht beauftragt. Die Release-Runde korrigiert nur sachliche Aussagen und den Versionsstand.
 
 ## Einträge
+
+### 2026-11-16 Abschlussrunde für 0.9.0
+
+- Auftrag des Operators, den Stand unabhängig zu prüfen, Tag und Release vorzubereiten sowie zu committen und zu pushen. Tag und Release bleiben beim Operator.
+- Sprachfarben zwischen Startseite und Explorer vereinheitlicht, nichtsprachliche Themen durchgehend violett, Sprachlegende umbrechbar. Die frühere Behauptung eines HSA-Überlaufs bei 360 Pixeln ließ sich nicht reproduzieren. Der Netzwerkschalter heißt „Mit Erwähnten“, Escape hebt die Personenauswahl auf und stellt den Fokus wieder her. Raum-Zeit zählt die tatsächlich darstellbaren Orte mit Koordinaten und Jahr.
+- Interne Modulübersichten nach `knowledge/context-maps/` verschoben. Altlogos mit ungeklärter Herkunft unverändert nach `source-material/legacy-logo/` verschoben. Die Website verwendet die vorhandene DHCraft-Marke unter ihrer dokumentierten Erlaubnis. Koordinatentabellen und Generator nennen Wikidata CC0 und GeoNames CC BY 4.0 getrennt, sämtliche Koordinatenwerte bleiben unverändert.
+- Hauptsession prüfte vollständigen Smoke-Test einschließlich Modultests, festen Aufgabensatz im Browser, JavaScript-Syntax, Ruff und CFF. Der Aufgabensatz ist nicht vollständig bestanden. Die einzelne Abweichung US-40 und manuelle Aufgaben bleiben ausdrücklich offen. Die Dichtemessung ist ebenfalls nicht vollständig bestanden. Ergebnisse und nicht ausgeführte Prüfungen stehen in [testing.md](testing.md).
+- Ein frischer, nur lesender Subagent prüfte die Oberfläche unabhängig bei 2000, 1280 und 360 Pixeln, den Datei-Upload, Netzwerkbedienung und Raum-Zeit-Zählung. Sein Urteil lautet: „Kein materieller Code- oder Darstellungsblocker für den begrenzten v0.9.0-Preview gefunden. Die Prüfung ersetzt keine fachliche Abnahme.“ Er las die relevanten Code-Diffs, Lizenztexte und US-40 vollständig, übrige Projektquellen selektiv. Die Hauptsession glich den Bericht mit Arbeitsbaum, Testausgaben und ausgewählten Bildern ab. Der angeforderte Claude-Reviewer war in dieser Umgebung nicht verfügbar, die Subagents nutzten das Standardmodell der Umgebung.
+- Prüfstand `reviewed` für den begrenzten Preview. Versionsdatum und Zitiermetadaten folgen erst nach dem erfolgreichen Pages-Deployment. Keine fachliche Validierung, kein Tag und kein GitHub Release durch die Session.
 
 ### 2026-11-16 Veröffentlichungsdatum im Zitierhinweis
 

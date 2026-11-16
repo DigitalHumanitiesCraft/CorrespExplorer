@@ -1572,6 +1572,16 @@ function setupEgoControls() {
         }
     });
 
+    // Escape follows the existing clear action and restores focus after the figure redraws.
+    ['network-graph', 'network-ego-list'].forEach(id => {
+        elements.getById(id)?.addEventListener('keydown', event => {
+            if (event.key !== 'Escape' || networkMode !== 'ego' || !state.filters.person) return;
+            event.preventDefault();
+            event.stopPropagation();
+            elements.getById('network-corner')?.querySelector('[data-ego="clear"]')?.click();
+        });
+    });
+
     elements.getById('network-ego-list')?.addEventListener('click', event => {
         const button = event.target.closest('button[data-action]');
         const id = button?.closest('[data-id]')?.dataset.id;
@@ -1659,9 +1669,8 @@ function renderLevelSwitch(model, hasMentions) {
     if (hasMentions) {
         segments.push({
             value: 'mentions',
-            html: `Erwähnte <strong>${formatNumber(counts.mentions)}</strong>` +
-                (counts.hollow ? ` <span class="ego-sign ego-sign--hollow" aria-hidden="true"></span><strong>${formatNumber(counts.hollow)}</strong>` : ''),
-            label: `Erwähnte: ${plural(counts.mentions, 'Person', 'Personen')} im Briefwechsel und in den Briefen genannt` +
+            html: `Mit Erwähnten <strong>${formatNumber(counts.mentions)}</strong>`,
+            label: `Mit Erwähnten: ${plural(counts.mentions, 'Person', 'Personen')} im Briefwechsel oder in den Briefen genannt` +
                 (counts.hollow ? `, davon ${formatNumber(counts.hollow)} ohne eigenen Brief` : '')
         });
     }

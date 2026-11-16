@@ -8,7 +8,7 @@
 // example letter, and the marks move. Every number comes from summarizeLetters()
 // (start-summary.js) or from data/examples.json, its port for the Hugo Schuchardt Archiv.
 
-import { computeLanguageColors, languageLabel, NO_LANGUAGE } from './constants.js';
+import { computeLanguageColors, languageLabel, LANGUAGE_LABELS, NO_LANGUAGE } from './constants.js';
 import { parseCMIFFiles } from './cmif-parser.js';
 import { formatSingleDate, formatNumber as format, plural } from './formatters.js';
 import { summarizeLetters, recordOf, STATEMENTS, letterTime } from './start-summary.js';
@@ -18,8 +18,6 @@ import { loadLand, mapFrame, frameProjection, landPath, smallGeometry } from './
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const SUMMARY_URL = 'data/examples.json';
-// The key names three languages; the rest share the grey of "übrige Sprachen" as in the explorer
-const NAMED_LANGUAGES = 3;
 const AXIS_ROOM = 16;
 // Room at the left of a list figure for the mark of the letter, so it never covers a name
 const INSET = 26;
@@ -852,7 +850,7 @@ function drawLanguages({ data, marks, width, height, colors }) {
 
 // The subjects most named, as small year profiles on one scale, as many as the height holds (the
 // letter's own subject among them where it is)
-function drawSubjects({ data, marks, width, height, summary }) {
+function drawSubjects({ data, marks, width, height, summary, colors }) {
     const list = summary.subjects || [];
     const rows = Math.max(1, Math.min(list.length, Math.floor(height / SUBJECT_ROW)));
     const shown = list.slice(0, rows);
@@ -862,6 +860,9 @@ function drawSubjects({ data, marks, width, height, summary }) {
     const rowHeight = height / rows;
     const items = [];
     shown.forEach(([label, years], index) => {
+        const language = colors.find(item => item.label === label);
+        const color = language?.color || (Object.values(LANGUAGE_LABELS).includes(label)
+            ? colors.find(item => item.key === 'other')?.color : null) || 'var(--color-role-topic)';
         const y0 = index * rowHeight;
         const plot = rowHeight - 20;
         const name = node('text', { x: 0, y: y0 + 12, class: 'mini-label' });
@@ -869,7 +870,7 @@ function drawSubjects({ data, marks, width, height, summary }) {
         items.push(name, node('line', { x1: 0, x2: width, y1: y0 + 16 + plot + 0.5, y2: y0 + 16 + plot + 0.5, class: 'mini-baseline' }));
         years.filter(([year]) => year >= summary.first && year <= summary.last).forEach(([year, n]) => {
             const h = Math.max((n / max) * plot, 1);
-            items.push(node('rect', { x: (year - summary.first) * band, y: y0 + 16 + plot - h, width: Math.max(band - (band >= 4 ? 1 : 0), 0.5), height: h, class: 'mini-subject' }));
+            items.push(node('rect', { x: (year - summary.first) * band, y: y0 + 16 + plot - h, width: Math.max(band - (band >= 4 ? 1 : 0), 0.5), height: h, fill: color, class: 'mini-subject mini-subject--topic' }));
         });
     });
     data.replaceChildren(...items);
@@ -975,8 +976,7 @@ function languageSeries(languages) {
     const palette = { ...computeLanguageColors(standIns) };
     const ranked = Object.keys(languages)
         .filter(code => code !== NO_LANGUAGE && palette[code])
-        .sort((a, b) => languages[b] - languages[a] || (a < b ? -1 : 1))
-        .slice(0, NAMED_LANGUAGES);
+        .sort((a, b) => languages[b] - languages[a] || a.localeCompare(b));
     const series = ranked.map(code => ({ key: code, label: languageLabel(code), color: palette[code], count: languages[code] }));
     const rest = Object.entries(languages)
         .filter(([code]) => code !== NO_LANGUAGE && !ranked.includes(code))

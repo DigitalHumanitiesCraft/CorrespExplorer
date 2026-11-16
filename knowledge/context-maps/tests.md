@@ -1,3 +1,18 @@
+---
+title: Test Context Map
+project:
+  name: CorrespExplorer
+  repository: https://github.com/DigitalHumanitiesCraft/CorrespExplorer
+method:
+  name: Promptotyping
+  url: https://dhcraft.org/Promptotyping/
+status: draft
+language: de
+created: 2026-11-16
+updated: 2026-11-16
+related: [../architecture, ../testing, ../design]
+---
+
 # Test Context Map
 
 Browser-Tests ohne externe Abhängigkeiten. Regeln und Abdeckung stehen in [testing.md](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/blob/main/knowledge/testing.md). Die in `run-all-tests.js` registrierten Suites sind die Quelle der Wahrheit, Anzahl und Ergebnis zeigt `test.html` beim Lauf.
@@ -24,7 +39,7 @@ Browser-Tests ohne externe Abhängigkeiten. Regeln und Abdeckung stehen in [test
 - test-correspsearch.js - `correspSearchShareUrl()` nur für Adressen der API, `datasetFromPages()` an den gespeicherten API-Antworten `data/test-correspsearch.json` (Briefe, Herausgeber, Lizenz) und `data/test-correspsearch-empty.json` (Abbruch ohne Treffer)
 - test-dom-cache.js - Element-Caching über `getById()` und `initDOMCache()`
 - test-basket.js - `addItemsToBasket()` mit einer Benachrichtigung und Abmelden des Listeners, Setup und Teardown sichern und schreiben einen vorhandenen Korb des Fixture-Datensatzes zurück, URL-Teilen im Format `basket_v=2` mit Namensschlüsseln, die Kommas enthalten, Entfernen veralteter Parameter, ältere Links ohne `basket_v`, Zusammenführen und Datensatzprüfung in `loadBasketFromUrl()`, `csvCell` mit Anführungszeichen und der Formelschutz von `lettersToCsv()` aus `test-hostile.xml`, `addEntityToBasket()` legt Person und Ort ohne Briefe ab
-- ../../test.html - Oberfläche des Runners mit dem einzigen Auslöser eines Laufs
+- docs/test.html - Oberfläche des Runners mit dem einzigen Auslöser eines Laufs
 
 ## Ausführung
 

@@ -73,12 +73,21 @@ def _serve() -> tuple[ThreadingHTTPServer, str]:
     return server, f"http://127.0.0.1:{server.server_address[1]}/"
 
 
-
 # The header offers subjects; a view is reached through its subject and, where the subject has
 # several representations, through the switch in the view header
-GROUP_OF = {"overview": "overview", "letters": "letters", "persons": "persons", "network": "persons",
-            "mentions-flow": "persons", "comparison": "persons", "map": "places", "spacetime": "places", "places": "places",
-            "timeline": "time", "topics": "topics"}
+GROUP_OF = {
+    "overview": "overview",
+    "letters": "letters",
+    "persons": "persons",
+    "network": "persons",
+    "mentions-flow": "persons",
+    "comparison": "persons",
+    "map": "places",
+    "spacetime": "places",
+    "places": "places",
+    "timeline": "time",
+    "topics": "topics",
+}
 
 
 def _open_view(page, view: str) -> None:
@@ -113,6 +122,53 @@ class Smoke:
         return self.browser.new_context(
             viewport={"width": 1366, "height": 900}, accept_downloads=True
         )
+
+    def release_ui_regressions(self) -> None:
+        """Keep filters reachable and preserve the same language colours across pages."""
+        ctx = self.context()
+        page = ctx.new_page()
+        for width in (360, 768, 1280):
+            page.set_viewport_size({"width": width, "height": 800})
+            page.goto(f"{self.base}explore.html?view=overview&{HSA}")
+            _loaded(page)
+            page.wait_for_selector(".language-key__mark", timeout=30_000)
+            fits = page.locator(".language-key:visible").evaluate(
+                "e => e.scrollWidth <= e.clientWidth + 1"
+            )
+            assert fits, f"language filter overflows at {width}px"
+
+        explorer_colours = page.locator(".language-key__mark").evaluate_all(
+            "els => Object.fromEntries(els.map(e => [e.dataset.key, "
+            "getComputedStyle(e).getPropertyValue('--language').trim()]))"
+        )
+        page.goto(self.base + "index.html")
+        page.wait_for_selector(".stmt-key .record-swatch", timeout=30_000)
+        start_colours = page.locator(".stmt-key .record-swatch").evaluate_all(
+            "els => els.map(e => e.style.backgroundColor)"
+        )
+        for colour in explorer_colours.values():
+            rgb = page.evaluate(
+                "colour => { const e = document.createElement('span'); "
+                "e.style.color = colour; document.body.append(e); "
+                "const value = getComputedStyle(e).color; e.remove(); return value; }",
+                colour,
+            )
+            assert rgb in start_colours, f"start figure lacks language colour {colour}"
+
+        page.goto(f"{self.base}explore.html?view=network&{HSA}")
+        _loaded(page)
+        node = page.locator(".ego-node:not(.ego-node--centre)").first
+        node.wait_for(timeout=30_000)
+        node.focus()
+        node.press("Enter")
+        page.wait_for_function("new URL(location.href).searchParams.has('person')")
+        page.locator(".ego-node--centre").focus()
+        page.keyboard.press("Escape")
+        page.wait_for_function("!new URL(location.href).searchParams.has('person')")
+        assert page.locator(".ego-node--centre").evaluate(
+            "e => e === document.activeElement"
+        ), "Escape did not restore focus in the network"
+        ctx.close()
 
     def test_runner(self) -> None:
         ctx = self.context()
@@ -170,7 +226,9 @@ class Smoke:
         page = ctx.new_page()
         errors: list[str] = []
         page.on("pageerror", lambda e: errors.append(str(e)))
-        page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+        page.on(
+            "console", lambda m: errors.append(m.text) if m.type == "error" else None
+        )
         views = {}
         for old in ("activity", "chronik"):
             page.goto(f"{self.base}explore.html?view={old}&{HSA}&demo=true&tour=0")
@@ -186,7 +244,9 @@ class Smoke:
         ctx = self.context()
         page = ctx.new_page()
         page.on("pageerror", lambda e: errors.append(str(e)))
-        page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+        page.on(
+            "console", lambda m: errors.append(m.text) if m.type == "error" else None
+        )
         page.goto(self.base + "explore.html?view=network&demo=true&tour=0")
         page.wait_for_url("**/index.html", timeout=15_000)
         notice = page.locator("#error-message").is_visible()
@@ -194,12 +254,22 @@ class Smoke:
         page.wait_for_selector("#model .stmt")
         start = page.url
         ctx.close()
-        assert all(v == "timeline-view" for v in views.values()), f"old views opened {views}"
+        assert all(v == "timeline-view" for v in views.values()), (
+            f"old views opened {views}"
+        )
         assert not notice, "a tutorial link shows the missing-dataset notice"
-        assert "index.html" in start, f"index.html?demo=true left the start page: {start}"
-        assert not explorer_errors, f"{len(explorer_errors)} errors, first: {explorer_errors[0]}"
-        script_errors = [e for e in errors if not e.startswith("Failed to load resource")]
-        assert not script_errors, f"{len(script_errors)} errors, first: {script_errors[0]}"
+        assert "index.html" in start, (
+            f"index.html?demo=true left the start page: {start}"
+        )
+        assert not explorer_errors, (
+            f"{len(explorer_errors)} errors, first: {explorer_errors[0]}"
+        )
+        script_errors = [
+            e for e in errors if not e.startswith("Failed to load resource")
+        ]
+        assert not script_errors, (
+            f"{len(script_errors)} errors, first: {script_errors[0]}"
+        )
 
     def missing_dataset_notice(self) -> None:
         ctx = self.context()
@@ -298,7 +368,9 @@ class Smoke:
         tab = page.locator('.view-group-btn[data-group="persons"]')
         menu = page.locator("#view-group-menu-persons")
         focused = page.evaluate("document.activeElement.dataset.group")
-        closed_on_focus = not menu.is_visible() and tab.get_attribute("aria-expanded") == "false"
+        closed_on_focus = (
+            not menu.is_visible() and tab.get_attribute("aria-expanded") == "false"
+        )
         page.keyboard.press("Enter")
         opened = menu.is_visible() and tab.get_attribute("aria-expanded") == "true"
         page.keyboard.press("Escape")
@@ -308,7 +380,9 @@ class Smoke:
         assert focused == "persons", f"Tab reached {focused}"
         assert closed_on_focus, "focus on the tab opened its menu"
         assert opened, "Enter did not open the menu"
-        assert closed and back == "persons", f"Escape left the menu open or focus on {back}"
+        assert closed and back == "persons", (
+            f"Escape left the menu open or focus on {back}"
+        )
 
     def basket_takes_person(self) -> None:
         ctx = self.context()
@@ -354,17 +428,25 @@ class Smoke:
         page.goto(f"{self.base}explore.html?view=timeline&{HSA}")
         _loaded(page)
         page.click('.tv-bar[data-year="1900"]', position={"x": 2, "y": 4})
-        page.wait_for_function("new URLSearchParams(location.search).get('yearMin') === '1900'")
+        page.wait_for_function(
+            "new URLSearchParams(location.search).get('yearMin') === '1900'"
+        )
         # The time view has no show-letters button of its own any more; the selection line opens
         # the drawer, as under every view
         page.click("#letters-drawer-toggle")
         page.wait_for_selector("#letters-drawer-panel:not(.hidden)")
         count = page.inner_text("#letters-drawer-count").split(" ")[0].replace(".", "")
         url = page.url
-        in_list = page.evaluate("() => !!document.activeElement.closest('#letters-drawer-list')")
+        in_list = page.evaluate(
+            "() => !!document.activeElement.closest('#letters-drawer-list')"
+        )
         ctx.close()
-        assert "view=timeline" in url and "drawer=1" in url, f"left the view or lost the drawer: {url}"
-        assert count == str(expected), f"drawer shows {count}, data hold {expected} letters of 1900"
+        assert "view=timeline" in url and "drawer=1" in url, (
+            f"left the view or lost the drawer: {url}"
+        )
+        assert count == str(expected), (
+            f"drawer shows {count}, data hold {expected} letters of 1900"
+        )
         assert in_list, "focus did not move into the list of letters"
 
     def page_structure(self) -> None:
@@ -411,12 +493,16 @@ class Smoke:
     def topics_figure(self) -> None:
         # Every subject of the data file is a row; Enter on a row sets the subject filter and the
         # figure keeps all rows; a correspondent of the strip adds the person filter
-        data = json.loads((DOCS / "data" / "hsa-letters.json").read_text(encoding="utf-8"))
-        expected = len({
-            s.get("uri") or s.get("id") or s.get("label")
-            for letter in data["letters"]
-            for s in (letter.get("mentions") or {}).get("subjects") or []
-        })
+        data = json.loads(
+            (DOCS / "data" / "hsa-letters.json").read_text(encoding="utf-8")
+        )
+        expected = len(
+            {
+                s.get("uri") or s.get("id") or s.get("label")
+                for letter in data["letters"]
+                for s in (letter.get("mentions") or {}).get("subjects") or []
+            }
+        )
         ctx = self.context()
         page = ctx.new_page()
         page.goto(f"{self.base}explore.html?view=topics&{HSA}")
@@ -435,18 +521,24 @@ class Smoke:
         rows_chosen = page.locator("#topics-rows .tp-row").count()
         page.locator("#topics-choice [data-person]").first.click()
         page.wait_for_timeout(300)
-        params = page.evaluate("Object.fromEntries(new URLSearchParams(location.search))")
+        params = page.evaluate(
+            "Object.fromEntries(new URLSearchParams(location.search))"
+        )
         ctx.close()
         assert rows == expected, f"{rows} rows for {expected} subjects"
         assert painted, "topics canvas is empty"
         assert subject == key, f"Enter on {key} set subject {subject}"
         assert rows_chosen == expected, f"{rows_chosen} rows after choosing a subject"
-        assert params.get("person") and params.get("subject") == key, f"after a correspondent: {params}"
+        assert params.get("person") and params.get("subject") == key, (
+            f"after a correspondent: {params}"
+        )
 
     def dashboard_filters(self) -> None:
         # A subject row of the start view filters the circle, the map and the drawer line; the
         # count comes from the data file. The circle chooses a person by keyboard as well
-        data = json.loads((DOCS / "data" / "hsa-letters.json").read_text(encoding="utf-8"))
+        data = json.loads(
+            (DOCS / "data" / "hsa-letters.json").read_text(encoding="utf-8")
+        )
         ctx = self.context()
         page = ctx.new_page()
         page.goto(f"{self.base}explore.html?view=overview&{HSA}")
@@ -482,7 +574,9 @@ class Smoke:
         person = page.evaluate("new URLSearchParams(location.search).get('person')")
         ctx.close()
         assert subject == key, f"row {key} set subject {subject}"
-        assert drawer == str(expected), f"drawer shows {drawer}, data hold {expected} letters of {key}"
+        assert drawer == str(expected), (
+            f"drawer shows {drawer}, data hold {expected} letters of {key}"
+        )
         assert followed, "circle or map did not follow the subject"
         assert released is None, f"the pressed row did not release {released}"
         assert person, "Enter on the circle chose no person"
@@ -519,7 +613,11 @@ class Smoke:
                     problems.append(f"French alone: {french}")
             ctx.close()
             for name, r in states:
-                if abs(r["pale"] - r["plot"]) > 1 or r["stack"] > r["pale"] + 0.5 or r["colours"] < 2:
+                if (
+                    abs(r["pale"] - r["plot"]) > 1
+                    or r["stack"] > r["pale"] + 0.5
+                    or r["colours"] < 2
+                ):
                     problems.append(f"{width}x{height} {name}: {r}")
         assert not problems, "; ".join(problems)
 
@@ -581,7 +679,9 @@ class Smoke:
             " return Object.keys(mine).filter(k => canon(mine[k]) !== canon(file[k])); }"
         )
         # The archive is the default holding; a statement it does not carry takes no place
-        page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
+        page.wait_for_function(
+            "document.getElementById('model').dataset.dataset === 'hsa'"
+        )
         network = page.get_attribute(".stmt--persons a.stmt-label", "href")
         absent = page.locator(".stmt--postmark").count()
         # "anderer Brief" steps to the next prepared letter and writes it into the address
@@ -592,19 +692,29 @@ class Smoke:
         linked = page.url
         # The address restores dataset and letter; an unknown letter falls back to the first
         page.goto(linked)
-        page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
+        page.wait_for_function(
+            "document.getElementById('model').dataset.dataset === 'hsa'"
+        )
         restored = page.inner_text(".record-sender")
         page.goto(self.base + "index.html?dataset=hsa&letter=unknown")
-        page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
+        page.wait_for_function(
+            "document.getElementById('model').dataset.dataset === 'hsa'"
+        )
         fallback = page.inner_text(".record-sender")
         # The tutorial left the start page; its address falls back to the archive
         page.goto(self.base + "index.html?dataset=demo")
-        page.wait_for_function("document.getElementById('model').dataset.dataset === 'hsa'")
+        page.wait_for_function(
+            "document.getElementById('model').dataset.dataset === 'hsa'"
+        )
         ctx.close()
         assert not differs, f"examples.json differs from start-summary.js in {differs}"
-        assert network == "explore.html?json=data/hsa-letters.json&view=network", network
+        assert network == "explore.html?json=data/hsa-letters.json&view=network", (
+            network
+        )
         assert absent == 0, "the archive shows a postmark statement it does not carry"
-        assert stepped != first and restored == stepped, f"letter {first} -> {stepped} -> {restored}"
+        assert stepped != first and restored == stepped, (
+            f"letter {first} -> {stepped} -> {restored}"
+        )
         assert fallback == first, f"unknown letter shows {fallback}"
 
     def axe(self, script: str) -> None:
@@ -671,7 +781,10 @@ def _checks(
         ("Back returns to the previous view", smoke.back_returns_to_previous_view),
         ("shared HSA filter link shows the filtered letters", smoke.shared_filter_link),
         ("CSV export with BOM and authority columns", smoke.csv_export),
-        ("header menu: focus opens nothing, Enter opens, Escape closes", smoke.header_menu_keyboard),
+        (
+            "header menu: focus opens nothing, Enter opens, Escape closes",
+            smoke.header_menu_keyboard,
+        ),
         ("person star puts the person into the basket", smoke.basket_takes_person),
         (
             "span bin on the timeline, map hint opens the place list",
@@ -696,6 +809,10 @@ def _checks(
         (
             "start view: the time profile keeps scale and colours across sizes and a language toggle",
             smoke.dashboard_time_scale,
+        ),
+        (
+            "release UI: wrapping language key, shared colours, Escape",
+            smoke.release_ui_regressions,
         ),
         ("network does not move under reduced motion", smoke.reduced_motion_network),
         (
@@ -756,7 +873,7 @@ def main() -> int:
             try:
                 check()
                 print(f"ok    {name}")
-            except Exception as error:  # collect every failure for the report
+            except Exception as error:  # noqa: BLE001 — aggregate independent test failures
                 errors.append(
                     (
                         name,

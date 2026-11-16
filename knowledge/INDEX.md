@@ -10,7 +10,7 @@ status: draft
 language: de
 version: 0.1
 created: 2025-12-03
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Index
@@ -22,7 +22,7 @@ related: [project, data, specification, architecture, design, testing, plan, jou
 
 # Index
 
-Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents, die am Werkzeug arbeiten. Sie liegt unter `knowledge/` im Repository-Root, außerhalb des ausgelieferten Ordners `docs/`, und wird nicht als Teil der Website ausgeliefert ([ADR-008](specification.md#adr-008-wissensbasis-nicht-auf-der-website)). Die Arbeitsregeln für Agenten stehen in `CLAUDE.md` im Repository-Root, code-nahe Übersichten in `docs/js/CONTEXT-MAP.md`, `docs/js/views/CONTEXT-MAP.md`, `docs/js/tests/CONTEXT-MAP.md` und `docs/css/CONTEXT-MAP.md`. Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index.
+Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents, die am Werkzeug arbeiten. Sie liegt unter `knowledge/` im Repository-Root, außerhalb des ausgelieferten Ordners `docs/`, und wird nicht als Teil der Website ausgeliefert ([ADR-008](specification.md#adr-008-wissensbasis-nicht-auf-der-website)). Die Arbeitsregeln für Agenten stehen in `CLAUDE.md` im Repository-Root, code-nahe Übersichten in `knowledge/context-maps/js.md`, `knowledge/context-maps/views.md`, `knowledge/context-maps/tests.md` und `knowledge/context-maps/css.md`. Die gemeinsame Schemaversion der Dokumente steht im Feld `version` dieses Index.
 
 ## Dokumente
 
@@ -38,6 +38,13 @@ Die Wissensbasis von CorrespExplorer richtet sich an Menschen und Coding-Agents,
 | [testing.md](testing.md) | Quality Assurance | Was garantieren die Prüfungen, wie laufen sie, und was bleibt ungeprüft? | bei neuen Prüfungen und nach jeder Prüfrunde |
 | [plan.md](plan.md) | Planning | Was ist offen, woher kommt es, und was wartet auf den Operator? | bei neuen Befunden, Entscheidungen und nach deren Erledigung |
 | [network-figures.md](network-figures.md) | Domain knowledge | Was lässt sich bei Briefdaten als Netz in Beziehung setzen, und welche Daten braucht es? | vor jeder Arbeit am Netzwerk |
+
+## Modulübersichten
+
+- [JavaScript](context-maps/js.md) erschließt die Einstiegspunkte und geteilten Module.
+- [Ansichten](context-maps/views.md) beschreibt ihre Abhängigkeiten und Exporte.
+- [Tests](context-maps/tests.md) erschließt die registrierten Suites.
+- [CSS](context-maps/css.md) beschreibt Ladereihenfolge und Zuständigkeit der Stylesheets.
 
 ## Ablagezonen
 

@@ -245,7 +245,7 @@
  * ======================================== */
 
 /*
-Every page links tokens.css first (load order in css/CONTEXT-MAP.md), so no stylesheet imports it.
+Every page links tokens.css first (load order in knowledge/context-maps/css.md), so no stylesheet imports it.
 
 DO NOT redefine these variables in other files.
 DO NOT use hard-coded values where tokens exist.

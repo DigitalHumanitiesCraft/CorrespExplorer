@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Architecture
@@ -21,7 +21,7 @@ related: [data, specification, design, testing]
 
 # Architecture
 
-CorrespExplorer ist eine statische Browser-Anwendung ohne Backend und ohne Build-Schritt. GitHub Pages liefert den Ordner `docs/` aus, alle Verarbeitung läuft im Browser in ES-Modulen, die Wissensbasis liegt außerhalb in `knowledge/`. Dieses Dokument beschreibt Seiten, Module, Stylesheets, ungenutzten Code, Datenfluss und die Stellen, an denen eine neue Ansicht ansetzt, am Stand `65ea4b8` nach dem Durchgang über alle Ansichten, der auf Refactoring und Distillation vom 2026-11-15 folgte. Die Modulliste mit Exporten führt `docs/js/CONTEXT-MAP.md`, die Ansichtsmodule `docs/js/views/CONTEXT-MAP.md`.
+CorrespExplorer ist eine statische Browser-Anwendung ohne Backend und ohne Build-Schritt. GitHub Pages liefert den Ordner `docs/` aus, alle Verarbeitung läuft im Browser in ES-Modulen, die Wissensbasis liegt außerhalb in `knowledge/`. Dieses Dokument beschreibt Seiten, Module, Stylesheets, ungenutzten Code, Datenfluss und die Stellen, an denen eine neue Ansicht ansetzt, am Stand `65ea4b8` nach dem Durchgang über alle Ansichten, der auf Refactoring und Distillation vom 2026-11-15 folgte. Die Modulliste mit Exporten führt `knowledge/context-maps/js.md`, die Ansichtsmodule `knowledge/context-maps/views.md`.
 
 ## Stack
 
@@ -85,7 +85,7 @@ Einzelne Ansichten:
 
 ## Stylesheets
 
-Ladereihenfolge und Zuständigkeit führt `docs/css/CONTEXT-MAP.md`. Seit dem 2026-11-14 hinzugekommen:
+Ladereihenfolge und Zuständigkeit führt `knowledge/context-maps/css.md`. Seit dem 2026-11-14 hinzugekommen:
 
 - `rail.css`: die Schiene, die Auswahlzeile und die Sprachlegende, also die Teile, die jede Ansicht teilt.
 - `dashboard.css`: Block des Bestands und Dashboard der Startansicht.
@@ -107,7 +107,7 @@ Das Refactoring vom 2026-11-15 (Schritt „refactoren“ der Promptotyping-Folge
 
 Was ungenutzt bleibt und im [Plan](plan.md#aufräumen) steht:
 
-- Dateien, auf die keine Seite verweist: `docs/data/hsa.xml` (`verification/task_set.py` zählt darin die Antwort zu US-01 und US-02, `resolve_geonames_wikidata.py` überspringt sie), `docs/data/schoenbach.xml`, `docs/assets/logo-no-background.png`, `docs/assets/logo.jpg` und `docs/favicon.svg`.
+- Dateien, auf die keine Seite verweist: `docs/data/hsa.xml` (`verification/task_set.py` zählt darin die Antwort zu US-01 und US-02, `resolve_geonames_wikidata.py` überspringt sie), `docs/data/schoenbach.xml`, `docs/favicon.svg`. Die alten Werkzeuglogos liegen außerhalb der Auslieferung unter `source-material/legacy-logo/`.
 - Tokens in `tokens.css`, die kein Stylesheet und kein Skript liest, darunter die Stufen `--color-scale-1` bis `--color-scale-4`.
 - `persons-view.js` importiert `getPersonInitials()`, ohne es aufzurufen.
 - Die Kacheln `#sidebar-dataset` sind ausgeblendet und werden befüllt, die Moduswahl des Vergleichs steht verborgen im Markup.
@@ -120,7 +120,7 @@ Was ungenutzt bleibt und im [Plan](plan.md#aufräumen) steht:
 3. In `explore.js`: Import und Aufruf von `init…` mit den `deps`, die die Ansicht braucht, `revealLetters` eingeschlossen, wenn sie Briefe öffnet. Eintrag in `VIEW_GROUPS` unter ihrem Gegenstand, Bedingung in `detectAvailableViews()`, `case` in `renderView()`, bei Bedarf ein Titel in `updateViewTitle()`. Setzt die Ansicht Zeitraum oder Sprache selbst, blendet `syncRail()` das Zeichen der Schiene für sie aus.
 4. In `explore.html`: Knopf in `#view-variants` mit `.view-btn-text`, aus dem das Menü unter dem Reiter seinen Namen liest, und ein Bereich `<div id="<name>-view" class="tab-content">` mit `.view-header` und `h2.view-header__title`. Das Menü entsteht aus `VIEW_GROUPS`.
 5. Die geteilten Teile verwenden statt eigener: `countOf()` für Zählungen, `renderLanguageKey()` für Sprachen, die Werte `PALE_TOKEN` oder `OUTSIDE_OPACITY` für das blasse Ganze, `deps.renderLanguageKey` für die Sprachlegende, `CHOOSABLE` und `OVER_MARK` für wählbare Marken, `renderDataTable()` mit eigenem `label` für die Tabelle, `revealLetters()` für die Briefe. Die Ansicht setzt keine eigene Zahl der Auswahl und keinen eigenen Filtersatz, beides steht in der Auswahlzeile.
-6. `VIEWS` und `GROUP_OF` in `tests/browser/smoke.py`, eine Suite für die reinen Funktionen, registriert in `run-all-tests.js`, `docs/js/views/CONTEXT-MAP.md`, und die Story in [specification.md](specification.md).
+6. `VIEWS` und `GROUP_OF` in `tests/browser/smoke.py`, eine Suite für die reinen Funktionen, registriert in `run-all-tests.js`, `knowledge/context-maps/views.md`, und die Story in [specification.md](specification.md).
 
 ## Datenfluss
 

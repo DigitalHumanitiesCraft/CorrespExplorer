@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-12-03
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Testing
@@ -62,7 +62,7 @@ Die Modultests prüfen nicht das gezeichnete Bild (D3, MapLibre, Zeichenflächen
 | Frage | Methode | Ebene | Stand |
 |---|---|---|---|
 | Liest das Werkzeug, was die Quelle sagt? | Modultests, Korpusprüfung, unabhängige Datenprüfung | automatisch und durch Agenten | Datenprüfung am Bestand von Stefan Zweig Digital vom 2026-11-14 ohne verlorenen oder doppelten Eintrag, die gefundenen Parserfehler behoben ([Journal](journal.md)) |
-| Zeigt jede Ansicht die richtige Zahl? | fester Aufgabensatz | Aufgabe mit berechneter Antwort | Antworten berechnet, in der Oberfläche noch nicht abgelesen |
+| Zeigt jede Ansicht die richtige Zahl? | fester Aufgabensatz | Aufgabe mit berechneter Antwort | Automatisierter Browserlauf am 2026-11-16, verbleibende manuelle Aufgaben und US-40 offen |
 | Lässt sich die Oberfläche bedienen? | Bedienprüfung durch Agenten mit Zeiger und Tastatur | Agent im Browser | Raum-Zeit am 2026-11-14 geprüft und umgebaut |
 | Dient sie den Forschenden? | Urteil am Bildschirm | Operator, Forschende | nichts abgenommen. Gutgeheißen hat der Operator die Startansicht im Stand von `b189cb5`, die Startseite als Figur und die Wahl von Raster und Anteile ([design.md](design.md)) |
 
@@ -70,7 +70,7 @@ Die Modultests prüfen nicht das gezeichnete Bild (D3, MapLibre, Zeichenflächen
 
 Jede Story in [specification.md](specification.md#epics-und-user-stories) hat eine Aufgabe am gebündelten Hugo Schuchardt Archiv mit einer Rechenregel. `verification/task_set.py` berechnet die Antworten aus `docs/data/hsa-letters.json`, für US-01 und US-02 aus `docs/data/hsa.xml`, ohne Code des Werkzeugs zu laden. Es überträgt `personKey`, `placeKey`, die Platzhalter für unbekannte Orte und das gültige Jahr der Specification nach Python und nennt je Aufgabe Ansicht und Adresse, unter der die Antwort abzulesen ist. In jeder Runde liest ein Mensch oder ein Agent die Antwort in der Oberfläche ab, eine Abweichung ist ein Befund und wird einer Story, der Gestaltung oder den Daten zugeordnet. Die Arbeitsweise hat der Operator am 2026-11-14 angenommen.
 
-Seit `d9f740b` liegt das Skript im Repository. Es führt die Aufgaben aller Stories mit Antwort und die zwölf Aufgaben der Bedienprüfung der Raum-Zeit-Ansicht als ST-a bis ST-l, deren Gegenstände aus den Skripten jener Prüfung rekonstruiert sind und die von Hand bleiben. Wo kein robuster Selektor besteht, markiert es eine Aufgabe als „von Hand“. Die Probe im Browser vergleicht die Zahlen der Antwort mit dem Text der Ansicht nach Entfernen der Tausenderpunkte. Seit dem Umbau der Ansichten hat niemand die Antworten in der Oberfläche abgelesen, auch `--browser` ist noch nicht gelaufen ([plan.md](plan.md#aufgabensatz-und-prüfungen)).
+Seit `d9f740b` liegt das Skript im Repository. Es führt die Aufgaben aller Stories mit Antwort und die zwölf Aufgaben der Bedienprüfung der Raum-Zeit-Ansicht als ST-a bis ST-l, deren Gegenstände aus den Skripten jener Prüfung rekonstruiert sind und die von Hand bleiben. Wo kein robuster Selektor besteht, markiert es eine Aufgabe als „von Hand“. Die Probe im Browser vergleicht die Zahlen der Antwort mit dem Text der Ansicht nach Entfernen der Tausenderpunkte. Der Browserlauf vom 2026-11-16 las die automatisierbaren Antworten ab. Sein Ergebnis steht im Prüfstand unten.
 
 Berechnete Antworten, Stand 2026-11-14, Datei `hsa-letters.json` mit `meta.generated` 2026-10-29. Am 2026-11-15 hat `task_set.py` am Stand `65ea4b8` dieselben Antworten gerechnet, dazu US-26 mit 627 Briefen, US-22 mit 1.031 Personen und US-36 mit 447 Briefen:
 
@@ -112,7 +112,7 @@ Berechnete Antworten, Stand 2026-11-14, Datei `hsa-letters.json` mit `meta.gener
 | US-47 | wie US-06 |
 | US-48 | wie US-16 |
 
-Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit der Korpusprüfung), US-45 (nicht bedient), US-17, US-32 und US-33 (nicht mehr bedient). Für US-28 und US-34 ist die Antwort berechnet, die Darstellung, in der sie abzulesen war, ist entfallen. Am 2026-11-15 hat die kuratierende Session in der Tabelle der unteren Zeitfigur die Antworten zu US-28 und US-31 abgelesen und die 23 Briefe vom 4.2.1912 gezählt, den briefreichsten Tag nennt dort aber kein Element ([specification.md](specification.md#zeit)). Die übrigen Antworten sind seit dem Umbau nicht abgelesen.
+Keine berechnete Antwort haben US-29 und US-30 (Wikidata), US-38 (geprüft mit der Korpusprüfung), US-45 (nicht bedient), US-17, US-32 und US-33 (nicht mehr bedient). Für US-28 und US-34 ist die Antwort berechnet, die Darstellung, in der sie abzulesen war, ist entfallen. Am 2026-11-15 hat die kuratierende Session in der Tabelle der unteren Zeitfigur die Antworten zu US-28 und US-31 abgelesen und die 23 Briefe vom 4.2.1912 gezählt, den briefreichsten Tag nennt dort aber kein Element ([specification.md](specification.md#zeit)). Der spätere Browserlauf ist unten dokumentiert.
 
 ## Browser-Smoke-Test
 
@@ -170,6 +170,8 @@ Die zwölf Aufgaben stehen als ST-a bis ST-l in `verification/task_set.py`, ihre
 
 ## Was nicht geprüft ist
 
+Die folgenden älteren Grenzen werden durch den Prüfstand vom 2026-11-16 ergänzt. Die dort genannten Bildschirm- und Bedienprüfungen sind erfolgt, eine fachliche Validierung bleibt aus.
+
 - Das gezeichnete Bild von Karte, Netzwerk, Raum-Zeit, Themen und Startfigur. Gedeckt durch Bildschirmfotos der bauenden Sessions und die Aufgabenprüfung.
 - Die Raum-Zeit-Ansicht unter axe-core.
 - Raster und Anteile, Briefliste, Zeitansicht, Startansicht und Startseite über ihre Modultests und Smoke-Prüfungen hinaus. Gedeckt durch Lesetests frischer Leser an Startseite und Raster und Gegenzählungen der Bau-Agenten an `hsa-letters.json`, je in deren Berichten, nicht unabhängig wiederholt.
@@ -192,6 +194,29 @@ uv run preprocessing/build_examples.py       # nach jeder Neuerzeugung von hsa-l
 ```
 
 `test.html` besitzt den einzigen Auslöser eines Laufs, `run-all-tests.js` startet keinen eigenen, weil zwei Läufe sich den state-manager teilten. Eine neue Suite ist eine Datei `docs/js/tests/test-<modul>.js`, die in `run-all-tests.js` registriert wird. Alle Suites prüfen mit `assert` aus `test-runner.js`, `teardown()` läuft auch nach einem Fehlschlag. `check-corpus.mjs` braucht `jsdom` aus einer vorhandenen Installation, weil das Repository keine Node-Abhängigkeiten führt.
+
+## Abschlussrunde 2026-11-16
+
+- Vollständiger Browser-Smoke-Test mit 20 bestandenen Prüfungen einschließlich 193 Modultests. Nach der letzten CSS-Korrektur wurde der vollständige Smoke-Test erneut bestanden.
+- Fester Aufgabensatz mit `--browser --json`: 34 Antworten stimmen überein, eine weicht ab, 22 Aufgaben bleiben manuell. US-40 fragt nach 6.551 Briefen mit erwähnten Personen, die Startseite nennt 2.080 verschiedene Personen. Die unabhängige Prüfung bestätigt beide Zahlen und den offenen Anforderungsstatus. Ein erfolgreicher Skript-Exit allein bedeutet deshalb keinen vollständig bestandenen Aufgabensatz.
+- Frischer unabhängiger Agent prüfte Startseite, About und elf Explorer-Ansichten bei 2000, 1280 und 360 Pixeln. Keine JavaScript-Seitenfehler oder horizontalen Dokumentüberläufe. Netzwerk mit Enter/Escape und Fokus, Upload der Fixture `demo-showcase.xml` ohne externe Requests beim Überspringen der Anreicherung und gefilterte Raum-Zeit-Zählung gesondert geprüft.
+- JavaScript-Syntax, Ruff lint/format der geänderten Python-Dateien, CFF-Schema und unveränderte Koordinatenwerte geprüft. Das Repository konfiguriert keinen Typechecker.
+- Kein neuer Korpuslauf am externen TEI-Bestand, kein neuer axe-core-Lauf, keine systematische Screenreader-Prüfung und keine anderen Browser. Die Prüfung ist `reviewed`, keine fachliche Validierung.
+
+### Dichtemessung 2026-11-16
+
+Gemessen mit dem vorhandenen `check_ui_density.cjs`, Profil `page` für Einstieg und About, `work` für Explorer, jeweils `wide` und `narrow`, nach vier Sekunden Wartezeit. Der Lauf meldet Fehler, keine Dichtekonformität.
+
+| Seite | Breit | Schmal |
+|---|---|---|
+| Startseite | Textstile 11 > 3, Textelemente 57 > 20, Wörter 123 > 120, Flächen 4 > 2 | Textstile 10 > 3, Textelemente 21 > 14, Flächen 3 > 1 |
+| About | Überschriften 4 > 3, Ebenen 3 > 2, Textstile 5 > 3, Wörter 146 > 120 | Überschriften 3 > 2, Textstile 4 > 3, Wörter 97 > 80, Inhaltsbeginn 236 > 220 px |
+| Startansicht | ohne Überschreitung | Bedienelemente 17 > 15 |
+| Netzwerk | ohne Überschreitung | Textelemente 37 > 35, Bedienelemente 22 > 15 |
+| Themen | ohne Überschreitung | Bedienelemente 22 > 15 |
+| Raum-Zeit | ohne Überschreitung | Bedienelemente 21 > 15 |
+
+Der unabhängige Prüfer bewertete die vorgelegten Befunde zu Einstieg, About und Startansicht als Verbesserungsbedarf ohne beobachteten Funktionsblocker. Eine umfassende Dichtekonformität oder UI-Abnahme wurde nicht erreicht. Eine Umgestaltung der bereits gutgeheißenen Startfigur wurde in dieser Abschlussrunde nicht vorgenommen.
 
 ## Stand
 

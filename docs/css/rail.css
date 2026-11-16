@@ -277,8 +277,9 @@
    marks outside a language filter fade. */
 .language-key {
     display: flex;
+    flex-wrap: wrap;
     align-items: stretch;
-    gap: 2px;
+    gap: var(--space-xs) 2px;
     width: 100%;
 }
 
@@ -361,11 +362,4 @@
     margin-bottom: 3px;
     border-radius: 2px;
     background: var(--language);
-}
-
-@media (max-width: 767px) {
-    .language-key {
-        flex-wrap: wrap;
-        row-gap: var(--space-xs);
-    }
 }

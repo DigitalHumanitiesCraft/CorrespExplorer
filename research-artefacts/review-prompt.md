@@ -25,16 +25,16 @@ Live Demo: https://dhcraft.org/CorrespExplorer
 
 1. Lies zuerst diese Dateien in dieser Reihenfolge:
    - README.md (Projektuebersicht)
-   - docs/knowledge/architecture.md (technische Architektur)
-   - docs/knowledge/specification.md (Anforderungen und User Stories)
-   - docs/knowledge/journal.md (Entwicklungshistorie)
+   - knowledge/architecture.md (technische Architektur)
+   - knowledge/specification.md (Anforderungen und User Stories)
+   - knowledge/journal.md (Entwicklungshistorie)
    - research-artefacts/interface-genesis-as-research.md (Forschungsthese)
 
 2. Erkunde das Repository:
    - docs/js/*.js (JavaScript-Module)
    - docs/css/*.css (Stylesheets)
    - docs/data/hsa.xml (Beispiel-CMIF-Datei)
-   - CONTEXT-MAP.md Dateien in docs/js, docs/js/views, docs/js/tests und docs/css
+   - Modulübersichten in knowledge/context-maps/
 
 3. Teste die Live-Demo mit dem HSA-Datensatz:
    - Alle zwoelf Views durchklicken
@@ -56,7 +56,7 @@ B. Dokumentation als Source of Truth
 - Ist die Dokumentation vollstaendig genug fuer Code-Regeneration?
 - Gibt es Widersprueche zwischen Docs und Code?
 - Funktioniert Context Compression (kompakt aber praezise)?
-- Sind die CONTEXT-MAP.md Dateien nuetzlich?
+- Sind die Modulübersichten nuetzlich?
 
 C. UX/Usability
 - Ist das Interface intuitiv?

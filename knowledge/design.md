@@ -9,7 +9,7 @@ method:
 status: draft
 language: de
 created: 2025-11-26
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Design
@@ -21,7 +21,7 @@ related: [specification, architecture, uncertainty-specification]
 
 # Design
 
-CorrespExplorer ist ein Forschungswerkzeug, dessen Oberfläche aus wenigen großen Figuren über einer gemeinsamen Auswahl besteht, mit ruhigem, papiernahem Charakter aus dem Logo. Dieses Dokument beschreibt den Aufbau, wie er am 2026-11-15 nach dem Durchgang über alle Ansichten (`7e04269`, `65ea4b8`) im Code steht, die Gestaltungsregeln und ihre Gründe und die Rückmeldungen des Operators, aus denen er entstanden ist. Die Werte (Farben, Abstände, Schriftgrößen, Radien, Schatten, Ebenen, Breakpoints) stehen allein in `docs/css/tokens.css`, Ladereihenfolge und Zuständigkeit der Stylesheets in `docs/css/CONTEXT-MAP.md`.
+CorrespExplorer ist ein Forschungswerkzeug, dessen Oberfläche aus wenigen großen Figuren über einer gemeinsamen Auswahl besteht, mit ruhigem, papiernahem Charakter aus dem Logo. Dieses Dokument beschreibt den Aufbau, wie er am 2026-11-15 nach dem Durchgang über alle Ansichten (`7e04269`, `65ea4b8`) im Code steht, die Gestaltungsregeln und ihre Gründe und die Rückmeldungen des Operators, aus denen er entstanden ist. Die Werte (Farben, Abstände, Schriftgrößen, Radien, Schatten, Ebenen, Breakpoints) stehen allein in `docs/css/tokens.css`, Ladereihenfolge und Zuständigkeit der Stylesheets in `knowledge/context-maps/css.md`.
 
 Abgenommen hat der Operator keinen Stand. Gesehen und gutgeheißen hat er die Startansicht des Explorers im Stand von `b189cb5`, die Startseite als Figur und das Raster als Themenansicht mit der Treemap als Anteile, jeweils im Abschnitt der Ansicht genannt. Alles andere vom 2026-11-14 und 2026-11-15 ist von Subagenten gebaut, von der koordinierenden Session am Bild gelesen, durch Modultests und Smoke-Test geprüft und vom Operator nicht gesehen. Der Stand bis `ce4dcf4` ist veröffentlicht und vor dem Push unabhängig gelesen worden ([Journal](journal.md)). Der Durchgang über die Ansichten nach den gemeinsamen Regeln ist danach gebaut, beim Schreiben nicht gepusht und noch nicht unabhängig gelesen.
 
@@ -473,3 +473,7 @@ Folge zur Themenansicht davor: Zwei kleine echte Fassungen am selben gefilterten
 ### Entscheidungen des Operators ohne wörtlichen Satz
 
 Diese Entscheidungen stehen im Journal mit ihrem Tag und sind hier nur mit ihrer Wirkung genannt: die Palette aus dem Logo bleibt (2026-11-14), die Einstiegskacheln der Übersicht entfallen (2026-11-14), der Brief-Dialog bleibt vollständig (2026-11-14), die Forschungspfade verlassen die Oberfläche, die Startansicht wird über die Seitenleiste gefiltert, die Unteransichten sind oben zu finden (2026-11-14), keine Ampel für die Datenlage (2026-10-29), die Ausnahme für die Zellen der Heatmap (E6, 2026-11-05).
+
+## Abschlusskorrekturen für 0.9.0
+
+Die Startfigur und die Ansichten verwenden dieselben benannten Sprachfarben. Themen behalten in Startansicht und Themenansicht den vorhandenen Farbwert `--color-role-topic`; die Flächenstufen der Themen sind Tönungen davon. Die Sprachlegende bricht innerhalb ihrer verfügbaren Breite um. Karte und Raum-Zeit benennen die jeweils darstellbaren Absendeorte, wobei Raum-Zeit zusätzlich ein Jahr benötigt. Die Netzwerkoption „Mit Erwähnten“ bezeichnet die Vereinigungsmenge aus Korrespondenten und erwähnten Personen. Escape löst die Personenwahl und stellt den Tastaturfokus wieder her. Die DHCraft-Marke ersetzt auf der Startseite und als Favicon das Werkzeuglogo, dessen Herkunft ungeklärt ist. Aufbau und Navigation bleiben erhalten.

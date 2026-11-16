@@ -13,9 +13,9 @@ The knowledge base lives in `knowledge/` at the repository root, outside `docs/`
 | Purpose, scope, relation to GOSSIP | `knowledge/project.md` |
 | Requirements, stories, their state and test tasks, decisions | `knowledge/specification.md` |
 | What the parser reads, datasets, the shared letter model, licences | `knowledge/data.md`, `knowledge/uncertainty-specification.md` |
-| Interface, views, colours, the operator's statements | `knowledge/design.md`, `docs/css/tokens.css`, `docs/css/CONTEXT-MAP.md` |
-| Modules, data flow, adding a view | `knowledge/architecture.md`, `docs/js/CONTEXT-MAP.md`, `docs/js/views/CONTEXT-MAP.md` |
-| Checks and how to run them | `knowledge/testing.md`, `docs/js/tests/CONTEXT-MAP.md` |
+| Interface, views, colours, the operator's statements | `knowledge/design.md`, `docs/css/tokens.css`, `knowledge/context-maps/css.md` |
+| Modules, data flow, adding a view | `knowledge/architecture.md`, `knowledge/context-maps/js.md`, `knowledge/context-maps/views.md` |
+| Checks and how to run them | `knowledge/testing.md`, `knowledge/context-maps/tests.md` |
 | What is open and what waits for the operator | `knowledge/plan.md` |
 
 ## Working rules
