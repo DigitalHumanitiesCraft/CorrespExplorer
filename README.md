@@ -22,7 +22,7 @@ Source URLs, correspSearch queries and optional Wikidata enrichment contact exte
 
 ## Status and limitations
 
-Version 0.9.0 is available on GitHub Pages. Its Git tag and GitHub Release are pending. CorrespExplorer is a research prototype without a support commitment, and findings should be checked against the underlying editions. It displays metadata and links to editions, without displaying letter texts or editing source data.
+Version 0.9.0 is available on GitHub Pages. The [v0.9.0 pre-release](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/releases/tag/v0.9.0) provides the tagged source. CorrespExplorer is a research prototype without a support commitment, and findings should be checked against the underlying editions. It displays metadata and links to editions, without displaying letter texts or editing source data.
 
 Module tests, browser smoke tests and an independent agent review cover the documented preview. Scholarly validation, manual tasks and accessibility checks remain incomplete. Tests are run locally and are not part of continuous integration. The [changelog](CHANGELOG.md) records the current verification status and known limitations, with detailed evidence in [testing.md](knowledge/testing.md) and outstanding work in [plan.md](knowledge/plan.md).
 

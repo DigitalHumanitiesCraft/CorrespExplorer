@@ -1,6 +1,6 @@
 # Changelog
 
-Changes to CorrespExplorer that a user or a maintainer notices. Version 0.9.0 was deployed to GitHub Pages on 2026-11-16. Its Git tag and GitHub Release are pending. The reasons behind each change are in [knowledge/journal.md](knowledge/journal.md).
+Changes to CorrespExplorer that a user or a maintainer notices. Version 0.9.0 was deployed to GitHub Pages on 2026-11-16. The [GitHub pre-release](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/releases/tag/v0.9.0) tags the reviewed source as `v0.9.0`. The reasons behind each change are in [knowledge/journal.md](knowledge/journal.md).
 
 ## Unreleased
 

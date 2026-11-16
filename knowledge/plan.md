@@ -145,18 +145,10 @@ Das Refactoring vom 2026-11-15 hat Tutorial und Tour, die Tagesansicht mit ihren
 
 ## Veröffentlichung
 
-- Version. Der Operator hat `v0.9.0` entschieden (über die koordinierende Session, 2026-11-15). Die Nummer kommt in `CITATION.cff`, `codemeta.json` und `CHANGELOG.md`, nachdem die unabhängige Durchsicht dieser Runde gelaufen ist. Tag und Release setzt er selbst. Der Stand vom 2026-11-15 und die Zitierkorrektur sind gepusht. Die Abschlussrunde vom 2026-11-16 hat den Prüfstand `reviewed`. Die Programmänderungen sind mit `69cecf4` veröffentlicht, der Pages-Lauf ist erfolgreich und der Live-Stand geprüft. Version und Veröffentlichungsdatum sind in den Zitiermetadaten eingetragen. Tag und GitHub Release bleiben beim Operator.
+- Version `v0.9.0` ist als [GitHub Pre-release](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/releases/tag/v0.9.0) veröffentlicht. Tag und Release wurden am 2026-11-16 auf ausdrücklichen Auftrag des Operators am geprüften Commit `16eb8d5c4897b56c9595d29f950d4365d65a7fb5` angelegt. Prüfstand bleibt `reviewed`.
 - Auf einer Folie für den 2026-11-16 steht ein Bildschirmfoto der Kartenansicht der öffentlichen Demo. Herkunft: Operator.
 - Das Aufräumen der Branches neben main. Wartet auf den Operator.
 - Der Abschnitt des Aufsatzes zur Promptotyping-Methode, der das Werkzeug als Explorer für CMIF beschreibt, ändert mit der Richtung seinen Gegenstand. Der Aufsatz ist bis zur Wiederaufnahme der Schreibarbeit nicht angefasst. Herkunft: Bauende.
-
-### Vorbereiteter GitHub Release
-
-- Tag `v0.9.0`, Ziel ist der Commit mit den finalen Zitiermetadaten auf `main`.
-- Titel `CorrespExplorer v0.9.0`.
-- Als Pre-release kennzeichnen, weil die fachliche Validierung und vollständige UI-Abnahme ausstehen.
-- Beschreibung ist der Abschnitt 0.9.0 aus [CHANGELOG.md](../CHANGELOG.md), einschließlich Prüfstand und bekannten Grenzen. Die automatisch erzeugten Quellarchive genügen, es gibt keinen kompilierten Build.
-- Tag und Release bleiben beim Operator. Die Session hat weder einen Tag noch einen Release-Entwurf auf GitHub angelegt.
 
 ## Gemeinsames Briefmodell
 

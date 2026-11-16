@@ -23,7 +23,7 @@ related: [project, specification, plan]
 
 ## Open
 
-Die Abschlussrunde vom 2026-11-16 ist unabhängig geprüft, Prüfstand `reviewed`. Die Programmänderungen von 0.9.0 sind auf GitHub Pages veröffentlicht, die Release-Unterlagen vorbereitet. Tag und GitHub Release setzt der Operator. Die Zitiermetadaten nennen 0.9.0 und das verifizierte Veröffentlichungsdatum 2026-11-16. Prüfungen und ihre Grenzen stehen im neuesten Eintrag und in [testing.md](testing.md).
+Die Abschlussrunde vom 2026-11-16 ist unabhängig geprüft, Prüfstand `reviewed`. Die Programmänderungen von 0.9.0 sind auf GitHub Pages veröffentlicht, Tag und GitHub Pre-release sind auf ausdrücklichen Auftrag des Operators veröffentlicht. Die Zitiermetadaten nennen 0.9.0 und das verifizierte Veröffentlichungsdatum 2026-11-16. Prüfungen und ihre Grenzen stehen im neuesten Eintrag und in [testing.md](testing.md).
 
 Beauftragt und zurückgestellt bleiben das gemeinsame Register aus Briefen, Personen und Orten sowie die Anpassung von Kopf und Fuß des Explorers. Die akzeptierte Startseite, die Startansicht und die Wahl von Raster und Treemap bleiben erhalten.
 
@@ -31,9 +31,15 @@ Beim Operator bleiben die fachlichen und gestalterischen Entscheidungen aus [pla
 
 Ohne fachliche Entscheidung offen bleiben die manuellen Aufgaben, Screenreader, andere Browser, eine vollständige Zoom-Prüfung und der neue axe-core-Lauf. Die Dichtemessung meldet Überschreitungen, dokumentiert in [testing.md](testing.md). Weitere Befunde wie doppelte Ortskennungen, zusätzliche Sprachlisten und die Bedienung des Wissenskorbs bleiben im Plan.
 
-Der README wurde auf ausdrücklichen Auftrag vom 2026-11-16 neu gefasst. Die Entwicklungsgeschichte steht im folgenden Eintrag, die offenen Fragen zum Release bleiben unverändert.
+Der README wurde auf ausdrücklichen Auftrag vom 2026-11-16 neu gefasst. Die Entwicklungsgeschichte steht im folgenden Eintrag, die bekannten fachlichen und gestalterischen Grenzen bleiben unverändert.
 
 ## Einträge
+
+### 2026-11-16 GitHub Pre-release veröffentlicht
+
+- Anlass: Ausdrücklicher Auftrag des Operators, den zuvor vorbereiteten Release direkt anzulegen. Dieser konkrete Auftrag autorisiert Tag und Veröffentlichung für diesen Schritt.
+- Geändert: Tag `v0.9.0` und [CorrespExplorer v0.9.0](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/releases/tag/v0.9.0) als veröffentlichter Pre-release am geprüften Commit `16eb8d5c4897b56c9595d29f950d4365d65a7fb5`. Der zuvor im Chat vorgelegte Release-Text wurde übernommen. README, Changelog und aktueller Plan nennen den veröffentlichten Stand.
+- Belege: GitHub-Read-back bestätigt `isDraft=false`, `isPrerelease=true`, Tag-Ziel und Veröffentlichung am 2026-11-16 um 10:44:28 UTC. Der Prüfstand bleibt `reviewed`, die fachlichen Grenzen bleiben offen. Der Tag wird durch die anschließende Statuskorrektur der Dokumentation nicht verschoben.
 
 ### 2026-11-16 README und Entwicklungsgeschichte
 
