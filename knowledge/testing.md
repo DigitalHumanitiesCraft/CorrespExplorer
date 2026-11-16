@@ -227,3 +227,7 @@ Läufe:
 - Am Commit `34fedd9` nach Bericht der koordinierenden Session 160 Modultests und 16 Smoke-Prüfungen ohne Fehlschlag.
 - Am Arbeitsbaum nach dem Refactoring 181 von 181 Modultests (kuratierende Session, 2026-11-15), am Commit `ce4dcf4` 181 von 181 und 18 von 18 Smoke-Prüfungen (Hauptsession).
 - Am Commit `65ea4b8` am 2026-11-15 in der kuratierenden Session: `test.html?test=true` mit 192 von 192 Modultests über Playwright in Chrome headless gegen den lokalen Server auf Port 8137. Die Konsole meldete dabei eine Ressource mit Fehler 404, welche, ist nicht ermittelt. `tests/browser/smoke.py` mit 18 von 18 Prüfungen. `verification/task_set.py` ohne `--browser` mit 57 Aufgaben (45 zu Stories, 12 der Bedienprüfung). `verification/check-corpus.mjs` am Bestand von Stefan Zweig Digital mit allen 24 Prüfungen.
+
+### README-Prüfung 2026-11-16
+
+Nach der reinen Dokumentationsänderung wurden 193 von 193 Modultests bestanden und die Antworten des festen Aufgabensatzes mit `verification/task_set.py --json` erneut berechnet. Kein neuer Browser-Aufgabenlauf und keine neue UI-Abnahme. Die bestehenden offenen Aufgaben und Grenzen der Abschlussrunde bleiben unverändert.
