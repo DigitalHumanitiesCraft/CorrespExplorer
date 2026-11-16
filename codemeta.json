@@ -18,5 +18,7 @@
     }
   ],
   "license": "https://spdx.org/licenses/MIT",
-  "dateModified": "2026-11-16"
+  "dateModified": "2026-11-16",
+  "version": "0.9.0",
+  "datePublished": "2026-11-16"
 }

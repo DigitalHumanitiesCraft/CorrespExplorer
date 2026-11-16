@@ -1,6 +1,6 @@
 # CorrespExplorer
 
-Version 0.9.0 is prepared for release. The Git tag and GitHub Release are pending. Verification status and known limitations are recorded in [CHANGELOG.md](CHANGELOG.md).
+Version 0.9.0 is available on GitHub Pages. The Git tag and GitHub Release are pending. Verification status and known limitations are recorded in [CHANGELOG.md](CHANGELOG.md).
 
 Experiment. CorrespExplorer is a research prototype developed with coding agents. It shows letter metadata in CMIF (Correspondence Metadata Interchange Format) and in TEI letter records as a few large figures over one shared selection, in the browser and without a server. It is being developed into the viewing tool for a shared letter model of five Graz editions. It is not a finished or supported product, and its results need checking before any reuse. Its tests cover fixture files and the bundled Hugo Schuchardt Archiv, reviews still find defects in the interface, and the open findings are listed in [knowledge/plan.md](knowledge/plan.md). Feedback belongs in the [issues of the repository](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues).
 

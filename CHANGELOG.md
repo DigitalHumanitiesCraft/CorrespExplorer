@@ -1,12 +1,12 @@
 # Changelog
 
-Changes to CorrespExplorer that a user or a maintainer notices. Version 0.9.0 is prepared below; its Git tag and GitHub Release are pending. The reasons behind each change are in [knowledge/journal.md](knowledge/journal.md).
+Changes to CorrespExplorer that a user or a maintainer notices. Version 0.9.0 was deployed to GitHub Pages on 2026-11-16. Its Git tag and GitHub Release are pending. The reasons behind each change are in [knowledge/journal.md](knowledge/journal.md).
 
 ## Unreleased
 
-## 0.9.0 (prepared 2026-11-16)
+## 0.9.0 (2026-11-16)
 
-Release preparation, verification status `reviewed`. Module and browser smoke tests pass. A fresh independent agent found no material code or rendering blocker in the reviewed scope. The fixed task set retains one unresolved mismatch and manual tasks. This is a research preview, without scholarly validation or a guarantee of stable interfaces.
+Verification status `reviewed`. Module and browser smoke tests pass. A fresh independent agent found no material code or rendering blocker in the reviewed scope. The fixed task set retains one unresolved mismatch and manual tasks. This is a research preview, without scholarly validation or a guarantee of stable interfaces.
 
 ### Release corrections
 
