@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2025-11-26
-updated: 2026-11-15
+updated: 2026-11-16
 authors: [Christopher Pollin]
 template:
   name: Vorlage Journal
@@ -65,6 +65,14 @@ Offen ohne Entscheidung:
 - Aus der Prüfung des ausgelieferten Stands, nicht behoben: `geonames_coordinates.json` nennt seine Quellen und keine Lizenz, die Angabe steht nur in [data.md](data.md#rechte-und-lizenzen). Jede Seite verlinkt die Wissensbasis auf GitHub, die wörtliche Sätze des Operators und Notizen der Sessions enthält. Die vier Modulübersichten unter `docs/` sind deutsch.
 
 ## Einträge
+
+### 2026-11-16 Veröffentlichungsdatum im Zitierhinweis
+
+- Anlass: Issue [#4](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/issues/4) und Auftrag des Operators, das Veröffentlichungsdatum zu prüfen, zu ergänzen, zu validieren und zu pushen.
+- Befund: Das Repository wurde am 2025-12-01 angelegt. Der früheste erhaltene erfolgreiche Pages-Lauf [19827572469](https://github.com/DigitalHumanitiesCraft/CorrespExplorer/actions/runs/19827572469) veröffentlichte Commit `4f8d359de9c5d7c54cc10d1921eec9467b52dd14`; sein Deploy-Job endete am 2025-12-01 um 15:19:14 UTC. Tags und GitHub Releases sind nicht vorhanden. Die frühere Git-Historie enthält auch den Vorgänger HerData und belegt für sich kein Veröffentlichungsdatum von CorrespExplorer.
+- Entschieden: `date-released: '2025-12-01'` bezeichnet die erste durch den Deployment-Verlauf belegte Veröffentlichung. Die geplante Version 0.9.0 bleibt offen; bei ihrer Veröffentlichung werden Version und Datum gemeinsam aktualisiert.
+- Geändert: `CITATION.cff`.
+- Belege: `uvx --from cffconvert cffconvert --validate -i CITATION.cff` bestätigt CFF 1.2.0. Der BibTeX-Export mit `cffconvert -f bibtex` enthält `year = {2025}`. `uv run tests/browser/smoke.py` besteht einschließlich der Modultestsuite. Keine Programm- oder Website-Datei wurde geändert.
 
 ### 2026-11-15 Unabhängige Prüfung der Runde 1 und Behebung
 
