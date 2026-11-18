@@ -23,15 +23,17 @@ related: [project, specification, plan]
 
 ## Open
 
-Die Abschlussrunde vom 2026-11-16 ist unabhängig geprüft, Prüfstand `reviewed`. Die Programmänderungen von 0.9.0 sind auf GitHub Pages veröffentlicht, Tag und GitHub Pre-release sind auf ausdrücklichen Auftrag des Operators veröffentlicht. Die Zitiermetadaten nennen 0.9.0 und das verifizierte Veröffentlichungsdatum 2026-11-16. Prüfungen und ihre Grenzen stehen im neuesten Eintrag und in [testing.md](testing.md).
+Stand vom 2026-11-18, kontrolliertes Ende auf Wunsch des Operators. `main` ist gleich `origin/main`.
 
-Beauftragt und zurückgestellt bleiben das gemeinsame Register aus Briefen, Personen und Orten sowie die Anpassung von Kopf und Fuß des Explorers. Die akzeptierte Startseite, die Startansicht und die Wahl von Raster und Treemap bleiben erhalten.
+Version 0.9.0 mit dem Prüfstand `reviewed` ist seit dem 2026-11-16 auf GitHub Pages ausgeliefert, getaggt und als GitHub Pre-release veröffentlicht. Danach kam eine Änderung hinzu, die in `CHANGELOG.md` unter Unreleased mit dem Prüfstand `built` steht: Die Startseite zählt bei „Erwähnte Personen“ die Briefe mit mindestens einer erwähnten Person, wie der Operator zu US-40 entschieden hat. Sie ist ausgeliefert und nicht unabhängig gelesen. Prüfungen und ihre Grenzen stehen in [testing.md](testing.md).
 
-Beim Operator bleiben die fachlichen und gestalterischen Entscheidungen aus [plan.md](plan.md#warten-auf-den-operator), insbesondere die Form des Netzwerks, die Zählgröße bei erwähnten Orten und Themen auf der Startseite, die Darstellung des gemeinsamen Briefmodells und die Herkunft der Altlogos. Die Altlogos liegen unverändert außerhalb der Website. Zur Sprachlegende wurde kein Überlauf reproduziert, sie kann jetzt umbrechen. Die übrigen Fragen zu sichtbaren Gruppennamen, gemeinsamer Zeitskala und Organisationen bleiben offen.
+Beim Wiedereinstieg ohne den Operator zu tun:
 
-Ohne fachliche Entscheidung offen bleiben die manuellen Aufgaben, Screenreader, andere Browser, eine vollständige Zoom-Prüfung und der neue axe-core-Lauf. Die Dichtemessung meldet Überschreitungen, dokumentiert in [testing.md](testing.md). Weitere Befunde wie doppelte Ortskennungen, zusätzliche Sprachlisten und die Bedienung des Wissenskorbs bleiben im Plan.
+1. Die Änderung unter Unreleased von einem frischen Prüfer lesen lassen, bevor eine nächste Version entsteht.
+2. Das beauftragte und zurückgestellte gemeinsame Register aus Briefen, Personen und Orten und die Anpassung von Kopf und Fuß des Explorers. Startseite, Startansicht und die Wahl von Raster und Treemap bleiben, wie der Operator sie gutgeheißen hat.
+3. Die Prüfungen ohne fachliche Entscheidung: manuelle Aufgaben des Aufgabensatzes, Screenreader, andere Browser, eine vollständige Prüfung bei 200 Prozent Zoom, ein neuer Lauf von axe-core und die Überschreitungen der Dichtemessung aus [testing.md](testing.md). Weitere Befunde wie doppelte Ortskennungen, zusätzliche Sprachlisten und die Bedienung des Wissenskorbs führt [plan.md](plan.md).
 
-Der README wurde auf ausdrücklichen Auftrag vom 2026-11-16 neu gefasst. Die Entwicklungsgeschichte steht im folgenden Eintrag, die bekannten fachlichen und gestalterischen Grenzen bleiben unverändert.
+Beim Operator liegen die Entscheidungen aus [plan.md](plan.md#warten-auf-den-operator). Die koordinierende Session hat diese fünf am 2026-11-18 in ACTIVE-WORK gestellt: ob die Startseite auch bei erwähnten Orten und Themen Briefe zählt, die Form des Netzwerks ([network-figures.md](network-figures.md)), Herkunft und Rechte der Altlogos, das Löschen der Dateien ohne Verweis (`docs/data/hsa.xml` bleibt, weil der Aufgabensatz sie liest) und ob die Daten von Stefan Zweig Digital nur lokal bleiben.
 
 ## Einträge
 
