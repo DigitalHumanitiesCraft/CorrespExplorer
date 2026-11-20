@@ -9,7 +9,7 @@ method:
 status: active
 language: de
 created: 2025-11-26
-updated: 2026-11-16
+updated: 2026-11-20
 authors: [Christopher Pollin]
 template:
   name: Vorlage Journal
@@ -34,6 +34,11 @@ Beim Wiedereinstieg ohne den Operator zu tun:
 3. Die Prüfungen ohne fachliche Entscheidung: manuelle Aufgaben des Aufgabensatzes, Screenreader, andere Browser, eine vollständige Prüfung bei 200 Prozent Zoom, ein neuer Lauf von axe-core und die Überschreitungen der Dichtemessung aus [testing.md](testing.md). Weitere Befunde wie doppelte Ortskennungen, zusätzliche Sprachlisten und die Bedienung des Wissenskorbs führt [plan.md](plan.md).
 
 Beim Operator liegen die Entscheidungen aus [plan.md](plan.md#warten-auf-den-operator). Die koordinierende Session hat diese fünf am 2026-11-18 in ACTIVE-WORK gestellt: ob die Startseite auch bei erwähnten Orten und Themen Briefe zählt, die Form des Netzwerks ([network-figures.md](network-figures.md)), Herkunft und Rechte der Altlogos, das Löschen der Dateien ohne Verweis (`docs/data/hsa.xml` bleibt, weil der Aufgabensatz sie liest) und ob die Daten von Stefan Zweig Digital nur lokal bleiben.
+
+Rückmeldung einer Fachleserin vom 2026-11-20, über die koordinierende Session eingegangen und an der öffentlichen Seite nachgestellt, nichts davon ist behoben:
+
+- Die Themenkachel der Startseite reagiert nicht auf den gewählten Brief. Bei `o:hsa.letter.654` und bei `o:hsa.letter.3994` zeigt sie dieselben drei Zeilen (Baskisch, Publikationsversand, Cercle d'Études Euskariennes), nur die Markierung mit der Nummer wandert. Die Leserin schrieb, bei den Themen passiere nichts, wenn man eine andere Person wählt. Dass sie diese Stelle meint, ist eine Zuordnung der koordinierenden Session. Im Explorer filtert die Personenwahl die Themen, geprüft an drei Personen.
+- Den Einstieg in das Hugo Schuchardt Archiv nannte sie „fast ein bisschen überfordernd“. Der Explorer öffnet mit allen Personen, Karte, Zeitleiste und Themenraster zugleich.
 
 ## Einträge
 
